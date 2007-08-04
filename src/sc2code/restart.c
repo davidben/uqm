@@ -56,9 +56,7 @@ DrawRestartMenuGraphic (MENU_STATE *pMS)
 	RECT r;
 	STAMP s;
 
-	s.frame = CaptureDrawable (
-		LoadGraphic (RESTART_PMAP_ANIM)
-		);
+	s.frame = CaptureDrawable (LoadGraphic (RESTART_PMAP_ANIM));
 	pMS->CurFrame = s.frame;
 	GetFrameRect (s.frame, &r);
 	s.origin.x = (SCREEN_WIDTH - r.extent.width) >> 1;
@@ -83,8 +81,13 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
-	r.corner.x = r.corner.y = r.extent.width = r.extent.height = 0;
+
+	r.corner.x = 0;
+	r.corner.y = 0;
+	r.extent.width = 0;
+	r.extent.height = 0;
 	SetContextClipRect (&r);
+
 	r.corner.x = 0;
 	r.corner.y = 0;
 	r.extent.width = SCREEN_WIDTH;
@@ -134,7 +137,8 @@ DoRestart (MENU_STATE *pMS)
 
 		{
 			BYTE clut_buf[] = {FadeAllToColor};
-			DWORD TimeOut = XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
+			DWORD TimeOut = XFormColorMap (
+					(COLORMAPPTR)clut_buf, ONE_SECOND / 2);
 			while ((GetTimeCounter () <= TimeOut) &&
 			       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
@@ -143,15 +147,14 @@ DoRestart (MENU_STATE *pMS)
 			}
 		}
 	}
-#ifdef TESTING
-else if (InputState & DEVICE_EXIT) return (FALSE);
-#endif /* TESTING */
 	else if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		return (FALSE);
 	}
-	else if (!(PulsedInputState.menu[KEY_MENU_UP] || PulsedInputState.menu[KEY_MENU_DOWN] ||
-			PulsedInputState.menu[KEY_MENU_LEFT] || PulsedInputState.menu[KEY_MENU_RIGHT] ||
+	else if (!(PulsedInputState.menu[KEY_MENU_UP] ||
+			PulsedInputState.menu[KEY_MENU_DOWN] ||
+			PulsedInputState.menu[KEY_MENU_LEFT] ||
+			PulsedInputState.menu[KEY_MENU_RIGHT] ||
 			PulsedInputState.menu[KEY_MENU_SELECT] || MouseButtonDown))
 
 	{
@@ -187,7 +190,8 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 				SetFlashRect (NULL, (FRAME)0);
 				UnlockMutex (GraphicsLock);
 				SetupMenu ();
-				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
+				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+						MENU_SOUND_SELECT);
 				InTime = GetTimeCounter ();
 				SetTransitionSource (NULL);
 				BatchGraphics ();
@@ -198,7 +202,8 @@ else if (InputState & DEVICE_EXIT) return (FALSE);
 				return TRUE;
 			case QUIT_GAME:
 				fade_buf[0] = FadeAllToBlack;
-				SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
+				SleepThreadUntil (XFormColorMap (
+						(COLORMAPPTR)fade_buf, ONE_SECOND / 2));
 
 				GLOBAL (CurrentActivity) = CHECK_ABORT;
 				break;
@@ -278,7 +283,8 @@ RestartMenu (MENU_STATE *pMS)
 
 		SleepThreadUntil (XFormColorMap ((COLORMAPPTR)white_buf,
 				ONE_SECOND / 8) + ONE_SECOND / 60);
-		SetContextBackGroundColor (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+		SetContextBackGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 		ClearDrawable ();
 		FlushColorXForms ();
 
@@ -412,8 +418,9 @@ StartGame (void)
 	}
 
 	PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
-	PlayerControl[1] =  COMPUTER_CONTROL | AWESOME_RATING;
+	PlayerControl[1] = COMPUTER_CONTROL | AWESOME_RATING;
 	SetPlayerInput ();
 
 	return (TRUE);
 }
+
