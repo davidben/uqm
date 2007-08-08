@@ -315,7 +315,6 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 	}
 	else
 	{	// fill the non-transparent parts of the image with fillcolor
-		SDL_Surface *src = img->NormalImg;
 		SDL_Surface *newfill = img->FilledImg;
 
 		if (newfill && (newfill->w < surf->w || newfill->h < surf->h))
@@ -1179,8 +1178,6 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas src_mipmap,
 		{
 			const int px0 = (sx0 >> 16);
 			const int px1 = (sx1 >> 16);
-			Uint8 *src_p0 = src_a0 + px0 * sbpp;
-			Uint8 *src_p1 = src_a1 + px1 * mmbpp;
 			// retrieve the fractional portions of x
 			const Uint8 u0 = (sx0 >> 8) & 0xff;
 			const Uint8 u1 = (sx1 >> 8) & 0xff;
