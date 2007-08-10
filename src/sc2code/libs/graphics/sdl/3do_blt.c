@@ -30,7 +30,8 @@ read_screen (RECT *lpRect, FRAME DstFramePtr)
 			|| !(GetFrameParentDrawable (DstFramePtr)->Flags
 				& MAPPED_TO_DISPLAY))
 	{
-		log_add (log_Warning, "Unimplemented function activated: read_screen()");
+		log_add (log_Warning, "Unimplemented function activated: "
+				"read_screen()");
 	}
 	else
 	{
@@ -53,14 +54,14 @@ alloc_image (COUNT NumFrames, DRAWABLE_TYPE DrawableType, CREATE_FLAGS
 
 static DISPLAY_INTERFACE DisplayInterface =
 {
-	WANT_MASK,
+	/* .DisplayFlags  = */ WANT_MASK,
 
-	16, // SCREEN_DEPTH,
-	320,
-	240,
+	/* .DisplayDepth  = */ 16,
+	/* .DisplayWidth  = */ 320,
+	/* .DisplayHeight = */ 240,
 
-	alloc_image,
-	read_screen,
+	/* .alloc_iamge   = */ alloc_image,
+	/* .read_display  = */ read_screen,
 };
 
 void
@@ -70,3 +71,4 @@ LoadDisplay (DISPLAY_INTERFACE **pDisplay)
 }
 
 #endif
+

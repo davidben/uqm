@@ -24,7 +24,8 @@ typedef struct
 	CREATE_FLAGS DisplayFlags;
 
 	BYTE DisplayDepth;
-	COUNT DisplayWidth, DisplayHeight;
+	COUNT DisplayWidth;
+	COUNT DisplayHeight;
 
 	DRAWABLE (*alloc_image) (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 			CREATE_FLAGS flags, SIZE width, SIZE height);
