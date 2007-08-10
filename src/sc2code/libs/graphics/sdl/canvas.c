@@ -1528,6 +1528,20 @@ TFB_DrawCanvas_Rescale_Bilinear (TFB_Canvas src_canvas, TFB_Canvas dst_canvas,
 }
 
 void
+TFB_DrawCanvas_Lock (TFB_Canvas canvas)
+{
+	SDL_Surface *surf = (SDL_Surface *)canvas;
+	SDL_LockSurface (surf);
+}
+
+void
+TFB_DrawCanvas_Unlock (TFB_Canvas canvas)
+{
+	SDL_Surface *surf = (SDL_Surface *)canvas;
+	SDL_UnlockSurface (surf);
+}
+
+void
 TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt)
 {
 	SDL_PixelFormat *sdl = SDL_Screen->format;
@@ -1553,11 +1567,18 @@ TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt)
 	}
 }
 
+int
+TFB_DrawCanvas_GetStride (TFB_Canvas canvas)
+{
+	SDL_Surface *surf = (SDL_Surface *)canvas;
+	return surf->pitch;
+}
+
 void*
 TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line)
 {
-	SDL_Surface* surf = (SDL_Surface *)canvas;
-	return (uint8*)surf->pixels + surf->pitch * line;
+	SDL_Surface *surf = (SDL_Surface *)canvas;
+	return (uint8 *)surf->pixels + surf->pitch * line;
 }
 
 void
@@ -1618,3 +1639,4 @@ TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src_canvas, int angle, EXTENT *size)
 	size->height = dsth;
 	size->width = dstw;
 }
+

@@ -150,7 +150,10 @@ BOOLEAN TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, int *r, int *g, i
 void TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOLEAN rleaccel);
 void TFB_DrawCanvas_CopyTransparencyInfo (TFB_Canvas src, TFB_Canvas dst);
 void TFB_DrawCanvas_Initialize (void);
+void TFB_DrawCanvas_Lock (TFB_Canvas canvas);
+void TFB_DrawCanvas_Unlock (TFB_Canvas canvas);
 void TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt);
+int TFB_DrawCanvas_GetStride (TFB_Canvas canvas);
 void* TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line);
 void TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y, int *r, int *g, int *b);
 
