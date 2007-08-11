@@ -607,7 +607,7 @@ TFB_ComputeFPS (void)
 }
 
 void
-TFB_FlushGraphics () // Only call from main thread!!
+TFB_FlushGraphics (void) // Only call from main thread!!
 {
 	int commands_handled;
 	BOOLEAN livelock_deterrence;
@@ -906,6 +906,11 @@ TFB_FlushGraphics () // Only call from main thread!!
 						exit (EXIT_FAILURE);
 					}
 				}
+				break;
+			}
+		case TFB_DRAWCOMMANDTYPE_CALLBACK:
+			{
+				DC.data.callback.callback (DC.data.callback.arg);
 				break;
 			}
 		}

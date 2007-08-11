@@ -211,7 +211,7 @@ TFB_DrawScreen_WaitForSignal (void)
 	DrawCommand.data.sendsignal.sem = s;
 	Lock_DCQ (1);
 	TFB_BatchReset ();
-	TFB_EnqueueDrawCommand(&DrawCommand);
+	TFB_EnqueueDrawCommand (&DrawCommand);
 	Unlock_DCQ();
 	SetSemaphore (s);	
 }
@@ -225,6 +225,16 @@ TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height)
 	DrawCommand.data.reinitvideo.flags = flags;
 	DrawCommand.data.reinitvideo.width = width;
 	DrawCommand.data.reinitvideo.height = height;
+	TFB_EnqueueDrawCommand (&DrawCommand);
+}
+
+void
+TFB_DrawScreen_Callback (void (*callback) (void *arg), void *arg)
+{
+	TFB_DrawCommand DrawCommand;
+	DrawCommand.Type = TFB_DRAWCOMMANDTYPE_CALLBACK;
+	DrawCommand.data.callback.callback = callback;
+	DrawCommand.data.callback.arg = arg;
 	TFB_EnqueueDrawCommand(&DrawCommand);
 }
 
@@ -417,3 +427,4 @@ TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type)
 		image->last_scale = target;
 	}
 }
+

@@ -41,6 +41,7 @@ enum
 	TFB_DRAWCOMMANDTYPE_DELETEDATA,
 	TFB_DRAWCOMMANDTYPE_SENDSIGNAL,
 	TFB_DRAWCOMMANDTYPE_REINITVIDEO,
+	TFB_DRAWCOMMANDTYPE_CALLBACK,
 };
 
 typedef struct tfb_dc_line
@@ -135,6 +136,12 @@ typedef struct tfb_dc_reinit_video
 	int driver, flags, width, height;
 } TFB_DrawCommand_ReinitVideo;
 
+typedef struct tfb_dc_callback
+{
+	void (*callback)(void *arg);
+	void *arg;
+} TFB_DrawCommand_Callback;
+
 typedef struct tfb_drawcommand
 {
 	int Type;
@@ -153,6 +160,7 @@ typedef struct tfb_drawcommand
 		TFB_DrawCommand_DeleteData deletedata;
 		TFB_DrawCommand_SendSignal sendsignal;
 		TFB_DrawCommand_ReinitVideo reinitvideo;
+		TFB_DrawCommand_Callback callback;
 	} data;
 } TFB_DrawCommand;
 
