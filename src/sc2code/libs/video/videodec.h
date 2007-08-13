@@ -49,7 +49,9 @@ typedef struct tfb_videodecoderfunc
 // from the player
 typedef struct tfb_videocallbacks
 {
-	// any decoder calls this
+	// any decoder calls these
+	void (* BeginFrame) (THIS_PTR);
+	void (* EndFrame) (THIS_PTR);
 	void* (* GetCanvasLine) (THIS_PTR, uint32 line);
 	// non-audio-driven decoders call this to figure out
 	// when the next frame should be drawn

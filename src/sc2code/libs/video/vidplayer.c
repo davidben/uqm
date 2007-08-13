@@ -25,6 +25,8 @@
 #include "libs/log.h"
 
 // video callbacks
+static void vp_BeginFrame (TFB_VideoDecoder*);
+static void vp_EndFrame (TFB_VideoDecoder*);
 static void* vp_GetCanvasLine (TFB_VideoDecoder*, uint32 line);
 static uint32 vp_GetTicks (TFB_VideoDecoder*);
 static bool vp_SetTimer (TFB_VideoDecoder*, uint32 msecs);
@@ -32,6 +34,8 @@ static bool vp_SetTimer (TFB_VideoDecoder*, uint32 msecs);
 
 TFB_VideoCallbacks vp_DecoderCBs =
 {
+	vp_BeginFrame,
+	vp_EndFrame,
 	vp_GetCanvasLine,
 	vp_GetTicks,
 	vp_SetTimer
@@ -470,6 +474,24 @@ TFB_VideoInput (VIDEO_REF VidRef)
 
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	DoInput (&vis, TRUE);
+}
+
+static void
+vp_BeginFrame (TFB_VideoDecoder* decoder)
+{
+	TFB_VideoClip* vid = (TFB_VideoClip*) decoder->data;
+
+	if (vid)
+		TFB_DrawCanvas_Lock (vid->frame->NormalImg);
+}
+
+static void
+vp_EndFrame (TFB_VideoDecoder* decoder)
+{
+	TFB_VideoClip* vid = (TFB_VideoClip*) decoder->data;
+
+	if (vid)
+		TFB_DrawCanvas_Unlock (vid->frame->NormalImg);
 }
 
 static void*

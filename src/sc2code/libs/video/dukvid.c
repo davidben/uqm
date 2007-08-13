@@ -529,8 +529,6 @@ dukv_RenderFrame (THIS_PTR)
 	default:
 		;
 	}
-	if (!This->audio_synced)
-	       This->callbacks.SetTimer (This, (uint32) (1000.0f / DUCK_GENERAL_FPS));
 }
 
 static const char*
@@ -701,7 +699,12 @@ dukv_DecodeNext (THIS_PTR)
 
 	dukv->iframe++;
 
+	This->callbacks.BeginFrame (This);
 	dukv_RenderFrame (This);
+	This->callbacks.EndFrame (This);
+
+	if (!This->audio_synced)
+	   This->callbacks.SetTimer (This, (uint32) (1000.0f / DUCK_GENERAL_FPS));
 
 	return 1;
 }
