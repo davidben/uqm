@@ -1541,14 +1541,6 @@ TFB_DrawCanvas_Unlock (TFB_Canvas canvas)
 	SDL_UnlockSurface (surf);
 }
 
-// This function should only be called from the graphics thread,
-// like from a TFB_DrawCommand_Callback command.
-TFB_Canvas
-TFB_DrawCanvas_GetScreenCanvas (SCREEN screen)
-{
-	return (TFB_Canvas) SDL_Screens[screen];
-}
-
 void
 TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt)
 {

@@ -341,6 +341,14 @@ TFB_DisplayFormatAlpha (SDL_Surface *surface)
 	return newsurf;
 }
 
+// This function should only be called from the graphics thread,
+// like from a TFB_DrawCommand_Callback command.
+TFB_Canvas
+TFB_GetScreenCanvas (SCREEN screen)
+{
+	return (TFB_Canvas) SDL_Screens[screen];
+}
+
 void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 					  SDL_Rect *dstrect, int blend_numer, int blend_denom)
 {
