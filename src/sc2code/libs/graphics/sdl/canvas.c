@@ -1037,7 +1037,6 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas src_mipmap,
 	SDL_PixelFormat *mmfmt = mm->format;
 	SDL_PixelFormat *dstfmt = dst->format;
 	SDL_Color *srcpal = srcfmt->palette? srcfmt->palette->colors : 0;
-	SDL_Color *mmpal = mmfmt->palette ? mmfmt->palette->colors : 0;
 	const int sbpp = srcfmt->BytesPerPixel;
 	const int mmbpp = mmfmt->BytesPerPixel;
 	const int slen = src->pitch;
@@ -1057,6 +1056,13 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas src_mipmap,
 	// source fractional x and y starting points
 	int ssx0 = 0, ssy0 = 0, ssx1 = 0, ssy1 = 0;
 	int x, y, w, h;
+
+	if (mmfmt->palette && !srcpal) 
+	{
+		log_add (log_Warning, "TFB_DrawCanvas_Rescale_Trilinear: "
+				"Mipmap is paletted, but source is not! Failing.");
+		return;
+	}
 
 	if (scale > 0)
 	{
@@ -1231,13 +1237,13 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas src_mipmap,
 				Uint8 *mm_p = src_a1 + px1 * mmbpp;
 
 				p1[0].value = scale_read_pixel (mm_p, mmfmt,
-						mmpal, mk1, ck1);
+						srcpal, mk1, ck1);
 				p1[1].value = scale_read_pixel (mm_p + mmbpp, mmfmt,
-						mmpal, mk1, ck1);
+						srcpal, mk1, ck1);
 				p1[2].value = scale_read_pixel (mm_p + mmlen, mmfmt,
-						mmpal, mk1, ck1);
+						srcpal, mk1, ck1);
 				p1[3].value = scale_read_pixel (mm_p + mmbpp + mmlen, mmfmt,
-						mmpal, mk1, ck1);
+						srcpal, mk1, ck1);
 			}
 			else
 			{

@@ -932,23 +932,19 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 								// (smaller) zoom level image as mipmap,
 								// needed for trilinear scaling
 
-								FRAME frame =
-									SetAbsFrameIndex (
-									ElementPtr->next.image.farray[index + 1],
-									GetFrameIndex (ElementPtr->next.image.frame));
+								FRAME frame = ElementPtr->next.image.frame;
+								FRAME mmframe = SetEquFrameIndex (
+										ElementPtr->next.image.farray[
+										index + 1], frame);
 
-								if (frame && frame->image)
+								// TODO: This is currently hacky, this code
+								//   really should not dereference FRAME.
+								//   Perhaps make mipmap part of STAMP prim?
+								if (frame && mmframe)
 								{
-									TFB_DrawCommand DC;
-									TFB_Image *mmimg = frame->image;
-									DC.Type = TFB_DRAWCOMMANDTYPE_SETMIPMAP;
-									DC.data.setmipmap.image = (ElementPtr->next.image.frame)->image;
-									DC.data.setmipmap.hotx = frame->HotSpot.x;
-									DC.data.setmipmap.hoty = frame->HotSpot.y;
-									LockMutex (mmimg->mutex);
-									DC.data.setmipmap.mipmap = mmimg->NormalImg;
-									UnlockMutex (mmimg->mutex);
-									TFB_EnqueueDrawCommand (&DC);
+									HOT_SPOT mmhs = GetFrameHot (mmframe);
+									TFB_DrawScreen_SetMipmap (frame->image,
+											mmframe->image, mmhs.x, mmhs.y);
 								}
 							}
 						}

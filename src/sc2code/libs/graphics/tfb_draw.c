@@ -159,6 +159,20 @@ TFB_DrawScreen_Copy (RECT *r, SCREEN src, SCREEN dest)
 }
 
 void
+TFB_DrawScreen_SetMipmap (TFB_Image *img, TFB_Image *mmimg, int hotx, int hoty)
+{
+	TFB_DrawCommand DC;
+
+	DC.Type = TFB_DRAWCOMMANDTYPE_SETMIPMAP;
+	DC.data.setmipmap.image = img;
+	DC.data.setmipmap.mipmap = mmimg;
+	DC.data.setmipmap.hotx = hotx;
+	DC.data.setmipmap.hoty = hoty;
+
+	TFB_EnqueueDrawCommand (&DC);
+}
+
+void
 TFB_DrawScreen_DeleteImage (TFB_Image *img)
 {
 	if (img)
@@ -356,6 +370,40 @@ TFB_DrawImage_New_Rotated (TFB_Image *img, int angle)
 	
 	newimg = TFB_DrawImage_New (dst);
 	return newimg;
+}
+
+void
+TFB_DrawImage_SetMipmap (TFB_Image *img, TFB_Image *mmimg, int hotx, int hoty)
+{
+	bool imgpal;
+	bool mmpal;
+
+	if (!img || !mmimg)
+		return;
+
+	LockMutex (img->mutex);
+	LockMutex (mmimg->mutex);
+	
+	// Either both images must be using the same colormap, or mipmap image
+	// must not be paletted. This restriction is due to the current
+	// implementation of fill-stamp, which replaces the palette with
+	// fill color.
+	imgpal = TFB_DrawCanvas_IsPaletted (img->NormalImg);
+	mmpal = TFB_DrawCanvas_IsPaletted (mmimg->NormalImg);
+	if (!mmpal || (mmpal && imgpal &&
+			img->colormap_index == mmimg->colormap_index))
+	{
+		img->MipmapImg = mmimg->NormalImg;
+		img->MipmapHs.x = hotx;
+		img->MipmapHs.y = hoty;
+	}
+	else
+	{
+		img->MipmapImg = NULL;
+	}
+
+	UnlockMutex (mmimg->mutex);
+	UnlockMutex (img->mutex);
 }
 
 void 

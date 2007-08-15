@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Fixed a problem with blue ships after Avatar's tractor beam,
+  along with some other fill-stamp situations; bug #929 - Alex
 - Added TFB_Canvas_Lock(), TFB_Canvas_Unlock() and TFB_Canvas_GetStride()
   - SvdB
 - Scaling images with respect to their hotspots: stabilizes compound

@@ -110,7 +110,7 @@ typedef struct tfb_dc_setpal
 typedef struct tfb_dc_setmip
 {
 	TFB_Image *image;
-	TFB_Canvas mipmap;
+	TFB_Image *mipmap;
 	int hotx, hoty;
 } TFB_DrawCommand_SetMipmap;
 

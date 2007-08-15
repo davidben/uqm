@@ -692,11 +692,9 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 		switch (DC.Type)
 		{
 		case TFB_DRAWCOMMANDTYPE_SETMIPMAP:
-			LockMutex (DC.data.setmipmap.image->mutex);
-			DC.data.setmipmap.image->MipmapImg = DC.data.setmipmap.mipmap;
-			DC.data.setmipmap.image->MipmapHs.x = DC.data.setmipmap.hotx;
-			DC.data.setmipmap.image->MipmapHs.y = DC.data.setmipmap.hoty;
-			UnlockMutex (DC.data.setmipmap.image->mutex);
+			TFB_DrawImage_SetMipmap (DC.data.setmipmap.image,
+					DC.data.setmipmap.mipmap,
+					DC.data.setmipmap.hotx, DC.data.setmipmap.hoty);
 			break;
 		case TFB_DRAWCOMMANDTYPE_IMAGE:
 			{

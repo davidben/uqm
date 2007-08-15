@@ -95,6 +95,7 @@ void TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale, int r,
 void TFB_DrawScreen_FontChar (TFB_Char *, TFB_Image *backing, int x, int y, SCREEN dest);
 
 void TFB_DrawScreen_CopyToImage (TFB_Image *img, RECT *lpRect, SCREEN src);
+void TFB_DrawScreen_SetMipmap (TFB_Image *img, TFB_Image *mmimg, int hotx, int hoty);
 void TFB_DrawScreen_DeleteImage (TFB_Image *img);
 void TFB_DrawScreen_DeleteData (void *);
 void TFB_DrawScreen_WaitForSignal (void);
@@ -104,6 +105,7 @@ void TFB_DrawScreen_Callback (void (*callback) (void *arg), void *arg);
 TFB_Image *TFB_DrawImage_New (TFB_Canvas canvas);
 TFB_Image *TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha);
 TFB_Image *TFB_DrawImage_New_Rotated (TFB_Image *img, int angle);
+void TFB_DrawImage_SetMipmap (TFB_Image *img, TFB_Image *mmimg, int hotx, int hoty);
 void TFB_DrawImage_Delete (TFB_Image *image);
 void TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type);
 
