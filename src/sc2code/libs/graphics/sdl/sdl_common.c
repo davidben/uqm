@@ -51,8 +51,6 @@ static volatile BOOLEAN abortFlag = FALSE;
 
 int GfxFlags = 0;
 
-static TFB_Palette palette[256];
-
 TFB_GRAPHICS_BACKEND *graphics_backend = NULL;
 
 #define FPS_PERIOD 100
@@ -693,22 +691,6 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 
 		switch (DC.Type)
 		{
-		case TFB_DRAWCOMMANDTYPE_SETPALETTE:
-			{
-				int index = DC.data.setpalette.index;
-				if (index < 0 || index > 255)
-				{
-					log_add (log_Debug, "DCQ panic: Tried to set palette #%i",
-							index);
-				}
-				else
-				{
-					palette[index].r = DC.data.setpalette.r & 0xFF;
-					palette[index].g = DC.data.setpalette.g & 0xFF;
-					palette[index].b = DC.data.setpalette.b & 0xFF;
-				}
-				break;
-			}
 		case TFB_DRAWCOMMANDTYPE_SETMIPMAP:
 			LockMutex (DC.data.setmipmap.image->mutex);
 			DC.data.setmipmap.image->MipmapImg = DC.data.setmipmap.mipmap;

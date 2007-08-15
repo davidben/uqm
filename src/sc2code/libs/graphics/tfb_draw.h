@@ -99,7 +99,6 @@ void TFB_DrawScreen_DeleteImage (TFB_Image *img);
 void TFB_DrawScreen_DeleteData (void *);
 void TFB_DrawScreen_WaitForSignal (void);
 void TFB_DrawScreen_ReinitVideo (int driver, int flags, int width, int height);
-void TFB_DrawScreen_SetPalette (int paletteIndex, int r, int g, int b);
 void TFB_DrawScreen_Callback (void (*callback) (void *arg), void *arg);
 
 TFB_Image *TFB_DrawImage_New (TFB_Canvas canvas);

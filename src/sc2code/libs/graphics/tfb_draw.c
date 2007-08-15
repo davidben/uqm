@@ -66,20 +66,6 @@ TFB_DrawScreen_Rect (RECT *rect, int r, int g, int b, SCREEN dest)
 }
 
 void
-TFB_DrawScreen_SetPalette (int paletteIndex, int r, int g, int b)
-{
-	TFB_DrawCommand DC;
-
-	DC.Type = TFB_DRAWCOMMANDTYPE_SETPALETTE;
-	DC.data.setpalette.r = r;
-	DC.data.setpalette.g = g;
-	DC.data.setpalette.b = b;
-	DC.data.setpalette.index = paletteIndex;
-
-	TFB_EnqueueDrawCommand (&DC);
-}
-
-void
 TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
 		TFB_ColorMap *cmap, SCREEN dest)
 {
