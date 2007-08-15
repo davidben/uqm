@@ -921,16 +921,9 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 							else
 								CALC_ZOOM_STUFF (&index, &scale);
 
-							ElementPtr->next.image.frame =
-#ifdef SAFE
-									SetAbsFrameIndex (
-									ElementPtr->next.image.farray[index],
-									GetFrameIndex (ElementPtr->next.image.frame));
-#else /* SAFE */
-									SetEquFrameIndex (
+							ElementPtr->next.image.frame = SetEquFrameIndex (
 									ElementPtr->next.image.farray[index],
 									ElementPtr->next.image.frame);
-#endif /* SAFE */
 
 							if (optMeleeScale == TFB_SCALE_TRILINEAR &&
 									index < 2 && scale != 256)

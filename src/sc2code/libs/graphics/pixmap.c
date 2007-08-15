@@ -17,6 +17,7 @@
  */
 
 #include "gfxintrn.h"
+#include "libs/log.h"
 
 FRAME
 CaptureDrawable (DRAWABLE Drawable)
@@ -128,14 +129,23 @@ SetRelFrameIndex (FRAME FramePtr, SIZE FrameOffs)
 FRAME
 SetEquFrameIndex (FRAME DstFramePtr, FRAME SrcFramePtr)
 {
-	if (DstFramePtr && SrcFramePtr)
-		return ((FRAME)(
-				(BYTE*)((GetFrameParentDrawable (DstFramePtr))->Frame)
-				+ ((BYTE*)SrcFramePtr -
-				(BYTE*)((GetFrameParentDrawable (SrcFramePtr))->Frame))
-				));
+	COUNT Index;
 
-	return (0);
+	if (!DstFramePtr || !SrcFramePtr)
+		return 0;
+
+	Index = GetFrameIndex (SrcFramePtr);
+#ifdef DEBUG
+	{
+		DRAWABLE_DESC *DrawablePtr = GetFrameParentDrawable (DstFramePtr);
+		if (Index > DrawablePtr->MaxIndex)
+			log_add (log_Debug, "SetEquFrameIndex: source index (%d) beyond "
+					"destination range (%d)", (int)Index,
+					(int)DrawablePtr->MaxIndex);
+	}
+#endif
+	
+	return SetAbsFrameIndex (DstFramePtr, Index);
 }
 
 FRAME
