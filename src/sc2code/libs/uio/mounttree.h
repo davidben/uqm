@@ -102,7 +102,7 @@ struct uio_MountInfo {
 	char *dirName;
 			/* The path inside the mounted fs leading to pDirHandle */
 	uio_PDirHandle *pDirHandle;
-			/* The pDirHandle belonging to this mount type */
+			/* The pDirHandle belonging to this mount */
 	uio_MountTree *mountTree;
 			/* The MountTree node for the mountpoint */
 	uio_AutoMount **autoMount;

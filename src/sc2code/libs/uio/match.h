@@ -70,6 +70,8 @@ match_Result match_matchPattern(match_MatchContext *context,
 const char *match_errorString(match_MatchContext *context,
 		match_Result result);
 void match_freeContext(match_MatchContext *context);
+match_Result match_matchPatternOnce(const char *pattern, match_MatchType type,
+		const char *string);
 
 
 /* *** Internal definitions follow *** */

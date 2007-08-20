@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Added match_matchPatternOnce() - SvdB
 - Fixed a problem with blue ships after Avatar's tractor beam,
   along with some other fill-stamp situations; bug #929 - Alex
 - Added TFB_Canvas_Lock(), TFB_Canvas_Unlock() and TFB_Canvas_GetStride()

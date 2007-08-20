@@ -65,6 +65,16 @@ static inline void match_freeRegexContext(match_RegexContext *context);
 
 // *** General part ***
 
+static inline match_MatchContext *
+match_allocMatchContext(void) {
+	return uio_malloc(sizeof (match_MatchContext));
+}
+
+static inline void
+match_freeMatchContext(match_MatchContext *context) {
+	uio_free(context);
+}
+
 // NB: Even if this function fails, *contextPtr contains a context
 //     which needs to be freed.
 match_Result
@@ -133,6 +143,7 @@ match_matchPattern(match_MatchContext *context, const char *string) {
 	}
 }
 
+// context may be NULL
 const char *
 match_errorString(match_MatchContext *context, match_Result result) {
 	switch (result) {
@@ -145,11 +156,15 @@ match_errorString(match_MatchContext *context, match_Result result) {
 		case match_ENOTINIT:
 			return "Uninitialised use";
 		case match_ECUSTOM:
-			// Depends on match type.
+			// Depends on match type. Printed below.
 			break;
 		default:
 			return "Unknown error";
 	}
+			
+	if (context == NULL)
+		return "Unknown match-type specific error.";
+				// We can't be any more specific if no 'context' is supplied.
 
 	switch (context->type) {
 #if 0
@@ -206,14 +221,21 @@ match_freeContext(match_MatchContext *context) {
 	match_freeMatchContext(context);
 }
 
-static inline match_MatchContext *
-match_allocMatchContext(void) {
-	return uio_malloc(sizeof (match_MatchContext));
-}
+match_Result
+match_matchPatternOnce(const char *pattern, match_MatchType type,
+		const char *string) {
+	match_MatchContext *context;
+	match_Result result;
 
-static inline void
-match_freeMatchContext(match_MatchContext *context) {
-	uio_free(context);
+	result = match_prepareContext(pattern, &context, type);
+	if (result != match_OK)
+		goto out;
+
+	result = match_matchPattern(context, string);
+
+out:
+	match_freeContext(context);
+	return result;
 }
 
 
