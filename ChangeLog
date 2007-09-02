@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- ShowPresentation() no longer clears the screen by force; presentations
+  now do this by request - Michael
 - Added match_matchPatternOnce() - SvdB
 - Fixed a problem with blue ships after Avatar's tractor beam,
   along with some other fill-stamp situations; bug #929 - Alex

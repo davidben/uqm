@@ -730,10 +730,6 @@ ShowPresentation (STRING PresStr)
 	OldContext = SetContext (ScreenContext);
 	GetContextClipRect (&OldRect);
 	OldFont = SetContextFont (NULL);
-	/* paint black rect over screen	*/
-	SetContextBackGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
-	ClearDrawable ();
 	UnlockMutex (GraphicsLock);
 
 	FlushInput ();
