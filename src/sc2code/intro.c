@@ -703,6 +703,32 @@ DoPresentation (void *pIS)
 			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
 			ShowPresentationFile (pPIS->Buffer);
 		}
+		else if (strcmp (Opcode, "LINE") == 0)
+		{
+			int x1, x2, y1, y2;
+			if (4 == sscanf (pStr, "%d %d %d %d", &x1, &y1, &x2, &y2))
+			{
+				COLOR old_color;
+				LINE l;
+
+				l.first.x = x1;
+				l.first.y = y1;
+				l.second.x = x2;
+				l.second.y = y2;
+				
+				if (!pPIS->Batched)
+					LockMutex (GraphicsLock);
+				old_color = SetContextForeGroundColor (pPIS->TextColor);
+				DrawLine (&l);
+				SetContextForeGroundColor (old_color);
+				if (!pPIS->Batched)
+					UnlockMutex (GraphicsLock);
+			}
+			else
+			{
+				log_add (log_Warning, "Bad LINE command '%s'", pStr);
+			}
+		}
 		else if (strcmp (Opcode, "NOOP") == 0)
 		{	/* no operation - must be a comment in script */
 			/* do nothing */
