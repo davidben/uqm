@@ -80,6 +80,11 @@ AllocElement (void)
 		LockElement (hElement, &ElementPtr);
 		memset (ElementPtr, 0, sizeof (*ElementPtr));
 		ElementPtr->PrimIndex = AllocDisplayPrim ();
+		if (ElementPtr->PrimIndex == END_OF_LIST)
+		{
+			log_add (log_Error, "AllocElement: Out of display prims!");
+			explode ();
+		}
 		SetPrimType (&DisplayArray[ElementPtr->PrimIndex], NO_PRIM);
 		UnlockElement (hElement);
 	}

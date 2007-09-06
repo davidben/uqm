@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Increased the size of display queue (elements were sometimes missing
+  in e.g. Nemesis vs. Nemesis battles with many marines out) - Alex
 - ShowPresentation() no longer clears the screen by force; presentations
   now do this by request - Michael
 - Added match_matchPatternOnce() - SvdB

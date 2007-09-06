@@ -157,7 +157,7 @@ struct element
 	HELEMENT hTarget;
 };
 
-#define MAX_DISPLAY_PRIMS 280
+#define MAX_DISPLAY_PRIMS 330
 extern COUNT DisplayFreeList;
 extern PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 

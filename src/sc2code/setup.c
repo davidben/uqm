@@ -155,7 +155,7 @@ InitContexts (void)
 	if (OffScreenContext == NULL)
 		return FALSE;
 
-	if (!InitQueue (&disp_q, 100, sizeof (ELEMENT)))
+	if (!InitQueue (&disp_q, MAX_DISPLAY_ELEMENTS, sizeof (ELEMENT)))
 		return FALSE;
 
 	return TRUE;

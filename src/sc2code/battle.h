@@ -29,6 +29,10 @@ typedef struct battlestate_struct {
 } BATTLE_STATE;
 
 extern QUEUE disp_q;
+// The maximum number of elements is chosen to provide a slight margin.
+// Currently, it is maximum *known used* in Melee + 30
+#define MAX_DISPLAY_ELEMENTS 150
+
 extern BYTE battle_counter[NUM_SIDES];
 extern BOOLEAN instantVictory;
 #ifdef NETPLAY
