@@ -59,12 +59,16 @@ typedef struct
 	COLOR TextColor;
 	COLOR TextBackColor;
 	int TextVPos;
+	int TextEffect;
 	RECT clip_r;
 	RECT tfade_r;
 #define MAX_TEXT_LINES 15
 	TEXT TextLines[MAX_TEXT_LINES];
 	COUNT LinesCount;
 	char Buffer[512];
+	int MovieFrame;
+	int MovieEndFrame;
+	int InterframeDelay;
 
 } PRESENTATION_INPUT_STATE;
 
@@ -159,6 +163,20 @@ DrawTracedText (TEXT *pText, COLOR Fore, COLOR Back)
 	pText->baseline.y--;
 	SetContextForeGroundColor (Fore);
 	font_DrawText (pText);
+}
+
+static void
+DrawTextEffect (TEXT *pText, COLOR Fore, COLOR Back, int Effect)
+{
+	if (Effect == 'T')
+	{
+		DrawTracedText (pText, Fore, Back);
+	}
+	else
+	{
+		SetContextForeGroundColor (Fore);
+		font_DrawText (pText);
+	}
 }
 
 static COUNT
@@ -295,6 +313,20 @@ Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
 	pPIS->SisFrame = SisFrame;
 }
 
+static void
+Present_DrawMovieFrame (PRESENTATION_INPUT_STATE* pPIS)
+{
+	STAMP s;
+
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = SetAbsFrameIndex (pPIS->Frame, pPIS->MovieFrame);
+	LockMutex (GraphicsLock);
+	SetContextClipping (TRUE);
+	DrawStamp (&s);
+	UnlockMutex (GraphicsLock);
+}
+
 BOOLEAN
 ShowPresentationFile (const char *name)
 {
@@ -313,10 +345,23 @@ DoPresentation (void *pIS)
 
 	if (pPIS->TimeOut)
 	{
-		if (GetTimeCounter () > pPIS->TimeOut)
-		{	/* time elapsed - continue normal ops */
-			pPIS->TimeOut = 0;
-			return TRUE;
+		TimeCount Delay = ONE_SECOND / 84;
+
+		if (GetTimeCounter () >= pPIS->TimeOut)
+		{
+			if (pPIS->MovieFrame >= 0)
+			{	/* Movie mode */
+				Present_DrawMovieFrame (pPIS);
+				++pPIS->MovieFrame;
+				if (pPIS->MovieFrame > pPIS->MovieEndFrame)
+					pPIS->MovieFrame = -1; /* movie is done */
+				Delay = pPIS->InterframeDelay;
+			}
+			else
+			{	/* time elapsed - continue normal ops */
+				pPIS->TimeOut = 0;
+				return TRUE;
+			}
 		}
 		
 		if (pPIS->TimeOutOnSkip &&
@@ -325,10 +370,11 @@ DoPresentation (void *pIS)
 			|| PulsedInputState.menu[KEY_MENU_RIGHT]) )
 		{	/* skip requested - continue normal ops */
 			pPIS->TimeOut = 0;
+			pPIS->MovieFrame = -1; /* abort any movie in progress */
 			return TRUE;
 		}
 
-		SleepThread (ONE_SECOND / 84);
+		SleepThread (Delay);
 		return TRUE;
 	}
 
@@ -452,48 +498,33 @@ DoPresentation (void *pIS)
 		{	/* text vertical align */
 			pPIS->TextVPos = toupper (*pStr);
 		}
+		else if (strcmp (Opcode, "TE") == 0)
+		{	/* text vertical align */
+			pPIS->TextEffect = toupper (*pStr);
+		}
 		else if (strcmp (Opcode, "TEXT") == 0)
 		{	/* simple text draw */
-			SIZE leading;
-			COUNT i;
-			COORD y;
-			
-			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
-			pPIS->LinesCount = ParseTextLines (pPIS->TextLines,
-					MAX_TEXT_LINES, pPIS->Buffer);
-			
-			if (!pPIS->Batched)
-				LockMutex (GraphicsLock);
-			GetContextFontLeading (&leading);
-			if (!pPIS->Batched)
-				UnlockMutex (GraphicsLock);
-			switch (pPIS->TextVPos)
-			{
-			case 'T': /* top */
-				y = leading;
-				break;
-			case 'M': /* middle */
-				y = (pPIS->clip_r.extent.height
-						- pPIS->LinesCount * leading) / 2;
-				break;
-			default: /* bottom */
-				y = pPIS->clip_r.extent.height - pPIS->LinesCount * leading;
-			}
-			for (i = 0; i < pPIS->LinesCount; ++i, y += leading)
-			{
-				pPIS->TextLines[i].align = ALIGN_CENTER;
-				pPIS->TextLines[i].baseline.x = SCREEN_WIDTH / 2;
-				pPIS->TextLines[i].baseline.y = y;
-			}
+			int x, y;
 
-			if (!pPIS->Batched)
-				LockMutex (GraphicsLock);
-			SetContextClipping (TRUE);
-			for (i = 0; i < pPIS->LinesCount; ++i)
-				DrawTracedText (pPIS->TextLines + i,
-						pPIS->TextColor, pPIS->TextBackColor);
-			if (!pPIS->Batched)
-				UnlockMutex (GraphicsLock);
+			assert (sizeof (pPIS->Buffer) >= 256);
+
+			if (3 == sscanf (pStr, "%d %d %255[^\n]", &x, &y, pPIS->Buffer))
+			{
+				TEXT t;
+
+				t.align = ALIGN_LEFT;
+				t.pStr = pPIS->Buffer;
+				t.CharCount = (COUNT)~0;
+				t.baseline.x = x;
+				t.baseline.y = y;
+				if (!pPIS->Batched)
+					LockMutex (GraphicsLock);
+				SetContextClipping (TRUE);
+				DrawTextEffect (&t, pPIS->TextColor, pPIS->TextBackColor,
+						pPIS->TextEffect);
+				if (!pPIS->Batched)
+					UnlockMutex (GraphicsLock);
+			}
 		}
 		else if (strcmp (Opcode, "TFI") == 0)
 		{	/* text fade-in */
@@ -536,15 +567,15 @@ DoPresentation (void *pIS)
 			LockMutex (GraphicsLock);
 			SetContextClipping (TRUE);
 			for (i = 0; i < pPIS->LinesCount; ++i)
-				DrawTracedText (pPIS->TextLines + i,
-						pPIS->TextFadeColor, pPIS->TextFadeColor);
+				DrawTextEffect (pPIS->TextLines + i, pPIS->TextFadeColor,
+						pPIS->TextFadeColor, pPIS->TextEffect);
 
 			/* do transition */
 			SetTransitionSource (&pPIS->tfade_r);
 			BatchGraphics ();
 			for (i = 0; i < pPIS->LinesCount; ++i)
-				DrawTracedText (pPIS->TextLines + i,
-						pPIS->TextColor, pPIS->TextBackColor);
+				DrawTextEffect (pPIS->TextLines + i, pPIS->TextColor,
+						pPIS->TextBackColor, pPIS->TextEffect);
 			ScreenTransition (3, &pPIS->tfade_r);
 			UnbatchGraphics ();
 			
@@ -562,8 +593,8 @@ DoPresentation (void *pIS)
 			SetTransitionSource (&pPIS->tfade_r);
 			BatchGraphics ();
 			for (i = 0; i < pPIS->LinesCount; ++i)
-				DrawTracedText (pPIS->TextLines + i,
-						pPIS->TextFadeColor, pPIS->TextFadeColor);
+				DrawTextEffect (pPIS->TextLines + i, pPIS->TextFadeColor,
+						pPIS->TextFadeColor, pPIS->TextEffect);
 			ScreenTransition (3, &pPIS->tfade_r);
 			UnbatchGraphics ();
 			UnlockMutex (GraphicsLock);
@@ -708,7 +739,6 @@ DoPresentation (void *pIS)
 			int x1, x2, y1, y2;
 			if (4 == sscanf (pStr, "%d %d %d %d", &x1, &y1, &x2, &y2))
 			{
-				COLOR old_color;
 				LINE l;
 
 				l.first.x = x1;
@@ -718,15 +748,36 @@ DoPresentation (void *pIS)
 				
 				if (!pPIS->Batched)
 					LockMutex (GraphicsLock);
-				old_color = SetContextForeGroundColor (pPIS->TextColor);
+				SetContextForeGroundColor (pPIS->TextColor);
 				DrawLine (&l);
-				SetContextForeGroundColor (old_color);
 				if (!pPIS->Batched)
 					UnlockMutex (GraphicsLock);
 			}
 			else
 			{
 				log_add (log_Warning, "Bad LINE command '%s'", pStr);
+			}
+		}
+		else if (strcmp (Opcode, "MOVIE") == 0)
+		{
+			int fps, from, to;
+		
+			if (3 == sscanf (pStr, "%d %d %d", &fps, &from, &to) &&
+					fps > 0 && from >= 0 && to >= 0 && to >= from)
+			{
+				Present_UnbatchGraphics (pPIS, TRUE);
+				
+				pPIS->MovieFrame = from;
+				pPIS->MovieEndFrame = to;
+				pPIS->InterframeDelay = ONE_SECOND / fps;
+
+				pPIS->TimeOut = GetTimeCounter ();
+				pPIS->TimeOutOnSkip = TRUE;
+				return TRUE;
+			}
+			else
+			{
+				log_add (log_Warning, "Bad MOVIE command '%s'", pStr);
 			}
 		}
 		else if (strcmp (Opcode, "NOOP") == 0)
@@ -746,6 +797,7 @@ ShowPresentation (STRING PresStr)
 	RECT OldRect;
 	PRESENTATION_INPUT_STATE pis;
 
+	memset (&pis, 0, sizeof(pis));
 	pis.SlideShow = PresStr;
 	if (!pis.SlideShow)
 		return FALSE;
@@ -762,17 +814,11 @@ ShowPresentation (STRING PresStr)
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	pis.MenuRepeatDelay = 0;
 	pis.InputFunc = DoPresentation;
-	pis.Font = 0;
-	pis.Frame = 0;
-	pis.RotatedFrame = 0;
 	pis.LastDrawKind = -1;
-	pis.LastAngle = 0;
-	pis.MusicRef = 0;
-	pis.SisFrame = 0;
-	pis.Batched = FALSE;
 	pis.TextVPos = 'B';
-	pis.LastSyncTime = pis.StartTime = GetTimeCounter ();
-	pis.TimeOut = 0;
+	pis.MovieFrame = -1;
+	pis.StartTime = GetTimeCounter ();
+	pis.LastSyncTime = pis.StartTime;
 	DoInput (&pis, TRUE);
 
 	SleepThreadUntil (FadeMusic (0, ONE_SECOND));

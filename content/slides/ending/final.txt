@@ -16,6 +16,8 @@ FTB 0
 TC FFFFFF
 #(Set text back color; 0xRRGGBB)
 TBC 000000
+#(Set text effect; Traced, None, others when added)
+TE TRACED
 
 #(Play music)
 MUSIC slides/ending/victoryf.mod
