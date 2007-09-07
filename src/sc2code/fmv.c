@@ -45,9 +45,12 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 
 	SetGraphicUseOtherExtra (1);
 	LoadIntoExtraScreen (0);
+#if 0
+	/* This is cut out right now but should be part of the 3DO side */
 	clut_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
 	FlushColorXForms ();
+#endif
 	
 	if (hMusic)
 		StopMusic ();
@@ -58,37 +61,20 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 	sprintf (snbuf, "slides/spins/ship%02u.aif", (unsigned)index);
 	if (optWhichIntro == OPT_PC || !DoFMVEx (vnbuf, "slides/spins/spin.aif", snbuf, SHIP_SPIN_LOOP_FRAME))
 	{
-		FRAME p, f;
-		/* Display Standby frame */
-		p = CaptureDrawable (LoadGraphicFile ("slides/spins/ship.0.ani"));
-		if (p)
-		{
-			STAMP prologue;
+		STRING f;
 
-			prologue.origin.x = SCREEN_WIDTH >> 1;
-			prologue.origin.y = SCREEN_HEIGHT >> 1;
-			prologue.frame = p;
-
-			DrawStamp (&prologue);
-		}
-
-		clut_buf[0] = FadeAllToColor;
-		XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 20);
-		FlushColorXForms ();
-
-		sprintf (vnbuf, "slides/spins/ship%02u.ani", (unsigned)index);
-		f = CaptureDrawable (LoadGraphicFile (vnbuf));
+		sprintf (vnbuf, "slides/spins/ship%02u.txt", (unsigned)index);
+		f = CaptureStringTable (LoadStringTableFile (contentDir, vnbuf));
 		if (f)
 		{
-			ShowShipAnim (f);
+			ShowPresentation (f);
+			/* BUG: Leak? This is also in ShowPresentationFile */
+			/* DestroyStringTable (ReleaseStringTable (f)); */
+
+			clut_buf[0] = FadeAllToBlack;
+			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
+			FlushColorXForms ();
 		}
-			
-		DestroyDrawable (ReleaseDrawable (f));
-		DestroyDrawable (ReleaseDrawable (p));
-		
-		clut_buf[0] = FadeAllToBlack;
-		SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
-		FlushColorXForms ();
 	}
 
 	GetContextClipRect (&old_r);

@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Non-3DO Shipspin anims now use Presentations - Michael
 - Added presentaion commands TEXT, TE (text effect), MOVIE - Alex
 - Increased the size of display queue (elements were sometimes missing
   in e.g. Nemesis vs. Nemesis battles with many marines out) - Alex

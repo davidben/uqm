@@ -512,7 +512,7 @@ DoPresentation (void *pIS)
 			{
 				TEXT t;
 
-				t.align = ALIGN_LEFT;
+				t.align = ALIGN_CENTER;
 				t.pStr = pPIS->Buffer;
 				t.CharCount = (COUNT)~0;
 				t.baseline.x = x;
@@ -836,79 +836,6 @@ ShowPresentation (STRING PresStr)
 	SetContextClipRect (&OldRect);
 	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
-
-	return TRUE;
-}
-
-/* This needs expansion; in particular, it needs to handle pause
- * frames and annotations */
-
-static BOOLEAN
-DoSpinAnim (void *pIS)
-{
-	SPINANIM_INPUT_STATE *pSIS = (SPINANIM_INPUT_STATE *)pIS;
-	STAMP *s = &pSIS->anim;
-	int f = GetFrameIndex (s->frame);
-
-	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-	{
-		return FALSE;
-	}
-
-	if (AnyButtonPress (FALSE) && !pSIS->debounce)
-	{
-		pSIS->debounce = 15;
-		if (f < 299)
-		{
-			f = 299;
-			s->frame = SetAbsFrameIndex (s->frame, 299);
-		}
-		else if (f == 299)
-		{
-			f = 300;
-			s->frame = SetAbsFrameIndex (s->frame, 300);
-		}
-		else
-		{
-			return FALSE;
-		}
-	}
-	else
-	{
-		if (pSIS->debounce) --pSIS->debounce;
-	}
-
-	DrawStamp (s);
-	if (f != 299) 
-	{
-		s->frame = SetRelFrameIndex (s->frame, 1);
-	}
-
-	if (GetFrameIndex (s->frame) == 0)
-	{
-		return FALSE;
-	}
-	
-	SleepThread (pSIS->last_time + ONE_SECOND / 30 - GetTimeCounter ());
-	pSIS->last_time = GetTimeCounter ();
-	return TRUE;
-} 
-
-BOOLEAN
-ShowShipAnim (FRAME anim)
-{
-	SPINANIM_INPUT_STATE is;
-
-	is.anim.origin.x = SCREEN_WIDTH >> 1;
-	is.anim.origin.y = SCREEN_HEIGHT >> 1;
-	is.anim.frame = anim;
-	is.last_time = GetTimeCounter ();
-	is.debounce = 15;
-
-	is.InputFunc = DoSpinAnim;
-	is.MenuRepeatDelay = 0;
-
-	DoInput (&is, TRUE);
 
 	return TRUE;
 }

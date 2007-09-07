@@ -36,7 +36,5 @@ extern BOOLEAN DoFMVEx (const char *name, const char *audname,
 extern BOOLEAN ShowPresentation (STRING PresStr);
 extern BOOLEAN ShowPresentationFile (const char *name);
 
-extern BOOLEAN ShowShipAnim (FRAME anim);
-
 #endif  /* _FMV_H */
 
