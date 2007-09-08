@@ -25,12 +25,17 @@ TBC 000000
 #(Set text effect; Traced, None, others when added)
 TE TRACED
 
+#(Load font to use later)
+FONT 0 lbm/starcon.fon
+#(Load font to use later)
+FONT 1 slides/slides.fon
+
 #(************ Title Screen ******************************************)
 
 #(+++++++++++ Title 1 +++++++++++++++++++++++++++++++++)
 
 #(Set font to use)
-FONT lbm/starcon.fon
+FONT 0
 
 #(Set ANIM to draw slides from)
 ANI slides/intro/title.ani
@@ -98,7 +103,7 @@ FTB 3000
 #(************* Slides *********************************************)
 
 #(Set font to use)
-FONT slides/slides.fon
+FONT 1
 
 #(Set ANIM to draw slides from)
 ANI slides/intro/intro.ani

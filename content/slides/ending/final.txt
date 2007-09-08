@@ -25,7 +25,7 @@ MUSIC slides/ending/victoryf.mod
 #(************* Slides *********************************************)
 
 #(Set font to use)
-FONT slides/slides.fon
+FONT 0 slides/slides.fon
 
 #(Set ANIM to draw slides from)
 ANI slides/ending/ending.ani

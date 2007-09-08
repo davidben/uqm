@@ -46,7 +46,8 @@ typedef struct
 	TimeCount TimeOut;
 	int TimeOutOnSkip;
 	STRING SlideShow;
-	FONT Font;
+#define MAX_FONTS 5
+	FONT Fonts[MAX_FONTS];
 	FRAME Frame;
 	MUSIC_REF MusicRef;
 	BOOLEAN Batched;
@@ -411,15 +412,31 @@ DoPresentation (void *pIS)
 			}
 		}
 		else if (strcmp (Opcode, "FONT") == 0)
-		{	/* set font */
-			utf8StringCopy (pPIS->Buffer, sizeof (pPIS->Buffer), pStr);
-			if (pPIS->Font)
-				DestroyFont (ReleaseFont (pPIS->Font));
-			pPIS->Font = CaptureFont ((FONT_REF) LoadFontFile (pPIS->Buffer));
+		{	/* set and/or load a font */
+			int index;
+			FONT *pFont;
+
+			assert (sizeof (pPIS->Buffer) >= 256);
+
+			pPIS->Buffer[0] = '\0';
+			if (1 > sscanf (pStr, "%d %255[^\n]", &index, pPIS->Buffer) ||
+					index < 0 || index >= MAX_FONTS)
+			{
+				log_add (log_Warning, "Bad FONT command '%s'", pStr);
+				continue;
+			}
+			pFont = &pPIS->Fonts[index];
+
+			if (pPIS->Buffer[0])
+			{	/* asked to load a font */
+				if (*pFont)
+					DestroyFont (ReleaseFont (*pFont));
+				*pFont = CaptureFont ((FONT_REF) LoadFontFile (pPIS->Buffer));
+			}
 
 			if (!pPIS->Batched)
 				LockMutex (GraphicsLock);
-			SetContextFont (pPIS->Font);
+			SetContextFont (*pFont);
 			if (!pPIS->Batched)
 				UnlockMutex (GraphicsLock);
 		}
@@ -796,6 +813,7 @@ ShowPresentation (STRING PresStr)
 	FONT OldFont;
 	RECT OldRect;
 	PRESENTATION_INPUT_STATE pis;
+	int i;
 
 	memset (&pis, 0, sizeof(pis));
 	pis.SlideShow = PresStr;
@@ -828,7 +846,8 @@ ShowPresentation (STRING PresStr)
 	DestroyMusic (pis.MusicRef);
 	DestroyDrawable (ReleaseDrawable (pis.RotatedFrame));
 	DestroyDrawable (ReleaseDrawable (pis.Frame));
-	DestroyFont (ReleaseFont (pis.Font));
+	for (i = 0; i < MAX_FONTS; ++i)
+		DestroyFont (ReleaseFont (pis.Fonts[i]));
 	DestroyStringTable (ReleaseStringTable (pis.SlideShow));
 
 	LockMutex (GraphicsLock);
