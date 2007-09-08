@@ -1,0 +1,62 @@
+#(Load font)
+FONT 0 lbm/starcon.fon
+
+#(Load other font)
+FONT 1 slides/slides.fon
+
+#(Select small font)
+FONT 0
+
+#(... and BG)
+TBC 000000
+
+#(Text effect)
+TE TRACED
+
+#(Load movie)
+ANI slides/spins/ship00.ani
+
+#(Take up entire screen)
+DIMS 320 240
+
+#(Fade out)
+FTB 250
+
+#(Draw first frame)
+DRAW 0
+
+#(Fade in)
+FTC 250
+
+#(Title Color)
+TC FFFFFF
+
+#(Title Font)
+FONT 1
+
+#(Title)
+TEXT 160 20 ANDROSYNTH GUARDIAN
+
+#(Load font)
+FONT 0
+
+#(Text color F)
+TC 54FC54
+
+#(Bubble marker - text1)
+TEXT 60 60 Semi-Homing
+
+#(Bubble marker - text2)
+TEXT 60 70 Acid Bubble
+
+#(Bubble marker - line)
+LINE 60 72 40 140
+
+#(Blazer text)
+TEXT 180 210 "Blazer" Conversion System
+
+#(Blazer marker - line)
+LINE 150 170 180 200
+
+#(Wait for five minutes, or keypress)
+WAIT 300000

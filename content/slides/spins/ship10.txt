@@ -1,0 +1,59 @@
+#(Load font)
+FONT 0 lbm/starcon.fon
+
+#(Load other font)
+FONT 1 slides/slides.fon
+
+#(Load movie)
+ANI slides/spins/ship10.ani
+
+#(Take up entire screen)
+DIMS 320 240
+
+#(Fade out)
+FTB 250
+
+#(Draw first frame)
+DRAW 0
+
+#(Fade in)
+FTC 250
+
+#(Title Color)
+TC FFFFFF
+
+#(Title Font)
+FONT 1
+
+#(Title effect)
+FE TRACED
+
+#(Title)
+TEXT 160 20 MYCON PODSHIP
+
+#(Load font)
+FONT 0
+
+#(Text effect)
+TE NONE
+
+#(Text color F)
+TC 54FC54
+
+#(Plasmoid line)
+LINE 245 75 260 42
+
+#(Plasmoid text)
+TEXT 260 40 Homing Plasmoid
+
+#(Crew line)
+LINE 60 135 45 170
+
+#(Crew text)
+TEXT 45 180 Regeneration
+
+#(Crew text 2)
+TEXT 45 190 Chambers
+
+#(Wait for five minutes, or keypress)
+WAIT 300000

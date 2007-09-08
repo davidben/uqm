@@ -1,0 +1,59 @@
+#(Load font)
+FONT 0 lbm/starcon.fon
+
+#(Load other font)
+FONT 1 slides/slides.fon
+
+#(Load movie)
+ANI slides/spins/ship04.ani
+
+#(Take up entire screen)
+DIMS 320 240
+
+#(Fade out)
+FTB 250
+
+#(Draw first frame)
+DRAW 0
+
+#(Fade in)
+FTC 250
+
+#(Title Color)
+TC FFFFFF
+
+#(Title Font)
+FONT 1
+
+#(Title effect)
+FE TRACED
+
+#(Title)
+TEXT 160 20 DRUUGE MAULER
+
+#(Load font)
+FONT 0
+
+#(Text color F)
+TC 54FC54
+
+#(Cannon text)
+TEXT 250 70 Megaton Cannon
+
+#(Cannon line)
+LINE 250 72 230 110
+
+#(Crew text)
+TEXT 255 143 Crew Quarters
+
+#(Crew line)
+LINE 175 140 210 140
+
+#(Reactor text)
+TEXT 150 200 Atomic Converter
+
+#(Reactor line)
+LINE 160 155 150 190
+
+#(Wait for five minutes, or keypress)
+WAIT 300000
