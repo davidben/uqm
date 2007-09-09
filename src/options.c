@@ -125,7 +125,7 @@ prepareContentDir (const char *contentDirName, const char **addons)
 		// Try the default content locations.
 		const char *locs[] = {
 			CONTENTDIR, /* defined in config.h */
-			""
+			"",
 			"content",
 			"../../content" /* For running from MSVC */
 		};
