@@ -86,6 +86,7 @@
 
 #undef false
 #undef true
+#undef bool
 typedef enum
 {
 	false = 0,
