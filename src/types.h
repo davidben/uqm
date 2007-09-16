@@ -84,10 +84,12 @@
 #	undef UQM_INT64
 #endif
 
+#undef false
+#undef true
 typedef enum
 {
 	false = 0,
-	true
+	true = 1
 } bool;
 
 /* If it isn't char, what is it ?!*/
