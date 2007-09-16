@@ -28,7 +28,7 @@
 static inline void
 resyncUTF8(const unsigned char **ptr) {
 	while ((**ptr & 0xc0) == 0x80)
-		*ptr++;
+		(*ptr)++;
 }
 
 // Get one character from a UTF-8 encoded string.
