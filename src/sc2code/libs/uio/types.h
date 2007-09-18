@@ -21,11 +21,33 @@
 #ifndef _uio_TYPES_H
 #define _uio_TYPES_H
 
-typedef enum
-{
-	false = 0,
-	true
-} uio_bool;
+#include "config.h"
+
+// ISO C99 compatible boolean types. The ISO C99 standard defines:
+// - An object declared as type _Bool, large enough to store the values 0
+//   and 1, the rank of which is less than the rank of all other standard
+//   integer types.
+// - A macro "bool", which expands to "_Bool".
+// - A macro "true", which expands to the integer constant 1, suitable for
+//   use in #if preprocessing directives.
+// - A macro "false", which expands to the integer constant 0, suitable for
+//   use in #if preprocessing directives.
+// - A macro "__bool_true_false_are_defined", which expands to the integer
+//   constant 1, suitable for use in #if preprocessing directives.
+#ifndef __bool_true_false_are_defined
+#undef bool
+#undef false
+#undef true
+#ifndef HAVE__BOOL
+typedef unsigned char _Bool;
+#endif  /* HAVE_BOOL */
+#define bool _Bool
+#define true 1
+#define false 0
+#define __bool_true_false_are_defined
+#endif  /* __bool_true_false_are_defined */
+
+typedef bool uio_bool;
 
 typedef unsigned char  uio_uint8;
 typedef   signed char  uio_sint8;

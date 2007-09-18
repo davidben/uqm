@@ -53,6 +53,9 @@
 /* Defined if your system has wint_t of its own */
 @HAVE_WINT_T@
 
+/* Defined if your system has _Bool of its own */
+@HAVE__BOOL@
+
 #endif  /* _CONFIG_WIN_H */
 
 
