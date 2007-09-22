@@ -280,7 +280,7 @@ InitSIS (void)
 	InitPlanetInfo ();
 	InitGroupInfo (TRUE);
 
-	GLOBAL (glob_flags) = NUM_READ_SPEEDS >> 1;
+	GLOBAL (glob_flags) = 0;
 
 	GLOBAL (ElementWorth[COMMON]) = 1;
 	GLOBAL_SIS (ElementAmounts[COMMON]) = 0;
@@ -352,7 +352,8 @@ InitSIS (void)
 	GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (SOL_X);
 	GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY (SOL_Y);
 	CurStarDescPtr = 0;
-	GLOBAL (autopilot.x) = GLOBAL (autopilot.y) = ~0;
+	GLOBAL (autopilot.x) = ~0;
+	GLOBAL (autopilot.y) = ~0;
 
 	/* In case the program is exited before the full game is terminated,
 	 * make sure that the temporary files are deleted.

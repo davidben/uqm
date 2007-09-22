@@ -25,16 +25,21 @@
 typedef enum
 {
 	UP_DIR,
+			// Animation indices are increasing
 	DOWN_DIR,
+			// Animation indices are decreasing
 	NO_DIR
 } ANIM_DIR;
 
 typedef enum
 {
 	PICTURE_ANIM,
+			// Parts of a picture are replaced
 	COLOR_ANIM
+			// Colormap tricks on a picture
 } ANIM_TYPE;
 
+// Describes an active animation.
 struct SEQUENCE
 {
 	COUNT Alarm;

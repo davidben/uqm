@@ -25,13 +25,17 @@
 #include "velocity.h"
 
 
+// XXX: the following should be moved to commanim.h
 // Animation types:
 #define RANDOM_ANIM (1 << 0)
-		// Next index is randomly chose
+		// The next index is randomly chosen.
 #define CIRCULAR_ANIM (1 << 1)
-		//
+		// After the last index has been reached, the animation starts over.
 #define YOYO_ANIM (1 << 2)
+		// After the last index has been reached, the order that the
+		// animation frames are used is reversed.
 #define ANIM_MASK (RANDOM_ANIM | CIRCULAR_ANIM | YOYO_ANIM)
+		// Mask of all animation types.
 
 #define WAIT_TALKING (1 << 3)
 #define PAUSE_TALKING (1 << 4)
@@ -48,7 +52,7 @@ typedef struct
 			// Index of the first image (for image animation) or
 			// index of the first color map (for palette animation)
 	BYTE NumFrames;
-			// number of frames
+			// Number of frames in the animation.
 
 	BYTE AnimFlags;
 			// One of RANDOM_ANIM, CIRCULAR_ANIM, or YOYO_ANIM
@@ -886,12 +890,10 @@ START_GAME_STATE
 	ADD_GAME_STATE (ORZ_STACK1, 1)
 END_GAME_STATE
 
-#define READ_SPEED_MASK ((1 << 3) - 1)
-#define NUM_READ_SPEEDS 5
+// Values for GAME_STATE.glob_flags:
 #define COMBAT_SPEED_SHIFT 6
 #define COMBAT_SPEED_MASK (((1 << 2) - 1) << COMBAT_SPEED_SHIFT)
 #define NUM_COMBAT_SPEEDS 4
-
 #define MUSIC_DISABLED (1 << 3)
 #define SOUND_DISABLED (1 << 4)
 #define CYBORG_ENABLED (1 << 5)
@@ -923,8 +925,8 @@ typedef UWORD ACTIVITY;
 
 typedef struct
 {
-	// XXX: cur_state is obsolete now and was replaced by process.c:zoom_out
-	BYTE cur_state, glob_flags;
+	BYTE glob_flags;
+			// See above for the meaning of the bits.
 
 	BYTE CrewCost, FuelCost;
 	BYTE ModuleCost[NUM_MODULES];
@@ -1010,9 +1012,6 @@ extern void setGameState32 (int startBit, DWORD val
 
 	
 extern CONTEXT RadarContext;
-
-extern void DiscardStarMap (void *CodeRef);
-extern void RetrieveStarMap (void);
 
 extern void FreeSC2Data (void);
 extern BOOLEAN LoadSC2Data (void);

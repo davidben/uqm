@@ -379,9 +379,10 @@ LoadClockState (CLOCK_STATE *ClockPtr, DECODE_REF fh)
 static void
 LoadGameState (GAME_STATE *GSPtr, DECODE_REF fh)
 {
+	BYTE dummy8;
 	DWORD tmpd;
 
-	cread_8   (fh, &GSPtr->cur_state); /* obsolete */
+	cread_8   (fh, &dummy8); /* obsolete */
 	cread_8   (fh, &GSPtr->glob_flags);
 	cread_8   (fh, &GSPtr->CrewCost);
 	cread_8   (fh, &GSPtr->FuelCost);

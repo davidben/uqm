@@ -140,10 +140,10 @@ ambient_anim_task (void *data)
 	memset (AnimFrame, 0, sizeof (AnimFrame));
 	for (i = 0; i < CommData.NumAnimations; i++)
 		if (CommData.AlienAmbientArray[i].AnimFlags & YOYO_ANIM)
-			AnimFrame[i] =  SetAbsFrameIndex (CommFrame,
+			AnimFrame[i] = SetAbsFrameIndex (CommFrame,
 					CommData.AlienAmbientArray[i].StartIndex);
 		else
-			AnimFrame[i] =  SetAbsFrameIndex (CommFrame,
+			AnimFrame[i] = SetAbsFrameIndex (CommFrame,
 					(COUNT)(CommData.AlienAmbientArray[i].StartIndex
 					+ CommData.AlienAmbientArray[i].NumFrames - 1));
 
