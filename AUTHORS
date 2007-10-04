@@ -35,7 +35,7 @@ Other contributions (in alphabetical order):
     Parker MacMillan
     Sanjay Madhav <madhav@usc.edu> (code patches)
     Robert McNamara <robert@americantenor.com> (MacOS X stuff)
-    Mike Melanson (ADPCM basis from MPlayer used for DUK audio)
+    Mike Melanson (ADPCM basis from FFmpeg used for DUK audio)
     Mudrony Laszlo <mudronyl@dragon.klte.hu> (PC/DOS content unpacking)
     Erol Otus <erol@toysforbob.com> (Splash screen)
     Brian Rogers <burpmaster@truffula.net>
