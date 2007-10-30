@@ -148,16 +148,12 @@ struct race_desc
 	DATA_STUFF ship_data _ALIGNED_ANY;
 	INTEL_STUFF cyborg_control _ALIGNED_ANY;
 
-	UNINIT_FUNC *uninit_func
-			_ALIGNED_ON(sizeof (UNINIT_FUNC *));
-	PREPROCESS_FUNC *preprocess_func
-			_ALIGNED_ON(sizeof (PREPROCESS_FUNC *));
-	POSTPROCESS_FUNC *postprocess_func 
-			_ALIGNED_ON(sizeof (POSTPROCESS_FUNC *));
-	INIT_WEAPON_FUNC *init_weapon_func
-			_ALIGNED_ON(sizeof (INIT_WEAPON_FUNC *));
+	UNINIT_FUNC *uninit_func;
+	PREPROCESS_FUNC *preprocess_func;
+	POSTPROCESS_FUNC *postprocess_func;
+	INIT_WEAPON_FUNC *init_weapon_func;
 
-	void *CodeRef _ALIGNED_ON(sizeof (void *));
+	void *CodeRef;
 };
 
 #define SHIP_BASE_COMMON \
@@ -208,11 +204,11 @@ typedef struct
 			// In battle: frames left before energy regeneration
 
 	BYTE ship_input_state;
-	STATUS_FLAGS cur_status_flags _ALIGNED_ON(sizeof (STATUS_FLAGS));
-	STATUS_FLAGS old_status_flags _ALIGNED_ON(sizeof (STATUS_FLAGS));
+	STATUS_FLAGS cur_status_flags;
+	STATUS_FLAGS old_status_flags;
 
-	HELEMENT hShip _ALIGNED_ON(sizeof (HELEMENT));
-	COUNT ShipFacing _ALIGNED_ON(sizeof (COUNT));
+	HELEMENT hShip;
+	COUNT ShipFacing;
 } STARSHIP;
 
 static inline STARSHIP *

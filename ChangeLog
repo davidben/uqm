@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Removed unnecessary _ALIGNED_ON macro usage - SvdB
 - The current directory is now among the locations searched for the content
   when no explicit location has been specified. (bug fix) - from Nic
 - Non-3DO Shipspin anims now use Presentations - Michael

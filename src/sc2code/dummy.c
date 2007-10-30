@@ -33,7 +33,7 @@
 
 typedef struct
 {
-	MEM_HANDLE handle _ALIGNED_ON(sizeof (MEM_HANDLE));
+	MEM_HANDLE handle;
 	RACE_DESC data _ALIGNED_ANY;
 } CODERES_STRUCT;
 

@@ -100,6 +100,9 @@ typedef UWORD MEM_FLAGS;
 typedef struct mem_header {
 	MEM_HANDLE handle;
 } _ALIGNED_ANY MEM_HEADER;
+// _ALIGNED_ANY adds padding to the end of MEM_HEADER, so that the following
+// address is aligned for any object (if the address of the MEM_HEADER
+// itself is aligned for any object).
 
 #define GET_MEM_HEADER(addr) ((MEM_HEADER *) \
 		(((char *) addr) - sizeof (MEM_HEADER)))
