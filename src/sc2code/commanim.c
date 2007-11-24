@@ -115,6 +115,8 @@ ambient_anim_task (void *data)
 	SEQUENCE *pSeq;
 	ANIMATION_DESC *ADPtr;
 	DWORD ActiveMask;
+			// Bit mask of all animations that are currently active.
+			// Bit 'i' is set if the animation with index 'i' is active.
 	DWORD LastOscillTime;
 	Task task = (Task) data;
 	BOOLEAN TransitionDone = FALSE;
@@ -139,13 +141,16 @@ ambient_anim_task (void *data)
 	memset (FrameChanged, 0, sizeof (FrameChanged));
 	memset (AnimFrame, 0, sizeof (AnimFrame));
 	for (i = 0; i < CommData.NumAnimations; i++)
+	{
+		COUNT nextIndex;
+
 		if (CommData.AlienAmbientArray[i].AnimFlags & YOYO_ANIM)
-			AnimFrame[i] = SetAbsFrameIndex (CommFrame,
-					CommData.AlienAmbientArray[i].StartIndex);
+			nextIndex = CommData.AlienAmbientArray[i].StartIndex;
 		else
-			AnimFrame[i] = SetAbsFrameIndex (CommFrame,
-					(COUNT)(CommData.AlienAmbientArray[i].StartIndex
-					+ CommData.AlienAmbientArray[i].NumFrames - 1));
+			nextIndex = (CommData.AlienAmbientArray[i].StartIndex
+					+ CommData.AlienAmbientArray[i].NumFrames - 1);
+		AnimFrame[i] = SetAbsFrameIndex (CommFrame, nextIndex);
+	}
 
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
@@ -182,7 +187,11 @@ ambient_anim_task (void *data)
 			{
 				if (!(ADPtr->AnimFlags
 						& CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
+				{
+					// This animation does not conflict with the talking
+					// animation right now.
 					pSeq->Direction = UP_DIR;
+				}
 			}
 			else if ((DWORD)pSeq->Alarm > ElapsedTicks)
 				pSeq->Alarm -= (COUNT)ElapsedTicks;
@@ -281,6 +290,8 @@ ambient_anim_task (void *data)
 					& CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING)
 					&& pSeq->Direction != NO_DIR)
 			{
+				// This is a picture animation which would conflict with
+				// the talking animation, and it is not stopped yet.
 				COUNT index;
 
 				CanTalk = FALSE;
