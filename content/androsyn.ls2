@@ -1,0 +1,16 @@
+  1   0   2 ship.androsyn.icons
+  1   0   4 ship.androsyn.text
+  1   0   8 ship.androsyn.code
+  1   1   2 ship.androsyn.meleeicons
+  2   0   5 ship.androsyn.sounds
+  2   0   6 ship.androsyn.ditty
+  2   2   2 ship.androsyn.graphics.androsyn.large
+  2   3   2 ship.androsyn.graphics.androsyn.medium
+  2   4   2 ship.androsyn.graphics.androsyn.small
+  2   5   2 ship.androsyn.graphics.bubble.large
+  2   6   2 ship.androsyn.graphics.bubble.medium
+  2   7   2 ship.androsyn.graphics.bubble.small
+  2   8   2 ship.androsyn.graphics.blazer.large
+  2   9   2 ship.androsyn.graphics.blazer.medium
+  2  10   2 ship.androsyn.graphics.blazer.small
+  2  11   2 ship.androsyn.graphics.captain

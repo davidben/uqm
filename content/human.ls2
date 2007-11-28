@@ -1,0 +1,13 @@
+  1   0   2 ship.human.icons
+  1   0   4 ship.human.text
+  1   0   8 ship.human.code
+  1   1   2 ship.human.meleeicons
+  2   0   5 ship.human.sounds
+  2   0   6 ship.human.ditty
+  2   2   2 ship.human.graphics.human.large
+  2   3   2 ship.human.graphics.human.medium
+  2   4   2 ship.human.graphics.human.small
+  2   5   2 ship.human.graphics.saturn.large
+  2   6   2 ship.human.graphics.saturn.medium
+  2   7   2 ship.human.graphics.saturn.small
+  2   8   2 ship.human.graphics.captain

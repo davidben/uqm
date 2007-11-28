@@ -1,0 +1,16 @@
+  1   0   2 ship.spathi.icons
+  1   0   4 ship.spathi.text
+  1   0   8 ship.spathi.code
+  1   1   2 ship.spathi.meleeicons
+  2   0   5 ship.spathi.sounds
+  2   0   6 ship.spathi.ditty
+  2   2   2 ship.spathi.graphics.spathi.large
+  2   3   2 ship.spathi.graphics.spathi.medium
+  2   4   2 ship.spathi.graphics.spathi.small
+  2   5   2 ship.spathi.graphics.missile.large
+  2   6   2 ship.spathi.graphics.missile.medium
+  2   7   2 ship.spathi.graphics.missile.small
+  2   8   2 ship.spathi.graphics.discrim.large
+  2   9   2 ship.spathi.graphics.discrim.medium
+  2  10   2 ship.spathi.graphics.discrim.small
+  2  11   2 ship.spathi.graphics.captain

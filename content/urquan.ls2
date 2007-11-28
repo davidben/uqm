@@ -1,0 +1,16 @@
+  1   0   2 ship.urquan.icons
+  1   0   4 ship.urquan.text
+  1   0   8 ship.urquan.code
+  1   1   2 ship.urquan.meleeicons
+  2   0   5 ship.urquan.sounds
+  2   0   6 ship.urquan.ditty
+  2   2   2 ship.urquan.graphics.urquan.large
+  2   3   2 ship.urquan.graphics.urquan.medium
+  2   4   2 ship.urquan.graphics.urquan.small
+  2   5   2 ship.urquan.graphics.fusion.large
+  2   6   2 ship.urquan.graphics.fusion.medium
+  2   7   2 ship.urquan.graphics.fusion.small
+  2   8   2 ship.urquan.graphics.fight.large
+  2   9   2 ship.urquan.graphics.fight.medium
+  2  10   2 ship.urquan.graphics.fight.small
+  2  11   2 ship.urquan.graphics.captain

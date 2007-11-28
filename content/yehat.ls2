@@ -1,0 +1,16 @@
+  1   0   2 ship.yehat.icons
+  1   0   4 ship.yehat.text
+  1   0   8 ship.yehat.code
+  1   1   2 ship.yehat.meleeicons
+  2   0   5 ship.yehat.sounds
+  2   0   6 ship.yehat.ditty
+  2   2   2 ship.yehat.graphics.yehat.large
+  2   3   2 ship.yehat.graphics.yehat.medium
+  2   4   2 ship.yehat.graphics.yehat.small
+  2   5   2 ship.yehat.graphics.missile.large
+  2   6   2 ship.yehat.graphics.missile.medium
+  2   7   2 ship.yehat.graphics.missile.small
+  2   8   2 ship.yehat.graphics.shield.large
+  2   9   2 ship.yehat.graphics.shield.medium
+  2  10   2 ship.yehat.graphics.shield.small
+  2  11   2 ship.yehat.graphics.captain

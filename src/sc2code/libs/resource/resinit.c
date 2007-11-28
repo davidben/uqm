@@ -83,16 +83,28 @@ lookupResourceIndex (const char *path)
 #endif
 
 static ResourceDesc *
-newResourceDesc (RESOURCE res, char *path)
+newResourceDesc (RESOURCE res, char *res_id)
 {
 	ResourceDesc *result;
+	const char *path;
 
 	result = HMalloc (sizeof (ResourceDesc));
 	if (result == NULL)
 		return NULL;
 
+	path = res_GetString (res_id);
+	if (path == NULL)
+	{
+		log_add (log_Warning, "Could not decode resource '%s'", res_id);
+		HFree (result);
+		return NULL;
+	}
+
+	// log_add (log_Info, "    '%s' -> '%s'.", res_id, path);
+
 	result->res = res;
 	result->path = path;
+	result->res_id = res_id;
 	result->handle = NULL_HANDLE;
 	//result->ref = 0;
 	return result;
@@ -305,8 +317,8 @@ _ReleaseResFileData (MEM_HANDLE handle)
 }
 
 MEM_HANDLE
-InitResourceSystem (const char *resfile, RES_TYPE resType, BOOLEAN
-		(*FileErrorFun) (const char *filename))
+InitResourceSystem (const char *mapfile, const char *resfile, RES_TYPE resType, 
+		BOOLEAN (*FileErrorFun) (const char *filename))
 {
 	MEM_HANDLE handle;
 	ResourceIndex *ndx;
@@ -316,6 +328,8 @@ InitResourceSystem (const char *resfile, RES_TYPE resType, BOOLEAN
 	
 	handlers.loadFun = _GetResFileData;
 	handlers.freeFun = _ReleaseResFileData;
+
+	res_LoadFilename (contentDir, mapfile);
 
 	SetResourceIndex (NULL_HANDLE);
 	handle = loadResource (resfile, handlers.loadFun);
@@ -329,6 +343,7 @@ InitResourceSystem (const char *resfile, RES_TYPE resType, BOOLEAN
 	SetResourceIndex (handle);
 
 	(void) FileErrorFun;
+	(void) mapfile;
 	return handle;
 }
 

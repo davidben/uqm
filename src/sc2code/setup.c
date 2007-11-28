@@ -111,7 +111,7 @@ LoadKernel (int argc, char *argv[])
 	SetContextFGFrame (Screen);
 	SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
 
-	hResIndex = InitResourceSystem ("starcon.lst", RES_INDEX, NULL);
+	hResIndex = InitResourceSystem ("uqm.rmp", "starcon.ls2", RES_INDEX, NULL);
 	if (hResIndex == 0)
 		return FALSE;
 	INIT_INSTANCES ();

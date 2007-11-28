@@ -1,0 +1,13 @@
+  1   0   2 ship.pkunk.icons
+  1   0   4 ship.pkunk.text
+  1   0   8 ship.pkunk.code
+  1   1   2 ship.pkunk.meleeicons
+  2   0   5 ship.pkunk.sounds
+  2   0   6 ship.pkunk.ditty
+  2   2   2 ship.pkunk.graphics.pkunk.large
+  2   3   2 ship.pkunk.graphics.pkunk.medium
+  2   4   2 ship.pkunk.graphics.pkunk.small
+  2   5   2 ship.pkunk.graphics.bug.large
+  2   6   2 ship.pkunk.graphics.bug.medium
+  2   7   2 ship.pkunk.graphics.bug.small
+  2   8   2 ship.pkunk.graphics.captain

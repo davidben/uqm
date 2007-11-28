@@ -1,0 +1,16 @@
+  1   0   2 ship.orz.icons
+  1   0   4 ship.orz.text
+  1   0   8 ship.orz.code
+  1   1   2 ship.orz.meleeicons
+  2   0   5 ship.orz.sounds
+  2   0   6 ship.orz.ditty
+  2   2   2 ship.orz.graphics.orz.large
+  2   3   2 ship.orz.graphics.orz.medium
+  2   4   2 ship.orz.graphics.orz.small
+  2   5   2 ship.orz.graphics.how.large
+  2   6   2 ship.orz.graphics.how.medium
+  2   7   2 ship.orz.graphics.how.small
+  2   8   2 ship.orz.graphics.tur.large
+  2   9   2 ship.orz.graphics.tur.medium
+  2  10   2 ship.orz.graphics.tur.small
+  2  11   2 ship.orz.graphics.captain

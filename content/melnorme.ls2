@@ -1,0 +1,16 @@
+  1   0   2 ship.melnorme.icons
+  1   0   4 ship.melnorme.text
+  1   0   8 ship.melnorme.code
+  1   1   2 ship.melnorme.meleeicons
+  2   0   5 ship.melnorme.sounds
+  2   0   6 ship.melnorme.ditty
+  2   2   2 ship.melnorme.graphics.melnorme.large
+  2   3   2 ship.melnorme.graphics.melnorme.medium
+  2   4   2 ship.melnorme.graphics.melnorme.small
+  2   5   2 ship.melnorme.graphics.pump.large
+  2   6   2 ship.melnorme.graphics.pump.medium
+  2   7   2 ship.melnorme.graphics.pump.small
+  2   8   2 ship.melnorme.graphics.confu.large
+  2   9   2 ship.melnorme.graphics.confu.medium
+  2  10   2 ship.melnorme.graphics.confu.small
+  2  11   2 ship.melnorme.graphics.captain

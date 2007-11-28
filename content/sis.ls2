@@ -1,0 +1,12 @@
+  1   0   8 ship.sis_ship.code
+  2   0   2 ship.sis_ship.icons
+  2   0   5 ship.sis_ship.sounds
+  2   0   6 ship.sis_ship.ditty
+  2   1   2 ship.sis_ship.graphics.sis.large
+  2   2   2 ship.sis_ship.graphics.sis.medium
+  2   3   2 ship.sis_ship.graphics.sis.small
+  2   4   2 ship.sis_ship.graphics.blas.large
+  2   5   2 ship.sis_ship.graphics.blas.medium
+  2   6   2 ship.sis_ship.graphics.blas.small
+  2   7   2 ship.sis_ship.graphics.captain
+  3   8   2 ship.sis_ship.graphics.sishyper

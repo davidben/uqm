@@ -67,8 +67,8 @@ extern long LengthResFile (uio_Stream *fp);
 extern BOOLEAN res_CloseResFile (uio_Stream *fp);
 extern BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 
-extern MEM_HANDLE InitResourceSystem (const char *resfile, RES_TYPE resType,
-		BOOLEAN (*FileErrorFun) (const char *filename));
+extern MEM_HANDLE InitResourceSystem (const char *mapfile, const char *resfile, 
+		RES_TYPE resType, BOOLEAN (*FileErrorFun) (const char *filename));
 extern void UninitResourceSystem (void);
 extern BOOLEAN InstallResTypeVectors (RES_TYPE res_type,
 		ResourceLoadFun *loadFun, ResourceFreeFun *freeFun);

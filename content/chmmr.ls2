@@ -1,0 +1,16 @@
+  1   0   2 ship.chmmr.icons
+  1   0   4 ship.chmmr.text
+  1   0   8 ship.chmmr.code
+  1   1   2 ship.chmmr.meleeicons
+  2   0   5 ship.chmmr.sounds
+  2   0   6 ship.chmmr.ditty
+  2   2   2 ship.chmmr.graphics.chmmr.large
+  2   3   2 ship.chmmr.graphics.chmmr.medium
+  2   4   2 ship.chmmr.graphics.chmmr.small
+  2   5   2 ship.chmmr.graphics.muz.large
+  2   6   2 ship.chmmr.graphics.muz.medium
+  2   7   2 ship.chmmr.graphics.muz.small
+  2   8   2 ship.chmmr.graphics.sat.large
+  2   9   2 ship.chmmr.graphics.sat.medium
+  2  10   2 ship.chmmr.graphics.sat.small
+  2  11   2 ship.chmmr.graphics.captain
