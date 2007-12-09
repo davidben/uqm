@@ -29,6 +29,7 @@
 #include "libs/uio.h"
 #include "libs/strlib.h"
 #include "libs/log.h"
+#include "libs/reslib.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,6 +46,7 @@ int optWhichIntro;
 int optWhichShield;
 int optSmoothScroll;
 int optMeleeScale;
+const char **optAddons;
 
 BOOLEAN optSubtitles;
 BOOLEAN optStereoSFX;
@@ -66,9 +68,9 @@ INPUT_TEMPLATE input_templates[6];
 static const char *findFileInDirs (const char *locs[], int numLocs,
 		const char *file);
 static void mountContentDir (uio_Repository *repository,
-		const char *contentPath, const char **addons);
+		const char *contentPath);
 static void mountDirZips (uio_MountHandle *contentHandle,
-		uio_DirHandle *dirHandle);
+		uio_DirHandle *dirHandle, const char *mountPoint);
 
 
 // Looks for a file 'file' in all 'numLocs' locations from 'locs'.
@@ -115,7 +117,7 @@ findFileInDirs (const char *locs[], int numLocs, const char *file)
 }
 
 void
-prepareContentDir (const char *contentDirName, const char **addons)
+prepareContentDir (const char *contentDirName)
 {
 	const char *testFile = "version";
 	const char *loc;
@@ -151,7 +153,7 @@ prepareContentDir (const char *contentDirName, const char **addons)
 	
 	log_add (log_Debug, "Using '%s' as base content dir.", baseContentPath);
 
-	mountContentDir (repository, baseContentPath, addons);
+	mountContentDir (repository, baseContentPath);
 }
 
 void
@@ -280,10 +282,10 @@ prepareMeleeDir (void) {
 }
 
 static void
-mountContentDir (uio_Repository *repository, const char *contentPath,
-		const char **addons) {
+mountContentDir (uio_Repository *repository, const char *contentPath)
+{
 	uio_MountHandle *contentHandle;
-	uio_DirHandle *packagesDir, *addonsDir, *addonDir;
+	uio_DirHandle *packagesDir, *addonsDir;
 	static uio_AutoMount *autoMount[] = { NULL };
 	availableAddons = NULL;
 
@@ -306,35 +308,24 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 	}
 
 	packagesDir = uio_openDir (repository, "/packages", 0);
-	if (packagesDir == NULL)
-	{	// No packages dir means no packages to load.
-		if (addons[0] != NULL)
-		{	// addons were specified, but there's no /packages dir,
-			// let alone a /packages/addons dir.
-			log_add (log_Warning, "Warning: There's no 'packages/addons' "
-					"directory in the 'content' directory;\n\t'--addon' "
-					"options are ignored.");
-		}
-		return;
+	if (packagesDir != NULL)
+	{
+		mountDirZips (contentHandle, packagesDir, "/");
+		uio_closeDir (packagesDir);	
 	}
 
-	mountDirZips (contentHandle, packagesDir);
-
 	// NB: note the difference between addonsDir and addonDir.
-	//     the former is the dir 'packages/addons', the latter a directory
+	//     the former is the dir 'addons', the latter a directory
 	//     in that dir.
-	addonsDir = uio_openDirRelative (packagesDir, "addons", 0);
+	addonsDir = uio_openDirRelative (contentDir, "addons", 0);
 	if (addonsDir == NULL)
 	{	// No addon dir found.
-		log_add (log_Warning, "Warning: There's no 'packages/addons' "
+		log_add (log_Warning, "Warning: There's no 'addons' "
 				"directory in the 'content' directory;\n\t'--addon' "
 				"options are ignored.");
-		uio_closeDir (packagesDir);
 		return;
 	}
 			
-	uio_closeDir (packagesDir);
-
 	availableAddons = uio_getDirList (addonsDir, "", "", match_MATCH_PREFIX);
 	if (availableAddons != NULL)
 	{
@@ -351,8 +342,23 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 		}
 		for (i = 0; i < count; i++)
 		{
-			log_add (log_Info, "    %d. %s", i+1,
-				availableAddons->names[i]);
+			static char mountname[128];
+			uio_DirHandle *addonDir;
+			const char *addon = availableAddons->names[i];
+			log_add (log_Info, "    %d. %s", i+1, addon);
+		
+			snprintf(mountname, 128, "addons/%s", addon);
+			mountname[127]=0;
+
+			addonDir = uio_openDirRelative (addonsDir, addon, 0);
+			if (addonDir == NULL)
+			{
+				log_add (log_Warning, "Warning: directory 'addons/%s' "
+					 "not found; addon skipped.", addon);
+				continue;
+			}
+			mountDirZips (contentHandle, addonDir, mountname);
+			uio_closeDir (addonDir);
 		}
 	}
 	else
@@ -360,26 +366,14 @@ mountContentDir (uio_Repository *repository, const char *contentPath,
 		log_add (log_Info, "0 available addon packs.");
 	}
 
-	for (; *addons != NULL; addons++)
-	{
-		addonDir = uio_openDirRelative (addonsDir, *addons, 0);
-		if (addonDir == NULL)
-		{
-			log_add (log_Warning, "Warning: directory 'packages/addons/%s' "
-					"not found; addon skipped.", *addons);
-			continue;
-		}
-		
-		mountDirZips (contentHandle, addonDir);
-
-		uio_closeDir (addonDir);
-	}
+	uio_DirList_free (availableAddons);
+	availableAddons = NULL;
 
 	uio_closeDir (addonsDir);
 }
 
 static void
-mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
+mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle, const char *mountPoint)
 {
 	static uio_AutoMount *autoMount[] = { NULL };
 	uio_DirList *dirList;
@@ -392,7 +386,7 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
 		
 		for (i = 0; i < dirList->numNames; i++)
 		{
-			if (uio_mountDir (repository, "/", uio_FSTYPE_ZIP,
+			if (uio_mountDir (repository, mountPoint, uio_FSTYPE_ZIP,
 					dirHandle, dirList->names[i], "/", autoMount,
 					uio_MOUNT_BELOW | uio_MOUNT_RDONLY,
 					contentHandle) == NULL)
@@ -405,3 +399,45 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle)
 	uio_DirList_free (dirList);
 }
 
+void
+prepareAddons (const char **addons)
+{
+	uio_DirHandle *addonsDir;
+
+	addonsDir = uio_openDirRelative (contentDir, "addons", 0);
+	if (addonsDir == NULL)
+	{	// No addon dir found.
+		log_add (log_Warning, "Warning: There's no 'addons' "
+				"directory in the 'content' directory;\n\t'--addon' "
+				"options are ignored.");
+		return;
+	}
+	for (; *addons != NULL; addons++)
+	{
+		uio_DirList *indices;
+		uio_DirHandle *addonDir;
+
+		addonDir = uio_openDirRelative (addonsDir, *addons, 0);
+		if (addonDir == NULL)
+		{
+			log_add (log_Warning, "Warning: Addon '%s' not found", *addons);
+			continue;
+		}
+		
+		indices = uio_getDirList (addonDir, "", ".rmp$",
+				match_MATCH_REGEX);		
+
+		if (indices != NULL)
+		{
+			int i;
+		
+			for (i = 0; i < indices->numNames; i++)
+			{
+				res_LoadFilename (addonDir, indices->names[i]);
+			}			
+		}
+		uio_DirList_free (indices);
+		uio_closeDir (addonDir);
+	}
+	uio_closeDir (addonsDir);
+}

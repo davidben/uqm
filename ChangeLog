@@ -1,4 +1,9 @@
 Changes towards version 0.7:
+- Major change in resource index scheme. 
+  - .lst replaced (mapping to IDs instead of to files)
+  - .rmp files give the mapping from IDs to files. 
+  - Addons provide additional files instead of overriding UIO
+  - Addons must provide .rmp files to do the necessary overrides.
 - Removed unnecessary _ALIGNED_ON macro usage - SvdB
 - The current directory is now among the locations searched for the content
   when no explicit location has been specified. (bug fix) - from Nic

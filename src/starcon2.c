@@ -419,9 +419,9 @@ main (int argc, char *argv[])
 	musicVolumeScale = options.musicVolumeScale;
 	sfxVolumeScale = options.sfxVolumeScale;
 	speechVolumeScale = options.speechVolumeScale;
+	optAddons = options.addons;
 
-	prepareContentDir (options.contentDir, options.addons);
-	HFree ((void *) options.addons);
+	prepareContentDir (options.contentDir);
 	prepareMeleeDir ();
 	prepareSaveDir ();
 #if 0

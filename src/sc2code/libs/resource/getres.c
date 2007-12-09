@@ -72,16 +72,24 @@ MEM_HANDLE
 loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc)
 {
 	RES_TYPE resType = GET_TYPE (desc->res);
-	
+	const char *path;
+
 	if (resType >= idx->typeInfo.numTypes ||
 			idx->typeInfo.handlers[resType].loadFun == NULL)
 	{
 		log_add (log_Warning, "Warning: Unable to load '%s'; no handler "
-				"for type %d defined.", desc->path, resType);
+				"for type %d defined.", desc->res_id, resType);
 		return NULL_HANDLE;
 	}
 
-	desc->handle = loadResource (desc->path,
+	path = res_GetString (desc->res_id);
+	if (path == NULL)
+	{
+		log_add (log_Warning, "Could not decode resource '%s'", desc->res_id);
+		return NULL_HANDLE;
+	}
+	
+	desc->handle = loadResource (path,
 			idx->typeInfo.handlers[resType].loadFun);
 	return desc->handle;
 }

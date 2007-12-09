@@ -50,6 +50,7 @@ extern uio_DirHandle *meleeDir;
 extern char baseContentPath[PATH_MAX];
 
 extern uio_DirList *availableAddons;
+extern const char **optAddons;
 
 /* These get edited by TEXTENTRY widgets, so they should have room to
  * hold as much as one of them allows by default. */
@@ -64,10 +65,11 @@ typedef struct _input_template {
 
 extern INPUT_TEMPLATE input_templates[6];
 
-void prepareContentDir (const char *contentDirName, const char **addons);
+void prepareContentDir (const char *contentDirName);
 void prepareConfigDir (const char *configDirName);
 void prepareMeleeDir (void);
 void prepareSaveDir (void);
+void prepareAddons (const char **addons);
 
 #endif
 

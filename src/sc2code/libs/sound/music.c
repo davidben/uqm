@@ -143,37 +143,8 @@ SetMusicVolume (COUNT Volume)
 char*
 CheckMusicResName (char* fileName)
 {
-	char otherName[256];
-	const char* otherExt;
-	char* curExt;
-
-	if (strlen (fileName) < 4)
-		return fileName;
-
-	strncpy (otherName, fileName, sizeof (otherName) - 1);
-	otherName[sizeof (otherName) - 1] = '\0';
-	
-	switch (optWhichMusic)
-	{
-		default:
-		case OPT_3DO:
-			otherExt = "ogg";
-			break;
-		case OPT_PC:
-			otherExt = "mod";
-			break;
-	}
-
-	curExt = otherName + strlen (otherName) - strlen (otherExt);
-	if (strcmp(curExt, otherExt) != 0)
-	{
-		strcpy (curExt, otherExt);
-		if (fileExists2 (contentDir, otherName))
-			strcpy (fileName, otherName);
-		else
-			log_add (log_Warning, "Requested track '%s' not found.", otherName);
-	}
-
+	if (!fileExists2 (contentDir, fileName))
+		log_add (log_Warning, "Requested track '%s' not found.", fileName);
 	return fileName;
 }
 

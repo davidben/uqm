@@ -184,16 +184,16 @@ Show subtitles for alien speech.
 
 #(CAT_9_OPTS)
 PC
-3do/Remixes
+3do
 
 #(CAT_9_OPT_0_DESC)
 Uses the music from the Original PC version.
-Prefers .MOD files to .OGG files.
+Can still be overriden by addon packs.
 Requires a restart of UQM to take effect.
 
 #(CAT_9_OPT_1_DESC)
-Uses more modern music, if available.
-Prefers .OGG files to .MOD files.
+Overrides PC soundtrack with 3do music.
+Can be further overridden by addon packs.
 Requires a restart of UQM to take effect.
 
 #(CAT_10_OPTS)

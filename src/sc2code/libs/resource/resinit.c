@@ -86,24 +86,14 @@ static ResourceDesc *
 newResourceDesc (RESOURCE res, char *res_id)
 {
 	ResourceDesc *result;
-	const char *path;
 
 	result = HMalloc (sizeof (ResourceDesc));
 	if (result == NULL)
 		return NULL;
 
-	path = res_GetString (res_id);
-	if (path == NULL)
-	{
-		log_add (log_Warning, "Could not decode resource '%s'", res_id);
-		HFree (result);
-		return NULL;
-	}
-
 	// log_add (log_Info, "    '%s' -> '%s'.", res_id, path);
 
 	result->res = res;
-	result->path = path;
 	result->res_id = res_id;
 	result->handle = NULL_HANDLE;
 	//result->ref = 0;

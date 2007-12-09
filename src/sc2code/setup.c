@@ -114,6 +114,17 @@ LoadKernel (int argc, char *argv[])
 	hResIndex = InitResourceSystem ("uqm.rmp", "starcon.ls2", RES_INDEX, NULL);
 	if (hResIndex == 0)
 		return FALSE;
+
+	/* TODO: This code must die once 3domusic becomes an addon
+	 * pack in its own right. */
+	if (optWhichMusic == OPT_3DO)
+	{
+		res_LoadFilename (contentDir, "3domusic.rmp");
+	}
+
+	/* Now load the rest of the addons, in order. */
+	prepareAddons (optAddons);
+
 	INIT_INSTANCES ();
 
 	{

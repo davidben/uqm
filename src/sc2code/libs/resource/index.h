@@ -24,7 +24,6 @@
 typedef struct
 {
 	RESOURCE res;
-	char *path;
 	char *res_id;
 	MEM_HANDLE handle;
 	//COUNT ref;
