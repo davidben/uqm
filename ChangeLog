@@ -1,5 +1,6 @@
 Changes towards version 0.7:
-- Major change in resource index scheme. 
+- 3DO music separated into an addon pack - Michael
+- Major change in resource index scheme - Michael
   - .lst replaced (mapping to IDs instead of to files)
   - .rmp files give the mapping from IDs to files. 
   - Addons provide additional files instead of overriding UIO
