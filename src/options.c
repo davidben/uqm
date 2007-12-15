@@ -325,6 +325,8 @@ mountContentDir (uio_Repository *repository, const char *contentPath)
 				"options are ignored.");
 		return;
 	}
+
+	mountDirZips (contentHandle, addonsDir, "addons");
 			
 	availableAddons = uio_getDirList (addonsDir, "", "", match_MATCH_PREFIX);
 	if (availableAddons != NULL)
