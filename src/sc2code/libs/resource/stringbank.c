@@ -75,7 +75,7 @@ StringBank_AddString (stringbank *bank, const char *str)
 	/* No room in any currently existing chunk */
 	x = add_chunk (bank);
 	strcpy (x->data, str);
-	x->len += len + 1;
+	x->len += len;
 	return x->data;
 }
 
