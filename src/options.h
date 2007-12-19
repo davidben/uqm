@@ -30,7 +30,6 @@
 #define OPT_PC  0x02
 #define OPT_ALL 0xFF
 
-extern int optWhichMusic;
 extern int optWhichCoarseScan;
 extern int optWhichMenu;
 extern int optWhichFonts;
@@ -39,6 +38,8 @@ extern int optWhichShield;
 extern int optSmoothScroll;
 extern int optMeleeScale;
 
+extern BOOLEAN opt3doMusic;
+extern BOOLEAN optPrecursorsMusic;
 extern BOOLEAN optSubtitles;
 extern BOOLEAN optStereoSFX;
 extern BOOLEAN optKeepAspectRatio;
@@ -70,6 +71,8 @@ void prepareConfigDir (const char *configDirName);
 void prepareMeleeDir (void);
 void prepareSaveDir (void);
 void prepareAddons (const char **addons);
+
+BOOLEAN loadAddon (const char *addon);
 
 #endif
 

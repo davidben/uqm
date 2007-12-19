@@ -115,10 +115,15 @@ LoadKernel (int argc, char *argv[])
 	if (hResIndex == 0)
 		return FALSE;
 
-	/* TODO: This code must die once addons are convenient to use. */
-	if (optWhichMusic == OPT_3DO)
+	/* Load addons demanded by the current configuration. */
+	if (opt3doMusic)
 	{
-		res_LoadFilename (contentDir, "addons/3domusic/3domusic.rmp");
+		loadAddon ("3domusic");
+	}
+
+	if (optPrecursorsMusic)
+	{
+		loadAddon ("remix");
 	}
 
 	/* Now load the rest of the addons, in order. */

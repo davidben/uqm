@@ -74,7 +74,8 @@ struct options_struct {
 	int numAddons;
 	int gammaSet;
 	float gamma;
-	int whichMusic;
+	BOOLEAN use3doMusic;
+	BOOLEAN usePrecursorsMusic;
 	int whichCoarseScan;
 	int whichMenu;
 	int whichFonts;
@@ -123,7 +124,8 @@ main (int argc, char *argv[])
 		/* .numAddons = */          0,
 		/* .gammaSet = */           0,
 		/* .gamma = */              0.0f,
-		/* .whichMusic = */         OPT_3DO,
+		/* .use3doMusic = */        TRUE,
+		/* .usePrecursorsMusic = */ FALSE,
 		/* .whichCoarseScan = */    OPT_PC,
 		/* .whichMenu = */          OPT_PC,
 		/* .whichFont = */          OPT_PC,
@@ -270,7 +272,11 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.3domusic"))
 	{
-		options.whichMusic = res_GetBoolean ("config.3domusic") ? OPT_3DO : OPT_PC;
+		options.use3doMusic = res_GetBoolean ("config.3domusic");
+	}
+	if (res_HasKey ("config.remixmusic"))
+	{
+		options.usePrecursorsMusic = res_GetBoolean ("config.remixmusic");
 	}
 	if (res_HasKey ("config.3domovies"))
 	{
@@ -405,7 +411,8 @@ main (int argc, char *argv[])
 	soundflags = options.soundFlags;
 
 	// Fill in global variables:
-	optWhichMusic = options.whichMusic;
+	opt3doMusic = options.use3doMusic;
+	optPrecursorsMusic = options.usePrecursorsMusic;
 	optWhichCoarseScan = options.whichCoarseScan;
 	optWhichMenu = options.whichMenu;
 	optWhichFonts = options.whichFonts;
@@ -512,7 +519,6 @@ static struct option longOptions[] =
 	{"speechvol", 1, NULL, 'T'},
 	{"audioquality", 1, NULL, 'q'},
 	{"nosubtitles", 0, NULL, 'u'},
-	{"music", 1, NULL, 'm'},
 	{"gamma", 1, NULL, 'g'},
 	{"logfile", 1, NULL, 'l'},
 	{"intro", 1, NULL, 'i'},
@@ -728,14 +734,6 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 			case 'u':
 				options->subTitles = FALSE;
 				break;
-			case 'm':
-			{
-				if (Check_PC_3DO_opt (optarg, OPT_PC | OPT_3DO,
-						optionIndex >= 0 ? longOptions[optionIndex].name : "m",
-						&options->whichMusic) == -1)
-					badArg = TRUE;
-				break;
-			}
 			case 'g':
 			{
 				int result = parseFloatOption (optarg, &options->gamma,
@@ -1019,8 +1017,6 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 #endif
 	log_add (log_User, "The following options can take either '3do' or 'pc' "
 			"as an option:");
-	log_add (log_User, "  -m, --music : Music version (default %s)",
-			PC_3DO_optString (defaultOptions->whichMusic));
 	log_add (log_User, "  -i, --intro : Intro/ending version (default %s)",
 			PC_3DO_optString (defaultOptions->whichIntro));
 	log_add (log_User, "  --cscan     : coarse-scan display, pc=text, "

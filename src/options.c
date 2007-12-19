@@ -38,7 +38,6 @@
 #include <locale.h>
 
 
-int optWhichMusic;
 int optWhichCoarseScan;
 int optWhichMenu;
 int optWhichFonts;
@@ -48,6 +47,8 @@ int optSmoothScroll;
 int optMeleeScale;
 const char **optAddons;
 
+BOOLEAN opt3doMusic;
+BOOLEAN optPrecursorsMusic;
 BOOLEAN optSubtitles;
 BOOLEAN optStereoSFX;
 BOOLEAN optKeepAspectRatio;
@@ -401,45 +402,56 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle, const ch
 	uio_DirList_free (dirList);
 }
 
-void
-prepareAddons (const char **addons)
+BOOLEAN
+loadAddon (const char *addon)
 {
-	uio_DirHandle *addonsDir;
-
+	uio_DirHandle *addonsDir, *addonDir;
+	uio_DirList *indices;
+	
 	addonsDir = uio_openDirRelative (contentDir, "addons", 0);
 	if (addonsDir == NULL)
 	{	// No addon dir found.
 		log_add (log_Warning, "Warning: There's no 'addons' "
 				"directory in the 'content' directory;\n\t'--addon' "
 				"options are ignored.");
-		return;
+		return FALSE;
 	}
+	addonDir = uio_openDirRelative (addonsDir, addon, 0);
+	if (addonDir == NULL)
+	{
+		log_add (log_Warning, "Warning: Addon '%s' not found", addon);
+		uio_closeDir (addonsDir);
+		return FALSE;
+	}
+		
+	indices = uio_getDirList (addonDir, "", ".rmp$",
+			match_MATCH_REGEX);		
+
+	if (indices != NULL)
+	{
+		int i;
+		
+		for (i = 0; i < indices->numNames; i++)
+		{
+			res_LoadFilename (addonDir, indices->names[i]);
+		}			
+	}
+	uio_DirList_free (indices);
+	uio_closeDir (addonDir);
+	uio_closeDir (addonsDir);
+	return TRUE;
+}
+
+
+
+void
+prepareAddons (const char **addons)
+{
 	for (; *addons != NULL; addons++)
 	{
-		uio_DirList *indices;
-		uio_DirHandle *addonDir;
-
-		addonDir = uio_openDirRelative (addonsDir, *addons, 0);
-		if (addonDir == NULL)
+		if (!loadAddon (*addons))
 		{
-			log_add (log_Warning, "Warning: Addon '%s' not found", *addons);
-			continue;
+			break;
 		}
-		
-		indices = uio_getDirList (addonDir, "", ".rmp$",
-				match_MATCH_REGEX);		
-
-		if (indices != NULL)
-		{
-			int i;
-		
-			for (i = 0; i < indices->numNames; i++)
-			{
-				res_LoadFilename (addonDir, indices->names[i]);
-			}			
-		}
-		uio_DirList_free (indices);
-		uio_closeDir (addonDir);
 	}
-	uio_closeDir (addonsDir);
 }

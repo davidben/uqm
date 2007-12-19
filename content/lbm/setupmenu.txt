@@ -21,7 +21,7 @@ Font Style
 Scan Style
 Scroll Style
 Subtitles
-Music Format
+3DO Remixes
 Display
 Cutscenes
 Show FPS
@@ -33,6 +33,7 @@ Slave Shields
 Player One
 Player Two
 Control Set
+UQM Remixes
 
 #(CAT_0_OPTS)
 320x240
@@ -183,8 +184,8 @@ Do not subtitle alien speech.
 Show subtitles for alien speech.
 
 #(CAT_9_OPTS)
-PC
-3do
+Disabled
+Enabled
 
 #(CAT_9_OPT_0_DESC)
 Uses the music from the Original PC version.
@@ -406,6 +407,19 @@ Select the control template to edit.
 
 
 Select the control template to edit.
+
+#(CAT_21_OPTS)
+Disabled
+Enabled
+
+#(CAT_21_OPT_0_DESC)
+Do not load the Precursors Remix Pack.
+Requires a restart of UQM to take effect.
+
+#(CAT_21_OPT_1_DESC)
+Overrides PC or 3do soundtrack with the
+modern soundtrack written by The Precursors.
+Requires a restart of UQM to take effect.
 
 #(SLIDERS)
 Music Volume
