@@ -660,14 +660,6 @@ SOURCE=..\sc2code\libs\memory\w_memlib.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\alist.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\resource\alist.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\resource\direct.c
 # End Source File
 # Begin Source File

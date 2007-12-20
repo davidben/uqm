@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Rewrote mapres.c to use uio's hashtables instead of its own
+  association lists - Michael
 - Added a Remix option to the setup menu - Michael
 - Addon zips can live in content/addons directly - Michael
 - 3DO music separated into an addon pack - Michael

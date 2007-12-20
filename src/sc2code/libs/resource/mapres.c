@@ -20,16 +20,24 @@
 #include <string.h>
 #include <ctype.h>
 #include "libs/reslib.h"
-#include "alist.h"
+#include "libs/log.h"
+#include "libs/uio/charhashtable.h"
 #include "stringbank.h"
 
-static alist *map = NULL;
+/* The CharHashTable owns its keys, but not its values. We will keep the 
+   values in a StringBank. */
+
+static CharHashTable_HashTable *map = NULL;
+static stringbank *bank = NULL;
 
 static void
 check_map_init (void)
 {
 	if (map == NULL) {
-		map = Alist_New ();
+		map = CharHashTable_newHashTable (NULL, NULL, NULL, NULL, 0, 0.85, 0.9);
+	}
+	if (bank == NULL) {
+		bank = StringBank_Create ();
 	}
 }
 
@@ -37,15 +45,19 @@ void
 res_ClearTables (void)
 {
 	if (map != NULL) {
-		Alist_Free (map);
+		CharHashTable_deleteHashTable (map);
 		map = NULL;
+	}
+	if (bank != NULL) {
+		StringBank_Free (bank);
+		bank = NULL;
 	}
 }
 
 BOOLEAN
 res_Remove (const char *key)
 {
-	return (Alist_RemoveString (map, key) != NULL);
+	return CharHashTable_remove (map, key);
 }
 
 /* Type conversion routines. */
@@ -59,7 +71,7 @@ static const char *
 int2str (int i) {
 	char buf[20];
 	sprintf (buf, "%d", i);
-	return StringBank_AddOrFindString (map->bank, buf);
+	return StringBank_AddOrFindString (bank, buf);
 }
 
 static int
@@ -74,52 +86,6 @@ str2bool (const char *s) {
 	    !stricmp (s, "1") )
 		return TRUE;
 	return FALSE;
-}
-
-void
-res_LoadFile (uio_Stream *s)
-{
-	alist *d;
-	check_map_init ();
-	
-	d = Alist_New_FromFile (s);
-	if (d) {
-		Alist_PutAll (map, d);
-		Alist_Free (d);
-	}
-}
-
-void
-res_LoadFilename (uio_DirHandle *path, const char *fname)
-{
-	alist *d;
-	check_map_init ();
-	
-	d = Alist_New_FromFilename (path, fname);
-	if (d) {
-		Alist_PutAll (map, d);
-		Alist_Free (d);
-	}
-}
-
-void
-res_SaveFile (uio_Stream *f, const char *root)
-{
-	check_map_init ();
-	Alist_Dump (map, f, root);
-}
-
-void
-res_SaveFilename (uio_DirHandle *path, const char *fname, const char *root)
-{
-	uio_Stream *f;
-	
-	check_map_init ();
-	f = res_OpenResFile (path, fname, "wb");
-	if (f) {
-		res_SaveFile (f, root);
-		res_CloseResFile (f);
-	}
 }
 
 BOOLEAN
@@ -159,14 +125,20 @@ const char *
 res_GetString (const char *key)
 {
 	check_map_init ();
-	return Alist_GetString (map, key);
+	return CharHashTable_find (map, key);
 }
 
 void
 res_PutString (const char *key, const char *value)
 {
 	check_map_init ();
-	Alist_PutString (map, key, value);
+	
+	value = StringBank_AddOrFindString (bank, value);
+	if (!CharHashTable_add (map, key, value))
+	{
+		CharHashTable_remove (map, key);
+		CharHashTable_add (map, key, value);
+	}
 }
 
 int
@@ -202,4 +174,161 @@ res_HasKey (const char *key)
 {
 	check_map_init ();
 	return (res_GetString (key) != NULL);
+}
+
+static void
+load_from_string (char *d)
+{
+	int len, i;
+
+	check_map_init ();
+	if (!map) return;
+
+	len = strlen(d);
+	i = 0;
+	while (i < len) {
+		int key_start, key_end, value_start, value_end;
+		/* Starting a line: search for non-whitespace */
+		while ((i < len) && isspace (d[i])) i++;
+		if (i >= len) break;  /* Done parsing! */
+		/* If it was a comment, skip to end of comment/file */
+		if (d[i] == '#') {
+			while ((i < len) && (d[i] != '\n')) i++;
+			if (i >= len) break;
+			continue; /* Back to keyword search */
+		}
+		key_start = i;
+		/* Find the = on this line */
+		while ((i < len) && (d[i] != '=') &&
+		       (d[i] != '\n') && (d[i] != '#')) i++;
+		if (i >= len) {  /* Bare key at EOF */
+			log_add (log_Warning, "Warning: Bare keyword at EOF");
+			break;
+		}
+		/* Comments here mean incomplete line too */
+		if (d[i] != '=') {
+			log_add (log_Warning, "Warning: Key without value");
+			while ((i < len) && (d[i] != '\n')) i++;
+			if (i >= len) break;
+			continue; /* Back to keyword search */
+		}
+		/* Key ends at first whitespace before = , or at key_start*/
+		key_end = i;
+		while ((key_end > key_start) && isspace (d[key_end-1]))
+			key_end--;
+		
+		/* Consume the = */
+		i++;
+		/* Value starts at first non-whitespace after = on line... */
+		while ((i < len) && (d[i] != '#') && (d[i] != '\n') &&
+		       isspace (d[i]))
+			i++;
+		value_start = i;
+		/* Until first non-whitespace before terminator */
+		while ((i < len) && (d[i] != '#') && (d[i] != '\n'))
+			i++;
+		value_end = i;
+		while ((value_end > value_start) && isspace (d[value_end-1]))
+			value_end--;
+		/* Skip past EOL or EOF */
+		while ((i < len) && (d[i] != '\n'))
+			i++;
+		i++;
+
+		/* We now have start and end values for key and value.
+		   We terminate the strings for both by writing \0s, then
+		   make a new map entry. */
+		d[key_end] = '\0';
+		d[value_end] = '\0';
+		res_PutString (d+key_start, d+value_start);
+	}
+}
+
+static void
+load_from_file (uio_Stream *f)
+{
+	long flen;
+	char *data;
+
+	flen = LengthResFile (f);
+
+	data = malloc (flen + 1);
+	if (!data) {
+		return;
+	}
+
+	flen = ReadResFile (data, 1, flen, f);
+	data[flen] = '\0';
+
+	load_from_string (data);
+	free (data);
+}
+
+static void
+load_from_filename (uio_DirHandle *path, const char *fname)
+{
+	uio_Stream *f = res_OpenResFile (path, fname, "rt");
+	if (!f) {
+		return;
+	}
+	load_from_file (f);
+	res_CloseResFile(f);
+}
+
+void
+res_LoadFile (uio_Stream *s)
+{
+	check_map_init ();
+	
+	load_from_file (s);
+}
+
+void
+res_LoadFilename (uio_DirHandle *path, const char *fname)
+{
+	check_map_init ();
+	
+	load_from_filename (path, fname);
+}
+
+void
+res_SaveFile (uio_Stream *f, const char *prefix)
+{
+	CharHashTable_Iterator *i;
+	int prefix_len = 0;
+	
+	if (prefix)
+		prefix_len = strlen (prefix);
+	
+	check_map_init ();
+
+	i = CharHashTable_getIterator (map);
+	while (!CharHashTable_iteratorDone (i))
+	{
+		const char *key = CharHashTable_iteratorKey (i);
+		const char *value = (const char *)CharHashTable_iteratorValue (i);
+		if (!prefix || !strncmp (prefix, key, prefix_len)) {
+			WriteResFile (key, 1, strlen (key), f);
+			PutResFileChar(' ', f);
+			PutResFileChar('=', f);
+			PutResFileChar(' ', f);
+			WriteResFile (value, 1, strlen (value), f);
+			PutResFileNewline(f);
+		}
+		i = CharHashTable_iteratorNext (i);
+	}
+	CharHashTable_freeIterator (i);
+}
+
+void
+res_SaveFilename (uio_DirHandle *path, const char *fname, const char *prefix)
+{
+	uio_Stream *f;
+	
+	check_map_init ();
+	f = res_OpenResFile (path, fname, "wb");
+	if (f) {
+		res_SaveFile (f, prefix);
+		res_CloseResFile (f);
+	}
 }
