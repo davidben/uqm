@@ -70,6 +70,7 @@ TFB_PreInit (void)
 			"%d.%d.%d)", SDL_Linked_Version ()->major,
 			SDL_Linked_Version ()->minor, SDL_Linked_Version ()->patch,
 			SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+#if 0
 	if (SDL_Linked_Version ()->major != SDL_MAJOR_VERSION ||
 			SDL_Linked_Version ()->minor != SDL_MINOR_VERSION ||
 			SDL_Linked_Version ()->patch != SDL_PATCHLEVEL) {
@@ -78,6 +79,7 @@ TFB_PreInit (void)
 				"If you experience any crashes, this would be an excellent "
 				"suspect.");
 	}
+#endif
 
 	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
 	{
