@@ -70,6 +70,15 @@ TFB_PreInit (void)
 			"%d.%d.%d)", SDL_Linked_Version ()->major,
 			SDL_Linked_Version ()->minor, SDL_Linked_Version ()->patch,
 			SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+	if (SDL_Linked_Version ()->major != SDL_MAJOR_VERSION ||
+			SDL_Linked_Version ()->minor != SDL_MINOR_VERSION ||
+			SDL_Linked_Version ()->patch != SDL_PATCHLEVEL) {
+		log_add (log_Warning, "The used SDL library is not the same version "
+				"as the one used to compile The Ur-Quan Masters with! "
+				"If you experience any crashes, this would be an excellent "
+				"suspect.");
+	}
+
 	if ((SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) == -1))
 	{
 		log_add (log_Fatal, "Could not initialize SDL: %s.", SDL_GetError ());
