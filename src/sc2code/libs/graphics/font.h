@@ -61,7 +61,7 @@ struct font_desc
 
 #define AllocFont(size) \
 	(FONT_REF)mem_allocate ((MEM_SIZE)(sizeof (FONT_DESC) + (size)), \
-			MEM_ZEROINIT | MEM_GRAPHICS, FONT_PRIORITY, MEM_SIMPLE)
+			MEM_ZEROINIT | MEM_GRAPHICS)
 #define LockFont(h) (FONT)mem_lock (h)
 #define UnlockFont(h) mem_unlock (h)
 #define FreeFont _ReleaseFontData

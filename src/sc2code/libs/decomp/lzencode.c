@@ -36,8 +36,7 @@ static SWORD *dad;
 		mem_allocate ( \
 		(MEM_SIZE)(((N + 1) + (N + 257) + (N + 1)) \
 		* sizeof (lson[0]) + sizeof (MEM_HANDLE)), \
-		MEM_ZEROINIT, DEFAULT_MEM_PRIORITY, MEM_SIMPLE \
-		)
+		MEM_ZEROINIT)
 #define LockCodeArrays (SWORD*)mem_lock
 #define UnlockCodeArrays mem_unlock
 #define FreeCodeArrays mem_release

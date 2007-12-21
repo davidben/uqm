@@ -231,8 +231,7 @@ MallocWithRetry(int bytes, char *diagStr)
 }
 
 MEM_HANDLE
-mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
-		MEM_USAGE usage)
+mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags)
 {
 	szMemoryNode *node;
 
@@ -277,8 +276,6 @@ mem_allocate (MEM_SIZE coreSize, MEM_FLAGS flags, MEM_PRIORITY priority,
 	}
 
 	UnlockMutex (_MemoryLock);
-	(void) priority;  /* Satisfying compiler (unused parameter) */
-	(void) usage;  /* Satisfying compiler (unused parameter) */
 	return (0);
 }
 
@@ -342,7 +339,7 @@ mem_get_size (MEM_HANDLE h)
 **
 **END*/
 
-MEM_BOOL
+BOOLEAN
 mem_init (void)
 {
 	int i;
@@ -385,7 +382,7 @@ mem_init (void)
 **
 **END*/
 
-MEM_BOOL
+BOOLEAN
 mem_uninit(void)
 {
 	int i;
@@ -442,7 +439,7 @@ mem_uninit(void)
 **
 **END*/
 
-MEM_BOOL
+BOOLEAN
 mem_release(MEM_HANDLE h)
 {
 	if (h == 0)
@@ -507,7 +504,7 @@ mem_release(MEM_HANDLE h)
 **END*/
 
 void *
-mem_simple_access(MEM_HANDLE h)
+mem_lock (MEM_HANDLE h)
 {
 	LockMutex (_MemoryLock);
 
@@ -545,8 +542,8 @@ mem_simple_access(MEM_HANDLE h)
 **
 **END*/
 
-MEM_BOOL
-mem_simple_unaccess(MEM_HANDLE h)
+BOOLEAN
+mem_unlock (MEM_HANDLE h)
 {
 	LockMutex (_MemoryLock);
 	if (h > 0 && h <= MAX_EXTENTS && extents[h - 1].handle == h)
@@ -567,8 +564,8 @@ _alloc_mem (int size)
 	void *p;
 	int h;
 
-	h = mem_allocate (sizeof (MEM_HEADER) + size, 0, 0, 0);
-	p = (void *)mem_simple_access (h);
+	h = mem_allocate (sizeof (MEM_HEADER) + size, DEFAULT_MEM_FLAGS);
+	p = (void *)mem_lock (h);
 	if (p)
 	{
 		((MEM_HEADER *) p)->handle = h;
@@ -603,7 +600,7 @@ HFree (void *p)
 
 		hdr = GET_MEM_HEADER(p);
 		h = hdr->handle;
-		mem_simple_unaccess (h);
+		mem_unlock (h);
 		mem_release (h);
 	}
 }

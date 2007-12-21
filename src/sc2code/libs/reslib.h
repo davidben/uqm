@@ -88,7 +88,7 @@ extern MEM_HANDLE GetResourceData (uio_Stream *fp, DWORD length,
 #define RESOURCE_PRIORITY DEFAULT_MEM_PRIORITY
 
 #define AllocResourceData(s,mf) \
-	mem_allocate ((MEM_SIZE)(s), (mf), RESOURCE_PRIORITY, MEM_SIMPLE)
+	mem_allocate ((MEM_SIZE)(s), (mf))
 #define LockResourceData(h,lp) \
 do \
 { \

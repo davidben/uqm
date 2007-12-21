@@ -91,7 +91,7 @@ UnlockLink (const QUEUE *pq, HLINK h)
 #define AllocQueueTab(pq,n) \
 		((pq)->hq_tab = mem_allocate ((MEM_SIZE)((COUNT)(pq)->object_size * \
 		(COUNT)((pq)->num_objects = (BYTE)(n))), \
-		MEM_PRIMARY, DEFAULT_MEM_PRIORITY, MEM_SIMPLE))
+		MEM_PRIMARY))
 #define LockQueueTab(pq) ((pq)->pq_tab = (BYTE*)mem_lock ((pq)->hq_tab))
 #define UnlockQueueTab(pq) mem_unlock ((pq)->hq_tab)
 #define FreeQueueTab(pq) mem_release ((pq)->hq_tab); (pq)->hq_tab = 0

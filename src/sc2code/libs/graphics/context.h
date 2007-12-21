@@ -46,7 +46,7 @@ struct context_desc
 
 #define AllocContext() \
 		(CONTEXT_REF)mem_allocate ((MEM_SIZE)sizeof (CONTEXT_DESC), \
-		MEM_ZEROINIT | MEM_PRIMARY, CONTEXT_PRIORITY, MEM_SIMPLE)
+		MEM_ZEROINIT | MEM_PRIMARY)
 #define LockContext (CONTEXT)mem_lock
 #define UnlockContext mem_unlock
 #define FreeContext mem_release

@@ -78,8 +78,7 @@ typedef LZHCODE_DESC *PLZHCODE_DESC;
 
 
 #define AllocCodeDesc() \
-		mem_allocate ((MEM_SIZE)sizeof (LZHCODE_DESC), \
-		MEM_ZEROINIT, DEFAULT_MEM_PRIORITY, MEM_SIMPLE)
+		mem_allocate ((MEM_SIZE)sizeof (LZHCODE_DESC), MEM_ZEROINIT)
 #define LockCodeDesc (PLZHCODE_DESC)mem_lock
 #define UnlockCodeDesc mem_unlock
 #define FreeCodeDesc mem_release

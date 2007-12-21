@@ -472,8 +472,7 @@ copyResTypeHandlers (ResourceIndex *dest, const ResourceIndex *src)
 
 static MEM_HANDLE
 allocResourceIndex (void) {
-	return mem_allocate (sizeof (ResourceIndex), MEM_PRIMARY,
-			INDEX_HEADER_PRIORITY, MEM_SIMPLE);
+	return mem_allocate (sizeof (ResourceIndex), MEM_PRIMARY);
 }
 
 static void

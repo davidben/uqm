@@ -84,8 +84,7 @@ AllocDrawable (COUNT n)
 {
 	DRAWABLE Drawable;
 	Drawable = (DRAWABLE)mem_allocate ((MEM_SIZE)(sizeof (DRAWABLE_DESC)), 
-			MEM_ZEROINIT | MEM_GRAPHICS,
-			DRAWABLE_PRIORITY, MEM_SIMPLE);
+			MEM_ZEROINIT | MEM_GRAPHICS);
 	if (Drawable)
 	{
 		DRAWABLE_DESC *DrawablePtr;
