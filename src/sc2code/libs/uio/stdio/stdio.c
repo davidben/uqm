@@ -32,7 +32,7 @@
 #else
 #	include <sys/stat.h>
 #	include <unistd.h>
-#	define _POSIX_THREAD_SAFEFUNCTIONS
+#	define _POSIX_THREAD_SAFE_FUNCTIONS
 		// for readdir_r
 #	include <dirent.h>
 #endif
