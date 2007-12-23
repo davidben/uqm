@@ -49,9 +49,9 @@
 // conflicts with SDL.
 #if !defined(HAVE_STRICMP) && !defined(HAVE_STRCASECMP_UQM)
 #	error Neither stricmp() nor strcasecmp() is available.
-#elif defined(HAVE_STRCASECMP_UQM)
+#elif !defined(HAVE_STRICMP)
 #	define stricmp strcasecmp
-#elif defined(HAVE_STRICMP)
+#elif !defined(HAVE_STRCASECMP_UQM)
 #	define strcasecmp stricmp
 #else
 	// We should take care not to define anything if both strcasecmp() and
