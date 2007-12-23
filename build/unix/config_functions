@@ -1007,6 +1007,8 @@ set_host_system() {
 				HOST_SYSTEM="SunOS" ;;
 			[Qq][Nn][Xx])
 				HOST_SYSTEM="QNX" ;;
+			[Cc][Ee][Gg][Cc][Cc])
+				HOST_SYSTEM="cegcc" ;;
 			*)
 				build_message "Warning: host type '$BUILD_HOST' unknown. Using defaults."
 				;;

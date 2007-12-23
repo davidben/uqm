@@ -19,6 +19,7 @@ Make sure that it isn't being reset by subshells that are started.
 
 Set the environment variable 'BUILD_HOST' to the host system.
 This is whatever 'uname -s' returns on such a system (like "MINGW32").
+When building for Windows CE, using the cegcc tools, you should use "cegcc".
 
 If your host system is big-endian, set the environment variable
 'BUILD_HOST_ENDIAN' to "big". For a little-endian system, you don't

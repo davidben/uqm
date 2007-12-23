@@ -104,7 +104,7 @@ case "$HOST_SYSTEM" in
 	FreeBSD|OpenBSD)
 		LIB_openal_LDFLAGS="-L/usr/local/lib -pthread -lopenal"
 		;;
-	MINGW32*|CYGWIN*)
+	MINGW32*|CYGWIN*|cegcc)
 		LIB_openal_LDFLAGS="-lopenal32"
 		;;
 	Darwin)
@@ -127,7 +127,7 @@ case "$HOST_SYSTEM" in
 		LIB_opengl_CFLAGS="-I/usr/X11R6/include -D_THREAD_SAFE"
 		LIB_opengl_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXext -pthread -lGL"
 		;;
-	MINGW32*|CYGWIN*)
+	MINGW32*|CYGWIN*|cegcc)
 		LIB_opengl_CFLAGS=""
 		LIB_opengl_LDFLAGS="-lopengl32"
 		;;
@@ -157,7 +157,7 @@ case "$HOST_SYSTEM" in
 		LIB_vorbisfile_CFLAGS="-I/usr/local/include"
 		LIB_vorbisfile_LDFLAGS="-L/usr/local/lib -lvorbisfile -lvorbis"
 		;;
-	MINGW32*|CYGWIN*)
+	MINGW32*|CYGWIN*|cegcc)
 		LIB_vorbisfile_CFLAGS=""
 		LIB_vorbisfile_LDFLAGS="-lvorbisfile -lvorbis -lm -logg"
 		;;
@@ -210,7 +210,7 @@ LIB_libmikmod_VERSION="$(libmikmod-config --version)"
 LIB_zlib_NAME="zlib"
 LIB_zlib_CFLAGS=""
 case "$HOST_SYSTEM" in
-	MINGW32*|CYGWIN*)
+	MINGW32*|CYGWIN*|cegcc)
 		LIB_zlib_LDFLAGS="-lzdll"
 		;;
 	*)
