@@ -7,9 +7,9 @@
 	 * If you want anything else than the defaults, you'll have to edit
 	 * that file manually. */
 #	include "msvc++/config.h"
-#elif defined (__MINGW32__) || defined (__CYGWIN__)
+#elif defined (__MINGW32__) || defined (__CYGWIN__) || defined(_WIN32_WCE)
 	/* If we're compiling on MS Windows using build.sh, use
-	 * config_win.h, generated from * src/config_win.h.in. */
+	 * config_win.h, generated from src/config_win.h.in. */
 #	include "config_win.h"
 #else
 	/* If we're compiling in unix, use config_unix.h, generated from
