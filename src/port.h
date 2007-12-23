@@ -502,7 +502,7 @@ typedef unsigned int wint_t;
 // stderr is normally unbuffered when connected to a terminal, but it
 // will be buffered when connected to a file, when a --logfile argument
 // is passed to uqm.
-// Buffered output is slower, which can be significant if much debug output
+// Unbuffered output is slower, which can be significant if much debug output
 // is requested, but after a crash occurs the logfile will still be up to
 // date.
 // On platforms where there is no console, having up-to-date log files
