@@ -14,9 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/* By Serge van den Boom, 2002-09-12
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "libs/threadlib.h"
