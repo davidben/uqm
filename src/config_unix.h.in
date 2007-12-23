@@ -37,6 +37,10 @@
 /* Defined if your system has strupr of its own */
 @HAVE_STRUPR@
 
+/* Defined if your system has strcasecmp of its own */
+@HAVE_STRCASECMP_UQM@
+		// Not using "HAVE_STRCASECMP" as that conflicts with SDL.
+
 /* Defined if your system has stricmp of its own */
 @HAVE_STRICMP@
 

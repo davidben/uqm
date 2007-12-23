@@ -45,11 +45,19 @@
 #	include <unistd.h>
 #endif
 
-#ifndef HAVE_STRICMP
+// Using "HAVE_STRCASECMP_UQM" instead of "HAVE_STRCASECMP" as the latter
+// conflicts with SDL.
+#if !defined(HAVE_STRICMP) && !defined(HAVE_STRCASECMP_UQM)
+#	error Neither stricmp() nor strcasecmp() is available.
+#elif defined(HAVE_STRCASECMP_UQM)
 #	define stricmp strcasecmp
-#else
+#elif defined(HAVE_STRICMP)
 #	define strcasecmp stricmp
+#else
+	// We should take care not to define anything if both strcasecmp() and
+	// stricmp() are defined, as one might exist as a macro to the other.
 #endif
+
 
 #ifndef HAVE_STRUPR
 char *strupr (char *str);

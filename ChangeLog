@@ -1,4 +1,7 @@
 Changes towards version 0.7:
+- Added support to the unix build system for explicitely specifying the name
+  of the define to set to show when a symbol is found.
+  Also a fix for when 'strcasecmp' is #define'd by the system. - SvdB
 - Rewrote mapres.c to use uio's hashtables instead of its own
   association lists - Michael
 - Added a Remix option to the setup menu - Michael
@@ -46,7 +49,7 @@ Changes towards version 0.7:
 - Fixed some Melnorme history info timestamps - Alex
 - Fixed Ur-Quan story timestamps, from Vlad-Ceru Opran
 - Removed the 256-frame limit on .ani files - Michael
-- Renamed PlaySpeeh/StopSpeech to work around name collisions
+- Renamed PlaySpeech/StopSpeech to work around name collisions
   on OSX - Alex
 - Ending the battle with a simultaneous death no longer triggers an
   assertion - SvdB

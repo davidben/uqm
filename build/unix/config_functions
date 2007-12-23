@@ -586,8 +586,13 @@ EOF
 # Description: check if a symbol is defined.
 # Arguments:   $1 - the name of the symbol
 have_symbol() {
-	local SYMBOL CODE
+	local SYMBOL TEMP_PRESENT CODE
 	SYMBOL="$1"
+
+	TEMP_PRESENT=`getVar SYMBOL_${SYMBOL}_PRESENT`
+	if [ -n "$TEMP_PRESENT" ]; then
+		return "$TEMP_PRESENT"
+	fi
 
 	CODE=`cat << EOF	
 int main(void) {
@@ -600,17 +605,24 @@ EOF
 	have_symbol_generic "$SYMBOL" "$CODE"
 	if [ $? -gt 0 ]; then
 		build_message "Symbol '$SYMBOL' not found."
+		eval "SYMBOL_${SYMBOL}_PRESENT"=1
 		return 1
 	fi
 	build_message "Symbol '$SYMBOL' found."
+	eval "SYMBOL_${SYMBOL}_PRESENT"=0
 	return 0
 }
 
 # Description: check if a type is present.
 # Arguments:   $1 - the name of the symbol
 have_type() {
-	local TYPE
+	local TYPE TEMP_PRESENT CODE
 	TYPE="$1"
+	
+	TEMP_PRESENT=`getVar TYPE_${TYPE}_PRESENT`
+	if [ -n "$TEMP_PRESENT" ]; then
+		return "$TEMP_PRESENT"
+	fi
 
 	CODE=`cat << EOF	
 int main(void) {
@@ -619,14 +631,16 @@ int main(void) {
 	return 0;
 }
 EOF
-`
+			`
 
 	have_symbol_generic "$TYPE" "$CODE"
 	if [ $? -gt 0 ]; then
 		build_message "Type '$TYPE' not found."
+		eval "TYPE_${TYPE}_PRESENT"=1
 		return 1
 	fi
 	build_message "Type '$TYPE' found."
+	eval "TYPE_${TYPE}_PRESENT"=0
 	return 0
 }
 
@@ -635,20 +649,26 @@ EOF
 #              name of the symbol.
 # Arguments:   $1 - the name of the symbol
 define_have_symbol() {
-	local NAME VALUE
+	local NAME VALUE DEFNAME
 
-	# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
-	# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
-	NAME=`$TR "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" << EOF
+	DEFNAME=`getVar SYMBOL_${1}_DEFNAME`
+	if [ -z "$DEFNAME" ]; then
+		# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
+		# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
+		NAME=`$TR "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+				<< EOF
 $1
 EOF
-`
+				`
+		DEFNAME="HAVE_$NAME"
+	fi
+
 	if have_symbol "$1"; then
-		add_symbol "HAVE_$NAME" "#define HAVE_$NAME"
-		add_symbol "HAVE_${NAME}_FLAG" 1
+		add_symbol "$DEFNAME" "#define $DEFNAME"
+		add_symbol "${DEFNAME}_FLAG" 1
 	else
-		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"
-		add_symbol "HAVE_${NAME}_FLAG" 0
+		add_symbol "$DEFNAME" "#undef $DEFNAME"
+		add_symbol "${DEFNAME}_FLAG" 0
 	fi
 }
 
@@ -657,20 +677,26 @@ EOF
 #              name of the symbol.
 # Arguments:   $1 - the name of the symbol
 define_have_type() {
-	local NAME VALUE
+	local NAME VALUE DEFNAME
 
-	# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
-	# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
-	NAME=`$TR "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" << EOF
+	DEFNAME=`getVar TYPE_${1}_DEFNAME`
+	if [ -z "$DEFNAME" ]; then
+		# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
+		# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
+		NAME=`$TR "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+				<< EOF
 $1
 EOF
-`
+				`
+		DEFNAME="HAVE_$NAME"
+	fi
+
 	if have_type "$1"; then
-		add_symbol "HAVE_$NAME" "#define HAVE_$NAME"
-		add_symbol "HAVE_${NAME}_FLAG" 1
+		add_symbol "$DEFNAME" "#define $DEFNAME"
+		add_symbol "${DEFNAME}_FLAG" 1
 	else
-		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"
-		add_symbol "HAVE_${NAME}_FLAG" 0
+		add_symbol "$DEFNAME" "#undef $DEFNAME"
+		add_symbol "${DEFNAME}_FLAG" 0
 	fi
 }
 
@@ -703,20 +729,26 @@ EOF
 #              name of the header file. "sys/time.h" becomes "SYS_TIME_H".
 # Arguments:   $1 - the name of the header file
 define_have_header() {
-	local NAME VALUE
+	local NAME VALUE DEFNAME
 	
-	# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
-	# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
-	NAME=`$TR "/.abcdefghijklmnopqrstuvwxyz" "__ABCDEFGHIJKLMNOPQRSTUVWXYZ" << EOF
+	DEFNAME=`getVar HEADER_${1%.h}_DEFNAME`
+	if [ -z "$DEFNAME" ]; then
+		# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
+		# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
+		NAME=`$TR "/.abcdefghijklmnopqrstuvwxyz" \
+				"__ABCDEFGHIJKLMNOPQRSTUVWXYZ" << EOF
 $1
 EOF
-`
+				`
+		DEFNAME="HAVE_$NAME"
+	fi
+
 	if have_header "$1"; then
-		add_symbol "HAVE_$NAME" "#define HAVE_$NAME"
-		add_symbol "HAVE_${NAME}_FLAG" 1
+		add_symbol "$DEFNAME" "#define $DEFNAME"
+		add_symbol "${DEFNAME}_FLAG" 1
 	else
-		add_symbol "HAVE_$NAME" "#undef HAVE_$NAME"
-		add_symbol "HAVE_${NAME}_FLAG" 0
+		add_symbol "$DEFNAME" "#undef $DEFNAME"
+		add_symbol "${DEFNAME}_FLAG" 0
 	fi
 }
 
