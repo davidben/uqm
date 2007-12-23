@@ -154,6 +154,9 @@ main (int argc, char *argv[])
 	{
 		int i;
 		freopen (options.logFile, "w", stderr);
+#ifdef UNBUFFERED_LOGFILE
+		setbuf (stderr, NULL);
+#endif
 		for (i = 0; i < argc; ++i)
 			log_add (log_User, "argv[%d] = [%s]", i, argv[i]);
 	}
