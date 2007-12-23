@@ -170,7 +170,16 @@ static keyname keynames[] = {
 	{"Power", SDLK_POWER},
 	{"Euro", SDLK_EURO},
 	{"Undo", SDLK_UNDO},
-	{"Unknown", 0}};  
+#ifdef _WIN32_WCE
+	{"App1", SDLK_APP1},
+	{"App2", SDLK_APP2},
+	{"App3", SDLK_APP3},
+	{"App4", SDLK_APP4},
+	{"App5", SDLK_APP5},
+	{"App6", SDLK_APP6},
+#endif
+
+	{"Unknown", 0}};
 /* Last element must have code zero */
 
 char *

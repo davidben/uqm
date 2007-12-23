@@ -25,7 +25,9 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include <memory.h>
+#ifndef _WIN32_WCE
+#	include <memory.h>
+#endif
 #include <string.h>
 #include "port.h"
 #include "types.h"

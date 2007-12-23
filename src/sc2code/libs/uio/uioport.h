@@ -45,6 +45,8 @@
 		// _MAX_DIR and FILENAME_MAX could also be candidates.
 		// If anyone can tell me which one matches NAME_MAX, please
 		// let me know.
+#elif defined(_WIN32_WCE)
+#	include <sys/syslimits.h>
 #else
 #	include <limits.h>
 		/* PATH_MAX is per POSIX defined in <limits.h>, but:

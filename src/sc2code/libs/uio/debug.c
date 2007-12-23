@@ -25,7 +25,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <time.h>
-#ifdef __unix__
+#if defined(__unix__) && !defined(_WIN32_WCE)
 #	include <sys/wait.h>
 #endif
 
@@ -496,7 +496,7 @@ debugCmdExec(DebugContext *debugContext, int argc, char *argv[]) {
 		fprintf(debugContext->err, " %s", newArgs[i]);
 	fprintf(debugContext->err, "\n");
 
-#ifdef __unix__
+#if defined(__unix__) && !defined(_WIN32_WCE)
 	{
 		pid_t pid;
 		
