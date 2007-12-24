@@ -76,10 +76,9 @@ int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);
 		// _MAX_DIR and FILENAME_MAX could also be candidates.
 		// If anyone can tell me which one matches NAME_MAX, please
 		// let me know. - SvdB
-#else
-#ifdef _WIN32_WCE
+#elif defined(_WIN32_WCE)
 #	include <sys/syslimits.h>
-#endif
+#else
 #	include <limits.h>
 		/* PATH_MAX is per POSIX defined in <limits.h>, but:
 		 * "A definition of one of the values from Table 2.6 shall bea
