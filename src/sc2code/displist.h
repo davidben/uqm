@@ -20,8 +20,9 @@
 #define _DISPLIST_H
 
 #include <assert.h>
-#include "libs/memlib.h"
 #include "port.h"
+#include "compiler.h"
+#include "misc.h"
 
 // Note that we MUST use the QUEUE_TABLE variant at this time, because
 // certain gameplay elements depend on it. Namely, the maximum number
@@ -34,6 +35,7 @@
 #ifdef QUEUE_TABLE
 typedef void* QUEUE_HANDLE;
 #else /* !QUEUE_TABLE */
+#include "libs/memlib.h"
 typedef MEM_HANDLE QUEUE_HANDLE;
 #endif /* QUEUE_TABLE */
 
@@ -55,7 +57,6 @@ typedef struct /* queue */
 #ifdef QUEUE_TABLE
 	BYTE  *pq_tab;
 	HLINK free_list;
-	MEM_HANDLE hq_tab;
 #endif
 	COUNT object_size;
 #ifdef QUEUE_TABLE
@@ -89,16 +90,13 @@ UnlockLink (const QUEUE *pq, HLINK h)
 #define GetFreeList(pq) (pq)->free_list
 #define SetFreeList(pq, h) (pq)->free_list = (h)
 #define AllocQueueTab(pq,n) \
-		((pq)->hq_tab = mem_allocate ((MEM_SIZE)((COUNT)(pq)->object_size * \
-		(COUNT)((pq)->num_objects = (BYTE)(n))), \
-		MEM_PRIMARY))
-#define LockQueueTab(pq) ((pq)->pq_tab = (BYTE*)mem_lock ((pq)->hq_tab))
-#define UnlockQueueTab(pq) mem_unlock ((pq)->hq_tab)
-#define FreeQueueTab(pq) mem_release ((pq)->hq_tab); (pq)->hq_tab = 0
+		((pq)->pq_tab = HMalloc (((COUNT)(pq)->object_size * \
+		(COUNT)((pq)->num_objects = (BYTE)(n)))))
+#define FreeQueueTab(pq) HFree ((pq)->pq_tab); (pq)->pq_tab = NULL
 #define SizeQueueTab(pq) (COUNT)((pq)->num_objects)
 #define GetLinkAddr(pq,i) (HLINK)((pq)->pq_tab + ((pq)->object_size * ((i) - 1)))
 #else /* !QUEUE_TABLE */
-#define AllocLink(pq) (HLINK)mem_request ((pq)->object_size)
+#define AllocLink(pq) (HLINK)mem_allocate ((pq)->object_size, DEFAULT_MEM_FLAGS)
 #define LockLink(pq, h) (LINK*)mem_lock (h)
 #define UnlockLink(pq, h) mem_unlock (h)
 #define FreeLink(pq,h) mem_release (h)

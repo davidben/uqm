@@ -314,8 +314,8 @@ credit_roll_task (void *data)
 	TextBack = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00);
 	TextFore = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
 
-	LocalContext = CaptureContext (CreateContext ());
-	DrawContext = CaptureContext (CreateContext ());
+	LocalContext = CreateContext ();
+	DrawContext = CreateContext ();
 	
 	total_h = disp_h = SCREEN_HEIGHT;
 
@@ -530,8 +530,8 @@ credit_roll_task (void *data)
 		}
 	}
 
-	DestroyContext (ReleaseContext (DrawContext));
-	DestroyContext (ReleaseContext (LocalContext));
+	DestroyContext (DrawContext);
+	DestroyContext (LocalContext);
 
 	// free remaining frames
 	DestroyDrawable (ReleaseDrawable (Frame));

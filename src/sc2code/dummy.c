@@ -84,7 +84,7 @@ enum
 	MEM_HANDLE hData;
 
 	which_res = GetResFileChar (fp);
-	hData = mem_request (sizeof (CODERES_STRUCT));
+	hData = mem_allocate (sizeof (CODERES_STRUCT), DEFAULT_MEM_FLAGS);
 	if (hData)
 	{
 		RACE_DESC *RDPtr;
@@ -374,14 +374,3 @@ ReleaseCodeRes (void *CodeRef)
 
 	return (0);
 }
-
-DRAWABLE
-CreatePixmapRegion (FRAME Frame, POINT *lpOrg, SIZE width, SIZE height)
-{
-	(void) lpOrg;  /* Satisfying compiler (unused parameter) */
-	(void) width;  /* Satisfying compiler (unused parameter) */
-	(void) height;  /* Satisfying compiler (unused parameter) */
-	return (GetFrameHandle (Frame));
-}
-
-

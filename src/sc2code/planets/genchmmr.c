@@ -113,7 +113,7 @@ GenerateChmmr (BYTE control)
 						CaptureStringTable (
 								LoadStringTable (CHMMR_BASE_STRTAB));
 
-				ScanContext = CaptureContext (CreateContext ());
+				ScanContext = CreateContext ();
 				SetContext (ScanContext);
 				SetContextFGFrame (Screen);
 				r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH;
@@ -125,7 +125,7 @@ GenerateChmmr (BYTE control)
 				DoDiscoveryReport (MenuSounds);
 
 				SetContext (SpaceContext);
-				DestroyContext (ReleaseContext (ScanContext));
+				DestroyContext (ScanContext);
 				ScanContext = 0;
 
 				DestroyStringTable (ReleaseStringTable (

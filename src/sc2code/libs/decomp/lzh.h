@@ -19,8 +19,8 @@
 #ifndef _LZH_H
 #define _LZH_H
 
-#include "reslib.h"
 #include "declib.h"
+#include "misc.h"
 
 /* LZSS Parameters */
 
@@ -41,8 +41,6 @@
 
 struct _LZHCODE_DESC
 {
-	MEM_HANDLE fh;
-
 	COUNT buf_index, restart_index, bytes_left;
 	BYTE text_buf[N + F - 1];
 		/* reconstruct freq tree */
@@ -77,11 +75,8 @@ typedef LZHCODE_DESC *PLZHCODE_DESC;
 								(*_Stream++ = (BYTE)(c)))
 
 
-#define AllocCodeDesc() \
-		mem_allocate ((MEM_SIZE)sizeof (LZHCODE_DESC), MEM_ZEROINIT)
-#define LockCodeDesc (PLZHCODE_DESC)mem_lock
-#define UnlockCodeDesc mem_unlock
-#define FreeCodeDesc mem_release
+#define AllocCodeDesc() HCalloc ((MEM_SIZE)sizeof (LZHCODE_DESC))
+#define FreeCodeDesc HFree
 
 extern void _update (COUNT c);
 extern void StartHuff (void);

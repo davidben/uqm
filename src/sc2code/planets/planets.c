@@ -152,7 +152,7 @@ LoadPlanet (FRAME SurfDefFrame)
 
 		StopMusic ();
 
-		TaskContext = CaptureContext (CreateContext ());
+		TaskContext = CreateContext ();
 
 		pPlanetDesc = pSolarSysState->pOrbitalDesc;
 
@@ -263,7 +263,7 @@ FreePlanet (void)
 		Orbit->ScratchArray = 0;
 	}
 
-	DestroyContext (ReleaseContext (TaskContext));
+	DestroyContext (TaskContext);
 	TaskContext = 0;
 	
 	DestroyStringTable (ReleaseStringTable (

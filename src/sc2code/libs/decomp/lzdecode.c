@@ -29,6 +29,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "libs/decomp/lzh.h"
+#include "reslib.h"
 
 PLZHCODE_DESC _lpCurCodeDesc;
 STREAM_TYPE _StreamType;
@@ -103,7 +104,6 @@ StartHuff (void)
 DECODE_REF
 copen (void *InStream, STREAM_TYPE SType, STREAM_MODE SMode)
 {
-	MEM_HANDLE h;
 	DWORD StreamLength;
 
 	_StreamType = SType;
@@ -132,17 +132,14 @@ copen (void *InStream, STREAM_TYPE SType, STREAM_MODE SMode)
 		StreamLength = MAKE_DWORD (loword, hiword);
 	}
 
-	h = 0;
 	if (StreamLength == 0xFFFFFFFF
-			|| (h = AllocCodeDesc ()) == 0
-			|| (_lpCurCodeDesc = LockCodeDesc (h)) == 0)
+			|| (_lpCurCodeDesc = AllocCodeDesc ()) == NULL)
 	{
-		_lpCurCodeDesc = 0;
-		FreeCodeDesc (h);
+		FreeCodeDesc (_lpCurCodeDesc);
+		_lpCurCodeDesc = NULL;
 	}
 	else
 	{
-		_lpCurCodeDesc->fh = h;
 		_lpCurCodeDesc->Stream = _Stream;
 		_lpCurCodeDesc->StreamType = _StreamType;
 		_lpCurCodeDesc->StreamMode = SMode;
@@ -168,8 +165,8 @@ cclose (PLZHCODE_DESC lpCodeDesc)
 			(*_lpCurCodeDesc->CleanupFunc) ();
 
 		StreamIndex = lpCodeDesc->StreamIndex;
-		UnlockCodeDesc (lpCodeDesc->fh);
-		FreeCodeDesc (lpCodeDesc->fh);
+		FreeCodeDesc (lpCodeDesc);
+		_lpCurCodeDesc = NULL;
 
 		return (StreamIndex);
 	}

@@ -44,20 +44,11 @@ typedef struct mem_header {
 #define GET_MEM_HEADER(addr) ((MEM_HEADER *) \
 		(((char *) addr) - sizeof (MEM_HEADER)))
 
-//Newer verion from w_memlib.c to follow...
-/*
-extern MEM_BOOL mem_init (MEM_SIZE core_size, PMEM_SIZE pmin_addressable,
-		PSTR disk_name);*/
-
 extern BOOLEAN mem_init (void);
-
 extern BOOLEAN mem_uninit (void);
 
 extern MEM_HANDLE mem_allocate (MEM_SIZE size, MEM_FLAGS flags);
 extern BOOLEAN mem_release (MEM_HANDLE handle);
-
-#define mem_request(size) \
-		mem_allocate((MEM_SIZE)(size), DEFAULT_MEM_FLAGS)
 
 extern void* mem_lock (MEM_HANDLE handle);
 extern BOOLEAN mem_unlock (MEM_HANDLE handle);

@@ -618,24 +618,21 @@ BOOLEAN
 SaveGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 {
 	BOOLEAN success, made_room;
-	void *out_fp;
-	MEM_HANDLE h;
+	void *out_fp, *h;
 	DECODE_REF fh;
 
 	success = TRUE;
 	made_room = FALSE;
 RetrySave:
-	h = mem_request (10 * 1024);
-	out_fp = mem_lock (h);
-	if (out_fp == 0
-			|| (fh = copen (out_fp, MEMORY_STREAM, STREAM_WRITE)) == 0)
+	h = HMalloc (10 * 1024);
+	if (h == 0
+			|| (fh = copen (h, MEMORY_STREAM, STREAM_WRITE)) == 0)
 	{
 		if (success)
 		{
 			success = FALSE;
 			made_room = TRUE;
-			mem_unlock (h);
-			mem_release (h);
+			HFree (h);
 
 			FreeSC2Data ();
 			log_add (log_Debug, "Insufficient room for save buffers"
@@ -821,11 +818,10 @@ RetrySave:
 
 			success = SaveSummary (SummPtr, out_fp);
 			// Then write the rest of the data.
-			if (success && WriteResFile (mem_lock (h), (COUNT)flen, 1,
+			if (success && WriteResFile (h, (COUNT)flen, 1,
 						out_fp) == 0)
 				success = FALSE;
 
-			mem_unlock (h);
 			if (res_CloseResFile ((uio_Stream *)out_fp) == 0)
 				success = FALSE;
 
@@ -837,8 +833,7 @@ RetrySave:
 			DeleteResFile (saveDir, file);
 	}
 
-	mem_unlock (h);
-	mem_release (h);
+	HFree (h);
 
 	if (made_room)
 		LoadSC2Data ();

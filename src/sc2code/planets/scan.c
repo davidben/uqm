@@ -1229,7 +1229,7 @@ ScanSystem (void)
 				(MAP_HEIGHT >> 1) << MAG_SHIFT;
 
 		LockMutex (GraphicsLock);
-		ScanContext = CaptureContext (CreateContext ());
+		ScanContext = CreateContext ();
 		SetContext (ScanContext);
 		MenuState.flash_rect0.extent.width = FLASH_WIDTH;
 		MenuState.flash_rect0.extent.height = FLASH_HEIGHT;
@@ -1263,7 +1263,7 @@ ScanSystem (void)
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		DestroyDrawable (ReleaseDrawable (MenuState.flash_frame0));
-		DestroyContext (ReleaseContext (ScanContext));
+		DestroyContext (ScanContext);
 		ScanContext = 0;
 		UnlockMutex (GraphicsLock);
 	}

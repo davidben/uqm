@@ -65,67 +65,40 @@ SetContext (CONTEXT Context)
 	return (LastContext);
 }
 
-CONTEXT_REF
+CONTEXT
 CreateContext (void)
 {
-	CONTEXT_REF ContextRef;
+	CONTEXT NewContext;
 
-	ContextRef = AllocContext ();
-	if (ContextRef)
+	NewContext = AllocContext ();
+	if (NewContext)
 	{
 		CONTEXT OldContext;
 
 				/* initialize context */
-		OldContext = SetContext (CaptureContext (ContextRef));
+		OldContext = SetContext (NewContext);
 		SetContextForeGroundColor (
 				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 		SetContextBackGroundColor (
 				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 		SetContextClipping (TRUE);
-		ReleaseContext (SetContext (OldContext));
+		SetContext (OldContext);
 	}
 
-	return (ContextRef);
+	return (NewContext);
 }
 
 BOOLEAN
-DestroyContext (CONTEXT_REF ContextRef)
+DestroyContext (CONTEXT ContextRef)
 {
 	if (ContextRef == 0)
 		return (FALSE);
 
-	if (_pCurContext && _pCurContext->ContextRef == ContextRef)
+	if (_pCurContext && _pCurContext == ContextRef)
 		SetContext ((CONTEXT)0);
 
-	return (FreeContext (ContextRef));
-}
-
-CONTEXT
-CaptureContext (CONTEXT_REF ContextRef)
-{
-	CONTEXT ContextPtr;
-
-	ContextPtr = LockContext (ContextRef);
-	if (ContextPtr)
-		ContextPtr->ContextRef = ContextRef;
-
-	return (ContextPtr);
-}
-
-CONTEXT_REF
-ReleaseContext (CONTEXT ContextPtr)
-{
-	if (ContextPtr)
-	{
-		CONTEXT_REF ContextRef;
-
-		ContextRef = ContextPtr->ContextRef;
-		UnlockContext (ContextRef);
-
-		return (ContextRef);
-	}
-
-	return (0);
+	FreeContext (ContextRef);
+	return TRUE;
 }
 
 COLOR

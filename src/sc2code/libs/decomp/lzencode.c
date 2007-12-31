@@ -26,38 +26,34 @@
 
 #include <stdio.h>
 #include "lzh.h"
+#include "reslib.h"
 
 static UWORD match_position, match_length;
 static SWORD *lson;
 static SWORD *rson;
 static SWORD *dad;
+static SWORD *encode_arrays;
 
 #define AllocEncodeArrays() \
-		mem_allocate ( \
+		HCalloc ( \
 		(MEM_SIZE)(((N + 1) + (N + 257) + (N + 1)) \
-		* sizeof (lson[0]) + sizeof (MEM_HANDLE)), \
-		MEM_ZEROINIT)
-#define LockCodeArrays (SWORD*)mem_lock
-#define UnlockCodeArrays mem_unlock
-#define FreeCodeArrays mem_release
+		* sizeof (lson[0])))
+#define FreeCodeArrays HFree
 
 static BOOLEAN
 InitTree (void)
 {
-	MEM_HANDLE h;
-
-	if ((h = AllocEncodeArrays ()) == 0
-			|| (lson = LockCodeArrays (h)) == 0)
+	if ((encode_arrays = AllocEncodeArrays ()) == NULL)
 	{
-		FreeCodeArrays (h);
+		FreeCodeArrays (encode_arrays);
+		encode_arrays = NULL;
 		return (FALSE);
 	}
 	else
 	{
 		SWORD i;
 
-		*(MEM_HANDLE *)lson = h;
-		lson = (SWORD*)((BYTE*)lson + sizeof (h));
+		lson = encode_arrays;
 		rson = lson + (N + 1);
 		dad = rson + (N + 257);
 
@@ -277,18 +273,17 @@ EncodePosition (UWORD c)
 static void
 UninitTree (void)
 {
-	MEM_HANDLE h;
-
 	if (_workbuflen)
 	{
 		OutChar ((BYTE)(_workbuf >> 8));
 		++_lpCurCodeDesc->StreamIndex;
 	}
 
-	lson = (SWORD*)((BYTE*)lson - sizeof (h));
-	h = *(MEM_HANDLE *)lson;
-	UnlockCodeArrays (h);
-	FreeCodeArrays (h);
+	FreeCodeArrays (encode_arrays);
+	encode_arrays = NULL;
+	lson = NULL;
+	rson = NULL;
+	dad = NULL;
 }
 
 static void

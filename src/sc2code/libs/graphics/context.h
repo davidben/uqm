@@ -27,7 +27,6 @@ typedef UWORD FBK_FLAGS;
 
 struct context_desc
 {
-	CONTEXT_REF ContextRef;
 	UWORD Flags;
 
 	COLOR ForeGroundColor, BackGroundColor;
@@ -42,14 +41,8 @@ struct context_desc
 
 };
 
-#define CONTEXT_PRIORITY DEFAULT_MEM_PRIORITY
-
-#define AllocContext() \
-		(CONTEXT_REF)mem_allocate ((MEM_SIZE)sizeof (CONTEXT_DESC), \
-		MEM_ZEROINIT | MEM_PRIMARY)
-#define LockContext (CONTEXT)mem_lock
-#define UnlockContext mem_unlock
-#define FreeContext mem_release
+#define AllocContext() HCalloc ((MEM_SIZE)sizeof (CONTEXT_DESC))
+#define FreeContext HFree
 
 extern CONTEXT _pCurContext;
 extern PRIMITIVE _locPrim;

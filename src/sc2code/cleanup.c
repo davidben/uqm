@@ -51,7 +51,7 @@ FreeKernel (void)
 	UninitPlayerInput ();
 
 	DestroyDrawable (ReleaseDrawable (Screen));
-	DestroyContext (ReleaseContext (ScreenContext));
+	DestroyContext (ScreenContext);
 
 	UninitVideoPlayer ();
 	UninitSound ();
@@ -63,9 +63,9 @@ UninitContexts (void)
 {
 	UninitQueue (&disp_q);
 
-	DestroyContext (ReleaseContext (OffScreenContext));
-	DestroyContext (ReleaseContext (SpaceContext));
-	DestroyContext (ReleaseContext (StatusContext));
+	DestroyContext (OffScreenContext);
+	DestroyContext (SpaceContext);
+	DestroyContext (StatusContext);
 }
 
 static void

@@ -1238,7 +1238,7 @@ DoCommunication (ENCOUNTER_STATE *pES)
 	CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
 
 	SetContext (SpaceContext);
-	DestroyContext (ReleaseContext (TaskContext));
+	DestroyContext (TaskContext);
 	TaskContext = 0;
 
 	UnlockMutex (GraphicsLock);
@@ -1333,7 +1333,7 @@ HailAlien (void)
 	SubtitleText.align = CommData.AlienTextAlign;
 
 	// init subtitle cache context
-	TextCacheContext = CaptureContext (CreateContext ());
+	TextCacheContext = CreateContext ();
 	TextCacheFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, SIS_SCREEN_WIDTH,
 			SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2, 1));
@@ -1354,7 +1354,7 @@ HailAlien (void)
 	{
 		RECT r;
 
-		TaskContext = CaptureContext (CreateContext ());
+		TaskContext = CreateContext ();
 		SetContext (TaskContext);
 		SetContextFGFrame (Screen);
 		GetFrameRect (CommData.AlienFrame, &r);
@@ -1420,7 +1420,7 @@ HailAlien (void)
 	DestroyFont (ReleaseFont (CommData.AlienFont));
 	DestroyDrawable (ReleaseDrawable (CommData.AlienFrame));
 
-	DestroyContext (ReleaseContext (TextCacheContext));
+	DestroyContext (TextCacheContext);
 	DestroyDrawable (ReleaseDrawable (TextCacheFrame));
 
 	SetContext (SpaceContext);

@@ -19,6 +19,10 @@
 #include "displist.h"
 #include "libs/log.h"
 
+#ifdef QUEUE_TABLE
+#define NULL_HANDLE NULL
+#endif
+
 /*
  * This file contains code for generic doubly linked lists.
  * If QUEUE_TABLE is defined, each lists has its own preallocated
@@ -40,7 +44,7 @@ InitQueue (QUEUE *pq, COUNT num_elements, OBJ_SIZE size)
 	log_add (log_Debug, "InitQueue(): num_elements = %d (%d)",
 			num_elements, (BYTE)num_elements);
 #endif
-	if (AllocQueueTab (pq, num_elements) && LockQueueTab (pq))
+	if (AllocQueueTab (pq, num_elements) != NULL)
 	{
 		do
 			FreeLink (pq, GetLinkAddr (pq, num_elements));
@@ -60,7 +64,6 @@ UninitQueue (QUEUE *pq)
 	SetHeadLink (pq, NULL_HANDLE);
 	SetTailLink (pq, NULL_HANDLE);
 	SetFreeList (pq, NULL_HANDLE);
-	UnlockQueueTab (pq);
 	FreeQueueTab (pq);
 
 	return (TRUE);

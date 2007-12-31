@@ -131,8 +131,6 @@ typedef struct
 	STAMP IntersectStamp;
 } INTERSECT_CONTROL;
 
-typedef MEM_HANDLE CONTEXT_REF;
-
 typedef DWORD DRAWABLE;
 #define BUILD_DRAWABLE(h,i) ((DRAWABLE)MAKE_DWORD(h,i))
 
@@ -172,8 +170,6 @@ extern BOOLEAN InitGraphics (int argc, char *argv[], COUNT
 extern void UninitGraphics (void);
 
 extern CONTEXT SetContext (CONTEXT Context);
-extern CONTEXT CaptureContext (CONTEXT_REF ContextRef);
-extern CONTEXT_REF ReleaseContext (CONTEXT Context);
 extern COLOR SetContextForeGroundColor (COLOR Color);
 extern COLOR SetContextBackGroundColor (COLOR Color);
 extern FRAME SetContextFGFrame (FRAME Frame);
@@ -196,8 +192,8 @@ extern void UnbatchGraphics (void);
 extern void FlushGraphics (void);
 extern void ClearBackGround (RECT *pClipRect);
 extern void ClearDrawable (void);
-extern CONTEXT_REF CreateContext (void);
-extern BOOLEAN DestroyContext (CONTEXT_REF ContextRef);
+extern CONTEXT CreateContext (void);
+extern BOOLEAN DestroyContext (CONTEXT ContextRef);
 extern DRAWABLE CreateDisplay (CREATE_FLAGS CreateFlags, SIZE *pwidth,
 		SIZE *pheight);
 extern DRAWABLE CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width,

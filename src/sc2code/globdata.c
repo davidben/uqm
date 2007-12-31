@@ -125,7 +125,7 @@ CreateRadar (void)
 		RECT r;
 		CONTEXT OldContext;
 
-		RadarContext = CaptureContext (CreateContext ());
+		RadarContext = CreateContext ();
 		OldContext = SetContext (RadarContext);
 		SetContextFGFrame (Screen);
 		r.corner.x = RADAR_X;
@@ -372,7 +372,7 @@ InitSIS (void)
 void
 FreeSC2Data (void)
 {
-	DestroyContext (ReleaseContext (RadarContext));
+	DestroyContext (RadarContext);
 	RadarContext = 0;
 	DestroyDrawable (ReleaseDrawable (FontGradFrame));
 	FontGradFrame = 0;
