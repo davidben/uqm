@@ -37,14 +37,13 @@ typedef STRING_TABLE_DESC *PSTRING_TABLE_DESC;
 #define HAS_TIMESTAMP (1 << 1)
 #define STRING_TABLEPTR PSTRING_TABLE_DESC
 
-#define AllocStringTable(s) AllocResourceData((s),MEM_SOUND)
-#define LockStringTable(h,ps) LockResourceData((MEM_HANDLE)LOWORD(h),ps)
-#define UnlockStringTable(h) UnlockResourceData ((MEM_HANDLE)LOWORD(h))
-#define FreeStringTable(h) FreeResourceData ((MEM_HANDLE)LOWORD(h))
+#define AllocStringTable(s)   AllocResourceData((s),MEM_SOUND)
+#define LockStringTable       LockResourceData
+#define UnlockStringTable     UnlockResourceData 
+#define FreeStringTable       FreeResourceData
 
 #define STRING_INDEX(S) ((COUNT)HIWORD (S))
-#define BUILD_STRING(h,i) ((STRING_TABLE)MAKE_DWORD(h,i))
-#define BUILD_STRING_TABLE(h) (STRING_TABLE)(h)
+#define BUILD_STRING(h,i) ((STRING)MAKE_DWORD(h,i))
 
 extern MEM_HANDLE _GetStringData (uio_Stream *fp, DWORD length);
 

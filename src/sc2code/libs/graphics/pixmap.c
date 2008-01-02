@@ -27,10 +27,7 @@ CaptureDrawable (DRAWABLE Drawable)
 	DrawablePtr = LockDrawable (Drawable);
 	if (DrawablePtr)
 	{
-		COUNT FrameIndex;
-
-		FrameIndex = GetDrawableIndex (Drawable);
-		return &DrawablePtr->Frame[FrameIndex];
+		return &DrawablePtr->Frame[0];
 	}
 
 	return (0);
@@ -45,13 +42,13 @@ ReleaseDrawable (FRAME FramePtr)
 		DRAWABLE_DESC *DrawablePtr;
 
 		DrawablePtr = GetFrameParentDrawable (FramePtr);
-		Drawable = BUILD_DRAWABLE (DrawablePtr->hDrawable, FramePtr->Index);
+		Drawable = DrawablePtr->hDrawable;
 		UnlockDrawable (Drawable);
 
 		return (Drawable);
 	}
 
-	return (0);
+	return NULL_HANDLE;
 }
 
 MEM_HANDLE

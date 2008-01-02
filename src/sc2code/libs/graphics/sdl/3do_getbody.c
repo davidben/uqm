@@ -409,10 +409,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 	{
 		log_add (log_Warning, "Couldn't allocate space for '%s' images", _cur_resfile_name);
 
-		/* This isn't a very good way to return failure, but
-		 * it seems to be how it is normally done in this
-		 * routine. */
-		return (GetDrawableHandle (0));
+		return NULL_HANDLE;
 	}
 
 	ani = HMalloc (sizeof (AniData) * cel_total);
@@ -421,10 +418,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 		HFree (img);
 		log_add (log_Warning, "Couldn't allocate space for '%s' anidata", _cur_resfile_name);
 
-		/* This isn't a very good way to return failure, but
-		 * it seems to be how it is normally done in this
-		 * routine. */
-		return (GetDrawableHandle (0));
+		return NULL_HANDLE;
 	}
 
 	cel_index = 0;
@@ -461,7 +455,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 			break;
 	}
 
-	Drawable = 0;
+	Drawable = NULL_HANDLE;
 	if (cel_index && (Drawable = AllocDrawable (cel_index)))
 	{
 		DRAWABLE_DESC *DrawablePtr;
@@ -472,13 +466,13 @@ _GetCelData (uio_Stream *fp, DWORD length)
 				SDL_FreeSurface (img[cel_index]);
 
 			mem_release ((MEM_HANDLE)Drawable);
-			Drawable = 0;
+			Drawable = NULL_HANDLE;
 		}
 		else
 		{
 			FRAME FramePtr;
 
-			DrawablePtr->hDrawable = GetDrawableHandle (Drawable);
+			DrawablePtr->hDrawable = Drawable;
 			DrawablePtr->Flags = WANT_PIXMAP;
 			DrawablePtr->MaxIndex = cel_index - 1;
 
@@ -496,7 +490,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 
 	HFree (img);
 	HFree (ani);
-	return (GetDrawableHandle (Drawable));
+	return Drawable;
 }
 
 BOOLEAN
@@ -773,14 +767,14 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 		if ((DrawablePtr = LockDrawable (Drawable)) == 0)
 		{
 			FreeDrawable (Drawable);
-			Drawable = 0;
+			Drawable = NULL_HANDLE;
 		}
 		else
 		{
 			int imgw, imgh;
 			FRAME FramePtr;
 
-			DrawablePtr->hDrawable = GetDrawableHandle (Drawable);
+			DrawablePtr->hDrawable = Drawable;
 			DrawablePtr->Flags = flags;
 			DrawablePtr->MaxIndex = NumFrames - 1;
 

@@ -42,7 +42,7 @@ LoadStringTableFile (uio_DirHandle *dir, const char *fileName)
 		_cur_resfile_name = 0;
 		res_CloseResFile (fp);
 
-		return (BUILD_STRING_TABLE (hData));
+		return hData;
 	}
 
 	return (0);

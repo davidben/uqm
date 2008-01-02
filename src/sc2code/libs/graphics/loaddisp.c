@@ -36,12 +36,9 @@
 DRAWABLE
 LoadDisplayPixmap (RECT *area, FRAME frame)
 {
-	DRAWABLE buffer;
+	MEM_HANDLE buffer = GetFrameHandle (frame);
+	COUNT index = GetFrameIndex (frame);
 
-	buffer = BUILD_DRAWABLE (
-			GetFrameHandle (frame),
-			GetFrameIndex (frame)
-			);
 	if (buffer || (buffer = CreateDrawable (
 			WANT_PIXMAP | MAPPED_TO_DISPLAY,
 			area->extent.width,
@@ -49,7 +46,7 @@ LoadDisplayPixmap (RECT *area, FRAME frame)
 			1))
 		)
 	{
-		frame = CaptureDrawable (buffer);
+		frame = SetAbsFrameIndex (CaptureDrawable (buffer), index);
 		ReadDisplay (area, frame);
 		ReleaseDrawable (frame);
 	}

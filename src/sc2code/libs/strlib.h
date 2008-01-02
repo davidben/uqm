@@ -21,11 +21,12 @@
 
 #include "compiler.h"
 #include "port.h"
+#include "libs/memlib.h"
 #include "libs/uio.h"
 
 #include <stddef.h>
 
-typedef DWORD STRING_TABLE;
+typedef MEM_HANDLE STRING_TABLE;
 typedef DWORD STRING;
 typedef BYTE* STRINGPTR;
 

@@ -66,11 +66,9 @@ typedef struct drawable_desc
 #define DRAWABLE_PRIORITY DEFAULT_MEM_PRIORITY
 
 extern DRAWABLE AllocDrawable (COUNT num_frames);
-#define LockDrawable(D) ((DRAWABLE_DESC*)mem_lock (GetDrawableHandle (D)))
-#define UnlockDrawable(D) mem_unlock (GetDrawableHandle (D))
-#define FreeDrawable(D) _ReleaseCelData (GetDrawableHandle (D))
-#define GetDrawableHandle(D) ((MEM_HANDLE)LOWORD (D))
-#define GetDrawableIndex(D) ((COUNT)HIWORD (D))
+#define LockDrawable(D) ((DRAWABLE_DESC*)mem_lock (D))
+#define UnlockDrawable(D) mem_unlock (D)
+#define FreeDrawable(D) _ReleaseCelData (D)
 #define GetFrameParentDrawable(F) (F)->parent
 
 #define TYPE_GET(f) ((f) & FTYPE_MASK)

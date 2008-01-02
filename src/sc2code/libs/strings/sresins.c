@@ -36,6 +36,6 @@ LoadStringTableInstance (DWORD res)
 		res_DetachResource (res);
 	}
 
-	return (BUILD_STRING_TABLE (hData));
+	return hData;
 }
 

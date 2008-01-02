@@ -131,8 +131,7 @@ typedef struct
 	STAMP IntersectStamp;
 } INTERSECT_CONTROL;
 
-typedef DWORD DRAWABLE;
-#define BUILD_DRAWABLE(h,i) ((DRAWABLE)MAKE_DWORD(h,i))
+typedef MEM_HANDLE DRAWABLE;
 
 typedef MEM_HANDLE FONT_REF;
 
