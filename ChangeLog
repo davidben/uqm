@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Don't set _POSIX_THREAD_SAFE_FUNCTIONS - SvdB
 - Support for Windows CE. - SvdB with Pavel Chernikov
 - Added support to the unix build system for explicitely specifying the name
   of the define to set to show when a symbol is found.
