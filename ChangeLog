@@ -1,5 +1,5 @@
 Changes towards version 0.7:
-- Prevent overflow for planet weight when scanning a planet
+- Prevent overflow for planet weight when scanning a planet (bug #1025)
   - from Benjamin Alan Weaver
 - Don't set _POSIX_THREAD_SAFE_FUNCTIONS - SvdB
 - Support for Windows CE. - SvdB with Pavel Chernikov
