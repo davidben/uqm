@@ -301,7 +301,7 @@ PrintCoarseScanPC (void)
 	PrintScanTitlePC (&t, &r, GAME_STRING (ORBITSCAN_STRING_BASE + 11),
 			RIGHT_SIDE_BASELINE_X_PC); // "Mass: "
 	val = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius;
-	val = (val * val * val / 100L
+	val = ((DWORD) val * (DWORD) val * (DWORD) val / 100L
 			* pSolarSysState->SysInfo.PlanetInfo.PlanetDensity
 			+ ((100L * 100L) >> 1)) / (100L * 100L);
 	if (val == 0)
@@ -522,7 +522,7 @@ PrintCoarseScan3DO (void)
 	LockMutex (GraphicsLock);
 	t.pStr = buf;
 	val = pSolarSysState->SysInfo.PlanetInfo.PlanetRadius;
-	val = (val * val * val / 100L
+	val = ((DWORD) val * (DWORD) val * (DWORD) val / 100L
 			* pSolarSysState->SysInfo.PlanetInfo.PlanetDensity
 			+ ((100L * 100L) >> 1)) / (100L * 100L);
 	if (val == 0)
