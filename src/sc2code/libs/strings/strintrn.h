@@ -25,27 +25,33 @@
 #include "memlib.h"
 #include "reslib.h"
 
+typedef struct string_table_entry
+{
+	STRINGPTR data;
+	int length;  /* Internal NULs are allowed */
+	int index;
+	struct string_table *parent;
+} STRING_TABLE_ENTRY_DESC;
+
 typedef struct string_table
 {
-	unsigned short StringCount;
+	MEM_HANDLE handle;
 	unsigned short flags;
-	DWORD StringOffsets[1];
+	int size;
+	STRING_TABLE_ENTRY_DESC *strings;
 } STRING_TABLE_DESC;
 typedef STRING_TABLE_DESC *PSTRING_TABLE_DESC;
 
 #define HAS_SOUND_CLIPS (1 << 0)
 #define HAS_TIMESTAMP (1 << 1)
-#define STRING_TABLEPTR PSTRING_TABLE_DESC
 
-#define AllocStringTable(s)   AllocResourceData((s),MEM_SOUND)
 #define LockStringTable       LockResourceData
 #define UnlockStringTable     UnlockResourceData 
-#define FreeStringTable       FreeResourceData
 
-#define STRING_INDEX(S) ((COUNT)HIWORD (S))
-#define BUILD_STRING(h,i) ((STRING)MAKE_DWORD(h,i))
+STRING_TABLE AllocStringTable (int num_entries, int flags);
+void FreeStringTable (STRING_TABLE strtab);
 
-extern MEM_HANDLE _GetStringData (uio_Stream *fp, DWORD length);
+MEM_HANDLE _GetStringData (uio_Stream *fp, DWORD length);
 
 #endif /* _STRINTRN_H */
 

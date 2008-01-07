@@ -26,9 +26,11 @@
 
 #include <stddef.h>
 
+typedef struct string_table_entry STRING_TABLE_ENTRY_DESC;
+
 typedef MEM_HANDLE STRING_TABLE;
-typedef DWORD STRING;
-typedef BYTE* STRINGPTR;
+typedef STRING_TABLE_ENTRY_DESC *STRING;
+typedef BYTE *STRINGPTR;
 
 extern BOOLEAN InstallStringTableResType (COUNT string_type);
 extern STRING_TABLE LoadStringTableInstance (DWORD res);

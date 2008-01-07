@@ -254,13 +254,9 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 	}
 
 	Snd = 0;
-	if (snd_ct && (Snd = AllocStringTable (
-		sizeof (STRING_TABLE_DESC)
-		+ (sizeof (DWORD) * snd_ct)
-		+ (sizeof (sndfx[0]) * snd_ct)
-		)))
+	if (snd_ct && (Snd = AllocStringTable (snd_ct, 0)))
 	{
-		STRING_TABLEPTR fxTab;
+		STRING_TABLE_DESC *fxTab;
 
 		LockStringTable (Snd, &fxTab);
 		if (fxTab == 0)
@@ -277,18 +273,18 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 		}
 		else
 		{
-			DWORD *offs, StringOffs;
+			STRING str;
+			int i;
 
-			fxTab->StringCount = snd_ct;
-			fxTab->flags = 0;
-			offs = fxTab->StringOffsets;
-			StringOffs = sizeof (STRING_TABLE_DESC) + (sizeof (DWORD) * snd_ct);
-			memcpy ((BYTE *)fxTab + StringOffs, sndfx, sizeof (sndfx[0]) * snd_ct);
-			do
+			str = fxTab->strings;
+			for (i = 0; i < snd_ct; i++)
 			{
-				*offs++ = StringOffs;
-				StringOffs += sizeof (sndfx[0]);
-			} while (snd_ct--);
+				TFB_SoundSample **target = HMalloc (sizeof (sndfx[0]));
+				*target = sndfx[i];
+				str->data = (STRINGPTR)target;
+				str->length = sizeof (sndfx[0]);
+				str++;
+			}
 			UnlockStringTable (Snd);
 		}
 	}
@@ -299,20 +295,22 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 BOOLEAN
 _ReleaseSoundBankData (MEM_HANDLE Snd)
 {
-	STRING_TABLEPTR fxTab;
+	STRING_TABLE_DESC *fxTab;
 
 	LockStringTable (Snd, &fxTab);
 	if (fxTab)
 	{
-		int snd_ct;
+		int snd_ct, index;
 		TFB_SoundSample **sptr;
 
-		snd_ct = fxTab->StringCount;
-		sptr = (TFB_SoundSample **)((BYTE *)fxTab + fxTab->StringOffsets[0]);
+		snd_ct = fxTab->size;
+		index = 0;
 		while (snd_ct--)
 		{
 			int i;
 			
+			sptr = (TFB_SoundSample **)(fxTab->strings[index].data);
+
 			for (i = 0; i < NUM_SOUNDSOURCES; ++i)
 			{
 				if (soundSource[i].sample == (*sptr))
@@ -329,7 +327,8 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 			if ((*sptr)->buffer_tag)
 				HFree ((*sptr)->buffer_tag);
 			HFree (*sptr);
-			*sptr++ = 0;
+			*sptr = 0;
+			index++;
 		}
 		UnlockStringTable (Snd);
 		FreeStringTable (Snd);

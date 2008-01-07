@@ -17,11 +17,78 @@
  */
 
 #include "strintrn.h"
+#include "misc.h"
+
+STRING_TABLE
+AllocStringTable (int num_entries, int flags)
+{
+	MEM_HANDLE hData = mem_allocate (sizeof (STRING_TABLE_DESC), MEM_SOUND);
+	STRING_TABLE_DESC *strtab = mem_lock (hData);
+	int i, multiplier = 1;
+
+	if (flags & HAS_SOUND_CLIPS)
+	{
+		multiplier++;
+	}
+	if (flags & HAS_TIMESTAMP)
+	{
+		multiplier++;
+	}
+	strtab->handle = hData;
+	strtab->flags = flags;
+	strtab->size = num_entries;
+	num_entries *= multiplier;
+	strtab->strings = HMalloc (sizeof (STRING_TABLE_ENTRY_DESC) * num_entries);
+	for (i = 0; i < num_entries; i++)
+	{
+		strtab->strings[i].data = NULL;
+		strtab->strings[i].length = 0;
+		strtab->strings[i].parent = strtab;
+		strtab->strings[i].index = i;
+	}
+	return hData;
+}
+
+void
+FreeStringTable (STRING_TABLE StringTable)
+{
+	STRING_TABLE_DESC *strtab;
+	int i, multiplier = 1;
+
+	strtab = mem_lock (StringTable);
+
+	if (strtab == NULL)
+	{
+		return;
+	}
+
+	if (strtab->flags & HAS_SOUND_CLIPS)
+	{
+		multiplier++;
+	}
+	if (strtab->flags & HAS_TIMESTAMP)
+	{
+		multiplier++;
+	}
+
+	for (i = 0; i < strtab->size * multiplier; i++)
+	{
+		if (strtab->strings[i].data != NULL)
+		{
+			HFree (strtab->strings[i].data);
+		}
+	}
+
+	HFree (strtab->strings);
+	mem_unlock (StringTable);
+	mem_release (StringTable);
+}
 
 BOOLEAN
 DestroyStringTable (STRING_TABLE StringTable)
 {
-	return (FreeStringTable (StringTable));
+	FreeStringTable (StringTable);
+	return TRUE;
 }
 
 STRING
@@ -29,15 +96,21 @@ CaptureStringTable (STRING_TABLE StringTable)
 {
 	if (StringTable != 0)
 	{
-		COUNT StringTableIndex;
-		STRING_TABLEPTR StringTablePtr;
+		STRING_TABLE_DESC *StringTablePtr;
 
 		LockStringTable (StringTable, &StringTablePtr);
-		StringTableIndex = GetStringTableIndex (StringTable);
-		return (BUILD_STRING (StringTable, StringTableIndex));
+		if (StringTablePtr->size > 0)
+		{
+			return StringTablePtr->strings;
+		}
+		else
+		{
+			UnlockStringTable (StringTable);
+			return NULL;
+		}
 	}
 
-	return ((STRING)NULL);
+	return NULL;
 }
 
 STRING_TABLE
@@ -55,53 +128,51 @@ ReleaseStringTable (STRING String)
 STRING_TABLE
 GetStringTable (STRING String)
 {
-	return ((STRING_TABLE)LOWORD (String));
+	if (String && String->parent)
+	{
+		return String->parent->handle;
+	}
+	return NULL_HANDLE;
 }
 
 COUNT
 GetStringTableCount (STRING String)
 {
-	COUNT StringCount;
-	STRING_TABLE StringTable;
-
-	StringTable = GetStringTable (String);
-	if (StringTable == 0)
-		StringCount = 0;
-	else
+	if (String && String->parent)
 	{
-		STRING_TABLEPTR StringTablePtr;
-
-		LockStringTable (StringTable, &StringTablePtr);
-		StringCount = StringTablePtr->StringCount;
-		UnlockStringTable (StringTable);
+		return String->parent->size;
 	}
-
-	return (StringCount);
+	return 0;
 }
 
 COUNT
 GetStringTableIndex (STRING String)
 {
-	return (STRING_INDEX (String));
+	if (String)
+	{
+		return String->index;
+	}
+	return 0;
 }
 
 STRING
 SetAbsStringTableIndex (STRING String, COUNT StringTableIndex)
 {
-	STRING_TABLE StringTable;
+	STRING_TABLE_DESC *StringTablePtr;
 
-	StringTable = GetStringTable (String);
-	if (StringTable == 0)
-		String = 0;
+	if (!String)
+		return NULL;
+	
+	StringTablePtr = String->parent;
+	
+	if (StringTablePtr == NULL)
+	{
+		String = NULL;
+	}
 	else
 	{
-		STRING_TABLEPTR StringTablePtr;
-
-		LockStringTable (StringTable, &StringTablePtr);
-		StringTableIndex = StringTableIndex % StringTablePtr->StringCount;
-		UnlockStringTable (StringTable);
-
-		String = BUILD_STRING (StringTable, StringTableIndex);
+		StringTableIndex = StringTableIndex % StringTablePtr->size;
+		String = &StringTablePtr->strings[StringTableIndex];
 	}
 
 	return (String);
@@ -110,24 +181,27 @@ SetAbsStringTableIndex (STRING String, COUNT StringTableIndex)
 STRING
 SetRelStringTableIndex (STRING String, SIZE StringTableOffs)
 {
-	STRING_TABLE StringTable;
+	STRING_TABLE_DESC *StringTablePtr;
 
-	StringTable = GetStringTable (String);
-	if (StringTable == 0)
-		String = 0;
+	if (!String)
+		return NULL;
+	
+	StringTablePtr = String->parent;
+	
+	if (StringTablePtr == NULL)
+	{
+		String = NULL;
+	}
 	else
 	{
-		STRING_TABLEPTR StringTablePtr;
 		COUNT StringTableIndex;
 
-		LockStringTable (StringTable, &StringTablePtr);
 		while (StringTableOffs < 0)
-			StringTableOffs += StringTablePtr->StringCount;
-		StringTableIndex = (STRING_INDEX (String) + StringTableOffs)
-				% StringTablePtr->StringCount;
-		UnlockStringTable (StringTable);
+			StringTableOffs += StringTablePtr->size;
+		StringTableIndex = (String->index + StringTableOffs)
+				% StringTablePtr->size;
 
-		String = BUILD_STRING (StringTable, StringTableIndex);
+		String = &StringTablePtr->strings[StringTableIndex];
 	}
 
 	return (String);
@@ -136,156 +210,99 @@ SetRelStringTableIndex (STRING String, SIZE StringTableOffs)
 COUNT
 GetStringLength (STRING String)
 {
-	COUNT StringLength;
-	STRING_TABLE StringTable;
-
-	StringTable = GetStringTable (String);
-	if (StringTable == 0)
-		StringLength = 0;
-	else
+	if (String == NULL)
 	{
-		COUNT StringIndex;
-		STRING_TABLEPTR StringTablePtr;
-
-		StringIndex = STRING_INDEX (String);
-		LockStringTable (StringTable, &StringTablePtr);
-
-		{
-			STRINGPTR start;
-			STRINGPTR end;
-
-			start = (STRINGPTR) ((BYTE *) StringTablePtr +
-					StringTablePtr->StringOffsets[StringIndex]);
-			end = (STRINGPTR) ((BYTE *) StringTablePtr +
-					StringTablePtr->StringOffsets[StringIndex + 1]);
-			StringLength = utf8StringCountN(start, end);
-		}
-
-#if 0
-		StringLength = (COUNT)(
-				StringTablePtr->StringOffsets[StringIndex + 1]
-				- StringTablePtr->StringOffsets[StringIndex]);
-#endif
-		UnlockStringTable (StringTable);
+		return 0;
 	}
-
-	return (StringLength);
+	return utf8StringCountN(String->data, String->data + String->length);
 }
 
 COUNT
 GetStringLengthBin (STRING String)
 {
-	COUNT StringLength;
-	STRING_TABLE StringTable;
-
-	StringTable = GetStringTable (String);
-	if (StringTable == 0)
-		StringLength = 0;
-	else
+	if (String == NULL)
 	{
-		COUNT StringIndex;
-		STRING_TABLEPTR StringTablePtr;
-
-		StringIndex = STRING_INDEX (String);
-		LockStringTable (StringTable, &StringTablePtr);
-
-		StringLength = (COUNT)(
-				StringTablePtr->StringOffsets[StringIndex + 1]
-				- StringTablePtr->StringOffsets[StringIndex]);
-		UnlockStringTable (StringTable);
+		return 0;
 	}
-
-	return (StringLength);
+	return String->length;
 }
 
 STRINGPTR
 GetStringSoundClip (STRING String)
 {
-	STRINGPTR StringAddr;
-	STRING_TABLE StringTable;
+	STRING_TABLE_DESC *StringTablePtr;
+	COUNT StringIndex;
 
-	StringTable = GetStringTable (String);
-	if (StringTable == 0)
-		StringAddr = 0;
-	else
+	if (String == NULL)
 	{
-		COUNT StringIndex;
-		STRING_TABLEPTR StringTablePtr;
-
-		StringIndex = STRING_INDEX (String);
-		LockStringTable (StringTable, &StringTablePtr);
-		if (!(StringTablePtr->flags & HAS_SOUND_CLIPS)
-				|| ((StringIndex += StringTablePtr->StringCount + 1),
-						StringTablePtr->StringOffsets[StringIndex + 1]
-								== StringTablePtr->StringOffsets[StringIndex]))
-			StringAddr = 0;
-		else
-		{
-			StringAddr = (STRINGPTR) ((BYTE *) StringTablePtr +
-					StringTablePtr->StringOffsets[StringIndex]);
-		}
-		UnlockStringTable (StringTable);
+		return NULL;
 	}
 
-	return (StringAddr);
+	StringTablePtr = String->parent;
+	if (StringTablePtr == NULL)
+	{
+		return NULL;
+	}
+
+	StringIndex = String->index;
+	if (!(StringTablePtr->flags & HAS_SOUND_CLIPS))
+	{
+		return NULL;
+	}
+
+	StringIndex += StringTablePtr->size;
+	String = &StringTablePtr->strings[StringIndex];
+	if (String->length == 0)
+	{
+		return NULL;
+	}
+
+	return String->data;
 }
 
 STRINGPTR
 GetStringTimeStamp (STRING String)
 {
-	STRINGPTR StringAddr;
-	STRING_TABLE StringTable;
+	STRING_TABLE_DESC *StringTablePtr;
+	COUNT StringIndex;
+	int offset;
 
-	StringTable = GetStringTable (String);
-	if (StringTable == 0)
-		StringAddr = 0;
-	else
+	if (String == NULL)
 	{
-		COUNT StringIndex;
-		STRING_TABLEPTR StringTablePtr;
-		int offset;
-
-		StringIndex = STRING_INDEX (String);
-		LockStringTable (StringTable, &StringTablePtr);
-		offset = (StringTablePtr->flags & HAS_SOUND_CLIPS) ? 1 : 0;
-		if (!(StringTablePtr->flags & HAS_TIMESTAMP)
-				|| ((StringIndex += (StringTablePtr->StringCount + 1) << offset),
-						StringTablePtr->StringOffsets[StringIndex + 1]
-								== StringTablePtr->StringOffsets[StringIndex]))
-			StringAddr = 0;
-		else
-		{
-			StringAddr = (STRINGPTR) ((BYTE *) StringTablePtr +
-					StringTablePtr->StringOffsets[StringIndex]);
-		}
-		UnlockStringTable (StringTable);
+		return NULL;
 	}
 
-	return (StringAddr);
+	StringTablePtr = String->parent;
+	if (StringTablePtr == NULL)
+	{
+		return NULL;
+	}
+
+	StringIndex = String->index;
+	if (!(StringTablePtr->flags & HAS_SOUND_CLIPS))
+	{
+		return NULL;
+	}
+
+	offset = (StringTablePtr->flags & HAS_SOUND_CLIPS) ? 1 : 0;
+	StringIndex += StringTablePtr->size << offset;
+	String = &StringTablePtr->strings[StringIndex];
+	if (String->length == 0)
+	{
+		return NULL;
+	}
+
+	return String->data;
 }
 
 STRINGPTR
 GetStringAddress (STRING String)
 {
-	STRINGPTR StringAddr;
-	STRING_TABLE StringTable;
-
-	StringTable = GetStringTable (String);
-	if (StringTable == 0)
-		StringAddr = 0;
-	else
+	if (String == NULL)
 	{
-		COUNT StringIndex;
-		STRING_TABLEPTR StringTablePtr;
-
-		StringIndex = STRING_INDEX (String);
-		LockStringTable (StringTable, &StringTablePtr);
-		StringAddr = (STRINGPTR) ((BYTE *) StringTablePtr +
-				StringTablePtr->StringOffsets[StringIndex]);
-		UnlockStringTable (StringTable);
+		return NULL;
 	}
-
-	return (StringAddr);
+	return String->data;
 }
 
 BOOLEAN
@@ -309,4 +326,3 @@ GetStringContents (STRING String, STRINGPTR StringBuf, BOOLEAN
 	*StringBuf = '\0';
 	return (FALSE);
 }
-

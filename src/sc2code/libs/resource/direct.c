@@ -17,6 +17,7 @@
  */
 
 #include "libs/strings/strintrn.h"
+#include "misc.h"
 #include "port.h"
 #include "libs/uio.h"
 #include <sys/stat.h>
@@ -26,21 +27,18 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 		const char *pattern, match_MatchType matchType)
 {
 	uio_DirList *dirList;
-	COUNT num_entries, length;
+	COUNT num_entries;
 	COUNT i;
-	COUNT slen;
 	uio_DirHandle *dir;
 	STRING_TABLE StringTable;
-	STRING_TABLEPTR lpST;
-	char *lpStr;
-	DWORD *lpLastOffs;
+	STRING_TABLE_DESC *lpST;
+	STRING lpLastString;
 
 	dir = uio_openDirRelative (dirHandle, path, 0);
 	assert(dir != NULL);
 	dirList = uio_getDirList (dir, "", pattern, matchType);
 	assert(dirList != NULL);
 	num_entries = 0;
-	length = 0;
 
 	// First, count the amount of space needed
 	for (i = 0; i < dirList->numNames; i++)
@@ -62,7 +60,6 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 			dirList->names[i] = NULL;
 			continue;
 		}
-		length += strlen (dirList->names[i]) + 1;
 		num_entries++;
 	}
 	uio_closeDir (dir);
@@ -72,9 +69,7 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 		return ((DIRENTRY_REF) 0);
 	}
 
-	slen = sizeof (STRING_TABLE_DESC)
-			+ (num_entries * sizeof (DWORD));
-	StringTable = AllocResourceData (slen + length, 0);
+	StringTable = AllocStringTable (num_entries, 0);
 	LockStringTable (StringTable, &lpST);
 	if (lpST == 0)
 	{
@@ -82,21 +77,21 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 		uio_DirList_free(dirList);
 		return ((DIRENTRY_REF) 0);
 	}
-	lpST->StringCount = num_entries;
-	lpLastOffs = &lpST->StringOffsets[0];
-	*lpLastOffs = slen;
-	lpStr = (BYTE*)lpST + slen;
+	lpST->size = num_entries;
+	lpLastString = lpST->strings;
 
 	for (i = 0; i < dirList->numNames; i++)
 	{
 		int size;
+		STRINGPTR target;
 		if (dirList->names[i] == NULL)
 			continue;
 		size = strlen (dirList->names[i]) + 1;
-		memcpy (lpStr, dirList->names[i], size);
-		lpLastOffs[1] = lpLastOffs[0] + size;
-		lpLastOffs++;
-		lpStr += size;
+		target = HMalloc (size);
+		memcpy (target, dirList->names[i], size);
+		lpLastString->data = target;
+		lpLastString->length = size;
+		lpLastString++;
 	}
 	
 	uio_DirList_free(dirList);

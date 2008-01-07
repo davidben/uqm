@@ -38,6 +38,25 @@ dword_convert (DWORD *dword_array, COUNT num_dwords)
 	} while (--num_dwords);
 }
 
+static void
+set_strtab_entry (STRING_TABLE_DESC *strtab, int index, const char *value, int len)
+{
+	STRING str = &strtab->strings[index];
+
+	if (str->data)
+	{
+		HFree (str->data);
+		str->data = NULL;
+		str->length = 0;
+	}
+	if (len)
+	{
+		str->data = HMalloc (len);
+		str->length = len;
+		memcpy (str->data, value, len);
+	}
+}
+
 MEM_HANDLE
 _GetStringData (uio_Stream *fp, DWORD length)
 {
@@ -238,67 +257,47 @@ _GetStringData (uio_Stream *fp, DWORD length)
 
 			hData = 0;
 			num_data_sets = (ClipOffs ? 1 : 0) + (TSOffs ? 1 : 0) + 1;
-			if (++n && (hData = AllocStringTable (
-					(sizeof (STRING_TABLE_DESC) - sizeof (DWORD))
-					+ (sizeof (DWORD) * ((n + 1) * num_data_sets))
-					+ StringOffs + ClipOffs + TSOffs)))
+			if (++n)
 			{
-				DWORD *lpStringOffs;
-				DWORD *lpClipOffs;
-				DWORD *lpTSOffs;
-				STRING_TABLEPTR lpST;
-
-				LockStringTable (hData, &lpST);
-				lpST->StringCount = n;
-				lpST->flags = 0;
+				int flags = 0;
 				if (ClipOffs)
-					lpST->flags |= HAS_SOUND_CLIPS;
+					flags |= HAS_SOUND_CLIPS;
 				if (TSOffs)
-					lpST->flags |= HAS_TIMESTAMP;
-
-				memcpy (&lpST->StringOffsets[(n + 1) * num_data_sets],
-						strdata, StringOffs);
-				memcpy ((BYTE *)&lpST->StringOffsets[(n + 1) * num_data_sets]
-						+ StringOffs, clipdata, ClipOffs);
-				if (TSOffs)
-					memcpy ((BYTE *)&lpST->StringOffsets[
-							(n + 1) * num_data_sets] + StringOffs + ClipOffs,
-							ts_data, TSOffs);
-				TSOffs = ((BYTE *)&lpST->StringOffsets[(n + 1) * num_data_sets]
-						- (BYTE *)lpST) + StringOffs + ClipOffs;
-				ClipOffs = TSOffs - ClipOffs;
-				StringOffs = ClipOffs - StringOffs;
-
-				lpStringOffs = lpST->StringOffsets;
-				lpClipOffs = &lpST->StringOffsets[lpST->StringCount + 1];
-				lpTSOffs = &lpST->StringOffsets[(lpST->StringCount + 1)
-						<< ((lpST->flags & HAS_SOUND_CLIPS) ? 1 : 0)];
-				for (n = 0; n < (int)lpST->StringCount;
-						++n, ++lpStringOffs, ++lpClipOffs, ++lpTSOffs)
+					flags |= HAS_TIMESTAMP;
+				hData = AllocStringTable (n, flags);
+				if (hData)
 				{
-					*lpStringOffs = StringOffs;
-					StringOffs += slen[n];
-					if (lpST->flags & HAS_SOUND_CLIPS)
+					int StringIndex, ClipIndex, TSIndex;
+					STRING_TABLE_DESC *lpST;
+
+					LockStringTable (hData, &lpST);
+
+					StringIndex = 0;
+					ClipIndex = n;
+					TSIndex = n * ((flags & HAS_SOUND_CLIPS) ? 2 : 1);
+
+					StringOffs = ClipOffs = TSOffs = 0;
+
+					for (n = 0; n < (int)lpST->size;
+							++n, ++StringIndex, ++ClipIndex, ++TSIndex)
 					{
-						*lpClipOffs = ClipOffs;
-						ClipOffs += clen[n];
-					}
-					if (lpST->flags & HAS_TIMESTAMP)
-					{
-						*lpTSOffs = TSOffs;
-						TSOffs += tslen[n];
+						set_strtab_entry(lpST, StringIndex, strdata + StringOffs, slen[n]);
+						StringOffs += slen[n];
+						if (lpST->flags & HAS_SOUND_CLIPS)
+						{
+							set_strtab_entry(lpST, ClipIndex, clipdata + ClipOffs, clen[n]);
+							ClipOffs += clen[n];
+						}
+						if (lpST->flags & HAS_TIMESTAMP)
+						{
+							set_strtab_entry(lpST, TSIndex, ts_data + TSOffs, tslen[n]);
+							TSOffs += tslen[n];
+						}
 					}
 
+					UnlockStringTable (hData);
 				}
-				*lpStringOffs = StringOffs;
-				if (lpST->flags & HAS_SOUND_CLIPS)
-					*lpClipOffs = ClipOffs;
-				if (lpST->flags & HAS_TIMESTAMP)
-					*lpTSOffs = TSOffs;
-
-				UnlockStringTable (hData);
 			}
-
 			HFree (strdata);
 			HFree (clipdata);
 			if (ts_data)
@@ -308,32 +307,39 @@ _GetStringData (uio_Stream *fp, DWORD length)
 		}
 	}
 
+	/* We don't end in .txt, so, we're a color table of some kind. */
 	hData = GetResourceData (fp, length, MEM_SOUND);
 	if (hData)
 	{
-		COUNT StringCount;
-		DWORD StringOffs;
-		DWORD *lpStringOffs;
-		STRING_TABLEPTR lpST;
+		DWORD *fileData;
+		MEM_HANDLE hStrTab;
 
-		LockStringTable (hData, &lpST);
-length = *(DWORD *)&lpST->StringCount;
-dword_convert (&length, 1);
-lpST->StringCount = (unsigned short)length;
-		StringCount = lpST->StringCount;
-		lpST->flags = 0;
+		fileData = mem_lock (hData);
 
-		lpStringOffs = lpST->StringOffsets;
-dword_convert (lpStringOffs, StringCount + 1);
-		StringOffs = sizeof (STRING_TABLE_DESC)
-				+ (sizeof (DWORD) * StringCount);
-		do
+		dword_convert (fileData, 1); /* Length */
+
+		hStrTab = AllocStringTable (fileData[0], 0);
+		if (hStrTab)
 		{
-			StringOffs += *lpStringOffs;
-			*lpStringOffs++ = StringOffs;
-		} while (StringCount--);
+			STRING_TABLE_DESC *lpST;
+			int i, size;
+			BYTE *stringptr;
 
-		UnlockStringTable (hData);
+			LockStringTable (hStrTab, &lpST);
+			size = lpST->size;
+
+			dword_convert (fileData+2, size);
+			stringptr = (BYTE *)(fileData + 2 + size);
+			for (i = 0; i < size; i++)
+			{
+				set_strtab_entry (lpST, i, stringptr, fileData[2+i]);
+				stringptr += fileData[2+i];
+			}
+			UnlockStringTable (hStrTab);
+		}
+		mem_unlock (hData);
+		mem_release (hData);
+		hData = hStrTab;
 	}
 
 	return (hData);
