@@ -25,13 +25,13 @@
 #include "memlib.h"
 #include "reslib.h"
 
-typedef struct string_table_entry
+struct string_table_entry
 {
 	STRINGPTR data;
 	int length;  /* Internal NULs are allowed */
 	int index;
 	struct string_table *parent;
-} STRING_TABLE_ENTRY_DESC;
+};
 
 typedef struct string_table
 {
