@@ -18,6 +18,7 @@
 #include "sound.h"
 #include "libs/reslib.h"
 #include "libs/log.h"
+#include "libs/strings/strintrn.h"
 #include <math.h>
 
 

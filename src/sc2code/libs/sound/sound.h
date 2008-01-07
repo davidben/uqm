@@ -18,7 +18,6 @@
 #define _UQM_SOUND_H
 
 #include "misc.h"
-#include "libs/strings/strintrn.h"
 #include "sndintrn.h"
 #include "audiocore.h"
 #include "decoders/decoder.h"
