@@ -28,17 +28,17 @@ static LOCDATA yehat_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)YEHAT_PMAP_ANIM, /* AlienFrame */
-	(FONT)YEHAT_FONT, /* AlienFont */
+	YEHAT_PMAP_ANIM, /* AlienFrame */
+	YEHAT_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* (SIS_TEXT_WIDTH - 16) * 2 / 3, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_MIDDLE, /* AlienTextValign */
-	(COLORMAP)YEHAT_COLOR_MAP, /* AlienColorMap */
+	YEHAT_COLOR_MAP, /* AlienColorMap */
 	YEHAT_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	REBEL_CONVERSATION_PHRASES, /* PlayerPhrases */
 	15, /* NumAnimations */
@@ -186,6 +186,10 @@ static LOCDATA yehat_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void
@@ -436,7 +440,7 @@ init_rebel_yehat_comm (void)
 	yehat_desc.AlienTextWidth = (SIS_TEXT_WIDTH - 16) * 2 / 3;
 
 	// use alternate "Rebels" track if available
-	yehat_desc.AlienAltSong = REBEL_MUSIC;
+	yehat_desc.AlienAltSongRes = REBEL_MUSIC;
 	yehat_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 
 	SET_GAME_STATE (BATTLE_SEGUE, 0);

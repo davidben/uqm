@@ -28,17 +28,17 @@ static LOCDATA supox_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)SUPOX_PMAP_ANIM, /* AlienFrame */
-	(FONT)SUPOX_FONT, /* AlienFont */
+	SUPOX_PMAP_ANIM, /* AlienFrame */
+	SUPOX_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)SUPOX_COLOR_MAP, /* AlienColorMap */
+	SUPOX_COLOR_MAP, /* AlienColorMap */
 	SUPOX_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SUPOX_CONVERSATION_PHRASES, /* PlayerPhrases */
 	4, /* NumAnimations */
@@ -94,6 +94,10 @@ static LOCDATA supox_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void

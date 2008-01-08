@@ -28,17 +28,17 @@ static LOCDATA shofixti_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)SHOFIXTI_PMAP_ANIM, /* AlienFrame */
-	(FONT)SHOFIXTI_FONT, /* AlienFont */
+	SHOFIXTI_PMAP_ANIM, /* AlienFrame */
+	SHOFIXTI_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)SHOFIXTI_COLOR_MAP, /* AlienColorMap */
+	SHOFIXTI_COLOR_MAP, /* AlienColorMap */
 	SHOFIXTI_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SHOFIXTI_CONVERSATION_PHRASES, /* PlayerPhrases */
 	11, /* NumAnimations */
@@ -150,6 +150,10 @@ static LOCDATA shofixti_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static RESPONSE_REF shofixti_name;

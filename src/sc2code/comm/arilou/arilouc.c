@@ -28,17 +28,17 @@ static LOCDATA arilou_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)ARILOU_PMAP_ANIM, /* AlienFrame */
-	(FONT)ARILOU_FONT, /* AlienFont */
+	ARILOU_PMAP_ANIM, /* AlienFrame */
+	ARILOU_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)ARILOU_COLOR_MAP, /* AlienColorMap */
+	ARILOU_COLOR_MAP, /* AlienColorMap */
 	ARILOU_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	ARILOU_CONVERSATION_PHRASES, /* PlayerPhrases */
 	20, /* NumAnimations */
@@ -221,6 +221,10 @@ static LOCDATA arilou_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void

@@ -27,17 +27,17 @@ static LOCDATA talkpet_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)TALKING_PET_PMAP_ANIM, /* AlienFrame */
-	(FONT)TALKING_PET_FONT, /* AlienFont */
+	TALKING_PET_PMAP_ANIM, /* AlienFrame */
+	TALKING_PET_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)TALKING_PET_COLOR_MAP, /* AlienColorMap */
+	TALKING_PET_COLOR_MAP, /* AlienColorMap */
 	TALKING_PET_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	TALKING_PET_CONVERSATION_PHRASES, /* PlayerPhrases */
 	16, /* NumAnimations */
@@ -191,6 +191,10 @@ static LOCDATA talkpet_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 #define STROBE_RATE   15

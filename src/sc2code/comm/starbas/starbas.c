@@ -39,17 +39,17 @@ static LOCDATA commander_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)COMMANDER_PMAP_ANIM, /* AlienFrame */
-	(FONT)COMMANDER_FONT, /* AlienFont */
+	COMMANDER_PMAP_ANIM, /* AlienFrame */
+	COMMANDER_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_MIDDLE, /* AlienTextValign */
-	(COLORMAP)COMMANDER_COLOR_MAP, /* AlienColorMap */
+	COMMANDER_COLOR_MAP, /* AlienColorMap */
 	COMMANDER_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	STARBASE_CONVERSATION_PHRASES, /* PlayerPhrases */
 	10, /* NumAnimations */
@@ -152,6 +152,10 @@ static LOCDATA commander_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static DWORD CurBulletinMask;
@@ -1942,7 +1946,7 @@ init_starbase_comm ()
 	commander_desc.AlienTextBaseline.y = 20;
 
 	// use alternate Starbase track if available
-	commander_desc.AlienAltSong = STARBASE_ALT_MUSIC;
+	commander_desc.AlienAltSongRes = STARBASE_ALT_MUSIC;
 	commander_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 
 	CurBulletinMask = 0;

@@ -25,8 +25,8 @@ static LOCDATA vux_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)VUX_PMAP_ANIM, /* AlienFrame */
-	(FONT)VUX_FONT, /* AlienFont */
+	VUX_PMAP_ANIM, /* AlienFrame */
+	VUX_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
@@ -35,7 +35,7 @@ static LOCDATA vux_desc =
 	VALIGN_TOP, /* AlienTextValign */
 	VUX_COLOR_MAP, /* AlienColorMap */
 	VUX_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	VUX_CONVERSATION_PHRASES, /* PlayerPhrases */
 	17, /* NumAnimations */
@@ -194,6 +194,10 @@ static LOCDATA vux_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void

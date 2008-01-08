@@ -29,17 +29,17 @@ static LOCDATA spahome_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)SPATHI_HOME_PMAP_ANIM, /* AlienFrame */
-	(FONT)SPATHI_FONT, /* AlienFont */
+	SPATHI_HOME_PMAP_ANIM, /* AlienFrame */
+	SPATHI_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)SPATHI_HOME_COLOR_MAP, /* AlienColorMap */
+	SPATHI_HOME_COLOR_MAP, /* AlienColorMap */
 	SPATHI_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SPATHI_HOME_CONVERSATION_PHRASES, /* PlayerPhrases */
 	14, /* NumAnimations */
@@ -177,6 +177,10 @@ static LOCDATA spahome_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void
@@ -996,7 +1000,7 @@ init_spahome_comm ()
 	spahome_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
 	// use alternate "Safe Ones" track if available
-	spahome_desc.AlienAltSong = SPAHOME_MUSIC;
+	spahome_desc.AlienAltSongRes = SPAHOME_MUSIC;
 	spahome_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 
 	if (GET_GAME_STATE (SPATHI_MANNER) == 3)

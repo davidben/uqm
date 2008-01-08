@@ -43,7 +43,8 @@ static RACE_DESC probe_desc =
 		MAX_ENERGY, MAX_ENERGY,
 		0,
 		0,
-		(FRAME)PROBE_MICON_MASK_PMAP_ANIM,
+		PROBE_MICON_MASK_PMAP_ANIM,
+		NULL, NULL, NULL
 	},
 	{ /* FLEET_STUFF */
 		0, /* Initial sphere of influence radius */
@@ -66,29 +67,30 @@ static RACE_DESC probe_desc =
 	},
 	{
 		{
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
+			NULL_RESOURCE,
+			NULL_RESOURCE,
+			NULL_RESOURCE,
 		},
 		{
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
+			NULL_RESOURCE,
+			NULL_RESOURCE,
+			NULL_RESOURCE,
 		},
 		{
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
+			NULL_RESOURCE,
+			NULL_RESOURCE,
+			NULL_RESOURCE,
 		},
 		{
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
+			NULL_RESOURCE,
+			NULL, NULL, NULL, NULL, NULL
 		},
-		(SOUND)0,
-		(SOUND)0,
+		NULL_RESOURCE,
+		NULL_RESOURCE,
+		{ NULL, NULL, NULL },
+		{ NULL, NULL, NULL },
+		{ NULL, NULL, NULL },
+		NULL_HANDLE, NULL
 	},
 	{
 		0,

@@ -29,17 +29,17 @@ static LOCDATA utwig_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)UTWIG_PMAP_ANIM, /* AlienFrame */
-	(FONT)UTWIG_FONT, /* AlienFont */
+	UTWIG_PMAP_ANIM, /* AlienFrame */
+	UTWIG_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_MIDDLE, /* AlienTextValign */
-	(COLORMAP)UTWIG_COLOR_MAP, /* AlienColorMap */
+	UTWIG_COLOR_MAP, /* AlienColorMap */
 	UTWIG_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	UTWIG_CONVERSATION_PHRASES, /* PlayerPhrases */
 	16, /* NumAnimations */
@@ -191,6 +191,10 @@ static LOCDATA utwig_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void
@@ -969,7 +973,7 @@ init_utwig_comm (void)
 
 	if (GET_GAME_STATE (UTWIG_HAVE_ULTRON))
 	{	// use alternate 'Happy Utwig!' track
-		utwig_desc.AlienAltSong = UTWIG_ULTRON_MUSIC;
+		utwig_desc.AlienAltSongRes = UTWIG_ULTRON_MUSIC;
 		utwig_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 	}
 	else

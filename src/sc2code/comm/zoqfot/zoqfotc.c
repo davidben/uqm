@@ -45,17 +45,17 @@ static LOCDATA zoqfot_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)ZOQFOTPIK_PMAP_ANIM, /* AlienFrame */
-	(FONT)ZOQFOTPIK_FONT, /* AlienFont */
+	ZOQFOTPIK_PMAP_ANIM, /* AlienFrame */
+	ZOQFOTPIK_FONT, /* AlienFont */
 	0, /* AlienTextFColor */
 	0, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_MIDDLE, /* AlienTextValign */
-	(COLORMAP)ZOQFOTPIK_COLOR_MAP, /* AlienColorMap */
+	ZOQFOTPIK_COLOR_MAP, /* AlienColorMap */
 	ZOQFOTPIK_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	ZOQFOTPIK_CONVERSATION_PHRASES, /* PlayerPhrases */
 	3, /* NumAnimations */
@@ -103,6 +103,10 @@ static LOCDATA zoqfot_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 enum

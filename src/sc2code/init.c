@@ -23,6 +23,7 @@
 #include "init.h"
 #include "port.h"
 #include "resinst.h"
+#include "reslib.h"
 #include "nameref.h"
 #include "setup.h"
 #include "units.h"
@@ -35,7 +36,7 @@ FRAME explosion[NUM_VIEWS];
 
 
 BOOLEAN
-load_animation (FRAME *pixarray, DWORD big_res, DWORD med_res, DWORD
+load_animation (FRAME *pixarray, RESOURCE big_res, RESOURCE med_res, RESOURCE
 		sml_res)
 {
 	DRAWABLE d;
@@ -45,7 +46,7 @@ load_animation (FRAME *pixarray, DWORD big_res, DWORD med_res, DWORD
 		return FALSE;
 	pixarray[0] = CaptureDrawable (d);
 
-	if (med_res != 0L)
+	if (med_res != NULL_RESOURCE)
 	{
 		d = LoadGraphic (med_res);
 		if (!d)
@@ -53,7 +54,7 @@ load_animation (FRAME *pixarray, DWORD big_res, DWORD med_res, DWORD
 	}
 	pixarray[1] = CaptureDrawable (d);
 
-	if (sml_res != 0L)
+	if (sml_res != NULL_RESOURCE)
 	{
 		d = LoadGraphic (sml_res);
 		if (!d)

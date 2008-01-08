@@ -21,6 +21,7 @@
 
 #include "clock.h"
 #include "libs/gfxlib.h"
+#include "libs/reslib.h"
 #include "sis.h"
 #include "velocity.h"
 
@@ -136,19 +137,19 @@ typedef struct
 	COUNT (*uninit_encounter_func) (void);
 			/* Called when encounter is done for cleanup */
 
-	FRAME AlienFrame;
-	FONT AlienFont;
+	RESOURCE AlienFrameRes;
+	RESOURCE AlienFontRes;
 	COLOR AlienTextFColor, AlienTextBColor;
 	POINT AlienTextBaseline;
 	COUNT AlienTextWidth;
 	TEXT_ALIGN AlienTextAlign;
 	TEXT_VALIGN AlienTextValign;
-	COLORMAP AlienColorMap;
-	DWORD AlienSong;
-	DWORD AlienAltSong;
+	RESOURCE AlienColorMapRes;
+	RESOURCE AlienSongRes;
+	RESOURCE AlienAltSongRes;
 	LDAS_FLAGS AlienSongFlags;
 
-	STRING ConversationPhrases;
+	RESOURCE ConversationPhrasesRes;
 
 	COUNT NumAnimations;
 	ANIMATION_DESC AlienAmbientArray[MAX_ANIMATIONS];
@@ -157,6 +158,13 @@ typedef struct
 	ANIMATION_DESC AlienTalkDesc;
 
 	NUMBER_SPEECH AlienNumberSpeech;
+
+	FRAME AlienFrame;
+	FONT AlienFont;
+	COLORMAP AlienColorMap;
+	MUSIC_REF AlienSong;
+	STRING ConversationPhrases;
+	
 } LOCDATA;
 
 enum

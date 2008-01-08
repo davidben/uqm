@@ -27,8 +27,8 @@ static LOCDATA commander_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)COMMANDER_PMAP_ANIM, /* AlienFrame */
-	(FONT)COMMANDER_FONT, /* AlienFont */
+	COMMANDER_PMAP_ANIM, /* AlienFrame */
+	COMMANDER_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
@@ -37,7 +37,7 @@ static LOCDATA commander_desc =
 	VALIGN_MIDDLE, /* AlienTextValign */
 	COMMANDER_COLOR_MAP, /* AlienColorMap */
 	COMMANDER_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	COMMANDER_CONVERSATION_PHRASES, /* PlayerPhrases */
 	3, /* NumAnimations */
@@ -84,6 +84,10 @@ static LOCDATA commander_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void
@@ -698,7 +702,7 @@ init_commander_comm ()
 	{	
 		commander_desc.AlienAmbientArray[2].AnimFlags &= ~ANIM_DISABLED;
 		// use alternate 'low-power' track if available
-		commander_desc.AlienAltSong = COMMANDER_LOWPOW_MUSIC;
+		commander_desc.AlienAltSongRes = COMMANDER_LOWPOW_MUSIC;
 		commander_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 	}
 

@@ -47,9 +47,10 @@ static RACE_DESC shofixti_desc =
 		5, /* Super Melee cost */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		(STRING)SHOFIXTI_RACE_STRINGS,
-		(FRAME)SHOFIXTI_ICON_MASK_PMAP_ANIM,
-		(FRAME)SHOFIXTI_MICON_MASK_PMAP_ANIM,
+		SHOFIXTI_RACE_STRINGS,
+		SHOFIXTI_ICON_MASK_PMAP_ANIM,
+		SHOFIXTI_MICON_MASK_PMAP_ANIM,
+		NULL, NULL, NULL
 	},
 	{ /* FLEET_STUFF */
 		0, /* Initial sphere of influence radius */
@@ -72,29 +73,30 @@ static RACE_DESC shofixti_desc =
 	},
 	{
 		{
-			(FRAME)SHOFIXTI_BIG_MASK_PMAP_ANIM,
-			(FRAME)SHOFIXTI_MED_MASK_PMAP_ANIM,
-			(FRAME)SHOFIXTI_SML_MASK_PMAP_ANIM,
+			SHOFIXTI_BIG_MASK_PMAP_ANIM,
+			SHOFIXTI_MED_MASK_PMAP_ANIM,
+			SHOFIXTI_SML_MASK_PMAP_ANIM,
 		},
 		{
-			(FRAME)DART_BIG_MASK_PMAP_ANIM,
-			(FRAME)DART_MED_MASK_PMAP_ANIM,
-			(FRAME)DART_SML_MASK_PMAP_ANIM,
+			DART_BIG_MASK_PMAP_ANIM,
+			DART_MED_MASK_PMAP_ANIM,
+			DART_SML_MASK_PMAP_ANIM,
 		},
 		{
-			(FRAME)DESTRUCT_BIG_MASK_ANIM,
-			(FRAME)DESTRUCT_MED_MASK_ANIM,
-			(FRAME)DESTRUCT_SML_MASK_ANIM,
+			DESTRUCT_BIG_MASK_ANIM,
+			DESTRUCT_MED_MASK_ANIM,
+			DESTRUCT_SML_MASK_ANIM,
 		},
 		{
-			(FRAME)SHOFIXTI_CAPTAIN_MASK_PMAP_ANIM,
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
+			SHOFIXTI_CAPTAIN_MASK_PMAP_ANIM,
+			NULL, NULL, NULL, NULL, NULL
 		},
-		(SOUND)SHOFIXTI_VICTORY_SONG,
-		(SOUND)SHOFIXTI_SHIP_SOUNDS,
+	        SHOFIXTI_VICTORY_SONG,
+		SHOFIXTI_SHIP_SOUNDS,
+		{ NULL, NULL, NULL },
+		{ NULL, NULL, NULL },
+		{ NULL, NULL, NULL },
+		NULL_HANDLE, NULL
 	},
 	{
 		0,
@@ -391,14 +393,14 @@ init_shofixti (void)
 #define NUM_LIMPETS 3
 		COUNT i;
 
-		new_shofixti_desc.ship_data.ship[0] = (FRAME)OLDSHOF_BIG_MASK_PMAP_ANIM;
-		new_shofixti_desc.ship_data.ship[1] = (FRAME)OLDSHOF_MED_MASK_PMAP_ANIM;
-		new_shofixti_desc.ship_data.ship[2] = (FRAME)OLDSHOF_SML_MASK_PMAP_ANIM;
-		new_shofixti_desc.ship_data.special[0] = (FRAME)0;
-		new_shofixti_desc.ship_data.special[1] = (FRAME)0;
-		new_shofixti_desc.ship_data.special[2] = (FRAME)0;
-		new_shofixti_desc.ship_data.captain_control.background =
-				(FRAME)OLDSHOF_CAPTAIN_MASK_PMAP_ANIM;
+		new_shofixti_desc.ship_data.ship_rsc[0] = OLDSHOF_BIG_MASK_PMAP_ANIM;
+		new_shofixti_desc.ship_data.ship_rsc[1] = OLDSHOF_MED_MASK_PMAP_ANIM;
+		new_shofixti_desc.ship_data.ship_rsc[2] = OLDSHOF_SML_MASK_PMAP_ANIM;
+		new_shofixti_desc.ship_data.special_rsc[0] = NULL_RESOURCE;
+		new_shofixti_desc.ship_data.special_rsc[1] = NULL_RESOURCE;
+		new_shofixti_desc.ship_data.special_rsc[2] = NULL_RESOURCE;
+		new_shofixti_desc.ship_data.captain_control.captain_rsc =
+				OLDSHOF_CAPTAIN_MASK_PMAP_ANIM;
 
 		/* Weapon doesn't work as well */
 		new_shofixti_desc.characteristics.weapon_wait = 10;

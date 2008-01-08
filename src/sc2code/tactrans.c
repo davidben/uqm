@@ -300,7 +300,7 @@ new_ship (ELEMENT *DeadShipPtr)
 			{
 				// StarShipPtr points to the remaining ship.
 				MusicStarted = TRUE;
-				PlayMusic ((MUSIC_REF)StarShipPtr->RaceDescPtr->
+				PlayMusic (StarShipPtr->RaceDescPtr->
 						ship_data.victory_ditty, FALSE, 3);
 				StarShipPtr->cur_status_flags &= ~PLAY_VICTORY_DITTY;
 			}

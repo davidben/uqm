@@ -23,6 +23,7 @@
 #include "units.h"
 #include "element.h"
 #include "libs/sndlib.h"
+#include "libs/reslib.h"
 
 
 // TODO: remove RACES_PER_PLAYER remnant of SC1
@@ -52,6 +53,7 @@
 
 typedef struct captain_stuff
 {
+	RESOURCE captain_rsc;
 	FRAME background;
 	FRAME turn;
 	FRAME thrust;
@@ -109,6 +111,10 @@ typedef struct
 	BYTE energy_level;
 	BYTE max_energy;
 
+	RESOURCE race_strings_rsc;
+	RESOURCE icons_rsc;
+	RESOURCE melee_icon_rsc;
+
 	STRING race_strings;
 	FRAME icons;
 	FRAME melee_icon;
@@ -124,11 +130,17 @@ typedef struct
 
 typedef struct
 {
+	RESOURCE ship_rsc[NUM_VIEWS];
+	RESOURCE weapon_rsc[NUM_VIEWS];
+	RESOURCE special_rsc[NUM_VIEWS];
+	CAPTAIN_STUFF captain_control;
+	RESOURCE victory_ditty_rsc;
+	RESOURCE ship_sounds_rsc;
+
 	FRAME ship[NUM_VIEWS];
 	FRAME weapon[NUM_VIEWS];
 	FRAME special[NUM_VIEWS];
-	CAPTAIN_STUFF captain_control;
-	DWORD victory_ditty;
+	MUSIC_REF victory_ditty;
 	SOUND ship_sounds;
 } DATA_STUFF;
 
@@ -348,12 +360,12 @@ enum
 	NUM_AVAILABLE_RACES
 };
 
-#define YEHAT_REBEL_CONVERSATION (~0L)
+#define YEHAT_REBEL_CONVERSATION ((RESOURCE)(~0L))
 
 #define RACE_COMMUNICATION \
 		ARILOU_CONVERSATION,       /* ARILOU_SHIP */ \
 		CHMMR_CONVERSATION,        /* CHMMR_SHIP */ \
-		0L,                        /* HUMAN_SHIP */ \
+		NULL_RESOURCE,             /* HUMAN_SHIP */	\
 		ORZ_CONVERSATION,          /* ORZ_SHIP */ \
 		PKUNK_CONVERSATION,        /* PKUNK_SHIP */ \
 		SHOFIXTI_CONVERSATION,     /* SHOFIXTI_SHIP */ \
@@ -371,10 +383,10 @@ enum
 		UMGAH_CONVERSATION,        /* UMGAH_SHIP */ \
 		URQUAN_CONVERSATION,       /* URQUAN_SHIP */ \
 		ZOQFOTPIK_CONVERSATION,    /* ZOQFOTPIK_SHIP */ \
-		0L,                        /* SYREEN_SHIP */ \
+		NULL_RESOURCE,             /* SYREEN_SHIP */ \
 		BLACKURQ_CONVERSATION,     /* BLACK_URQUAN_SHIP */ \
 		YEHAT_REBEL_CONVERSATION,  /* YEHAT_REBEL_SHIP */ \
-		0L,                        /* URQUAN_PROBE_SHIP */
+		NULL_RESOURCE,             /* URQUAN_PROBE_SHIP */
 
 #define RACE_SHIP_COST \
 		1600,  /* ARILOU_SHIP */ \
@@ -589,8 +601,8 @@ extern HSTARSHIP GetEncounterStarShip (STARSHIP *LastStarShipPtr,
 		COUNT which_player);
 extern void DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect);
 
-extern BOOLEAN load_animation (FRAME *pixarray, DWORD big_res,
-		DWORD med_res, DWORD sml_res);
+extern BOOLEAN load_animation (FRAME *pixarray, RESOURCE big_res,
+		RESOURCE med_res, RESOURCE sml_res);
 extern BOOLEAN free_image (FRAME *pixarray);
 extern void NotifyOthers (COUNT which_race, BYTE target_loc);
 

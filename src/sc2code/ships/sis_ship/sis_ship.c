@@ -53,9 +53,10 @@ static RACE_DESC sis_desc =
 		16, /* Super Melee cost */
 		MAX_CREW, MAX_CREW,
 		MAX_ENERGY, MAX_ENERGY,
-		0,
-		(FRAME)SIS_ICON_MASK_PMAP_ANIM,
-		0,
+		NULL_RESOURCE,
+		SIS_ICON_MASK_PMAP_ANIM,
+		NULL_RESOURCE,
+		NULL, NULL, NULL
 	},
 	{ /* FLEET_STUFF */
 		0, /* Initial sphere of influence radius */
@@ -78,29 +79,30 @@ static RACE_DESC sis_desc =
 	},
 	{
 		{
-			(FRAME)SIS_BIG_MASK_PMAP_ANIM,
-			(FRAME)SIS_MED_MASK_PMAP_ANIM,
-			(FRAME)SIS_SML_MASK_PMAP_ANIM,
+			SIS_BIG_MASK_PMAP_ANIM,
+			SIS_MED_MASK_PMAP_ANIM,
+			SIS_SML_MASK_PMAP_ANIM,
 		},
 		{
-			(FRAME)BLASTER_BIG_MASK_PMAP_ANIM,
-			(FRAME)BLASTER_MED_MASK_PMAP_ANIM,
-			(FRAME)BLASTER_SML_MASK_PMAP_ANIM,
+			BLASTER_BIG_MASK_PMAP_ANIM,
+			BLASTER_MED_MASK_PMAP_ANIM,
+			BLASTER_SML_MASK_PMAP_ANIM,
 		},
 		{
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
+			NULL_RESOURCE,
+			NULL_RESOURCE,
+			NULL_RESOURCE,
 		},
 		{
-			(FRAME)SIS_CAPTAIN_MASK_PMAP_ANIM,
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
-			(FRAME)0,
+			SIS_CAPTAIN_MASK_PMAP_ANIM,
+			NULL, NULL, NULL, NULL, NULL
 		},
-		(SOUND)SIS_VICTORY_SONG,
-		(SOUND)SIS_SHIP_SOUNDS,
+		SIS_VICTORY_SONG,
+		SIS_SHIP_SOUNDS,
+		{ NULL, NULL, NULL },
+		{ NULL, NULL, NULL },
+		{ NULL, NULL, NULL },
+		NULL_HANDLE, NULL
 	},
 	{
 		0,
@@ -832,16 +834,16 @@ init_sis (void)
 	{
 		for (i = 0; i < NUM_VIEWS; ++i)
 		{
-			new_sis_desc.ship_data.ship[i] = 0;
-			new_sis_desc.ship_data.weapon[i] = 0;
-			new_sis_desc.ship_data.special[i] = 0;
+			new_sis_desc.ship_data.ship_rsc[i] = NULL_RESOURCE;
+			new_sis_desc.ship_data.weapon_rsc[i] = NULL_RESOURCE;
+			new_sis_desc.ship_data.special_rsc[i] = NULL_RESOURCE;
 		}
-		new_sis_desc.ship_info.icons = 0;
-		new_sis_desc.ship_data.captain_control.background = 0;
-		new_sis_desc.ship_data.victory_ditty = 0;
-		new_sis_desc.ship_data.ship_sounds = 0;
+		new_sis_desc.ship_info.icons_rsc = NULL_RESOURCE;
+		new_sis_desc.ship_data.captain_control.captain_rsc = NULL_RESOURCE;
+		new_sis_desc.ship_data.victory_ditty_rsc = NULL_RESOURCE;
+		new_sis_desc.ship_data.ship_sounds_rsc = NULL_RESOURCE;
 
-		new_sis_desc.ship_data.ship[0] = (FRAME)SIS_HYPER_MASK_PMAP_ANIM;
+		new_sis_desc.ship_data.ship_rsc[0] = SIS_HYPER_MASK_PMAP_ANIM;
 
 		new_sis_desc.preprocess_func = sis_hyper_preprocess;
 		new_sis_desc.postprocess_func = sis_hyper_postprocess;

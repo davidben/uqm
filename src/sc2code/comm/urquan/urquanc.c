@@ -25,17 +25,17 @@ static LOCDATA urquan_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)URQUAN_PMAP_ANIM, /* AlienFrame */
-	(FONT)URQUAN_FONT, /* AlienFont */
+	URQUAN_PMAP_ANIM, /* AlienFrame */
+	URQUAN_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)URQUAN_COLOR_MAP, /* AlienColorMap */
+	URQUAN_COLOR_MAP, /* AlienColorMap */
 	URQUAN_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	URQUAN_CONVERSATION_PHRASES, /* PlayerPhrases */
 	7, /* NumAnimations */
@@ -114,6 +114,10 @@ static LOCDATA urquan_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void

@@ -867,7 +867,7 @@ AlienTalkSegue (COUNT wait_track)
 		}
 		pCurInputState->Initialized = TRUE;
 
-		PlayMusic ((MUSIC_REF)CommData.AlienSong, TRUE, 1);
+		PlayMusic (CommData.AlienSong, TRUE, 1);
 		SetMusicVolume (BACKGROUND_VOL);
 
 		{
@@ -1313,21 +1313,21 @@ HailAlien (void)
 	SetResourceIndex (hOldIndex);
 
 	CommData.AlienFrame = CaptureDrawable (
-			LoadGraphic ((RESOURCE)CommData.AlienFrame));
+			LoadGraphic (CommData.AlienFrameRes));
 	CommData.AlienFont = CaptureFont ((FONT_REF)
-			LoadFont ((RESOURCE)CommData.AlienFont));
+			LoadFont (CommData.AlienFontRes));
 	CommData.AlienColorMap = CaptureColorMap (
-			LoadColorMap ((RESOURCE)CommData.AlienColorMap));
+			LoadColorMap (CommData.AlienColorMapRes));
 	if ((CommData.AlienSongFlags & LDASF_USE_ALTERNATE)
-			&& CommData.AlienAltSong)
-		SongRef = LoadMusic ((RESOURCE)CommData.AlienAltSong);
+			&& CommData.AlienAltSongRes)
+		SongRef = LoadMusic (CommData.AlienAltSongRes);
 	if (SongRef)
 		CommData.AlienSong = SongRef;
 	else
-		CommData.AlienSong = LoadMusic ((RESOURCE)CommData.AlienSong);
+		CommData.AlienSong = LoadMusic (CommData.AlienSongRes);
 
 	CommData.ConversationPhrases = CaptureStringTable (
-			LoadStringTable ((RESOURCE)CommData.ConversationPhrases));
+			LoadStringTable (CommData.ConversationPhrasesRes));
 
 	SubtitleText.baseline = CommData.AlienTextBaseline;
 	SubtitleText.align = CommData.AlienTextAlign;
@@ -1415,7 +1415,7 @@ HailAlien (void)
 	LockMutex (GraphicsLock);
 
 	DestroyStringTable (ReleaseStringTable (CommData.ConversationPhrases));
-	DestroyMusic ((MUSIC_REF)CommData.AlienSong);
+	DestroyMusic (CommData.AlienSong);
 	DestroyColorMap (ReleaseColorMap (CommData.AlienColorMap));
 	DestroyFont (ReleaseFont (CommData.AlienFont));
 	DestroyDrawable (ReleaseDrawable (CommData.AlienFrame));
@@ -1478,7 +1478,7 @@ InitCommunication (RESOURCE which_comm)
 	}
 	else
 	{
-		if (which_comm == (RESOURCE) YEHAT_REBEL_CONVERSATION)
+		if (which_comm == YEHAT_REBEL_CONVERSATION)
 		{
 			status = YEHAT_REBEL_SHIP;
 			which_comm = YEHAT_CONVERSATION;
@@ -1517,7 +1517,7 @@ InitCommunication (RESOURCE which_comm)
 
 		LocDataPtr = init_race (
 				status != YEHAT_REBEL_SHIP ? which_comm :
-				(RESOURCE)YEHAT_REBEL_CONVERSATION);
+				YEHAT_REBEL_CONVERSATION);
 		if (LocDataPtr)
 			CommData = *LocDataPtr;
 	}

@@ -28,17 +28,17 @@ static LOCDATA ilwrath_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)ILWRATH_PMAP_ANIM, /* AlienFrame */
-	(FONT)ILWRATH_FONT, /* AlienFont */
+	ILWRATH_PMAP_ANIM, /* AlienFrame */
+	ILWRATH_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_MIDDLE, /* AlienTextValign */
-	(COLORMAP)ILWRATH_COLOR_MAP, /* AlienColorMap */
+	ILWRATH_COLOR_MAP, /* AlienColorMap */
 	ILWRATH_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	ILWRATH_CONVERSATION_PHRASES, /* PlayerPhrases */
 	4, /* NumAnimations */
@@ -93,6 +93,10 @@ static LOCDATA ilwrath_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void

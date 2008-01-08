@@ -29,17 +29,17 @@ static LOCDATA syreen_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)SYREEN_PMAP_ANIM, /* AlienFrame */
-	(FONT)SYREEN_FONT, /* AlienFont */
+	SYREEN_PMAP_ANIM, /* AlienFrame */
+	SYREEN_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)SYREEN_COLOR_MAP, /* AlienColorMap */
+	SYREEN_COLOR_MAP, /* AlienColorMap */
 	SYREEN_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SYREEN_CONVERSATION_PHRASES, /* PlayerPhrases */
 	15, /* NumAnimations */
@@ -184,6 +184,10 @@ static LOCDATA syreen_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void

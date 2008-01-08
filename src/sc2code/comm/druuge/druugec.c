@@ -29,17 +29,17 @@ static LOCDATA druuge_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)DRUUGE_PMAP_ANIM, /* AlienFrame */
-	(FONT)DRUUGE_FONT, /* AlienFont */
+	DRUUGE_PMAP_ANIM, /* AlienFrame */
+	DRUUGE_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_MIDDLE, /* AlienTextValign */
-	(COLORMAP)DRUUGE_COLOR_MAP, /* AlienColorMap */
+	DRUUGE_COLOR_MAP, /* AlienColorMap */
 	DRUUGE_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	DRUUGE_CONVERSATION_PHRASES, /* PlayerPhrases */
 	11, /* NumAnimations */
@@ -150,6 +150,10 @@ static LOCDATA druuge_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static COUNT SlaveryCount = 0;

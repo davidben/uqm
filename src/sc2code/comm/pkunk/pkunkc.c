@@ -29,17 +29,17 @@ static LOCDATA pkunk_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)PKUNK_PMAP_ANIM, /* AlienFrame */
-	(FONT)PKUNK_FONT, /* AlienFont */
+	PKUNK_PMAP_ANIM, /* AlienFrame */
+	PKUNK_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)PKUNK_COLOR_MAP, /* AlienColorMap */
+	PKUNK_COLOR_MAP, /* AlienColorMap */
 	PKUNK_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	PKUNK_CONVERSATION_PHRASES, /* PlayerPhrases */
 	3, /* NumAnimations */
@@ -89,6 +89,10 @@ static LOCDATA pkunk_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static BOOLEAN

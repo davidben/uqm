@@ -39,8 +39,8 @@ static LOCDATA melnorme_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)MELNORME_PMAP_ANIM, /* AlienFrame */
-	(FONT)MELNORME_FONT, /* AlienFont */
+	MELNORME_PMAP_ANIM, /* AlienFrame */
+	MELNORME_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
@@ -49,7 +49,7 @@ static LOCDATA melnorme_desc =
 	VALIGN_TOP, /* AlienTextValign */
 	MELNORME_COLOR_MAP, /* AlienColorMap */
 	MELNORME_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	MELNORME_CONVERSATION_PHRASES, /* PlayerPhrases */
 	4, /* NumAnimations */
@@ -104,6 +104,10 @@ static LOCDATA melnorme_desc =
 		0, /* BlockMask */
 	},
 	&melnorme_numbers_english, /* AlienNumberSpeech - default */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static COUNT melnorme_digit_names[] =

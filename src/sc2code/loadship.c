@@ -45,21 +45,21 @@ load_ship (DWORD RaceResIndex, BOOLEAN LoadBattleData)
 	RDPtr->CodeRef = CodeRef;
 
 	RDPtr->ship_info.icons = CaptureDrawable (LoadGraphic (
-			(RESOURCE)RDPtr->ship_info.icons));
+			RDPtr->ship_info.icons_rsc));
 	if (!RDPtr->ship_info.icons)
 	{
 		/* goto BadLoad */
 	}
 		
 	RDPtr->ship_info.melee_icon = CaptureDrawable (LoadGraphic (
-			(RESOURCE)RDPtr->ship_info.melee_icon));
+			RDPtr->ship_info.melee_icon_rsc));
 	if (!RDPtr->ship_info.melee_icon)
 	{
 		/* goto BadLoad */
 	}
 
 	RDPtr->ship_info.race_strings =	CaptureStringTable (LoadStringTable (
-			(RESOURCE)RDPtr->ship_info.race_strings));
+			RDPtr->ship_info.race_strings_rsc));
 	if (!RDPtr->ship_info.race_strings)
 	{
 		/* goto BadLoad */
@@ -69,49 +69,49 @@ load_ship (DWORD RaceResIndex, BOOLEAN LoadBattleData)
 	{
 		DATA_STUFF *RawPtr = &RDPtr->ship_data;
 		if (!load_animation (RawPtr->ship,
-				(RESOURCE)RawPtr->ship[0],
-				(RESOURCE)RawPtr->ship[1],
-				(RESOURCE)RawPtr->ship[2]))
+				RawPtr->ship_rsc[0],
+				RawPtr->ship_rsc[1],
+				RawPtr->ship_rsc[2]))
 			goto BadLoad;
 
-		if (RawPtr->weapon[0] != 0)
+		if (RawPtr->weapon_rsc[0] != NULL_RESOURCE)
 		{
 			if (!load_animation (RawPtr->weapon,
-					(RESOURCE)RawPtr->weapon[0],
-					(RESOURCE)RawPtr->weapon[1],
-					(RESOURCE)RawPtr->weapon[2]))
+					RawPtr->weapon_rsc[0],
+					RawPtr->weapon_rsc[1],
+					RawPtr->weapon_rsc[2]))
 				goto BadLoad;
 		}
 
-		if (RawPtr->special[0] != 0)
+		if (RawPtr->special_rsc[0] != NULL_RESOURCE)
 		{
 			if (!load_animation (RawPtr->special,
-					(RESOURCE)RawPtr->special[0],
-					(RESOURCE)RawPtr->special[1],
-					(RESOURCE)RawPtr->special[2]))
+					RawPtr->special_rsc[0],
+					RawPtr->special_rsc[1],
+					RawPtr->special_rsc[2]))
 				goto BadLoad;
 		}
 
-		if (RawPtr->captain_control.background != 0)
+		if (RawPtr->captain_control.captain_rsc != NULL_RESOURCE)
 		{
 			RawPtr->captain_control.background = CaptureDrawable (LoadGraphic (
-					(RESOURCE)RawPtr->captain_control.background));
+					RawPtr->captain_control.captain_rsc));
 			if (!RawPtr->captain_control.background)
 				goto BadLoad;
 		}
 
-		if (RawPtr->victory_ditty != 0)
+		if (RawPtr->victory_ditty_rsc != NULL_RESOURCE)
 		{
 			RawPtr->victory_ditty =
-					LoadMusic ((RESOURCE)RawPtr->victory_ditty);
+					LoadMusic (RawPtr->victory_ditty_rsc);
 			if (!RawPtr->victory_ditty)
 				goto BadLoad;
 		}
 
-		if (RawPtr->ship_sounds != 0)
+		if (RawPtr->ship_sounds_rsc != NULL_RESOURCE)
 		{
 			RawPtr->ship_sounds = CaptureSound (
-					LoadSound ((RESOURCE)RawPtr->ship_sounds));
+					LoadSound (RawPtr->ship_sounds_rsc));
 			if (!RawPtr->ship_sounds)
 				goto BadLoad;
 		}
@@ -147,7 +147,7 @@ free_ship (RACE_DESC *raceDescPtr, BOOLEAN FreeIconData,
 
 		DestroyDrawable (
 				ReleaseDrawable (shipData->captain_control.background));
-		DestroyMusic ((MUSIC_REF)shipData->victory_ditty);
+		DestroyMusic (shipData->victory_ditty);
 		DestroySound (ReleaseSound (shipData->ship_sounds));
 	}
 
@@ -162,5 +162,3 @@ free_ship (RACE_DESC *raceDescPtr, BOOLEAN FreeIconData,
 
 	DestroyCodeRes (ReleaseCodeRes (raceDescPtr->CodeRef));
 }
-
-

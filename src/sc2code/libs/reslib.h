@@ -31,6 +31,8 @@ typedef BYTE RES_TYPE;
 typedef COUNT RES_INSTANCE;
 typedef COUNT RES_PACKAGE;
 
+#define NULL_RESOURCE 0L
+
 #define TYPE_BITS 8
 #define INSTANCE_BITS 13
 #define PACKAGE_BITS 11

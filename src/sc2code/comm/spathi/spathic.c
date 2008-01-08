@@ -28,17 +28,17 @@ static LOCDATA spathi_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)SPATHI_PMAP_ANIM, /* AlienFrame */
-	(FONT)SPATHI_FONT, /* AlienFont */
+	SPATHI_PMAP_ANIM, /* AlienFrame */
+	SPATHI_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH - 16, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)SPATHI_COLOR_MAP, /* AlienColorMap */
+	SPATHI_COLOR_MAP, /* AlienColorMap */
 	SPATHI_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SPATHI_CONVERSATION_PHRASES, /* PlayerPhrases */
 	8, /* NumAnimations */
@@ -138,6 +138,10 @@ static LOCDATA spathi_desc =
 	},
 #endif /* NEVER */
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void
@@ -806,7 +810,7 @@ init_spathi_comm (void)
 
 	if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
 	{	// use alternate Fwiffo track if available
-		spathi_desc.AlienAltSong = FWIFFO_MUSIC;
+		spathi_desc.AlienAltSongRes = FWIFFO_MUSIC;
 		spathi_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 	}
 	else

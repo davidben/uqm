@@ -27,17 +27,17 @@ static LOCDATA slylandro_desc =
 	NULL, /* init_encounter_func */
 	NULL, /* post_encounter_func */
 	NULL, /* uninit_encounter_func */
-	(FRAME)SLYLANDRO_PMAP_ANIM, /* AlienFrame */
-	(FONT)SLYLANDRO_FONT, /* AlienFont */
+	SLYLANDRO_PMAP_ANIM, /* AlienFrame */
+	SLYLANDRO_FONT, /* AlienFont */
 	WHITE_COLOR, /* AlienTextFColor */
 	BLACK_COLOR, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */
 	VALIGN_TOP, /* AlienTextValign */
-	(COLORMAP)SLYLANDRO_COLOR_MAP, /* AlienColorMap */
+	SLYLANDRO_COLOR_MAP, /* AlienColorMap */
 	SLYLANDRO_MUSIC, /* AlienSong */
-	0, /* AlienAltSong */
+	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	SLYLANDRO_CONVERSATION_PHRASES, /* PlayerPhrases */
 	13, /* NumAnimations */
@@ -164,6 +164,10 @@ static LOCDATA slylandro_desc =
 		0, /* BlockMask */
 	},
 	NULL, /* AlienNumberSpeech - none */
+	/* Filler for loaded resources */
+	NULL, NULL, NULL,
+	NULL_HANDLE,
+	NULL,
 };
 
 static void
