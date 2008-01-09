@@ -22,6 +22,7 @@
 #include "video.h"
 #include "dukvid.h"
 #include <stdio.h>
+#include <string.h>
 #include "libs/uio.h"
 #include "endian_uqm.h"
 
