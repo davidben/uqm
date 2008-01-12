@@ -489,9 +489,9 @@ _GetCelData (uio_Stream *fp, DWORD length)
 }
 
 BOOLEAN
-_ReleaseCelData (DRAWABLE handle)
+_ReleaseCelData (void *handle)
 {
-	DRAWABLE_DESC *DrawablePtr;
+	DRAWABLE DrawablePtr;
 	int cel_ct;
 	FRAME FramePtr = NULL;
 
