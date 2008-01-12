@@ -21,6 +21,11 @@
 
 #include "compiler.h"
 
+extern BOOLEAN mem_init (void);
+extern BOOLEAN mem_uninit (void);
+
+#ifdef LEGACY_HANDLE_ALLOCATOR
+
 #define NULL_HANDLE (MEM_HANDLE)(0L)
 
 typedef signed long MEM_SIZE;
@@ -44,9 +49,6 @@ typedef struct mem_header {
 #define GET_MEM_HEADER(addr) ((MEM_HEADER *) \
 		(((char *) addr) - sizeof (MEM_HEADER)))
 
-extern BOOLEAN mem_init (void);
-extern BOOLEAN mem_uninit (void);
-
 extern MEM_HANDLE mem_allocate (MEM_SIZE size, MEM_FLAGS flags);
 extern BOOLEAN mem_release (MEM_HANDLE handle);
 
@@ -54,6 +56,8 @@ extern void* mem_lock (MEM_HANDLE handle);
 extern BOOLEAN mem_unlock (MEM_HANDLE handle);
 
 extern MEM_SIZE mem_get_size (MEM_HANDLE handle);
+
+#endif /* LEGACY_HANDLE_ALLOCATOR */
 
 #endif /* _MEMLIB_H */
 

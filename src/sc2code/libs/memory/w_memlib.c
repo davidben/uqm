@@ -25,10 +25,14 @@
 //#include "utils.h"
 //#include "pcwin.h"
 #include "compiler.h"
+#ifdef LEGACY_HANDLE_ALLOCATOR
 #include "libs/threadlib.h"
+#endif
 #include "libs/memlib.h"
 #include "libs/log.h"
 #include "libs/misc.h"
+
+#ifdef LEGACY_HANDLE_ALLOCATOR
 
 #define GetToolFrame() 1
 
@@ -643,3 +647,71 @@ HRealloc (void *p, int size)
 	return (np);
 }
 
+#else /* !LEGACY_HANDLE_ALLOCATOR */
+
+BOOLEAN
+mem_init (void)
+{
+	return TRUE;
+}
+
+BOOLEAN
+mem_uninit(void)
+{
+	return (TRUE);
+}
+
+void *
+HMalloc (int size)
+{
+    void *p;
+
+	if (size == 0) return NULL;
+
+	if (size < 0) 
+	{
+		log_add (log_Fatal, "Fatal Error: Request for negative amount of memory %d!", size);
+		fflush (stderr);
+		explode ();
+	}
+
+    if ((p = malloc (size)) == NULL) {
+        log_add (log_Fatal, "Fatal Error: HMalloc(): out of memory.");
+		fflush (stderr);
+        explode ();
+    }
+    return (p);
+}
+
+void
+HFree (void *p)
+{
+	if (p)
+	{
+		free (p);
+	}
+}
+
+void *
+HCalloc (int size)
+{
+	void *p;
+
+	p = HMalloc (size);
+	if (p)
+		memset (p, 0, size);
+
+	return (p);
+}
+
+void *
+HRealloc (void *p, int size)
+{
+	void *np;
+
+	np = realloc (p, size);
+
+	return (np);
+}
+
+#endif /* LEGACY_HANDLE_ALLOCATOR */
