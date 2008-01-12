@@ -48,12 +48,12 @@ struct frame_desc
 	struct drawable_desc *parent;
 };
 
-typedef struct drawable_desc
+struct drawable_desc
 {
 	CREATE_FLAGS Flags;
 	UWORD MaxIndex;
 	FRAME_DESC *Frame;
-} DRAWABLE_DESC;
+};
 
 #define GetFrameWidth(f) ((f)->Bounds.width)
 #define GetFrameHeight(f) ((f)->Bounds.height)
