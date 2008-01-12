@@ -141,8 +141,8 @@ UnQueueThread (TrueThread thread)
 {
 	volatile TrueThread *ptr;
 
-	ptr = &threadQueue;
 	SDL_mutexP (threadQueueMutex);
+	ptr = &threadQueue;
 	while (*ptr != thread)
 	{
 #ifdef DEBUG_THREADS
@@ -166,8 +166,8 @@ FindThreadInfo (Uint32 threadID)
 {
 	TrueThread ptr;
 
-	ptr = threadQueue;
 	SDL_mutexP (threadQueueMutex);
+	ptr = threadQueue;
 	while (ptr)
 	{
 		if (SDL_GetThreadID (ptr->native) == threadID)
