@@ -93,7 +93,7 @@ static RACE_DESC druuge_desc =
 		{ NULL, NULL, NULL },
 		{ NULL, NULL, NULL },
 		{ NULL, NULL, NULL },
-		NULL_HANDLE, NULL
+		NULL, NULL
 	},
 	{
 		0,

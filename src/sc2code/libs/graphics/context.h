@@ -41,7 +41,7 @@ struct context_desc
 
 };
 
-#define AllocContext() HCalloc ((MEM_SIZE)sizeof (CONTEXT_DESC))
+#define AllocContext() HCalloc (sizeof (CONTEXT_DESC))
 #define FreeContext HFree
 
 extern CONTEXT _pCurContext;

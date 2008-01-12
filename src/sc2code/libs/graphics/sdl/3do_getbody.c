@@ -370,7 +370,7 @@ Uint32 frame_mapRGBA (FRAME FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
 	return (SDL_MapRGBA (img->format, r, g, b, a));
 }
 
-MEM_HANDLE
+void *
 _GetCelData (uio_Stream *fp, DWORD length)
 {
 	int cel_total, cel_index, n;
@@ -409,7 +409,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 	{
 		log_add (log_Warning, "Couldn't allocate space for '%s' images", _cur_resfile_name);
 
-		return NULL_HANDLE;
+		return NULL;
 	}
 
 	ani = HMalloc (sizeof (AniData) * cel_total);
@@ -418,7 +418,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 		HFree (img);
 		log_add (log_Warning, "Couldn't allocate space for '%s' anidata", _cur_resfile_name);
 
-		return NULL_HANDLE;
+		return NULL;
 	}
 
 	cel_index = 0;
@@ -455,36 +455,31 @@ _GetCelData (uio_Stream *fp, DWORD length)
 			break;
 	}
 
-	Drawable = NULL_HANDLE;
+	Drawable = NULL;
 	if (cel_index && (Drawable = AllocDrawable (cel_index)))
 	{
-		DRAWABLE_DESC *DrawablePtr;
-
-		if ((DrawablePtr = LockDrawable (Drawable)) == 0)
+		if (!Drawable)
 		{
 			while (cel_index--)
 				SDL_FreeSurface (img[cel_index]);
 
-			mem_release ((MEM_HANDLE)Drawable);
-			Drawable = NULL_HANDLE;
+			HFree (Drawable);
+			Drawable = NULL;
 		}
 		else
 		{
 			FRAME FramePtr;
 
-			DrawablePtr->hDrawable = Drawable;
-			DrawablePtr->Flags = WANT_PIXMAP;
-			DrawablePtr->MaxIndex = cel_index - 1;
+			Drawable->Flags = WANT_PIXMAP;
+			Drawable->MaxIndex = cel_index - 1;
 
-			FramePtr = &DrawablePtr->Frame[cel_index];
+			FramePtr = &Drawable->Frame[cel_index];
 			while (--FramePtr, cel_index--)
 				process_image (FramePtr, img, ani, cel_index);
-
-			UnlockDrawable (Drawable);
 		}
 	}
 
-	if (Drawable == 0)
+	if (Drawable == NULL)
 		log_add (log_Warning, "Couldn't get cel data for '%s'",
 				_cur_resfile_name);
 
@@ -494,13 +489,13 @@ _GetCelData (uio_Stream *fp, DWORD length)
 }
 
 BOOLEAN
-_ReleaseCelData (MEM_HANDLE handle)
+_ReleaseCelData (DRAWABLE handle)
 {
 	DRAWABLE_DESC *DrawablePtr;
 	int cel_ct;
 	FRAME FramePtr = NULL;
 
-	if ((DrawablePtr = LockDrawable (handle)) == 0)
+	if ((DrawablePtr = handle) == 0)
 		return (FALSE);
 
 	cel_ct = DrawablePtr->MaxIndex + 1;
@@ -514,8 +509,8 @@ _ReleaseCelData (MEM_HANDLE handle)
 		}
 	}
 
-	UnlockDrawable (handle);
-	if (mem_release (handle) && FramePtr)
+	HFree (handle);
+	if (FramePtr)
 	{
 		int i;
 		for (i = 0; i < cel_ct; i++)
@@ -543,17 +538,16 @@ compareBCDIndex(const BuildCharDesc *bcd1, const BuildCharDesc *bcd2) {
 	return (int) bcd1->index - (int) bcd2->index;
 }
 
-MEM_HANDLE
+void *
 _GetFontData (uio_Stream *fp, DWORD length)
 {
 	COUNT numDirEntries;
-	FONT_REF fontRef = 0;
-	DIRENTRY fontDir = 0;
+	DIRENTRY fontDir = NULL;
 	BuildCharDesc *bcds = NULL;
 	size_t numBCDs = 0;
 	int dirEntryI;
 	uio_DirHandle *fontDirHandle = NULL;
-	FONT fontPtr;
+	FONT fontPtr = NULL;
 
 	if (_cur_resfile_name == 0)
 		goto err;
@@ -613,15 +607,10 @@ _GetFontData (uio_Stream *fp, DWORD length)
 	qsort (bcds, numBCDs, sizeof (BuildCharDesc),
 			(int (*)(const void *, const void *)) compareBCDIndex);
 
-	fontRef = AllocFont (0);
-	if (fontRef == 0)
-		goto err;
-
-	fontPtr = LockFont (fontRef);
+	fontPtr = AllocFont (0);
 	if (fontPtr == NULL)
 		goto err;
 	
-	fontPtr->FontRef = fontRef;
 	fontPtr->Leading = 0;
 	fontPtr->LeadingWidth = 0;
 
@@ -684,17 +673,16 @@ _GetFontData (uio_Stream *fp, DWORD length)
 	}
 
 	fontPtr->Leading++;
-	UnlockFont (fontRef);
 
 	HFree (bcds);
 
 	(void) fp;  /* Satisfying compiler (unused parameter) */
 	(void) length;  /* Satisfying compiler (unused parameter) */
-	return fontRef;
+	return fontPtr;
 
 err:
-	if (fontRef != 0)
-		mem_release (fontRef);
+	if (fontPtr != 0)
+		HFree (fontPtr);
 	
 	if (bcds != NULL)
 	{
@@ -713,9 +701,9 @@ err:
 }
 
 BOOLEAN
-_ReleaseFontData (MEM_HANDLE handle)
+_ReleaseFontData (void *handle)
 {
-	FONT font = LockFont (handle);
+	FONT font = (FONT) handle;
 	if (font == NULL)
 		return FALSE;
 
@@ -743,8 +731,7 @@ _ReleaseFontData (MEM_HANDLE handle)
 		}
 	}
 
-	UnlockFont (handle);
-	mem_release (handle);
+	HFree (font);
 
 	return TRUE;
 }
@@ -762,43 +749,31 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 			);
 	if (Drawable)
 	{
-		DRAWABLE_DESC *DrawablePtr;
+		int imgw, imgh;
+		FRAME FramePtr;
 
-		if ((DrawablePtr = LockDrawable (Drawable)) == 0)
-		{
-			FreeDrawable (Drawable);
-			Drawable = NULL_HANDLE;
-		}
-		else
-		{
-			int imgw, imgh;
-			FRAME FramePtr;
+		Drawable->Flags = flags;
+		Drawable->MaxIndex = NumFrames - 1;
 
-			DrawablePtr->hDrawable = Drawable;
-			DrawablePtr->Flags = flags;
-			DrawablePtr->MaxIndex = NumFrames - 1;
-
-			imgw = width;
-			imgh = height;
+		imgw = width;
+		imgh = height;
 			
-			FramePtr = &DrawablePtr->Frame[NumFrames - 1];
-			while (NumFrames--)
+		FramePtr = &Drawable->Frame[NumFrames - 1];
+		while (NumFrames--)
+		{
+			TFB_Image *Image;
+
+			if (DrawableType == RAM_DRAWABLE && imgw > 0 && imgh > 0
+					&& (Image = TFB_DrawImage_New (TFB_DrawCanvas_New_TrueColor (
+						imgw, imgh, (flags & WANT_ALPHA) ? TRUE : FALSE))))
 			{
-				TFB_Image *Image;
-
-				if (DrawableType == RAM_DRAWABLE && imgw > 0 && imgh > 0
-						&& (Image = TFB_DrawImage_New (TFB_DrawCanvas_New_TrueColor (
-							imgw, imgh, (flags & WANT_ALPHA) ? TRUE : FALSE))))
-				{
-					FramePtr->image = Image;
-				}
-
-				FramePtr->Type = DrawableType;
-				FramePtr->Index = NumFrames;
-				SetFrameBounds (FramePtr, width, height);
-				--FramePtr;
+				FramePtr->image = Image;
 			}
-			UnlockDrawable (Drawable);
+
+			FramePtr->Type = DrawableType;
+			FramePtr->Index = NumFrames;
+			SetFrameBounds (FramePtr, width, height);
+			--FramePtr;
 		}
 	}
 

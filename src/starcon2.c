@@ -33,6 +33,7 @@
 #include "controls.h"
 #include "file.h"
 #include "port.h"
+#include "libs/memlib.h"
 #include "libs/platform.h"
 #include "libs/log.h"
 #include "options.h"

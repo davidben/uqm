@@ -35,18 +35,18 @@ LoadSoundFile (const char *pStr)
 	fp = res_OpenResFile (contentDir, pStr, "rb");
 	if (fp)
 	{
-		MEM_HANDLE hData;
+		SOUND_REF hData;
 
 		_cur_resfile_name = pStr;
-		hData = _GetSoundBankData (fp, LengthResFile (fp));
+		hData = (SOUND_REF)_GetSoundBankData (fp, LengthResFile (fp));
 		_cur_resfile_name = 0;
 
 		res_CloseResFile (fp);
 
-		return ((SOUND_REF)hData);
+		return hData;
 	}
 
-	return (0);
+	return NULL;
 }
 
 MUSIC_REF
@@ -70,15 +70,15 @@ LoadMusicFile (const char *pStr)
 	fp = res_OpenResFile (contentDir, filename, "rb");
 	if (fp)
 	{
-		MEM_HANDLE hData;
+		MUSIC_REF hData;
 
 		_cur_resfile_name = filename;
-		hData = _GetMusicData (fp, LengthResFile (fp));
+		hData = (MUSIC_REF)_GetMusicData (fp, LengthResFile (fp));
 		_cur_resfile_name = 0;
 
 		res_CloseResFile (fp);
 
-		return ((MUSIC_REF)hData);
+		return hData;
 	}
 
 	return (0);

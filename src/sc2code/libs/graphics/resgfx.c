@@ -27,15 +27,16 @@ InstallGraphicResTypes (COUNT cel_type, COUNT font_type)
 	return (TRUE);
 }
 
-DWORD
+/* Needs to be void * because it could be either a DRAWABLE or a FONT. */
+void *
 LoadGraphicInstance (DWORD res)
 {
-	MEM_HANDLE hData;
+	void *hData;
 
 	hData = res_GetResource (res);
 	if (hData)
 		res_DetachResource (res);
 
-	return ((DWORD)hData);
+	return (hData);
 }
 

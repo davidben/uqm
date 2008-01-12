@@ -142,7 +142,7 @@ LoadSC2Data (void)
 {
 	if (FlagStatFrame == 0)
 	{
-		MEM_HANDLE hOldIndex;
+		RESOURCE_INDEX hOldIndex;
 
 		hOldIndex = SetResourceIndex (hResIndex);
 

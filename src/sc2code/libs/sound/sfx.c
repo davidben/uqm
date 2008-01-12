@@ -177,7 +177,7 @@ GetSampleRate (SOUND sound)
 	return 0;
 }
 
-MEM_HANDLE
+void *
 _GetSoundBankData (uio_Stream *fp, DWORD length)
 {
 	int snd_ct, n;
@@ -254,12 +254,11 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 			break;*/
 	}
 
-	Snd = 0;
+	Snd = NULL;
 	if (snd_ct && (Snd = AllocStringTable (snd_ct, 0)))
 	{
-		STRING_TABLE_DESC *fxTab;
+		STRING_TABLE fxTab = Snd;
 
-		LockStringTable (Snd, &fxTab);
 		if (fxTab == 0)
 		{
 			while (snd_ct--)
@@ -286,19 +285,17 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 				str->length = sizeof (sndfx[0]);
 				str++;
 			}
-			UnlockStringTable (Snd);
 		}
 	}
 
-	return ((MEM_HANDLE)Snd);
+	return Snd;
 }
 
 BOOLEAN
-_ReleaseSoundBankData (MEM_HANDLE Snd)
+_ReleaseSoundBankData (void *Snd)
 {
-	STRING_TABLE_DESC *fxTab;
+	STRING_TABLE fxTab = Snd;
 
-	LockStringTable (Snd, &fxTab);
 	if (fxTab)
 	{
 		int snd_ct, index;
@@ -331,7 +328,6 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 			*sptr = 0;
 			index++;
 		}
-		UnlockStringTable (Snd);
 		FreeStringTable (Snd);
 
 		return (TRUE);
@@ -343,5 +339,5 @@ _ReleaseSoundBankData (MEM_HANDLE Snd)
 BOOLEAN
 DestroySound(SOUND_REF target)
 {
-	return _ReleaseSoundBankData ((MEM_HANDLE) target);
+	return _ReleaseSoundBankData (target);
 }

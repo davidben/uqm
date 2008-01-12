@@ -42,46 +42,15 @@ SetContextFont (FONT Font)
 }
 
 BOOLEAN
-DestroyFont (FONT_REF FontRef)
+DestroyFont (FONT FontRef)
 {
-	if (FontRef == 0)
+	if (FontRef == NULL)
 		return (FALSE);
 
-	if (_CurFontPtr && _CurFontPtr->FontRef == FontRef)
-		SetContextFont ((FONT)0);
+	if (_CurFontPtr && _CurFontPtr == FontRef)
+		SetContextFont ((FONT)NULL);
 
 	return (FreeFont (FontRef));
-}
-
-FONT
-CaptureFont (FONT_REF FontRef)
-{
-	FONT FontPtr;
-
-	FontPtr = LockFont (FontRef);
-	if (FontPtr)
-		FontPtr->FontRef = FontRef;
-
-	return FontPtr;
-}
-
-FONT_REF
-ReleaseFont (FONT Font)
-{
-	FONT FontPtr;
-
-	FontPtr = Font;
-	if (FontPtr)
-	{
-		FONT_REF FontRef;
-
-		FontRef = FontPtr->FontRef;
-		UnlockFont (FontRef);
-
-		return (FontRef);
-	}
-
-	return (0);
 }
 
 void

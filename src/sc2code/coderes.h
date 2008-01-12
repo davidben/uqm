@@ -21,16 +21,15 @@
 
 #include "reslib.h"
 
-extern MEM_HANDLE LoadCodeResFile (const char *pStr);
+extern void *LoadCodeResFile (const char *pStr);
 extern BOOLEAN InstallCodeResType (COUNT code_type);
-extern MEM_HANDLE LoadCodeResInstance (RESOURCE res);
-extern void* CaptureCodeRes (MEM_HANDLE hCode, void *pData, void **ppLocData);
-extern MEM_HANDLE ReleaseCodeRes (void *CodeRef);
-extern BOOLEAN DestroyCodeRes (MEM_HANDLE hCode);
+extern void *LoadCodeResInstance (RESOURCE res);
+extern void *CaptureCodeRes (void *hCode, void *pData, void **ppLocData);
+extern void *ReleaseCodeRes (void *CodeRef);
+extern BOOLEAN DestroyCodeRes (void *hCode);
 
 typedef struct
 {
-	MEM_HANDLE hCode;
 	UWORD size;
 } CODE_REF;
 

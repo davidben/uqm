@@ -95,7 +95,7 @@ static RACE_DESC arilou_desc =
 		{ NULL, NULL, NULL },
 		{ NULL, NULL, NULL },
 		{ NULL, NULL, NULL },
-		NULL_HANDLE, NULL
+		NULL, NULL
 	},
 	{
 		0,

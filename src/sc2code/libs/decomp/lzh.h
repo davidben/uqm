@@ -75,7 +75,7 @@ typedef LZHCODE_DESC *PLZHCODE_DESC;
 								(*_Stream++ = (BYTE)(c)))
 
 
-#define AllocCodeDesc() HCalloc ((MEM_SIZE)sizeof (LZHCODE_DESC))
+#define AllocCodeDesc() HCalloc (sizeof (LZHCODE_DESC))
 #define FreeCodeDesc HFree
 
 extern void _update (COUNT c);

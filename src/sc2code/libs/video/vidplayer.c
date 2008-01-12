@@ -346,12 +346,11 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 		}
 
 		// nasty hack for now
-		LockMusicData (vid->hAudio, &pmus);
+		pmus = vid->hAudio;
 		(*pmus)->buffer_tag = HCalloc (
 				sizeof (TFB_SoundTag) * (*pmus)->num_buffers);
 		(*pmus)->callbacks = vp_AudioCBs;
 		(*pmus)->data = vid;	// hijack data ;)
-		UnlockMusicData (vid->hAudio);
 	}
 
 	SetSemaphore (vp_interthread_lock);

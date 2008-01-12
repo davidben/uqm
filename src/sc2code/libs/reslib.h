@@ -20,11 +20,13 @@
 #define _RESLIB_H
 
 //#include <stdio.h>
+#include "compiler.h"
 #include "port.h"
-#include "memlib.h"
+#include "misc.h"
 #include  "libs/uio.h"
 
 
+typedef struct resource_index *RESOURCE_INDEX;
 typedef DWORD RESOURCE;
 
 typedef BYTE RES_TYPE;
@@ -52,8 +54,8 @@ typedef COUNT RES_PACKAGE;
 
 extern const char *_cur_resfile_name;
 
-typedef MEM_HANDLE (ResourceLoadFun) (uio_Stream *fp, DWORD len);
-typedef BOOLEAN (ResourceFreeFun) (MEM_HANDLE handle);
+typedef void *(ResourceLoadFun) (uio_Stream *fp, DWORD len);
+typedef BOOLEAN (ResourceFreeFun) (void *handle);
 
 extern uio_Stream *res_OpenResFile (uio_DirHandle *dir, const char *filename,
 		const char *mode);
@@ -69,42 +71,31 @@ extern long LengthResFile (uio_Stream *fp);
 extern BOOLEAN res_CloseResFile (uio_Stream *fp);
 extern BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 
-extern MEM_HANDLE InitResourceSystem (const char *mapfile, const char *resfile, 
+extern RESOURCE_INDEX InitResourceSystem (const char *mapfile, const char *resfile, 
 		RES_TYPE resType, BOOLEAN (*FileErrorFun) (const char *filename));
 extern void UninitResourceSystem (void);
 extern BOOLEAN InstallResTypeVectors (RES_TYPE res_type,
 		ResourceLoadFun *loadFun, ResourceFreeFun *freeFun);
-extern MEM_HANDLE res_GetResource (RESOURCE res);
-extern MEM_HANDLE res_DetachResource (RESOURCE res);
+extern void *res_GetResource (RESOURCE res);
+extern void *res_DetachResource (RESOURCE res);
 extern BOOLEAN FreeResource (RESOURCE res);
 extern COUNT CountResourceTypes (void);
 
-extern MEM_HANDLE OpenResourceIndexFile (const char *resfile);
-extern MEM_HANDLE OpenResourceIndexInstance (RESOURCE res);
-extern MEM_HANDLE SetResourceIndex (MEM_HANDLE newIndexHandle);
-extern BOOLEAN CloseResourceIndex (MEM_HANDLE newIndexHandle);
+extern RESOURCE_INDEX OpenResourceIndexFile (const char *resfile);
+extern RESOURCE_INDEX OpenResourceIndexInstance (RESOURCE res);
+extern RESOURCE_INDEX SetResourceIndex (RESOURCE_INDEX newIndexHandle);
+extern BOOLEAN CloseResourceIndex (RESOURCE_INDEX newIndexHandle);
 
-extern MEM_HANDLE GetResourceData (uio_Stream *fp, DWORD length,
-		MEM_FLAGS mem_flags);
+extern void *GetResourceData (uio_Stream *fp, DWORD length);
 
-#define RESOURCE_PRIORITY DEFAULT_MEM_PRIORITY
-
-#define AllocResourceData(s,mf) \
-	mem_allocate ((MEM_SIZE)(s), (mf))
-#define LockResourceData(h,lp) \
-do \
-{ \
-	*(lp) = mem_lock ((MEM_HANDLE)(h)); \
-} while (0)
-#define UnlockResourceData mem_unlock
-#define FreeResourceData mem_release
+#define AllocResourceData HMalloc
+#define FreeResourceData  HFree
 
 #include "strlib.h"
 
 typedef STRING_TABLE DIRENTRY_REF;
 typedef STRING DIRENTRY;
 typedef STRINGPTR DIRENTRYPTR;
-
 
 extern DIRENTRY_REF LoadDirEntryTable (uio_DirHandle *dirHandle,
 		const char *path, const char *pattern, match_MatchType matchType);

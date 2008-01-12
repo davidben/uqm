@@ -30,8 +30,8 @@ static bool copyResTypeHandlers (ResourceIndex *dest,
 		const ResourceIndex *src);
 static bool setResTypeHandlers (ResourceIndex *idx, RES_TYPE resType,
 		const ResourceHandlers *handlers);
-static MEM_HANDLE allocResourceIndex(void);
-static void freeResourceIndex (MEM_HANDLE h);
+static RESOURCE_INDEX allocResourceIndex(void);
+static void freeResourceIndex (RESOURCE_INDEX h);
 
 
 static List_List *indexList;
@@ -95,19 +95,18 @@ newResourceDesc (RESOURCE res, char *res_id)
 
 	result->res = res;
 	result->res_id = res_id;
-	result->handle = NULL_HANDLE;
+	result->resdata = NULL;
 	//result->ref = 0;
 	return result;
 }
 
-static MEM_HANDLE
+static RESOURCE_INDEX
 loadResourceIndex (uio_Stream *stream, const char *fileName) {
 	size_t lineNum;
 	ResourceDesc **descs = NULL;
 	COUNT numRes;
 	int numDescsAlloced = 0;
-	MEM_HANDLE indexHandle = NULL_HANDLE;
-	ResourceIndex *ndx = NULL;
+	RESOURCE_INDEX ndx = NULL;
 #ifdef DEBUG
 	RESOURCE lastResource = 0x00000000;
 #endif
@@ -238,35 +237,31 @@ loadResourceIndex (uio_Stream *stream, const char *fileName) {
 		log_add (log_Debug, "Warning: Resource index '%s' contains no valid "
 				"entries.", fileName);
 
-	indexHandle = allocResourceIndex ();
-	if (indexHandle == NULL_HANDLE)
+	ndx = allocResourceIndex ();
+	if (ndx == NULL)
 		goto err;
 	
-	ndx = lockResourceIndex (indexHandle);
 	ndx->res = descs;
 	ndx->numRes = numRes;
 	ndx->typeInfo.numTypes = 0;
 	ndx->typeInfo.handlers = NULL;
 	List_add (indexList, (void *) ndx);
-	unlockResourceIndex (indexHandle);
 
-	return indexHandle;
+	return ndx;
 
 err:
-	if (indexHandle != NULL_HANDLE)
-		freeResourceIndex (indexHandle);
+	if (ndx != NULL)
+		freeResourceIndex (ndx);
 	HFree (descs);
-	return NULL_HANDLE;
+	return NULL;
 }
 
 // Get the data associated with a resource of type RES_INDEX
 // (In other words, a ResourceIndex)
-MEM_HANDLE
+void *
 _GetResFileData (uio_Stream *res_fp, DWORD fileLength)
 {
-	MEM_HANDLE handle;
-	ResourceIndex *ndx;
-	ResourceIndex *parentNdx;
+	RESOURCE_INDEX ndx, parentNdx;
 
 #if 0
 	ResourceDesc *desc;
@@ -278,39 +273,28 @@ _GetResFileData (uio_Stream *res_fp, DWORD fileLength)
 		return desc->handle;
 #endif
 
-	handle = loadResourceIndex (res_fp, _cur_resfile_name);
-	if (handle == NULL_HANDLE)
-		return NULL_HANDLE;
-
-	ndx = lockResourceIndex (handle);
+	ndx = loadResourceIndex (res_fp, _cur_resfile_name);
 	parentNdx = _get_current_index_header ();
 	if (parentNdx != NULL)
 		copyResTypeHandlers (ndx, parentNdx);
 	
-	unlockResourceIndex (handle);
-
 	(void) fileLength;
-	return handle;
+	return ndx;
 }
 
 BOOLEAN
-_ReleaseResFileData (MEM_HANDLE handle)
+_ReleaseResFileData (RESOURCE_INDEX ndx)
 {
-	ResourceIndex *ndx;
-
-	ndx = lockResourceIndex (handle);
 	if (ndx->typeInfo.handlers != NULL)
 		HFree (ndx->typeInfo.handlers);
-	unlockResourceIndex (handle);
-	mem_release (handle);
+	HFree (ndx);
 	return TRUE;
 }
 
-MEM_HANDLE
+RESOURCE_INDEX
 InitResourceSystem (const char *mapfile, const char *resfile, RES_TYPE resType, 
 		BOOLEAN (*FileErrorFun) (const char *filename))
 {
-	MEM_HANDLE handle;
 	ResourceIndex *ndx;
 	ResourceHandlers handlers;
 
@@ -321,20 +305,18 @@ InitResourceSystem (const char *mapfile, const char *resfile, RES_TYPE resType,
 
 	res_LoadFilename (contentDir, mapfile);
 
-	SetResourceIndex (NULL_HANDLE);
-	handle = loadResource (resfile, handlers.loadFun);
-	if (handle == NULL_HANDLE)
-		return NULL_HANDLE;
+	SetResourceIndex (NULL);
+	ndx = loadResource (resfile, handlers.loadFun);
+	if (ndx == NULL)
+		return NULL;
 
-	ndx = lockResourceIndex (handle);
 	setResTypeHandlers (ndx, resType, &handlers);
-	unlockResourceIndex (handle);
 
-	SetResourceIndex (handle);
+	SetResourceIndex (ndx);
 
 	(void) FileErrorFun;
 	(void) mapfile;
-	return handle;
+	return ndx;
 }
 
 void
@@ -351,15 +333,15 @@ UninitResourceSystem (void)
 #endif
 	uninitIndexList ();
 	
-	SetResourceIndex (NULL_HANDLE);
+	SetResourceIndex (NULL);
 }
 
-MEM_HANDLE
+RESOURCE_INDEX
 OpenResourceIndexInstance (RESOURCE res)
 {
-	MEM_HANDLE hRH;
+	RESOURCE_INDEX hRH;
 
-	hRH = res_GetResource (res);
+	hRH = (RESOURCE_INDEX)res_GetResource (res);
 	if (hRH)
 		res_DetachResource (res);
 
@@ -368,46 +350,36 @@ OpenResourceIndexInstance (RESOURCE res)
 
 // Sets the current global resource index.
 // This is the index res_GetResource() calls will use.
-MEM_HANDLE
-SetResourceIndex (MEM_HANDLE newIndexHandle)
+RESOURCE_INDEX
+SetResourceIndex (RESOURCE_INDEX newIndex)
 {
-	static MEM_HANDLE currentIndexHandle;
+	static RESOURCE_INDEX currentIndex;
 			// NB: currentIndexHandle is locked.
-	MEM_HANDLE oldIndexHandle;
+	RESOURCE_INDEX oldIndex;
 	
-	if (currentIndexHandle != NULL_HANDLE)
-		unlockResourceIndex (currentIndexHandle);
+	oldIndex = currentIndex;
+	currentIndex = newIndex;
 
-	oldIndexHandle = currentIndexHandle;
-	currentIndexHandle = newIndexHandle;
+	if (currentIndex != NULL) {
+		RESOURCE_INDEX ndx;
 
-	if (currentIndexHandle != NULL_HANDLE) {
-		ResourceIndex *ndx;
-
-		ndx = lockResourceIndex (currentIndexHandle);
+		ndx = currentIndex;
 		_set_current_index_header (ndx);
 	} else
 		_set_current_index_header (NULL);
 	
-	return oldIndexHandle;
+	return oldIndex;
 }
 
 BOOLEAN
-CloseResourceIndex (MEM_HANDLE handle)
+CloseResourceIndex (RESOURCE_INDEX ndx)
 {
-	ResourceIndex *ndx;
-	
-	unlockResourceIndex (handle);
-
-	ndx = lockResourceIndex (handle);
 	if (ndx == _get_current_index_header ())
-		SetResourceIndex (NULL_HANDLE);
+		SetResourceIndex (NULL);
 
 	List_remove ((void *) indexList, ndx);
 	
-	unlockResourceIndex (handle);
-
-	_ReleaseResFileData (handle);
+	_ReleaseResFileData (ndx);
 
 	return TRUE;
 }
@@ -470,14 +442,14 @@ copyResTypeHandlers (ResourceIndex *dest, const ResourceIndex *src)
 }
 
 
-static MEM_HANDLE
+static RESOURCE_INDEX
 allocResourceIndex (void) {
-	return mem_allocate (sizeof (ResourceIndex), MEM_PRIMARY);
+	return HMalloc (sizeof (struct resource_index));
 }
 
 static void
-freeResourceIndex (MEM_HANDLE h) {
-	mem_release (h);
+freeResourceIndex (RESOURCE_INDEX h) {
+	HFree (h);
 }
 
 

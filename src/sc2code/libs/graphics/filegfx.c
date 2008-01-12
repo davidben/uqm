@@ -21,7 +21,7 @@
 #include "libs/reslib.h"
 
 
-DWORD
+DRAWABLE
 LoadGraphicFile (const char *pStr)
 {
 	uio_Stream *fp;
@@ -34,19 +34,19 @@ LoadGraphicFile (const char *pStr)
 	fp = res_OpenResFile (contentDir, pStr, "rb");
 	if (fp != NULL)
 	{
-		MEM_HANDLE hData;
+		DRAWABLE hData;
 
 		_cur_resfile_name = pStr;
-		hData = _GetCelData (fp, LengthResFile (fp));
+		hData = (DRAWABLE)_GetCelData (fp, LengthResFile (fp));
 		_cur_resfile_name = 0;
 		res_CloseResFile (fp);
-		return ((DWORD)hData);
+		return hData;
 	}
 
-	return (0);
+	return (NULL);
 }
 
-DWORD
+FONT
 LoadFontFile (const char *pStr)
 {
 	uio_Stream *fp;
@@ -59,13 +59,13 @@ LoadFontFile (const char *pStr)
 	fp = res_OpenResFile (contentDir, pStr, "rb");
 	if (fp == (uio_Stream *) ~0)
 	{
-		MEM_HANDLE hData;
+		FONT hData;
 
 		_cur_resfile_name = pStr;
-		hData = _GetFontData (fp, LengthResFile (fp));
+		hData = (FONT)_GetFontData (fp, LengthResFile (fp));
 		_cur_resfile_name = 0;
 		res_CloseResFile (fp);
-		return ((DWORD)hData);
+		return hData;
 	}
 
 	return (0);

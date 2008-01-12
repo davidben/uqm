@@ -48,8 +48,6 @@ FreeFontPage (FONT_PAGE *page)
 
 struct font_desc
 {
-	FONT_REF FontRef;
-
 	UWORD Leading;
 	UWORD LeadingWidth;
 	FONT_PAGE *fontPages;
@@ -59,17 +57,13 @@ struct font_desc
 
 #define FONT_PRIORITY DEFAULT_MEM_PRIORITY
 
-#define AllocFont(size) \
-	(FONT_REF)mem_allocate ((MEM_SIZE)(sizeof (FONT_DESC) + (size)), \
-			MEM_ZEROINIT | MEM_GRAPHICS)
-#define LockFont(h) (FONT)mem_lock (h)
-#define UnlockFont(h) mem_unlock (h)
+#define AllocFont(size) (FONT)HCalloc (sizeof (FONT_DESC) + (size))
 #define FreeFont _ReleaseFontData
 
 extern FONT _CurFontPtr;
 
-extern MEM_HANDLE _GetFontData (uio_Stream *fp, DWORD length);
-extern BOOLEAN _ReleaseFontData (MEM_HANDLE handle);
+extern void *_GetFontData (uio_Stream *fp, DWORD length);
+extern BOOLEAN _ReleaseFontData (void *handle);
 
 #endif /* _FONT_H */
 

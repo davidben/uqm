@@ -19,10 +19,11 @@
 #include "resintrn.h"
 #include "declib.h"
 
-MEM_HANDLE
-GetResourceData (uio_Stream *fp, DWORD length, MEM_FLAGS mem_flags)
+void *
+GetResourceData (uio_Stream *fp, DWORD length)
 {
-	MEM_HANDLE RData;
+	BYTE *RDPtr;
+	void *result;
 	DECODE_REF fh = 0;
 
 	if (length == ~(DWORD)0)
@@ -32,51 +33,38 @@ GetResourceData (uio_Stream *fp, DWORD length, MEM_FLAGS mem_flags)
 	else
 		length -= sizeof (DWORD);
 
-	RData = AllocResourceData (length, mem_flags);
-	if (RData)
+	result = AllocResourceData (length);
+	RDPtr = result;
+	if (RDPtr)
 	{
-		BYTE *RDPtr;
+		COUNT num_read;
 
-		LockResourceData (RData, &RDPtr);
-		if (RDPtr == NULL)
+		do
 		{
-			FreeResourceData (RData);
-			RData = 0;
-		}
-		else
-		{
-			COUNT num_read;
-
-			do
-			{
 #define READ_LENGTH 0x00007FFFL
-				num_read = length >= READ_LENGTH ?
-						(COUNT)READ_LENGTH : (COUNT)length;
-				if (fh)
-				{
-					if (cread (RDPtr, 1, num_read, fh) != num_read)
-						break;
-				}
-				else
-				{
-					if ((int)(ReadResFile (RDPtr, 1, num_read, fp)) != (int)num_read)
-						break;
-				}
-				RDPtr += num_read;
-			} while (length -= num_read);
-
-			UnlockResourceData (RData);
-			if (length > 0)
+			num_read = length >= READ_LENGTH ?
+					(COUNT)READ_LENGTH : (COUNT)length;
+			if (fh)
 			{
-				FreeResourceData (RData);
-				RData = 0;
+				if (cread (RDPtr, 1, num_read, fh) != num_read)
+					break;
 			}
+			else
+			{
+				if ((int)(ReadResFile (RDPtr, 1, num_read, fp)) != (int)num_read)
+					break;
+			}
+			RDPtr += num_read;
+		} while (length -= num_read);
+
+		if (length > 0)
+		{
+			FreeResourceData (result);
+			result = NULL;
 		}
 	}
 
 	cclose (fh);
 
-	return (RData);
+	return result;
 }
-
-

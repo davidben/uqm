@@ -184,7 +184,7 @@ COUNT
 InitEncounter (void)
 {
 	COUNT i;
-	MEM_HANDLE hOldIndex;
+	RESOURCE_INDEX hOldIndex;
 	FRAME SegueFrame;
 	STAMP s;
 	TEXT t;
@@ -713,7 +713,7 @@ ExitUninitEncounter:
 void
 EncounterBattle (void)
 {
-	MEM_HANDLE hLastIndex;
+	RESOURCE_INDEX hLastIndex;
 	ACTIVITY OldActivity;
 	extern UWORD nth_frame;
 

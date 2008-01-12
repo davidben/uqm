@@ -533,7 +533,7 @@ static void
 CheckObjectCollision (COUNT index)
 {
 	INTERSECT_CONTROL LanderControl;
-	MEM_HANDLE LanderHandle;
+	DRAWABLE LanderHandle;
 	PRIMITIVE *pPrim;
 	PRIMITIVE *pLanderPrim;
 	PLANETSIDE_DESC *pPSD;
@@ -555,7 +555,7 @@ CheckObjectCollision (COUNT index)
 
 	pPSD = (PLANETSIDE_DESC*)pMenuState->ModuleFrame;
 	LanderControl.EndPoint = LanderControl.IntersectStamp.origin;
-	LanderHandle = GetFrameHandle (LanderControl.IntersectStamp.frame);
+	LanderHandle = GetFrameParentDrawable (LanderControl.IntersectStamp.frame);
 
 	for (; index != END_OF_LIST; index = GetPredLink (GetPrimLinks (pPrim)))
 	{
@@ -566,7 +566,7 @@ CheckObjectCollision (COUNT index)
 		ElementControl.IntersectStamp = pPrim->Object.Stamp;
 		ElementControl.EndPoint = ElementControl.IntersectStamp.origin;
 
-		if (GetFrameHandle (ElementControl.IntersectStamp.frame)
+		if (GetFrameParentDrawable (ElementControl.IntersectStamp.frame)
 				== LanderHandle)
 		{
 			CheckObjectCollision (index);

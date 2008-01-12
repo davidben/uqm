@@ -1298,7 +1298,7 @@ DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC response_func,
 static void
 HailAlien (void)
 {
-	MEM_HANDLE hOldIndex;
+	RESOURCE_INDEX hOldIndex;
 	ENCOUNTER_STATE ES;
 	FONT PlayerFont, OldFont;
 	MUSIC_REF SongRef = 0;
@@ -1309,13 +1309,12 @@ HailAlien (void)
 
 	ES.InputFunc = DoCommunication;
 	hOldIndex = SetResourceIndex (hResIndex);
-	PlayerFont = CaptureFont ((FONT_REF)LoadFont (PLAYER_FONT));
+	PlayerFont = LoadFont (PLAYER_FONT);
 	SetResourceIndex (hOldIndex);
 
 	CommData.AlienFrame = CaptureDrawable (
 			LoadGraphic (CommData.AlienFrameRes));
-	CommData.AlienFont = CaptureFont ((FONT_REF)
-			LoadFont (CommData.AlienFontRes));
+	CommData.AlienFont = LoadFont (CommData.AlienFontRes);
 	CommData.AlienColorMap = CaptureColorMap (
 			LoadColorMap (CommData.AlienColorMapRes));
 	if ((CommData.AlienSongFlags & LDASF_USE_ALTERNATE)
@@ -1417,7 +1416,7 @@ HailAlien (void)
 	DestroyStringTable (ReleaseStringTable (CommData.ConversationPhrases));
 	DestroyMusic (CommData.AlienSong);
 	DestroyColorMap (ReleaseColorMap (CommData.AlienColorMap));
-	DestroyFont (ReleaseFont (CommData.AlienFont));
+	DestroyFont (CommData.AlienFont);
 	DestroyDrawable (ReleaseDrawable (CommData.AlienFrame));
 
 	DestroyContext (TextCacheContext);
@@ -1425,7 +1424,7 @@ HailAlien (void)
 
 	SetContext (SpaceContext);
 	SetContextFont (OldFont);
-	DestroyFont (ReleaseFont (PlayerFont));
+	DestroyFont (PlayerFont);
 
 	CommData.ConversationPhrases = 0;
 	pCurInputState = 0;
@@ -1435,7 +1434,7 @@ COUNT
 InitCommunication (RESOURCE which_comm)
 {
 	COUNT status;
-	MEM_HANDLE hOldIndex, hIndex;
+	RESOURCE_INDEX hOldIndex, hIndex;
 	LOCDATA *LocDataPtr;
 
 #ifdef DEBUG

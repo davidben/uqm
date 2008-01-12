@@ -20,7 +20,6 @@
 #define _SNDLIB_H
 
 #include "strlib.h"
-#include "memlib.h"
 
 typedef STRING_TABLE SOUND_REF;
 typedef STRING SOUND;
@@ -43,7 +42,8 @@ typedef struct soundposition
 #define GetSoundAddress GetStringAddress
 #define GetSoundContents GetStringContents
 
-typedef MEM_HANDLE MUSIC_REF;
+typedef struct tfb_soundsample TFB_SoundSample;
+typedef TFB_SoundSample **MUSIC_REF;
 
 extern BOOLEAN InitSound (int argc, char *argv[]);
 extern void UninitSound (void);

@@ -74,12 +74,12 @@ UninitKernel (BOOLEAN ships)
 	UninitSpace ();
 
 	DestroySound (ReleaseSound (MenuSounds));
-	DestroyFont (ReleaseFont (MicroFont));
+	DestroyFont (MicroFont);
 	DestroyStringTable (ReleaseStringTable (GameStrings));
 	DestroyDrawable (ReleaseDrawable (StatusFrame));
 	DestroyDrawable (ReleaseDrawable (ActivityFrame));
-	DestroyFont (ReleaseFont (TinyFont));
-	DestroyFont (ReleaseFont (StarConFont));
+	DestroyFont (TinyFont);
+	DestroyFont (StarConFont);
 
 	UninitQueue (&race_q[0]);
 	UninitQueue (&race_q[1]);

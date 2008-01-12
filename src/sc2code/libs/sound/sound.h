@@ -38,9 +38,6 @@ typedef struct
 	void *data; // user-defined data
 } TFB_SoundTag;
 
-// forward-declare
-typedef struct tfb_soundsample TFB_SoundSample;
-
 typedef struct tfb_soundcallbacks
 {
 	// return TRUE to continue, FALSE to abort

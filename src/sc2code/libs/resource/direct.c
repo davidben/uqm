@@ -70,7 +70,7 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 	}
 
 	StringTable = AllocStringTable (num_entries, 0);
-	LockStringTable (StringTable, &lpST);
+	lpST = StringTable;
 	if (lpST == 0)
 	{
 		FreeStringTable (StringTable);
@@ -95,8 +95,7 @@ LoadDirEntryTable (uio_DirHandle *dirHandle, const char *path,
 	}
 	
 	uio_DirList_free(dirList);
-	UnlockStringTable (StringTable);
-	return ((DIRENTRY_REF) StringTable);
+	return StringTable;
 }	
 
 

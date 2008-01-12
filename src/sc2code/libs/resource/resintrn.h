@@ -20,11 +20,11 @@
 #define _RESINTRN_H
 
 #include <string.h>
-#include "libs/reslib.h"
+#include "reslib.h"
 #include "index.h"
 
-MEM_HANDLE loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc);
-MEM_HANDLE loadResource(const char *path, ResourceLoadFun *loadFun);
+void *loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc);
+void *loadResource(const char *path, ResourceLoadFun *loadFun);
 
 void _set_current_index_header (ResourceIndex *newResourceIndex);
 ResourceIndex *_get_current_index_header (void);

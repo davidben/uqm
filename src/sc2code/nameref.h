@@ -22,8 +22,8 @@
 #include "restypes.h"
 
 #define LoadCodeRes     LoadCodeResInstance
-#define LoadGraphic     LoadGraphicInstance
-#define LoadFont        LoadGraphicInstance
+#define LoadGraphic     (DRAWABLE)LoadGraphicInstance
+#define LoadFont        (FONT)LoadGraphicInstance
 #define LoadColorMap    LoadColorMapInstance
 #define LoadStringTable LoadStringTableInstance
 #define LoadSound       LoadSoundInstance

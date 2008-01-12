@@ -65,19 +65,35 @@ load_animation (FRAME *pixarray, RESOURCE big_res, RESOURCE med_res, RESOURCE
 	return TRUE;
 }
 
+/* Warning: Some ships (such as the Umgah) will alias their pixarrays,
+   so we need to track to make sure that we do not double-free. */
 BOOLEAN
 free_image (FRAME *pixarray)
 {
 	BOOLEAN retval;
-	COUNT i;
+	COUNT i, j;
+	void *already_freed[NUM_VIEWS];
 
 	retval = TRUE;
 	for (i = 0; i < NUM_VIEWS; ++i)
 	{
 		if (pixarray[i] != NULL)
 		{
-			if (!DestroyDrawable (ReleaseDrawable (pixarray[i])))
-				retval = FALSE;
+			BOOLEAN ok = TRUE;
+			for (j = 0; j < i; j++)
+			{
+				if (already_freed[j] == pixarray[i])
+				{
+					ok = FALSE;
+					break;
+				}
+			}
+			if (ok)
+			{
+				if (!DestroyDrawable (ReleaseDrawable (pixarray[i])))
+					retval = FALSE;
+			}
+			already_freed[i] = pixarray[i];
 			pixarray[i] = NULL;
 		}
 	}

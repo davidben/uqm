@@ -46,7 +46,7 @@ ACTIVITY LastActivity;
 BYTE PlayerControl[NUM_PLAYERS];
 
 // XXX: These declarations should really go to the file they belong to.
-MEM_HANDLE hResIndex;
+RESOURCE_INDEX hResIndex;
 CONTEXT ScreenContext;
 CONTEXT SpaceContext;
 CONTEXT StatusContext;
@@ -184,11 +184,11 @@ InitKernel (void)
 	for (counter = 0; counter < NUM_PLAYERS; ++counter)
 		InitQueue (&race_q[counter], MAX_SHIPS_PER_SIDE, sizeof (STARSHIP));
 
-	StarConFont = CaptureFont (LoadFont (STARCON_FONT));
+	StarConFont = LoadFont (STARCON_FONT);
 	if (StarConFont == NULL)
 		return FALSE;
 
-	TinyFont = CaptureFont (LoadFont (TINY_FONT));
+	TinyFont = LoadFont (TINY_FONT);
 	if (TinyFont == NULL)
 		return FALSE;
 
@@ -204,7 +204,7 @@ InitKernel (void)
 	if (GameStrings == 0)
 		return FALSE;
 
-	MicroFont = CaptureFont (LoadFont (MICRO_FONT));
+	MicroFont = LoadFont (MICRO_FONT);
 	if (MicroFont == NULL)
 		return FALSE;
 

@@ -609,7 +609,7 @@ MeleeConnectDialog (int side)
 {
 	CONNECT_DIALOG_STATE state;
 
-	PlayerFont = CaptureFont ((FONT_REF)LoadFont (PLAYER_FONT));
+	PlayerFont = LoadFont (PLAYER_FONT);
 
 	state.Initialized = FALSE;
 	state.which_side = side;
@@ -622,7 +622,7 @@ MeleeConnectDialog (int side)
 
 	current_state = NULL;
 
-	DestroyFont (ReleaseFont (PlayerFont));
+	DestroyFont (PlayerFont);
 
 	return state.confirmed;
 }

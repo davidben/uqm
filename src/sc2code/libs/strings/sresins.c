@@ -28,14 +28,14 @@ InstallStringTableResType (COUNT string_type)
 STRING_TABLE
 LoadStringTableInstance (DWORD res)
 {
-	MEM_HANDLE hData;
+	void *data;
 
-	hData = res_GetResource (res);
-	if (hData)
+	data = res_GetResource (res);
+	if (data)
 	{
 		res_DetachResource (res);
 	}
 
-	return hData;
+	return (STRING_TABLE)data;
 }
 

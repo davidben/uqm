@@ -430,8 +430,8 @@ DoPresentation (void *pIS)
 			if (pPIS->Buffer[0])
 			{	/* asked to load a font */
 				if (*pFont)
-					DestroyFont (ReleaseFont (*pFont));
-				*pFont = CaptureFont ((FONT_REF) LoadFontFile (pPIS->Buffer));
+					DestroyFont (*pFont);
+				*pFont = LoadFontFile (pPIS->Buffer);
 			}
 
 			if (!pPIS->Batched)
@@ -847,7 +847,7 @@ ShowPresentation (STRING PresStr)
 	DestroyDrawable (ReleaseDrawable (pis.RotatedFrame));
 	DestroyDrawable (ReleaseDrawable (pis.Frame));
 	for (i = 0; i < MAX_FONTS; ++i)
-		DestroyFont (ReleaseFont (pis.Fonts[i]));
+		DestroyFont (pis.Fonts[i]);
 	DestroyStringTable (ReleaseStringTable (pis.SlideShow));
 
 	LockMutex (GraphicsLock);

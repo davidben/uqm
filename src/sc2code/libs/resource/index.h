@@ -19,13 +19,14 @@
 #ifndef _INDEX_H
 #define _INDEX_H
 
+#include "reslib.h"
 #include <stdio.h>
 
 typedef struct
 {
 	RESOURCE res;
 	char *res_id;
-	MEM_HANDLE handle;
+	void *resdata;
 	//COUNT ref;
 } ResourceDesc;
 
@@ -44,30 +45,19 @@ typedef struct
 	ResourceHandlers *handlers;
 } ResourceTypeInfo;
 
-typedef struct
+struct resource_index
 {
 	ResourceDesc **res;
 	ResourceTypeInfo typeInfo;
 	size_t numRes;
-} ResourceIndex;
+};
 
+/* XXX: This should almost certainly be folded into RESOURCE_INDEX wherever possible */
+typedef struct resource_index ResourceIndex;
 
 void
 forAllResourceIndices(
 		void (*callback) (ResourceIndex *idx, void *extra), void *extra);
-
-
-#define INDEX_HEADER_PRIORITY DEFAULT_MEM_PRIORITY
-
-static inline ResourceIndex *
-lockResourceIndex (MEM_HANDLE h) {
-	return (ResourceIndex *) mem_lock (h);
-}
-static inline void
-unlockResourceIndex (MEM_HANDLE h) {
-	mem_unlock (h);
-}
-
 
 #endif /* _INDEX_H */
 

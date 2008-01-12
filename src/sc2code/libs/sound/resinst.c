@@ -27,9 +27,9 @@ InstallAudioResTypes (COUNT sound_type, COUNT music_type)
 }
 
 SOUND_REF
-LoadSoundInstance (DWORD res)
+LoadSoundInstance (RESOURCE res)
 {
-	MEM_HANDLE hData;
+	void *hData;
 
 	hData = res_GetResource (res);
 	if (hData)
@@ -39,9 +39,9 @@ LoadSoundInstance (DWORD res)
 }
 
 MUSIC_REF
-LoadMusicInstance (DWORD res)
+LoadMusicInstance (RESOURCE res)
 {
-	MEM_HANDLE hData;
+	void *hData;
 
 	hData = res_GetResource (res);
 	if (hData)

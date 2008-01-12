@@ -1,7 +1,7 @@
 Changes towards version 0.7:
+- Remove MEM_HANDLEs from everywhere outside of memlib - Michael
 - Split out RESOURCEs from the loaded data in RACE_DESC and LOCDATA
   structures - Michael
-- Normalized all loaded resources to be flat MEM_HANDLEs - Michael
 - Prevent overflow for planet weight when scanning a planet (bug #1025)
   - from Benjamin Alan Weaver
 - Don't set _POSIX_THREAD_SAFE_FUNCTIONS - SvdB

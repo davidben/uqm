@@ -554,7 +554,7 @@ StartCredits (void)
 	CreditsBack = CaptureDrawable (LoadGraphic (CREDITS_BACK_ANIM));
 	// load fonts
 	for (fdef = CreditsFont; fdef->size; ++fdef)
-		fdef->font = CaptureFont (LoadFont (fdef->res));
+		fdef->font = LoadFont (fdef->res);
 
 	CreditsRate = CREDITS_BASE_RATE;
 	CreditsRunning = FALSE;
@@ -578,7 +578,7 @@ FreeCredits (void)
 	// free fonts
 	for (fdef = CreditsFont; fdef->size; ++fdef)
 	{
-		DestroyFont (ReleaseFont (fdef->font));
+		DestroyFont (fdef->font);
 		fdef->font = 0;
 	}
 }

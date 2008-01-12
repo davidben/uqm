@@ -19,8 +19,8 @@
 #ifndef _INPLIB_H
 #define _INPLIB_H
 
-#include "memlib.h"
 #include <stddef.h>
+#include "compiler.h"
 #include "libs/uio.h"
 
 typedef DWORD INPUT_STATE;

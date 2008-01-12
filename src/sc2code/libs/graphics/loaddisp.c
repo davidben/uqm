@@ -36,7 +36,7 @@
 DRAWABLE
 LoadDisplayPixmap (RECT *area, FRAME frame)
 {
-	MEM_HANDLE buffer = GetFrameHandle (frame);
+	DRAWABLE buffer = GetFrameParentDrawable (frame);
 	COUNT index = GetFrameIndex (frame);
 
 	if (buffer || (buffer = CreateDrawable (

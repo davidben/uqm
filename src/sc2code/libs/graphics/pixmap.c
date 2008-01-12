@@ -19,18 +19,25 @@
 #include "gfxintrn.h"
 #include "libs/log.h"
 
-FRAME
-CaptureDrawable (DRAWABLE Drawable)
+DRAWABLE
+GetFrameParentDrawable (FRAME f)
 {
-	DRAWABLE_DESC *DrawablePtr;
+	if (f != NULL)
+	{
+		return f->parent;
+	}
+	return NULL;
+}
 
-	DrawablePtr = LockDrawable (Drawable);
+FRAME
+CaptureDrawable (DRAWABLE DrawablePtr)
+{
 	if (DrawablePtr)
 	{
 		return &DrawablePtr->Frame[0];
 	}
 
-	return (0);
+	return NULL;
 }
 
 DRAWABLE
@@ -39,28 +46,13 @@ ReleaseDrawable (FRAME FramePtr)
 	if (FramePtr != 0)
 	{
 		DRAWABLE Drawable;
-		DRAWABLE_DESC *DrawablePtr;
 
-		DrawablePtr = GetFrameParentDrawable (FramePtr);
-		Drawable = DrawablePtr->hDrawable;
-		UnlockDrawable (Drawable);
+		Drawable = GetFrameParentDrawable (FramePtr);
 
 		return (Drawable);
 	}
 
-	return NULL_HANDLE;
-}
-
-MEM_HANDLE
-GetFrameHandle (FRAME FramePtr)
-{
-	DRAWABLE_DESC *DrawablePtr;
-
-	if (FramePtr == 0)
-		return (0);
-
-	DrawablePtr = GetFrameParentDrawable (FramePtr);
-	return (DrawablePtr->hDrawable);
+	return NULL;
 }
 
 COUNT

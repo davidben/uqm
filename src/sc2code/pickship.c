@@ -451,7 +451,7 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect)
 	STAMP s;
 	TEXT t;
 	CONTEXT OldContext;
-	MEM_HANDLE hLastIndex;
+	RESOURCE_INDEX hLastIndex;
 	FRAME PickFrame;
 
 	hLastIndex = SetResourceIndex (hResIndex);

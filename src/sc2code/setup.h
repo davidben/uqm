@@ -19,12 +19,12 @@
 
 #include "displist.h"
 #include "globdata.h"
+#include "libs/reslib.h"
 #include "libs/sndlib.h"
 #include "libs/gfxlib.h"
 #include "libs/threadlib.h"
 
-
-extern MEM_HANDLE hResIndex;
+extern RESOURCE_INDEX hResIndex;
 
 extern FRAME Screen;
 extern FRAME ActivityFrame;

@@ -22,8 +22,7 @@
 STRING_TABLE
 AllocStringTable (int num_entries, int flags)
 {
-	MEM_HANDLE hData = mem_allocate (sizeof (STRING_TABLE_DESC), MEM_SOUND);
-	STRING_TABLE_DESC *strtab = mem_lock (hData);
+	STRING_TABLE strtab = HMalloc (sizeof (STRING_TABLE_DESC));
 	int i, multiplier = 1;
 
 	if (flags & HAS_SOUND_CLIPS)
@@ -34,7 +33,6 @@ AllocStringTable (int num_entries, int flags)
 	{
 		multiplier++;
 	}
-	strtab->handle = hData;
 	strtab->flags = flags;
 	strtab->size = num_entries;
 	num_entries *= multiplier;
@@ -46,16 +44,13 @@ AllocStringTable (int num_entries, int flags)
 		strtab->strings[i].parent = strtab;
 		strtab->strings[i].index = i;
 	}
-	return hData;
+	return strtab;
 }
 
 void
-FreeStringTable (STRING_TABLE StringTable)
+FreeStringTable (STRING_TABLE strtab)
 {
-	STRING_TABLE_DESC *strtab;
 	int i, multiplier = 1;
-
-	strtab = mem_lock (StringTable);
 
 	if (strtab == NULL)
 	{
@@ -80,8 +75,7 @@ FreeStringTable (STRING_TABLE StringTable)
 	}
 
 	HFree (strtab->strings);
-	mem_unlock (StringTable);
-	mem_release (StringTable);
+	HFree (strtab);
 }
 
 BOOLEAN
@@ -94,20 +88,9 @@ DestroyStringTable (STRING_TABLE StringTable)
 STRING
 CaptureStringTable (STRING_TABLE StringTable)
 {
-	if (StringTable != 0)
+	if ((StringTable != 0) && (StringTable->size > 0))
 	{
-		STRING_TABLE_DESC *StringTablePtr;
-
-		LockStringTable (StringTable, &StringTablePtr);
-		if (StringTablePtr->size > 0)
-		{
-			return StringTablePtr->strings;
-		}
-		else
-		{
-			UnlockStringTable (StringTable);
-			return NULL;
-		}
+		return StringTable->strings;
 	}
 
 	return NULL;
@@ -119,8 +102,6 @@ ReleaseStringTable (STRING String)
 	STRING_TABLE StringTable;
 
 	StringTable = GetStringTable (String);
-	if (StringTable != 0)
-		UnlockStringTable (StringTable);
 
 	return (StringTable);
 }
@@ -130,9 +111,9 @@ GetStringTable (STRING String)
 {
 	if (String && String->parent)
 	{
-		return String->parent->handle;
+		return String->parent;
 	}
-	return NULL_HANDLE;
+	return NULL;
 }
 
 COUNT
@@ -158,7 +139,7 @@ GetStringTableIndex (STRING String)
 STRING
 SetAbsStringTableIndex (STRING String, COUNT StringTableIndex)
 {
-	STRING_TABLE_DESC *StringTablePtr;
+	STRING_TABLE StringTablePtr;
 
 	if (!String)
 		return NULL;
@@ -181,7 +162,7 @@ SetAbsStringTableIndex (STRING String, COUNT StringTableIndex)
 STRING
 SetRelStringTableIndex (STRING String, SIZE StringTableOffs)
 {
-	STRING_TABLE_DESC *StringTablePtr;
+	STRING_TABLE StringTablePtr;
 
 	if (!String)
 		return NULL;
@@ -230,7 +211,7 @@ GetStringLengthBin (STRING String)
 STRINGPTR
 GetStringSoundClip (STRING String)
 {
-	STRING_TABLE_DESC *StringTablePtr;
+	STRING_TABLE StringTablePtr;
 	COUNT StringIndex;
 
 	if (String == NULL)
@@ -263,7 +244,7 @@ GetStringSoundClip (STRING String)
 STRINGPTR
 GetStringTimeStamp (STRING String)
 {
-	STRING_TABLE_DESC *StringTablePtr;
+	STRING_TABLE StringTablePtr;
 	COUNT StringIndex;
 	int offset;
 

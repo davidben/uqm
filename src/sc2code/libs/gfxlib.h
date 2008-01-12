@@ -19,15 +19,17 @@
 #ifndef _GFXLIB_H
 #define _GFXLIB_H
 
-#include "memlib.h"
+#include "compiler.h"
 
 typedef struct context_desc CONTEXT_DESC;
 typedef struct frame_desc FRAME_DESC;
 typedef struct font_desc FONT_DESC;
+typedef struct drawable_desc DRAWABLE_DESC;
 
 typedef CONTEXT_DESC *CONTEXT;
 typedef FRAME_DESC *FRAME;
 typedef FONT_DESC *FONT;
+typedef DRAWABLE_DESC *DRAWABLE;
 
 typedef UWORD TIME_VALUE;
 
@@ -131,10 +133,6 @@ typedef struct
 	STAMP IntersectStamp;
 } INTERSECT_CONTROL;
 
-typedef MEM_HANDLE DRAWABLE;
-
-typedef MEM_HANDLE FONT_REF;
-
 typedef BYTE INTERSECT_CODE;
 
 #define INTERSECT_LEFT (INTERSECT_CODE)(1 << 0)
@@ -203,15 +201,13 @@ extern BOOLEAN GetFrameRect (FRAME Frame, RECT *pRect);
 extern HOT_SPOT SetFrameHot (FRAME Frame, HOT_SPOT HotSpot);
 extern HOT_SPOT GetFrameHot (FRAME Frame);
 extern BOOLEAN InstallGraphicResTypes (COUNT cel_type, COUNT font_type);
-extern DWORD LoadGraphicFile (const char *pStr);
-extern DWORD LoadFontFile (const char *pStr);
-extern DWORD LoadGraphicInstance (DWORD res);
+extern DRAWABLE LoadGraphicFile (const char *pStr);
+extern FONT LoadFontFile (const char *pStr);
+extern void *LoadGraphicInstance (DWORD res);
 extern DRAWABLE LoadDisplayPixmap (RECT *area, FRAME frame);
 extern FRAME SetContextFontEffect (FRAME EffectFrame);
 extern FONT SetContextFont (FONT Font);
-extern BOOLEAN DestroyFont (FONT_REF FontRef);
-extern FONT CaptureFont (FONT_REF FontRef);
-extern FONT_REF ReleaseFont (FONT Font);
+extern BOOLEAN DestroyFont (FONT FontRef);
 extern BOOLEAN TextRect (TEXT *pText, RECT *pRect, BYTE *pdelta);
 extern BOOLEAN GetContextFontLeading (SIZE *pheight);
 extern BOOLEAN GetContextFontLeadingWidth (SIZE *pwidth);
@@ -228,7 +224,7 @@ extern void SetFrameTransparentColor (FRAME Frame, COLOR c32k);
 extern FRAME CaptureDrawable (DRAWABLE Drawable);
 extern DRAWABLE ReleaseDrawable (FRAME Frame);
 
-extern MEM_HANDLE GetFrameHandle (FRAME Frame);
+extern DRAWABLE GetFrameParentDrawable (FRAME Frame);
 
 extern BOOLEAN SetColorMap (COLORMAPPTR ColorMapPtr);
 extern DWORD XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval);

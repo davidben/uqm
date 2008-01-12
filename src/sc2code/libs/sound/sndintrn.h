@@ -23,16 +23,14 @@
 #include "sndlib.h"
 #include "reslib.h"
 
-extern MEM_HANDLE _GetMusicData (uio_Stream *fp, DWORD length);
-extern BOOLEAN _ReleaseMusicData (MEM_HANDLE handle);
+extern void *_GetMusicData (uio_Stream *fp, DWORD length);
+extern BOOLEAN _ReleaseMusicData (void *handle);
 
-extern MEM_HANDLE _GetSoundBankData (uio_Stream *fp, DWORD length);
-extern BOOLEAN _ReleaseSoundBankData (MEM_HANDLE handle);
+extern void *_GetSoundBankData (uio_Stream *fp, DWORD length);
+extern BOOLEAN _ReleaseSoundBankData (void *handle);
 
-#define AllocMusicData(s) AllocResourceData((s),MEM_ZEROINIT)
-#define LockMusicData LockResourceData
-#define UnlockMusicData UnlockResourceData
-#define FreeMusicData _ReleaseMusicData
+#define AllocMusicData HMalloc
+#define FreeMusicData  HFree
 
 extern char* CheckMusicResName (char* filename);
 

@@ -106,7 +106,7 @@ static LOCDATA melnorme_desc =
 	&melnorme_numbers_english, /* AlienNumberSpeech - default */
 	/* Filler for loaded resources */
 	NULL, NULL, NULL,
-	NULL_HANDLE,
+	NULL,
 	NULL,
 };
 

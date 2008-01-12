@@ -61,14 +61,14 @@ loadPackage (ResourceIndex *idx, RES_PACKAGE pkg) {
 		if (GET_PACKAGE (idx->res[i]->res) != pkg)
 			continue;
 	
-		if (idx->res[i]->handle != NULL_HANDLE)
+		if (idx->res[i]->resdata != NULL)
 			continue;  // Already loaded
 
 		loadResourceDesc (idx, idx->res[i]);
 	}
 }
 
-MEM_HANDLE
+void *
 loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc)
 {
 	RES_TYPE resType = GET_TYPE (desc->res);
@@ -79,33 +79,33 @@ loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc)
 	{
 		log_add (log_Warning, "Warning: Unable to load '%s'; no handler "
 				"for type %d defined.", desc->res_id, resType);
-		return NULL_HANDLE;
+		return NULL;
 	}
 
 	path = res_GetString (desc->res_id);
 	if (path == NULL)
 	{
 		log_add (log_Warning, "Could not decode resource '%s'", desc->res_id);
-		return NULL_HANDLE;
+		return NULL;
 	}
 	
-	desc->handle = loadResource (path,
+	desc->resdata = loadResource (path,
 			idx->typeInfo.handlers[resType].loadFun);
-	return desc->handle;
+	return desc->resdata;
 }
 
-MEM_HANDLE
+void *
 loadResource(const char *path, ResourceLoadFun *loadFun)
 {
 	uio_Stream *stream;
 	long dataLen;
-	MEM_HANDLE handle;
+	void *resdata;
 
 	stream = res_OpenResFile (contentDir, path, "rb");
 	if (stream == NULL)
 	{
 		log_add (log_Warning, "Warning: Can't open '%s'", path);
-		return NULL_HANDLE;
+		return NULL;
 	}
 
 	dataLen = LengthResFile (stream);
@@ -118,15 +118,15 @@ loadResource(const char *path, ResourceLoadFun *loadFun)
 	}
 
 	_cur_resfile_name = path;
-	handle = (*loadFun) (stream, dataLen);
+	resdata = (*loadFun) (stream, dataLen);
 	_cur_resfile_name = NULL;
 	res_CloseResFile (stream);
 
-	return handle;
+	return resdata;
 
 err:
 	res_CloseResFile (stream);
-	return NULL_HANDLE;
+	return NULL;
 }
 
 // Get a resource by its resource ID.
@@ -135,7 +135,7 @@ err:
 // NB. It may be better to add an extra flag to res_GetResource() to
 // indicate whether you really want this, or add a separate function
 // for preloading the entire package.
-MEM_HANDLE
+void *
 res_GetResource (RESOURCE res)
 {
 	ResourceIndex *resourceIndex;
@@ -148,17 +148,17 @@ res_GetResource (RESOURCE res)
 	{
 		log_add (log_Warning, "Trying to get undefined resource %08x",
 				(DWORD) res);
-		return NULL_HANDLE;
+		return NULL;
 	}
 
-	if (desc->handle != NULL_HANDLE)
-		return desc->handle;
+	if (desc->resdata != NULL)
+		return desc->resdata;
 
 	// Load the entire package, for historical reasons.
 	loadPackage (resourceIndex, GET_PACKAGE (res));
 
-	return desc->handle;
-			// May still be NULL_HANDLE, if the load failed.
+	return desc->resdata;
+			// May still be NULL, if the load failed.
 }
 
 // NB: this function appears to be never called!
@@ -177,7 +177,7 @@ res_FreeResource (RESOURCE res)
 		return;
 	}
 	
-	if (desc->handle == NULL_HANDLE)
+	if (desc->resdata == NULL)
 	{
 		log_add (log_Debug, "Warning: trying to free not loaded "
 				"resource.");
@@ -186,37 +186,37 @@ res_FreeResource (RESOURCE res)
 
 	idx = _get_current_index_header ();
 	freeFun = idx->typeInfo.handlers[GET_TYPE (res)].freeFun;
-	(*freeFun) (desc->handle);
-	desc->handle = NULL_HANDLE;
+	(*freeFun) (desc->resdata);
+	desc->resdata = NULL;
 }
 
 // By calling this function the caller will be responsible of unloading
 // the resource. If res_GetResource() get called again for this
 // resource, a NEW copy will be loaded, regardless of whether a detached
 // copy still exists.
-MEM_HANDLE
+void *
 res_DetachResource (RESOURCE res)
 {
 	ResourceDesc *desc;
-	MEM_HANDLE result;
+	void *result;
 
 	desc = lookupResourceDesc (_get_current_index_header(), res);
 	if (desc == NULL)
 	{
 		log_add (log_Debug, "Warning: trying to detach from an unrecognised "
 				"resource.");
-		return NULL_HANDLE;
+		return NULL;
 	}
 	
-	if (desc->handle == NULL_HANDLE)
+	if (desc->resdata == NULL)
 	{
 		log_add (log_Debug, "Warning: trying to detach from a not loaded "
 				"resource.");
-		return NULL_HANDLE;
+		return NULL;
 	}
 
-	result = desc->handle;
-	desc->handle = NULL_HANDLE;
+	result = desc->resdata;
+	desc->resdata = NULL;
 
 	return result;
 }

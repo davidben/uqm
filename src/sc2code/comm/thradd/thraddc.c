@@ -129,7 +129,7 @@ static LOCDATA thradd_desc =
 	NULL, /* AlienNumberSpeech - none */
 	/* Filler for loaded resources */
 	NULL, NULL, NULL,
-	NULL_HANDLE,
+	NULL,
 	NULL,
 };
 

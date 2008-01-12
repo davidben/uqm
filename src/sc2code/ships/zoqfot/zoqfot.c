@@ -96,7 +96,7 @@ static RACE_DESC zoqfotpik_desc =
 		{ NULL, NULL, NULL },
 		{ NULL, NULL, NULL },
 		{ NULL, NULL, NULL },
-		NULL_HANDLE, NULL
+		NULL, NULL
 	},
 	{
 		0,

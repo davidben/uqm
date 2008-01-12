@@ -57,10 +57,10 @@ set_strtab_entry (STRING_TABLE_DESC *strtab, int index, const char *value, int l
 	}
 }
 
-MEM_HANDLE
+void *
 _GetStringData (uio_Stream *fp, DWORD length)
 {
-	MEM_HANDLE hData;
+	void *result;
 
 	{
 		char *s;
@@ -255,7 +255,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 			if (timestamp_fp)
 				uio_fclose (timestamp_fp);
 
-			hData = 0;
+			result = NULL;
 			num_data_sets = (ClipOffs ? 1 : 0) + (TSOffs ? 1 : 0) + 1;
 			if (++n)
 			{
@@ -264,13 +264,13 @@ _GetStringData (uio_Stream *fp, DWORD length)
 					flags |= HAS_SOUND_CLIPS;
 				if (TSOffs)
 					flags |= HAS_TIMESTAMP;
-				hData = AllocStringTable (n, flags);
-				if (hData)
+				result = AllocStringTable (n, flags);
+				if (result)
 				{
 					int StringIndex, ClipIndex, TSIndex;
 					STRING_TABLE_DESC *lpST;
 
-					LockStringTable (hData, &lpST);
+					lpST = (STRING_TABLE) result;
 
 					StringIndex = 0;
 					ClipIndex = n;
@@ -294,8 +294,6 @@ _GetStringData (uio_Stream *fp, DWORD length)
 							TSOffs += tslen[n];
 						}
 					}
-
-					UnlockStringTable (hData);
 				}
 			}
 			HFree (strdata);
@@ -303,46 +301,42 @@ _GetStringData (uio_Stream *fp, DWORD length)
 			if (ts_data)
 				HFree (ts_data);
 
-			return (hData);
+			return (result);
 		}
 	}
 
 	/* We don't end in .txt, so, we're a color table of some kind. */
-	hData = GetResourceData (fp, length, MEM_SOUND);
-	if (hData)
+	result = GetResourceData (fp, length);
+	if (result)
 	{
 		DWORD *fileData;
-		MEM_HANDLE hStrTab;
+		STRING_TABLE lpST;
 
-		fileData = mem_lock (hData);
+		fileData = (DWORD *)result;
 
 		dword_convert (fileData, 1); /* Length */
 
-		hStrTab = AllocStringTable (fileData[0], 0);
-		if (hStrTab)
+		lpST = AllocStringTable (fileData[0], 0);
+		if (lpST)
 		{
-			STRING_TABLE_DESC *lpST;
 			int i, size;
 			BYTE *stringptr;
 
-			LockStringTable (hStrTab, &lpST);
 			size = lpST->size;
 
-			dword_convert (fileData+2, size);
-			stringptr = (BYTE *)(fileData + 2 + size);
+			dword_convert (fileData+1, size + 1);
+			stringptr = (BYTE *)(fileData + 2 + size + fileData[1]);
 			for (i = 0; i < size; i++)
 			{
 				set_strtab_entry (lpST, i, stringptr, fileData[2+i]);
 				stringptr += fileData[2+i];
 			}
-			UnlockStringTable (hStrTab);
 		}
-		mem_unlock (hData);
-		mem_release (hData);
-		hData = hStrTab;
+		HFree (result);
+		result = lpST;
 	}
 
-	return (hData);
+	return (result);
 }
 
 

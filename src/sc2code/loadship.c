@@ -26,11 +26,10 @@
 RACE_DESC *
 load_ship (DWORD RaceResIndex, BOOLEAN LoadBattleData)
 {
-	MEM_HANDLE h;
+	RESOURCE_INDEX h, hOldIndex;
 	RACE_DESC *RDPtr = 0;
 #define INITIAL_CODE_RES MAKE_RESOURCE (1, CODE, 0)
 	void *CodeRef;
-	MEM_HANDLE hOldIndex;
 
 	h = OpenResourceIndexInstance (RaceResIndex);
 	if (!h)

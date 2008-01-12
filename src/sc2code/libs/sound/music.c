@@ -28,9 +28,8 @@ static MUSIC_REF curSpeechRef;
 void
 PLRPlaySong (MUSIC_REF MusicRef, BOOLEAN Continuous, BYTE Priority)
 {
-	TFB_SoundSample **pmus;
+	TFB_SoundSample **pmus = MusicRef;
 
-	LockMusicData (MusicRef, &pmus);
 	if (pmus)
 	{
 		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
@@ -52,7 +51,6 @@ PLRStop (MUSIC_REF MusicRef)
 		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 		StopStream (MUSIC_SOURCE);
 		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
-		UnlockMusicData (curMusicRef);
 
 		curMusicRef = 0;
 	}
@@ -100,9 +98,8 @@ PLRResume (MUSIC_REF MusicRef)
 void
 snd_PlaySpeech (MUSIC_REF SpeechRef)
 {
-	TFB_SoundSample **pmus;
+	TFB_SoundSample **pmus = SpeechRef;
 
-	LockMusicData (SpeechRef, &pmus);
 	if (pmus)
 	{
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
@@ -122,7 +119,6 @@ snd_StopSpeech (void)
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	StopStream (SPEECH_SOURCE);
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-	UnlockMusicData (curSpeechRef);
 
 	curSpeechRef = 0;
 }
@@ -130,7 +126,8 @@ snd_StopSpeech (void)
 BOOLEAN
 DestroyMusic (MUSIC_REF MusicRef)
 {
-	return (FreeMusicData (MusicRef));
+	FreeMusicData (MusicRef);
+	return (TRUE);
 }
 
 void
@@ -149,22 +146,18 @@ CheckMusicResName (char* fileName)
 	return fileName;
 }
 
-MEM_HANDLE
+void *
 _GetMusicData (uio_Stream *fp, DWORD length)
 {
-	MEM_HANDLE h;
+	MUSIC_REF h;
 
-	h = 0;
 	if (_cur_resfile_name && (h = AllocMusicData (sizeof (void *))))
 	{
-		TFB_SoundSample **pmus;
+		TFB_SoundSample **pmus = h;
 
-		LockMusicData (h, &pmus);
 		if (!pmus)
 		{
-			UnlockMusicData (h);
-			mem_release (h);
-			h = 0;
+			return NULL;
 		}		
 		else
 		{
@@ -181,9 +174,8 @@ _GetMusicData (uio_Stream *fp, DWORD length)
 			{
 				log_add (log_Warning, "_GetMusicData(): couldn't load %s", filename);
 
-				UnlockMusicData (h);
-				mem_release (h);
-				h = 0;
+				HFree (h);
+				return NULL;
 			}
 			else
 			{
@@ -196,8 +188,6 @@ _GetMusicData (uio_Stream *fp, DWORD length)
 				audio_GenBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
 			}
 		}
-
-		UnlockMusicData (h);
 	}
 
 	(void) fp;  /* satisfy compiler (unused parameter) */
@@ -206,12 +196,11 @@ _GetMusicData (uio_Stream *fp, DWORD length)
 }
 
 BOOLEAN
-_ReleaseMusicData (MEM_HANDLE handle)
+_ReleaseMusicData (void *data)
 {
-	TFB_SoundSample **pmus;
+	TFB_SoundSample **pmus = data;
 
-	LockMusicData (handle, &pmus);
-	if (pmus == 0)
+	if (pmus == NULL)
 		return (FALSE);
 
 	if ((*pmus)->decoder)
@@ -232,9 +221,7 @@ _ReleaseMusicData (MEM_HANDLE handle)
 			HFree ((*pmus)->buffer_tag);
 	}
 	HFree (*pmus);
-
-	UnlockMusicData (handle);
-	mem_release (handle);
+	HFree (pmus);
 
 	return (TRUE);
 }

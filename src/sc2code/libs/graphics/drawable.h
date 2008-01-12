@@ -50,8 +50,6 @@ struct frame_desc
 
 typedef struct drawable_desc
 {
-	MEM_HANDLE hDrawable;
-
 	CREATE_FLAGS Flags;
 	UWORD MaxIndex;
 	FRAME_DESC *Frame;
@@ -66,10 +64,7 @@ typedef struct drawable_desc
 #define DRAWABLE_PRIORITY DEFAULT_MEM_PRIORITY
 
 extern DRAWABLE AllocDrawable (COUNT num_frames);
-#define LockDrawable(D) ((DRAWABLE_DESC*)mem_lock (D))
-#define UnlockDrawable(D) mem_unlock (D)
 #define FreeDrawable(D) _ReleaseCelData (D)
-#define GetFrameParentDrawable(F) (F)->parent
 
 #define TYPE_GET(f) ((f) & FTYPE_MASK)
 #define INDEX_GET(f) ((f) & FINDEX_MASK)
@@ -86,8 +81,8 @@ extern DRAWABLE _request_drawable (COUNT NumFrames, DRAWABLE_TYPE
 		DrawableType, CREATE_FLAGS flags, SIZE width, SIZE height);
 extern INTERSECT_CODE _clip_line (RECT *pClipRect, BRESENHAM_LINE *pLine);
 
-extern MEM_HANDLE _GetCelData (uio_Stream *fp, DWORD length);
-extern BOOLEAN _ReleaseCelData (MEM_HANDLE handle);
+extern void *_GetCelData (uio_Stream *fp, DWORD length);
+extern BOOLEAN _ReleaseCelData (void *handle);
 
 extern STAMP _save_stamp;
 extern FRAME _CurFramePtr;

@@ -21,14 +21,14 @@
 
 #include "compiler.h"
 #include "port.h"
-#include "libs/memlib.h"
 #include "libs/uio.h"
 
 #include <stddef.h>
 
 typedef struct string_table_entry STRING_TABLE_ENTRY_DESC;
+typedef struct string_table STRING_TABLE_DESC;
 
-typedef MEM_HANDLE STRING_TABLE;
+typedef STRING_TABLE_DESC *STRING_TABLE;
 typedef STRING_TABLE_ENTRY_DESC *STRING;
 typedef BYTE *STRINGPTR;
 

@@ -31,7 +31,7 @@ load_gravity_well (BYTE selector)
 	RES_TYPE rt;
 	RES_INSTANCE ri;
 	RES_PACKAGE rp;
-	MEM_HANDLE hLastIndex;
+	RESOURCE_INDEX hLastIndex;
 
 	hLastIndex = SetResourceIndex (hResIndex);
 

@@ -36,7 +36,7 @@ static SWORD *encode_arrays;
 
 #define AllocEncodeArrays() \
 		HCalloc ( \
-		(MEM_SIZE)(((N + 1) + (N + 257) + (N + 1)) \
+		(((N + 1) + (N + 257) + (N + 1)) \
 		* sizeof (lson[0])))
 #define FreeCodeArrays HFree
 

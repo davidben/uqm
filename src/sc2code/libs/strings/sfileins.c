@@ -35,14 +35,14 @@ LoadStringTableFile (uio_DirHandle *dir, const char *fileName)
 	fp = res_OpenResFile (dir, fileName, "rb");
 	if (fp)
 	{
-		MEM_HANDLE hData;
+		STRING_TABLE data;
 
 		_cur_resfile_name = fileName;
-		hData = _GetStringData (fp, LengthResFile (fp));
+		data = (STRING_TABLE) _GetStringData (fp, LengthResFile (fp));
 		_cur_resfile_name = 0;
 		res_CloseResFile (fp);
 
-		return hData;
+		return data;
 	}
 
 	return (0);

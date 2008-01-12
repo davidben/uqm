@@ -83,20 +83,17 @@ DRAWABLE
 AllocDrawable (COUNT n) 
 {
 	DRAWABLE Drawable;
-	Drawable = (DRAWABLE)mem_allocate ((MEM_SIZE)(sizeof (DRAWABLE_DESC)), 
-			MEM_ZEROINIT | MEM_GRAPHICS);
+	Drawable = (DRAWABLE) HCalloc(sizeof (DRAWABLE_DESC));
 	if (Drawable)
 	{
-		DRAWABLE_DESC *DrawablePtr;
 		int i;
-		DrawablePtr = LockDrawable (Drawable);
-		DrawablePtr->Frame = (FRAME)HMalloc ((MEM_SIZE)(sizeof (FRAME_DESC) * n));
+		Drawable->Frame = (FRAME)HMalloc (sizeof (FRAME_DESC) * n);
 
 		/* Zero out the newly allocated frames, since HMalloc doesn't have MEM_ZEROINIT. */
 		for (i = 0; i < n; i++) {
 			FRAME F;
-			F = &DrawablePtr->Frame[i];
-			F->parent = DrawablePtr;
+			F = &Drawable->Frame[i];
+			F->parent = Drawable;
 			F->Type = 0;
 			F->Index = 0;
 			F->image = 0;
@@ -105,8 +102,6 @@ AllocDrawable (COUNT n)
 			F->HotSpot.x = 0;
 			F->HotSpot.y = 0;
 		}
-		
-		UnlockDrawable (Drawable);
 	}
 	return Drawable;
 }
@@ -143,15 +138,11 @@ CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width, SIZE height, COUNT
 BOOLEAN
 DestroyDrawable (DRAWABLE Drawable)
 {
-	DRAWABLE_DESC *DrawablePtr;
+	if (_CurFramePtr && (Drawable == _CurFramePtr->parent))
+		SetContextFGFrame ((FRAME)NULL);
 
-	if (LOWORD (Drawable) == GetFrameHandle (_CurFramePtr))
-		SetContextFGFrame ((FRAME)0);
-
-	DrawablePtr = LockDrawable (Drawable);
-	if (DrawablePtr)
+	if (Drawable)
 	{
-		UnlockDrawable (Drawable);
 		FreeDrawable (Drawable);
 
 		return (TRUE);

@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "strlib.h"
-#include "memlib.h"
 #include "reslib.h"
 
 struct string_table_entry
@@ -33,25 +32,20 @@ struct string_table_entry
 	struct string_table *parent;
 };
 
-typedef struct string_table
+struct string_table
 {
-	MEM_HANDLE handle;
 	unsigned short flags;
 	int size;
 	STRING_TABLE_ENTRY_DESC *strings;
-} STRING_TABLE_DESC;
-typedef STRING_TABLE_DESC *PSTRING_TABLE_DESC;
+};
 
 #define HAS_SOUND_CLIPS (1 << 0)
 #define HAS_TIMESTAMP (1 << 1)
 
-#define LockStringTable       LockResourceData
-#define UnlockStringTable     UnlockResourceData 
-
 STRING_TABLE AllocStringTable (int num_entries, int flags);
 void FreeStringTable (STRING_TABLE strtab);
 
-MEM_HANDLE _GetStringData (uio_Stream *fp, DWORD length);
+void *_GetStringData (uio_Stream *fp, DWORD length);
 
 #endif /* _STRINTRN_H */
 

@@ -279,7 +279,7 @@ FreePlanet (void)
 void
 LoadStdLanderFont (PLANET_INFO *info)
 {
-	info->LanderFont = CaptureFont (LoadFont (LANDER_FONT));
+	info->LanderFont = LoadFont (LANDER_FONT);
 	info->LanderFontEff = CaptureDrawable (
 			LoadGraphic (LANDER_FONTEFF_PMAP_ANIM));
 }
@@ -287,8 +287,8 @@ LoadStdLanderFont (PLANET_INFO *info)
 void
 FreeLanderFont (PLANET_INFO *info)
 {
-	DestroyFont (ReleaseFont (info->LanderFont));
-	info->LanderFont = 0;
+	DestroyFont (info->LanderFont);
+	info->LanderFont = NULL;
 	DestroyDrawable (ReleaseDrawable (info->LanderFontEff));
-	info->LanderFontEff = 0;
+	info->LanderFontEff = NULL;
 }

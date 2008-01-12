@@ -33,18 +33,17 @@
 
 typedef struct
 {
-	MEM_HANDLE handle;
 	RACE_DESC data _ALIGNED_ANY;
 } CODERES_STRUCT;
 
-MEM_HANDLE
+void *
 LoadCodeResFile (const char *pStr)
 {
 	(void) pStr;  /* Satisfying compiler (unused parameter) */
-	return (0);
+	return NULL;
 }
 
-static MEM_HANDLE
+static void *
 GetCodeResData (uio_Stream *fp, DWORD length)
 {
 enum
@@ -81,15 +80,15 @@ enum
 };
 
 	BYTE which_res;
-	MEM_HANDLE hData;
+	void *hData;
 
 	which_res = GetResFileChar (fp);
-	hData = mem_allocate (sizeof (CODERES_STRUCT), DEFAULT_MEM_FLAGS);
+	hData = HMalloc (sizeof (CODERES_STRUCT));
 	if (hData)
 	{
 		RACE_DESC *RDPtr;
 
-		RDPtr = 0;
+		RDPtr = NULL;
 		switch (which_res)
 		{
 			case ANDROSYN_CODE_RES:
@@ -295,36 +294,40 @@ enum
 
 		if (RDPtr == 0)
 		{
-			mem_release (hData);
+			HFree (hData);
 			hData = 0;
 		}
 		else
 		{
 			CODERES_STRUCT *cs;
 
-			cs = (CODERES_STRUCT *) mem_lock (hData);
-			cs->data = *RDPtr;
-					// Structure assignment.
-			mem_unlock (hData);
+			cs = (CODERES_STRUCT *) hData;
+			cs->data = *RDPtr;  // Structure assignment.
 		}
 	}
 	(void) length;  /* Satisfying compiler (unused parameter) */
 	return (hData);
 }
 
+BOOLEAN
+_ReleaseCodeResData (void *data)
+{
+	HFree (data);
+	return TRUE;
+}
 
 BOOLEAN
 InstallCodeResType (COUNT code_type)
 {
 	return (InstallResTypeVectors (code_type,
-			GetCodeResData, mem_release));
+			GetCodeResData, _ReleaseCodeResData));
 }
 
 
-MEM_HANDLE
+void *
 LoadCodeResInstance (DWORD res)
 {
-	MEM_HANDLE hData;
+	void *hData;
 
 	hData = res_GetResource (res);
 	if (hData)
@@ -335,25 +338,25 @@ LoadCodeResInstance (DWORD res)
 
 
 BOOLEAN
-DestroyCodeRes (MEM_HANDLE hCode)
+DestroyCodeRes (void *hCode)
 {
-	return (mem_release (hCode));
+	HFree (hCode);
+	return (TRUE);
 }
 
 
 void*
-CaptureCodeRes (MEM_HANDLE hCode, void *pData, void **ppLocData)
+CaptureCodeRes (void *hCode, void *pData, void **ppLocData)
 {
 	CODERES_STRUCT *cs;
 
-	if (hCode == 0)
+	if (hCode == NULL)
 	{
-		log_add (log_Fatal, "dummy.c::CaptureCodeRes() hCode==0! FATAL!");
-		return(0);
+		log_add (log_Fatal, "dummy.c::CaptureCodeRes() hCode==NULL! FATAL!");
+		return(NULL);
 	}
 
-	cs = (CODERES_STRUCT *) mem_lock (hCode);
-	cs->handle = hCode;
+	cs = (CODERES_STRUCT *) hCode;
 	*ppLocData = &cs->data;
 
 	(void) pData;  /* Satisfying compiler (unused parameter) */
@@ -361,16 +364,8 @@ CaptureCodeRes (MEM_HANDLE hCode, void *pData, void **ppLocData)
 }
 
 
-MEM_HANDLE
+void *
 ReleaseCodeRes (void *CodeRef)
 {
-	if (CodeRef)
-	{
-		MEM_HANDLE hCode;
-
-		mem_unlock (hCode = *(MEM_HANDLE *)CodeRef);
-		return (hCode);
-	}
-
-	return (0);
+	return CodeRef;
 }
