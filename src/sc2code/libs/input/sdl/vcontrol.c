@@ -204,6 +204,7 @@ key_init (void)
 			joysticks[i].numaxes = joysticks[i].numbuttons = 0;
 			joysticks[i].axes = NULL;
 			joysticks[i].buttons = NULL;
+			joysticks[i].threshold = 10000;
 		}
 	}
 	else
@@ -212,6 +213,7 @@ key_init (void)
 	}
 #else
 	joycount = 0;
+	joysticks = NULL;
 #endif /* HAVE_JOYSTICK */
 }
 
