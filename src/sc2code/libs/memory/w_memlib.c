@@ -70,74 +70,6 @@ typedef struct _szMemoryNode {
 static szMemoryNode extents[MAX_EXTENTS];
 static szMemoryNode *freeListHead = NULL;
 
-
-#if 0
-/*****************************************************************************/
-/*FUNCTION
-**
-** SYNOPSIS
-**      ok = MessageWithRetry(format, parms)
-**
-** DESCRIPTION
-** Presents a windows message box to the user and echoes the
-** message with printf(). The users gets to choose OK or CANCEL.
-** Returns TRUE if the user says OK.
-**
-** INPUT
-** As for printf().
-**
-** OUTPUT
-** int ok = TRUE for OK, FALSE for CANCEL.
-**
-** HISTORY
-**      6-Nov-96:AKL Creation.
-**
-** ASSUMPTIONS
-**END*/
-
-static int MessageWithRetry(char *fmt, ...)
-{
-		va_list ap;
-		char buffer[256];
-#if 0
-		int ret;
-#endif
-
-
-		va_start(ap, fmt);
-		vsprintf(buffer, fmt, ap);
-		va_end(ap);
-
-		log_add (log_User, "%s", buffer);
-		// fflush(stderr);
-
-#if 0
-	if (GetToolFrame ())
-	{
-		ShowWindow(GetToolFrame (),SW_HIDE);
-	}
-		ret = MessageBox(NULL, buffer, "Message From Programmer Dude",
-												MB_OKCANCEL);
-
-		/* Return value:
-						0 => not enough memory for message. Abort game.
-						IDCANCEL => user selected CANCEL.
-						IDOK => user selected OK.
-		*/
-
-	if (GetToolFrame ())
-	{
-		ShowWindow(GetToolFrame (),SW_NORMAL);
-	}
-
-		if ( ret == IDOK )
-				return TRUE;
-		else
-#endif
-				return FALSE;
-}
-#endif
-
 /*****************************************************************************/
 /*FUNCTION
 **
@@ -164,17 +96,16 @@ static int MessageWithRetry(char *fmt, ...)
 
 void CheckMemory(void)
 {
+	// Send all reports to STDOUT
+	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
+	_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
+	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
+	_CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDOUT );
+	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
+	_CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
 
-   // Send all reports to STDOUT
-   _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDOUT );
-   _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDOUT );
-   _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDOUT );
-
-		_CrtCheckMemory();
-		fflush(stdout);
+	_CrtCheckMemory();
+	fflush(stdout);
 }
 #endif
 
@@ -182,56 +113,40 @@ void CheckMemory(void)
 /*FUNCTION
 **
 ** SYNOPSIS
-** mem = MallocWithRetry(coreSize, diagnostic)
+** mem = SafeMalloc (coreSize, diagnostic)
 **
 ** DESCRIPTION
-** Mallocs the required memory. If the malloc fails, the user is prompted
-** to shutdown other applications and retry, or kill the game.
-** If the game is killed, the diagnostic string is printed.
+** Mallocs the required memory. If the malloc fails, the game
+** is killed with a diagnostic string.
 **
 ** INPUT
 ** int coreSize = How much memory to malloc (in bytes).
 ** char *diagnostic = String identifying the caller.
 **
 ** OUTPUT
-** void *mem = Ptr to memory, or NULL if user wants to kill us.
+** void *mem = Ptr to memory.  Never returns NULL.
 **
 ** HISTORY
+**      14-Jan-08:Cleanups and conversion from MallocWithRetry.
 **      06-Nov-96:AKL Creation.
 **
 ** ASSUMPTIONS
 **
 **END*/
 
-void *
-MallocWithRetry(int bytes, char *diagStr)
+static void *
+SafeMalloc (int bytes, char *diagStr)
 {
-	while (1)
+	void *ptr;
+	
+	ptr = malloc (bytes);
+	if (!ptr)
 	{
-		void *ptr;
-		
-		ptr = malloc (bytes);
-		if (ptr)
-			return (ptr);
-
 		log_add (log_Fatal, "Malloc failed for %s. #Bytes %d.", diagStr, bytes);
 		fflush (stderr);
-        explode ();
-#if 0
-		/* The user gets a chance to close other applications and try again. */
-		if (!MessageWithRetry ("I'm out of memory!  "
-				"Please close other applications and click OK to try again"))
-		{
-			if (MessageWithRetry ("Really OK to stop tfbtool?"))
-			{
-				/* User says "die". */
-				log_add (log_Error, "Killed by the user (%s).", diagStr);
-				log_showBox (false, false);
-				exit (EXIT_SUCCESS);
-			}
-		}
-#endif
+		explode ();
 	}
+	return ptr;
 }
 
 MEM_HANDLE
@@ -488,11 +403,10 @@ mem_release(MEM_HANDLE h)
 /*FUNCTION
 **
 ** SYNOPSIS
-** memp = mem_simple_access(h)
+** memp = mem_lock (h)
 **
 ** DESCRIPTION
-**      Obtains access to the given memory allocation. For now, we simply
-** return the handle itself, because it is the actual address!
+**      Converts a MEM_HANDLE into its equivalent pointer.
 **
 ** INPUT
 ** int h = Handle to memory to be accessed.
@@ -530,8 +444,7 @@ mem_lock (MEM_HANDLE h)
 ** done = mem_simple_unaccess(h)
 **
 ** DESCRIPTION
-**      Release access to the given memory allocation. For now, we simply
-** do nothing!
+**      Drops the refcount on a piece of memory.
 **
 ** INPUT
 ** int h = Handle to memory to be unaccessed.
@@ -621,9 +534,6 @@ HCalloc (int size)
 	return (p);
 }
 
-// BUG: HRealloc() is does not behave like realloc():
-// From the C standard: "If memory for the new object cannot be allocated,
-// the old object is not deallocated and its value is unchanged."
 void *
 HRealloc (void *p, int size)
 {
@@ -664,7 +574,7 @@ mem_uninit(void)
 void *
 HMalloc (int size)
 {
-    void *p;
+	void *p;
 
 	if (size == 0) return NULL;
 
@@ -675,12 +585,13 @@ HMalloc (int size)
 		explode ();
 	}
 
-    if ((p = malloc (size)) == NULL) {
-        log_add (log_Fatal, "Fatal Error: HMalloc(): out of memory.");
+	if ((p = malloc (size)) == NULL) 
+	{
+		log_add (log_Fatal, "Fatal Error: HMalloc(): out of memory.");
 		fflush (stderr);
-        explode ();
-    }
-    return (p);
+		explode ();
+	}
+	return (p);
 }
 
 void
@@ -698,8 +609,7 @@ HCalloc (int size)
 	void *p;
 
 	p = HMalloc (size);
-	if (p)
-		memset (p, 0, size);
+	memset (p, 0, size);
 
 	return (p);
 }
@@ -707,11 +617,7 @@ HCalloc (int size)
 void *
 HRealloc (void *p, int size)
 {
-	void *np;
-
-	np = realloc (p, size);
-
-	return (np);
+	return realloc (p, size);
 }
 
 #endif /* LEGACY_HANDLE_ALLOCATOR */
