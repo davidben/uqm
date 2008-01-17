@@ -29,7 +29,19 @@
 typedef struct resource_index *RESOURCE_INDEX;
 typedef DWORD RESOURCE;
 
-typedef BYTE RES_TYPE;
+typedef enum
+{
+	UNKNOWNRES = 0,
+	KEY_CONFIG,
+	GFXRES,
+	FONTRES,
+	STRTAB,
+	SNDRES,
+	MUSICRES,
+	RES_INDEX,
+	CODE
+} RES_TYPE;
+
 typedef COUNT RES_INSTANCE;
 typedef COUNT RES_PACKAGE;
 
@@ -41,6 +53,7 @@ typedef COUNT RES_PACKAGE;
 
 #define GET_TYPE(res) \
 		((RES_TYPE)(res) & (RES_TYPE)((1 << TYPE_BITS) - 1))
+
 #define GET_INSTANCE(res) \
 		((RES_INSTANCE)((res) >> TYPE_BITS) & ((1 << INSTANCE_BITS) - 1))
 #define GET_PACKAGE(res) \

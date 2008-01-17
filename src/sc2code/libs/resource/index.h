@@ -25,6 +25,7 @@
 typedef struct
 {
 	RESOURCE res;
+	RES_TYPE restype;
 	char *res_id;
 	void *resdata;
 	//COUNT ref;
