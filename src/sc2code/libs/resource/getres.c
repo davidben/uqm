@@ -68,22 +68,6 @@ lookupResourceDesc (ResourceIndex *idx, RESOURCE res) {
 	return NULL;
 }
 
-// Load every resource in a package.
-static void
-loadPackage (ResourceIndex *idx, RES_PACKAGE pkg) {
-	COUNT i;
-
-	for (i = 0; i < idx->numRes; i++) {
-		if (GET_PACKAGE (idx->res[i]->res) != pkg)
-			continue;
-	
-		if (idx->res[i]->resdata != NULL)
-			continue;  // Already loaded
-
-		loadResourceDesc (idx, idx->res[i]);
-	}
-}
-
 void *
 loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc)
 {
@@ -198,11 +182,6 @@ err:
 }
 
 // Get a resource by its resource ID.
-// For historical reasons, if the resource is not already loaded,
-// the *entire* package will be (pre-)loaded.
-// NB. It may be better to add an extra flag to res_GetResource() to
-// indicate whether you really want this, or add a separate function
-// for preloading the entire package.
 void *
 res_GetResource (RESOURCE res)
 {
@@ -222,8 +201,7 @@ res_GetResource (RESOURCE res)
 	if (desc->resdata != NULL)
 		return desc->resdata;
 
-	// Load the entire package, for historical reasons.
-	loadPackage (resourceIndex, GET_PACKAGE (res));
+	loadResourceDesc (resourceIndex, desc);
 
 	return desc->resdata;
 			// May still be NULL, if the load failed.
