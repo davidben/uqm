@@ -1,8 +1,8 @@
-  1   0   2 comm.comandr.graphics
-  1   0   3 comm.comandr.font
-  1   0   4 comm.comandr.colortable
-  1   0   6 comm.comandr.music
-  2   1   4 comm.comandr.dialogue
-  3   2   4 comm.starbas.dialogue
-  4   1   6 comm.starbas.music
+  1   0   2 comm.commander.graphics
+  1   0   3 comm.commander.font
+  1   0   4 comm.commander.colortable
+  1   0   6 comm.commander.music
+  2   1   4 comm.commander.dialogue
+  3   2   4 comm.starbase.dialogue
+  4   1   6 comm.starbase.music
   5   2   6 comm.comlowpw.music
