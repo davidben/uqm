@@ -850,10 +850,15 @@ CheckObjectCollision (COUNT index)
 				if (!(pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] &
 						(1L << which_node)))
 				{
-					if (DestroyStringTable (ReleaseStringTable (
-							pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-							)))
-						pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
+					/* If our discovery strings have cycled, we're done */
+					if (GetStringTableIndex (
+							pSolarSysState->SysInfo.PlanetInfo.DiscoveryString) == 0)
+					{
+						if (DestroyStringTable (ReleaseStringTable (
+								pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
+								)))
+							pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
+					}
 				}
 				else
 				{

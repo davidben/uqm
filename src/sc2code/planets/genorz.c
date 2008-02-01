@@ -62,10 +62,6 @@ GenerateAndrosynth (BYTE control)
 					{
 						pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 								&= ~(1L << i);
-							/* so won't get freed in lander.c */
-						CaptureStringTable (GetStringTable (
-								pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-								));
 						if (!(pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 								& (1L << (i + 16))))
 						{
@@ -86,13 +82,6 @@ GenerateAndrosynth (BYTE control)
 										pSolarSysState->SysInfo.PlanetInfo.DiscoveryString,
 										1
 										);
-								if (GetStringTableIndex (
-										pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-										) == 0)
-										/* so will get freed in lander.c */
-									ReleaseStringTable (
-											pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-											);
 							}
 						}
 					}
