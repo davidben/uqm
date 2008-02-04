@@ -71,32 +71,32 @@
  43  30   2 graphics.orbview
  44  31   2 graphics.eartmask
  45  32   2 graphics.lifecan
- 46  33   2 graphics.lifea
- 47  34   2 graphics.lifeb
- 48  35   2 graphics.lifec
- 49  36   2 graphics.lifed
- 50  37   2 graphics.lifee
- 51  38   2 graphics.lifef
- 52  39   2 graphics.lifeg
- 53  40   2 graphics.lifeh
- 54  41   2 graphics.lifei
- 55  42   2 graphics.lifej
- 56  43   2 graphics.lifek
- 57  44   2 graphics.lifel
- 58  45   2 graphics.lifem
- 59  46   2 graphics.lifen
- 60  47   2 graphics.lifeo
- 61  48   2 graphics.lifep
- 62  49   2 graphics.lifeq
- 63  50   2 graphics.lifer
- 64  51   2 graphics.lifes
- 65  52   2 graphics.lifet
- 66  53   2 graphics.lifew
- 67  54   2 graphics.lifex
- 68  55   2 graphics.lifey
- 69  56   2 graphics.lifeu
- 70  57   2 graphics.lifev
- 71  58   2 graphics.lifez
+ 46  33   2 graphics.life.0
+ 47  34   2 graphics.life.1
+ 48  35   2 graphics.life.2
+ 49  36   2 graphics.life.3
+ 50  37   2 graphics.life.4
+ 51  38   2 graphics.life.5
+ 52  39   2 graphics.life.6
+ 53  40   2 graphics.life.7
+ 54  41   2 graphics.life.8
+ 55  42   2 graphics.life.9
+ 56  43   2 graphics.life.10
+ 57  44   2 graphics.life.11
+ 58  45   2 graphics.life.12
+ 59  46   2 graphics.life.13
+ 60  47   2 graphics.life.14
+ 61  48   2 graphics.life.15
+ 62  49   2 graphics.life.16
+ 63  50   2 graphics.life.17
+ 64  51   2 graphics.life.18
+ 65  52   2 graphics.life.19
+ 66  53   2 graphics.life.20
+ 67  54   2 graphics.life.21
+ 68  55   2 graphics.life.22
+ 69  56   2 graphics.life.23
+ 70  57   2 graphics.life.24
+ 71  58   2 graphics.life.25
  72   5   4 colortable.str_cts_
  72   6   4 translate.mtl2xlts
  73   7   4 colortable.wr1_cts_
