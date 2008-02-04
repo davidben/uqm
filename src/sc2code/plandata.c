@@ -794,7 +794,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{TERBIUM, MEDIUM_USEFUL},
 		},
 		LANTHANIDE_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		LANTHANIDE_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* TREASURE_WORLD */
@@ -813,7 +813,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		TREASURE_COLOR_TAB,
-		QUASI_DEGENERATE_XLAT_TAB,
+		TREASURE_XLAT_TAB,
 		500, 1, 0, 160,
 	},
 	{ /* UREA_WORLD */
@@ -870,7 +870,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		RADIOACTIVE_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		RADIOACTIVE_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* OPALESCENT_WORLD */
@@ -908,7 +908,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		CYANIC_COLOR_TAB,
-		QUASI_DEGENERATE_XLAT_TAB,
+		CYANIC_XLAT_TAB,
 		500, 1, 0, 160,
 	},
 	{ /* ACID_WORLD */
@@ -927,7 +927,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		ACID_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		ACID_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* ALKALI_WORLD */
@@ -946,7 +946,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		ALKALI_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		ALKALI_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* HALIDE_WORLD */
@@ -965,7 +965,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		HALIDE_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		HALIDE_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* GREEN_WORLD */
@@ -984,7 +984,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		GREEN_COLOR_TAB,
-		UREA_XLAT_TAB,
+		GREEN_XLAT_TAB,
 		230, 2, 200, 150,
 	},
 	{ /* COPPER_WORLD */
@@ -1003,7 +1003,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		COPPER_COLOR_TAB,
-		QUASI_DEGENERATE_XLAT_TAB,
+		COPPER_XLAT_TAB,
 		500, 1, 0, 160,
 	},
 	{ /* CARBIDE_WORLD */
@@ -1022,7 +1022,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		CARBIDE_COLOR_TAB,
-		OPALESCENT_XLAT_TAB,
+		CARBIDE_XLAT_TAB,
 		400, 1, 100, 190,
 	},
 	{ /* ULTRAMARINE_WORLD */
@@ -1041,7 +1041,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		ULTRAMARINE_COLOR_TAB,
-		UREA_XLAT_TAB,
+		ULTRAMARINE_XLAT_TAB,
 		200, 2, 100, 100,
 	},
 	{ /* NOBLE_WORLD */
@@ -1060,7 +1060,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		NOBLE_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		NOBLE_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* AZURE_WORLD */
@@ -1079,7 +1079,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		AZURE_COLOR_TAB,
-		UREA_XLAT_TAB,
+		AZURE_XLAT_TAB,
 		230, 2, 200, 150,
 	},
 	{ /* CHONDRITE_WORLD */
@@ -1117,7 +1117,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		PURPLE_COLOR_TAB,
-		UREA_XLAT_TAB,
+		PURPLE_XLAT_TAB,
 		230, 2, 200, 150,
 	},
 	{ /* SUPER_DENSE_WORLD */
@@ -1136,7 +1136,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		SUPER_DENSE_COLOR_TAB,
-		QUASI_DEGENERATE_XLAT_TAB,
+		SUPER_DENSE_XLAT_TAB,
 		500, 1, 0, 160,
 	},
 	{ /* PELLUCID_WORLD */
@@ -1155,7 +1155,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		PELLUCID_COLOR_TAB,
-		OPALESCENT_XLAT_TAB,
+		PELLUCID_XLAT_TAB,
 		400, 1, 100, 190,
 	},
 	{ /* DUST_WORLD */
@@ -1174,7 +1174,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		DUST_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		DUST_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* CRIMSON_WORLD */
@@ -1192,8 +1192,8 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 			{NOTHING, NO_DEPOSIT},
 		},
-		MAROON_COLOR_TAB,
-		UREA_XLAT_TAB,
+		CRIMSON_COLOR_TAB,
+		CRIMSON_XLAT_TAB,
 		230, 2, 200, 150,
 	},
 	{ /* CIMMERIAN_WORLD */
@@ -1212,7 +1212,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		CIMMERIAN_COLOR_TAB,
-		QUASI_DEGENERATE_XLAT_TAB,
+		CIMMERIAN_XLAT_TAB,
 		500, 1, 0, 160,
 	},
 	{ /* INFRARED_WORLD */
@@ -1231,7 +1231,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		INFRARED_COLOR_TAB,
-		OPALESCENT_XLAT_TAB,
+		INFRARED_XLAT_TAB,
 		400, 1, 100, 190,
 	},
 	{ /* SELENIC_WORLD */
@@ -1250,7 +1250,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		SELENIC_COLOR_TAB,
-		UREA_XLAT_TAB,
+		SELENIC_XLAT_TAB,
 		230, 2, 200, 150,
 	},
 	{ /* AURIC_WORLD */
@@ -1269,7 +1269,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		AURIC_COLOR_TAB,
-		QUASI_DEGENERATE_XLAT_TAB,
+		AURIC_XLAT_TAB,
 		500, 1, 0, 160,
 	},
 
@@ -1290,7 +1290,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		FLUORESCENT_COLOR_TAB,
-		OPALESCENT_XLAT_TAB,
+		FLUORESCENT_XLAT_TAB,
 		400, 1, 100, 190,
 	},
 	{ /* ULTRAVIOLET_WORLD */
@@ -1309,7 +1309,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		ULTRAVIOLET_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		ULTRAVIOLET_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* PLUTONIC_WORLD */
@@ -1328,7 +1328,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		PLUTONIC_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		PLUTONIC_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* RAINBOW_WORLD */
@@ -1350,7 +1350,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 		RAINBOW_XLAT_TAB,
 		500, 1, 20, 100,
 	},
-	{ /* CRACKED_WORLD */
+	{ /* SHATTERED_WORLD */
 		MAKE_BYTE (LARGE_ROCKY_WORLD + CRATERED_ALGO,
 				ORANGE_BODY), /* Color and type/size of planet */
 		SUPER_TECTONICS, /* Tectonics - Scaled with Earth at 82    */
@@ -1365,8 +1365,8 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{CHROMIUM, HUGE_USEFUL},
 			{NOTHING, NO_DEPOSIT},
 		},
-		CRACKED_COLOR_TAB,
-		CRACKED_XLAT_TAB,
+		SHATTERED_COLOR_TAB,
+		SHATTERED_XLAT_TAB,
 		500, 1, 0, 185,
 	},
 	{ /* SAPPHIRE_WORLD */
@@ -1404,7 +1404,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		ORGANIC_COLOR_TAB,
-		QUASI_DEGENERATE_XLAT_TAB,
+		ORGANIC_XLAT_TAB,
 		500, 1, 0, 160,
 	},
 	{ /* XENOLITHIC_WORLD */
@@ -1423,7 +1423,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		XENOLITHIC_COLOR_TAB,
-		OPALESCENT_XLAT_TAB,
+		XENOLITHIC_XLAT_TAB,
 		400, 1, 100, 190,
 	},
 	{ /* REDUX_WORLD */
@@ -1461,7 +1461,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		PRIMORDIAL_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		PRIMORDIAL_XLAT_TAB,
 		250, 2, 10, 200,
 	},
 	{ /* EMERALD_WORLD */
@@ -1480,7 +1480,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		EMERALD_COLOR_TAB,
-		SAPPHIRE_XLAT_TAB,
+		EMERALD_XLAT_TAB,
 		80, 1, 0, 128,
 	},
 	{ /* CHLORINE_WORLD */
@@ -1518,7 +1518,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		MAGNETIC_COLOR_TAB,
-		OPALESCENT_XLAT_TAB,
+		MAGNETIC_XLAT_TAB,
 		400, 1, 100, 190,
 	},
 	{ /* WATER_WORLD */
@@ -1537,7 +1537,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		WATER_COLOR_TAB,
-		CHLORINE_XLAT_TAB,
+		WATER_XLAT_TAB,
 		500, 1, 0, 190,
 	},
 	{ /* TELLURIC_WORLD */
@@ -1556,7 +1556,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		TELLURIC_COLOR_TAB,
-		YTTRIC_XLAT_TAB,
+		TELLURIC_XLAT_TAB,
 		250, 2, 80, 200,
 	},
 	{ /* HYDROCARBON_WORLD */
@@ -1575,7 +1575,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		HYDROCARBON_COLOR_TAB,
-		QUASI_DEGENERATE_XLAT_TAB,
+		HYDROCARBON_XLAT_TAB,
 		500, 1, 0, 160,
 	},
 	{ /* IODINE_WORLD */
@@ -1594,7 +1594,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		IODINE_COLOR_TAB,
-		UREA_XLAT_TAB,
+		IODINE_XLAT_TAB,
 		230, 2, 200, 150,
 	},
 	{ /* VINYLOGOUS_WORLD */
@@ -1613,7 +1613,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		VINYLOGOUS_COLOR_TAB,
-		OPALESCENT_XLAT_TAB,
+		VINYLOGOUS_XLAT_TAB,
 		400, 1, 100, 190,
 	},
 	{ /* RUBY_WORLD */
@@ -1632,7 +1632,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		RUBY_COLOR_TAB,
-		SAPPHIRE_XLAT_TAB,
+		RUBY_XLAT_TAB,
 		80, 1, 0, 128,
 	},
 	{ /* MAGMA_WORLD */
@@ -1651,7 +1651,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		MAGMA_COLOR_TAB,
-		QUASI_DEGENERATE_XLAT_TAB,
+		MAGMA_XLAT_TAB,
 		500, 1, 0, 160,
 	},
 	{ /* MAROON_WORLD */
@@ -1669,8 +1669,8 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 			{NOTHING, NO_DEPOSIT},
 		},
-		CRIMSON_COLOR_TAB,
-		UREA_XLAT_TAB,
+		MAROON_COLOR_TAB,
+		MAROON_XLAT_TAB,
 		230, 2, 200, 150,
 	},
 
@@ -1690,7 +1690,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		BLU_GAS_COLOR_TAB,
-		GAS_XLAT_TAB,
+		BLU_GAS_XLAT_TAB,
 		10, 2, 8, 29,
 	},
 	{
@@ -1709,7 +1709,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		CYA_GAS_COLOR_TAB,
-		GAS_XLAT_TAB,
+		CYA_GAS_XLAT_TAB,
 		10, 2, 8, 29,
 	},
 	{
@@ -1728,7 +1728,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		GRN_GAS_COLOR_TAB,
-		GAS_XLAT_TAB,
+		GRN_GAS_XLAT_TAB,
 		10, 2, 8, 29,
 	},
 	{
@@ -1747,7 +1747,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		GRY_GAS_COLOR_TAB,
-		GAS_XLAT_TAB,
+		GRY_GAS_XLAT_TAB,
 		10, 2, 8, 29,
 	},
 	{
@@ -1766,7 +1766,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		ORA_GAS_COLOR_TAB,
-		GAS_XLAT_TAB,
+		ORA_GAS_XLAT_TAB,
 		10, 2, 8, 29,
 	},
 	{
@@ -1785,7 +1785,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		PUR_GAS_COLOR_TAB,
-		GAS_XLAT_TAB,
+		PUR_GAS_XLAT_TAB,
 		10, 2, 8, 29,
 	},
 	{
@@ -1804,7 +1804,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		RED_GAS_COLOR_TAB,
-		GAS_XLAT_TAB,
+		RED_GAS_XLAT_TAB,
 		10, 2, 8, 29,
 	},
 	{
@@ -1823,7 +1823,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		VIO_GAS_COLOR_TAB,
-		GAS_XLAT_TAB,
+		VIO_GAS_XLAT_TAB,
 		10, 2, 8, 29,
 	},
 	{ /* A Jupiter-like World */
@@ -1842,7 +1842,7 @@ const PlanetFrame planet_array[NUMBER_OF_PLANET_TYPES] =
 			{NOTHING, NO_DEPOSIT},
 		},
 		YEL_GAS_COLOR_TAB,
-		GAS_XLAT_TAB,
+		YEL_GAS_XLAT_TAB,
 		10, 2, 8, 29,
 	},
 };

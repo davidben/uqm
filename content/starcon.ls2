@@ -97,78 +97,124 @@
  69  56   2 graphics.life.23
  70  57   2 graphics.life.24
  71  58   2 graphics.life.25
- 72   5   4 colortable.str_cts_
- 72   6   4 translate.mtl2xlts
- 73   7   4 colortable.wr1_cts_
- 74   8   4 translate.rst_xlts
- 75   9   4 colortable.co2_cts_
- 76  10   4 translate.bnd_xlts
- 77  11   4 colortable.ylgscts_
- 78  12   4 colortable.lll_cts_
- 79  13   4 colortable.ylgscts_
- 80  14   4 translate.den_xlts
- 81  15   4 colortable.mtl_cts_
- 81  16   4 translate.mtl1xlts
- 82  17   4 colortable.rrr_cts_
- 83  18   4 colortable.ice_cts_
- 84  19   4 translate.ice_xlts
- 85  20   4 colortable.qqq_cts_
- 86  21   4 colortable.rst_cts_
- 87  22   4 colortable.bnd_cts_
- 88  23   4 colortable.rdx_cts_
- 89  24   4 colortable.nnn_cts_
- 90  25   4 colortable.qqq_cts_
- 91  26   4 colortable.rrr_cts_
- 92  27   4 colortable.den_cts_
- 93  28   4 colortable.blgscts_
- 94  29   4 colortable.www_cts_
- 95  30   4 colortable.grv_cts_
- 95  31   4 translate.grv_xlts
- 96  32   4 colortable.vigscts_
- 97  33   4 colortable.kkk_cts_
- 98  34   4 colortable.prgscts_
- 99  35   4 colortable.dst_cts_
-100  36   4 colortable.dst_cts_
-101  37   4 colortable.jjj_cts_
-102  38   4 colortable.dst_cts_
-103  39   4 colortable.lit_cts_
-104  40   4 colortable.ylgscts_
-105  41   4 colortable.vigscts_
-106  42   4 colortable.vigscts_
-107  43   4 colortable.orgscts_
-108  44   4 colortable.rai_cts_
-108  45   4 translate.rai_xlts
-109  46   4 colortable.hel_cts_
-109  47   4 translate.hel_xlts
-110  48   4 colortable.cry_cts_
-111  49   4 translate.cry_xlts
-112  50   4 colortable.bnd_cts_
-113  51   4 colortable.cygscts_
-114  52   4 colortable.rdx_cts_
-114  53   4 translate.rdx1xlts
-115  54   4 colortable.co2_cts_
-116  55   4 colortable.eme_cts_
-117  56   4 colortable.rst_cts_
-118  57   4 translate.h2o_xlts
-119  58   4 colortable.rdx_cts_
-120  59   4 colortable.h2o_cts_
-121  60   4 colortable.h2o_cts_
-122  61   4 colortable.www_cts_
-123  62   4 colortable.co2_cts_
-124  63   4 colortable.wr1_cts_
-125  64   4 colortable.rub_cts_
-126  65   4 colortable.rrr_cts_
-127  66   4 colortable.bbb_cts_
-128  67   4 translate.gasg
-129  68   4 colortable.blugasgi
-130  69   4 colortable.cyagasgi
-131  70   4 colortable.grngasgi
-132  71   4 colortable.grygasgi
-133  72   4 colortable.oragasgi
-134  73   4 colortable.purgasgi
-135  74   4 colortable.redgasgi
-136  75   4 colortable.viogasgi
-137  76   4 colortable.yelgasgi
+ 72   5   4 planet.oolite.colortable
+ 72   6   4 planet.oolite.translatetable
+ 73   5   4 planet.yttric.colortable
+ 73   6   4 planet.yttric.translatetable
+ 74   5   4 planet.quasidegenerate.colortable
+ 74   6   4 planet.quasidegenerate.translatetable
+ 75   5   4 planet.lanthanide.colortable
+ 75   6   4 planet.lanthanide.translatetable
+ 76   5   4 planet.treasure.colortable
+ 76   6   4 planet.treasure.translatetable
+ 77   5   4 planet.urea.colortable
+ 77   6   4 planet.urea.translatetable
+ 78   5   4 planet.metal.colortable
+ 78   6   4 planet.metal.translatetable
+ 79   5   4 planet.radioactive.colortable
+ 79   6   4 planet.radioactive.translatetable
+ 80   5   4 planet.opalescent.colortable
+ 80   6   4 planet.opalescent.translatetable
+ 81   5   4 planet.cyanic.colortable
+ 81   6   4 planet.cyanic.translatetable
+ 82   5   4 planet.acid.colortable
+ 82   6   4 planet.acid.translatetable
+ 83   5   4 planet.alkali.colortable
+ 83   6   4 planet.alkali.translatetable
+ 84   5   4 planet.halide.colortable
+ 84   6   4 planet.halide.translatetable
+ 85   5   4 planet.green.colortable
+ 85   6   4 planet.green.translatetable
+ 86   5   4 planet.copper.colortable
+ 86   6   4 planet.copper.translatetable
+ 87   5   4 planet.carbide.colortable
+ 87   6   4 planet.carbide.translatetable
+ 88   5   4 planet.ultramarine.colortable
+ 88   6   4 planet.ultramarine.translatetable
+ 89   5   4 planet.noble.colortable
+ 89   6   4 planet.noble.translatetable
+ 90   5   4 planet.azure.colortable
+ 90   6   4 planet.azure.translatetable
+ 91   5   4 planet.chondrite.colortable
+ 91   6   4 planet.chondrite.translatetable
+ 92   5   4 planet.purple.colortable
+ 92   6   4 planet.purple.translatetable
+ 93   5   4 planet.superdense.colortable
+ 93   6   4 planet.superdense.translatetable
+ 94   5   4 planet.pellucid.colortable
+ 94   6   4 planet.pellucid.translatetable
+ 95   5   4 planet.dust.colortable
+ 95   6   4 planet.dust.translatetable
+ 96   5   4 planet.crimson.colortable
+ 96   6   4 planet.crimson.translatetable
+ 97   5   4 planet.cimmerian.colortable
+ 97   6   4 planet.cimmerian.translatetable
+ 98   5   4 planet.infrared.colortable
+ 98   6   4 planet.infrared.translatetable
+ 99   5   4 planet.selenic.colortable
+ 99   6   4 planet.selenic.translatetable
+100   5   4 planet.auric.colortable
+100   6   4 planet.auric.translatetable
+101   5   4 planet.fluorescent.colortable
+101   6   4 planet.fluorescent.translatetable
+102   5   4 planet.ultraviolet.colortable
+102   6   4 planet.ultraviolet.translatetable
+103   5   4 planet.plutonic.colortable
+103   6   4 planet.plutonic.translatetable
+104   5   4 planet.rainbow.colortable
+104   6   4 planet.rainbow.translatetable
+105   5   4 planet.shattered.colortable
+105   6   4 planet.shattered.translatetable
+106   5   4 planet.sapphire.colortable
+106   6   4 planet.sapphire.translatetable
+107   5   4 planet.organic.colortable
+107   6   4 planet.organic.translatetable
+108   5   4 planet.xenolithic.colortable
+108   6   4 planet.xenolithic.translatetable
+109   5   4 planet.redux.colortable
+109   6   4 planet.redux.translatetable
+110   5   4 planet.primordial.colortable
+110   6   4 planet.primordial.translatetable
+111   5   4 planet.emerald.colortable
+111   6   4 planet.emerald.translatetable
+112   5   4 planet.chlorine.colortable
+112   6   4 planet.chlorine.translatetable
+113   5   4 planet.magnetic.colortable
+113   6   4 planet.magnetic.translatetable
+114   5   4 planet.water.colortable
+114   6   4 planet.water.translatetable
+115   5   4 planet.telluric.colortable
+115   6   4 planet.telluric.translatetable
+116   5   4 planet.hydrocarbon.colortable
+116   6   4 planet.hydrocarbon.translatetable
+117   5   4 planet.iodine.colortable
+117   6   4 planet.iodine.translatetable
+118   5   4 planet.vinylogous.colortable
+118   6   4 planet.vinylogous.translatetable
+119   5   4 planet.ruby.colortable
+119   6   4 planet.ruby.translatetable
+120   5   4 planet.magma.colortable
+120   6   4 planet.magma.translatetable
+121   5   4 planet.maroon.colortable
+121   6   4 planet.maroon.translatetable
+122   5   4 planet.bluegas.colortable
+122   6   4 planet.bluegas.translatetable
+123   5   4 planet.cyangas.colortable
+123   6   4 planet.cyangas.translatetable
+124   5   4 planet.greengas.colortable
+124   6   4 planet.greengas.translatetable
+125   5   4 planet.greygas.colortable
+125   6   4 planet.greygas.translatetable
+126   5   4 planet.orangegas.colortable
+126   6   4 planet.orangegas.translatetable
+127   5   4 planet.purplegas.colortable
+127   6   4 planet.purplegas.translatetable
+128   5   4 planet.redgas.colortable
+128   6   4 planet.redgas.translatetable
+129   5   4 planet.violetgas.colortable
+129   6   4 planet.violetgas.translatetable
+130   5   4 planet.yellowgas.colortable
+130   6   4 planet.yellowgas.translatetable
 138   3   3 font.lander
 138 288   2 graphics.landfeff
 139  59   2 graphics.moonbase

@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Planetside resource names are now consistent and generatable - Michael
 - Androsynth ruins freeing condition now uses cycles (Bug #1028) - Michael
 - .rmp files now carry the types of the targets - Michael
 - Joystick threshold defaults to 10,000, not 0 (Bug #1046) - Michael

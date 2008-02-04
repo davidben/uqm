@@ -109,7 +109,7 @@ GenerateMycon (BYTE control)
 			COUNT angle;
 
 			GenerateRandomIP (GENERATE_PLANETS);
-			pSolarSysState->PlanetDesc[0].data_index = CRACKED_WORLD;
+			pSolarSysState->PlanetDesc[0].data_index = SHATTERED_WORLD;
 			pSolarSysState->PlanetDesc[0].radius = EARTH_RADIUS * 80L / 100;
 			if (pSolarSysState->PlanetDesc[0].NumPlanets > 2)
 				pSolarSysState->PlanetDesc[0].NumPlanets = 2;
