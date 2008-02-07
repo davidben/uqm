@@ -36,6 +36,10 @@
 #include <string.h>
 #include <errno.h>
 #include <locale.h>
+#ifdef __APPLE__
+#	include <libgen.h>
+			/* for dirname() */
+#endif
 
 
 int optWhichCoarseScan;
@@ -117,8 +121,12 @@ findFileInDirs (const char *locs[], int numLocs, const char *file)
 	return NULL;
 }
 
+// contentDirName is an explicitely specified location for the content,
+// or NULL if none was explicitely specified.
+// execFile is the path to the uqm executable, as acquired through
+// main()'s argv[0].
 void
-prepareContentDir (const char *contentDirName)
+prepareContentDir (const char *contentDirName, const char *execFile)
 {
 	const char *testFile = "version";
 	const char *loc;
@@ -133,6 +141,20 @@ prepareContentDir (const char *contentDirName)
 			"../../content" /* For running from MSVC */
 		};
 		loc = findFileInDirs (locs, sizeof locs / sizeof locs[0], testFile);
+
+#ifdef __APPLE__
+		/* On OSX, if the content can't be found in any of the static
+		 * locations, attempt to look inside the application bundle,
+		 * by looking relative to the location of the uqm executable. */
+		if (loc == NULL)
+		{
+			char *tempDir = (char *) HMalloc (PATH_MAX);
+			snprintf (tempDir, sizeof tempDir, "%s/../Resources/content",
+					dirname (execFile));
+			loc = findFileInDirs ((const char **) &tempDir, 1, testFile);
+			HFree (tempDir);
+		}
+#endif
 	}
 	else
 	{
@@ -145,7 +167,8 @@ prepareContentDir (const char *contentDirName)
 		exit (EXIT_FAILURE);
 	}
 
-	if (expandPath (baseContentPath, sizeof baseContentPath, loc, EP_ALL_SYSTEM) == -1)
+	if (expandPath (baseContentPath, sizeof baseContentPath, loc,
+			EP_ALL_SYSTEM) == -1)
 	{
 		log_add (log_Fatal, "Fatal error: Could not expand path to content "
 				"directory: %s", strerror (errno));
@@ -155,6 +178,10 @@ prepareContentDir (const char *contentDirName)
 	log_add (log_Debug, "Using '%s' as base content dir.", baseContentPath);
 
 	mountContentDir (repository, baseContentPath);
+
+#ifndef __APPLE__
+	(void) execFile;
+#endif
 }
 
 void

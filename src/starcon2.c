@@ -432,7 +432,7 @@ main (int argc, char *argv[])
 	speechVolumeScale = options.speechVolumeScale;
 	optAddons = options.addons;
 
-	prepareContentDir (options.contentDir);
+	prepareContentDir (options.contentDir, argv[0]);
 	prepareMeleeDir ();
 	prepareSaveDir ();
 #if 0

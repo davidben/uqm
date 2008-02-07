@@ -66,7 +66,7 @@ typedef struct _input_template {
 
 extern INPUT_TEMPLATE input_templates[6];
 
-void prepareContentDir (const char *contentDirName);
+void prepareContentDir (const char *contentDirName, const char *execFile);
 void prepareConfigDir (const char *configDirName);
 void prepareMeleeDir (void);
 void prepareSaveDir (void);
