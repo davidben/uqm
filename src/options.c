@@ -149,7 +149,7 @@ prepareContentDir (const char *contentDirName, const char *execFile)
 		if (loc == NULL)
 		{
 			char *tempDir = (char *) HMalloc (PATH_MAX);
-			snprintf (tempDir, sizeof tempDir, "%s/../Resources/content",
+			snprintf (tempDir, PATH_MAX, "%s/../Resources/content",
 					dirname (execFile));
 			loc = findFileInDirs ((const char **) &tempDir, 1, testFile);
 			HFree (tempDir);
