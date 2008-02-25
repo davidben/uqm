@@ -1,13 +1,13 @@
-  1   0   2 ship.mycon.icons
-  1   0   4 ship.mycon.text
   1   0   8 ship.mycon.code
-  1   1   2 ship.mycon.meleeicons
-  2   0   5 ship.mycon.sounds
-  2   0   6 ship.mycon.ditty
-  2   2   2 ship.mycon.graphics.mycon.large
-  2   3   2 ship.mycon.graphics.mycon.medium
-  2   4   2 ship.mycon.graphics.mycon.small
-  2   5   2 ship.mycon.graphics.plasma.large
-  2   6   2 ship.mycon.graphics.plasma.medium
-  2   7   2 ship.mycon.graphics.plasma.small
-  2   8   2 ship.mycon.graphics.captain
+711   0   6 ship.mycon.ditty
+711   1   4 ship.mycon.text
+711   2   5 ship.mycon.sounds
+711   3   2 ship.mycon.icons
+711   4   2 ship.mycon.meleeicons
+711   5   2 ship.mycon.graphics.mycon.large
+711   6   2 ship.mycon.graphics.mycon.medium
+711   7   2 ship.mycon.graphics.mycon.small
+711   8   2 ship.mycon.graphics.plasma.large
+711   9   2 ship.mycon.graphics.plasma.medium
+711  10   2 ship.mycon.graphics.plasma.small
+711  11   2 ship.mycon.graphics.captain

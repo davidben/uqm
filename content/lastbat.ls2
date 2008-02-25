@@ -1,13 +1,13 @@
   1   0   8 ship.lastbat.code
-  2   0   2 ship.lastbat.graphics.lastbat.large
-  2   0   5 ship.lastbat.sounds
-  2   0   6 ship.lastbat.ditty
-  2   1   2 ship.lastbat.graphics.lastbat.medium
-  2   2   2 ship.lastbat.graphics.lastbat.small
-  2   3   2 ship.lastbat.graphics.sen.large
-  2   4   2 ship.lastbat.graphics.sen.medium
-  2   5   2 ship.lastbat.graphics.sen.small
-  2   6   2 ship.lastbat.graphics.gen.large
-  2   7   2 ship.lastbat.graphics.gen.medium
-  2   8   2 ship.lastbat.graphics.gen.small
-  3   9   2 ship.lastbat.graphics.captain
+708   0   6 ship.lastbat.ditty
+708   1   5 ship.lastbat.sounds
+708   2   2 ship.lastbat.graphics.lastbat.large
+708   3   2 ship.lastbat.graphics.lastbat.medium
+708   4   2 ship.lastbat.graphics.lastbat.small
+708   5   2 ship.lastbat.graphics.sen.large
+708   6   2 ship.lastbat.graphics.sen.medium
+708   7   2 ship.lastbat.graphics.sen.small
+708   8   2 ship.lastbat.graphics.gen.large
+708   9   2 ship.lastbat.graphics.gen.medium
+708  10   2 ship.lastbat.graphics.gen.small
+708  11   2 ship.lastbat.graphics.captain

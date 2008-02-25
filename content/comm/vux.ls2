@@ -1,5 +1,5 @@
-  1   0   2 comm.vux.graphics
-  1   0   3 comm.vux.font
-  1   0   4 comm.vux.dialogue
-  1   0   6 comm.vux.music
-  1   1   4 comm.vux.colortable
+521   0   6 comm.vux.music
+521   1   3 comm.vux.font
+521   2   4 comm.vux.dialogue
+521   3   4 comm.vux.colortable
+521   4   2 comm.vux.graphics

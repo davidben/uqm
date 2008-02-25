@@ -1,13 +1,13 @@
-  1   0   2 ship.syreen.icons
-  1   0   4 ship.syreen.text
   1   0   8 ship.syreen.code
-  1   1   2 ship.syreen.meleeicons
-  2   0   5 ship.syreen.sounds
-  2   0   6 ship.syreen.ditty
-  2   2   2 ship.syreen.graphics.syreen.large
-  2   3   2 ship.syreen.graphics.syreen.medium
-  2   4   2 ship.syreen.graphics.syreen.small
-  2   5   2 ship.syreen.graphics.dagger.large
-  2   6   2 ship.syreen.graphics.dagger.medium
-  2   7   2 ship.syreen.graphics.dagger.small
-  2   8   2 ship.syreen.graphics.captain
+720   0   6 ship.syreen.ditty
+720   1   4 ship.syreen.text
+720   2   5 ship.syreen.sounds
+720   3   2 ship.syreen.icons
+720   4   2 ship.syreen.meleeicons
+720   5   2 ship.syreen.graphics.syreen.large
+720   6   2 ship.syreen.graphics.syreen.medium
+720   7   2 ship.syreen.graphics.syreen.small
+720   8   2 ship.syreen.graphics.dagger.large
+720   9   2 ship.syreen.graphics.dagger.medium
+720  10   2 ship.syreen.graphics.dagger.small
+720  11   2 ship.syreen.graphics.captain

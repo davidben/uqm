@@ -1,13 +1,13 @@
-  1   0   2 ship.druuge.icons
-  1   0   4 ship.druuge.text
   1   0   8 ship.druuge.code
-  1   1   2 ship.druuge.meleeicons
-  2   0   5 ship.druuge.sounds
-  2   0   6 ship.druuge.ditty
-  2   2   2 ship.druuge.graphics.druuge.large
-  2   3   2 ship.druuge.graphics.druuge.medium
-  2   4   2 ship.druuge.graphics.druuge.small
-  2   5   2 ship.druuge.graphics.can.large
-  2   6   2 ship.druuge.graphics.can.medium
-  2   7   2 ship.druuge.graphics.can.small
-  2   8   2 ship.druuge.graphics.captain
+705   0   6 ship.druuge.ditty
+705   1   4 ship.druuge.text
+705   2   5 ship.druuge.sounds
+705   3   2 ship.druuge.icons
+705   4   2 ship.druuge.meleeicons
+705   5   2 ship.druuge.graphics.druuge.large
+705   6   2 ship.druuge.graphics.druuge.medium
+705   7   2 ship.druuge.graphics.druuge.small
+705   8   2 ship.druuge.graphics.can.large
+705   9   2 ship.druuge.graphics.can.medium
+705  10   2 ship.druuge.graphics.can.small
+705  11   2 ship.druuge.graphics.captain

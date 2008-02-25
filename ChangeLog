@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Repackaged static comm/ship data to it all uniquely named - Michael
 - On MacOS X, search for the content in the application bundle, from Nic
 - Planetside resource names are now consistent and generatable - Michael
 - Androsynth ruins freeing condition now uses cycles (Bug #1028) - Michael

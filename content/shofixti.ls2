@@ -1,20 +1,20 @@
-  1   0   2 ship.shofixti.icons
-  1   0   4 ship.shofixti.text
   1   0   8 ship.shofixti.code
-  1   1   2 ship.shofixti.meleeicons
-  2   2   2 ship.shofixti.graphics.shofixti.large
-  2   3   2 ship.shofixti.graphics.shofixti.medium
-  2   4   2 ship.shofixti.graphics.shofixti.small
-  2   5   2 ship.shofixti.graphics.destruct.large
-  2   6   2 ship.shofixti.graphics.destruct.medium
-  2   7   2 ship.shofixti.graphics.destruct.small
-  2   8   2 ship.shofixti.graphics.captain
-  3   9   2 ship.shofixti.graphics.oldshof.large
-  3  10   2 ship.shofixti.graphics.oldshof.medium
-  3  11   2 ship.shofixti.graphics.oldshof.small
-  3  12   2 ship.shofixti.graphics.oldcaptain
-  4   0   5 ship.shofixti.sounds
-  4   0   6 ship.shofixti.ditty
-  4  13   2 ship.shofixti.graphics.missile.large
-  4  14   2 ship.shofixti.graphics.missile.medium
-  4  15   2 ship.shofixti.graphics.missile.small
+715   0   6 ship.shofixti.ditty
+715   1   4 ship.shofixti.text
+715   2   5 ship.shofixti.sounds
+715   3   2 ship.shofixti.icons
+715   4   2 ship.shofixti.meleeicons
+715   5   2 ship.shofixti.graphics.shofixti.large
+715   6   2 ship.shofixti.graphics.shofixti.medium
+715   7   2 ship.shofixti.graphics.shofixti.small
+715   8   2 ship.shofixti.graphics.destruct.large
+715   9   2 ship.shofixti.graphics.destruct.medium
+715  10   2 ship.shofixti.graphics.destruct.small
+715  11   2 ship.shofixti.graphics.captain
+715  12   2 ship.shofixti.graphics.oldshof.large
+715  13   2 ship.shofixti.graphics.oldshof.medium
+715  14   2 ship.shofixti.graphics.oldshof.small
+715  15   2 ship.shofixti.graphics.oldcaptain
+715  16   2 ship.shofixti.graphics.missile.large
+715  17   2 ship.shofixti.graphics.missile.medium
+715  18   2 ship.shofixti.graphics.missile.small

@@ -1,16 +1,16 @@
-  1   0   2 ship.mmrnmhrm.icons
-  1   0   4 ship.mmrnmhrm.text
   1   0   8 ship.mmrnmhrm.code
-  1   1   2 ship.mmrnmhrm.meleeicons
-  2   0   5 ship.mmrnmhrm.sounds
-  2   0   6 ship.mmrnmhrm.ditty
-  2   2   2 ship.mmrnmhrm.graphics.mmrnmhrm.large
-  2   3   2 ship.mmrnmhrm.graphics.mmrnmhrm.medium
-  2   4   2 ship.mmrnmhrm.graphics.mmrnmhrm.small
-  2   5   2 ship.mmrnmhrm.graphics.torp.large
-  2   6   2 ship.mmrnmhrm.graphics.torp.medium
-  2   7   2 ship.mmrnmhrm.graphics.torp.small
-  2   8   2 ship.mmrnmhrm.graphics.ywing.large
-  2   9   2 ship.mmrnmhrm.graphics.ywing.medium
-  2  10   2 ship.mmrnmhrm.graphics.ywing.small
-  2  11   2 ship.mmrnmhrm.graphics.captain
+710   0   6 ship.mmrnmhrm.ditty
+710   1   4 ship.mmrnmhrm.text
+710   2   5 ship.mmrnmhrm.sounds
+710   3   2 ship.mmrnmhrm.icons
+710   4   2 ship.mmrnmhrm.meleeicons
+710   5   2 ship.mmrnmhrm.graphics.mmrnmhrm.large
+710   6   2 ship.mmrnmhrm.graphics.mmrnmhrm.medium
+710   7   2 ship.mmrnmhrm.graphics.mmrnmhrm.small
+710   8   2 ship.mmrnmhrm.graphics.torp.large
+710   9   2 ship.mmrnmhrm.graphics.torp.medium
+710  10   2 ship.mmrnmhrm.graphics.torp.small
+710  11   2 ship.mmrnmhrm.graphics.ywing.large
+710  12   2 ship.mmrnmhrm.graphics.ywing.medium
+710  13   2 ship.mmrnmhrm.graphics.ywing.small
+710  14   2 ship.mmrnmhrm.graphics.captain

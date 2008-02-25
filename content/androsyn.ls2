@@ -1,16 +1,16 @@
-  1   0   2 ship.androsynth.icons
-  1   0   4 ship.androsynth.text
   1   0   8 ship.androsynth.code
-  1   1   2 ship.androsynth.meleeicons
-  2   0   5 ship.androsynth.sounds
-  2   0   6 ship.androsynth.ditty
-  2   2   2 ship.androsynth.graphics.androsyn.large
-  2   3   2 ship.androsynth.graphics.androsyn.medium
-  2   4   2 ship.androsynth.graphics.androsyn.small
-  2   5   2 ship.androsynth.graphics.bubble.large
-  2   6   2 ship.androsynth.graphics.bubble.medium
-  2   7   2 ship.androsynth.graphics.bubble.small
-  2   8   2 ship.androsynth.graphics.blazer.large
-  2   9   2 ship.androsynth.graphics.blazer.medium
-  2  10   2 ship.androsynth.graphics.blazer.small
-  2  11   2 ship.androsynth.graphics.captain
+700   0   6 ship.androsynth.ditty
+700   1   4 ship.androsynth.text
+700   2   5 ship.androsynth.sounds
+700   3   2 ship.androsynth.icons
+700   4   2 ship.androsynth.meleeicons
+700   5   2 ship.androsynth.graphics.androsyn.large
+700   6   2 ship.androsynth.graphics.androsyn.medium
+700   7   2 ship.androsynth.graphics.androsyn.small
+700   8   2 ship.androsynth.graphics.bubble.large
+700   9   2 ship.androsynth.graphics.bubble.medium
+700  10   2 ship.androsynth.graphics.bubble.small
+700  11   2 ship.androsynth.graphics.blazer.large
+700  12   2 ship.androsynth.graphics.blazer.medium
+700  13   2 ship.androsynth.graphics.blazer.small
+700  14   2 ship.androsynth.graphics.captain

@@ -1,16 +1,16 @@
-  1   0   2 ship.melnorme.icons
-  1   0   4 ship.melnorme.text
   1   0   8 ship.melnorme.code
-  1   1   2 ship.melnorme.meleeicons
-  2   0   5 ship.melnorme.sounds
-  2   0   6 ship.melnorme.ditty
-  2   2   2 ship.melnorme.graphics.melnorme.large
-  2   3   2 ship.melnorme.graphics.melnorme.medium
-  2   4   2 ship.melnorme.graphics.melnorme.small
-  2   5   2 ship.melnorme.graphics.pump.large
-  2   6   2 ship.melnorme.graphics.pump.medium
-  2   7   2 ship.melnorme.graphics.pump.small
-  2   8   2 ship.melnorme.graphics.confu.large
-  2   9   2 ship.melnorme.graphics.confu.medium
-  2  10   2 ship.melnorme.graphics.confu.small
-  2  11   2 ship.melnorme.graphics.captain
+709   0   6 ship.melnorme.ditty
+709   1   4 ship.melnorme.text
+709   2   5 ship.melnorme.sounds
+709   3   2 ship.melnorme.icons
+709   4   2 ship.melnorme.meleeicons
+709   5   2 ship.melnorme.graphics.melnorme.large
+709   6   2 ship.melnorme.graphics.melnorme.medium
+709   7   2 ship.melnorme.graphics.melnorme.small
+709   8   2 ship.melnorme.graphics.pump.large
+709   9   2 ship.melnorme.graphics.pump.medium
+709  10   2 ship.melnorme.graphics.pump.small
+709  11   2 ship.melnorme.graphics.confu.large
+709  12   2 ship.melnorme.graphics.confu.medium
+709  13   2 ship.melnorme.graphics.confu.small
+709  14   2 ship.melnorme.graphics.captain

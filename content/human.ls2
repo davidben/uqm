@@ -1,13 +1,13 @@
-  1   0   2 ship.earthling.icons
-  1   0   4 ship.earthling.text
   1   0   8 ship.earthling.code
-  1   1   2 ship.earthling.meleeicons
-  2   0   5 ship.earthling.sounds
-  2   0   6 ship.earthling.ditty
-  2   2   2 ship.earthling.graphics.human.large
-  2   3   2 ship.earthling.graphics.human.medium
-  2   4   2 ship.earthling.graphics.human.small
-  2   5   2 ship.earthling.graphics.saturn.large
-  2   6   2 ship.earthling.graphics.saturn.medium
-  2   7   2 ship.earthling.graphics.saturn.small
-  2   8   2 ship.earthling.graphics.captain
+706   0   6 ship.earthling.ditty
+706   1   4 ship.earthling.text
+706   2   5 ship.earthling.sounds
+706   3   2 ship.earthling.icons
+706   4   2 ship.earthling.meleeicons
+706   5   2 ship.earthling.graphics.human.large
+706   6   2 ship.earthling.graphics.human.medium
+706   7   2 ship.earthling.graphics.human.small
+706   8   2 ship.earthling.graphics.saturn.large
+706   9   2 ship.earthling.graphics.saturn.medium
+706  10   2 ship.earthling.graphics.saturn.small
+706  11   2 ship.earthling.graphics.captain

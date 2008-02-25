@@ -1,14 +1,14 @@
-  1   0   2 ship.vux.icons
-  1   0   4 ship.vux.text
   1   0   8 ship.vux.code
-  1   1   2 ship.vux.meleeicons
-  2   0   5 ship.vux.sounds
-  2   0   6 ship.vux.ditty
-  2   2   2 ship.vux.graphics.vux.large
-  2   3   2 ship.vux.graphics.vux.medium
-  2   4   2 ship.vux.graphics.vux.small
-  2   5   2 ship.vux.graphics.limpets.large
-  2   6   2 ship.vux.graphics.limpets.medium
-  2   7   2 ship.vux.graphics.limpets.small
-  2   8   2 ship.vux.graphics.slime
-  2   9   2 ship.vux.graphics.captain
+725   0   6 ship.vux.ditty
+725   1   4 ship.vux.text
+725   2   5 ship.vux.sounds
+725   3   2 ship.vux.icons
+725   4   2 ship.vux.meleeicons
+725   5   2 ship.vux.graphics.vux.large
+725   6   2 ship.vux.graphics.vux.medium
+725   7   2 ship.vux.graphics.vux.small
+725   8   2 ship.vux.graphics.limpets.large
+725   9   2 ship.vux.graphics.limpets.medium
+725  10   2 ship.vux.graphics.limpets.small
+725  11   2 ship.vux.graphics.slime
+725  12   2 ship.vux.graphics.captain

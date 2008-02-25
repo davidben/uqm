@@ -1,13 +1,13 @@
-  1   0   2 ship.arilou.icons
-  1   0   4 ship.arilou.text
   1   0   8 ship.arilou.code
-  1   1   2 ship.arilou.meleeicons
-  2   0   5 ship.arilou.sounds
-  2   0   6 ship.arilou.ditty
-  2   2   2 ship.arilou.graphics.arilou.large
-  2   3   2 ship.arilou.graphics.arilou.medium
-  2   4   2 ship.arilou.graphics.arilou.small
-  2   5   2 ship.arilou.graphics.warp.large
-  2   6   2 ship.arilou.graphics.warp.medium
-  2   7   2 ship.arilou.graphics.warp.small
-  2   8   2 ship.arilou.graphics.captain
+701   0   6 ship.arilou.ditty
+701   1   4 ship.arilou.text
+701   2   5 ship.arilou.sounds
+701   3   2 ship.arilou.icons
+701   4   2 ship.arilou.meleeicons
+701   5   2 ship.arilou.graphics.arilou.large
+701   6   2 ship.arilou.graphics.arilou.medium
+701   7   2 ship.arilou.graphics.arilou.small
+701   8   2 ship.arilou.graphics.warp.large
+701   9   2 ship.arilou.graphics.warp.medium
+701  10   2 ship.arilou.graphics.warp.small
+701  11   2 ship.arilou.graphics.captain

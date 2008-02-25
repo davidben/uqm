@@ -1,13 +1,13 @@
-  1   0   2 ship.supox.icons
-  1   0   4 ship.supox.text
   1   0   8 ship.supox.code
-  1   1   2 ship.supox.meleeicons
-  2   0   5 ship.supox.sounds
-  2   0   6 ship.supox.ditty
-  2   2   2 ship.supox.graphics.supox.large
-  2   3   2 ship.supox.graphics.supox.medium
-  2   4   2 ship.supox.graphics.supox.small
-  2   5   2 ship.supox.graphics.gob.large
-  2   6   2 ship.supox.graphics.gob.medium
-  2   7   2 ship.supox.graphics.gob.small
-  2   8   2 ship.supox.graphics.captain
+719   0   6 ship.supox.ditty
+719   1   4 ship.supox.text
+719   2   5 ship.supox.sounds
+719   3   2 ship.supox.icons
+719   4   2 ship.supox.meleeicons
+719   5   2 ship.supox.graphics.supox.large
+719   6   2 ship.supox.graphics.supox.medium
+719   7   2 ship.supox.graphics.supox.small
+719   8   2 ship.supox.graphics.gob.large
+719   9   2 ship.supox.graphics.gob.medium
+719  10   2 ship.supox.graphics.gob.small
+719  11   2 ship.supox.graphics.captain

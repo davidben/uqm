@@ -1,13 +1,13 @@
-  1   0   2 ship.ilwrath.icons
-  1   0   4 ship.ilwrath.text
   1   0   8 ship.ilwrath.code
-  1   1   2 ship.ilwrath.meleeicons
-  2   0   5 ship.ilwrath.sounds
-  2   0   6 ship.ilwrath.ditty
-  2   2   2 ship.ilwrath.graphics.ilwrath.large
-  2   3   2 ship.ilwrath.graphics.ilwrath.medium
-  2   4   2 ship.ilwrath.graphics.ilwrath.small
-  2   5   2 ship.ilwrath.graphics.fire.large
-  2   6   2 ship.ilwrath.graphics.fire.medium
-  2   7   2 ship.ilwrath.graphics.fire.small
-  2   8   2 ship.ilwrath.graphics.captain
+707   0   6 ship.ilwrath.ditty
+707   1   4 ship.ilwrath.text
+707   2   5 ship.ilwrath.sounds
+707   3   2 ship.ilwrath.icons
+707   4   2 ship.ilwrath.meleeicons
+707   5   2 ship.ilwrath.graphics.ilwrath.large
+707   6   2 ship.ilwrath.graphics.ilwrath.medium
+707   7   2 ship.ilwrath.graphics.ilwrath.small
+707   8   2 ship.ilwrath.graphics.fire.large
+707   9   2 ship.ilwrath.graphics.fire.medium
+707  10   2 ship.ilwrath.graphics.fire.small
+707  11   2 ship.ilwrath.graphics.captain

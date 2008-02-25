@@ -1,10 +1,10 @@
-  1   0   2 ship.slylandro.icons
-  1   0   4 ship.slylandro.text
   1   0   8 ship.slylandro.code
-  1   1   2 ship.slylandro.meleeicons
-  2   0   5 ship.slylandro.sounds
-  2   0   6 ship.slylandro.ditty
-  2   2   2 ship.slylandro.graphics.slylandr.large
-  2   3   2 ship.slylandro.graphics.slylandr.medium
-  2   4   2 ship.slylandro.graphics.slylandr.small
-  2   5   2 ship.slylandro.graphics.captain
+717   0   6 ship.slylandro.ditty
+717   1   4 ship.slylandro.text
+717   2   5 ship.slylandro.sounds
+717   3   2 ship.slylandro.icons
+717   4   2 ship.slylandro.meleeicons
+717   5   2 ship.slylandro.graphics.slylandr.large
+717   6   2 ship.slylandro.graphics.slylandr.medium
+717   7   2 ship.slylandro.graphics.slylandr.small
+717   8   2 ship.slylandro.graphics.captain

@@ -1,13 +1,13 @@
-  1   0   2 ship.utwig.icons
-  1   0   4 ship.utwig.text
   1   0   8 ship.utwig.code
-  1   1   2 ship.utwig.meleeicons
-  2   0   5 ship.utwig.sounds
-  2   0   6 ship.utwig.ditty
-  2   2   2 ship.utwig.graphics.utwig.large
-  2   3   2 ship.utwig.graphics.utwig.medium
-  2   4   2 ship.utwig.graphics.utwig.small
-  2   5   2 ship.utwig.graphics.lan.large
-  2   6   2 ship.utwig.graphics.lan.medium
-  2   7   2 ship.utwig.graphics.lan.small
-  2   8   2 ship.utwig.graphics.captain
+724   0   6 ship.utwig.ditty
+724   1   4 ship.utwig.text
+724   2   5 ship.utwig.sounds
+724   3   2 ship.utwig.icons
+724   4   2 ship.utwig.meleeicons
+724   5   2 ship.utwig.graphics.utwig.large
+724   6   2 ship.utwig.graphics.utwig.medium
+724   7   2 ship.utwig.graphics.utwig.small
+724   8   2 ship.utwig.graphics.lan.large
+724   9   2 ship.utwig.graphics.lan.medium
+724  10   2 ship.utwig.graphics.lan.small
+724  11   2 ship.utwig.graphics.captain
