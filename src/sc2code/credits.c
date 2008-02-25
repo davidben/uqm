@@ -23,6 +23,7 @@
 #include "options.h"
 #include "oscill.h"
 #include "comm.h"
+#include "commglue.h"
 #include "resinst.h"
 #include "nameref.h"
 #include "settings.h"
@@ -587,7 +588,7 @@ static void
 OutTakes (void)
 {
 #define NUM_OUTTAKES 15
-	static long outtake_list[NUM_OUTTAKES] =
+	static CONVERSATION outtake_list[NUM_OUTTAKES] =
 	{
 		ZOQFOTPIK_CONVERSATION,
 		TALKING_PET_CONVERSATION,

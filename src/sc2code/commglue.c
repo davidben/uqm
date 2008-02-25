@@ -293,7 +293,7 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 }
 
 LOCDATA*
-init_race (RESOURCE comm_id)
+init_race (CONVERSATION comm_id)
 {
 	switch (comm_id)
 	{

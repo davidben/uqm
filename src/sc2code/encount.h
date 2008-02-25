@@ -19,6 +19,7 @@
 #ifndef _ENCOUNT_H
 #define _ENCOUNT_H
 
+#include "commglue.h"
 #include "displist.h"
 #include "libs/gfxlib.h"
 #include "planets/planets.h"
@@ -148,7 +149,7 @@ extern void EncounterBattle (void);
 extern void BuildBattle (COUNT which_player);
 extern COUNT InitEncounter (void);
 extern COUNT UninitEncounter (void);
-extern COUNT InitCommunication (RESOURCE which_comm);
+extern COUNT InitCommunication (CONVERSATION which_comm);
 extern void RaceCommunication (void);
 
 extern void GenerateSOL (BYTE control);

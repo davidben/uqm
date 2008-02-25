@@ -1431,10 +1431,10 @@ HailAlien (void)
 }
 
 COUNT
-InitCommunication (RESOURCE which_comm)
+InitCommunication (CONVERSATION which_comm)
 {
 	COUNT status;
-	RESOURCE_INDEX hOldIndex, hIndex;
+	RESOURCE_INDEX hOldIndex;
 	LOCDATA *LocDataPtr;
 
 #ifdef DEBUG
@@ -1470,7 +1470,7 @@ InitCommunication (RESOURCE which_comm)
 		}
 	}
 
-	if (which_comm == 0)
+	if (which_comm == URQUAN_PROBE_CONVERSATION)
 	{
 		status = URQUAN_PROBE_SHIP;
 		which_comm = URQUAN_CONVERSATION;
@@ -1484,8 +1484,10 @@ InitCommunication (RESOURCE which_comm)
 		}
 		else
 		{
-			status = GET_PACKAGE (which_comm)
-					- GET_PACKAGE (ARILOU_CONVERSATION) + ARILOU_SHIP;
+			COUNT commToShip[] = {
+				RACE_SHIP_FOR_COMM
+			};
+			status = commToShip[which_comm];
 			if (status >= YEHAT_REBEL_SHIP) {
 				/* conversation exception, set to self */
 				status = HUMAN_SHIP;
@@ -1504,22 +1506,12 @@ InitCommunication (RESOURCE which_comm)
 	}
 
 	hOldIndex = SetResourceIndex (hResIndex);
-	hIndex = OpenResourceIndexInstance (which_comm);
-	if (hIndex == 0)
-	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
-		LocDataPtr = 0;
-	}
-	else
-	{
-		SetResourceIndex (hIndex);
 
-		LocDataPtr = init_race (
-				status != YEHAT_REBEL_SHIP ? which_comm :
-				YEHAT_REBEL_CONVERSATION);
-		if (LocDataPtr)
-			CommData = *LocDataPtr;
-	}
+	LocDataPtr = init_race (
+			status != YEHAT_REBEL_SHIP ? which_comm :
+			YEHAT_REBEL_CONVERSATION);
+	if (LocDataPtr)
+		CommData = *LocDataPtr;
 
 	UnlockMutex (GraphicsLock);
 
@@ -1557,7 +1549,6 @@ InitCommunication (RESOURCE which_comm)
 	}
 
 	SetResourceIndex (hOldIndex);
-	CloseResourceIndex (hIndex);
 
 	UnlockMutex (GraphicsLock);
 
@@ -1595,7 +1586,7 @@ RaceCommunication (void)
 	HSHIPFRAG hStarShip;
 	SHIP_FRAGMENT *FragPtr;
 	HENCOUNTER hEncounter = 0;
-	RESOURCE RaceComm[] =
+	CONVERSATION RaceComm[] =
 	{
 		RACE_COMMUNICATION
 	};
