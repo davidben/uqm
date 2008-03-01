@@ -50,6 +50,9 @@ const char *eventName (BYTE func_index);
 // Give the flagship a decent equipment for debugging.
 void equipShip (void);
 
+// Remove all escort ships.
+void clearEscorts (void);
+
 // Show all active spheres of influence.
 void showSpheres (void);
 

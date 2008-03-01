@@ -18,6 +18,7 @@
 
 #include "uqmdebug.h"
 
+#include "build.h"
 #include "colors.h"
 #include "clock.h"
 #include "encount.h"
@@ -63,6 +64,23 @@ debugKeyPressed (void)
 {
 	// State modifying:
 	equipShip ();
+
+	// Give the player the ships you can't ally with under normal
+	// conditions.
+	clearEscorts ();
+	ActivateStarShip (ARILOU_SHIP, 1);
+	ActivateStarShip (PKUNK_SHIP, 1);
+	ActivateStarShip (VUX_SHIP, 1);
+	ActivateStarShip (YEHAT_SHIP, 1);
+	ActivateStarShip (MELNORME_SHIP, 1);
+	ActivateStarShip (DRUUGE_SHIP, 1);
+	ActivateStarShip (ILWRATH_SHIP, 1);
+	ActivateStarShip (MYCON_SHIP, 1);
+	ActivateStarShip (SLYLANDRO_SHIP, 1);
+	ActivateStarShip (UMGAH_SHIP, 1);
+	ActivateStarShip (URQUAN_SHIP, 1);
+	ActivateStarShip (BLACK_URQUAN_SHIP, 1);
+
 	resetCrewBattle ();
 	resetEnergyBattle ();
 	instantMove = !instantMove;
@@ -325,6 +343,31 @@ equipShip (void)
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
 		UnlockMutex (GraphicsLock);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+void
+clearEscorts (void)
+{
+	HSHIPFRAG hStarShip, hNextShip;
+
+	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
+			hStarShip; hStarShip = hNextShip)
+	{
+		SHIP_FRAGMENT *StarShipPtr;
+
+		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+		hNextShip = _GetSuccLink (StarShipPtr);
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+
+		RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
+		FreeShipFrag (&GLOBAL (built_ship_q), hStarShip);
+	}
+
+	LockMutex (GraphicsLock);
+	DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
+	UnlockMutex (GraphicsLock);
 }
 
 ////////////////////////////////////////////////////////////////////////////
