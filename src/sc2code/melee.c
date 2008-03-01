@@ -1985,6 +1985,42 @@ check_for_disconnections (MELEE_STATE *pMS)
 
 #endif
 
+static void
+nextControlType (COUNT which_side)
+{
+	switch (PlayerControl[which_side])
+	{
+		case HUMAN_CONTROL | STANDARD_RATING:
+			PlayerControl[which_side] =  COMPUTER_CONTROL | STANDARD_RATING;
+			break;
+		case COMPUTER_CONTROL | STANDARD_RATING:
+			PlayerControl[which_side] =  COMPUTER_CONTROL | GOOD_RATING;
+			break;
+		case COMPUTER_CONTROL | GOOD_RATING:
+			PlayerControl[which_side] =  COMPUTER_CONTROL | AWESOME_RATING;
+			break;
+		case COMPUTER_CONTROL | AWESOME_RATING:
+			PlayerControl[which_side] =  HUMAN_CONTROL | STANDARD_RATING;
+			break;
+
+#ifdef NETPLAY
+		case NETWORK_CONTROL | STANDARD_RATING:
+			if (netConnections[which_side] != NULL)
+				closePlayerNetworkConnection (which_side);
+			UpdateMeleeStatusMessage (-1);
+			PlayerControl[which_side] =  HUMAN_CONTROL | STANDARD_RATING;
+			break;
+#endif  /* NETPLAY */
+		default:
+			log_add (log_Error, "Error: Bad control type (%d) in "
+					"nextControlType().\n", PlayerControl[which_side]);
+			PlayerControl[which_side] =  HUMAN_CONTROL | STANDARD_RATING;
+			break;
+	}
+
+	DrawControls (which_side, TRUE);
+}
+
 BOOLEAN
 DoMelee (MELEE_STATE *pMS)
 {
@@ -2160,34 +2196,9 @@ DoMelee (MELEE_STATE *pMS)
 				case CONTROLS_TOP:
 				case CONTROLS_BOT:
 				{
-					COUNT which_side;
-
-					which_side = pMS->MeleeOption == CONTROLS_TOP ? 1 : 0;
-					if (PlayerControl[which_side] & HUMAN_CONTROL)
-						PlayerControl[which_side] =
-								COMPUTER_CONTROL | STANDARD_RATING;
-					else if (PlayerControl[which_side] & AWESOME_RATING)
-					{
-						PlayerControl[which_side] =
-								HUMAN_CONTROL | STANDARD_RATING;
-					}
-#ifdef NETPLAY
-					else if (PlayerControl[which_side] & NETWORK_CONTROL)
-					{
-						if (netConnections[which_side] != NULL)
-							closePlayerNetworkConnection (which_side);
-						UpdateMeleeStatusMessage (-1);
-						PlayerControl[which_side] =
-								HUMAN_CONTROL | STANDARD_RATING;
-					}
-#endif  /* NETPLAY */
-					else
-						PlayerControl[which_side] = ((
-								PlayerControl[which_side]
-								& (STANDARD_RATING | GOOD_RATING |
-								AWESOME_RATING)) << 1) | COMPUTER_CONTROL;
-					SetPlayerInput ();
-					DrawControls (which_side, TRUE);
+					COUNT which_side =
+							(pMS->MeleeOption == CONTROLS_TOP) ? 1 : 0;
+					nextControlType (which_side);
 					break;
 				}
 			}
