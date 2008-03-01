@@ -116,7 +116,7 @@ static LOCDATA spathi_desc =
 		0, /* AnimFlags */
 		0, 0, /* FrameRate */
 		0, 0, /* RestartRate */
-			0, /* BlockMask */
+		0, /* BlockMask */
 	},
 #ifdef NEVER
 	{ /* AlienTalkDesc */

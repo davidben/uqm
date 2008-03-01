@@ -53,18 +53,28 @@ enum
 enum
 {
 	GENERATE_PLANETS = 0,
+			// Layout of planets within a solar system.
 	GENERATE_MOONS,
+			// Layout of moons around a planet.
 	GENERATE_ORBITAL,
+			// Characteristics of words (planets and moons).
 
 	INIT_NPCS,
+			// Ships in the solar system, the first time it is accessed.
 	REINIT_NPCS,
+			// Ships in the solar system, every next time it is accessed.
 	UNINIT_NPCS,
+			// When leaving the solar system.
 
 	GENERATE_MINERAL,
+			// Minerals on the planet surface.
 	GENERATE_ENERGY,
+			// Energy sources on the planet surface.
 	GENERATE_LIFE,
+			// Bio on the planet surface.
 
 	GENERATE_NAME
+			// Name of a planet.
 };
 
 enum
@@ -74,7 +84,7 @@ enum
 	LIGHTNING_DISASTER,
 	LAVASPOT_DISASTER,
 
-		/* additional lander sounds */
+	/* additional lander sounds */
 	LANDER_INJURED,
 	LANDER_SHOOTS,
 	LANDER_HITS,

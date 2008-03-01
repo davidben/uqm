@@ -285,7 +285,14 @@ BuildGroups (void)
 	EncounterPercent[SLYLANDRO_SHIP] *= GET_GAME_STATE (SLYLANDRO_MULTIPLIER);
 	Index = GET_GAME_STATE (UTWIG_SUPOX_MISSION);
 	if (Index > 1 && Index < 5)
-		HomeWorld[UTWIG_SHIP] = HomeWorld[SUPOX_SHIP] = 0;
+	{
+		// XXX: The BuildGroups function is only called when there is no
+		// existing battle group for the system (right?). Is it even
+		// possible to start the Utwig/Supox mission without visiting their
+		// home systems?
+		HomeWorld[UTWIG_SHIP] = 0;
+		HomeWorld[SUPOX_SHIP] = 0;
+	}
 
 	BestPercent = 0;
 	universe = CurStarDescPtr->star_pt;

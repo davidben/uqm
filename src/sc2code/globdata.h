@@ -39,6 +39,10 @@
 		// Mask of all animation types.
 
 #define WAIT_TALKING (1 << 3)
+		// This is set in AlienTalkDesc when the ambient animations should
+		// stop at the end of the current animation cycle.
+		// In AlienAmbientArray, this is set for those ambient animations
+		// which can not be active while the talking animation is active.
 #define PAUSE_TALKING (1 << 4)
 #define TALK_INTRO (1 << 5)
 #define TALK_DONE (1 << 6)
@@ -64,6 +68,8 @@ typedef struct
 	COUNT RandomRestartRate;
 
 	DWORD BlockMask;
+			// Bit mask of the indices of all animations that can not
+			// be active at the same time as this animation.
 } ANIMATION_DESC;
 
 #define MAX_ANIMATIONS 20

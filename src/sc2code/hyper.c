@@ -457,8 +457,8 @@ unhyper_transition (ELEMENT *ElementPtr)
 				{
 					POINT pt;
 
-					GLOBAL (autopilot.x) =
-							GLOBAL (autopilot.y) = ~0;
+					GLOBAL (autopilot.x) = ~0;
+					GLOBAL (autopilot.y) = ~0;
 
 					ElementToUniverse (ElementPtr, &pt);
 					CurStarDescPtr = FindStar (NULL, &pt, 5, 5);
@@ -507,15 +507,13 @@ unhyper_transition (ELEMENT *ElementPtr)
 				 */
 				GLOBAL (ShipStamp.frame) = 0;
 				SET_GAME_STATE (USED_BROADCASTER, 0);
-				GLOBAL (autopilot.x) =
-						GLOBAL (autopilot.y) = ~0;
+				GLOBAL (autopilot.x) = ~0;
+				GLOBAL (autopilot.y) = ~0;
 				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 				{
 					// From HyperSpace to QuasiSpace.
-					GLOBAL_SIS (log_x) =
-							UNIVERSE_TO_LOGX (QUASI_SPACE_X);
-					GLOBAL_SIS (log_y) =
-							UNIVERSE_TO_LOGY (QUASI_SPACE_Y);
+					GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (QUASI_SPACE_X);
+					GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY (QUASI_SPACE_Y);
 					if (GET_GAME_STATE (PORTAL_COUNTER) == 0)
 					{
 						// Periodically appearing portal.
@@ -532,10 +530,8 @@ unhyper_transition (ELEMENT *ElementPtr)
 				{
 					// From QuasiSpace to HyperSpace through the
 					// periodically appearing portal.
-					GLOBAL_SIS (log_x) =
-							UNIVERSE_TO_LOGX (ARILOU_SPACE_X);
-					GLOBAL_SIS (log_y) =
-							UNIVERSE_TO_LOGY (ARILOU_SPACE_Y);
+					GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (ARILOU_SPACE_X);
+					GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY (ARILOU_SPACE_Y);
 					SET_GAME_STATE (ARILOU_SPACE_SIDE, 0);
 				}
 				break;
