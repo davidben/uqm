@@ -80,7 +80,7 @@ CreateDisplay (CREATE_FLAGS CreateFlags, SIZE *pwidth, SIZE *pheight)
 }
 
 DRAWABLE
-AllocDrawable (COUNT n) 
+AllocDrawable (COUNT n)
 {
 	DRAWABLE Drawable;
 	Drawable = (DRAWABLE) HCalloc(sizeof (DRAWABLE_DESC));
@@ -89,7 +89,8 @@ AllocDrawable (COUNT n)
 		int i;
 		Drawable->Frame = (FRAME)HMalloc (sizeof (FRAME_DESC) * n);
 
-		/* Zero out the newly allocated frames, since HMalloc doesn't have MEM_ZEROINIT. */
+		/* Zero out the newly allocated frames, since HMalloc doesn't have
+		 * MEM_ZEROINIT. */
 		for (i = 0; i < n; i++) {
 			FRAME F;
 			F = &Drawable->Frame[i];
@@ -245,3 +246,4 @@ SetFrameTransparentColor (FRAME Frame, COLOR c32k)
 	TFB_DrawCanvas_SetTransparentColor (Frame->image->NormalImg,
 			color.r, color.g, color.b, FALSE);
 }
+
