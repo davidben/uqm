@@ -568,7 +568,7 @@ DrawPickIcon (COUNT iship, BYTE DrawErase)
 // This function is generic. It should probably be moved to elsewhere.
 // The caller should hold the GraphicsLock.
 static void
-multiLineDrawText(TEXT *textIn, RECT *clipRect) {
+multiLineDrawText (TEXT *textIn, RECT *clipRect) {
 	RECT oldRect;
 
 	SIZE leading;
@@ -594,7 +594,7 @@ multiLineDrawText(TEXT *textIn, RECT *clipRect) {
 
 		text.baseline.y += leading;
 		text.CharCount = (COUNT) ~0;
-		getLineWithinWidth(&text, &nextLine, lineWidth, text.CharCount);
+		getLineWithinWidth (&text, &nextLine, lineWidth, text.CharCount);
 				// This will also fill in text->CharCount.
 			
 		font_DrawText (&text);
@@ -669,7 +669,7 @@ UpdateMeleeStatusMessage (ssize_t player)
 					// "Unconnected. Press LEFT to connect."
 			break;
 		case NetState_connecting:
-			if (NetConnection_getPeerOptions(conn)->isServer)
+			if (NetConnection_getPeerOptions (conn)->isServer)
 				DrawMeleeStatusMessage (
 						GAME_STRING (NETMELEE_STRING_BASE + 1));
 						// "Awaiting incoming connection...\n"
@@ -1100,7 +1100,7 @@ DoEdit (MELEE_STATE *pMS)
 		fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
 		fleetShipChanged (pMS, pMS->side, fleetShipIndex);
 		AdvanceCursor (pMS);
-		UpdateCurrentShip(pMS);
+		UpdateCurrentShip (pMS);
 	}
 	else
 	{
@@ -1196,7 +1196,7 @@ DoEdit (MELEE_STATE *pMS)
 			pMS->col = col;
 			UnlockMutex (GraphicsLock);
 
-			UpdateCurrentShip(pMS);
+			UpdateCurrentShip (pMS);
 		}
 	}
 
@@ -1276,7 +1276,7 @@ DoPickShip (MELEE_STATE *pMS)
 		}
 
 		fleetShipChanged (pMS, pMS->side, index);
-		UpdateCurrentShip(pMS);
+		UpdateCurrentShip (pMS);
 
 		pMS->InputFunc = DoEdit;
 
@@ -1363,7 +1363,7 @@ numPlayersReady (void)
 			if (conn == NULL || !NetConnection_isConnected (conn))
 				return -1;
 
-			if (NetConnection_getState(conn) > NetState_inSetup)
+			if (NetConnection_getState (conn) > NetState_inSetup)
 				numDone++;
 		}
 #endif
@@ -1457,7 +1457,7 @@ DoConfirmSettings (MELEE_STATE *pMS)
 			if (!NetConnection_isConnected (conn))
 				continue;
 
-			if (NetConnection_getDiscriminant(conn))
+			if (NetConnection_getDiscriminant (conn))
 				Netplay_seedRandom (conn, SeedRandomNumbers ());
 		}
 		flushPacketQueues ();
@@ -1476,7 +1476,7 @@ DoConfirmSettings (MELEE_STATE *pMS)
 
 	// The maximum value for all connections is used.
 	{
-		bool ok = setupInputDelay(netplayOptions.inputDelay);
+		bool ok = setupInputDelay (netplayOptions.inputDelay);
 		if (!ok)
 			return FALSE;
 	}
@@ -1625,7 +1625,7 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 		SetContextForeGroundColor (PICKSHIP_TEAM_START_VALUE_COLOR);
 		font_DrawText (&t);
 
-		assert (CountLinks(&race_q[side]) == 0);
+		assert (CountLinks (&race_q[side]) == 0);
 
 		for (index = 0; index < MELEE_FLEET_SIZE; index++)
 		{
@@ -1796,7 +1796,7 @@ StartMeleeButtonPressed (MELEE_STATE *pMS)
 							// "Connection for top player not "
 							// "established."
 			}
-			else if (NetConnection_getState(conn) != NetState_inSetup)
+			else if (NetConnection_getState (conn) != NetState_inSetup)
 			{
 				// This side may be in the setup, but the network connection
 				// is not in a state that setup information can be sent.
@@ -1849,7 +1849,7 @@ DoConnectingDialog (MELEE_STATE *pMS)
 
 		// Build a network connection.
 		if (netConnections[which_side] != NULL)
-			closePlayerNetworkConnection(which_side);
+			closePlayerNetworkConnection (which_side);
 
 		pMS->Initialized = TRUE;
 		conn = openPlayerNetworkConnection (which_side, pMS);
@@ -2535,7 +2535,7 @@ updateRandomSeed (MELEE_STATE *pMS, COUNT side, DWORD seed)
 
 // The remote player has done something which invalidates our confirmation.
 void
-confirmationCancelled(MELEE_STATE *pMS, COUNT side)
+confirmationCancelled (MELEE_STATE *pMS, COUNT side)
 {
 	LockMutex (GraphicsLock);
 	if (side == 0)
@@ -2569,7 +2569,7 @@ connectionFeedback (NetConnection *conn, const char *str, bool forcePopup) {
 
 void
 connectedFeedback (NetConnection *conn) {
-	if (NetConnection_getPlayerNr(conn) == 0)
+	if (NetConnection_getPlayerNr (conn) == 0)
 		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 8),
 				false);
 				// "Bottom player is connected."
@@ -2663,7 +2663,7 @@ resetFeedback (NetConnection *conn, NetplayResetReason reason,
 void
 errorFeedback (NetConnection *conn)
 {
-	if (NetConnection_getPlayerNr(conn) == 0)
+	if (NetConnection_getPlayerNr (conn) == 0)
 		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 10),
 				false);
 				// "Bottom player: connection failed."
@@ -2676,7 +2676,7 @@ errorFeedback (NetConnection *conn)
 void
 closeFeedback (NetConnection *conn)
 {
-	if (NetConnection_getPlayerNr(conn) == 0)
+	if (NetConnection_getPlayerNr (conn) == 0)
 		connectionFeedback (conn, GAME_STRING (NETMELEE_STRING_BASE + 12),
 				false);
 				// "Bottom player: connection closed."
