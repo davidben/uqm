@@ -307,7 +307,8 @@ RestartMenu (MENU_STATE *pMS)
 		}
 	}
 
-	LastActivity = NextActivity = 0;
+	LastActivity = 0;
+	NextActivity = 0;
 
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)black_buf, TimeOut));
 	if (TimeOut == ONE_SECOND / 8)

@@ -112,7 +112,7 @@ _check_for_pulse (int *current, int *cached, int *old, DWORD *accel, DWORD *newt
 		if (*newtime - *oldtime < *accel)
 		{
 			*current = 0;
-		} 
+		}
 		else
 		{
 			*current = *cached;
@@ -139,7 +139,7 @@ static void
 _check_gestalt (DWORD NewTime)
 {
 	BOOLEAN CurrentGestalt;
-	int i,j;
+	int i, j;
 	OldGestalt = CachedGestalt;
 
 	CachedGestalt = 0;
@@ -225,9 +225,7 @@ UpdateInputState (void)
 		PauseGame ();
 
 	if (ExitRequested)
-	{
 		ConfirmExit ();
-	}
 
 	CurrentInputState = ImmediateInputState;
 	OldInputState = CachedInputState;
@@ -294,17 +292,48 @@ FlushInputState (void)
 	_clear_menu_state ();
 }
 
+MENU_SOUND_FLAGS
+MenuKeysToSoundFlags (const CONTROLLER_INPUT_STATE *state)
+{
+	MENU_SOUND_FLAGS soundFlags;
+
+	soundFlags = MENU_SOUND_NONE;
+	if (PulsedInputState.menu[KEY_MENU_UP])
+		soundFlags |= MENU_SOUND_UP;
+	if (PulsedInputState.menu[KEY_MENU_DOWN])
+		soundFlags |= MENU_SOUND_DOWN;
+	if (PulsedInputState.menu[KEY_MENU_LEFT])
+		soundFlags |= MENU_SOUND_LEFT;
+	if (PulsedInputState.menu[KEY_MENU_RIGHT])
+		soundFlags |= MENU_SOUND_RIGHT;
+	if (PulsedInputState.menu[KEY_MENU_SELECT])
+		soundFlags |= MENU_SOUND_SELECT;
+	if (PulsedInputState.menu[KEY_MENU_CANCEL])
+		soundFlags |= MENU_SOUND_CANCEL;
+	if (PulsedInputState.menu[KEY_MENU_SPECIAL])
+		soundFlags |= MENU_SOUND_SPECIAL;
+	if (PulsedInputState.menu[KEY_MENU_PAGE_UP])
+		soundFlags |= MENU_SOUND_PAGEUP;
+	if (PulsedInputState.menu[KEY_MENU_PAGE_DOWN])
+		soundFlags |= MENU_SOUND_PAGEDOWN;
+	if (PulsedInputState.menu[KEY_MENU_DELETE])
+		soundFlags |= MENU_SOUND_DELETE;
+	if (PulsedInputState.menu[KEY_MENU_BACKSPACE])
+		soundFlags |= MENU_SOUND_DELETE;
+	
+	return soundFlags;
+}
+
 void
 DoInput (void *pInputState, BOOLEAN resetInput)
 {
 	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY, ACCELERATION_INCREMENT, FALSE);
 	if (resetInput)
-	{
 		TFB_ResetControls ();
-	}
+
 	do
 	{
-		MENU_SOUND_FLAGS input;
+		MENU_SOUND_FLAGS soundFlags;
 		TaskSwitch ();
 
 		UpdateInputState ();
@@ -321,25 +350,14 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 		if (CurrentInputState.menu[KEY_EXIT])
 			ExitState = ConfirmExit ();
 
-		input = MENU_SOUND_NONE;
-		if (PulsedInputState.menu[KEY_MENU_UP]) input |= MENU_SOUND_UP;
-		if (PulsedInputState.menu[KEY_MENU_DOWN]) input |= MENU_SOUND_DOWN;
-		if (PulsedInputState.menu[KEY_MENU_LEFT]) input |= MENU_SOUND_LEFT;
-		if (PulsedInputState.menu[KEY_MENU_RIGHT]) input |= MENU_SOUND_RIGHT;
-		if (PulsedInputState.menu[KEY_MENU_SELECT]) input |= MENU_SOUND_SELECT;
-		if (PulsedInputState.menu[KEY_MENU_CANCEL]) input |= MENU_SOUND_CANCEL;
-		if (PulsedInputState.menu[KEY_MENU_SPECIAL]) input |= MENU_SOUND_SPECIAL;
-		if (PulsedInputState.menu[KEY_MENU_PAGE_UP]) input |= MENU_SOUND_PAGEUP;
-		if (PulsedInputState.menu[KEY_MENU_PAGE_DOWN]) input |= MENU_SOUND_PAGEDOWN;
-		if (PulsedInputState.menu[KEY_MENU_DELETE]) input |= MENU_SOUND_DELETE;
-		if (PulsedInputState.menu[KEY_MENU_BACKSPACE]) input |= MENU_SOUND_DELETE;
+		soundFlags = MenuKeysToSoundFlags (&PulsedInputState);
 			
 		if (MenuSounds
 				&& (pSolarSysState == 0
 						/* see if in menu */
 				|| pSolarSysState->MenuState.CurState
 				|| pSolarSysState->MenuState.Initialized > 2)
-		                && (input & (sound_0 | sound_1))
+		                && (soundFlags & (sound_0 | sound_1))
 #ifdef NEVER
 				&& !PLRPlaying ((MUSIC_REF)~0)
 #endif /* NEVER */
@@ -348,12 +366,13 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 			SOUND S;
 
 			S = MenuSounds;
-			if (input & sound_1)
+			if (soundFlags & sound_1)
 				S = SetAbsSoundIndex (S, MENU_SOUND_SUCCESS);
 
 			PlaySoundEffect (S, 0, NotPositional (), NULL, 0);
 		}
 	} while (((INPUT_STATE_DESC*)pInputState)->InputFunc (pInputState));
+
 	if (resetInput)
 	{
 		TFB_ResetControls ();
