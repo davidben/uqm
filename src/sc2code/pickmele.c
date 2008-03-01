@@ -180,9 +180,9 @@ DoGetMeleePlayer (GETMELEE_STATE *gms, COUNT which_player)
 		CONTROL_TEMPLATE template;
 
 		if (which_player == 0)
-			template = PlayerOne;
+			template = PlayerControls[0];
 		else
-			template = PlayerTwo;
+			template = PlayerControls[1];
 
 		left = PulsedInputState.key[template][KEY_LEFT];
 		right = PulsedInputState.key[template][KEY_RIGHT];

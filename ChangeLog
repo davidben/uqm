@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Replace PlayerOne/PlayerTwo by PlayerControls[0]/PlayerControls[1] - SvdB
 - Moved comm resources into starcon.ls2 - Michael
 - Repackaged static comm/ship data to it all uniquely named - Michael
 - On MacOS X, search for the content in the application bundle, from Nic

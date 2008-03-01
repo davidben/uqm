@@ -41,14 +41,14 @@ typedef struct
 
 /* These static variables are the values that are set by the controllers. */
 
-typedef struct 
+typedef struct
 {
 	DWORD key [NUM_TEMPLATES][NUM_KEYS];
 	DWORD menu [NUM_MENU_KEYS];
 } MENU_ANNOTATIONS;
 
 
-CONTROL_TEMPLATE PlayerOne, PlayerTwo;
+CONTROL_TEMPLATE PlayerControls[NUM_PLAYERS];
 CONTROLLER_INPUT_STATE CurrentInputState, PulsedInputState;
 static CONTROLLER_INPUT_STATE CachedInputState, OldInputState;
 static MENU_ANNOTATIONS RepeatDelays, Times;
@@ -375,52 +375,35 @@ GetMenuSounds (MENU_SOUND_FLAGS *s0, MENU_SOUND_FLAGS *s1)
 	*s1 = sound_1;
 }
 
-/* These can really be refactored */
-
-BATTLE_INPUT_STATE
-p1_combat_summary (COUNT player, STARSHIP *StarShipPtr)
+static BATTLE_INPUT_STATE
+ControlInputToBattleInput (const int *keyState)
 {
 	BATTLE_INPUT_STATE InputState = 0;
-	if (CurrentInputState.key[PlayerOne][KEY_UP])
+
+	if (keyState[KEY_UP])
 		InputState |= BATTLE_THRUST;
-	if (CurrentInputState.key[PlayerOne][KEY_LEFT])
+	if (keyState[KEY_LEFT])
 		InputState |= BATTLE_LEFT;
-	if (CurrentInputState.key[PlayerOne][KEY_RIGHT])
+	if (keyState[KEY_RIGHT])
 		InputState |= BATTLE_RIGHT;
-	if (CurrentInputState.key[PlayerOne][KEY_WEAPON])
+	if (keyState[KEY_WEAPON])
 		InputState |= BATTLE_WEAPON;
-	if (CurrentInputState.key[PlayerOne][KEY_SPECIAL])
+	if (keyState[KEY_SPECIAL])
 		InputState |= BATTLE_SPECIAL;
-	if (CurrentInputState.key[PlayerOne][KEY_ESCAPE])
+	if (keyState[KEY_ESCAPE])
 		InputState |= BATTLE_ESCAPE;
-	if (CurrentInputState.key[PlayerOne][KEY_DOWN])
+	if (keyState[KEY_DOWN])
 		InputState |= BATTLE_DOWN;
 
-	(void) player;
-	(void) StarShipPtr;
 	return InputState;
 }
 
 BATTLE_INPUT_STATE
-p2_combat_summary (COUNT player, STARSHIP *StarShipPtr)
+combat_summary (COUNT player, STARSHIP *StarShipPtr)
 {
-	BATTLE_INPUT_STATE InputState = 0;
-	if (CurrentInputState.key[PlayerTwo][KEY_UP])
-		InputState |= BATTLE_THRUST;
-	if (CurrentInputState.key[PlayerTwo][KEY_LEFT])
-		InputState |= BATTLE_LEFT;
-	if (CurrentInputState.key[PlayerTwo][KEY_RIGHT])
-		InputState |= BATTLE_RIGHT;
-	if (CurrentInputState.key[PlayerTwo][KEY_WEAPON])
-		InputState |= BATTLE_WEAPON;
-	if (CurrentInputState.key[PlayerTwo][KEY_SPECIAL])
-		InputState |= BATTLE_SPECIAL;
-	if (CurrentInputState.key[PlayerTwo][KEY_DOWN])
-		InputState |= BATTLE_DOWN;
-
-	(void) player;
 	(void) StarShipPtr;
-	return InputState;
+	return ControlInputToBattleInput(
+			CurrentInputState.key[PlayerControls[player]]);
 }
 
 BOOLEAN

@@ -664,10 +664,10 @@ UninitEncounter (void)
 			while (!(AnyButtonPress (TRUE)) && GetTimeCounter () < Time)
 				TaskSwitch ();
 			LockMutex (GraphicsLock);
-			if (!CurrentInputState.key[PlayerOne][KEY_ESCAPE])
+			if (!CurrentInputState.key[PlayerControls[0]][KEY_ESCAPE])
 			{
 				DrawFadeText (str1, str2, FALSE, &scavenge_r);
-				if (!CurrentInputState.key[PlayerOne][KEY_ESCAPE])
+				if (!CurrentInputState.key[PlayerControls[0]][KEY_ESCAPE])
 				{
 					SetContextForeGroundColor (BLACK_COLOR);
 					r.corner.x = scavenge_r.corner.x + 10;
@@ -695,7 +695,7 @@ UninitEncounter (void)
 							&& GetTimeCounter () < Time)
 						TaskSwitch ();
 					LockMutex (GraphicsLock);
-					if (!CurrentInputState.key[PlayerOne][KEY_ESCAPE])
+					if (!CurrentInputState.key[PlayerControls[0]][KEY_ESCAPE])
 						DrawFadeText (str1, str2, FALSE, &scavenge_r);
 				}
 			}

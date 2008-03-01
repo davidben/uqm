@@ -96,7 +96,7 @@ extern battle_summary_func PlayerInput[];
 
 extern CONTROLLER_INPUT_STATE CurrentInputState, PulsedInputState;
 extern volatile CONTROLLER_INPUT_STATE ImmediateInputState;
-extern CONTROL_TEMPLATE PlayerOne, PlayerTwo;
+extern CONTROL_TEMPLATE PlayerControls[];
 
 void UpdateInputState (void);
 void FlushInputState (void);
@@ -113,8 +113,7 @@ BOOLEAN ConfirmExit (void);
 void DoPopupWindow(const char *msg);
 void DoInput (void *pInputState, BOOLEAN resetInput);
 
-BATTLE_INPUT_STATE p1_combat_summary (COUNT player, STARSHIP *StarShipPtr);
-BATTLE_INPUT_STATE p2_combat_summary (COUNT player, STARSHIP *StarShipPtr);
+BATTLE_INPUT_STATE combat_summary (COUNT player, STARSHIP *StarShipPtr);
 
 extern volatile BOOLEAN GamePaused, ExitRequested;
 

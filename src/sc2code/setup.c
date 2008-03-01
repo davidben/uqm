@@ -73,8 +73,8 @@ uio_DirHandle *rootDir;
 static void
 InitPlayerInput (void)
 {
-	HumanInput[0] = p1_combat_summary;
-	HumanInput[1] = p2_combat_summary;
+	HumanInput[0] = combat_summary;
+	HumanInput[1] = combat_summary;
 	ComputerInput = computer_intelligence;
 #ifdef NETPLAY
 	NetworkInput = networkBattleInput;

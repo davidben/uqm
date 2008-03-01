@@ -1188,8 +1188,8 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		}
 	}
 
-	opts->player1 = PlayerOne;
-	opts->player2 = PlayerTwo;
+	opts->player1 = PlayerControls[0];
+	opts->player2 = PlayerControls[1];
 
 	opts->musicvol = (((int)(musicVolumeScale * 100.0f) + 2) / 5) * 5;
 	opts->sfxvol = (((int)(sfxVolumeScale * 100.0f) + 2) / 5) * 5;
@@ -1306,8 +1306,8 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	optWhichShield = (opts->shield == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optMeleeScale = (opts->meleezoom == OPTVAL_3DO) ? TFB_SCALE_TRILINEAR : TFB_SCALE_STEP;
 	optWhichIntro = (opts->intro == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
-	PlayerOne = opts->player1;
-	PlayerTwo = opts->player2;
+	PlayerControls[0] = opts->player1;
+	PlayerControls[1] = opts->player2;
 
 	res_PutBoolean ("config.subtitles", opts->subtitles == OPTVAL_ENABLED);
 	res_PutBoolean ("config.textmenu", opts->menu == OPTVAL_PC);

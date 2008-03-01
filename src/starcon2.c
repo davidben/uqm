@@ -202,8 +202,8 @@ main (int argc, char *argv[])
 	initIO ();
 	prepareConfigDir (options.configDir);
 
-	PlayerOne = CONTROL_TEMPLATE_KB_1;
-	PlayerTwo = CONTROL_TEMPLATE_JOY_1;
+	PlayerControls[0] = CONTROL_TEMPLATE_KB_1;
+	PlayerControls[1] = CONTROL_TEMPLATE_JOY_1;
 
 	// Fill in the options struct based on uqm.cfg
 	res_LoadFilename (configDir, "uqm.cfg");
@@ -347,25 +347,28 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.pulseshield"))
 	{
-		options.whichShield = res_GetBoolean ("config.pulseshield") ? OPT_3DO : OPT_PC;
+		options.whichShield =
+				res_GetBoolean ("config.pulseshield") ? OPT_3DO : OPT_PC;
 	}
 	if (res_HasKey ("config.player1control"))
 	{
-		PlayerOne = res_GetInteger ("config.player1control");
+		PlayerControls[0] = res_GetInteger ("config.player1control");
 		/* This is an unsigned, so no < 0 check is necessary */
-		if (PlayerOne >= NUM_TEMPLATES)
+		if (PlayerControls[0] >= NUM_TEMPLATES)
 		{
-			log_add (log_Error, "Illegal control template '%d' for Player One.", PlayerOne);
-			PlayerOne = CONTROL_TEMPLATE_KB_1;
+			log_add (log_Error, "Illegal control template '%d' for Player "
+					"One.", PlayerControls[0]);
+			PlayerControls[0] = CONTROL_TEMPLATE_KB_1;
 		}
 	}
 	if (res_HasKey ("config.player2control"))
 	{
 		/* This is an unsigned, so no < 0 check is necessary */
-		PlayerTwo = res_GetInteger ("config.player2control");
-		if (PlayerTwo >= NUM_TEMPLATES)
+		PlayerControls[1] = res_GetInteger ("config.player2control");
+		if (PlayerControls[1] >= NUM_TEMPLATES)
 		{
-			log_add (log_Error, "Illegal control template '%d' for Player Two.", PlayerTwo);
+			log_add (log_Error, "Illegal control template '%d' for Player "
+					"Two.", PlayerControls[1]);
 			PlayerTwo = CONTROL_TEMPLATE_JOY_1;
 		}
 	}
