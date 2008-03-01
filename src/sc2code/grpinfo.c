@@ -286,10 +286,12 @@ BuildGroups (void)
 	Index = GET_GAME_STATE (UTWIG_SUPOX_MISSION);
 	if (Index > 1 && Index < 5)
 	{
-		// XXX: The BuildGroups function is only called when there is no
-		// existing battle group for the system (right?). Is it even
-		// possible to start the Utwig/Supox mission without visiting their
-		// home systems?
+		// When the Utwig and Supox are on their mission, there won't be
+		// a new battle group generated for the system.
+		// XXX: An old battle group might still exist, in which case this
+		// function is never even called, and the old group would be
+		// reused. This is probably not the intent, which would make this
+		// a BUG.
 		HomeWorld[UTWIG_SHIP] = 0;
 		HomeWorld[SUPOX_SHIP] = 0;
 	}
