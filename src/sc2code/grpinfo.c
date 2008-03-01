@@ -288,10 +288,10 @@ BuildGroups (void)
 	{
 		// When the Utwig and Supox are on their mission, there won't be
 		// new battle groups generated for the system.
-		// XXX: Old battle groups might still exist, in which case this
-		// function is never even called, and the old groups would be
-		// reused. This is probably not the intent, which would make this
-		// a BUG.
+		// Note that old groups may still exist (in which case this function
+		// would not even be called), but those expire after spending a week
+		// outside of the star system, or when a different star system is
+		// entered.
 		HomeWorld[UTWIG_SHIP] = 0;
 		HomeWorld[SUPOX_SHIP] = 0;
 	}
