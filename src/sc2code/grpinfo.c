@@ -287,9 +287,9 @@ BuildGroups (void)
 	if (Index > 1 && Index < 5)
 	{
 		// When the Utwig and Supox are on their mission, there won't be
-		// a new battle group generated for the system.
-		// XXX: An old battle group might still exist, in which case this
-		// function is never even called, and the old group would be
+		// new battle groups generated for the system.
+		// XXX: Old battle groups might still exist, in which case this
+		// function is never even called, and the old groups would be
 		// reused. This is probably not the intent, which would make this
 		// a BUG.
 		HomeWorld[UTWIG_SHIP] = 0;
