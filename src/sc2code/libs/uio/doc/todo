@@ -4,6 +4,7 @@ Needed for use in UQM:
 - when doing uio_getStdioPhysical(), if write access is required, but
   not available on the original location, also copy the file to the
   temporary dir.
+- Call fsync() at appropriate times.
 
 Documentation:
 - use doxygen
@@ -127,6 +128,9 @@ Cleanups (not necessary for UQM):
   uio_PRoot_unref etc
 - Add uio_fatal(), uio_error(), uio_warning()
 - Clean up the include structure
+- use stdint.h and stdbool.h types directly, instead of using uio_int16 etc.
+  Remove types.h, and instead, if these types are missing on some platforms,
+  put the fixes in port.h.
 
 
 
