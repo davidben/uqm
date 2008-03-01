@@ -369,7 +369,7 @@ main (int argc, char *argv[])
 		{
 			log_add (log_Error, "Illegal control template '%d' for Player "
 					"Two.", PlayerControls[1]);
-			PlayerTwo = CONTROL_TEMPLATE_JOY_1;
+			PlayerControls[1] = CONTROL_TEMPLATE_JOY_1;
 		}
 	}
 	if (res_HasKey ("config.musicvol"))
