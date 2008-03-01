@@ -105,7 +105,8 @@ ResetKeyRepeat (void)
 }
 
 static void
-_check_for_pulse (int *current, int *cached, int *old, DWORD *accel, DWORD *newtime, DWORD *oldtime)
+_check_for_pulse (int *current, int *cached, int *old, DWORD *accel,
+		DWORD *newtime, DWORD *oldtime)
 {
 	if (*cached && *old)
 	{
@@ -327,7 +328,8 @@ MenuKeysToSoundFlags (const CONTROLLER_INPUT_STATE *state)
 void
 DoInput (void *pInputState, BOOLEAN resetInput)
 {
-	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY, ACCELERATION_INCREMENT, FALSE);
+	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY,
+			ACCELERATION_INCREMENT, FALSE);
 	if (resetInput)
 		TFB_ResetControls ();
 
@@ -374,10 +376,7 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 	} while (((INPUT_STATE_DESC*)pInputState)->InputFunc (pInputState));
 
 	if (resetInput)
-	{
 		TFB_ResetControls ();
-	}
-
 }
 
 void
@@ -462,6 +461,8 @@ ConfirmExit (void)
 		
 	result = DoConfirmExit ();
 	
-	SetMenuRepeatDelay (old_min_accel, old_max_accel, old_step_accel, old_gestalt_keys);
+	SetMenuRepeatDelay (old_min_accel, old_max_accel, old_step_accel,
+			old_gestalt_keys);
 	return result;
 }
+

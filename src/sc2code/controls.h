@@ -94,7 +94,8 @@ typedef BATTLE_INPUT_STATE (*battle_summary_func) (COUNT player,
 extern battle_summary_func ComputerInput, HumanInput[], NetworkInput;
 extern battle_summary_func PlayerInput[];
 
-extern CONTROLLER_INPUT_STATE CurrentInputState, PulsedInputState;
+extern CONTROLLER_INPUT_STATE CurrentInputState;
+extern CONTROLLER_INPUT_STATE PulsedInputState;
 extern volatile CONTROLLER_INPUT_STATE ImmediateInputState;
 extern CONTROL_TEMPLATE PlayerControls[];
 
@@ -115,7 +116,8 @@ void DoInput (void *pInputState, BOOLEAN resetInput);
 
 BATTLE_INPUT_STATE combat_summary (COUNT player, STARSHIP *StarShipPtr);
 
-extern volatile BOOLEAN GamePaused, ExitRequested;
+extern volatile BOOLEAN GamePaused;
+extern volatile BOOLEAN ExitRequested;
 
 typedef struct joy_char joy_char_t;
 
