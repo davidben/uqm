@@ -205,7 +205,7 @@ uio_GPDir_getPDirEntryHandle(const uio_PDirHandle *pDirHandle,
  * where you ended up, and 'pathRest' will point into the original path. to
  * the beginning of the part that was not matched.
  * It is allowed to have endGPDir point to gPDir and/or restPath
- * point to path when calling this function.i
+ * point to path when calling this function.
  * returns: 0 if the complete path was matched
  *          ENOENT if some component (the next one) didn't exists
  *          ENODIR if a component (the next one) exists but isn't a dir
