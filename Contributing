@@ -8,7 +8,7 @@ Before making changes:
 - See if the the Bugzilla bug database at
   http://bugs.uqm.stack.nl/ contains any comments on what you're planning
   to do.
-- Make sure you're using the most recent cvs version
+- Make sure you're using the most recent Subversion version
 - Discuss in advance what you're planning to do, with the core team.
   The best place to do this is on #sc2 on irc.freenode.net.
   This prevents you from wasting your time when
@@ -78,7 +78,7 @@ Making changes:
   These comments only foul the code and don't add anything for people
   reading it. You'll still be credited in the Changelog, and for large
   contributions (or many small ones) in the authors list. We have
-  CVS for when we need to find out when what changes were made.
+  Subversion for when we need to find out when what changes were made.
 
 Making the patches:
 - One issue per patch.
@@ -88,7 +88,7 @@ Making the patches:
 - Use unified diffs.
   That way, there's a bigger chance the patch can be automatically applied
   successfully against modified files.
-- Make the patches against the current cvs tree.
+- Make the patches against the current Subversion tree.
 
 Test the patches:
 - If possible, test your changes both on Windows and a *nix platform, or
