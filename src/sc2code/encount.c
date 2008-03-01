@@ -228,10 +228,12 @@ InitEncounter (void)
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 	{
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 0);
+				// "ENCOUNTER IN"
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 		t.baseline.y += 12;
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 1);
+				// "DEEP SPACE"
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 	}
@@ -240,6 +242,7 @@ InitEncounter (void)
 		UNICODE buf[256];
 
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 2);
+				// "ENCOUNTER AT"
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 		t.baseline.y += 12;
@@ -561,6 +564,7 @@ UninitEncounter (void)
 								t.baseline.y += 6;
 								t.pStr = GAME_STRING (
 										ENCOUNTER_STRING_BASE + 3);
+										// "BATTLE GROUP"
 								t.CharCount = (COUNT)~0;
 								font_DrawText (&t);
 
@@ -569,8 +573,10 @@ UninitEncounter (void)
 								SetContextFont (MicroFont);
 								str1 = GAME_STRING (
 										ENCOUNTER_STRING_BASE + 4);
+										// "Enemy Ships"
 								str2 = GAME_STRING (
 										ENCOUNTER_STRING_BASE + 5),
+										// "Destroyed"
 								DrawFadeText (str1, str2, TRUE, &scavenge_r);
 							}
 
@@ -679,7 +685,9 @@ UninitEncounter (void)
 					font_DrawText (&t);
 
 					str1 = GAME_STRING (ENCOUNTER_STRING_BASE + 6);
+							// "Debris"
 					str2 = GAME_STRING (ENCOUNTER_STRING_BASE + 7);
+							// "Scavenged"
 					DrawFadeText (str1, str2, TRUE, &scavenge_r);
 					Time = GetTimeCounter () + ONE_SECOND * 2;
 					UnlockMutex (GraphicsLock);
