@@ -299,27 +299,27 @@ MenuKeysToSoundFlags (const CONTROLLER_INPUT_STATE *state)
 	MENU_SOUND_FLAGS soundFlags;
 
 	soundFlags = MENU_SOUND_NONE;
-	if (PulsedInputState.menu[KEY_MENU_UP])
+	if (state->menu[KEY_MENU_UP])
 		soundFlags |= MENU_SOUND_UP;
-	if (PulsedInputState.menu[KEY_MENU_DOWN])
+	if (state->menu[KEY_MENU_DOWN])
 		soundFlags |= MENU_SOUND_DOWN;
-	if (PulsedInputState.menu[KEY_MENU_LEFT])
+	if (state->menu[KEY_MENU_LEFT])
 		soundFlags |= MENU_SOUND_LEFT;
-	if (PulsedInputState.menu[KEY_MENU_RIGHT])
+	if (state->menu[KEY_MENU_RIGHT])
 		soundFlags |= MENU_SOUND_RIGHT;
-	if (PulsedInputState.menu[KEY_MENU_SELECT])
+	if (state->menu[KEY_MENU_SELECT])
 		soundFlags |= MENU_SOUND_SELECT;
-	if (PulsedInputState.menu[KEY_MENU_CANCEL])
+	if (state->menu[KEY_MENU_CANCEL])
 		soundFlags |= MENU_SOUND_CANCEL;
-	if (PulsedInputState.menu[KEY_MENU_SPECIAL])
+	if (state->menu[KEY_MENU_SPECIAL])
 		soundFlags |= MENU_SOUND_SPECIAL;
-	if (PulsedInputState.menu[KEY_MENU_PAGE_UP])
+	if (state->menu[KEY_MENU_PAGE_UP])
 		soundFlags |= MENU_SOUND_PAGEUP;
-	if (PulsedInputState.menu[KEY_MENU_PAGE_DOWN])
+	if (state->menu[KEY_MENU_PAGE_DOWN])
 		soundFlags |= MENU_SOUND_PAGEDOWN;
-	if (PulsedInputState.menu[KEY_MENU_DELETE])
+	if (state->menu[KEY_MENU_DELETE])
 		soundFlags |= MENU_SOUND_DELETE;
-	if (PulsedInputState.menu[KEY_MENU_BACKSPACE])
+	if (state->menu[KEY_MENU_BACKSPACE])
 		soundFlags |= MENU_SOUND_DELETE;
 	
 	return soundFlags;
