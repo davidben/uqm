@@ -223,7 +223,8 @@ uio_walkGPPath(uio_GPDir *startGPDir, const char *path,
 	int retVal;
 
 	gPDir = startGPDir;
-	tempBuf = uio_alloca(strlen(path) + 1);
+	tempBuf = uio_malloc(strlen(path) + 1);
+			// XXX: Use a dynamically allocated array when moving to C99.
 	pathEnd = path + pathLen;
 	getFirstPathComponent(path, pathEnd, &partStart, &partEnd);
 	while (1) {
@@ -247,6 +248,7 @@ uio_walkGPPath(uio_GPDir *startGPDir, const char *path,
 		getNextPathComponent(pathEnd, &partStart, &partEnd);
 	}
 
+	uio_free(tempBuf);
 	*pathRest = partStart;
 	*endGPDir = gPDir;
 	return retVal;

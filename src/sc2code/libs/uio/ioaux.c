@@ -71,7 +71,8 @@ uio_walkPhysicalPath(uio_PDirHandle *startPDirHandle, const char *path,
 
 	uio_PDirHandle_ref(startPDirHandle);
 	pDirHandle = startPDirHandle;
-	tempBuf = uio_alloca(strlen(path) + 1);
+	tempBuf = uio_malloc(strlen(path) + 1);
+			// XXX: Use a dynamically allocated array when moving to C99.
 	pathEnd = path + pathLen;
 	getFirstPathComponent(path, pathEnd, &partStart, &partEnd);
 	for (;;) {
@@ -97,6 +98,7 @@ uio_walkPhysicalPath(uio_PDirHandle *startPDirHandle, const char *path,
 		getNextPathComponent(pathEnd, &partStart, &partEnd);
 	}
 
+	uio_free(tempBuf);
 	*pathRest = partStart;
 	*endPDirHandle = pDirHandle;
 	return retVal;
@@ -132,8 +134,9 @@ uio_makePath(uio_PDirHandle *pDirHandle, const char *path, size_t pathLen,
 
 	pathEnd = path + pathLen;
 	
-	buf = uio_alloca(pathLen + 1);
+	buf = uio_malloc(pathLen + 1);
 			// worst case length
+			// XXX: Use a dynamically allocated array when moving to C99.
 
 	uio_walkPhysicalPath(pDirHandle, path, pathLen, &pDirHandle, &rest);
 			// The reference to the original pDirHandle is still kept
@@ -152,12 +155,14 @@ uio_makePath(uio_PDirHandle *pDirHandle, const char *path, size_t pathLen,
 			int savedErrno = errno;
 			uio_PDirHandle_unref(pDirHandle);
 			errno = savedErrno;
+			uio_free(buf);
 			return NULL;
 		}
 		uio_PDirHandle_unref(pDirHandle);
 		pDirHandle = newPDirHandle;
 		getNextPathComponent(pathEnd, &start, &end);
 	}
+	uio_free(buf);
 	return pDirHandle;
 }
 

@@ -667,6 +667,7 @@ listOneDir(DebugContext *debugContext, const char *arg) {
 	int i;
 	const char *pattern;
 	const char *cpath;
+	char *buf = NULL;
 
 	if (arg[0] == '\0') {
 		cpath = arg;
@@ -674,21 +675,21 @@ listOneDir(DebugContext *debugContext, const char *arg) {
 	} else {
 		pattern = strrchr(arg, '/');
 		if (pattern == NULL) {
+			// No directory component in 'arg'.
 			cpath = "";
 			pattern = arg;
 		} else if (pattern[1] == '\0') {
-			// argument ends on /
+			// 'arg' ends on /
 			cpath = arg;
 			pattern = "*";
 		} else {
 			if (pattern == arg) {
 				cpath = "/";
 			} else {
-				char *path;
-				path = uio_alloca(pattern - arg + 1);
-				memcpy(path, arg, pattern - arg);
-				path[pattern - arg] = '\0';
-				cpath = path;
+				buf = uio_malloc(pattern - arg + 1);
+				memcpy(buf, arg, pattern - arg);
+				buf[pattern - arg] = '\0';
+				cpath = buf;
 			}
 			pattern++;
 		}
@@ -708,11 +709,15 @@ listOneDir(DebugContext *debugContext, const char *arg) {
 	if (dirList == NULL) {
 		fprintf(debugContext->out, "Error in uio_getDirList(): %s.\n",
 				strerror(errno));
+		if (buf != NULL)
+			uio_free(buf);
 		return 1;
 	}
 	for (i = 0; i < dirList->numNames; i++)
 		fprintf(debugContext->out, "%s\n", dirList->names[i]);
 	uio_DirList_free(dirList);
+	if (buf != NULL)
+		uio_free(buf);
 	return 0;
 }
 

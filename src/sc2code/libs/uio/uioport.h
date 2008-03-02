@@ -145,17 +145,6 @@ typedef unsigned short mode_t;
 #	define S_IFDIR _S_IFDIR
 #endif
 
-// Memory related:
-#ifdef WIN32
-#	ifdef __MINGW32__
-#		include <malloc.h>
-#	elif defined (_MSC_VER)
-#		define alloca _alloca
-#	endif
-#elif defined(__linux__) || defined(__svr4__)
-#	include <alloca.h>
-#endif
-
 // String formatting
 #ifdef _MSC_VER
 #define snprintf _snprintf

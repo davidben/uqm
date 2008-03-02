@@ -29,7 +29,6 @@
 #define uio_realloc realloc
 #define uio_free free
 #define uio_calloc calloc
-#define uio_alloca alloca
 
 #ifdef uio_MEM_DEBUG
 // When uio_strdup is defined to the libc strdup, there's no opportunity
