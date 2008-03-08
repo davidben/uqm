@@ -204,7 +204,7 @@ TFB_ProcessEvents ()
 		ProcessInputEvent (&Event);
 		/* Handle Graphics events. */
 		switch (Event.type) {
-			case SDL_ACTIVEEVENT:    /* Loose/gain visibility */
+			case SDL_ACTIVEEVENT:    /* Lose/gain visibility */
 				// TODO
 				break;
 			case SDL_QUIT:
