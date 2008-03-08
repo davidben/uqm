@@ -17,7 +17,10 @@
 #ifndef _PICKMELE_H
 #define _PICKMELE_H
 
+typedef struct getmelee_struct GETMELEE_STATE;
+
 #include "races.h"
+#include "battlecontrols.h"
 #include "libs/compiler.h"
 
 BOOLEAN MeleeShipDeath (STARSHIP *ship, COUNT which_player);
@@ -25,9 +28,54 @@ void MeleeGameOver (void);
 BOOLEAN GetInitialMeleeStarShips (HSTARSHIP *result);
 BOOLEAN GetNextMeleeStarShip (COUNT which_player, HSTARSHIP *result);
 
-typedef struct getmelee_struct GETMELEE_STATE;
-
 bool updateMeleeSelection (GETMELEE_STATE *gms, COUNT player, COUNT ship);
+
+BOOLEAN selectShipHuman (HumanInputContext *context, GETMELEE_STATE *gms);
+BOOLEAN selectShipComputer (ComputerInputContext *context,
+		GETMELEE_STATE *gms);
+#ifdef NETPLAY
+BOOLEAN selectShipNetwork (NetworkInputContext *context, GETMELEE_STATE *gms);
+#endif  /* NETPLAY */
+
+#ifdef PICKMELE_INTERNAL
+
+#include "flash.h"
+#include "libs/timelib.h"
+
+struct getmelee_struct {
+	BOOLEAN (*InputFunc) (struct getmelee_struct *pInputState);
+	COUNT MenuRepeatDelay;
+	BOOLEAN Initialized;
+	
+	struct {
+		TimeCount timeIn;
+		HSTARSHIP hBattleShip;
+				// Chosen ship.
+		COUNT choice;
+				// Index of chosen ship, or (COUNT) ~0 for random choice.
+
+		COUNT row;
+		COUNT col;
+		COUNT ships_left;
+				// Number of ships still available.
+		COUNT randomIndex;
+				// Pre-generated random number.
+		BOOLEAN selecting;
+				// Is this player selecting a ship?
+		BOOLEAN done;
+				// Has a selection been made for this player?
+		FlashContext *flashContext;
+				// Context for controlling the flash rectangle.
+#ifdef NETPLAY
+		BOOLEAN remoteSelected;
+#endif
+	} player[NUM_PLAYERS];
+};
+
+bool setShipSelected(GETMELEE_STATE *gms, COUNT playerI, COUNT choice,
+		bool reportNetwork);
+
+#endif  /* PICKMELE_INTERNAL */
 
 #endif  /* _PICKMELE_H */
 

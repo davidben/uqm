@@ -19,6 +19,7 @@
 #include "encount.h"
 
 #include "battle.h"
+#include "battlecontrols.h"
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
@@ -724,6 +725,7 @@ EncounterBattle (void)
 	RESOURCE_INDEX hLastIndex;
 	ACTIVITY OldActivity;
 	extern UWORD nth_frame;
+	InputContext *savedPlayerInput;
 
 	LockMutex (GraphicsLock);
 
@@ -756,7 +758,9 @@ EncounterBattle (void)
 			cur_speed = (BYTE)~0; /* maximum speed - no rendering */
 		nth_frame = MAKE_WORD (1, cur_speed);
 		PlayerControl[0] = CYBORG_CONTROL | AWESOME_RATING;
-		PlayerInput[0] = ComputerInput;
+		savedPlayerInput = PlayerInput[0];
+		PlayerInput[0] = NULL;
+		SetPlayerInput (0);
 	}
 
 	GameSounds = CaptureSound (LoadSound (GAME_SOUNDS));
@@ -775,7 +779,8 @@ EncounterBattle (void)
 	{
 		nth_frame = MAKE_WORD (0, 0);
 		PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
-		PlayerInput[0] = HumanInput[0];
+		ClearPlayerInput (0);
+		PlayerInput[0] = savedPlayerInput;
 	}
 
 	SetResourceIndex (hResIndex);

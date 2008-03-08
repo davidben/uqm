@@ -1010,7 +1010,7 @@ Avoid (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr)
 }
 
 BATTLE_INPUT_STATE
-tactical_intelligence (COUNT player, STARSHIP *StarShipPtr)
+tactical_intelligence (ComputerInputContext *context, STARSHIP *StarShipPtr)
 {
 	ELEMENT *ShipPtr;
 	ELEMENT Ship;
@@ -1038,7 +1038,7 @@ tactical_intelligence (COUNT player, STARSHIP *StarShipPtr)
 
 	ShipMoved = TRUE;
 	/* Disable ship's special completely for the Standard AI */
-	if (PlayerControl[player] & STANDARD_RATING)
+	if (PlayerControl[context->playerNr] & STANDARD_RATING)
 		++StarShipPtr->special_counter;
 
 #ifdef DEBUG_CYBORG
@@ -1146,9 +1146,9 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 					InitCyborg (EnemyStarShipPtr);
 
 				ed.which_turn = WORLD_TO_TURN (
-						square_root ((long)dx * dx + (long)dy * dy)
-						);
-				if (ed.which_turn > ObjectsOfConcern[ENEMY_SHIP_INDEX].which_turn)
+						square_root ((long)dx * dx + (long)dy * dy));
+				if (ed.which_turn >
+						ObjectsOfConcern[ENEMY_SHIP_INDEX].which_turn)
 				{
 					UnlockElement (hElement);
 					continue;
@@ -1261,7 +1261,7 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 							ed.which_turn = 0;
 					}
 				}
-				else if (!(PlayerControl[player] & AWESOME_RATING))
+				else if (!(PlayerControl[context->playerNr] & AWESOME_RATING))
 					ed.which_turn = 0;
 				else
 				{

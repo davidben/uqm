@@ -420,7 +420,6 @@ StartGame (void)
 
 	PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
 	PlayerControl[1] = COMPUTER_CONTROL | AWESOME_RATING;
-	SetPlayerInput ();
 
 	return (TRUE);
 }

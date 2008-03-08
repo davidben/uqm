@@ -73,12 +73,6 @@ uio_DirHandle *rootDir;
 static void
 InitPlayerInput (void)
 {
-	HumanInput[0] = combat_summary;
-	HumanInput[1] = combat_summary;
-	ComputerInput = computer_intelligence;
-#ifdef NETPLAY
-	NetworkInput = networkBattleInput;
-#endif
 }
 
 void
@@ -229,32 +223,54 @@ InitGameKernel (void)
 }
 
 void
-SetPlayerInput (void)
+SetPlayerInput (COUNT playerI)
 {
-	COUNT which_player;
+	assert (PlayerInput[playerI] == NULL);
 
-	for (which_player = 0; which_player < NUM_PLAYERS; ++which_player)
-	{
-		if (PlayerControl[which_player] & COMPUTER_CONTROL)
-			PlayerInput[which_player] = ComputerInput;
-		else if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE)
-		{
-			// Full game.
-			if (which_player == 0)
-				PlayerInput[which_player] = HumanInput[0];
-			else
-			{
-				PlayerInput[which_player] = ComputerInput;
-				PlayerControl[which_player] = COMPUTER_CONTROL | AWESOME_RATING;
-			}
-		}
+	switch (PlayerControl[playerI] & CONTROL_MASK) {
+		case HUMAN_CONTROL:
+			PlayerInput[playerI] =
+					(InputContext *) HumanInputContext_new (playerI);
+			break;
+		case COMPUTER_CONTROL:
+			PlayerInput[playerI] =
+					(InputContext *) ComputerInputContext_new (playerI);
+			break;
 #ifdef NETPLAY
-		else if (PlayerControl[which_player] & NETWORK_CONTROL)
-			PlayerInput[which_player] = NetworkInput;
+		case NETWORK_CONTROL:
+			PlayerInput[playerI] =
+					(InputContext *) NetworkInputContext_new (playerI);
+			break;
 #endif
-		else
-			PlayerInput[which_player] = HumanInput[which_player];
+		default:
+			fprintf (stderr, "Invalid control method in SetPlayerInput().\n");
+			explode ();  /* Does not return */
 	}
+}
+
+void
+SetPlayerInputAll (void)
+{
+	COUNT playerI;
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+		SetPlayerInput (playerI);
+}
+
+void
+ClearPlayerInput (COUNT playerI)
+{
+	assert (PlayerInput[playerI] != NULL);
+
+	PlayerInput[playerI]->handlers->deleteContext (PlayerInput[playerI]);
+	PlayerInput[playerI] = NULL;
+}
+
+void
+ClearPlayerInputAll (void)
+{
+	COUNT playerI;
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+		ClearPlayerInput (playerI);
 }
 
 int

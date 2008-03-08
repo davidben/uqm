@@ -21,6 +21,11 @@
 
 #include "libs/compiler.h"
 #include "units.h"
+#include "displist.h"
+
+typedef struct STARSHIP STARSHIP;
+typedef HLINK HSTARSHIP;
+
 #include "element.h"
 #include "libs/sndlib.h"
 #include "libs/reslib.h"
@@ -184,9 +189,7 @@ typedef struct
 } SHIP_BASE;
 
 
-typedef HLINK HSTARSHIP;
-
-typedef struct
+struct STARSHIP
 {
 	SHIP_BASE_COMMON;
 	
@@ -221,7 +224,7 @@ typedef struct
 
 	HELEMENT hShip;
 	COUNT ShipFacing;
-} STARSHIP;
+};
 
 static inline STARSHIP *
 LockStarShip (const QUEUE *pq, HSTARSHIP h)

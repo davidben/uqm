@@ -1714,10 +1714,12 @@ StartMelee (MELEE_STATE *pMS)
 
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
+		SetPlayerInputAll ();
 		load_gravity_well ((BYTE)((COUNT)TFB_Random () %
 					NUMBER_OF_PLANET_TYPES));
 		Battle ();
 		free_gravity_well ();
+		ClearPlayerInputAll ();
 
 		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 			return;
@@ -1926,7 +1928,6 @@ DoConnectingDialog (MELEE_STATE *pMS)
 		{
 			/* Connection complete! */
 			PlayerControl[which_side] = NETWORK_CONTROL | STANDARD_RATING;
-			SetPlayerInput ();
 			DrawControls (which_side, TRUE);
 
 			RedrawMeleeFrame ();
@@ -1973,11 +1974,6 @@ check_for_disconnections (MELEE_STATE *pMS)
 					"controls\n", player);
 			changed = TRUE;
 		}
-	}
-
-	if (changed)
-	{
-		SetPlayerInput ();
 	}
 
 	(void) pMS;
@@ -2326,7 +2322,6 @@ Melee (void)
 			PlayerControl[1] = COMPUTER_CONTROL | STANDARD_RATING;
 			MenuState.SideState[1].TeamImage = MenuState.load.preBuiltList[1];
 		}
-		SetPlayerInput ();
 		teamStringChanged (&MenuState, 0);
 		teamStringChanged (&MenuState, 1);
 		entireFleetChanged (&MenuState, 0);

@@ -18,6 +18,7 @@
 
 #include "intel.h"
 
+#include "battlecontrols.h"
 #include "controls.h"
 #include "globdata.h"
 #include "setup.h"
@@ -29,7 +30,7 @@
 SIZE cur_player;
 
 BATTLE_INPUT_STATE
-computer_intelligence (COUNT player, STARSHIP *StarShipPtr)
+computer_intelligence (ComputerInputContext *context, STARSHIP *StarShipPtr)
 {
 	BATTLE_INPUT_STATE InputState;
 
@@ -38,19 +39,20 @@ computer_intelligence (COUNT player, STARSHIP *StarShipPtr)
 
 	if (StarShipPtr)
 	{
-		if (PlayerControl[player] & CYBORG_CONTROL)
+		// Selecting the next action for in battle.
+		if (PlayerControl[context->playerNr] & CYBORG_CONTROL)
 		{
-			InputState = tactical_intelligence (player, StarShipPtr);
+			InputState = tactical_intelligence (context, StarShipPtr);
 
-			// allow a player to warp-escape in cyborg mode
-			if (player == 0)
-				InputState |= (*(HumanInput[player])) (player, StarShipPtr)
-						& BATTLE_ESCAPE;
+			// Allow a player to warp-escape in cyborg mode
+			if (context->playerNr == 0)
+				InputState |= CurrentInputToBattleInput (
+						context->playerNr) & BATTLE_ESCAPE;
 		}
 		else
-			InputState = (*(HumanInput[player])) (player, StarShipPtr);
+			InputState = CurrentInputToBattleInput (context->playerNr);
 	}
-	else if (!(PlayerControl[player] & PSYTRON_CONTROL))
+	else if (!(PlayerControl[context->playerNr] & PSYTRON_CONTROL))
 		InputState = 0;
 	else
 	{

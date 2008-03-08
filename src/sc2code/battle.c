@@ -18,8 +18,8 @@
 
 #include "battle.h"
 
+#include "battlecontrols.h"
 #include "controls.h"
-#include "options.h"
 #include "init.h"
 #include "intel.h"
 #ifdef NETPLAY
@@ -132,6 +132,13 @@ setupBattleInputOrder(void)
 #endif
 }
 
+BATTLE_INPUT_STATE
+frameInputHuman (HumanInputContext *context, STARSHIP *StarShipPtr)
+{
+	(void) StarShipPtr;
+	return CurrentInputToBattleInput (context->playerNr);
+}
+
 static void
 ProcessInput (void)
 {
@@ -163,8 +170,9 @@ ProcessInput (void)
 			{
 				CyborgDescPtr = StarShipPtr;
 
-				InputState = (*(PlayerInput[cur_player]))(cur_player,
-						StarShipPtr);
+				InputState = PlayerInput[cur_player]->handlers->frameInput (
+						PlayerInput[cur_player], StarShipPtr);
+
 #if CREATE_JOURNAL
 				JournalInput (InputState);
 #endif /* CREATE_JOURNAL */

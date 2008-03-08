@@ -57,14 +57,17 @@ extern ACTIVITY LastActivity;
 extern BYTE PlayerControl[];
 extern SIZE cur_player;
 
-extern BOOLEAN InitContexts (void);
-extern void UninitPlayerInput (void);
-extern BOOLEAN InitGameKernel (void);
+BOOLEAN InitContexts (void);
+void UninitPlayerInput (void);
+BOOLEAN InitGameKernel (void);
 
-extern int initIO (void);
-extern void uninitIO (void);
+int initIO (void);
+void uninitIO (void);
 
-extern void SetPlayerInput (void);
+void SetPlayerInput (COUNT playerI);
+void SetPlayerInputAll (void);
+void ClearPlayerInput (COUNT playerI);
+void ClearPlayerInputAll (void);
 
 
 #endif  /* _SETUP_H */

@@ -24,8 +24,12 @@
 #include "netconnection.h"
 #include "packetsenders.h"
 
+#include "../battlecontrols.h"
+		// for NetworkInputContext
 #include "../controls.h"
 		// for BATTLE_INPUT_STATE
+#include "../races.h"
+		// for STARSHIP
 
 
 extern struct NetConnection *netConnections[];
@@ -55,7 +59,8 @@ void sendChecksumConnections(uint32 frameNr, uint32 checksum);
 void initBattleStateDataConnections(void);
 void setBattleStateConnections(struct battlestate_struct *bs);
 
-BATTLE_INPUT_STATE networkBattleInput(COUNT player, STARSHIP *StarShipPtr);
+BATTLE_INPUT_STATE networkBattleInput(NetworkInputContext *context,
+		STARSHIP *StarShipPtr);
 
 NetConnection *openPlayerNetworkConnection(COUNT player, void *extra);
 void closePlayerNetworkConnection(COUNT player);

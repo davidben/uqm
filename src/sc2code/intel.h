@@ -19,6 +19,7 @@
 #ifndef _INTEL_H
 #define _INTEL_H
 
+#include "battlecontrols.h"
 #include "controls.h"
 #include "element.h"
 #include "races.h"
@@ -46,10 +47,10 @@ enum
 extern STARSHIP *CyborgDescPtr;
 extern SIZE cur_player;
 
-extern BATTLE_INPUT_STATE computer_intelligence (COUNT player,
-		STARSHIP *StarShipPtr);
-extern BATTLE_INPUT_STATE tactical_intelligence (COUNT player,
-		STARSHIP *StarShipPtr);
+extern BATTLE_INPUT_STATE computer_intelligence (
+		ComputerInputContext *context, STARSHIP *StarShipPtr);
+extern BATTLE_INPUT_STATE tactical_intelligence (
+		ComputerInputContext *context, STARSHIP *StarShipPtr);
 extern void ship_intelligence (ELEMENT *ShipPtr,
 		EVALUATE_DESC *ObjectsOfConcern, COUNT ConcernCounter);
 extern BOOLEAN ship_weapons (ELEMENT *ShipPtr, ELEMENT *OtherPtr,
@@ -67,6 +68,7 @@ extern BOOLEAN ThrustShip (ELEMENT *ShipPtr, COUNT angle);
 #define PSYTRON_CONTROL (BYTE)(1 << 2)
 #define NETWORK_CONTROL (BYTE)(1 << 3)
 #define COMPUTER_CONTROL (CYBORG_CONTROL | PSYTRON_CONTROL)
+#define CONTROL_MASK (HUMAN_CONTROL | COMPUTER_CONTROL | NETWORK_CONTROL)
 
 #define STANDARD_RATING (BYTE)(1 << 4)
 #define GOOD_RATING (BYTE)(1 << 5)

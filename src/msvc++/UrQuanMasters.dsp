@@ -3848,6 +3848,14 @@ SOURCE=..\sc2code\battle.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\battlecontrols.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\battlecontrols.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\border.c
 # End Source File
 # Begin Source File
@@ -4301,6 +4309,10 @@ SOURCE=..\sc2code\status.c
 # Begin Source File
 
 SOURCE=..\sc2code\tactrans.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\tactrans.h
 # End Source File
 # Begin Source File
 

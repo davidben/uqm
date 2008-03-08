@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "battlecontrols.h"
 #include "build.h"
 #include "collide.h"
 #include "globdata.h"
@@ -119,7 +120,7 @@ readyToEndCallback (NetConnection *conn, void *arg)
  * 5. The battle ends.
  */
 static bool
-readyForBattleEndPlayer (NetConnection *conn, void *arg)
+readyForBattleEndPlayer (NetConnection *conn)
 {
 	BattleStateData *battleStateData;
 	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
@@ -176,10 +177,29 @@ readyForBattleEndPlayer (NetConnection *conn, void *arg)
 	// We are ready and wait for the other party to become ready too.
 	negotiateReady (conn, true, NetState_interBattle);
 
-	(void) arg;
 	return true;	
 }
 #endif
+
+bool
+battleEndReadyHuman (HumanInputContext *context)
+{
+	(void) context;
+	return true;
+}
+
+bool
+battleEndReadyComputer (ComputerInputContext *context)
+{
+	(void) context;
+	return true;
+}
+
+bool
+battleEndReadyNetwork (NetworkInputContext *context)
+{
+	return readyForBattleEndPlayer (netConnections[context->playerNr]);
+}
 
 // Returns true iff this side is ready to end the battle.
 static inline bool
@@ -196,6 +216,8 @@ readyForBattleEnd (COUNT side)
 	return !PLRPlaying ((MUSIC_REF)~0);
 #endif  /* !DEMO_MODE */
 #else  /* defined (NETPLAY) */
+	int playerI;
+
 	if (PLRPlaying ((MUSIC_REF)~0))
 		return false;
 
@@ -213,8 +235,10 @@ readyForBattleEnd (COUNT side)
 		return false;
 	}
 
-	if (!forAllConnectedPlayers (readyForBattleEndPlayer, NULL))
-		return false;
+	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+		if (!PlayerInput[playerI]->handlers->battleEndReady (
+				PlayerInput[playerI]))
+			return false;
 
 	currentDeadSide = (COUNT)~0;
 			// Another side may be handled.

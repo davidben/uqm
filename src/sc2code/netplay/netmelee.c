@@ -30,6 +30,8 @@
 #include "netplay/proto/ready.h"
 #include "netplay/proto/reset.h"
 
+#include "battlecontrols.h"
+		// for NetworkInputContext
 #include "controls.h"
 		// for BATTLE_INPUT_STATE
 #include "init.h"
@@ -318,8 +320,8 @@ setBattleStateConnections(struct battlestate_struct *bs) {
 }
 
 BATTLE_INPUT_STATE
-networkBattleInput(COUNT player, STARSHIP *StarShipPtr) {
-	BattleInputBuffer *bib = getBattleInputBuffer(player);
+networkBattleInput(NetworkInputContext *context, STARSHIP *StarShipPtr) {
+	BattleInputBuffer *bib = getBattleInputBuffer(context->playerNr);
 	BATTLE_INPUT_STATE result;
 	
 	for (;;) {
@@ -345,7 +347,7 @@ networkBattleInput(COUNT player, STARSHIP *StarShipPtr) {
 			break;
 			
 		{
-			NetConnection *conn = netConnections[player];
+			NetConnection *conn = netConnections[context->playerNr];
 
 			// First try whether there is incoming data, without blocking.
 			// If there isn't any, only then give a warning, and then
@@ -364,7 +366,7 @@ networkBattleInput(COUNT player, STARSHIP *StarShipPtr) {
 #if 0
 			log_add(log_Warning, "NETPLAY: [%d] stalling for "
 					"network input. Increase the input delay if this "
-					"happens a lot.\n", player);
+					"happens a lot.\n", context->playerNr);
 #endif
 #define MAX_BLOCK_TIME 500
 			netInputBlocking(MAX_BLOCK_TIME);

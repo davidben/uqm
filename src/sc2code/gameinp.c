@@ -17,17 +17,21 @@
  */
 
 #include "controls.h"
+#include "battlecontrols.h"
 #include "init.h"
+#include "intel.h"
+		// For computer_intelligence
+#ifdef NETPLAY
+#	include "netplay/netmelee.h"
+#endif
 #include "planets/planets.h"
 #include "settings.h"
 #include "sounds.h"
+#include "tactrans.h"
 #include "libs/inplib.h"
 #include "libs/timelib.h"
 #include "libs/threadlib.h"
 
-
-battle_summary_func ComputerInput, HumanInput[NUM_PLAYERS], NetworkInput;
-battle_summary_func PlayerInput[NUM_PLAYERS];
 
 #define ACCELERATION_INCREMENT (ONE_SECOND / 12)
 #define MENU_REPEAT_DELAY (ONE_SECOND >> 1)
@@ -417,11 +421,17 @@ ControlInputToBattleInput (const int *keyState)
 }
 
 BATTLE_INPUT_STATE
-combat_summary (COUNT player, STARSHIP *StarShipPtr)
+CurrentInputToBattleInput (COUNT player)
 {
-	(void) StarShipPtr;
 	return ControlInputToBattleInput(
 			CurrentInputState.key[PlayerControls[player]]);
+}
+
+BATTLE_INPUT_STATE
+PulsedInputToBattleInput (COUNT player)
+{
+	return ControlInputToBattleInput(
+			PulsedInputState.key[PlayerControls[player]]);
 }
 
 BOOLEAN

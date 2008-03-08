@@ -16,8 +16,15 @@
 #ifndef _BATTLE_H
 #define _BATTLE_H
 
+#include "options.h"
 #include "libs/compiler.h"
+
+#if defined (NETPLAY)
+typedef DWORD BattleFrameCounter;
+#endif
+
 #include "displist.h"
+		// for QUEUE
 #include "init.h"
 		// For NUM_SIDES
 
@@ -35,16 +42,17 @@ extern QUEUE disp_q;
 
 extern BYTE battle_counter[NUM_SIDES];
 extern BOOLEAN instantVictory;
-#ifdef NETPLAY
-typedef DWORD BattleFrameCounter;
+#if defined (NETPLAY)
 extern BattleFrameCounter battleFrameCount;
+#endif
+#ifdef NETPLAY
 extern COUNT currentDeadSide;
 COUNT GetPlayerOrder (COUNT i);
 #else
 #	define GetPlayerOrder(i) (i)
 #endif
 
-extern BOOLEAN Battle (void);
+BOOLEAN Battle (void);
 
 #endif  /* _BATTLE_H */
 

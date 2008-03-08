@@ -150,6 +150,7 @@ while (--ac > 0)
 //	OpenJournal ();
 	while (StartGame ())
 	{
+		SetPlayerInputAll ();
 		InitSIS ();
 		InitGameClock ();
 
@@ -248,6 +249,7 @@ while (--ac > 0)
 		StopSound ();
 		UninitGameClock ();
 		UninitSIS ();
+		ClearPlayerInputAll ();
 	}
 //	CloseJournal ();
 
