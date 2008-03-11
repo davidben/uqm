@@ -65,7 +65,9 @@ extern BOOLEAN ThrustShip (ELEMENT *ShipPtr, COUNT angle);
 
 #define HUMAN_CONTROL (BYTE)(1 << 0)
 #define CYBORG_CONTROL (BYTE)(1 << 1)
+		// The computer fights the battles.
 #define PSYTRON_CONTROL (BYTE)(1 << 2)
+		// The computer selects the ships to fight with.
 #define NETWORK_CONTROL (BYTE)(1 << 3)
 #define COMPUTER_CONTROL (CYBORG_CONTROL | PSYTRON_CONTROL)
 #define CONTROL_MASK (HUMAN_CONTROL | COMPUTER_CONTROL | NETWORK_CONTROL)

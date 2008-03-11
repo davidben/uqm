@@ -233,6 +233,14 @@ SetPlayerInput (COUNT playerI)
 					(InputContext *) HumanInputContext_new (playerI);
 			break;
 		case COMPUTER_CONTROL:
+		case CYBORG_CONTROL:
+			// COMPUTER_CONTROL is used in SuperMelee; the computer choses
+			// the ships and fights the battles.
+			// CYBORG_CONTROL is used in the full game; the computer only
+			// fights the battles. XXX: This will need to be handled
+			// separately in the future if we want to remove the special
+			// cases for ship selection with CYBORG_CONTROL from the
+			// computer handlers.
 			PlayerInput[playerI] =
 					(InputContext *) ComputerInputContext_new (playerI);
 			break;
