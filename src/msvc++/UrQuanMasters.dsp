@@ -994,6 +994,10 @@ SOURCE=..\sc2code\libs\task\tasklib.c
 # Begin Group "uio"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\getint.h
+# End Source File
 # Begin Group "stdio"
 
 # PROP Default_Filter ""

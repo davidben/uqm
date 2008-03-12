@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Added endian-aware integer read functions to uio - SvdB
 - Introduce the concept of an "InputContext" - SvdB
 - Don't use alloca() in uio. - SvdB
 - Replace PlayerOne/PlayerTwo by PlayerControls[0]/PlayerControls[1] - SvdB

@@ -41,6 +41,7 @@ typedef enum {
 #include "mount.h"
 #include "mounttree.h"
 #include "uiostream.h"
+#include "getint.h"
 #include "debug.h"
 
 struct uio_AutoMount {
