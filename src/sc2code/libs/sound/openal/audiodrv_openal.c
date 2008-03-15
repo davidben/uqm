@@ -145,9 +145,9 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 	alcMakeContextCurrent (alcContext);
 
 	log_add (log_Info, "OpenAL initialized.\n"
-			"    version:     %s\n",
-			"    vendor:      %s\n",
-			"    renderer:    %s\n",
+			"    version:     %s\n"
+			"    vendor:      %s\n"
+			"    renderer:    %s\n"
 			"    device:      %s",
 			alGetString (AL_VERSION), alGetString (AL_VENDOR),
 			alGetString (AL_RENDERER),
