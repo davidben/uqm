@@ -195,11 +195,13 @@ battleEndReadyComputer (ComputerInputContext *context)
 	return true;
 }
 
+#ifdef NETPLAY
 bool
 battleEndReadyNetwork (NetworkInputContext *context)
 {
 	return readyForBattleEndPlayer (netConnections[context->playerNr]);
 }
+#endif
 
 // Returns true iff this side is ready to end the battle.
 static inline bool
