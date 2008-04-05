@@ -142,10 +142,6 @@ LoadSC2Data (void)
 {
 	if (FlagStatFrame == 0)
 	{
-		RESOURCE_INDEX hOldIndex;
-
-		hOldIndex = SetResourceIndex (hResIndex);
-
 		FlagStatFrame = CaptureDrawable (
 				LoadGraphic (FLAGSTAT_MASK_PMAP_ANIM));
 		if (FlagStatFrame == NULL)
@@ -158,8 +154,6 @@ LoadSC2Data (void)
 
 		FontGradFrame = CaptureDrawable (
 				LoadGraphic (FONTGRAD_PMAP_ANIM));
-
-		SetResourceIndex (hOldIndex);
 	}
 
 	CreateRadar ();

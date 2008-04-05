@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Moved all non-CODE resources into starcon.ls2 - Michael
 - Fixed compile errors when compiling without joystick support - Michael
 - Added endian-aware integer read functions to uio - SvdB
 - Introduce the concept of an "InputContext" - SvdB

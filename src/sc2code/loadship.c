@@ -39,6 +39,9 @@ load_ship (DWORD RaceResIndex, BOOLEAN LoadBattleData)
 
 	CodeRef = CaptureCodeRes (LoadCodeRes (INITIAL_CODE_RES),
 			&GlobData, &RDPtr);
+			
+	SetResourceIndex (hOldIndex);
+	
 	if (!CodeRef)
 		goto BadLoad;
 	RDPtr->CodeRef = CodeRef;
@@ -117,7 +120,6 @@ load_ship (DWORD RaceResIndex, BOOLEAN LoadBattleData)
 	}
 
 ExitFunc:
-	SetResourceIndex (hOldIndex);
 	CloseResourceIndex (h);
 
 	return RDPtr;

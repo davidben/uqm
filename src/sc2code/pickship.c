@@ -451,10 +451,8 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect)
 	STAMP s;
 	TEXT t;
 	CONTEXT OldContext;
-	RESOURCE_INDEX hLastIndex;
 	FRAME PickFrame;
 
-	hLastIndex = SetResourceIndex (hResIndex);
 	OldContext = SetContext (SpaceContext);
 
 	PickFrame = CaptureDrawable (LoadGraphic (SC2_PICK_PMAP_ANIM));
@@ -554,6 +552,5 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect)
 	DestroyDrawable (ReleaseDrawable (PickFrame));
 
 	SetContext (OldContext);
-	SetResourceIndex (hLastIndex);
 }
 

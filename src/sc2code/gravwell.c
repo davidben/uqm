@@ -31,9 +31,6 @@ load_gravity_well (BYTE selector)
 	RES_TYPE rt;
 	RES_INSTANCE ri;
 	RES_PACKAGE rp;
-	RESOURCE_INDEX hLastIndex;
-
-	hLastIndex = SetResourceIndex (hResIndex);
 
 	if (selector == NUMBER_OF_PLANET_TYPES)
 	{
@@ -67,7 +64,6 @@ load_gravity_well (BYTE selector)
 		}
 	}
 
-	SetResourceIndex (hLastIndex);
 }
 
 void

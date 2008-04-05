@@ -396,8 +396,6 @@ Battle (void)
 
 	LockMutex (GraphicsLock);
 
-	SetResourceIndex (hResIndex);
-
 #if !(DEMO_MODE || CREATE_JOURNAL)
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE) {
 		// In Supermelee, the RNG is already initialised.

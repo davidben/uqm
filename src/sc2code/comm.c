@@ -1298,7 +1298,6 @@ DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC response_func,
 static void
 HailAlien (void)
 {
-	RESOURCE_INDEX hOldIndex;
 	ENCOUNTER_STATE ES;
 	FONT PlayerFont, OldFont;
 	MUSIC_REF SongRef = 0;
@@ -1308,9 +1307,7 @@ HailAlien (void)
 	memset (pCurInputState, 0, sizeof (*pCurInputState));
 
 	ES.InputFunc = DoCommunication;
-	hOldIndex = SetResourceIndex (hResIndex);
 	PlayerFont = LoadFont (PLAYER_FONT);
-	SetResourceIndex (hOldIndex);
 
 	CommData.AlienFrame = CaptureDrawable (
 			LoadGraphic (CommData.AlienFrameRes));
@@ -1434,7 +1431,6 @@ COUNT
 InitCommunication (CONVERSATION which_comm)
 {
 	COUNT status;
-	RESOURCE_INDEX hOldIndex;
 	LOCDATA *LocDataPtr;
 
 #ifdef DEBUG
@@ -1505,8 +1501,6 @@ InitCommunication (CONVERSATION which_comm)
 			BuildBattle (1);
 	}
 
-	hOldIndex = SetResourceIndex (hResIndex);
-
 	LocDataPtr = init_race (
 			status != YEHAT_REBEL_SHIP ? which_comm :
 			YEHAT_REBEL_CONVERSATION);
@@ -1547,8 +1541,6 @@ InitCommunication (CONVERSATION which_comm)
 
 		(*CommData.uninit_encounter_func) (); // cleanup
 	}
-
-	SetResourceIndex (hOldIndex);
 
 	UnlockMutex (GraphicsLock);
 

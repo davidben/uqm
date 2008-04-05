@@ -185,7 +185,6 @@ COUNT
 InitEncounter (void)
 {
 	COUNT i;
-	RESOURCE_INDEX hOldIndex;
 	FRAME SegueFrame;
 	STAMP s;
 	TEXT t;
@@ -193,8 +192,6 @@ InitEncounter (void)
 	MUSIC_REF MR;
 
 	LockMutex (GraphicsLock);
-
-	hOldIndex = SetResourceIndex (hResIndex);
 
 	SetContext (SpaceContext);
 	SetContextFont (TinyFont);
@@ -318,8 +315,6 @@ InitEncounter (void)
 	UnbatchGraphics ();
 	DestroyDrawable (ReleaseDrawable (SegueFrame));
 	ScreenTransition (3, NULL);
-
-	SetResourceIndex (hOldIndex);
 
 	UnlockMutex (GraphicsLock);
 
@@ -722,7 +717,6 @@ ExitUninitEncounter:
 void
 EncounterBattle (void)
 {
-	RESOURCE_INDEX hLastIndex;
 	ACTIVITY OldActivity;
 	extern UWORD nth_frame;
 	InputContext *savedPlayerInput;
@@ -730,8 +724,6 @@ EncounterBattle (void)
 	LockMutex (GraphicsLock);
 
 	SET_GAME_STATE (BATTLE_SEGUE, 1);
-
-	hLastIndex = SetResourceIndex (hResIndex);
 
 	OldActivity = GLOBAL (CurrentActivity);
 	if (LOBYTE (OldActivity) == IN_LAST_BATTLE)
@@ -783,7 +775,6 @@ EncounterBattle (void)
 		PlayerInput[0] = savedPlayerInput;
 	}
 
-	SetResourceIndex (hResIndex);
 //    MicroFont = CaptureFont (
 // LoadFont (MICRO_FONT)
 // );
@@ -791,8 +782,6 @@ EncounterBattle (void)
 //    LoadSC2Data ();
 
 	GLOBAL (CurrentActivity) = OldActivity;
-
-	SetResourceIndex (hLastIndex);
 
 	UnlockMutex (GraphicsLock);
 }
