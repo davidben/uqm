@@ -213,7 +213,6 @@ key_init (void)
 	}
 #else
 	joycount = 0;
-	joysticks = NULL;
 #endif /* HAVE_JOYSTICK */
 }
 
@@ -257,6 +256,9 @@ VControl_SetJoyThreshold (int port, int threshold)
 		return 0;
 	}
 	else
+#else
+	(void) port;
+	(void) threshold;
 #endif /* HAVE_JOYSTICK */
 	{
 		// log_add (log_Warning, "VControl_SetJoyThreshold passed illegal port %d", port);
@@ -537,6 +539,11 @@ VControl_AddJoyAxisBinding (int port, int axis, int polarity, int *target)
 		}
 	}
 	else
+#else
+	(void) port;
+	(void) axis;
+	(void) polarity;
+	(void) target;
 #endif /* HAVE_JOYSTICK */
 	{
 		// log_add (log_Debug, "VControl: Attempted to bind to illegal port %d", port);
@@ -575,6 +582,11 @@ VControl_RemoveJoyAxisBinding (int port, int axis, int polarity, int *target)
 		}
 	}
 	else
+#else
+	(void) port;
+	(void) axis;
+	(void) polarity;
+	(void) target;
 #endif /* HAVE_JOYSTICK */
 	{
 		log_add (log_Debug, "VControl: Attempted to unbind from illegal port %d", port);
@@ -602,6 +614,10 @@ VControl_AddJoyButtonBinding (int port, int button, int *target)
 		}
 	}
 	else
+#else
+	(void) port;
+	(void) button;
+	(void) target;
 #endif /* HAVE_JOYSTICK */
 	{
 		// log_add (log_Debug, "VControl: Attempted to bind to illegal port %d", port);
@@ -628,6 +644,10 @@ VControl_RemoveJoyButtonBinding (int port, int button, int *target)
 		}
 	}
 	else
+#else
+	(void) port;
+	(void) button;
+	(void) target;
 #endif /* HAVE_JOYSTICK */
 	{
 		log_add (log_Debug, "VControl: Attempted to unbind from illegal port %d", port);
@@ -675,6 +695,11 @@ VControl_AddJoyHatBinding (int port, int which, Uint8 dir, int *target)
 		}
 	}
 	else
+#else
+	(void) port;
+	(void) which;
+	(void) dir;
+	(void) target;
 #endif /* HAVE_JOYSTICK */
 	{
 		// log_add (log_Debug, "VControl: Attempted to bind to illegal port %d", port);
@@ -720,6 +745,11 @@ VControl_RemoveJoyHatBinding (int port, int which, Uint8 dir, int *target)
 		}
 	}
 	else
+#else
+	(void) port;
+	(void) which;
+	(void) dir;
+	(void) target;
 #endif /* HAVE_JOYSTICK */
 	{
 		log_add (log_Debug, "VControl: Attempted to unbind from illegal port %d", port);
@@ -760,6 +790,9 @@ VControl_ProcessJoyButtonDown (int port, int button)
 	if (!joysticks[port].stick)
 		return;
 	activate (joysticks[port].buttons[button]);
+#else
+	(void) port;
+	(void) button;
 #endif /* HAVE_JOYSTICK */
 }
 
@@ -770,6 +803,9 @@ VControl_ProcessJoyButtonUp (int port, int button)
 	if (!joysticks[port].stick)
 		return;
 	deactivate (joysticks[port].buttons[button]);
+#else
+	(void) port;
+	(void) button;
 #endif /* HAVE_JOYSTICK */
 }
 
@@ -817,6 +853,10 @@ VControl_ProcessJoyAxis (int port, int axis, int value)
 		}
 		joysticks[port].axes[axis].polarity = 0;
 	}
+#else
+	(void) port;
+	(void) axis;
+	(void) value;
 #endif /* HAVE_JOYSTICK */
 }
 
@@ -845,6 +885,10 @@ VControl_ProcessJoyHat (int port, int which, Uint8 value)
 	if ((old & SDL_HAT_DOWN) && !(value & SDL_HAT_DOWN))
 		deactivate (joysticks[port].hats[which].down);
 	joysticks[port].hats[which].last = value;
+#else
+	(void) port;
+	(void) which;
+	(void) value;
 #endif /* HAVE_JOYSTICK */
 }
 
