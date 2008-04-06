@@ -850,7 +850,7 @@ GetSoundData (void *data)
 
 			// Using step of 1 sample at 11025Hz, because the human speech
 			// is mostly in the low frequencies
-			step = soundSource[MUSIC_SOURCE].sample->decoder->frequency * 2 / 11025;
+			step = soundSource[SPEECH_SOURCE].sample->decoder->frequency * 2 / 11025;
 			step = (step + 1) & ~1;
 
 			if (delta < 0)
