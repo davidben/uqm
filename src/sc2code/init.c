@@ -18,6 +18,7 @@
 
 #include "build.h"
 #include "colors.h"
+#include "cons_res.h"
 #include "element.h"
 #include "globdata.h"
 #include "init.h"

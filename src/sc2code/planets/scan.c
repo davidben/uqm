@@ -17,6 +17,7 @@
  */
 
 #include "build.h"
+#include "cons_res.h"
 #include "controls.h"
 #include "encount.h"
 #include "gamestr.h"
@@ -34,7 +35,6 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 #include "libs/mathlib.h"
-
 
 extern FRAME SpaceJunkFrame;
 
@@ -1384,13 +1384,7 @@ GeneratePlanetSide (void)
 						life_init_tab[i] = (BYTE)which_node + 1;
 
 						pSolarSysState->PlanetSideFrame[i + 3] =
-								CaptureDrawable (LoadGraphic (
-								MAKE_RESOURCE (
-								GET_PACKAGE (LIFE00_MASK_PMAP_ANIM)
-								+ which_node, GFXRES,
-								GET_INSTANCE (LIFE00_MASK_PMAP_ANIM)
-								+ which_node)));
-
+								load_life_form (which_node);
 						break;
 					}
 

@@ -207,8 +207,6 @@ extern BOOLEAN DeltaCrew (ELEMENT *ElementPtr, SIZE crew_delta);
 extern void PreProcessStatus (ELEMENT *ShipPtr);
 extern void PostProcessStatus (ELEMENT *ShipPtr);
 
-extern void load_gravity_well (BYTE selector);
-extern void free_gravity_well (void);
 extern void spawn_planet (void);
 extern void spawn_asteroid (ELEMENT *ElementPtr);
 extern void animation_preprocess (ELEMENT *ElementPtr);

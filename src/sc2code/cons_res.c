@@ -21,7 +21,6 @@
 #include "nameref.h"
 #include "setup.h"
 
-
 FRAME planet[NUM_VIEWS];
 
 void
@@ -78,3 +77,21 @@ free_gravity_well (void)
 	}
 }
 
+FRAME
+load_life_form (BYTE selector)
+{
+	return CaptureDrawable (LoadGraphic (MAKE_RESOURCE (
+			GET_PACKAGE (LIFE00_MASK_PMAP_ANIM) + selector,
+			GFXRES,
+			GET_INSTANCE (LIFE00_MASK_PMAP_ANIM) + selector)));
+}
+
+MUSIC_REF
+load_orbit_theme (BYTE selector)
+{
+	RES_PACKAGE rp = GET_PACKAGE (ORBIT1_MUSIC);
+	RES_INSTANCE ri = GET_INSTANCE (ORBIT1_MUSIC) + selector;
+	RES_TYPE rt = GET_TYPE (ORBIT1_MUSIC);
+	
+	return LoadMusic (MAKE_RESOURCE (rp, rt, ri));
+}

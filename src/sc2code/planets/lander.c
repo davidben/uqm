@@ -1872,15 +1872,9 @@ LoadLanderData (void)
 
 		{
 			COUNT i;
-			RES_TYPE rt;
-			RES_INSTANCE ri;
-			RES_PACKAGE rp;
 
-			rt = GET_TYPE (ORBIT1_MUSIC);
-			ri = GET_INSTANCE (ORBIT1_MUSIC);
-			rp = GET_PACKAGE (ORBIT1_MUSIC);
-			for (i = 0; i < NUM_ORBIT_THEMES; ++i, ++ri)
-				OrbitMusic[i] = LoadMusic (MAKE_RESOURCE (rp, rt, ri));
+			for (i = 0; i < NUM_ORBIT_THEMES; ++i)
+				OrbitMusic[i] = load_orbit_theme (i);
 		}
 	}
 }

@@ -22,6 +22,7 @@
 #include "colors.h"
 #include "comm.h"
 		// for getLineWithinWidth
+#include "cons_res.h"
 #include "controls.h"
 #include "file.h"
 #include "fmv.h"
