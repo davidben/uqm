@@ -28,7 +28,7 @@ typedef struct
 	HMASTERSHIP pred;
 	HMASTERSHIP succ;
 
-	DWORD RaceResIndex;
+	SPECIES_ID SpeciesID;
 
 	SHIP_INFO ShipInfo;
 	FLEET_STUFF Fleet;
@@ -52,8 +52,8 @@ LockMasterShip (const QUEUE *pq, HMASTERSHIP h)
 
 extern void LoadMasterShipList (void (* YieldProcessing)(void));
 extern void FreeMasterShipList (void);
-extern HMASTERSHIP FindMasterShip (DWORD ship_ref);
-extern int FindMasterShipIndex (DWORD ship_ref);
+extern HMASTERSHIP FindMasterShip (SPECIES_ID ship_ref);
+extern int FindMasterShipIndex (SPECIES_ID ship_ref);
 COUNT GetShipCostFromIndex (unsigned Index);
 FRAME GetShipIconsFromIndex (unsigned Index);
 FRAME GetShipMeleeIconsFromIndex (unsigned Index);

@@ -18,30 +18,54 @@
 
 #include "build.h"
 #include "coderes.h"
+#include "corecode.h"
 #include "globdata.h"
 #include "nameref.h"
 #include "races.h"
 
+static RESOURCE code_resources[] = {
+		NULL_RESOURCE,
+		ARILOU_CODE,
+		CHMMR_CODE,
+		HUMAN_CODE,
+		ORZ_CODE,
+		PKUNK_CODE,
+		SHOFIXTI_CODE,
+		SPATHI_CODE,
+		SUPOX_CODE,
+		THRADDASH_CODE,
+		UTWIG_CODE,
+		VUX_CODE,
+		YEHAT_CODE,
+		MELNORME_CODE,
+		DRUUGE_CODE,
+		ILWRATH_CODE,
+		MYCON_CODE,
+		SLYLANDRO_CODE,
+		UMGAH_CODE,
+		URQUAN_CODE,
+		ZOQFOTPIK_CODE,
+		SYREEN_CODE,
+		KOHR_AH_CODE,
+		ANDROSYNTH_CODE,
+		CHENJESU_CODE,
+		MMRNMHRM_CODE,
+		SIS_CODE,
+		SAMATRA_CODE,
+		PROBE_CODE };
 
 RACE_DESC *
-load_ship (DWORD RaceResIndex, BOOLEAN LoadBattleData)
+load_ship (SPECIES_ID SpeciesID, BOOLEAN LoadBattleData)
 {
-	RESOURCE_INDEX h, hOldIndex;
 	RACE_DESC *RDPtr = 0;
-#define INITIAL_CODE_RES MAKE_RESOURCE (1, CODE, 0)
 	void *CodeRef;
-
-	h = OpenResourceIndexInstance (RaceResIndex);
-	if (!h)
-		return 0;
-
-	hOldIndex = SetResourceIndex (h);
-
-	CodeRef = CaptureCodeRes (LoadCodeRes (INITIAL_CODE_RES),
-			&GlobData, &RDPtr);
-			
-	SetResourceIndex (hOldIndex);
 	
+	if (SpeciesID >= NUM_SPECIES_ID)
+		return NULL;
+
+	CodeRef = CaptureCodeRes (LoadCodeRes (code_resources[SpeciesID]),
+			&GlobData, (void **)(&RDPtr));
+			
 	if (!CodeRef)
 		goto BadLoad;
 	RDPtr->CodeRef = CodeRef;
@@ -120,8 +144,6 @@ load_ship (DWORD RaceResIndex, BOOLEAN LoadBattleData)
 	}
 
 ExitFunc:
-	CloseResourceIndex (h);
-
 	return RDPtr;
 
 	// TODO: We should really free the resources that did load here

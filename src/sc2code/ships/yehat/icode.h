@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define YEHAT_CODE 0x00200008L
+#define YEHAT_CODE 0x5ac00008L

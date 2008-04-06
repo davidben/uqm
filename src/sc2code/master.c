@@ -30,14 +30,8 @@ void
 LoadMasterShipList (void (* YieldProcessing)(void))
 {
 	COUNT num_entries;
-	RES_TYPE rt;
-	RES_INSTANCE ri;
-	RES_PACKAGE rp;
-
-	rt = GET_TYPE (ARILOU_SHIP_INDEX);
-	ri = GET_INSTANCE (ARILOU_SHIP_INDEX);
-	rp = GET_PACKAGE (ARILOU_SHIP_INDEX);
-	num_entries = NUM_MELEE_SHIPS;
+	SPECIES_ID s_id = ARILOU_ID;
+	num_entries = LAST_MELEE_ID - ARILOU_ID + 1;
 	InitQueue (&master_q, num_entries, sizeof (MASTER_SHIP_INFO));
 	while (num_entries--)
 	{
@@ -57,8 +51,8 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 			YieldProcessing ();
 
 		BuiltPtr = LockMasterShip (&master_q, hBuiltShip);
-		BuiltPtr->RaceResIndex = MAKE_RESOURCE (rp++, rt, ri++);
-		RDPtr = load_ship (BuiltPtr->RaceResIndex, FALSE);
+		BuiltPtr->SpeciesID = s_id++;
+		RDPtr = load_ship (BuiltPtr->SpeciesID, FALSE);
 		if (!RDPtr)
 		{
 			UnlockMasterShip (&master_q, hBuiltShip);
@@ -123,7 +117,7 @@ FreeMasterShipList (void)
 }
 
 HMASTERSHIP
-FindMasterShip (DWORD ship_ref)
+FindMasterShip (SPECIES_ID ship_ref)
 {
 	HMASTERSHIP hStarShip, hNextShip;
 	
@@ -134,7 +128,7 @@ FindMasterShip (DWORD ship_ref)
 
 		MasterPtr = LockMasterShip (&master_q, hStarShip);
 		hNextShip = _GetSuccLink (MasterPtr);
-		ref = MasterPtr->RaceResIndex;
+		ref = MasterPtr->SpeciesID;
 		UnlockMasterShip (&master_q, hStarShip);
 
 		if (ref == ship_ref)
@@ -145,7 +139,7 @@ FindMasterShip (DWORD ship_ref)
 }
 
 int
-FindMasterShipIndex (DWORD ship_ref)
+FindMasterShipIndex (SPECIES_ID ship_ref)
 {
 	HMASTERSHIP hStarShip, hNextShip;
 	int index;
@@ -158,7 +152,7 @@ FindMasterShipIndex (DWORD ship_ref)
 
 		MasterPtr = LockMasterShip (&master_q, hStarShip);
 		hNextShip = _GetSuccLink (MasterPtr);
-		ref = MasterPtr->RaceResIndex;
+		ref = MasterPtr->SpeciesID;
 		UnlockMasterShip (&master_q, hStarShip);
 
 		if (ref == ship_ref)

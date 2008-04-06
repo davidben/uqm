@@ -132,7 +132,7 @@ BuildBattle (COUNT which_player)
 
 		hBuiltShip = Build (&race_q[which_player],
 				FragPtr->race_id == SAMATRA_SHIP ?
-					SAMATRA_RES_INDEX : FragPtr->RaceResIndex);
+					SA_MATRA_ID : FragPtr->SpeciesID);
 		if (hBuiltShip)
 		{
 			BuiltShipPtr = LockStarShip (&race_q[which_player], hBuiltShip);
@@ -156,7 +156,7 @@ BuildBattle (COUNT which_player)
 	}
 
 	if (which_player == 0
-			&& (hBuiltShip = Build (&race_q[0], SIS_RES_INDEX)))
+			&& (hBuiltShip = Build (&race_q[0], SIS_SHIP_ID)))
 	{
 		BuiltShipPtr = LockStarShip (&race_q[0], hBuiltShip);
 		BuiltShipPtr->captains_name_index = 0;

@@ -1648,8 +1648,8 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 				MasterPtr = LockMasterShip (&master_q, hMasterShip);
 
 				captains_name_index = NameCaptain (&race_q[side],
-						MasterPtr->RaceResIndex);
-				hBuiltShip = Build (&race_q[side], MasterPtr->RaceResIndex);
+						MasterPtr->SpeciesID);
+				hBuiltShip = Build (&race_q[side], MasterPtr->SpeciesID);
 
 				// Draw the icon.
 				row = GetShipRow (index);

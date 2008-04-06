@@ -381,7 +381,7 @@ spawn_ship (STARSHIP *StarShipPtr)
 	HELEMENT hShip;
 	RACE_DESC *RDPtr;
 
-	RDPtr = load_ship (StarShipPtr->RaceResIndex, TRUE);
+	RDPtr = load_ship (StarShipPtr->SpeciesID, TRUE);
 	if (!RDPtr)
 		return FALSE;
 

@@ -147,7 +147,7 @@ ChangeSelection:
 				{
 					StarShipPtr = LockStarShip (&race_q[0], hBattleShip);
 					if (StarShipPtr->index == ship_index
-							&& StarShipPtr->RaceResIndex)
+							&& (StarShipPtr->SpeciesID != NO_ID))
 					{
 						UnlockStarShip (&race_q[0], hBattleShip);
 						break;
@@ -388,7 +388,7 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 						/* Record crew left after the battle */
 						FragPtr->crew_level = SPtr->crew_level;
 						if (GLOBAL (CurrentActivity) & IN_BATTLE)
-							SPtr->RaceResIndex = 0;
+							SPtr->SpeciesID = NO_ID;
 									// deactivates the ship
 					}
 					else /* if infinite ships */
@@ -523,10 +523,10 @@ DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect)
 			r.corner = s.origin;
 			SetContextForeGroundColor (BLACK_COLOR);
 			DrawFilledRectangle (&r);
-			if (StarShipPtr->RaceResIndex || StarShipPtr->crew_level == 0)
+			if ((StarShipPtr->SpeciesID != NO_ID) || (StarShipPtr->crew_level == 0))
 			{
 				DrawStamp (&s);
-				if (StarShipPtr->RaceResIndex == 0)
+				if (StarShipPtr->SpeciesID == NO_ID)
 				{
 					/* Dead ship - mark with an X. */
 					s.origin.x -= 1;

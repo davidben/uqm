@@ -37,11 +37,11 @@
 								& (NUM_CAPTAINS_NAMES - 1)) \
 								+ NAME_OFFSET)
 
-extern HLINK Build (QUEUE *pQueue, DWORD RaceResIndex);
+extern HLINK Build (QUEUE *pQueue, SPECIES_ID SpeciesID);
 extern HSHIPFRAG CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue,
 		COUNT crew_level);
 extern HLINK GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index);
-extern BYTE NameCaptain (QUEUE *pQueue, DWORD RaceResIndex);
+extern BYTE NameCaptain (QUEUE *pQueue, SPECIES_ID SpeciesID);
 
 /* Possible values for the 'state' argument of
  * COUNT ActivateStarShip (COUNT which_ship, SIZE state)
@@ -63,7 +63,7 @@ extern COUNT GetIndexFromStarShip (QUEUE *pShipQ, HLINK hStarShip);
 extern int SetEscortCrewComplement (COUNT which_ship, COUNT crew_level,
 		BYTE captain);
 
-extern RACE_DESC *load_ship (DWORD RaceResIndex, BOOLEAN LoadBattleData);
+extern RACE_DESC *load_ship (SPECIES_ID SpeciesID, BOOLEAN LoadBattleData);
 extern void free_ship (RACE_DESC *RaceDescPtr, BOOLEAN FreeIconData,
 		BOOLEAN FreeBattleData);
 

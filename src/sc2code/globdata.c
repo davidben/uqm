@@ -194,36 +194,30 @@ InitSIS (void)
 	
 	{
 		COUNT num_ships;
-		RES_TYPE rt;
-		RES_INSTANCE ri;
-		RES_PACKAGE rp;
+		SPECIES_ID s_id = ARILOU_ID;
 
-		rt = GET_TYPE (ARILOU_SHIP_INDEX);
-		ri = GET_INSTANCE (ARILOU_SHIP_INDEX);
-		rp = GET_PACKAGE (ARILOU_SHIP_INDEX);
-
-		num_ships = (GET_PACKAGE (BLACKURQ_SHIP_INDEX) - rp + 1)
+		num_ships = KOHR_AH_ID - s_id + 1
 				+ 2; /* Yehat Rebels and Ur-Quan probe */
 
 		InitQueue (&GLOBAL (avail_race_q), num_ships, sizeof (FLEET_INFO));
 		for (i = 0; i < num_ships; ++i)
 		{
-			DWORD ship_ref;
+			SPECIES_ID ship_ref;
 			HFLEETINFO hFleet;
 			FLEET_INFO *FleetPtr;
 
 			if (i < num_ships - 2)
-				ship_ref = MAKE_RESOURCE (rp++, rt, ri++);
+				ship_ref = s_id++;
 			else if (i == num_ships - 2)
-				ship_ref = YEHAT_SHIP_INDEX;
+				ship_ref = YEHAT_ID;
 			else  /* (i == num_ships - 1) */
-				ship_ref = PROBE_RES_INDEX;
+				ship_ref = UR_QUAN_PROBE_ID;
 			
 			hFleet = AllocLink (&GLOBAL (avail_race_q));
 			if (!hFleet)
 				continue;
 			FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hFleet);
-			FleetPtr->RaceResIndex = ship_ref;
+			FleetPtr->SpeciesID = ship_ref;
 
 			if (i < num_ships - 1)
 			{
@@ -240,7 +234,7 @@ InitSIS (void)
 			else
 			{
 				// Ur-Quan probe.
-				RACE_DESC *RDPtr = load_ship (FleetPtr->RaceResIndex,
+				RACE_DESC *RDPtr = load_ship (FleetPtr->SpeciesID,
 						FALSE);
 				if (RDPtr)
 				{	// Grab a copy of loaded icons and strings

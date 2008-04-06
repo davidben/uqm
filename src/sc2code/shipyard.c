@@ -130,7 +130,7 @@ SpinStarShip (HFLEETINFO hStarShip)
 	FLEET_INFO *FleetPtr;
 
 	FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
-	Index = FindMasterShipIndex (FleetPtr->RaceResIndex);
+	Index = FindMasterShipIndex (FleetPtr->SpeciesID);
 	UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 				
 	if (Index >= 0 && Index < NUM_MELEE_SHIPS)

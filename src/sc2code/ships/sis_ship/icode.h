@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SIS_CODE 0x00200008L
+#define SIS_CODE 0x59800008L

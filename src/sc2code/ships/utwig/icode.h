@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UTWIG_CODE 0x00200008L
+#define UTWIG_CODE 0x5a800008L

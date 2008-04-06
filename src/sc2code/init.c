@@ -156,7 +156,7 @@ BuildSIS (void)
 	HSTARSHIP hStarShip;
 	STARSHIP *StarShipPtr;
 
-	hStarShip = Build (&race_q[0], SIS_RES_INDEX);
+	hStarShip = Build (&race_q[0], SIS_SHIP_ID);
 	if (!hStarShip)
 		return 0;
 	StarShipPtr = LockStarShip (&race_q[0], hStarShip);

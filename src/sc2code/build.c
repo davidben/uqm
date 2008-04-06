@@ -27,7 +27,7 @@
 
 // Allocate a new STARSHIP or SHIP_FRAGMENT and put it in the queue
 HLINK
-Build (QUEUE *pQueue, DWORD RaceResIndex)
+Build (QUEUE *pQueue, SPECIES_ID SpeciesID)
 {
 	HLINK hNewShip;
 	SHIP_BASE *ShipPtr;
@@ -41,7 +41,7 @@ Build (QUEUE *pQueue, DWORD RaceResIndex)
 
 	ShipPtr = (SHIP_BASE *) LockLink (pQueue, hNewShip);
 	memset (ShipPtr, 0, GetLinkSize (pQueue));
-	ShipPtr->RaceResIndex = RaceResIndex;
+	ShipPtr->SpeciesID = SpeciesID;
 
 	UnlockLink (pQueue, hNewShip);
 	PutQueue (pQueue, hNewShip);
@@ -320,7 +320,7 @@ GetIndexFromStarShip (QUEUE *pShipQ, HLINK hStarShip)
 }
 
 BYTE
-NameCaptain (QUEUE *pQueue, DWORD RaceResIndex)
+NameCaptain (QUEUE *pQueue, SPECIES_ID SpeciesID)
 {
 	BYTE name_index;
 	HLINK hStarShip;
@@ -341,7 +341,7 @@ NameCaptain (QUEUE *pQueue, DWORD RaceResIndex)
 
 			ShipPtr = (SHIP_BASE *) LockLink (pQueue, hStarShip);
 			hNextShip = _GetSuccLink (ShipPtr);
-			if (ShipPtr->RaceResIndex == RaceResIndex)
+			if (ShipPtr->SpeciesID == SpeciesID)
 				test_name_index = ShipPtr->captains_name_index;
 			UnlockLink (pQueue, hStarShip);
 			
@@ -374,8 +374,8 @@ CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue, COUNT crew_level)
 		captains_name_index = 0;
 	else
 		captains_name_index = NameCaptain (pDstQueue,
-				TemplatePtr->RaceResIndex);
-	hBuiltShip = Build (pDstQueue, TemplatePtr->RaceResIndex);
+				TemplatePtr->SpeciesID);
+	hBuiltShip = Build (pDstQueue, TemplatePtr->SpeciesID);
 	if (hBuiltShip)
 	{
 		SHIP_FRAGMENT *ShipFragPtr;

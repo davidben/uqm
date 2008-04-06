@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define VUX_CODE 0x00200008L
+#define VUX_CODE 0x5aa00008L

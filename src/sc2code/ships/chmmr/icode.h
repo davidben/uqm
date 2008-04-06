@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define CHMMR_CODE 0x00200008L
+#define CHMMR_CODE 0x58000008L

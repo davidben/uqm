@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define URQUAN_CODE 0x00200008L
+#define URQUAN_CODE 0x5a600008L

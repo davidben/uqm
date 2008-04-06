@@ -55,6 +55,41 @@ typedef HLINK HSTARSHIP;
 #define PLAYER_CAPTAIN    (1 << 13)
 		/* The protagonist himself is on board. He gets a different color. */
 
+/* These track the old resource package orderings for the ship resource indices */
+typedef enum
+{
+	NO_ID,
+	ARILOU_ID,
+	CHMMR_ID,
+	EARTHLING_ID,
+	ORZ_ID,
+	PKUNK_ID,
+	SHOFIXTI_ID,
+	SPATHI_ID,
+	SUPOX_ID,
+	THRADDASH_ID,
+	UTWIG_ID,
+	VUX_ID,
+	YEHAT_ID,
+	MELNORME_ID,
+	DRUUGE_ID,
+	ILWRATH_ID,
+	MYCON_ID,
+	SLYLANDRO_ID,
+	UMGAH_ID,
+	UR_QUAN_ID,
+	ZOQFOTPIK_ID,
+	SYREEN_ID,
+	KOHR_AH_ID,
+	ANDROSYNTH_ID,
+	CHENJESU_ID,
+	MMRNMHRM_ID,
+	LAST_MELEE_ID = MMRNMHRM_ID,
+	SIS_SHIP_ID,
+	SA_MATRA_ID,
+	UR_QUAN_PROBE_ID,
+	NUM_SPECIES_ID
+} SPECIES_ID;
 
 typedef struct captain_stuff
 {
@@ -178,7 +213,7 @@ struct race_desc
 	HLINK pred; \
 	HLINK succ; \
 	\
-	DWORD RaceResIndex; \
+	SPECIES_ID SpeciesID; \
 	BYTE captains_name_index \
 			/* Also used in full-game to detect if a STARSHIP is an escort
 			 * or the flagship (captains_name_index == 0) */
@@ -283,7 +318,7 @@ typedef struct
 	HFLEETINFO pred;
 	HFLEETINFO succ;
 
-	DWORD RaceResIndex;
+	SPECIES_ID SpeciesID;
 
 	UWORD ship_flags; /* 0, GOOD_GUY, or BAD_GUY */
 	BYTE days_left;   /* Days left before the fleet reachers 'dest_loc'. */

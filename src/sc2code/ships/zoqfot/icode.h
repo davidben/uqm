@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ZOQFOTPIK_CODE 0x00200008L
+#define ZOQFOTPIK_CODE 0x5ae00008L

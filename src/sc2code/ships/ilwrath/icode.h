@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ILWRATH_CODE 0x00200008L
+#define ILWRATH_CODE 0x58600008L

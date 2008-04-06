@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define KOHR_AH_CODE 0x00200008L
+#define KOHR_AH_CODE 0x57c00008L

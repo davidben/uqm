@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ANDROSYNTH_CODE 0x00200008L
+#define ANDROSYNTH_CODE 0x57800008L

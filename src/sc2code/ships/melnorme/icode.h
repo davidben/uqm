@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MELNORME_CODE 0x00200008L
+#define MELNORME_CODE 0x58a00008L
