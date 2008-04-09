@@ -53,13 +53,11 @@ freeResourceIndex (RESOURCE_INDEX h) {
    unlikely to be a problem. */
 static const char *res_type_strings[] = {
 	"UNKNOWNRES",
-	"KEY_CONFIG",
 	"GFXRES",
 	"FONTRES",
 	"STRTAB",
 	"SNDRES",
 	"MUSICRES",
-	"RES_INDEX",
 	"CODE",
 	NULL
 };	

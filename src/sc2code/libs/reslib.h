@@ -31,13 +31,11 @@ typedef const char *RESOURCE;
 typedef enum
 {
 	UNKNOWNRES = 0,
-	KEY_CONFIG,
 	GFXRES,
 	FONTRES,
 	STRTAB,
 	SNDRES,
 	MUSICRES,
-	RES_INDEX,
 	CODE
 } RES_TYPE;
 
