@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MYCON_FONT 0x3f600103L
+#define MYCON_FONT "comm.mycon.font"

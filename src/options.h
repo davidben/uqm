@@ -73,6 +73,7 @@ void prepareSaveDir (void);
 void prepareAddons (const char **addons);
 
 BOOLEAN loadAddon (const char *addon);
+int loadIndices (uio_DirHandle *baseDir);
 
 #endif
 

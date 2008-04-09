@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define DRUUGE_RACE_STRINGS 0x58200104L
+#define DRUUGE_RACE_STRINGS "ship.druuge.text"

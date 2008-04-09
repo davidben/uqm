@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define KOHR_AH_RACE_STRINGS 0x57c00104L
+#define KOHR_AH_RACE_STRINGS "ship.kohrah.text"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define CHMMR_SHIP_SOUNDS 0x58000205L
+#define CHMMR_SHIP_SOUNDS "ship.chmmr.sounds"

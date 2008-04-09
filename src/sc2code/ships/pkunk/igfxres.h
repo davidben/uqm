@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PKUNK_ICON_MASK_PMAP_ANIM 0x59200302L
-#define PKUNK_MICON_MASK_PMAP_ANIM 0x59200402L
-#define PKUNK_BIG_MASK_PMAP_ANIM 0x59200502L
-#define PKUNK_MED_MASK_PMAP_ANIM 0x59200602L
-#define PKUNK_SML_MASK_PMAP_ANIM 0x59200702L
-#define BUG_BIG_MASK_PMAP_ANIM 0x59200802L
-#define BUG_MED_MASK_PMAP_ANIM 0x59200902L
-#define BUG_SML_MASK_PMAP_ANIM 0x59200a02L
-#define PKUNK_CAPTAIN_MASK_PMAP_ANIM 0x59200b02L
+#define PKUNK_ICON_MASK_PMAP_ANIM "ship.pkunk.icons"
+#define PKUNK_MICON_MASK_PMAP_ANIM "ship.pkunk.meleeicons"
+#define PKUNK_BIG_MASK_PMAP_ANIM "ship.pkunk.graphics.pkunk.large"
+#define PKUNK_MED_MASK_PMAP_ANIM "ship.pkunk.graphics.pkunk.medium"
+#define PKUNK_SML_MASK_PMAP_ANIM "ship.pkunk.graphics.pkunk.small"
+#define BUG_BIG_MASK_PMAP_ANIM "ship.pkunk.graphics.bug.large"
+#define BUG_MED_MASK_PMAP_ANIM "ship.pkunk.graphics.bug.medium"
+#define BUG_SML_MASK_PMAP_ANIM "ship.pkunk.graphics.bug.small"
+#define PKUNK_CAPTAIN_MASK_PMAP_ANIM "ship.pkunk.graphics.captain"

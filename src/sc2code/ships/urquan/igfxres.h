@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define URQUAN_ICON_MASK_PMAP_ANIM 0x5a600302L
-#define URQUAN_MICON_MASK_PMAP_ANIM 0x5a600402L
-#define URQUAN_BIG_MASK_PMAP_ANIM 0x5a600502L
-#define URQUAN_MED_MASK_PMAP_ANIM 0x5a600602L
-#define URQUAN_SML_MASK_PMAP_ANIM 0x5a600702L
-#define FUSION_BIG_MASK_PMAP_ANIM 0x5a600802L
-#define FUSION_MED_MASK_PMAP_ANIM 0x5a600902L
-#define FUSION_SML_MASK_PMAP_ANIM 0x5a600a02L
-#define FIGHTER_BIG_MASK_PMAP_ANIM 0x5a600b02L
-#define FIGHTER_MED_MASK_PMAP_ANIM 0x5a600c02L
-#define FIGHTER_SML_MASK_PMAP_ANIM 0x5a600d02L
-#define URQUAN_CAPTAIN_MASK_PMAP_ANIM 0x5a600e02L
+#define URQUAN_ICON_MASK_PMAP_ANIM "ship.urquan.icons"
+#define URQUAN_MICON_MASK_PMAP_ANIM "ship.urquan.meleeicons"
+#define URQUAN_BIG_MASK_PMAP_ANIM "ship.urquan.graphics.urquan.large"
+#define URQUAN_MED_MASK_PMAP_ANIM "ship.urquan.graphics.urquan.medium"
+#define URQUAN_SML_MASK_PMAP_ANIM "ship.urquan.graphics.urquan.small"
+#define FUSION_BIG_MASK_PMAP_ANIM "ship.urquan.graphics.fusion.large"
+#define FUSION_MED_MASK_PMAP_ANIM "ship.urquan.graphics.fusion.medium"
+#define FUSION_SML_MASK_PMAP_ANIM "ship.urquan.graphics.fusion.small"
+#define FIGHTER_BIG_MASK_PMAP_ANIM "ship.urquan.graphics.fight.large"
+#define FIGHTER_MED_MASK_PMAP_ANIM "ship.urquan.graphics.fight.medium"
+#define FIGHTER_SML_MASK_PMAP_ANIM "ship.urquan.graphics.fight.small"
+#define URQUAN_CAPTAIN_MASK_PMAP_ANIM "ship.urquan.graphics.captain"

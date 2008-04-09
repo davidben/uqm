@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define VUX_MUSIC 0x41200006L
+#define VUX_MUSIC "comm.vux.music"

@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SLYLANDRO_CONVERSATION_PHRASES 0x3fe00204L
-#define SLYLANDRO_COLOR_MAP 0x3fe00304L
+#define SLYLANDRO_CONVERSATION_PHRASES "comm.slyhome.dialogue"
+#define SLYLANDRO_COLOR_MAP "comm.slyhome.colortable"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define COMMANDER_PMAP_ANIM 0x3ee00702L
+#define COMMANDER_PMAP_ANIM "comm.commander.graphics"

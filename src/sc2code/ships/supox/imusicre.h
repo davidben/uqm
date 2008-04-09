@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SUPOX_VICTORY_SONG 0x59e00006L
+#define SUPOX_VICTORY_SONG "ship.supox.ditty"

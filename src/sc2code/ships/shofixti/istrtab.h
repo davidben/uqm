@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SHOFIXTI_RACE_STRINGS 0x59600104L
+#define SHOFIXTI_RACE_STRINGS "ship.shofixti.text"

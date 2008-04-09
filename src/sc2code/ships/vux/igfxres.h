@@ -2,13 +2,13 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define VUX_ICON_MASK_PMAP_ANIM 0x5aa00302L
-#define VUX_MICON_MASK_PMAP_ANIM 0x5aa00402L
-#define VUX_BIG_MASK_PMAP_ANIM 0x5aa00502L
-#define VUX_MED_MASK_PMAP_ANIM 0x5aa00602L
-#define VUX_SML_MASK_PMAP_ANIM 0x5aa00702L
-#define LIMPETS_BIG_MASK_PMAP_ANIM 0x5aa00802L
-#define LIMPETS_MED_MASK_PMAP_ANIM 0x5aa00902L
-#define LIMPETS_SML_MASK_PMAP_ANIM 0x5aa00a02L
-#define SLIME_MASK_PMAP_ANIM 0x5aa00b02L
-#define VUX_CAPTAIN_MASK_PMAP_ANIM 0x5aa00c02L
+#define VUX_ICON_MASK_PMAP_ANIM "ship.vux.icons"
+#define VUX_MICON_MASK_PMAP_ANIM "ship.vux.meleeicons"
+#define VUX_BIG_MASK_PMAP_ANIM "ship.vux.graphics.vux.large"
+#define VUX_MED_MASK_PMAP_ANIM "ship.vux.graphics.vux.medium"
+#define VUX_SML_MASK_PMAP_ANIM "ship.vux.graphics.vux.small"
+#define LIMPETS_BIG_MASK_PMAP_ANIM "ship.vux.graphics.limpets.large"
+#define LIMPETS_MED_MASK_PMAP_ANIM "ship.vux.graphics.limpets.medium"
+#define LIMPETS_SML_MASK_PMAP_ANIM "ship.vux.graphics.limpets.small"
+#define SLIME_MASK_PMAP_ANIM "ship.vux.graphics.slime"
+#define VUX_CAPTAIN_MASK_PMAP_ANIM "ship.vux.graphics.captain"

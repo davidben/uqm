@@ -2,9 +2,9 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SLYLANDRO_ICON_MASK_PMAP_ANIM 0x59a00302L
-#define SLYLANDRO_MICON_MASK_PMAP_ANIM 0x59a00402L
-#define SLYLANDRO_BIG_MASK_PMAP_ANIM 0x59a00502L
-#define SLYLANDRO_MED_MASK_PMAP_ANIM 0x59a00602L
-#define SLYLANDRO_SML_MASK_PMAP_ANIM 0x59a00702L
-#define SLYLANDRO_CAPTAIN_MASK_PMAP_ANIM 0x59a00802L
+#define SLYLANDRO_ICON_MASK_PMAP_ANIM "ship.slylandro.icons"
+#define SLYLANDRO_MICON_MASK_PMAP_ANIM "ship.slylandro.meleeicons"
+#define SLYLANDRO_BIG_MASK_PMAP_ANIM "ship.slylandro.graphics.slylandr.large"
+#define SLYLANDRO_MED_MASK_PMAP_ANIM "ship.slylandro.graphics.slylandr.medium"
+#define SLYLANDRO_SML_MASK_PMAP_ANIM "ship.slylandro.graphics.slylandr.small"
+#define SLYLANDRO_CAPTAIN_MASK_PMAP_ANIM "ship.slylandro.graphics.captain"

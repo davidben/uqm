@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define DRUUGE_FONT 0x3f000103L
+#define DRUUGE_FONT "comm.druuge.font"

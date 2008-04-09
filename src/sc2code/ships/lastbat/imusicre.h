@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SAMATRA_VICTORY_SONG 0x58800006L
+#define SAMATRA_VICTORY_SONG "ship.lastbat.ditty"

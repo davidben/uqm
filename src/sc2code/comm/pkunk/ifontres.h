@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PKUNK_FONT 0x3fa00103L
+#define PKUNK_FONT "comm.pkunk.font"

@@ -26,7 +26,7 @@ InstallStringTableResType (COUNT string_type)
 }
 
 STRING_TABLE
-LoadStringTableInstance (DWORD res)
+LoadStringTableInstance (RESOURCE res)
 {
 	void *data;
 

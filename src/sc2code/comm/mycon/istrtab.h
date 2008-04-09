@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MYCON_CONVERSATION_PHRASES 0x3f600204L
-#define MYCON_COLOR_MAP 0x3f600304L
+#define MYCON_CONVERSATION_PHRASES "comm.mycon.dialogue"
+#define MYCON_COLOR_MAP "comm.mycon.colortable"

@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SYREEN_ICON_MASK_PMAP_ANIM 0x5a000302L
-#define SYREEN_MICON_MASK_PMAP_ANIM 0x5a000402L
-#define SYREEN_BIG_MASK_PMAP_ANIM 0x5a000502L
-#define SYREEN_MED_MASK_PMAP_ANIM 0x5a000602L
-#define SYREEN_SML_MASK_PMAP_ANIM 0x5a000702L
-#define DAGGER_BIG_MASK_PMAP_ANIM 0x5a000802L
-#define DAGGER_MED_MASK_PMAP_ANIM 0x5a000902L
-#define DAGGER_SML_MASK_PMAP_ANIM 0x5a000a02L
-#define SYREEN_CAPTAIN_MASK_PMAP_ANIM 0x5a000b02L
+#define SYREEN_ICON_MASK_PMAP_ANIM "ship.syreen.icons"
+#define SYREEN_MICON_MASK_PMAP_ANIM "ship.syreen.meleeicons"
+#define SYREEN_BIG_MASK_PMAP_ANIM "ship.syreen.graphics.syreen.large"
+#define SYREEN_MED_MASK_PMAP_ANIM "ship.syreen.graphics.syreen.medium"
+#define SYREEN_SML_MASK_PMAP_ANIM "ship.syreen.graphics.syreen.small"
+#define DAGGER_BIG_MASK_PMAP_ANIM "ship.syreen.graphics.dagger.large"
+#define DAGGER_MED_MASK_PMAP_ANIM "ship.syreen.graphics.dagger.medium"
+#define DAGGER_SML_MASK_PMAP_ANIM "ship.syreen.graphics.dagger.small"
+#define SYREEN_CAPTAIN_MASK_PMAP_ANIM "ship.syreen.graphics.captain"

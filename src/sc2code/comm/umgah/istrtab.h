@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UMGAH_CONVERSATION_PHRASES 0x40c00204L
-#define UMGAH_COLOR_MAP 0x40c00304L
+#define UMGAH_CONVERSATION_PHRASES "comm.umgah.dialogue"
+#define UMGAH_COLOR_MAP "comm.umgah.colortable"

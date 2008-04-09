@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define BLACKURQ_FONT 0x3ea00103L
+#define BLACKURQ_FONT "comm.kohrah.font"

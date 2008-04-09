@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define YEHAT_PMAP_ANIM 0x41400602L
+#define YEHAT_PMAP_ANIM "comm.yehat.graphics"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SUPOX_SHIP_SOUNDS 0x59e00205L
+#define SUPOX_SHIP_SOUNDS "ship.supox.sounds"

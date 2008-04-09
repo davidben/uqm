@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define THRADDASH_CODE 0x5a200008L
+#define THRADDASH_CODE "ship.thraddash.code"

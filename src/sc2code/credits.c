@@ -50,7 +50,7 @@ static FRAME CreditsBack;
 typedef struct
 {
 	int size;
-	DWORD res;
+	RESOURCE res;
 	FONT font;
 } FONT_SIZE_DEF;
 

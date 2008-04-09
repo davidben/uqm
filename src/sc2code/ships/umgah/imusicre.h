@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UMGAH_VICTORY_SONG 0x5a400006L
+#define UMGAH_VICTORY_SONG "ship.umgah.ditty"

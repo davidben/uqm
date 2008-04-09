@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ILWRATH_CONVERSATION_PHRASES 0x3f200204L
-#define ILWRATH_COLOR_MAP 0x3f200304L
+#define ILWRATH_CONVERSATION_PHRASES "comm.ilwrath.dialogue"
+#define ILWRATH_COLOR_MAP "comm.ilwrath.colortable"

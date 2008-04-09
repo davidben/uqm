@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SIS_ICON_MASK_PMAP_ANIM 0x59800202L
-#define SIS_BIG_MASK_PMAP_ANIM 0x59800302L
-#define SIS_MED_MASK_PMAP_ANIM 0x59800402L
-#define SIS_SML_MASK_PMAP_ANIM 0x59800502L
-#define BLASTER_BIG_MASK_PMAP_ANIM 0x59800602L
-#define BLASTER_MED_MASK_PMAP_ANIM 0x59800702L
-#define BLASTER_SML_MASK_PMAP_ANIM 0x59800802L
-#define SIS_CAPTAIN_MASK_PMAP_ANIM 0x59800902L
-#define SIS_HYPER_MASK_PMAP_ANIM 0x59800a02L
+#define SIS_ICON_MASK_PMAP_ANIM "ship.sis_ship.icons"
+#define SIS_BIG_MASK_PMAP_ANIM "ship.sis_ship.graphics.sis.large"
+#define SIS_MED_MASK_PMAP_ANIM "ship.sis_ship.graphics.sis.medium"
+#define SIS_SML_MASK_PMAP_ANIM "ship.sis_ship.graphics.sis.small"
+#define BLASTER_BIG_MASK_PMAP_ANIM "ship.sis_ship.graphics.blas.large"
+#define BLASTER_MED_MASK_PMAP_ANIM "ship.sis_ship.graphics.blas.medium"
+#define BLASTER_SML_MASK_PMAP_ANIM "ship.sis_ship.graphics.blas.small"
+#define SIS_CAPTAIN_MASK_PMAP_ANIM "ship.sis_ship.graphics.captain"
+#define SIS_HYPER_MASK_PMAP_ANIM "ship.sis_ship.graphics.sishyper"

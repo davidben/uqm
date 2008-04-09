@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define THRADD_CONVERSATION_PHRASES 0x40a00204L
-#define THRADD_COLOR_MAP 0x40a00304L
+#define THRADD_CONVERSATION_PHRASES "comm.thraddash.dialogue"
+#define THRADD_COLOR_MAP "comm.thraddash.colortable"

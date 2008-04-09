@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ORZ_SHIP_SOUNDS 0x59000205L
+#define ORZ_SHIP_SOUNDS "ship.orz.sounds"

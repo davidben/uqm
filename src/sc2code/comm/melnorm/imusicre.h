@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MELNORME_MUSIC 0x3f400006L
+#define MELNORME_MUSIC "comm.melnorme.music"

@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UTWIG_CONVERSATION_PHRASES 0x41000304L
-#define UTWIG_COLOR_MAP 0x41000404L
+#define UTWIG_CONVERSATION_PHRASES "comm.utwig.dialogue"
+#define UTWIG_COLOR_MAP "comm.utwig.colortable"

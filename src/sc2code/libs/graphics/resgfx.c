@@ -29,7 +29,7 @@ InstallGraphicResTypes (COUNT cel_type, COUNT font_type)
 
 /* Needs to be void * because it could be either a DRAWABLE or a FONT. */
 void *
-LoadGraphicInstance (DWORD res)
+LoadGraphicInstance (RESOURCE res)
 {
 	void *hData;
 

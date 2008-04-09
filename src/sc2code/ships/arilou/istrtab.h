@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ARILOU_RACE_STRINGS 0x57a00104L
+#define ARILOU_RACE_STRINGS "ship.arilou.text"

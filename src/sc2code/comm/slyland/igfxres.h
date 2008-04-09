@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SLYLAND_PMAP_ANIM 0x40000402L
+#define SLYLAND_PMAP_ANIM "comm.slylandro.graphics"

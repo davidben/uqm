@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define VUX_PMAP_ANIM 0x41200402L
+#define VUX_PMAP_ANIM "comm.vux.graphics"

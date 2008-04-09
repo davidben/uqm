@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SHOFIXTI_PMAP_ANIM 0x3fc00402L
+#define SHOFIXTI_PMAP_ANIM "comm.shofixti.graphics"

@@ -19,16 +19,16 @@
 #ifndef _INDEX_H
 #define _INDEX_H
 
-#include "reslib.h"
 #include <stdio.h>
+#include "reslib.h"
+#include "libs/uio/charhashtable.h"
 
 typedef struct
 {
-	RESOURCE res;
+	RESOURCE res_id;
+	char *fname;
 	RES_TYPE restype;
-	char *res_id;
 	void *resdata;
-	//COUNT ref;
 } ResourceDesc;
 
 typedef struct
@@ -48,17 +48,13 @@ typedef struct
 
 struct resource_index
 {
-	ResourceDesc **res;
+	CharHashTable_HashTable *map;
 	ResourceTypeInfo typeInfo;
 	size_t numRes;
 };
 
 /* XXX: This should almost certainly be folded into RESOURCE_INDEX wherever possible */
 typedef struct resource_index ResourceIndex;
-
-void
-forAllResourceIndices(
-		void (*callback) (ResourceIndex *idx, void *extra), void *extra);
 
 #endif /* _INDEX_H */
 

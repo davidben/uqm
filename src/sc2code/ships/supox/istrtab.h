@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SUPOX_RACE_STRINGS 0x59e00104L
+#define SUPOX_RACE_STRINGS "ship.supox.text"

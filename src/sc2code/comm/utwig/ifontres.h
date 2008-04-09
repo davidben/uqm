@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UTWIG_FONT 0x41000203L
+#define UTWIG_FONT "comm.utwig.font"

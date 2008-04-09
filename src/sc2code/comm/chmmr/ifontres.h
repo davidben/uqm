@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define CHMMR_FONT 0x3ec00103L
+#define CHMMR_FONT "comm.chmmr.font"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ILWRATH_RACE_STRINGS 0x58600104L
+#define ILWRATH_RACE_STRINGS "ship.ilwrath.text"

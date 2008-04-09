@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define DRUUGE_PMAP_ANIM 0x3f000402L
+#define DRUUGE_PMAP_ANIM "comm.druuge.graphics"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SPATHI_SHIP_SOUNDS 0x59c00205L
+#define SPATHI_SHIP_SOUNDS "ship.spathi.sounds"

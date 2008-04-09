@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PKUNK_VICTORY_SONG 0x59200006L
+#define PKUNK_VICTORY_SONG "ship.pkunk.ditty"

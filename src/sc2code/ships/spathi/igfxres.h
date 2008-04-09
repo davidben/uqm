@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SPATHI_ICON_MASK_PMAP_ANIM 0x59c00302L
-#define SPATHI_MICON_MASK_PMAP_ANIM 0x59c00402L
-#define SPATHI_BIG_MASK_PMAP_ANIM 0x59c00502L
-#define SPATHI_MED_MASK_PMAP_ANIM 0x59c00602L
-#define SPATHI_SML_MASK_PMAP_ANIM 0x59c00702L
-#define MISSILE_BIG_MASK_PMAP_ANIM 0x59c00802L
-#define MISSILE_MED_MASK_PMAP_ANIM 0x59c00902L
-#define MISSILE_SML_MASK_PMAP_ANIM 0x59c00a02L
-#define DISCRIM_BIG_MASK_PMAP_ANIM 0x59c00b02L
-#define DISCRIM_MED_MASK_PMAP_ANIM 0x59c00c02L
-#define DISCRIM_SML_MASK_PMAP_ANIM 0x59c00d02L
-#define SPATHI_CAPTAIN_MASK_PMAP_ANIM 0x59c00e02L
+#define SPATHI_ICON_MASK_PMAP_ANIM "ship.spathi.icons"
+#define SPATHI_MICON_MASK_PMAP_ANIM "ship.spathi.meleeicons"
+#define SPATHI_BIG_MASK_PMAP_ANIM "ship.spathi.graphics.spathi.large"
+#define SPATHI_MED_MASK_PMAP_ANIM "ship.spathi.graphics.spathi.medium"
+#define SPATHI_SML_MASK_PMAP_ANIM "ship.spathi.graphics.spathi.small"
+#define MISSILE_BIG_MASK_PMAP_ANIM "ship.spathi.graphics.missile.large"
+#define MISSILE_MED_MASK_PMAP_ANIM "ship.spathi.graphics.missile.medium"
+#define MISSILE_SML_MASK_PMAP_ANIM "ship.spathi.graphics.missile.small"
+#define DISCRIM_BIG_MASK_PMAP_ANIM "ship.spathi.graphics.discrim.large"
+#define DISCRIM_MED_MASK_PMAP_ANIM "ship.spathi.graphics.discrim.medium"
+#define DISCRIM_SML_MASK_PMAP_ANIM "ship.spathi.graphics.discrim.small"
+#define SPATHI_CAPTAIN_MASK_PMAP_ANIM "ship.spathi.graphics.captain"

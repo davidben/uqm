@@ -2,19 +2,19 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define HYPERSPACE_MUSIC 0x04c00006L
-#define QUASISPACE_MUSIC 0x04e00106L
-#define IP_MUSIC 0x13e00206L
-#define ORBIT1_MUSIC 0x14000306L
-#define ORBIT2_MUSIC 0x14000406L
-#define ORBIT3_MUSIC 0x14000506L
-#define ORBIT4_MUSIC 0x14000606L
-#define ORBIT5_MUSIC 0x14000706L
-#define MELEE_MUSIC 0x14200e06L
-#define REDALERT_MUSIC 0x14600806L
-#define MAINMENU_MUSIC 0x18200f06L
-#define OUTFIT_MUSIC 0x18800906L
-#define SHIPYARD_MUSIC 0x18c00a06L
-#define STARBASE_MUSIC 0x18e00b06L
-#define BATTLE_MUSIC 0x20a00c06L
-#define CREDITS_MUSIC 0x23400d06L
+#define HYPERSPACE_MUSIC "music.hyper"
+#define QUASISPACE_MUSIC "music.arispace"
+#define IP_MUSIC "music.space"
+#define ORBIT1_MUSIC "music.orbit1"
+#define ORBIT2_MUSIC "music.orbit2"
+#define ORBIT3_MUSIC "music.orbit3"
+#define ORBIT4_MUSIC "music.orbit4"
+#define ORBIT5_MUSIC "music.orbit5"
+#define MELEE_MUSIC "music.meleemenu"
+#define REDALERT_MUSIC "music.redalert"
+#define MAINMENU_MUSIC "music.mainmenu"
+#define OUTFIT_MUSIC "music.outfit"
+#define SHIPYARD_MUSIC "music.shipyard"
+#define STARBASE_MUSIC "music.starbase"
+#define BATTLE_MUSIC "music.battle"
+#define CREDITS_MUSIC "music.credits"

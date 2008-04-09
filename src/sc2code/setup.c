@@ -105,9 +105,12 @@ LoadKernel (int argc, char *argv[])
 	SetContextFGFrame (Screen);
 	SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
 
-	hResIndex = InitResourceSystem ("uqm.rmp", "starcon.ls2", RES_INDEX, NULL);
+	hResIndex = InitResourceSystem ();
 	if (hResIndex == 0)
 		return FALSE;
+	
+	/* Load base content. */
+	loadIndices (contentDir);
 
 	/* Load addons demanded by the current configuration. */
 	if (opt3doMusic)
@@ -122,8 +125,6 @@ LoadKernel (int argc, char *argv[])
 
 	/* Now load the rest of the addons, in order. */
 	prepareAddons (optAddons);
-
-	INIT_INSTANCES ();
 
 	{
 		COLORMAP ColorMapTab;

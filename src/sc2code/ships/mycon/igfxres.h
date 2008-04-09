@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MYCON_ICON_MASK_PMAP_ANIM 0x58e00302L
-#define MYCON_MICON_MASK_PMAP_ANIM 0x58e00402L
-#define MYCON_BIG_MASK_PMAP_ANIM 0x58e00502L
-#define MYCON_MED_MASK_PMAP_ANIM 0x58e00602L
-#define MYCON_SML_MASK_PMAP_ANIM 0x58e00702L
-#define PLASMA_BIG_MASK_PMAP_ANIM 0x58e00802L
-#define PLASMA_MED_MASK_PMAP_ANIM 0x58e00902L
-#define PLASMA_SML_MASK_PMAP_ANIM 0x58e00a02L
-#define MYCON_CAPTAIN_MASK_PMAP_ANIM 0x58e00b02L
+#define MYCON_ICON_MASK_PMAP_ANIM "ship.mycon.icons"
+#define MYCON_MICON_MASK_PMAP_ANIM "ship.mycon.meleeicons"
+#define MYCON_BIG_MASK_PMAP_ANIM "ship.mycon.graphics.mycon.large"
+#define MYCON_MED_MASK_PMAP_ANIM "ship.mycon.graphics.mycon.medium"
+#define MYCON_SML_MASK_PMAP_ANIM "ship.mycon.graphics.mycon.small"
+#define PLASMA_BIG_MASK_PMAP_ANIM "ship.mycon.graphics.plasma.large"
+#define PLASMA_MED_MASK_PMAP_ANIM "ship.mycon.graphics.plasma.medium"
+#define PLASMA_SML_MASK_PMAP_ANIM "ship.mycon.graphics.plasma.small"
+#define MYCON_CAPTAIN_MASK_PMAP_ANIM "ship.mycon.graphics.captain"

@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ZOQFOTPIK_CONVERSATION_PHRASES 0x41600204L
-#define ZOQFOTPIK_COLOR_MAP 0x41600304L
+#define ZOQFOTPIK_CONVERSATION_PHRASES "comm.zoqfotpik.dialogue"
+#define ZOQFOTPIK_COLOR_MAP "comm.zoqfotpik.colortable"

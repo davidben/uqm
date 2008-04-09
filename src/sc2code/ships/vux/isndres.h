@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define VUX_SHIP_SOUNDS 0x5aa00205L
+#define VUX_SHIP_SOUNDS "ship.vux.sounds"

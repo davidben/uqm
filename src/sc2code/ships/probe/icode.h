@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PROBE_CODE 0x59400008L
+#define PROBE_CODE "ship.probe.code"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UMGAH_FONT 0x40c00103L
+#define UMGAH_FONT "comm.umgah.font"

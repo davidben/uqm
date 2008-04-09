@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SUPOX_FONT 0x40400103L
+#define SUPOX_FONT "comm.supox.font"

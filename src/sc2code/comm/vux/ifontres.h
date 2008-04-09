@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define VUX_FONT 0x41200103L
+#define VUX_FONT "comm.vux.font"

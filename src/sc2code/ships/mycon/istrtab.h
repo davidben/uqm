@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MYCON_RACE_STRINGS 0x58e00104L
+#define MYCON_RACE_STRINGS "ship.mycon.text"

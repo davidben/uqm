@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ANDROSYNTH_SHIP_SOUNDS 0x57800205L
+#define ANDROSYNTH_SHIP_SOUNDS "ship.androsynth.sounds"

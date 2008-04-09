@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SUPOX_ICON_MASK_PMAP_ANIM 0x59e00302L
-#define SUPOX_MICON_MASK_PMAP_ANIM 0x59e00402L
-#define SUPOX_BIG_MASK_PMAP_ANIM 0x59e00502L
-#define SUPOX_MED_MASK_PMAP_ANIM 0x59e00602L
-#define SUPOX_SML_MASK_PMAP_ANIM 0x59e00702L
-#define GOB_BIG_MASK_PMAP_ANIM 0x59e00802L
-#define GOB_MED_MASK_PMAP_ANIM 0x59e00902L
-#define GOB_SML_MASK_PMAP_ANIM 0x59e00a02L
-#define SUPOX_CAPTAIN_MASK_PMAP_ANIM 0x59e00b02L
+#define SUPOX_ICON_MASK_PMAP_ANIM "ship.supox.icons"
+#define SUPOX_MICON_MASK_PMAP_ANIM "ship.supox.meleeicons"
+#define SUPOX_BIG_MASK_PMAP_ANIM "ship.supox.graphics.supox.large"
+#define SUPOX_MED_MASK_PMAP_ANIM "ship.supox.graphics.supox.medium"
+#define SUPOX_SML_MASK_PMAP_ANIM "ship.supox.graphics.supox.small"
+#define GOB_BIG_MASK_PMAP_ANIM "ship.supox.graphics.gob.large"
+#define GOB_MED_MASK_PMAP_ANIM "ship.supox.graphics.gob.medium"
+#define GOB_SML_MASK_PMAP_ANIM "ship.supox.graphics.gob.small"
+#define SUPOX_CAPTAIN_MASK_PMAP_ANIM "ship.supox.graphics.captain"

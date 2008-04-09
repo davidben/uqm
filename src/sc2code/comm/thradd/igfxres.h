@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define THRADD_PMAP_ANIM 0x40a00402L
+#define THRADD_PMAP_ANIM "comm.thraddash.graphics"

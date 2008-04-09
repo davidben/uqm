@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define TALKING_PET_FONT 0x40800103L
+#define TALKING_PET_FONT "comm.talkingpet.font"

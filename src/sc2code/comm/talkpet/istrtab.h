@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define TALKING_PET_CONVERSATION_PHRASES 0x40800204L
-#define TALKING_PET_COLOR_MAP 0x40800304L
+#define TALKING_PET_CONVERSATION_PHRASES "comm.talkingpet.dialogue"
+#define TALKING_PET_COLOR_MAP "comm.talkingpet.colortable"

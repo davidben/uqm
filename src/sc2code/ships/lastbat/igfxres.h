@@ -2,13 +2,13 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SAMATRA_BIG_MASK_ANIM 0x58800202L
-#define SAMATRA_MED_MASK_PMAP_ANIM 0x58800302L
-#define SAMATRA_SML_MASK_PMAP_ANIM 0x58800402L
-#define SENTINEL_BIG_MASK_ANIM 0x58800502L
-#define SENTINEL_MED_MASK_PMAP_ANIM 0x58800602L
-#define SENTINEL_SML_MASK_PMAP_ANIM 0x58800702L
-#define GENERATOR_BIG_MASK_ANIM 0x58800802L
-#define GENERATOR_MED_MASK_PMAP_ANIM 0x58800902L
-#define GENERATOR_SML_MASK_PMAP_ANIM 0x58800a02L
-#define SAMATRA_CAPTAIN_MASK_PMAP_ANIM 0x58800b02L
+#define SAMATRA_BIG_MASK_ANIM "ship.lastbat.graphics.lastbat.large"
+#define SAMATRA_MED_MASK_PMAP_ANIM "ship.lastbat.graphics.lastbat.medium"
+#define SAMATRA_SML_MASK_PMAP_ANIM "ship.lastbat.graphics.lastbat.small"
+#define SENTINEL_BIG_MASK_ANIM "ship.lastbat.graphics.sen.large"
+#define SENTINEL_MED_MASK_PMAP_ANIM "ship.lastbat.graphics.sen.medium"
+#define SENTINEL_SML_MASK_PMAP_ANIM "ship.lastbat.graphics.sen.small"
+#define GENERATOR_BIG_MASK_ANIM "ship.lastbat.graphics.gen.large"
+#define GENERATOR_MED_MASK_PMAP_ANIM "ship.lastbat.graphics.gen.medium"
+#define GENERATOR_SML_MASK_PMAP_ANIM "ship.lastbat.graphics.gen.small"
+#define SAMATRA_CAPTAIN_MASK_PMAP_ANIM "ship.lastbat.graphics.captain"

@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ANDROSYNTH_ICON_MASK_PMAP_ANIM 0x57800302L
-#define ANDROSYNTH_MICON_MASK_PMAP_ANIM 0x57800402L
-#define ANDROSYNTH_BIG_MASK_PMAP_ANIM 0x57800502L
-#define ANDROSYNTH_MED_MASK_PMAP_ANIM 0x57800602L
-#define ANDROSYNTH_SML_MASK_PMAP_ANIM 0x57800702L
-#define BUBBLE_BIG_MASK_PMAP_ANIM 0x57800802L
-#define BUBBLE_MED_MASK_PMAP_ANIM 0x57800902L
-#define BUBBLE_SML_MASK_PMAP_ANIM 0x57800a02L
-#define BLAZER_BIG_MASK_PMAP_ANIM 0x57800b02L
-#define BLAZER_MED_MASK_PMAP_ANIM 0x57800c02L
-#define BLAZER_SML_MASK_PMAP_ANIM 0x57800d02L
-#define ANDROSYNTH_CAPT_MASK_PMAP_ANIM 0x57800e02L
+#define ANDROSYNTH_ICON_MASK_PMAP_ANIM "ship.androsynth.icons"
+#define ANDROSYNTH_MICON_MASK_PMAP_ANIM "ship.androsynth.meleeicons"
+#define ANDROSYNTH_BIG_MASK_PMAP_ANIM "ship.androsynth.graphics.androsyn.large"
+#define ANDROSYNTH_MED_MASK_PMAP_ANIM "ship.androsynth.graphics.androsyn.medium"
+#define ANDROSYNTH_SML_MASK_PMAP_ANIM "ship.androsynth.graphics.androsyn.small"
+#define BUBBLE_BIG_MASK_PMAP_ANIM "ship.androsynth.graphics.bubble.large"
+#define BUBBLE_MED_MASK_PMAP_ANIM "ship.androsynth.graphics.bubble.medium"
+#define BUBBLE_SML_MASK_PMAP_ANIM "ship.androsynth.graphics.bubble.small"
+#define BLAZER_BIG_MASK_PMAP_ANIM "ship.androsynth.graphics.blazer.large"
+#define BLAZER_MED_MASK_PMAP_ANIM "ship.androsynth.graphics.blazer.medium"
+#define BLAZER_SML_MASK_PMAP_ANIM "ship.androsynth.graphics.blazer.small"
+#define ANDROSYNTH_CAPT_MASK_PMAP_ANIM "ship.androsynth.graphics.captain"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ORZ_CODE 0x59000008L
+#define ORZ_CODE "ship.orz.code"

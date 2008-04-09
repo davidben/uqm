@@ -23,11 +23,10 @@
 #include "compiler.h"
 #include "port.h"
 #include "misc.h"
-#include  "libs/uio.h"
-
+#include "libs/uio.h"
 
 typedef struct resource_index *RESOURCE_INDEX;
-typedef DWORD RESOURCE;
+typedef const char *RESOURCE;
 
 typedef enum
 {
@@ -42,28 +41,7 @@ typedef enum
 	CODE
 } RES_TYPE;
 
-typedef COUNT RES_INSTANCE;
-typedef COUNT RES_PACKAGE;
-
-#define NULL_RESOURCE 0L
-
-#define TYPE_BITS 8
-#define INSTANCE_BITS 13
-#define PACKAGE_BITS 11
-
-#define GET_TYPE(res) \
-		((RES_TYPE)(res) & (RES_TYPE)((1 << TYPE_BITS) - 1))
-
-#define GET_INSTANCE(res) \
-		((RES_INSTANCE)((res) >> TYPE_BITS) & ((1 << INSTANCE_BITS) - 1))
-#define GET_PACKAGE(res) \
-		((RES_PACKAGE)((res) >> (TYPE_BITS + INSTANCE_BITS)) & \
-		((1 << PACKAGE_BITS) - 1))
-#define MAKE_RESOURCE(p,t,i) \
-		(((RESOURCE)(p) << (TYPE_BITS + INSTANCE_BITS)) | \
-		((RESOURCE)(i) << TYPE_BITS) | \
-		((RESOURCE)(t)))
-
+#define NULL_RESOURCE NULL
 
 extern const char *_cur_resfile_name;
 
@@ -84,8 +62,7 @@ extern long LengthResFile (uio_Stream *fp);
 extern BOOLEAN res_CloseResFile (uio_Stream *fp);
 extern BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 
-extern RESOURCE_INDEX InitResourceSystem (const char *mapfile, const char *resfile, 
-		RES_TYPE resType, BOOLEAN (*FileErrorFun) (const char *filename));
+extern RESOURCE_INDEX InitResourceSystem ();
 extern void UninitResourceSystem (void);
 extern BOOLEAN InstallResTypeVectors (RES_TYPE res_type,
 		ResourceLoadFun *loadFun, ResourceFreeFun *freeFun);
@@ -94,15 +71,12 @@ extern void *res_DetachResource (RESOURCE res);
 extern BOOLEAN FreeResource (RESOURCE res);
 extern COUNT CountResourceTypes (void);
 
-extern RESOURCE_INDEX OpenResourceIndexFile (const char *resfile);
-extern RESOURCE_INDEX OpenResourceIndexInstance (RESOURCE res);
-extern RESOURCE_INDEX SetResourceIndex (RESOURCE_INDEX newIndexHandle);
-extern BOOLEAN CloseResourceIndex (RESOURCE_INDEX newIndexHandle);
+extern void LoadResourceIndex (uio_DirHandle *dir, const char *filename);
 
 extern void *GetResourceData (uio_Stream *fp, DWORD length);
 
 #define AllocResourceData HMalloc
-#define FreeResourceData  HFree
+extern BOOLEAN FreeResourceData (void *);
 
 #include "strlib.h"
 
@@ -149,4 +123,3 @@ void res_PutBoolean (const char *key, BOOLEAN value);
 BOOLEAN res_Remove (const char *key);
 
 #endif /* _RESLIB_H */
-

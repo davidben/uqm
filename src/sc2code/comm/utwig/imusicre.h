@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UTWIG_MUSIC 0x41000006L
-#define UTWIG_ULTRON_MUSIC 0x41000106L
+#define UTWIG_MUSIC "comm.utwig.music"
+#define UTWIG_ULTRON_MUSIC "comm.utwigult.music"

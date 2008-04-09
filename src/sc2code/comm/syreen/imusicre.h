@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SYREEN_MUSIC 0x40600006L
+#define SYREEN_MUSIC "comm.syreen.music"

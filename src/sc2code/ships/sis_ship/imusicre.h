@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SIS_VICTORY_SONG 0x59800006L
+#define SIS_VICTORY_SONG "ship.sis_ship.ditty"

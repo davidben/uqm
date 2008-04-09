@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define CHMMR_RACE_STRINGS 0x58000104L
+#define CHMMR_RACE_STRINGS "ship.chmmr.text"

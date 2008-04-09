@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define HUMAN_RACE_STRINGS 0x58400104L
+#define HUMAN_RACE_STRINGS "ship.earthling.text"

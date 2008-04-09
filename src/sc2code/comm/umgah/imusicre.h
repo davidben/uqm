@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UMGAH_MUSIC 0x40c00006L
+#define UMGAH_MUSIC "comm.umgah.music"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define YEHAT_SHIP_SOUNDS 0x5ac00205L
+#define YEHAT_SHIP_SOUNDS "ship.yehat.sounds"

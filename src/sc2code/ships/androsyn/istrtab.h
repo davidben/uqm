@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ANDROSYNTH_RACE_STRINGS 0x57800104L
+#define ANDROSYNTH_RACE_STRINGS "ship.androsynth.text"

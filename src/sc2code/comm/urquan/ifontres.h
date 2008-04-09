@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define URQUAN_FONT 0x40e00103L
+#define URQUAN_FONT "comm.urquan.font"

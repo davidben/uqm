@@ -2,19 +2,19 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SHOFIXTI_ICON_MASK_PMAP_ANIM 0x59600302L
-#define SHOFIXTI_MICON_MASK_PMAP_ANIM 0x59600402L
-#define SHOFIXTI_BIG_MASK_PMAP_ANIM 0x59600502L
-#define SHOFIXTI_MED_MASK_PMAP_ANIM 0x59600602L
-#define SHOFIXTI_SML_MASK_PMAP_ANIM 0x59600702L
-#define DESTRUCT_BIG_MASK_ANIM 0x59600802L
-#define DESTRUCT_MED_MASK_ANIM 0x59600902L
-#define DESTRUCT_SML_MASK_ANIM 0x59600a02L
-#define SHOFIXTI_CAPTAIN_MASK_PMAP_ANIM 0x59600b02L
-#define OLDSHOF_BIG_MASK_PMAP_ANIM 0x59600c02L
-#define OLDSHOF_MED_MASK_PMAP_ANIM 0x59600d02L
-#define OLDSHOF_SML_MASK_PMAP_ANIM 0x59600e02L
-#define OLDSHOF_CAPTAIN_MASK_PMAP_ANIM 0x59600f02L
-#define DART_BIG_MASK_PMAP_ANIM 0x59601002L
-#define DART_MED_MASK_PMAP_ANIM 0x59601102L
-#define DART_SML_MASK_PMAP_ANIM 0x59601202L
+#define SHOFIXTI_ICON_MASK_PMAP_ANIM "ship.shofixti.icons"
+#define SHOFIXTI_MICON_MASK_PMAP_ANIM "ship.shofixti.meleeicons"
+#define SHOFIXTI_BIG_MASK_PMAP_ANIM "ship.shofixti.graphics.shofixti.large"
+#define SHOFIXTI_MED_MASK_PMAP_ANIM "ship.shofixti.graphics.shofixti.medium"
+#define SHOFIXTI_SML_MASK_PMAP_ANIM "ship.shofixti.graphics.shofixti.small"
+#define DESTRUCT_BIG_MASK_ANIM "ship.shofixti.graphics.destruct.large"
+#define DESTRUCT_MED_MASK_ANIM "ship.shofixti.graphics.destruct.medium"
+#define DESTRUCT_SML_MASK_ANIM "ship.shofixti.graphics.destruct.small"
+#define SHOFIXTI_CAPTAIN_MASK_PMAP_ANIM "ship.shofixti.graphics.captain"
+#define OLDSHOF_BIG_MASK_PMAP_ANIM "ship.shofixti.graphics.oldshof.large"
+#define OLDSHOF_MED_MASK_PMAP_ANIM "ship.shofixti.graphics.oldshof.medium"
+#define OLDSHOF_SML_MASK_PMAP_ANIM "ship.shofixti.graphics.oldshof.small"
+#define OLDSHOF_CAPTAIN_MASK_PMAP_ANIM "ship.shofixti.graphics.oldcaptain"
+#define DART_BIG_MASK_PMAP_ANIM "ship.shofixti.graphics.missile.large"
+#define DART_MED_MASK_PMAP_ANIM "ship.shofixti.graphics.missile.medium"
+#define DART_SML_MASK_PMAP_ANIM "ship.shofixti.graphics.missile.small"

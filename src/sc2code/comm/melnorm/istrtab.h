@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MELNORME_CONVERSATION_PHRASES 0x3f400204L
-#define MELNORME_COLOR_MAP 0x3f400304L
+#define MELNORME_CONVERSATION_PHRASES "comm.melnorme.dialogue"
+#define MELNORME_COLOR_MAP "comm.melnorme.colortable"

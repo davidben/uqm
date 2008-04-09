@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MMRNMHRM_ICON_MASK_PMAP_ANIM 0x58c00302L
-#define MMRNMHRM_MICON_MASK_PMAP_ANIM 0x58c00402L
-#define MMRNMHRM_BIG_MASK_PMAP_ANIM 0x58c00502L
-#define MMRNMHRM_MED_MASK_PMAP_ANIM 0x58c00602L
-#define MMRNMHRM_SML_MASK_PMAP_ANIM 0x58c00702L
-#define TORP_BIG_MASK_PMAP_ANIM 0x58c00802L
-#define TORP_MED_MASK_PMAP_ANIM 0x58c00902L
-#define TORP_SML_MASK_PMAP_ANIM 0x58c00a02L
-#define YWING_BIG_MASK_PMAP_ANIM 0x58c00b02L
-#define YWING_MED_MASK_PMAP_ANIM 0x58c00c02L
-#define YWING_SML_MASK_PMAP_ANIM 0x58c00d02L
-#define MMRNMHRM_CAPTAIN_MASK_PMAP_ANIM 0x58c00e02L
+#define MMRNMHRM_ICON_MASK_PMAP_ANIM "ship.mmrnmhrm.icons"
+#define MMRNMHRM_MICON_MASK_PMAP_ANIM "ship.mmrnmhrm.meleeicons"
+#define MMRNMHRM_BIG_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.mmrnmhrm.large"
+#define MMRNMHRM_MED_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.mmrnmhrm.medium"
+#define MMRNMHRM_SML_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.mmrnmhrm.small"
+#define TORP_BIG_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.torp.large"
+#define TORP_MED_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.torp.medium"
+#define TORP_SML_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.torp.small"
+#define YWING_BIG_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.ywing.large"
+#define YWING_MED_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.ywing.medium"
+#define YWING_SML_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.ywing.small"
+#define MMRNMHRM_CAPTAIN_MASK_PMAP_ANIM "ship.mmrnmhrm.graphics.captain"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PKUNK_MUSIC 0x3fa00006L
+#define PKUNK_MUSIC "comm.pkunk.music"

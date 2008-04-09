@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ILWRATH_MUSIC 0x3f200006L
+#define ILWRATH_MUSIC "comm.ilwrath.music"

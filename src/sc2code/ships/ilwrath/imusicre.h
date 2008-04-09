@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ILWRATH_VICTORY_SONG 0x58600006L
+#define ILWRATH_VICTORY_SONG "ship.ilwrath.ditty"

@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define THRADDASH_ICON_MASK_PMAP_ANIM 0x5a200302L
-#define THRADDASH_MICON_MASK_PMAP_ANIM 0x5a200402L
-#define THRADDASH_BIG_MASK_PMAP_ANIM 0x5a200502L
-#define THRADDASH_MED_MASK_PMAP_ANIM 0x5a200602L
-#define THRADDASH_SML_MASK_PMAP_ANIM 0x5a200702L
-#define HORN_BIG_MASK_PMAP_ANIM 0x5a200802L
-#define HORN_MED_MASK_PMAP_ANIM 0x5a200902L
-#define HORN_SML_MASK_PMAP_ANIM 0x5a200a02L
-#define NAPALM_BIG_MASK_PMAP_ANIM 0x5a200b02L
-#define NAPALM_MED_MASK_PMAP_ANIM 0x5a200c02L
-#define NAPALM_SML_MASK_PMAP_ANIM 0x5a200d02L
-#define THRADDASH_CAPTAIN_MASK_PMAP_ANIM 0x5a200e02L
+#define THRADDASH_ICON_MASK_PMAP_ANIM "ship.thraddash.icons"
+#define THRADDASH_MICON_MASK_PMAP_ANIM "ship.thraddash.meleeicons"
+#define THRADDASH_BIG_MASK_PMAP_ANIM "ship.thraddash.graphics.thradd.large"
+#define THRADDASH_MED_MASK_PMAP_ANIM "ship.thraddash.graphics.thradd.medium"
+#define THRADDASH_SML_MASK_PMAP_ANIM "ship.thraddash.graphics.thradd.small"
+#define HORN_BIG_MASK_PMAP_ANIM "ship.thraddash.graphics.hor.large"
+#define HORN_MED_MASK_PMAP_ANIM "ship.thraddash.graphics.hor.medium"
+#define HORN_SML_MASK_PMAP_ANIM "ship.thraddash.graphics.hor.small"
+#define NAPALM_BIG_MASK_PMAP_ANIM "ship.thraddash.graphics.nap.large"
+#define NAPALM_MED_MASK_PMAP_ANIM "ship.thraddash.graphics.nap.medium"
+#define NAPALM_SML_MASK_PMAP_ANIM "ship.thraddash.graphics.nap.small"
+#define THRADDASH_CAPTAIN_MASK_PMAP_ANIM "ship.thraddash.graphics.captain"

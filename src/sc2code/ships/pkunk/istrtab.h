@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PKUNK_RACE_STRINGS 0x59200104L
+#define PKUNK_RACE_STRINGS "ship.pkunk.text"

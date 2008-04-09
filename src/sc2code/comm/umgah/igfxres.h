@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UMGAH_PMAP_ANIM 0x40c00402L
+#define UMGAH_PMAP_ANIM "comm.umgah.graphics"

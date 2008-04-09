@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define DRUUGE_MUSIC 0x3f000006L
+#define DRUUGE_MUSIC "comm.druuge.music"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define YEHAT_FONT 0x41400203L
+#define YEHAT_FONT "comm.yehat.font"

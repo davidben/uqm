@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UTWIG_PMAP_ANIM 0x41000502L
+#define UTWIG_PMAP_ANIM "comm.utwig.graphics"

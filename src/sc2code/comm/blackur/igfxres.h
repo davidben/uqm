@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define BLACKURQ_PMAP_ANIM 0x3ea00402L
+#define BLACKURQ_PMAP_ANIM "comm.kohrah.graphics"

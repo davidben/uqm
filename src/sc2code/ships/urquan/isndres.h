@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define URQUAN_SHIP_SOUNDS 0x5a600205L
+#define URQUAN_SHIP_SOUNDS "ship.urquan.sounds"

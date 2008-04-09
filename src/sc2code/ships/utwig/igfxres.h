@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UTWIG_ICON_MASK_PMAP_ANIM 0x5a800302L
-#define UTWIG_MICON_MASK_PMAP_ANIM 0x5a800402L
-#define UTWIG_BIG_MASK_PMAP_ANIM 0x5a800502L
-#define UTWIG_MED_MASK_PMAP_ANIM 0x5a800602L
-#define UTWIG_SML_MASK_PMAP_ANIM 0x5a800702L
-#define LANCE_BIG_MASK_PMAP_ANIM 0x5a800802L
-#define LANCE_MED_MASK_PMAP_ANIM 0x5a800902L
-#define LANCE_SML_MASK_PMAP_ANIM 0x5a800a02L
-#define UTWIG_CAPTAIN_MASK_PMAP_ANIM 0x5a800b02L
+#define UTWIG_ICON_MASK_PMAP_ANIM "ship.utwig.icons"
+#define UTWIG_MICON_MASK_PMAP_ANIM "ship.utwig.meleeicons"
+#define UTWIG_BIG_MASK_PMAP_ANIM "ship.utwig.graphics.utwig.large"
+#define UTWIG_MED_MASK_PMAP_ANIM "ship.utwig.graphics.utwig.medium"
+#define UTWIG_SML_MASK_PMAP_ANIM "ship.utwig.graphics.utwig.small"
+#define LANCE_BIG_MASK_PMAP_ANIM "ship.utwig.graphics.lan.large"
+#define LANCE_MED_MASK_PMAP_ANIM "ship.utwig.graphics.lan.medium"
+#define LANCE_SML_MASK_PMAP_ANIM "ship.utwig.graphics.lan.small"
+#define UTWIG_CAPTAIN_MASK_PMAP_ANIM "ship.utwig.graphics.captain"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SPATHI_FONT 0x40200303L
+#define SPATHI_FONT "comm.spathi.font"

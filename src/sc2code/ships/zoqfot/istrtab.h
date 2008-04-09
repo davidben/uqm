@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ZOQFOTPIK_RACE_STRINGS 0x5ae00104L
+#define ZOQFOTPIK_RACE_STRINGS "ship.zoqfotpik.text"

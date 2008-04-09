@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UTWIG_VICTORY_SONG 0x5a800006L
+#define UTWIG_VICTORY_SONG "ship.utwig.ditty"

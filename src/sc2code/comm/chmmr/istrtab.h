@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define CHMMR_CONVERSATION_PHRASES 0x3ec00204L
-#define CHMMR_COLOR_MAP 0x3ec00304L
+#define CHMMR_CONVERSATION_PHRASES "comm.chmmr.dialogue"
+#define CHMMR_COLOR_MAP "comm.chmmr.colortable"

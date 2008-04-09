@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MELNORME_PMAP_ANIM 0x3f400402L
+#define MELNORME_PMAP_ANIM "comm.melnorme.graphics"

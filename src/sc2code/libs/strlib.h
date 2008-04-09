@@ -32,8 +32,11 @@ typedef STRING_TABLE_DESC *STRING_TABLE;
 typedef STRING_TABLE_ENTRY_DESC *STRING;
 typedef BYTE *STRINGPTR;
 
+/* This has to go here because reslib requires the above typedefs. */
+#include "reslib.h"
+
 extern BOOLEAN InstallStringTableResType (COUNT string_type);
-extern STRING_TABLE LoadStringTableInstance (DWORD res);
+extern STRING_TABLE LoadStringTableInstance (RESOURCE res);
 extern STRING_TABLE LoadStringTableFile (uio_DirHandle *dir,
 		const char *fileName);
 extern BOOLEAN DestroyStringTable (STRING_TABLE StringTable);

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PROBE_MICON_MASK_PMAP_ANIM 0x59400002L
+#define PROBE_MICON_MASK_PMAP_ANIM "ship.probe.meleeicons"

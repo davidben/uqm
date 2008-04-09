@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MELNORME_ICON_MASK_PMAP_ANIM 0x58a00302L
-#define MELNORME_MICON_MASK_PMAP_ANIM 0x58a00402L
-#define MELNORME_BIG_MASK_PMAP_ANIM 0x58a00502L
-#define MELNORME_MED_MASK_PMAP_ANIM 0x58a00602L
-#define MELNORME_SML_MASK_PMAP_ANIM 0x58a00702L
-#define PUMPUP_BIG_MASK_PMAP_ANIM 0x58a00802L
-#define PUMPUP_MED_MASK_PMAP_ANIM 0x58a00902L
-#define PUMPUP_SML_MASK_PMAP_ANIM 0x58a00a02L
-#define CONFUSE_BIG_MASK_PMAP_ANIM 0x58a00b02L
-#define CONFUSE_MED_MASK_PMAP_ANIM 0x58a00c02L
-#define CONFUSE_SML_MASK_PMAP_ANIM 0x58a00d02L
-#define MELNORME_CAPTAIN_MASK_PMAP_ANIM 0x58a00e02L
+#define MELNORME_ICON_MASK_PMAP_ANIM "ship.melnorme.icons"
+#define MELNORME_MICON_MASK_PMAP_ANIM "ship.melnorme.meleeicons"
+#define MELNORME_BIG_MASK_PMAP_ANIM "ship.melnorme.graphics.melnorme.large"
+#define MELNORME_MED_MASK_PMAP_ANIM "ship.melnorme.graphics.melnorme.medium"
+#define MELNORME_SML_MASK_PMAP_ANIM "ship.melnorme.graphics.melnorme.small"
+#define PUMPUP_BIG_MASK_PMAP_ANIM "ship.melnorme.graphics.pump.large"
+#define PUMPUP_MED_MASK_PMAP_ANIM "ship.melnorme.graphics.pump.medium"
+#define PUMPUP_SML_MASK_PMAP_ANIM "ship.melnorme.graphics.pump.small"
+#define CONFUSE_BIG_MASK_PMAP_ANIM "ship.melnorme.graphics.confu.large"
+#define CONFUSE_MED_MASK_PMAP_ANIM "ship.melnorme.graphics.confu.medium"
+#define CONFUSE_SML_MASK_PMAP_ANIM "ship.melnorme.graphics.confu.small"
+#define MELNORME_CAPTAIN_MASK_PMAP_ANIM "ship.melnorme.graphics.captain"

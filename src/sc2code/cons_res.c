@@ -16,20 +16,40 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <stdio.h>
+
+#include "cons_res.h"
 #include "element.h"
 #include "resinst.h"
 #include "nameref.h"
 #include "setup.h"
 
+static const char *planet_types[] = {
+	"oolite", "yttric", "quasidegenerate", "lanthanide", "treasure",
+	"urea", "metal", "radioactive", "opalescent", "cyanic",
+	"acid", "alkali", "halide", "green", "copper",
+	"carbide", "ultramarine", "noble", "azure", "chondrite",
+	"purple", "superdense", "pellucid", "dust", "crimson",
+	"cimmerian", "infrared", "selenic", "auric", "fluorescent",
+	"ultraviolet", "plutonic", "rainbow", "shattered", "sapphire",
+	"organic", "xenolithic", "redux", "primordial", "emerald",
+	"chlorine", "magnetic", "water", "telluric", "hydrocarbon",
+	"iodine", "vinylogous", "ruby", "magma", "maroon",
+	"bluegas", "cyangas", "greengas", "greygas", "orangegas",
+	"purplegas", "redgas", "violetgas", "yellowgas"
+};
+
+static const char *planet_sizes[] = {
+	"large", "medium", "small"
+}; 
+
 FRAME planet[NUM_VIEWS];
+static char buffer[80];
 
 void
 load_gravity_well (BYTE selector)
 {
 	COUNT i;
-	RES_TYPE rt;
-	RES_INSTANCE ri;
-	RES_PACKAGE rp;
 
 	if (selector == NUMBER_OF_PLANET_TYPES)
 	{
@@ -40,26 +60,21 @@ load_gravity_well (BYTE selector)
 	}
 	else
 	{
+		const char *ptype;
 		if (selector & PLANET_SHIELDED)
 		{
-			rt = GET_TYPE (SHIELDED_BIG_MASK_PMAP_ANIM);
-			ri = GET_INSTANCE (SHIELDED_BIG_MASK_PMAP_ANIM);
-			rp = GET_PACKAGE (SHIELDED_BIG_MASK_PMAP_ANIM);
+			ptype = "slaveshield";
 		}
 		else
 		{
-			rt = GET_TYPE (PLANET00_BIG_MASK_PMAP_ANIM);
-			ri = GET_INSTANCE (PLANET00_BIG_MASK_PMAP_ANIM)
-					+ (selector * NUM_VIEWS);
-			rp = GET_PACKAGE (PLANET00_BIG_MASK_PMAP_ANIM)
-					+ selector;
+			ptype = planet_types[selector];
 		}
 
-		for (i = 0; i < NUM_VIEWS; ++i, ++ri)
+		for (i = 0; i < NUM_VIEWS; ++i)
 		{
-			planet[i] = CaptureDrawable (
-					LoadGraphic (MAKE_RESOURCE (rp, rt, ri))
-					);
+			snprintf (buffer, 79, "planet.%s.%s", ptype, planet_sizes[i]);
+			buffer[79] = '\0';
+			planet[i] = CaptureDrawable (LoadGraphic (buffer));
 		}
 	}
 
@@ -80,18 +95,15 @@ free_gravity_well (void)
 FRAME
 load_life_form (BYTE selector)
 {
-	return CaptureDrawable (LoadGraphic (MAKE_RESOURCE (
-			GET_PACKAGE (LIFE00_MASK_PMAP_ANIM) + selector,
-			GFXRES,
-			GET_INSTANCE (LIFE00_MASK_PMAP_ANIM) + selector)));
+	snprintf (buffer, 79, "graphics.life.%d", selector);
+	buffer[79] = '\0'; /* Shouldn't be necessary, but better safe than sorry */
+	return CaptureDrawable (LoadGraphic (buffer));
 }
 
 MUSIC_REF
 load_orbit_theme (BYTE selector)
 {
-	RES_PACKAGE rp = GET_PACKAGE (ORBIT1_MUSIC);
-	RES_INSTANCE ri = GET_INSTANCE (ORBIT1_MUSIC) + selector;
-	RES_TYPE rt = GET_TYPE (ORBIT1_MUSIC);
-	
-	return LoadMusic (MAKE_RESOURCE (rp, rt, ri));
+	snprintf (buffer, 79, "music.orbit%d", selector + 1);
+	buffer[79] = '\0'; /* Shouldn't be necessary, but better safe than sorry */	
+	return LoadMusic (buffer);
 }

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ZOQFOTPIK_FONT 0x41600103L
+#define ZOQFOTPIK_FONT "comm.zoqfotpik.font"

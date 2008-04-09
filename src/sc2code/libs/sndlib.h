@@ -51,8 +51,8 @@ extern SOUND_REF LoadSoundFile (const char *pStr);
 extern MUSIC_REF LoadMusicFile (const char *pStr);
 extern BOOLEAN InstallAudioResTypes (COUNT sound_type, COUNT
 		music_type);
-extern SOUND_REF LoadSoundInstance (DWORD res);
-extern MUSIC_REF LoadMusicInstance (DWORD res);
+extern SOUND_REF LoadSoundInstance (RESOURCE res);
+extern MUSIC_REF LoadMusicInstance (RESOURCE res);
 extern BOOLEAN DestroySound (SOUND_REF SoundRef);
 extern BOOLEAN DestroyMusic (MUSIC_REF MusicRef);
 

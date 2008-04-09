@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define YEHAT_ICON_MASK_PMAP_ANIM 0x5ac00302L
-#define YEHAT_MICON_MASK_PMAP_ANIM 0x5ac00402L
-#define YEHAT_BIG_MASK_PMAP_ANIM 0x5ac00502L
-#define YEHAT_MED_MASK_PMAP_ANIM 0x5ac00602L
-#define YEHAT_SML_MASK_PMAP_ANIM 0x5ac00702L
-#define YEHAT_CANNON_BIG_MASK_PMAP_ANIM 0x5ac00802L
-#define YEHAT_CANNON_MED_MASK_PMAP_ANIM 0x5ac00902L
-#define YEHAT_CANNON_SML_MASK_PMAP_ANIM 0x5ac00a02L
-#define SHIELD_BIG_MASK_ANIM 0x5ac00b02L
-#define SHIELD_MED_MASK_ANIM 0x5ac00c02L
-#define SHIELD_SML_MASK_ANIM 0x5ac00d02L
-#define YEHAT_CAPTAIN_MASK_PMAP_ANIM 0x5ac00e02L
+#define YEHAT_ICON_MASK_PMAP_ANIM "ship.yehat.icons"
+#define YEHAT_MICON_MASK_PMAP_ANIM "ship.yehat.meleeicons"
+#define YEHAT_BIG_MASK_PMAP_ANIM "ship.yehat.graphics.yehat.large"
+#define YEHAT_MED_MASK_PMAP_ANIM "ship.yehat.graphics.yehat.medium"
+#define YEHAT_SML_MASK_PMAP_ANIM "ship.yehat.graphics.yehat.small"
+#define YEHAT_CANNON_BIG_MASK_PMAP_ANIM "ship.yehat.graphics.missile.large"
+#define YEHAT_CANNON_MED_MASK_PMAP_ANIM "ship.yehat.graphics.missile.medium"
+#define YEHAT_CANNON_SML_MASK_PMAP_ANIM "ship.yehat.graphics.missile.small"
+#define SHIELD_BIG_MASK_ANIM "ship.yehat.graphics.shield.large"
+#define SHIELD_MED_MASK_ANIM "ship.yehat.graphics.shield.medium"
+#define SHIELD_SML_MASK_ANIM "ship.yehat.graphics.shield.small"
+#define YEHAT_CAPTAIN_MASK_PMAP_ANIM "ship.yehat.graphics.captain"

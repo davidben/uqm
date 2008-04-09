@@ -2,7 +2,7 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SPATHI_CONVERSATION_PHRASES 0x40200404L
-#define SPATHI_HOME_COLOR_MAP 0x40200504L
-#define SPATHI_HOME_CONVERSATION_PHRASES 0x40200604L
-#define SPATHI_COLOR_MAP 0x40200704L
+#define SPATHI_CONVERSATION_PHRASES "comm.spathi.dialogue"
+#define SPATHI_HOME_COLOR_MAP "comm.spahome.colortable"
+#define SPATHI_HOME_CONVERSATION_PHRASES "comm.spahome.dialogue"
+#define SPATHI_COLOR_MAP "comm.spathi.colortable"

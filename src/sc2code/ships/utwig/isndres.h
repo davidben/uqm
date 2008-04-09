@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UTWIG_SHIP_SOUNDS 0x5a800205L
+#define UTWIG_SHIP_SOUNDS "ship.utwig.sounds"

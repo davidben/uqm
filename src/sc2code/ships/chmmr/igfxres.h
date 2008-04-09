@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define CHMMR_ICON_MASK_PMAP_ANIM 0x58000302L
-#define CHMMR_MICON_MASK_PMAP_ANIM 0x58000402L
-#define CHMMR_BIG_MASK_PMAP_ANIM 0x58000502L
-#define CHMMR_MED_MASK_PMAP_ANIM 0x58000602L
-#define CHMMR_SML_MASK_PMAP_ANIM 0x58000702L
-#define MUZZLE_BIG_MASK_PMAP_ANIM 0x58000802L
-#define MUZZLE_MED_MASK_PMAP_ANIM 0x58000902L
-#define MUZZLE_SML_MASK_PMAP_ANIM 0x58000a02L
-#define SATELLITE_BIG_MASK_PMAP_ANIM 0x58000b02L
-#define SATELLITE_MED_MASK_PMAP_ANIM 0x58000c02L
-#define SATELLITE_SML_MASK_PMAP_ANIM 0x58000d02L
-#define CHMMR_CAPTAIN_MASK_PMAP_ANIM 0x58000e02L
+#define CHMMR_ICON_MASK_PMAP_ANIM "ship.chmmr.icons"
+#define CHMMR_MICON_MASK_PMAP_ANIM "ship.chmmr.meleeicons"
+#define CHMMR_BIG_MASK_PMAP_ANIM "ship.chmmr.graphics.chmmr.large"
+#define CHMMR_MED_MASK_PMAP_ANIM "ship.chmmr.graphics.chmmr.medium"
+#define CHMMR_SML_MASK_PMAP_ANIM "ship.chmmr.graphics.chmmr.small"
+#define MUZZLE_BIG_MASK_PMAP_ANIM "ship.chmmr.graphics.muz.large"
+#define MUZZLE_MED_MASK_PMAP_ANIM "ship.chmmr.graphics.muz.medium"
+#define MUZZLE_SML_MASK_PMAP_ANIM "ship.chmmr.graphics.muz.small"
+#define SATELLITE_BIG_MASK_PMAP_ANIM "ship.chmmr.graphics.sat.large"
+#define SATELLITE_MED_MASK_PMAP_ANIM "ship.chmmr.graphics.sat.medium"
+#define SATELLITE_SML_MASK_PMAP_ANIM "ship.chmmr.graphics.sat.small"
+#define CHMMR_CAPTAIN_MASK_PMAP_ANIM "ship.chmmr.graphics.captain"

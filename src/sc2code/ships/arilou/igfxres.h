@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ARILOU_ICON_MASK_PMAP_ANIM 0x57a00302L
-#define ARILOU_MICON_MASK_PMAP_ANIM 0x57a00402L
-#define ARILOU_BIG_MASK_PMAP_ANIM 0x57a00502L
-#define ARILOU_MED_MASK_PMAP_ANIM 0x57a00602L
-#define ARILOU_SML_MASK_PMAP_ANIM 0x57a00702L
-#define WARP_BIG_MASK_PMAP_ANIM 0x57a00802L
-#define WARP_MED_MASK_PMAP_ANIM 0x57a00902L
-#define WARP_SML_MASK_PMAP_ANIM 0x57a00a02L
-#define ARILOU_CAPTAIN_MASK_PMAP_ANIM 0x57a00b02L
+#define ARILOU_ICON_MASK_PMAP_ANIM "ship.arilou.icons"
+#define ARILOU_MICON_MASK_PMAP_ANIM "ship.arilou.meleeicons"
+#define ARILOU_BIG_MASK_PMAP_ANIM "ship.arilou.graphics.arilou.large"
+#define ARILOU_MED_MASK_PMAP_ANIM "ship.arilou.graphics.arilou.medium"
+#define ARILOU_SML_MASK_PMAP_ANIM "ship.arilou.graphics.arilou.small"
+#define WARP_BIG_MASK_PMAP_ANIM "ship.arilou.graphics.warp.large"
+#define WARP_MED_MASK_PMAP_ANIM "ship.arilou.graphics.warp.medium"
+#define WARP_SML_MASK_PMAP_ANIM "ship.arilou.graphics.warp.small"
+#define ARILOU_CAPTAIN_MASK_PMAP_ANIM "ship.arilou.graphics.captain"

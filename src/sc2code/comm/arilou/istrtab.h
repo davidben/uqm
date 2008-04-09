@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ARILOU_CONVERSATION_PHRASES 0x3e800204L
+#define ARILOU_CONVERSATION_PHRASES "comm.arilou.dialogue"

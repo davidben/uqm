@@ -2,13 +2,13 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UMGAH_ICON_MASK_PMAP_ANIM 0x5a400302L
-#define UMGAH_MICON_MASK_PMAP_ANIM 0x5a400402L
-#define UMGAH_BIG_MASK_PMAP_ANIM 0x5a400502L
-#define UMGAH_MED_MASK_PMAP_ANIM 0x5a400602L
-#define UMGAH_SML_MASK_PMAP_ANIM 0x5a400702L
-#define SPRITZ_MASK_PMAP_ANIM 0x5a400802L
-#define CONE_BIG_MASK_ANIM 0x5a400902L
-#define CONE_MED_MASK_ANIM 0x5a400a02L
-#define CONE_SML_MASK_ANIM 0x5a400b02L
-#define UMGAH_CAPTAIN_MASK_PMAP_ANIM 0x5a400c02L
+#define UMGAH_ICON_MASK_PMAP_ANIM "ship.umgah.icons"
+#define UMGAH_MICON_MASK_PMAP_ANIM "ship.umgah.meleeicons"
+#define UMGAH_BIG_MASK_PMAP_ANIM "ship.umgah.graphics.umgah.large"
+#define UMGAH_MED_MASK_PMAP_ANIM "ship.umgah.graphics.umgah.medium"
+#define UMGAH_SML_MASK_PMAP_ANIM "ship.umgah.graphics.umgah.small"
+#define SPRITZ_MASK_PMAP_ANIM "ship.umgah.graphics.spritz"
+#define CONE_BIG_MASK_ANIM "ship.umgah.graphics.cone.large"
+#define CONE_MED_MASK_ANIM "ship.umgah.graphics.cone.medium"
+#define CONE_SML_MASK_ANIM "ship.umgah.graphics.cone.small"
+#define UMGAH_CAPTAIN_MASK_PMAP_ANIM "ship.umgah.graphics.captain"

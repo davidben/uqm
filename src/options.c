@@ -429,15 +429,40 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle, const ch
 	uio_DirList_free (dirList);
 }
 
+int
+loadIndices (uio_DirHandle *dir)
+{
+	uio_DirList *indices;
+	int i;
+
+	indices = uio_getDirList (dir, "", ".rmp$",
+			match_MATCH_REGEX);		
+
+	if (indices != NULL)
+	{
+		int i;
+		
+		for (i = 0; i < indices->numNames; i++)
+		{
+			log_add (log_Debug, "Loading resouce index '%s'", indices->names[i]);
+			LoadResourceIndex (dir, indices->names[i]);
+		}			
+	}
+	uio_DirList_free (indices);
+	
+	/* Return the number of index files loaded. */
+	return i;
+}
+
 BOOLEAN
 loadAddon (const char *addon)
 {
 	uio_DirHandle *addonsDir, *addonDir;
-	uio_DirList *indices;
-	
+
 	addonsDir = uio_openDirRelative (contentDir, "addons", 0);
 	if (addonsDir == NULL)
-	{	// No addon dir found.
+	{
+		// No addon dir found.
 		log_add (log_Warning, "Warning: There's no 'addons' "
 				"directory in the 'content' directory;\n\t'--addon' "
 				"options are ignored.");
@@ -450,26 +475,13 @@ loadAddon (const char *addon)
 		uio_closeDir (addonsDir);
 		return FALSE;
 	}
-		
-	indices = uio_getDirList (addonDir, "", ".rmp$",
-			match_MATCH_REGEX);		
 
-	if (indices != NULL)
-	{
-		int i;
-		
-		for (i = 0; i < indices->numNames; i++)
-		{
-			res_LoadFilename (addonDir, indices->names[i]);
-		}			
-	}
-	uio_DirList_free (indices);
+	loadIndices (addonDir);		
+
 	uio_closeDir (addonDir);
 	uio_closeDir (addonsDir);
 	return TRUE;
 }
-
-
 
 void
 prepareAddons (const char **addons)

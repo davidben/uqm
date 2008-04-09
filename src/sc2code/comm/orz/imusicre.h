@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ORZ_MUSIC 0x3f800006L
+#define ORZ_MUSIC "comm.orz.music"

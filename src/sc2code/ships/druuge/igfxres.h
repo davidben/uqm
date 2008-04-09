@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define DRUUGE_ICON_MASK_PMAP_ANIM 0x58200302L
-#define DRUUGE_MICON_MASK_PMAP_ANIM 0x58200402L
-#define DRUUGE_BIG_MASK_PMAP_ANIM 0x58200502L
-#define DRUUGE_MED_MASK_PMAP_ANIM 0x58200602L
-#define DRUUGE_SML_MASK_PMAP_ANIM 0x58200702L
-#define DRUUGE_CANNON_BIG_MASK_PMAP_ANIM 0x58200802L
-#define DRUUGE_CANNON_MED_MASK_PMAP_ANIM 0x58200902L
-#define DRUUGE_CANNON_SML_MASK_PMAP_ANIM 0x58200a02L
-#define DRUUGE_CAPT_MASK_PMAP_ANIM 0x58200b02L
+#define DRUUGE_ICON_MASK_PMAP_ANIM "ship.druuge.icons"
+#define DRUUGE_MICON_MASK_PMAP_ANIM "ship.druuge.meleeicons"
+#define DRUUGE_BIG_MASK_PMAP_ANIM "ship.druuge.graphics.druuge.large"
+#define DRUUGE_MED_MASK_PMAP_ANIM "ship.druuge.graphics.druuge.medium"
+#define DRUUGE_SML_MASK_PMAP_ANIM "ship.druuge.graphics.druuge.small"
+#define DRUUGE_CANNON_BIG_MASK_PMAP_ANIM "ship.druuge.graphics.can.large"
+#define DRUUGE_CANNON_MED_MASK_PMAP_ANIM "ship.druuge.graphics.can.medium"
+#define DRUUGE_CANNON_SML_MASK_PMAP_ANIM "ship.druuge.graphics.can.small"
+#define DRUUGE_CAPT_MASK_PMAP_ANIM "ship.druuge.graphics.captain"

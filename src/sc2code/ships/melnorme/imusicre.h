@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MELNORME_VICTORY_SONG 0x58a00006L
+#define MELNORME_VICTORY_SONG "ship.melnorme.ditty"

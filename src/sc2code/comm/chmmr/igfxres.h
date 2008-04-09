@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define CHMMR_PMAP_ANIM 0x3ec00402L
+#define CHMMR_PMAP_ANIM "comm.chmmr.graphics"

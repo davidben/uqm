@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define TALKING_PET_PMAP_ANIM 0x40800402L
+#define TALKING_PET_PMAP_ANIM "comm.talkingpet.graphics"

@@ -20,6 +20,7 @@
 #define _GFXLIB_H
 
 #include "compiler.h"
+#include "reslib.h"
 
 typedef struct context_desc CONTEXT_DESC;
 typedef struct frame_desc FRAME_DESC;
@@ -203,7 +204,7 @@ extern HOT_SPOT GetFrameHot (FRAME Frame);
 extern BOOLEAN InstallGraphicResTypes (COUNT cel_type, COUNT font_type);
 extern DRAWABLE LoadGraphicFile (const char *pStr);
 extern FONT LoadFontFile (const char *pStr);
-extern void *LoadGraphicInstance (DWORD res);
+extern void *LoadGraphicInstance (RESOURCE res);
 extern DRAWABLE LoadDisplayPixmap (RECT *area, FRAME frame);
 extern FRAME SetContextFontEffect (FRAME EffectFrame);
 extern FONT SetContextFont (FONT Font);

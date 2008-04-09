@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ARILOU_PMAP_ANIM 0x3e800302L
-#define ARILOU_COLOR_MAP 0x3e800404L
+#define ARILOU_PMAP_ANIM "comm.arilou.graphics"
+#define ARILOU_COLOR_MAP "comm.arilou.colortable"

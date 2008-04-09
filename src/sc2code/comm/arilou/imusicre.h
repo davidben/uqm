@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ARILOU_MUSIC 0x3e800006L
+#define ARILOU_MUSIC "comm.arilou.music"

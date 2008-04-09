@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ILWRATH_ICON_MASK_PMAP_ANIM 0x58600302L
-#define ILWRATH_MICON_MASK_PMAP_ANIM 0x58600402L
-#define ILWRATH_BIG_MASK_PMAP_ANIM 0x58600502L
-#define ILWRATH_MED_MASK_PMAP_ANIM 0x58600602L
-#define ILWRATH_SML_MASK_PMAP_ANIM 0x58600702L
-#define FIRE_BIG_MASK_PMAP_ANIM 0x58600802L
-#define FIRE_MED_MASK_PMAP_ANIM 0x58600902L
-#define FIRE_SML_MASK_PMAP_ANIM 0x58600a02L
-#define ILWRATH_CAPTAIN_MASK_PMAP_ANIM 0x58600b02L
+#define ILWRATH_ICON_MASK_PMAP_ANIM "ship.ilwrath.icons"
+#define ILWRATH_MICON_MASK_PMAP_ANIM "ship.ilwrath.meleeicons"
+#define ILWRATH_BIG_MASK_PMAP_ANIM "ship.ilwrath.graphics.ilwrath.large"
+#define ILWRATH_MED_MASK_PMAP_ANIM "ship.ilwrath.graphics.ilwrath.medium"
+#define ILWRATH_SML_MASK_PMAP_ANIM "ship.ilwrath.graphics.ilwrath.small"
+#define FIRE_BIG_MASK_PMAP_ANIM "ship.ilwrath.graphics.fire.large"
+#define FIRE_MED_MASK_PMAP_ANIM "ship.ilwrath.graphics.fire.medium"
+#define FIRE_SML_MASK_PMAP_ANIM "ship.ilwrath.graphics.fire.small"
+#define ILWRATH_CAPTAIN_MASK_PMAP_ANIM "ship.ilwrath.graphics.captain"

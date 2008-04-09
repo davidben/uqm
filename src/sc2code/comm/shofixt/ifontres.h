@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SHOFIXTI_FONT 0x3fc00103L
+#define SHOFIXTI_FONT "comm.shofixti.font"

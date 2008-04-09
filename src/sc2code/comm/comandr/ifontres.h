@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define COMMANDER_FONT 0x3ee00303L
+#define COMMANDER_FONT "comm.commander.font"

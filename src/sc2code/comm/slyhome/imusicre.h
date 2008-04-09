@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SLYLANDRO_MUSIC 0x3fe00006L
+#define SLYLANDRO_MUSIC "comm.slyhome.music"

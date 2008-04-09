@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define THRADD_FONT 0x40a00103L
+#define THRADD_FONT "comm.thraddash.font"

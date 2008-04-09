@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ANDROSYNTH_VICTORY_SONG 0x57800006L
+#define ANDROSYNTH_VICTORY_SONG "ship.androsynth.ditty"

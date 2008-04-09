@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define CHMMR_MUSIC 0x3ec00006L
+#define CHMMR_MUSIC "comm.chmmr.music"

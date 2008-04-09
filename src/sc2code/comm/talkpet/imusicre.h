@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define TALKING_PET_MUSIC 0x40800006L
+#define TALKING_PET_MUSIC "comm.talkingpet.music"

@@ -2,6 +2,6 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define COMMANDER_MUSIC 0x3ee00006L
-#define STARBASE_ALT_MUSIC 0x3ee00106L
-#define COMMANDER_LOWPOW_MUSIC 0x3ee00206L
+#define COMMANDER_MUSIC "comm.commander.music"
+#define STARBASE_ALT_MUSIC "comm.starbase.music"
+#define COMMANDER_LOWPOW_MUSIC "comm.comlowpw.music"

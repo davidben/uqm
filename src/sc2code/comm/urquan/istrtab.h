@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define URQUAN_CONVERSATION_PHRASES 0x40e00204L
-#define URQUAN_COLOR_MAP 0x40e00304L
+#define URQUAN_CONVERSATION_PHRASES "comm.urquan.dialogue"
+#define URQUAN_COLOR_MAP "comm.urquan.colortable"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ZOQFOTPIK_PMAP_ANIM 0x41600402L
+#define ZOQFOTPIK_PMAP_ANIM "comm.zoqfotpik.graphics"

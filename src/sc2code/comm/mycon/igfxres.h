@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define MYCON_PMAP_ANIM 0x3f600402L
+#define MYCON_PMAP_ANIM "comm.mycon.graphics"

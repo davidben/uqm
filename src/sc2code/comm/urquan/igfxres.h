@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define URQUAN_PMAP_ANIM 0x40e00402L
+#define URQUAN_PMAP_ANIM "comm.urquan.graphics"

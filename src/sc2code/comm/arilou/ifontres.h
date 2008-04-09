@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ARILOU_FONT 0x3e800103L
+#define ARILOU_FONT "comm.arilou.font"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ZOQFOTPIK_MUSIC 0x41600006L
+#define ZOQFOTPIK_MUSIC "comm.zoqfotpik.music"

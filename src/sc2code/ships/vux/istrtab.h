@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define VUX_RACE_STRINGS 0x5aa00104L
+#define VUX_RACE_STRINGS "ship.vux.text"

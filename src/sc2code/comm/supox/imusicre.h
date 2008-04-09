@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SUPOX_MUSIC 0x40400006L
+#define SUPOX_MUSIC "comm.supox.music"

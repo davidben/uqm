@@ -2,6 +2,6 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define COMMANDER_COLOR_MAP 0x3ee00404L
-#define COMMANDER_CONVERSATION_PHRASES 0x3ee00504L
-#define STARBASE_CONVERSATION_PHRASES 0x3ee00604L
+#define COMMANDER_COLOR_MAP "comm.commander.colortable"
+#define COMMANDER_CONVERSATION_PHRASES "comm.commander.dialogue"
+#define STARBASE_CONVERSATION_PHRASES "comm.starbase.dialogue"

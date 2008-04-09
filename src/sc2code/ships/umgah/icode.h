@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define UMGAH_CODE 0x5a400008L
+#define UMGAH_CODE "ship.umgah.code"

@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define THRADDASH_VICTORY_SONG 0x5a200006L
+#define THRADDASH_VICTORY_SONG "ship.thraddash.ditty"

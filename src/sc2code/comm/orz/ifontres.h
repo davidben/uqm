@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ORZ_FONT 0x3f800103L
+#define ORZ_FONT "comm.orz.font"

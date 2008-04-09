@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SYREEN_CODE 0x5a000008L
+#define SYREEN_CODE "ship.syreen.code"

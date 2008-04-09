@@ -325,7 +325,7 @@ InstallCodeResType (COUNT code_type)
 
 
 void *
-LoadCodeResInstance (DWORD res)
+LoadCodeResInstance (RESOURCE res)
 {
 	void *hData;
 

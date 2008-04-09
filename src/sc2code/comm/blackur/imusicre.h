@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define BLACKURQ_MUSIC 0x3ea00006L
+#define BLACKURQ_MUSIC "comm.kohrah.music"
