@@ -684,6 +684,14 @@ SOURCE=..\sc2code\libs\resource\mapres.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\resource\propfile.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\resource\propfile.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\resource\resdata.c
 # End Source File
 # Begin Source File
@@ -994,10 +1002,6 @@ SOURCE=..\sc2code\libs\task\tasklib.c
 # Begin Group "uio"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\getint.h
-# End Source File
 # Begin Group "stdio"
 
 # PROP Default_Filter ""
@@ -1077,6 +1081,10 @@ SOURCE=..\sc2code\libs\uio\fstypes.c
 # Begin Source File
 
 SOURCE=..\sc2code\libs\uio\fstypes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\uio\getint.h
 # End Source File
 # Begin Source File
 
@@ -3936,6 +3944,14 @@ SOURCE=..\sc2code\confirm.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\cons_res.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\cons_res.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\controls.h
 # End Source File
 # Begin Source File
@@ -4041,10 +4057,6 @@ SOURCE=..\sc2code\globdata.h
 # Begin Source File
 
 SOURCE=..\sc2code\gravity.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\gravwell.c
 # End Source File
 # Begin Source File
 
