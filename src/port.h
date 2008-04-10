@@ -12,6 +12,7 @@
 #		define _M_IA64
 #	elif defined(__amd64__)
 #		define _M_AMD64
+#		define _M_X64
 #	elif defined(__m68k__)
 #		define _68K_
 #	elif defined(__ppc__)
