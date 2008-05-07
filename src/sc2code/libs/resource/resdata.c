@@ -18,15 +18,15 @@
 
 #include "resintrn.h"
 
-static ResourceIndex *curResourceIndex;
+static RESOURCE_INDEX curResourceIndex;
 
 void
-_set_current_index_header (ResourceIndex *newResourceIndex)
+_set_current_index_header (RESOURCE_INDEX newResourceIndex)
 {
 	curResourceIndex = newResourceIndex;
 }
 
-ResourceIndex *
+RESOURCE_INDEX
 _get_current_index_header (void)
 {
 	return curResourceIndex;

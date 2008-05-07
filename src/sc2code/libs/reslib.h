@@ -25,7 +25,9 @@
 #include "misc.h"
 #include "libs/uio.h"
 
-typedef struct resource_index *RESOURCE_INDEX;
+typedef struct resource_index_desc RESOURCE_INDEX_DESC;
+typedef RESOURCE_INDEX_DESC *RESOURCE_INDEX;
+
 typedef const char *RESOURCE;
 
 typedef enum

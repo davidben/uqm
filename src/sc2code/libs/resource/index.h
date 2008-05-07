@@ -46,15 +46,12 @@ typedef struct
 	ResourceHandlers *handlers;
 } ResourceTypeInfo;
 
-struct resource_index
+struct resource_index_desc
 {
 	CharHashTable_HashTable *map;
 	ResourceTypeInfo typeInfo;
 	size_t numRes;
 };
-
-/* XXX: This should almost certainly be folded into RESOURCE_INDEX wherever possible */
-typedef struct resource_index ResourceIndex;
 
 #endif /* _INDEX_H */
 

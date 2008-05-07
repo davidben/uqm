@@ -23,11 +23,11 @@
 #include "reslib.h"
 #include "index.h"
 
-void *loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc);
+void *loadResourceDesc (RESOURCE_INDEX idx, ResourceDesc *desc);
 void *loadResource(const char *path, ResourceLoadFun *loadFun);
 
-void _set_current_index_header (ResourceIndex *newResourceIndex);
-ResourceIndex *_get_current_index_header (void);
+void _set_current_index_header (RESOURCE_INDEX newResourceIndex);
+RESOURCE_INDEX _get_current_index_header (void);
 
 
 #endif /* _RESINTRN_H */

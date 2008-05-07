@@ -28,12 +28,12 @@ const char *_cur_resfile_name;
 // At other times, it is NULL.
 
 static ResourceDesc *
-lookupResourceDesc (ResourceIndex *idx, RESOURCE res) {
+lookupResourceDesc (RESOURCE_INDEX idx, RESOURCE res) {
 	return (ResourceDesc *) CharHashTable_find (idx->map, res);
 }
 
 void *
-loadResourceDesc (ResourceIndex *idx, ResourceDesc *desc)
+loadResourceDesc (RESOURCE_INDEX idx, ResourceDesc *desc)
 {
 	desc->resdata = loadResource (desc->fname,
 			idx->typeInfo.handlers[desc->restype].loadFun);
@@ -79,7 +79,7 @@ err:
 void *
 res_GetResource (RESOURCE res)
 {
-	ResourceIndex *resourceIndex;
+	RESOURCE_INDEX resourceIndex;
 	ResourceDesc *desc;
 	
 	if (res == NULL_RESOURCE)
@@ -113,7 +113,7 @@ res_FreeResource (RESOURCE res)
 {
 	ResourceDesc *desc;
 	ResourceFreeFun *freeFun;
-	ResourceIndex *idx;
+	RESOURCE_INDEX idx;
 
 	desc = lookupResourceDesc (_get_current_index_header(), res);
 	if (desc == NULL)

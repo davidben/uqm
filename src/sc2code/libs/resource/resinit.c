@@ -28,7 +28,7 @@
 
 static RESOURCE_INDEX
 allocResourceIndex (void) {
-	RESOURCE_INDEX ndx = HMalloc (sizeof (struct resource_index));
+	RESOURCE_INDEX ndx = HMalloc (sizeof (RESOURCE_INDEX_DESC));
 	ndx->typeInfo.numTypes = 0;
 	ndx->typeInfo.handlers = NULL;
 	ndx->map = CharHashTable_newHashTable (NULL, NULL, NULL, NULL, 0, 0.85, 0.9);
@@ -69,7 +69,7 @@ newResourceDesc (const char *res_id, const char *resval)
 	int pathlen;
 	RES_TYPE resType;
 	ResourceDesc *result;
-	ResourceIndex *idx = _get_current_index_header ();
+	RESOURCE_INDEX idx = _get_current_index_header ();
 
 	path = strchr (resval, ':');
 	if (path == NULL)
@@ -164,7 +164,7 @@ process_resource_desc (const char *key, const char *value)
 RESOURCE_INDEX
 InitResourceSystem (void)
 {
-	ResourceIndex *ndx = allocResourceIndex ();
+	RESOURCE_INDEX ndx = allocResourceIndex ();
 	
 	_set_current_index_header (ndx);
 
@@ -191,7 +191,7 @@ InstallResTypeVectors (RES_TYPE resType, ResourceLoadFun *loadFun,
 		ResourceFreeFun *freeFun)
 {
 	ResourceHandlers handlers;
-	ResourceIndex *idx = _get_current_index_header ();
+	RESOURCE_INDEX idx = _get_current_index_header ();
 	handlers.loadFun = loadFun;
 	handlers.freeFun = freeFun;
 
