@@ -19,10 +19,11 @@
 #include "strintrn.h"
 
 BOOLEAN
-InstallStringTableResType (COUNT string_type)
+InstallStringTableResType (COUNT string_type, COUNT bin_type)
 {
-	return (InstallResTypeVectors (string_type,
-			_GetStringData, FreeResourceData));
+	InstallResTypeVectors (string_type, _GetStringData, FreeResourceData);
+	InstallResTypeVectors (bin_type, _GetBinaryTableData, FreeResourceData);
+	return TRUE;
 }
 
 STRING_TABLE

@@ -62,251 +62,252 @@ _GetStringData (uio_Stream *fp, DWORD length)
 {
 	void *result;
 
-	{
-		char *s;
-
-		if (_cur_resfile_name && (s = strrchr (_cur_resfile_name, '.')) &&
-				stricmp (s, ".txt") == 0)
-		{
 #define MAX_STRINGS 2048
 #define POOL_SIZE 4096
-			int n, path_len, num_data_sets;
-			DWORD opos,
-			      slen[MAX_STRINGS], StringOffs, tot_string_size,
-			      clen[MAX_STRINGS], ClipOffs, tot_clip_size,
-			      tslen[MAX_STRINGS], TSOffs, tot_ts_size;
-			char CurrentLine[1024], clip_path[1024], *strdata, *clipdata,
-			     *ts_data;
-			uio_Stream *timestamp_fp = NULL;
+	int n, path_len, num_data_sets;
+	DWORD opos,
+	      slen[MAX_STRINGS], StringOffs, tot_string_size,
+	      clen[MAX_STRINGS], ClipOffs, tot_clip_size,
+	      tslen[MAX_STRINGS], TSOffs, tot_ts_size;
+	char CurrentLine[1024], clip_path[1024], *strdata, *clipdata,
+	     *ts_data;
+	uio_Stream *timestamp_fp = NULL;
 
-			if ((strdata = HMalloc (tot_string_size = POOL_SIZE)) == 0)
+	if ((strdata = HMalloc (tot_string_size = POOL_SIZE)) == 0)
+		return (0);
+
+	if ((clipdata = HMalloc (tot_clip_size = POOL_SIZE)) == 0)
+	{
+		HFree (strdata);
+		return (0);
+	}
+	ts_data = NULL;
+
+	{
+		char *s1, *s2;
+
+		if (((s2 = 0), (s1 = strrchr (_cur_resfile_name, '/')) == 0)
+				&& (s2 = strrchr (_cur_resfile_name, '\\')) == 0)
+			n = 0;
+		else
+		{
+			if (s2 > s1)
+				s1 = s2;
+			n = s1 - _cur_resfile_name + 1;
+			strncpy (clip_path, _cur_resfile_name, n);
+		}
+		clip_path[n] = '\0';
+		path_len = strlen (clip_path);
+	}
+
+	{
+		// try to open the timestamp file
+		char ts_file_name[1024];
+		char *s;
+		strcpy (ts_file_name, _cur_resfile_name);
+		s = strrchr (ts_file_name, '.');
+		s += 2;
+		*s++ = 's';
+		*s = '\0';
+		if ((timestamp_fp = uio_fopen (contentDir, ts_file_name,
+				"rb")))
+		{
+			log_add (log_Info, "Found timestamp file: %s", ts_file_name);
+			if ((ts_data = HMalloc (tot_ts_size = POOL_SIZE)) == 0)
 				return (0);
-
-			if ((clipdata = HMalloc (tot_clip_size = POOL_SIZE)) == 0)
-			{
-				HFree (strdata);
-				return (0);
-			}
-			ts_data = NULL;
-
-			{
-				char *s1, *s2;
-
-				if (((s2 = 0), (s1 = strrchr (_cur_resfile_name, '/')) == 0)
-						&& (s2 = strrchr (_cur_resfile_name, '\\')) == 0)
-					n = 0;
-				else
-				{
-					if (s2 > s1)
-						s1 = s2;
-					n = s1 - _cur_resfile_name + 1;
-					strncpy (clip_path, _cur_resfile_name, n);
-				}
-				clip_path[n] = '\0';
-				path_len = strlen (clip_path);
-			}
-
-			{
-				// try to open the timestamp file
-				char ts_file_name[1024];
-				strcpy (ts_file_name, _cur_resfile_name);
-				s = strrchr (ts_file_name, '.');
-				s += 2;
-				*s++ = 's';
-				*s = '\0';
-				if ((timestamp_fp = uio_fopen (contentDir, ts_file_name,
-						"rb")))
-				{
-					log_add (log_Info, "Found timestamp file: %s", ts_file_name);
-					if ((ts_data = HMalloc (tot_ts_size = POOL_SIZE)) == 0)
-						return (0);
-				}
-			}
-
-			opos = uio_ftell (fp);
-			n = -1;
-			StringOffs = ClipOffs = TSOffs = 0;
-			while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
-			{
-				int l;
-
-				if (CurrentLine[0] == '#')
-				{
-					char CopyLine[1024];
-
-					strcpy (CopyLine, CurrentLine);
-					s = strtok (&CopyLine[1], "()");
-					if (s)
-					{
-						if (n >= 0)
-						{
-							while (slen[n] > 1 && 
-									(strdata[StringOffs - 2] == '\n' ||
-									strdata[StringOffs - 2] == '\r'))
-							{
-								--slen[n];
-								--StringOffs;
-								strdata[StringOffs - 1] = '\0';
-							}
-						}
-
-						slen[++n] = 0;
-						// now lets check for timestamp data
-						if (timestamp_fp)
-						{
-							char TimeStampLine[1024], *tsptr;
-							BOOLEAN ts_ok = FALSE;
-							uio_fgets (TimeStampLine, sizeof (TimeStampLine), timestamp_fp);
-							if (TimeStampLine[0] == '#')
-							{
-								tslen[n] = 0;
-								if ((tsptr = strstr (TimeStampLine,s)) 
-										&& (tsptr += strlen(s))
-										&& (++tsptr))
-								{
-									ts_ok = TRUE;
-									while (! strcspn(tsptr," \t\r\n") && *tsptr)
-										tsptr++;
-									if (*tsptr)
-									{
-										l = strlen (tsptr)  + 1;
-										if (TSOffs + l > tot_ts_size
-											&& (ts_data = HRealloc (ts_data,
-												tot_ts_size += POOL_SIZE)) == 0)
-										{
-											HFree (strdata);
-											return (0);
-										}
-										strcpy (&ts_data[TSOffs], tsptr);
-										TSOffs += l;
-										tslen[n] = l;
-									}
-								}
-							}
-							if (!ts_ok)
-							{
-								// timestamp data is invalid, remove all of it
-								log_add (log_Warning, "Invalid timestamp data "
-										"for '%s'.  Disabling timestamps", s);
-								HFree (ts_data);
-								ts_data = NULL;
-								uio_fclose (timestamp_fp);
-								timestamp_fp = NULL;
-								TSOffs = 0;
-							}
-						}
-						clen[n] = 0;
-						s = strtok (NULL, " \t\r\n)");
-						if (s)
-						{
-							l = path_len + strlen (s) + 1;
-							if (ClipOffs + l > tot_clip_size
-									&& (clipdata = HRealloc (clipdata,
-									tot_clip_size += POOL_SIZE)) == 0)
-							{
-								HFree (strdata);
-								return (0);
-							}
-
-							strcpy (&clipdata[ClipOffs], clip_path);
-							strcpy (&clipdata[ClipOffs + path_len], s);
-							ClipOffs += l;
-							clen[n] = l;
-						}
-					}
-				}
-				else if (n >= 0)
-				{
-					l = strlen (CurrentLine) + 1;
-					if (StringOffs + l > tot_string_size
-							&& (strdata = HRealloc (strdata,
-							tot_string_size += POOL_SIZE)) == 0)
-					{
-						HFree (clipdata);
-						return (0);
-					}
-
-					if (slen[n])
-					{
-						--slen[n];
-						--StringOffs;
-					}
-					s = &strdata[StringOffs];
-					slen[n] += l;
-					StringOffs += l;
-
-					strcpy (s, CurrentLine);
-				}
-
-				if ((int)uio_ftell (fp) - (int)opos >= (int)length)
-					break;
-			}
-			if (n >= 0)
-			{
-				while (slen[n] > 1 && (strdata[StringOffs - 2] == '\n'
-						|| strdata[StringOffs - 2] == '\r'))
-				{
-					--slen[n];
-					--StringOffs;
-					strdata[StringOffs - 1] = '\0';
-				}
-			}
-
-			if (timestamp_fp)
-				uio_fclose (timestamp_fp);
-
-			result = NULL;
-			num_data_sets = (ClipOffs ? 1 : 0) + (TSOffs ? 1 : 0) + 1;
-			if (++n)
-			{
-				int flags = 0;
-				if (ClipOffs)
-					flags |= HAS_SOUND_CLIPS;
-				if (TSOffs)
-					flags |= HAS_TIMESTAMP;
-				result = AllocStringTable (n, flags);
-				if (result)
-				{
-					int StringIndex, ClipIndex, TSIndex;
-					STRING_TABLE_DESC *lpST;
-
-					lpST = (STRING_TABLE) result;
-
-					StringIndex = 0;
-					ClipIndex = n;
-					TSIndex = n * ((flags & HAS_SOUND_CLIPS) ? 2 : 1);
-
-					StringOffs = ClipOffs = TSOffs = 0;
-
-					for (n = 0; n < (int)lpST->size;
-							++n, ++StringIndex, ++ClipIndex, ++TSIndex)
-					{
-						set_strtab_entry(lpST, StringIndex, strdata + StringOffs, slen[n]);
-						StringOffs += slen[n];
-						if (lpST->flags & HAS_SOUND_CLIPS)
-						{
-							set_strtab_entry(lpST, ClipIndex, clipdata + ClipOffs, clen[n]);
-							ClipOffs += clen[n];
-						}
-						if (lpST->flags & HAS_TIMESTAMP)
-						{
-							set_strtab_entry(lpST, TSIndex, ts_data + TSOffs, tslen[n]);
-							TSOffs += tslen[n];
-						}
-					}
-				}
-			}
-			HFree (strdata);
-			HFree (clipdata);
-			if (ts_data)
-				HFree (ts_data);
-
-			return (result);
 		}
 	}
 
-	/* We don't end in .txt, so, we're a color table of some kind. */
+	opos = uio_ftell (fp);
+	n = -1;
+	StringOffs = ClipOffs = TSOffs = 0;
+	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
+	{
+		int l;
+
+		if (CurrentLine[0] == '#')
+		{
+			char CopyLine[1024];
+			char *s;
+
+			strcpy (CopyLine, CurrentLine);
+			s = strtok (&CopyLine[1], "()");
+			if (s)
+			{
+				if (n >= 0)
+				{
+					while (slen[n] > 1 && 
+							(strdata[StringOffs - 2] == '\n' ||
+							strdata[StringOffs - 2] == '\r'))
+					{
+						--slen[n];
+						--StringOffs;
+						strdata[StringOffs - 1] = '\0';
+					}
+				}
+
+				slen[++n] = 0;
+				// now lets check for timestamp data
+				if (timestamp_fp)
+				{
+					char TimeStampLine[1024], *tsptr;
+					BOOLEAN ts_ok = FALSE;
+					uio_fgets (TimeStampLine, sizeof (TimeStampLine), timestamp_fp);
+					if (TimeStampLine[0] == '#')
+					{
+						tslen[n] = 0;
+						if ((tsptr = strstr (TimeStampLine,s)) 
+								&& (tsptr += strlen(s))
+								&& (++tsptr))
+						{
+							ts_ok = TRUE;
+							while (! strcspn(tsptr," \t\r\n") && *tsptr)
+								tsptr++;
+							if (*tsptr)
+							{
+								l = strlen (tsptr)  + 1;
+								if (TSOffs + l > tot_ts_size
+									&& (ts_data = HRealloc (ts_data,
+										tot_ts_size += POOL_SIZE)) == 0)
+								{
+									HFree (strdata);
+									return (0);
+								}
+								strcpy (&ts_data[TSOffs], tsptr);
+								TSOffs += l;
+								tslen[n] = l;
+							}
+						}
+					}
+					if (!ts_ok)
+					{
+						// timestamp data is invalid, remove all of it
+						log_add (log_Warning, "Invalid timestamp data "
+								"for '%s'.  Disabling timestamps", s);
+						HFree (ts_data);
+						ts_data = NULL;
+						uio_fclose (timestamp_fp);
+						timestamp_fp = NULL;
+						TSOffs = 0;
+					}
+				}
+				clen[n] = 0;
+				s = strtok (NULL, " \t\r\n)");
+				if (s)
+				{
+					l = path_len + strlen (s) + 1;
+					if (ClipOffs + l > tot_clip_size
+							&& (clipdata = HRealloc (clipdata,
+							tot_clip_size += POOL_SIZE)) == 0)
+					{
+						HFree (strdata);
+						return (0);
+					}
+
+					strcpy (&clipdata[ClipOffs], clip_path);
+					strcpy (&clipdata[ClipOffs + path_len], s);
+					ClipOffs += l;
+					clen[n] = l;
+				}
+			}
+		}
+		else if (n >= 0)
+		{
+			char *s;
+			l = strlen (CurrentLine) + 1;
+			if (StringOffs + l > tot_string_size
+					&& (strdata = HRealloc (strdata,
+					tot_string_size += POOL_SIZE)) == 0)
+			{
+				HFree (clipdata);
+				return (0);
+			}
+
+			if (slen[n])
+			{
+				--slen[n];
+				--StringOffs;
+			}
+			s = &strdata[StringOffs];
+			slen[n] += l;
+			StringOffs += l;
+
+			strcpy (s, CurrentLine);
+		}
+
+		if ((int)uio_ftell (fp) - (int)opos >= (int)length)
+			break;
+	}
+	if (n >= 0)
+	{
+		while (slen[n] > 1 && (strdata[StringOffs - 2] == '\n'
+				|| strdata[StringOffs - 2] == '\r'))
+		{
+			--slen[n];
+			--StringOffs;
+			strdata[StringOffs - 1] = '\0';
+		}
+	}
+
+	if (timestamp_fp)
+		uio_fclose (timestamp_fp);
+
+	result = NULL;
+	num_data_sets = (ClipOffs ? 1 : 0) + (TSOffs ? 1 : 0) + 1;
+	if (++n)
+	{
+		int flags = 0;
+		if (ClipOffs)
+			flags |= HAS_SOUND_CLIPS;
+		if (TSOffs)
+			flags |= HAS_TIMESTAMP;
+		result = AllocStringTable (n, flags);
+		if (result)
+		{
+			int StringIndex, ClipIndex, TSIndex;
+			STRING_TABLE_DESC *lpST;
+
+			lpST = (STRING_TABLE) result;
+
+			StringIndex = 0;
+			ClipIndex = n;
+			TSIndex = n * ((flags & HAS_SOUND_CLIPS) ? 2 : 1);
+
+			StringOffs = ClipOffs = TSOffs = 0;
+
+			for (n = 0; n < (int)lpST->size;
+					++n, ++StringIndex, ++ClipIndex, ++TSIndex)
+			{
+				set_strtab_entry(lpST, StringIndex, strdata + StringOffs, slen[n]);
+				StringOffs += slen[n];
+				if (lpST->flags & HAS_SOUND_CLIPS)
+				{
+					set_strtab_entry(lpST, ClipIndex, clipdata + ClipOffs, clen[n]);
+					ClipOffs += clen[n];
+				}
+				if (lpST->flags & HAS_TIMESTAMP)
+				{
+					set_strtab_entry(lpST, TSIndex, ts_data + TSOffs, tslen[n]);
+					TSOffs += tslen[n];
+				}
+			}
+		}
+	}
+	HFree (strdata);
+	HFree (clipdata);
+	if (ts_data)
+		HFree (ts_data);
+
+	return (result);
+}
+
+
+void *
+_GetBinaryTableData (uio_Stream *fp, DWORD length)
+{
+	void *result;
 	result = GetResourceData (fp, length);
+
 	if (result)
 	{
 		DWORD *fileData;
@@ -338,5 +339,4 @@ _GetStringData (uio_Stream *fp, DWORD length)
 
 	return (result);
 }
-
 

@@ -46,6 +46,7 @@ STRING_TABLE AllocStringTable (int num_entries, int flags);
 void FreeStringTable (STRING_TABLE strtab);
 
 void *_GetStringData (uio_Stream *fp, DWORD length);
+void *_GetBinaryTableData (uio_Stream *fp, DWORD length);
 
 #endif /* _STRINTRN_H */
 

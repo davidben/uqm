@@ -56,6 +56,7 @@ static const char *res_type_strings[] = {
 	"GFXRES",
 	"FONTRES",
 	"STRTAB",
+	"BINTAB",
 	"SNDRES",
 	"MUSICRES",
 	"CODE",

@@ -32,7 +32,7 @@
 #define INIT_INSTANCES() do \
 		{ \
 			InstallGraphicResTypes (GFXRES, FONTRES); \
-			InstallStringTableResType (STRTAB); \
+			InstallStringTableResType (STRTAB, BINTAB); \
 			InstallAudioResTypes (SNDRES, MUSICRES); \
 			InstallCodeResType (CODE); \
 		} while (0)

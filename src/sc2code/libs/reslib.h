@@ -36,6 +36,7 @@ typedef enum
 	GFXRES,
 	FONTRES,
 	STRTAB,
+	BINTAB,
 	SNDRES,
 	MUSICRES,
 	CODE
