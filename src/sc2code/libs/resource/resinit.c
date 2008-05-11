@@ -29,8 +29,6 @@
 static RESOURCE_INDEX
 allocResourceIndex (void) {
 	RESOURCE_INDEX ndx = HMalloc (sizeof (RESOURCE_INDEX_DESC));
-	ndx->typeInfo.numTypes = 0;
-	ndx->typeInfo.handlers = NULL;
 	ndx->map = CharHashTable_newHashTable (NULL, NULL, NULL, NULL, 0, 0.85, 0.9);
 	return ndx;
 }
@@ -41,86 +39,57 @@ freeResourceIndex (RESOURCE_INDEX h) {
 	{
 		/* TODO: This leaks the contents of h->map */
 		CharHashTable_deleteHashTable (h->map);
-		if (h->typeInfo.handlers != NULL)
-			HFree (h->typeInfo.handlers);
 		HFree (h);
 	}
 }
 
 #define TYPESIZ 32
-/* These MUST COME in the SAME ORDER as the enums in reslib.h!!!
-   They also must be no more than TYPESIZ-1 characters long, but that's
-   unlikely to be a problem. */
-static const char *res_type_strings[] = {
-	"UNKNOWNRES",
-	"GFXRES",
-	"FONTRES",
-	"STRTAB",
-	"BINTAB",
-	"SNDRES",
-	"MUSICRES",
-	"CODE",
-	NULL
-};	
 
 static ResourceDesc *
 newResourceDesc (const char *res_id, const char *resval)
 {
-	char *path;
+	const char *path;
 	int pathlen;
-	RES_TYPE resType;
-	ResourceDesc *result;
+	ResourceHandlers *vtable;
+	ResourceDesc *result, *handlerdesc;
 	RESOURCE_INDEX idx = _get_current_index_header ();
+	char typestr[TYPESIZ];
 
 	path = strchr (resval, ':');
 	if (path == NULL)
 	{
 		log_add (log_Warning, "Could not find type information for resource '%s'", res_id);
-		return NULL;
+		strncpy(typestr, "sys.UNKNOWNRES", TYPESIZ);
+		path = resval;
 	}
 	else
 	{
-		char typestr[TYPESIZ];
 		int n = path - resval;
 
-		if (n >= TYPESIZ)
+		if (n >= TYPESIZ - 4)
 		{
-			n = TYPESIZ - 1;
+			n = TYPESIZ - 5;
 		}
-
-		strncpy (typestr, resval, n);
-		typestr[n] = '\0';
-
+		strncpy (typestr, "sys.", TYPESIZ);
+		strncat (typestr+1, resval, n);
+		typestr[n+4] = '\0';
 		path++;
-		pathlen = strlen (path);
+	}
+	pathlen = strlen (path);
 
-		resType = UNKNOWNRES;
-		while (res_type_strings[resType])
-		{
-			if (!strcmp (typestr, res_type_strings[resType]))
-			{
-				break;
-			}
-			resType++;
-		}
-		if (!res_type_strings[resType])
-		{
-			log_add (log_Warning, "Illegal type '%s' for resource '%s'", typestr, res_id);
-			return NULL;
-		}
+	handlerdesc = lookupResourceDesc(idx, typestr);
+	if (handlerdesc == NULL) {
+		path = resval;
+		log_add (log_Warning, "Illegal type '%s' for resource '%s'; treating as UNKNOWNRES", typestr, res_id);
+		handlerdesc = lookupResourceDesc(idx, "sys.UNKNOWNRES");
 	}
 
-	if (resType >= idx->typeInfo.numTypes)
+	vtable = (ResourceHandlers *)handlerdesc->resdata;
+
+	if (vtable->loadFun == NULL)
 	{
 		log_add (log_Warning, "Warning: Unable to load '%s'; no handler "
-				"for type %d defined.", res_id, resType);
-		return NULL;
-	}
-	
-	if (idx->typeInfo.handlers[resType].loadFun == NULL)
-	{
-		log_add (log_Warning, "Warning: Unable to load '%s'; no handler "
-				"for type %s defined.", res_id, res_type_strings[resType]);
+				"for type %s defined.", res_id, typestr);
 		return NULL;
 	}
 
@@ -131,7 +100,7 @@ newResourceDesc (const char *res_id, const char *resval)
 	result->fname = HMalloc (pathlen + 1);
 	strncpy (result->fname, path, pathlen);
 	result->fname[pathlen] = '\0';
-	result->restype = resType;
+	result->vtable = vtable;
 	result->resdata = NULL;
 	return result;
 }
@@ -169,7 +138,11 @@ InitResourceSystem (void)
 	
 	_set_current_index_header (ndx);
 
-	INIT_INSTANCES ();
+	InstallResTypeVectors ("UNKNOWNRES", NULL, NULL);
+	InstallGraphicResTypes ();
+	InstallStringTableResType ();
+	InstallAudioResTypes ();
+	InstallCodeResType ();
 
 	return ndx;
 }
@@ -188,31 +161,37 @@ UninitResourceSystem (void)
 }
 
 BOOLEAN
-InstallResTypeVectors (RES_TYPE resType, ResourceLoadFun *loadFun,
+InstallResTypeVectors (const char *resType, ResourceLoadFun *loadFun,
 		ResourceFreeFun *freeFun)
 {
-	ResourceHandlers handlers;
-	RESOURCE_INDEX idx = _get_current_index_header ();
-	handlers.loadFun = loadFun;
-	handlers.freeFun = freeFun;
-
-	if (resType >= idx->typeInfo.numTypes) {
-		// Have to enlarge the handler array.
-		ResourceHandlers *newHandlers = HRealloc (idx->typeInfo.handlers,
-				(resType + 1) * sizeof (ResourceHandlers));
-		if (newHandlers == NULL)
-			return FALSE;  // idx->typeInfo.handlers is untouched
-
-		// Clear the space for new entries. No need to init the last one;
-		// it's going to be used immediately.
-		memset (&newHandlers[idx->typeInfo.numTypes], 0,
-				(resType - idx->typeInfo.numTypes /* + 1 - 1 */)
-				* sizeof (ResourceHandlers));
-
-		idx->typeInfo.handlers = newHandlers;
-		idx->typeInfo.numTypes = resType + 1;
+	ResourceHandlers *handlers;
+	ResourceDesc *result;
+	char key[TYPESIZ];
+	int typelen;
+	
+	snprintf(key, TYPESIZ, "sys.%s", resType);
+	key[TYPESIZ-1] = '\0';
+	typelen = strlen(resType);
+	
+	handlers = HMalloc (sizeof (ResourceHandlers));
+	if (handlers == NULL)
+	{
+		return FALSE;
 	}
+	handlers->loadFun = loadFun;
+	handlers->freeFun = freeFun;
+	handlers->resType = resType;
+	
+	result = HMalloc (sizeof (ResourceDesc));
+	if (result == NULL)
+		return FALSE;
 
-	idx->typeInfo.handlers[resType] = handlers;
-	return TRUE;
+	result->fname = HMalloc (strlen(resType) + 1);
+	strncpy (result->fname, resType, typelen);
+	result->fname[typelen] = '\0';
+	result->vtable = NULL;
+	result->resdata = handlers;
+
+	CharHashTable_HashTable *map = _get_current_index_header ()->map;
+	return CharHashTable_add (map, key, result) != 0;
 }

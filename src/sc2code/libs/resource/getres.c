@@ -27,16 +27,16 @@ const char *_cur_resfile_name;
 // When a file is being loaded, _cur_resfile_name is set to its name.
 // At other times, it is NULL.
 
-static ResourceDesc *
+ResourceDesc *
 lookupResourceDesc (RESOURCE_INDEX idx, RESOURCE res) {
 	return (ResourceDesc *) CharHashTable_find (idx->map, res);
 }
 
 void *
-loadResourceDesc (RESOURCE_INDEX idx, ResourceDesc *desc)
+loadResourceDesc (ResourceDesc *desc)
 {
 	desc->resdata = loadResource (desc->fname,
-			idx->typeInfo.handlers[desc->restype].loadFun);
+			desc->vtable->loadFun);
 	return desc->resdata;
 }
 
@@ -101,7 +101,7 @@ res_GetResource (RESOURCE res)
 	if (desc->resdata != NULL)
 		return desc->resdata;
 
-	loadResourceDesc (resourceIndex, desc);
+	loadResourceDesc (desc);
 
 	return desc->resdata;
 			// May still be NULL, if the load failed.
@@ -113,7 +113,6 @@ res_FreeResource (RESOURCE res)
 {
 	ResourceDesc *desc;
 	ResourceFreeFun *freeFun;
-	RESOURCE_INDEX idx;
 
 	desc = lookupResourceDesc (_get_current_index_header(), res);
 	if (desc == NULL)
@@ -130,8 +129,7 @@ res_FreeResource (RESOURCE res)
 		return;
 	}
 
-	idx = _get_current_index_header ();
-	freeFun = idx->typeInfo.handlers[desc->restype].freeFun;
+	freeFun = desc->vtable->freeFun;
 	(*freeFun) (desc->resdata);
 	desc->resdata = NULL;
 }

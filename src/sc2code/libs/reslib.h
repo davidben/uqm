@@ -30,18 +30,6 @@ typedef RESOURCE_INDEX_DESC *RESOURCE_INDEX;
 
 typedef const char *RESOURCE;
 
-typedef enum
-{
-	UNKNOWNRES = 0,
-	GFXRES,
-	FONTRES,
-	STRTAB,
-	BINTAB,
-	SNDRES,
-	MUSICRES,
-	CODE
-} RES_TYPE;
-
 #define NULL_RESOURCE NULL
 
 extern const char *_cur_resfile_name;
@@ -65,7 +53,7 @@ extern BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 
 extern RESOURCE_INDEX InitResourceSystem ();
 extern void UninitResourceSystem (void);
-extern BOOLEAN InstallResTypeVectors (RES_TYPE res_type,
+extern BOOLEAN InstallResTypeVectors (const char *res_type,
 		ResourceLoadFun *loadFun, ResourceFreeFun *freeFun);
 extern void *res_GetResource (RESOURCE res);
 extern void *res_DetachResource (RESOURCE res);

@@ -20,10 +20,10 @@
 
 
 BOOLEAN
-InstallGraphicResTypes (COUNT cel_type, COUNT font_type)
+InstallGraphicResTypes (void)
 {
-	InstallResTypeVectors (cel_type, _GetCelData, _ReleaseCelData);
-	InstallResTypeVectors (font_type, _GetFontData, _ReleaseFontData);
+	InstallResTypeVectors ("GFXRES", _GetCelData, _ReleaseCelData);
+	InstallResTypeVectors ("FONTRES", _GetFontData, _ReleaseFontData);
 	return (TRUE);
 }
 

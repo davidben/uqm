@@ -19,10 +19,10 @@
 #include "sndintrn.h"
 
 BOOLEAN
-InstallAudioResTypes (COUNT sound_type, COUNT music_type)
+InstallAudioResTypes (void)
 {
-	InstallResTypeVectors (sound_type, _GetSoundBankData, _ReleaseSoundBankData);
-	InstallResTypeVectors (music_type, _GetMusicData, _ReleaseMusicData);
+	InstallResTypeVectors ("SNDRES", _GetSoundBankData, _ReleaseSoundBankData);
+	InstallResTypeVectors ("MUSICRES", _GetMusicData, _ReleaseMusicData);
 	return (TRUE);
 }
 

@@ -317,9 +317,9 @@ _ReleaseCodeResData (void *data)
 }
 
 BOOLEAN
-InstallCodeResType (COUNT code_type)
+InstallCodeResType ()
 {
-	return (InstallResTypeVectors (code_type,
+	return (InstallResTypeVectors ("CODE",
 			GetCodeResData, _ReleaseCodeResData));
 }
 

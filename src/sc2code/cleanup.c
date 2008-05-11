@@ -45,7 +45,6 @@ FreeKernel (void)
 	UninitKernel (TRUE);
 	UninitContexts ();
 
-	UNINIT_INSTANCES ();
 	UninitResourceSystem ();
 
 	UninitPlayerInput ();

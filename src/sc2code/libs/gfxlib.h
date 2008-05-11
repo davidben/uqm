@@ -201,7 +201,7 @@ extern BOOLEAN GetFrameRect (FRAME Frame, RECT *pRect);
 
 extern HOT_SPOT SetFrameHot (FRAME Frame, HOT_SPOT HotSpot);
 extern HOT_SPOT GetFrameHot (FRAME Frame);
-extern BOOLEAN InstallGraphicResTypes (COUNT cel_type, COUNT font_type);
+extern BOOLEAN InstallGraphicResTypes (void);
 extern DRAWABLE LoadGraphicFile (const char *pStr);
 extern FONT LoadFontFile (const char *pStr);
 extern void *LoadGraphicInstance (RESOURCE res);

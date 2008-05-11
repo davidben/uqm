@@ -29,14 +29,5 @@
 #define LoadSound       LoadSoundInstance
 #define LoadMusic       LoadMusicInstance
 
-#define INIT_INSTANCES() do \
-		{ \
-			InstallGraphicResTypes (GFXRES, FONTRES); \
-			InstallStringTableResType (STRTAB, BINTAB); \
-			InstallAudioResTypes (SNDRES, MUSICRES); \
-			InstallCodeResType (CODE); \
-		} while (0)
-#define UNINIT_INSTANCES()
-
 #endif /* _NAMEREF_H */
 

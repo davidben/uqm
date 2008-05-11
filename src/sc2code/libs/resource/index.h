@@ -25,31 +25,22 @@
 
 typedef struct
 {
-	RESOURCE res_id;
-	char *fname;
-	RES_TYPE restype;
-	void *resdata;
-} ResourceDesc;
-
-typedef struct
-{
+	const char *resType;
 	ResourceLoadFun *loadFun;
 	ResourceFreeFun *freeFun;
 } ResourceHandlers;
 
 typedef struct
 {
-	RES_TYPE numTypes;
-			/* Number of types in the handlers array (whether NULL or not).
-			 * == the highest stored handler number + 1.
-			 */
-	ResourceHandlers *handlers;
-} ResourceTypeInfo;
+	RESOURCE res_id;
+	char *fname;
+	ResourceHandlers *vtable;
+	void *resdata;
+} ResourceDesc;
 
 struct resource_index_desc
 {
 	CharHashTable_HashTable *map;
-	ResourceTypeInfo typeInfo;
 	size_t numRes;
 };
 
