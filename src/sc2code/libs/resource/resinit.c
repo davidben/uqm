@@ -134,8 +134,29 @@ process_resource_desc (const char *key, const char *value)
 void *
 UseDescriptorAsRes (const char *descriptor)
 {
-	return descriptor;
+	return (void *)descriptor;
 }
+
+void *
+DescriptorToInt (const char *descriptor)
+{
+	intptr_t value = atoi(descriptor);
+	return (void *) value;
+}
+
+void *
+DescriptorToBoolean (const char *descriptor)
+{
+	if (!stricmp(descriptor, "true"))
+	{
+		return (void *)(1);
+	}
+	else
+	{
+		return (void *)(0);
+	}
+}
+	    
 
 BOOLEAN
 NullFreeRes (void *data)
@@ -152,6 +173,9 @@ InitResourceSystem (void)
 	_set_current_index_header (ndx);
 
 	InstallResTypeVectors ("UNKNOWNRES", UseDescriptorAsRes, NullFreeRes);
+	InstallResTypeVectors ("STRING", UseDescriptorAsRes, NullFreeRes);
+	InstallResTypeVectors ("INT32", DescriptorToInt, NullFreeRes);
+	InstallResTypeVectors ("BOOLEAN", DescriptorToBoolean, NullFreeRes);
 	InstallGraphicResTypes ();
 	InstallStringTableResType ();
 	InstallAudioResTypes ();
