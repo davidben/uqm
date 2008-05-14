@@ -36,6 +36,9 @@ extern const char *_cur_resfile_name;
 
 typedef void *(ResourceLoadFun) (const char *pathname);
 typedef BOOLEAN (ResourceFreeFun) (void *handle);
+				  
+void *UseDescriptorAsRes (const char *descriptor);
+BOOLEAN NullFreeRes (void *handle);
 
 typedef void *(ResourceLoadFileFun) (uio_Stream *fp, DWORD len);
 

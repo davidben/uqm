@@ -21,7 +21,6 @@
 
 #include "reslib.h"
 
-extern void *LoadCodeResFile (const char *pStr);
 extern BOOLEAN InstallCodeResType (void);
 extern void *LoadCodeResInstance (RESOURCE res);
 extern void *CaptureCodeRes (void *hCode, void *pData, void **ppLocData);

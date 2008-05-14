@@ -1,4 +1,7 @@
 Changes towards version 0.7:
+- UNKNOWNRES is now safe to load, and "loads" as its resvalue - Michael
+- CODE is now SHIP, and uses an integer descriptor instead of a one-byte
+  .cod file - Michael
 - ResourceLoadFun is now descriptor-based, not stream-based - Michael
 - Removed RES_TYPE enum, folded into ResourceDesc - Michael
 - Split STRTAB into STRTAB (strings) and BINTAB (color/xlat tables) - Michael

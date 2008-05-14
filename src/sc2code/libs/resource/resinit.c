@@ -131,6 +131,19 @@ process_resource_desc (const char *key, const char *value)
 	}
 }
 
+void *
+UseDescriptorAsRes (const char *descriptor)
+{
+	return descriptor;
+}
+
+BOOLEAN
+NullFreeRes (void *data)
+{
+	(void)data;
+	return TRUE;
+}
+
 RESOURCE_INDEX
 InitResourceSystem (void)
 {
@@ -138,7 +151,7 @@ InitResourceSystem (void)
 	
 	_set_current_index_header (ndx);
 
-	InstallResTypeVectors ("UNKNOWNRES", NULL, NULL);
+	InstallResTypeVectors ("UNKNOWNRES", UseDescriptorAsRes, NullFreeRes);
 	InstallGraphicResTypes ();
 	InstallStringTableResType ();
 	InstallAudioResTypes ();

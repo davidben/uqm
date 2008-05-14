@@ -28,6 +28,7 @@
 #include "libs/compiler.h"
 #include "libs/log.h"
 
+#include <stdlib.h>
 #include <ctype.h>
 
 
@@ -36,15 +37,8 @@ typedef struct
 	RACE_DESC data _ALIGNED_ANY;
 } CODERES_STRUCT;
 
-void *
-LoadCodeResFile (const char *pStr)
-{
-	(void) pStr;  /* Satisfying compiler (unused parameter) */
-	return NULL;
-}
-
 static void *
-GetCodeResData (uio_Stream *fp, DWORD length)
+GetCodeResData (const char *ship_id)
 {
 enum
 {
@@ -82,7 +76,7 @@ enum
 	BYTE which_res;
 	void *hData;
 
-	which_res = GetResFileChar (fp);
+	which_res = atoi (ship_id);
 	hData = HMalloc (sizeof (CODERES_STRUCT));
 	if (hData)
 	{
@@ -290,6 +284,12 @@ enum
 				RDPtr = init_probe ();
 				break;
 			}
+			default:
+			{
+				log_add (log_Warning, "Unknown SHIP identifier '%d'", which_res);
+				RDPtr = NULL;
+				break;
+			}
 		}
 
 		if (RDPtr == 0)
@@ -305,7 +305,6 @@ enum
 			cs->data = *RDPtr;  // Structure assignment.
 		}
 	}
-	(void) length;  /* Satisfying compiler (unused parameter) */
 	return (hData);
 }
 
@@ -316,17 +315,11 @@ _ReleaseCodeResData (void *data)
 	return TRUE;
 }
 
-static void *
-GetCodeFileData (const char *pathname)
-{
-	return LoadResourceFromPath (pathname, GetCodeResData);
-}
-
 BOOLEAN
 InstallCodeResType ()
 {
-	return (InstallResTypeVectors ("CODE",
-			GetCodeFileData, _ReleaseCodeResData));
+	return (InstallResTypeVectors ("SHIP",
+			GetCodeResData, _ReleaseCodeResData));
 }
 
 
