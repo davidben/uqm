@@ -34,38 +34,39 @@ typedef const char *RESOURCE;
 
 extern const char *_cur_resfile_name;
 
-typedef void *(ResourceLoadFun) (uio_Stream *fp, DWORD len);
+typedef void *(ResourceLoadFun) (const char *pathname);
 typedef BOOLEAN (ResourceFreeFun) (void *handle);
 
-extern uio_Stream *res_OpenResFile (uio_DirHandle *dir, const char *filename,
-		const char *mode);
-extern int ReadResFile (void *lpBuf, COUNT size, COUNT count, uio_Stream *fp);
-extern int WriteResFile (const void *lpBuf, COUNT size, COUNT count,
-		uio_Stream *fp);
-extern int GetResFileChar (uio_Stream *fp);
-extern int PutResFileChar (char ch, uio_Stream *fp);
-extern int PutResFileNewline (uio_Stream *fp);
-extern long SeekResFile (uio_Stream *fp, long offset, int whence);
-extern long TellResFile (uio_Stream *fp);
-extern long LengthResFile (uio_Stream *fp);
-extern BOOLEAN res_CloseResFile (uio_Stream *fp);
-extern BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
+typedef void *(ResourceLoadFileFun) (uio_Stream *fp, DWORD len);
 
-extern RESOURCE_INDEX InitResourceSystem ();
-extern void UninitResourceSystem (void);
-extern BOOLEAN InstallResTypeVectors (const char *res_type,
-		ResourceLoadFun *loadFun, ResourceFreeFun *freeFun);
-extern void *res_GetResource (RESOURCE res);
-extern void *res_DetachResource (RESOURCE res);
-extern BOOLEAN FreeResource (RESOURCE res);
-extern COUNT CountResourceTypes (void);
+void *LoadResourceFromPath(const char *pathname, ResourceLoadFileFun fn);
 
-extern void LoadResourceIndex (uio_DirHandle *dir, const char *filename);
+uio_Stream *res_OpenResFile (uio_DirHandle *dir, const char *filename, const char *mode);
+int ReadResFile (void *lpBuf, COUNT size, COUNT count, uio_Stream *fp);
+int WriteResFile (const void *lpBuf, COUNT size, COUNT count, uio_Stream *fp);
+int GetResFileChar (uio_Stream *fp);
+int PutResFileChar (char ch, uio_Stream *fp);
+int PutResFileNewline (uio_Stream *fp);
+long SeekResFile (uio_Stream *fp, long offset, int whence);
+long TellResFile (uio_Stream *fp);
+long LengthResFile (uio_Stream *fp);
+BOOLEAN res_CloseResFile (uio_Stream *fp);
+BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 
-extern void *GetResourceData (uio_Stream *fp, DWORD length);
+RESOURCE_INDEX InitResourceSystem ();
+void UninitResourceSystem (void);
+BOOLEAN InstallResTypeVectors (const char *res_type, ResourceLoadFun *loadFun, ResourceFreeFun *freeFun);
+void *res_GetResource (RESOURCE res);
+void *res_DetachResource (RESOURCE res);
+BOOLEAN FreeResource (RESOURCE res);
+COUNT CountResourceTypes (void);
+
+void LoadResourceIndex (uio_DirHandle *dir, const char *filename);
+
+void *GetResourceData (uio_Stream *fp, DWORD length);
 
 #define AllocResourceData HMalloc
-extern BOOLEAN FreeResourceData (void *);
+BOOLEAN FreeResourceData (void *);
 
 #include "strlib.h"
 

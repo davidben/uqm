@@ -25,7 +25,6 @@
 
 ResourceDesc *lookupResourceDesc (RESOURCE_INDEX idx, RESOURCE res);
 void *loadResourceDesc (ResourceDesc *desc);
-void *loadResource(const char *path, ResourceLoadFun *loadFun);
 
 void _set_current_index_header (RESOURCE_INDEX newResourceIndex);
 RESOURCE_INDEX _get_current_index_header (void);

@@ -18,11 +18,23 @@
 
 #include "strintrn.h"
 
+static void *
+GetStringTableFileData (const char *pathname)
+{
+	return LoadResourceFromPath (pathname, _GetStringData);
+}
+
+static void *
+GetBinaryTableFileData (const char *pathname)
+{
+	return LoadResourceFromPath (pathname, _GetBinaryTableData);
+}
+
 BOOLEAN
 InstallStringTableResType (void)
 {
-	InstallResTypeVectors ("STRTAB", _GetStringData, FreeResourceData);
-	InstallResTypeVectors ("BINTAB", _GetBinaryTableData, FreeResourceData);
+	InstallResTypeVectors ("STRTAB", GetStringTableFileData, FreeResourceData);
+	InstallResTypeVectors ("BINTAB", GetBinaryTableFileData, FreeResourceData);
 	return TRUE;
 }
 

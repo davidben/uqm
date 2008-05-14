@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- ResourceLoadFun is now descriptor-based, not stream-based - Michael
 - Removed RES_TYPE enum, folded into ResourceDesc - Michael
 - Split STRTAB into STRTAB (strings) and BINTAB (color/xlat tables) - Michael
 - Removed internal references to defunct resource types - Michael

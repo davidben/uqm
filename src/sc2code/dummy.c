@@ -316,11 +316,17 @@ _ReleaseCodeResData (void *data)
 	return TRUE;
 }
 
+static void *
+GetCodeFileData (const char *pathname)
+{
+	return LoadResourceFromPath (pathname, GetCodeResData);
+}
+
 BOOLEAN
 InstallCodeResType ()
 {
 	return (InstallResTypeVectors ("CODE",
-			GetCodeResData, _ReleaseCodeResData));
+			GetCodeFileData, _ReleaseCodeResData));
 }
 
 

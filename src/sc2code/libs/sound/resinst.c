@@ -18,11 +18,23 @@
 
 #include "sndintrn.h"
 
+static void *
+GetSoundBankFileData (const char *pathname)
+{
+	return LoadResourceFromPath (pathname, _GetSoundBankData);
+}
+
+static void *
+GetMusicFileData (const char *pathname)
+{
+	return LoadResourceFromPath (pathname, _GetMusicData);
+}
+
 BOOLEAN
 InstallAudioResTypes (void)
 {
-	InstallResTypeVectors ("SNDRES", _GetSoundBankData, _ReleaseSoundBankData);
-	InstallResTypeVectors ("MUSICRES", _GetMusicData, _ReleaseMusicData);
+	InstallResTypeVectors ("SNDRES", GetSoundBankFileData, _ReleaseSoundBankData);
+	InstallResTypeVectors ("MUSICRES", GetMusicFileData, _ReleaseMusicData);
 	return (TRUE);
 }
 

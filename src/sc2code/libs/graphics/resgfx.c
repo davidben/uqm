@@ -18,12 +18,24 @@
 
 #include "gfxintrn.h"
 
+static void *
+GetCelFileData (const char *pathname)
+{
+	return LoadResourceFromPath (pathname, _GetCelData);
+}
+
+static void *
+GetFontFileData (const char *pathname)
+{
+	return LoadResourceFromPath (pathname, _GetFontData);
+}
+
 
 BOOLEAN
 InstallGraphicResTypes (void)
 {
-	InstallResTypeVectors ("GFXRES", _GetCelData, _ReleaseCelData);
-	InstallResTypeVectors ("FONTRES", _GetFontData, _ReleaseFontData);
+	InstallResTypeVectors ("GFXRES", GetCelFileData, _ReleaseCelData);
+	InstallResTypeVectors ("FONTRES", GetFontFileData, _ReleaseFontData);
 	return (TRUE);
 }
 

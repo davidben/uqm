@@ -35,13 +35,12 @@ lookupResourceDesc (RESOURCE_INDEX idx, RESOURCE res) {
 void *
 loadResourceDesc (ResourceDesc *desc)
 {
-	desc->resdata = loadResource (desc->fname,
-			desc->vtable->loadFun);
+	desc->resdata = desc->vtable->loadFun (desc->fname);
 	return desc->resdata;
 }
 
 void *
-loadResource(const char *path, ResourceLoadFun *loadFun)
+LoadResourceFromPath (const char *path, ResourceLoadFileFun *loadFun)
 {
 	uio_Stream *stream;
 	long dataLen;
