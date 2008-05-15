@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Split STRTAB further into STRTAB and CONVERSATION - Michael
 - INT32, BOOLEAN, and STRING resource types - Michael
 - UNKNOWNRES is now safe to load, and "loads" as its resvalue - Michael
 - CODE is now SHIP, and uses an integer descriptor instead of a one-byte

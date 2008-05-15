@@ -22,6 +22,8 @@
 #include "libs/reslib.h"
 #include "libs/log.h"
 
+#define MAX_STRINGS 2048
+#define POOL_SIZE 4096
 
 static void
 dword_convert (DWORD *dword_array, COUNT num_dwords)
@@ -57,44 +59,60 @@ set_strtab_entry (STRING_TABLE_DESC *strtab, int index, const char *value, int l
 	}
 }
 
-void *
-_GetStringData (uio_Stream *fp, DWORD length)
+void
+_GetConversationData (const char *path, RESOURCE_DATA *resdata)
 {
+	uio_Stream *fp;
+	long dataLen;
 	void *result;
 
-#define MAX_STRINGS 2048
-#define POOL_SIZE 4096
+	fp = res_OpenResFile (contentDir, path, "rb");
+	if (fp == NULL)
+	{
+		log_add (log_Warning, "Warning: Can't open '%s'", path);
+		resdata->ptr = NULL;
+		return;
+	}
+
+	dataLen = LengthResFile (fp);
+	log_add (log_Info, "\t'%s' -- %lu bytes in Conversation", path, dataLen);
+	
+	if (dataLen == 0)
+	{
+		log_add (log_Warning, "Warning: Trying to load empty file '%s'.", path);
+		goto err;
+	}
 	int n, path_len, num_data_sets;
 	DWORD opos,
-	      slen[MAX_STRINGS], StringOffs, tot_string_size,
-	      clen[MAX_STRINGS], ClipOffs, tot_clip_size,
-	      tslen[MAX_STRINGS], TSOffs, tot_ts_size;
+		slen[MAX_STRINGS], StringOffs, tot_string_size,
+		clen[MAX_STRINGS], ClipOffs, tot_clip_size,
+		tslen[MAX_STRINGS], TSOffs, tot_ts_size;
 	char CurrentLine[1024], clip_path[1024], *strdata, *clipdata,
-	     *ts_data;
+		*ts_data;
 	uio_Stream *timestamp_fp = NULL;
-
+	
 	if ((strdata = HMalloc (tot_string_size = POOL_SIZE)) == 0)
-		return (0);
-
+		goto err;
+	
 	if ((clipdata = HMalloc (tot_clip_size = POOL_SIZE)) == 0)
 	{
 		HFree (strdata);
-		return (0);
+		goto err;
 	}
 	ts_data = NULL;
-
+	
 	{
 		char *s1, *s2;
 
-		if (((s2 = 0), (s1 = strrchr (_cur_resfile_name, '/')) == 0)
-				&& (s2 = strrchr (_cur_resfile_name, '\\')) == 0)
+		if (((s2 = 0), (s1 = strrchr (path, '/')) == 0)
+				&& (s2 = strrchr (path, '\\')) == 0)
 			n = 0;
 		else
 		{
 			if (s2 > s1)
 				s1 = s2;
-			n = s1 - _cur_resfile_name + 1;
-			strncpy (clip_path, _cur_resfile_name, n);
+			n = s1 - path + 1;
+			strncpy (clip_path, path, n);
 		}
 		clip_path[n] = '\0';
 		path_len = strlen (clip_path);
@@ -104,20 +122,20 @@ _GetStringData (uio_Stream *fp, DWORD length)
 		// try to open the timestamp file
 		char ts_file_name[1024];
 		char *s;
-		strcpy (ts_file_name, _cur_resfile_name);
+		strcpy (ts_file_name, path);
 		s = strrchr (ts_file_name, '.');
 		s += 2;
 		*s++ = 's';
 		*s = '\0';
 		if ((timestamp_fp = uio_fopen (contentDir, ts_file_name,
-				"rb")))
+					       "rb")))
 		{
 			log_add (log_Info, "Found timestamp file: %s", ts_file_name);
 			if ((ts_data = HMalloc (tot_ts_size = POOL_SIZE)) == 0)
-				return (0);
+				goto err;
 		}
 	}
-
+	
 	opos = uio_ftell (fp);
 	n = -1;
 	StringOffs = ClipOffs = TSOffs = 0;
@@ -171,7 +189,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 										tot_ts_size += POOL_SIZE)) == 0)
 								{
 									HFree (strdata);
-									return (0);
+									goto err;
 								}
 								strcpy (&ts_data[TSOffs], tsptr);
 								TSOffs += l;
@@ -201,7 +219,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 							tot_clip_size += POOL_SIZE)) == 0)
 					{
 						HFree (strdata);
-						return (0);
+						goto err;
 					}
 
 					strcpy (&clipdata[ClipOffs], clip_path);
@@ -220,7 +238,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 					tot_string_size += POOL_SIZE)) == 0)
 			{
 				HFree (clipdata);
-				return (0);
+				goto err;
 			}
 
 			if (slen[n])
@@ -235,7 +253,7 @@ _GetStringData (uio_Stream *fp, DWORD length)
 			strcpy (s, CurrentLine);
 		}
 
-		if ((int)uio_ftell (fp) - (int)opos >= (int)length)
+		if ((int)uio_ftell (fp) - (int)opos >= (int)dataLen)
 			break;
 	}
 	if (n >= 0)
@@ -297,6 +315,121 @@ _GetStringData (uio_Stream *fp, DWORD length)
 	HFree (clipdata);
 	if (ts_data)
 		HFree (ts_data);
+
+	resdata->ptr = result;
+	return;
+
+err:
+	res_CloseResFile (fp);
+	resdata->ptr = NULL;
+
+}
+
+void *
+_GetStringData (uio_Stream *fp, DWORD length)
+{
+	void *result;
+
+	int n;
+	DWORD opos, slen[MAX_STRINGS], StringOffs, tot_string_size;
+	char CurrentLine[1024], *strdata;
+
+	if ((strdata = HMalloc (tot_string_size = POOL_SIZE)) == 0)
+		return (0);
+
+	opos = uio_ftell (fp);
+	n = -1;
+	StringOffs = 0;
+	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
+	{
+		int l;
+
+		if (CurrentLine[0] == '#')
+		{
+			char CopyLine[1024];
+			char *s;
+
+			strcpy (CopyLine, CurrentLine);
+			s = strtok (&CopyLine[1], "()");
+			if (s)
+			{
+				if (n >= 0)
+				{
+					while (slen[n] > 1 && 
+							(strdata[StringOffs - 2] == '\n' ||
+							strdata[StringOffs - 2] == '\r'))
+					{
+						--slen[n];
+						--StringOffs;
+						strdata[StringOffs - 1] = '\0';
+					}
+				}
+
+				slen[++n] = 0;
+			}
+		}
+		else if (n >= 0)
+		{
+			char *s;
+			l = strlen (CurrentLine) + 1;
+			if (StringOffs + l > tot_string_size
+					&& (strdata = HRealloc (strdata,
+					tot_string_size += POOL_SIZE)) == 0)
+			{
+				return (0);
+			}
+
+			if (slen[n])
+			{
+				--slen[n];
+				--StringOffs;
+			}
+			s = &strdata[StringOffs];
+			slen[n] += l;
+			StringOffs += l;
+
+			strcpy (s, CurrentLine);
+		}
+
+		if ((int)uio_ftell (fp) - (int)opos >= (int)length)
+			break;
+	}
+	if (n >= 0)
+	{
+		while (slen[n] > 1 && (strdata[StringOffs - 2] == '\n'
+				|| strdata[StringOffs - 2] == '\r'))
+		{
+			--slen[n];
+			--StringOffs;
+			strdata[StringOffs - 1] = '\0';
+		}
+	}
+
+	result = NULL;
+	if (++n)
+	{
+		int flags = 0;
+		result = AllocStringTable (n, flags);
+		if (result)
+		{
+			int StringIndex;
+			STRING_TABLE_DESC *lpST;
+
+			lpST = (STRING_TABLE) result;
+
+			StringIndex = 0;
+
+			StringOffs = 0;
+
+			for (n = 0; n < (int)lpST->size;
+					++n, ++StringIndex)
+			{
+				set_strtab_entry(lpST, StringIndex, strdata + StringOffs, slen[n]);
+				StringOffs += slen[n];
+			}
+		}
+	}
+	HFree (strdata);
 
 	return (result);
 }

@@ -35,6 +35,7 @@ InstallStringTableResType (void)
 {
 	InstallResTypeVectors ("STRTAB", GetStringTableFileData, FreeResourceData);
 	InstallResTypeVectors ("BINTAB", GetBinaryTableFileData, FreeResourceData);
+	InstallResTypeVectors ("CONVERSATION", _GetConversationData, FreeResourceData);
 	return TRUE;
 }
 

@@ -47,6 +47,7 @@ void FreeStringTable (STRING_TABLE strtab);
 
 void *_GetStringData (uio_Stream *fp, DWORD length);
 void *_GetBinaryTableData (uio_Stream *fp, DWORD length);
+void _GetConversationData (const char *path, RESOURCE_DATA *resdata);
 
 #endif /* _STRINTRN_H */
 
