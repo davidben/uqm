@@ -30,16 +30,18 @@ typedef RESOURCE_INDEX_DESC *RESOURCE_INDEX;
 
 typedef const char *RESOURCE;
 
+typedef union {
+	DWORD num;
+	void *ptr;
+} RESOURCE_DATA;
+
 #define NULL_RESOURCE NULL
 
 extern const char *_cur_resfile_name;
 
-typedef void *(ResourceLoadFun) (const char *pathname);
+typedef void (ResourceLoadFun) (const char *pathname, RESOURCE_DATA *resdata);
 typedef BOOLEAN (ResourceFreeFun) (void *handle);
 				  
-void *UseDescriptorAsRes (const char *descriptor);
-BOOLEAN NullFreeRes (void *handle);
-
 typedef void *(ResourceLoadFileFun) (uio_Stream *fp, DWORD len);
 
 void *LoadResourceFromPath(const char *pathname, ResourceLoadFileFun fn);
@@ -63,6 +65,8 @@ void *res_GetResource (RESOURCE res);
 void *res_DetachResource (RESOURCE res);
 BOOLEAN FreeResource (RESOURCE res);
 COUNT CountResourceTypes (void);
+DWORD res_GetIntResource (RESOURCE res);
+BOOLEAN res_GetBooleanResource (RESOURCE res);
 
 void LoadResourceIndex (uio_DirHandle *dir, const char *filename);
 

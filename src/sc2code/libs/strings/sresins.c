@@ -18,16 +18,16 @@
 
 #include "strintrn.h"
 
-static void *
-GetStringTableFileData (const char *pathname)
+static void
+GetStringTableFileData (const char *pathname, RESOURCE_DATA *resdata)
 {
-	return LoadResourceFromPath (pathname, _GetStringData);
+	resdata->ptr = LoadResourceFromPath (pathname, _GetStringData);
 }
 
-static void *
-GetBinaryTableFileData (const char *pathname)
+static void
+GetBinaryTableFileData (const char *pathname, RESOURCE_DATA *resdata)
 {
-	return LoadResourceFromPath (pathname, _GetBinaryTableData);
+	resdata->ptr = LoadResourceFromPath (pathname, _GetBinaryTableData);
 }
 
 BOOLEAN

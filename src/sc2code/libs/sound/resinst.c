@@ -18,16 +18,16 @@
 
 #include "sndintrn.h"
 
-static void *
-GetSoundBankFileData (const char *pathname)
+static void
+GetSoundBankFileData (const char *pathname, RESOURCE_DATA *resdata)
 {
-	return LoadResourceFromPath (pathname, _GetSoundBankData);
+	resdata->ptr = LoadResourceFromPath (pathname, _GetSoundBankData);
 }
 
-static void *
-GetMusicFileData (const char *pathname)
+static void
+GetMusicFileData (const char *pathname, RESOURCE_DATA *resdata)
 {
-	return LoadResourceFromPath (pathname, _GetMusicData);
+	resdata->ptr = LoadResourceFromPath (pathname, _GetMusicData);
 }
 
 BOOLEAN

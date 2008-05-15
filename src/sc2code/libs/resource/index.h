@@ -23,19 +23,19 @@
 #include "reslib.h"
 #include "libs/uio/charhashtable.h"
 
-typedef struct
+typedef struct resource_handlers
 {
 	const char *resType;
 	ResourceLoadFun *loadFun;
 	ResourceFreeFun *freeFun;
 } ResourceHandlers;
 
-typedef struct
+typedef struct resource_desc
 {
 	RESOURCE res_id;
 	char *fname;
 	ResourceHandlers *vtable;
-	void *resdata;
+	RESOURCE_DATA resdata;
 } ResourceDesc;
 
 struct resource_index_desc

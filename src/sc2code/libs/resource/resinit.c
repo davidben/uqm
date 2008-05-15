@@ -84,7 +84,7 @@ newResourceDesc (const char *res_id, const char *resval)
 		handlerdesc = lookupResourceDesc(idx, "sys.UNKNOWNRES");
 	}
 
-	vtable = (ResourceHandlers *)handlerdesc->resdata;
+	vtable = (ResourceHandlers *)handlerdesc->resdata.ptr;
 
 	if (vtable->loadFun == NULL)
 	{
@@ -101,7 +101,16 @@ newResourceDesc (const char *res_id, const char *resval)
 	strncpy (result->fname, path, pathlen);
 	result->fname[pathlen] = '\0';
 	result->vtable = vtable;
-	result->resdata = NULL;
+	
+	if (vtable->freeFun == NULL)
+	{
+		/* Non-heap resources are raw values. Work those out at load time. */
+		vtable->loadFun (result->fname, &result->resdata);
+	}
+	else
+	{
+		result->resdata.ptr = NULL;
+	}
 	return result;
 }
 
@@ -117,7 +126,7 @@ process_resource_desc (const char *key, const char *value)
 			ResourceDesc *oldDesc = (ResourceDesc *)CharHashTable_find (map, key);
 			if (oldDesc != NULL)
 			{
-				if (newDesc->resdata != NULL)
+				if (newDesc->resdata.ptr != NULL)
 				{
 					/* XXX: It might be nice to actually clean it up properly */
 					log_add (log_Warning, "LEAK WARNING: Replaced '%s' while it was live", key);
@@ -131,38 +140,29 @@ process_resource_desc (const char *key, const char *value)
 	}
 }
 
-void *
-UseDescriptorAsRes (const char *descriptor)
+void
+UseDescriptorAsRes (const char *descriptor, RESOURCE_DATA *resdata)
 {
-	return (void *)descriptor;
+	resdata->ptr = (void *)descriptor;
 }
 
-void *
-DescriptorToInt (const char *descriptor)
+void
+DescriptorToInt (const char *descriptor, RESOURCE_DATA *resdata)
 {
-	intptr_t value = atoi(descriptor);
-	return (void *) value;
+	resdata->num = atoi (descriptor);
 }
 
-void *
-DescriptorToBoolean (const char *descriptor)
+void
+DescriptorToBoolean (const char *descriptor, RESOURCE_DATA *resdata)
 {
-	if (!stricmp(descriptor, "true"))
+	if (!stricmp (descriptor, "true"))
 	{
-		return (void *)(1);
+		resdata->num = TRUE;
 	}
 	else
 	{
-		return (void *)(0);
+		resdata->num = FALSE;
 	}
-}
-	    
-
-BOOLEAN
-NullFreeRes (void *data)
-{
-	(void)data;
-	return TRUE;
 }
 
 RESOURCE_INDEX
@@ -172,10 +172,10 @@ InitResourceSystem (void)
 	
 	_set_current_index_header (ndx);
 
-	InstallResTypeVectors ("UNKNOWNRES", UseDescriptorAsRes, NullFreeRes);
-	InstallResTypeVectors ("STRING", UseDescriptorAsRes, NullFreeRes);
-	InstallResTypeVectors ("INT32", DescriptorToInt, NullFreeRes);
-	InstallResTypeVectors ("BOOLEAN", DescriptorToBoolean, NullFreeRes);
+	InstallResTypeVectors ("UNKNOWNRES", UseDescriptorAsRes, NULL);
+	InstallResTypeVectors ("STRING", UseDescriptorAsRes, NULL);
+	InstallResTypeVectors ("INT32", DescriptorToInt, NULL);
+	InstallResTypeVectors ("BOOLEAN", DescriptorToBoolean, NULL);
 	InstallGraphicResTypes ();
 	InstallStringTableResType ();
 	InstallAudioResTypes ();
@@ -227,7 +227,7 @@ InstallResTypeVectors (const char *resType, ResourceLoadFun *loadFun,
 	strncpy (result->fname, resType, typelen);
 	result->fname[typelen] = '\0';
 	result->vtable = NULL;
-	result->resdata = handlers;
+	result->resdata.ptr = handlers;
 
 	CharHashTable_HashTable *map = _get_current_index_header ()->map;
 	return CharHashTable_add (map, key, result) != 0;

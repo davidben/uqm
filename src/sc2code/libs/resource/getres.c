@@ -32,11 +32,10 @@ lookupResourceDesc (RESOURCE_INDEX idx, RESOURCE res) {
 	return (ResourceDesc *) CharHashTable_find (idx->map, res);
 }
 
-void *
+void
 loadResourceDesc (ResourceDesc *desc)
 {
-	desc->resdata = desc->vtable->loadFun (desc->fname);
-	return desc->resdata;
+	desc->vtable->loadFun (desc->fname, &desc->resdata);
 }
 
 void *
@@ -97,13 +96,44 @@ res_GetResource (RESOURCE res)
 		return NULL;
 	}
 
-	if (desc->resdata != NULL)
-		return desc->resdata;
+	if (desc->resdata.ptr != NULL)
+		return desc->resdata.ptr;
 
 	loadResourceDesc (desc);
 
-	return desc->resdata;
+	return desc->resdata.ptr;
 			// May still be NULL, if the load failed.
+}
+
+DWORD
+res_GetIntResource (RESOURCE res)
+{
+	RESOURCE_INDEX resourceIndex;
+	ResourceDesc *desc;
+	
+	if (res == NULL_RESOURCE)
+	{
+		log_add (log_Warning, "Trying to get null resource");
+		return 0;
+	}
+	
+	resourceIndex = _get_current_index_header ();
+
+	desc = lookupResourceDesc (resourceIndex, res);
+	if (desc == NULL)
+	{
+		log_add (log_Warning, "Trying to get undefined resource '%s'",
+				 res);
+		return 0;
+	}
+
+	return desc->resdata.num;
+}
+
+BOOLEAN
+res_GetBooleanResource (RESOURCE res)
+{
+	return (res_GetIntResource (res) != 0);
 }
 
 // NB: this function appears to be never called!
@@ -120,17 +150,23 @@ res_FreeResource (RESOURCE res)
 				"resource.");
 		return;
 	}
+
+	freeFun = desc->vtable->freeFun;
+	if (freeFun == NULL)
+	{
+		log_add (log_Debug, "Warning: trying to free a non-heap resource.");
+		return;
+	}
 	
-	if (desc->resdata == NULL)
+	if (desc->resdata.ptr == NULL)
 	{
 		log_add (log_Debug, "Warning: trying to free not loaded "
 				"resource.");
 		return;
 	}
 
-	freeFun = desc->vtable->freeFun;
-	(*freeFun) (desc->resdata);
-	desc->resdata = NULL;
+	(*freeFun) (desc->resdata.ptr);
+	desc->resdata.ptr = NULL;
 }
 
 // By calling this function the caller will be responsible of unloading
@@ -141,6 +177,7 @@ void *
 res_DetachResource (RESOURCE res)
 {
 	ResourceDesc *desc;
+	ResourceFreeFun *freeFun;
 	void *result;
 
 	desc = lookupResourceDesc (_get_current_index_header(), res);
@@ -151,15 +188,22 @@ res_DetachResource (RESOURCE res)
 		return NULL;
 	}
 	
-	if (desc->resdata == NULL)
+	freeFun = desc->vtable->freeFun;
+	if (freeFun == NULL)
+	{
+		log_add (log_Debug, "Warning: trying to detatch from a non-heap resource.");
+		return NULL;
+	}
+	
+	if (desc->resdata.ptr == NULL)
 	{
 		log_add (log_Debug, "Warning: trying to detach from a not loaded "
 				"resource.");
 		return NULL;
 	}
 
-	result = desc->resdata;
-	desc->resdata = NULL;
+	result = desc->resdata.ptr;
+	desc->resdata.ptr = NULL;
 
 	return result;
 }

@@ -18,16 +18,16 @@
 
 #include "gfxintrn.h"
 
-static void *
-GetCelFileData (const char *pathname)
+static void
+GetCelFileData (const char *pathname, RESOURCE_DATA *resdata)
 {
-	return LoadResourceFromPath (pathname, _GetCelData);
+	resdata->ptr = LoadResourceFromPath (pathname, _GetCelData);
 }
 
-static void *
-GetFontFileData (const char *pathname)
+static void
+GetFontFileData (const char *pathname, RESOURCE_DATA *resdata)
 {
-	return LoadResourceFromPath (pathname, _GetFontData);
+	resdata->ptr = LoadResourceFromPath (pathname, _GetFontData);
 }
 
 

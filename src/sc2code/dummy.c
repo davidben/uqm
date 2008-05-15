@@ -37,8 +37,8 @@ typedef struct
 	RACE_DESC data _ALIGNED_ANY;
 } CODERES_STRUCT;
 
-static void *
-GetCodeResData (const char *ship_id)
+static void
+GetCodeResData (const char *ship_id, RESOURCE_DATA *resdata)
 {
 enum
 {
@@ -305,7 +305,7 @@ enum
 			cs->data = *RDPtr;  // Structure assignment.
 		}
 	}
-	return (hData);
+	resdata->ptr = (hData);
 }
 
 BOOLEAN
