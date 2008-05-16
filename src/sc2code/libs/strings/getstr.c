@@ -65,6 +65,14 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 	uio_Stream *fp;
 	long dataLen;
 	void *result;
+	int n, path_len, num_data_sets;
+	DWORD opos,
+		slen[MAX_STRINGS], StringOffs, tot_string_size,
+		clen[MAX_STRINGS], ClipOffs, tot_clip_size,
+		tslen[MAX_STRINGS], TSOffs, tot_ts_size;
+	char CurrentLine[1024], clip_path[1024], *strdata, *clipdata,
+		*ts_data;
+	uio_Stream *timestamp_fp = NULL;
 
 	fp = res_OpenResFile (contentDir, path, "rb");
 	if (fp == NULL)
@@ -82,14 +90,6 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 		log_add (log_Warning, "Warning: Trying to load empty file '%s'.", path);
 		goto err;
 	}
-	int n, path_len, num_data_sets;
-	DWORD opos,
-		slen[MAX_STRINGS], StringOffs, tot_string_size,
-		clen[MAX_STRINGS], ClipOffs, tot_clip_size,
-		tslen[MAX_STRINGS], TSOffs, tot_ts_size;
-	char CurrentLine[1024], clip_path[1024], *strdata, *clipdata,
-		*ts_data;
-	uio_Stream *timestamp_fp = NULL;
 	
 	if ((strdata = HMalloc (tot_string_size = POOL_SIZE)) == 0)
 		goto err;
