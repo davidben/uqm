@@ -205,7 +205,7 @@ VControl_name2code (char *name)
 	{
 		char *test = keynames[i].name;
 		int code = keynames[i].code;
-		if (!stricmp(test, name) || !code)
+		if (!strcasecmp(test, name) || !code)
 		{
 			return code;
 		}

@@ -155,7 +155,7 @@ DescriptorToInt (const char *descriptor, RESOURCE_DATA *resdata)
 void
 DescriptorToBoolean (const char *descriptor, RESOURCE_DATA *resdata)
 {
-	if (!stricmp (descriptor, "true"))
+	if (!strcasecmp (descriptor, "true"))
 	{
 		resdata->num = TRUE;
 	}

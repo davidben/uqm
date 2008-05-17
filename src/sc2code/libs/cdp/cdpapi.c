@@ -277,7 +277,7 @@ cdp_GetInterfaceReg (const char* name, cdp_ApiVersion api_ver)
 	cdp_ItfReg* itf;
 
 	for (itf = cdp_itfs; itf->used &&
-			(!itf->name || stricmp(itf->name, name) != 0 ||
+			(!itf->name || strcasecmp(itf->name, name) != 0 ||
 			 api_ver < itf->ver_from || api_ver > itf->ver_to);
 			itf++)
 		;
@@ -390,7 +390,7 @@ cdp_Host_RegisterItf (const char* name, cdp_ApiVersion ver_from,
 
 	// check if interface already registered
 	for (itfreg = cdp_itfs; itfreg->used &&
-			(!itfreg->name || stricmp(itfreg->name, id_name) != 0 ||
+			(!itfreg->name || strcasecmp(itfreg->name, id_name) != 0 ||
 			 ver_from < itfreg->ver_from || ver_to > itfreg->ver_to);
 			++itfreg)
 	{
@@ -502,7 +502,7 @@ cdp_GetEventReg (const char* name)
 	cdp_EventReg* evt;
 
 	for (evt = cdp_evts; evt->used &&
-			(!evt->name || stricmp(evt->name, name) != 0);
+			(!evt->name || strcasecmp(evt->name, name) != 0);
 			evt++)
 		;
 	if (!evt->name)
@@ -626,7 +626,7 @@ cdp_Host_RegisterEvent (const char* name, cdp_Module* owner)
 
 	// check if event already registered
 	for (evtreg = cdp_evts; evtreg->used &&
-			(!evtreg->name || stricmp(evtreg->name, id_name) != 0);
+			(!evtreg->name || strcasecmp(evtreg->name, id_name) != 0);
 			++evtreg)
 	{
 		// and pick up an empty slot (where available)

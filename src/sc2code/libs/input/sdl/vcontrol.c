@@ -1086,7 +1086,7 @@ expected_error (parse_state *state, char *expected)
 static void
 consume (parse_state *state, char *expected)
 {
-	if (stricmp (expected, state->token))
+	if (strcasecmp (expected, state->token))
 	{
 		expected_error (state, expected);
 	}
@@ -1126,11 +1126,11 @@ static int
 consume_polarity (parse_state *state)
 {
 	int result = 0;
-	if (!stricmp (state->token, "positive"))
+	if (!strcasecmp (state->token, "positive"))
 	{
 		result = 1;
 	}
-	else if (!stricmp (state->token, "negative"))
+	else if (!strcasecmp (state->token, "negative"))
 	{
 		result = -1;
 	}
@@ -1146,19 +1146,19 @@ static Uint8
 consume_dir (parse_state *state)
 {
 	Uint8 result = 0;
-	if (!stricmp (state->token, "left"))
+	if (!strcasecmp (state->token, "left"))
 	{
 		result = SDL_HAT_LEFT;
 	}
-	else if (!stricmp (state->token, "right"))
+	else if (!strcasecmp (state->token, "right"))
 	{
 		result = SDL_HAT_RIGHT;
 	}
-	else if (!stricmp (state->token, "up"))
+	else if (!strcasecmp (state->token, "up"))
 	{
 		result = SDL_HAT_UP;
 	}
-	else if (!stricmp (state->token, "down"))
+	else if (!strcasecmp (state->token, "down"))
 	{
 		result = SDL_HAT_DOWN;
 	}
@@ -1178,7 +1178,7 @@ parse_joybinding (parse_state *state, VCONTROL_GESTURE *gesture)
 	sticknum = consume_num (state);
 	if (!state->error)
 	{
-		if (!stricmp (state->token, "axis"))
+		if (!strcasecmp (state->token, "axis"))
 		{
 			int axisnum;
 			consume (state, "axis");
@@ -1195,7 +1195,7 @@ parse_joybinding (parse_state *state, VCONTROL_GESTURE *gesture)
 				}
 			}
 		} 
-		else if (!stricmp (state->token, "button"))
+		else if (!strcasecmp (state->token, "button"))
 		{
 			int buttonnum;
 			consume (state, "button");
@@ -1207,7 +1207,7 @@ parse_joybinding (parse_state *state, VCONTROL_GESTURE *gesture)
 				gesture->gesture.button.index = buttonnum;
 			}
 		}
-		else if (!stricmp (state->token, "hat"))
+		else if (!strcasecmp (state->token, "hat"))
 		{
 			int hatnum;
 			consume (state, "hat");
@@ -1235,7 +1235,7 @@ static void
 parse_gesture (parse_state *state, VCONTROL_GESTURE *gesture)
 {
 	gesture->type = VCONTROL_NONE; /* Default to error */
-	if (!stricmp (state->token, "key"))
+	if (!strcasecmp (state->token, "key"))
 	{
 		/* Parse key binding */
 		int keysym;
@@ -1247,7 +1247,7 @@ parse_gesture (parse_state *state, VCONTROL_GESTURE *gesture)
 			gesture->gesture.key = keysym;
 		}
 	}
-	else if (!stricmp (state->token, "joystick"))
+	else if (!strcasecmp (state->token, "joystick"))
 	{
 		parse_joybinding (state, gesture);
 	}

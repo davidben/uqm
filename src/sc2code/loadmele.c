@@ -169,7 +169,7 @@ GetFleetIndexByFileName (MELEE_STATE *pMS, const char *fileName)
 				pMS->load.entryIndices[index]);
 		const BYTE *entryName = GetDirEntryAddress (entry);
 
-		if (stricmp ((const char *) entryName, fileName) == 0)
+		if (strcasecmp ((const char *) entryName, fileName) == 0)
 			return pMS->load.preBuiltCount + index;
 	}
 

@@ -82,9 +82,9 @@ str2int (const char *s) {
 
 static BOOLEAN
 str2bool (const char *s) {
-	if (!stricmp (s, "yes") ||
-	    !stricmp (s, "true") ||
-	    !stricmp (s, "1") )
+	if (!strcasecmp (s, "yes") ||
+	    !strcasecmp (s, "true") ||
+	    !strcasecmp (s, "1") )
 		return TRUE;
 	return FALSE;
 }
@@ -98,13 +98,13 @@ res_IsBoolean (const char *key)
 	d = res_GetString (key);
 	if (!d) return 0;
 		
-	return !stricmp (d, "yes") ||
-	       !stricmp (d, "no") ||
-	       !stricmp (d, "true") ||
-	       !stricmp (d, "false") ||
-	       !stricmp (d, "0") ||
-	       !stricmp (d, "1") ||
-	       !stricmp (d, "");
+	return !strcasecmp (d, "yes") ||
+	       !strcasecmp (d, "no") ||
+	       !strcasecmp (d, "true") ||
+	       !strcasecmp (d, "false") ||
+	       !strcasecmp (d, "0") ||
+	       !strcasecmp (d, "1") ||
+	       !strcasecmp (d, "");
 }
 
 BOOLEAN
