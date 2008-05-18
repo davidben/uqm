@@ -260,7 +260,7 @@ GetStringTimeStamp (STRING String)
 	}
 
 	StringIndex = String->index;
-	if (!(StringTablePtr->flags & HAS_SOUND_CLIPS))
+	if (!(StringTablePtr->flags & HAS_TIMESTAMP))
 	{
 		return NULL;
 	}
