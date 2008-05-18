@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Voiceovers controlled by a synthetic '3dovoice' addon - Michael
+- CONVERSATION explicitly names text/voice/timestamps - Michael
 - Replaced stricmp() by the POSIX compatible strcasecmp() - SvdB
 - Split STRTAB further into STRTAB and CONVERSATION - Michael
 - INT32, BOOLEAN, and STRING resource types - Michael

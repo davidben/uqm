@@ -70,20 +70,50 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 		slen[MAX_STRINGS], StringOffs, tot_string_size,
 		clen[MAX_STRINGS], ClipOffs, tot_clip_size,
 		tslen[MAX_STRINGS], TSOffs, tot_ts_size;
-	char CurrentLine[1024], clip_path[1024], *strdata, *clipdata,
-		*ts_data;
+	char CurrentLine[1024], paths[1024], *clip_path, *ts_path,
+		*strdata, *clipdata, *ts_data;
 	uio_Stream *timestamp_fp = NULL;
 
-	fp = res_OpenResFile (contentDir, path, "rb");
+	/* Parse out the conversation components. */
+	strncpy (paths, path, 1023);
+	paths[1023] = '\0';
+	clip_path = strchr (paths, ':');
+	if (clip_path == NULL)
+	{
+		ts_path = NULL;
+	}
+	else
+	{
+		*clip_path = '\0';
+		clip_path++;
+
+		ts_path = strchr (clip_path, ':');
+		if (ts_path != NULL)
+		{
+			*ts_path = '\0';
+			ts_path++;
+		}
+	}
+
+	fp = res_OpenResFile (contentDir, paths, "rb");
 	if (fp == NULL)
 	{
-		log_add (log_Warning, "Warning: Can't open '%s'", path);
+		log_add (log_Warning, "Warning: Can't open '%s'", paths);
 		resdata->ptr = NULL;
 		return;
 	}
 
 	dataLen = LengthResFile (fp);
-	log_add (log_Info, "\t'%s' -- %lu bytes in Conversation", path, dataLen);
+	log_add (log_Info, "\t'%s' -- conversation phrases -- %lu bytes", paths, dataLen);
+	if (clip_path)
+		log_add (log_Info, "\t'%s' -- voice clip directory", clip_path);
+	else
+		log_add (log_Info, "\tNo associated voice clips");
+	if (ts_path)
+		log_add (log_Info, "\t'%s' -- timestamps", ts_path);
+	else
+		log_add (log_Info, "\tNo associated timestamp file");
+
 	
 	if (dataLen == 0)
 	{
@@ -101,39 +131,13 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 	}
 	ts_data = NULL;
 	
-	{
-		char *s1, *s2;
+	path_len = clip_path ? strlen (clip_path) : 0;
 
-		if (((s2 = 0), (s1 = strrchr (path, '/')) == 0)
-				&& (s2 = strrchr (path, '\\')) == 0)
-			n = 0;
-		else
-		{
-			if (s2 > s1)
-				s1 = s2;
-			n = s1 - path + 1;
-			strncpy (clip_path, path, n);
-		}
-		clip_path[n] = '\0';
-		path_len = strlen (clip_path);
-	}
-
+	if (ts_path && (timestamp_fp = uio_fopen (contentDir, ts_path,
+			"rb")))
 	{
-		// try to open the timestamp file
-		char ts_file_name[1024];
-		char *s;
-		strcpy (ts_file_name, path);
-		s = strrchr (ts_file_name, '.');
-		s += 2;
-		*s++ = 's';
-		*s = '\0';
-		if ((timestamp_fp = uio_fopen (contentDir, ts_file_name,
-					       "rb")))
-		{
-			log_add (log_Info, "Found timestamp file: %s", ts_file_name);
-			if ((ts_data = HMalloc (tot_ts_size = POOL_SIZE)) == 0)
-				goto err;
-		}
+		if ((ts_data = HMalloc (tot_ts_size = POOL_SIZE)) == 0)
+			goto err;
 	}
 	
 	opos = uio_ftell (fp);
@@ -222,7 +226,8 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 						goto err;
 					}
 
-					strcpy (&clipdata[ClipOffs], clip_path);
+					if (clip_path)
+						strcpy (&clipdata[ClipOffs], clip_path);
 					strcpy (&clipdata[ClipOffs + path_len], s);
 					ClipOffs += l;
 					clen[n] = l;

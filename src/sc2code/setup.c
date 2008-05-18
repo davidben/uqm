@@ -118,6 +118,8 @@ LoadKernel (int argc, char *argv[])
 		loadAddon ("3domusic");
 	}
 
+	loadAddon ("3dovoice"); /* Always try to use voice data */
+
 	if (optPrecursorsMusic)
 	{
 		loadAddon ("remix");
