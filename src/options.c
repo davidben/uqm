@@ -433,6 +433,7 @@ int
 loadIndices (uio_DirHandle *dir)
 {
 	uio_DirList *indices;
+	int numLoaded = 0;
 
 	indices = uio_getDirList (dir, "", ".rmp$",
 			match_MATCH_REGEX);		
@@ -445,12 +446,13 @@ loadIndices (uio_DirHandle *dir)
 		{
 			log_add (log_Debug, "Loading resouce index '%s'", indices->names[i]);
 			LoadResourceIndex (dir, indices->names[i]);
+			numLoaded++;
 		}			
 	}
 	uio_DirList_free (indices);
 	
 	/* Return the number of index files loaded. */
-	return indices->numNames;
+	return numLoaded;
 }
 
 BOOLEAN
