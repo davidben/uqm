@@ -123,7 +123,7 @@ FindMasterShip (SPECIES_ID ship_ref)
 	
 	for (hStarShip = GetHeadLink (&master_q); hStarShip; hStarShip = hNextShip)
 	{
-		DWORD ref;
+		SPECIES_ID ref;
 		MASTER_SHIP_INFO *MasterPtr;
 
 		MasterPtr = LockMasterShip (&master_q, hStarShip);
@@ -147,7 +147,7 @@ FindMasterShipIndex (SPECIES_ID ship_ref)
 	for (index = 0, hStarShip = GetHeadLink (&master_q); hStarShip;
 			++index, hStarShip = hNextShip)
 	{
-		DWORD ref;
+		SPECIES_ID ref;
 		MASTER_SHIP_INFO *MasterPtr;
 
 		MasterPtr = LockMasterShip (&master_q, hStarShip);
