@@ -205,6 +205,7 @@ InstallResTypeVectors (const char *resType, ResourceLoadFun *loadFun,
 	ResourceDesc *result;
 	char key[TYPESIZ];
 	int typelen;
+	CharHashTable_HashTable *map;
 	
 	snprintf(key, TYPESIZ, "sys.%s", resType);
 	key[TYPESIZ-1] = '\0';
@@ -229,6 +230,6 @@ InstallResTypeVectors (const char *resType, ResourceLoadFun *loadFun,
 	result->vtable = NULL;
 	result->resdata.ptr = handlers;
 
-	CharHashTable_HashTable *map = _get_current_index_header ()->map;
+	map = _get_current_index_header ()->map;
 	return CharHashTable_add (map, key, result) != 0;
 }
