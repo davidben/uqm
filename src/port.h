@@ -123,18 +123,9 @@ typedef unsigned short mode_t;
 #	define open _open
 #	define read _read
 //#	define fstat _fstat
-#	define O_ACCMODE (O_RDONLY | O_WRONLY | O_RDWR)
-#	define S_IRWXU (S_IREAD | S_IWRITE | S_IEXEC)
-#	define S_IRWXG 0
-#	define S_IRWXO 0
-#	define S_ISDIR(mode) (((mode) & _S_IFMT) == _S_IFDIR)
-#	define S_ISREG(mode) (((mode) & _S_IFMT) == _S_IFREG)
 #	define write _write
 //#	define stat _stat
 #	define unlink _unlink
-#elif defined (__MINGW32__)
-#	define S_IRWXG 0
-#	define S_IRWXO 0
 #endif
 
 // Memory
