@@ -35,7 +35,7 @@ For libvorbis:
 - As above, but you need the "Release" target.
 
 To build:
-- Run ./build.sh in the sc2/ directory and , choose your configuration
+- Run ./build.sh in the sc2/ directory and choose your configuration
   options.  The only truly important one is to use Included MikMod
   instead of System MikMod.
 - If the build fails because SDL_include.h has errors, run 
