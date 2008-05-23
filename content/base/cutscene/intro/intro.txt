@@ -26,9 +26,9 @@ TBC 000000
 TE TRACED
 
 #(Load font to use later)
-FONT 0 lbm/starcon.fon
+FONT 0 base/fonts/starcon.fon
 #(Load font to use later)
-FONT 1 slides/slides.fon
+FONT 1 base/fonts/slides.fon
 
 #(************ Title Screen ******************************************)
 
@@ -38,7 +38,7 @@ FONT 1 slides/slides.fon
 FONT 0
 
 #(Set ANIM to draw slides from)
-ANI slides/intro/title.ani
+ANI base/cutscene/intro/title.ani
 
 #(Set text fade in/out color; 0xRRGGBB)
 TFC 000000
@@ -60,7 +60,7 @@ WAIT 500
 #(++++++++++++ Title 2 +++++++++++++++++++++++++++++++++++)
 
 #(Play music)
-MUSIC slides/intro/introx.mod
+MUSIC base/cutscene/intro/introx.mod
 
 #(Move sync point to current time index)
 RESYNC
@@ -106,7 +106,7 @@ FTB 3000
 FONT 1
 
 #(Set ANIM to draw slides from)
-ANI slides/intro/intro.ani
+ANI base/cutscene/intro/intro.ani
 
 #(Set text vertical position; can be T=top, B=bottom, M=middle)
 TVA T

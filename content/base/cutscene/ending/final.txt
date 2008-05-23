@@ -20,15 +20,15 @@ TBC 000000
 TE TRACED
 
 #(Play music)
-MUSIC slides/ending/victoryf.mod
+MUSIC base/cutscene/ending/victoryf.mod
 
 #(************* Slides *********************************************)
 
 #(Set font to use)
-FONT 0 slides/slides.fon
+FONT 0 base/fonts/slides.fon
 
 #(Set ANIM to draw slides from)
-ANI slides/ending/ending.ani
+ANI base/cutscene/ending/ending.ani
 
 #(Set text vertical position; can be T=top, B=bottom, M=middle)
 TVA T

@@ -13,12 +13,12 @@ DIMS 320 200
 #(Everything is drawn within the clipping rect defined by DIMS, from 0, 0)
 
 #(Sequence 1 -- position the bomb)
-CALL slides/ending/victory1.txt
+CALL base/cutscene/ending/victory1.txt
 
 #(Sequence 2 -- blow it up!)
-CALL slides/ending/victory2.txt
+CALL base/cutscene/ending/victory2.txt
 
 #(Sequence 3 -- final slide show)
-CALL slides/ending/final.txt
+CALL base/cutscene/ending/final.txt
 
 #(***************************** The End ********************************)

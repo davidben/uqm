@@ -1,8 +1,8 @@
 #(Load font)
-FONT 0 lbm/starcon.fon
+FONT 0 base/fonts/starcon.fon
 
 #(Load other font)
-FONT 1 slides/slides.fon
+FONT 1 base/fonts/slides.fon
 
 #(Select small font)
 FONT 0
@@ -14,7 +14,7 @@ TBC 000000
 TE TRACED
 
 #(Load movie)
-ANI slides/spins/ship00.ani
+ANI base/cutscene/spins/ship00.ani
 
 #(Take up entire screen)
 DIMS 320 240

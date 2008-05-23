@@ -6,10 +6,10 @@ DIMS 320 200
 #(Everything is drawn within the clipping rect defined by DIMS, from 0, 0)
 
 #(Set ANIM to draw animation frames from)
-ANI slides/ending/victory1.ani
+ANI base/cutscene/ending/victory1.ani
 
 #(Play music)
-MUSIC slides/ending/victory1.mod
+MUSIC base/cutscene/ending/victory1.mod
 
 #(Clear screen)
 CLS

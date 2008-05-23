@@ -1,11 +1,11 @@
 #(Load font)
-FONT 0 lbm/starcon.fon
+FONT 0 base/fonts/starcon.fon
 
 #(Load other font)
-FONT 1 slides/slides.fon
+FONT 1 base/fonts/slides.fon
 
 #(Load movie)
-ANI slides/spins/ship10.ani
+ANI base/cutscene/spins/ship10.ani
 
 #(Take up entire screen)
 DIMS 320 240
