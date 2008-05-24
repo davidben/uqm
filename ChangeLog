@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Content Dirs completely reorganized; 3DO and PC segregation - Coredev
 - Voiceovers controlled by a synthetic '3dovoice' addon - Michael
 - CONVERSATION explicitly names text/voice/timestamps - Michael
 - Replaced stricmp() by the POSIX compatible strcasecmp() - SvdB
