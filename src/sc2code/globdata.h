@@ -553,6 +553,12 @@ START_GAME_STATE
 	ADD_GAME_STATE (CHMMR_EMERGING, 1)
 	ADD_GAME_STATE (CHMMR_UNLEASHED, 1)
 	ADD_GAME_STATE (CHMMR_BOMB_STATE, 2)
+			/* 0 - Nothing is known about the Precursor Bomb.
+			 * 1 - The captain knows from the Chmmr that some extremely
+			 *     powerful weapon is needed to destroy the Sa-Matra.
+			 * 2 - Installation of the precursor bomb has started.
+			 * 3 - Left the starbase after installation of the Precursor bomb.
+			 */
 
 	ADD_GAME_STATE (DRUUGE_DISCLAIMER, 1)
 
