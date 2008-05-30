@@ -150,11 +150,12 @@ while (--ac > 0)
 //	OpenJournal ();
 	while (StartGame ())
 	{
+		// Initialise a new game
 		SetPlayerInputAll ();
 		InitSIS ();
 		InitGameClock ();
-
 		AddInitialGameEvents();
+
 		do
 		{
 			SuspendGameClock ();
@@ -212,6 +213,7 @@ while (--ac > 0)
 			}
 			else
 			{
+				// Entering HyperSpace or QuasiSpace.
 				Task ArilouTask;
 				
 				GLOBAL (CurrentActivity) = MAKE_WORD (IN_HYPERSPACE, 0);
