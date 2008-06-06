@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define DRUUGE_CONVERSATION_PHRASES "comm.druuge.dialogue"
 #define DRUUGE_COLOR_MAP "comm.druuge.colortable"
+#define DRUUGE_CONVERSATION_PHRASES "comm.druuge.dialogue"

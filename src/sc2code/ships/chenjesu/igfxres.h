@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define CHENJESU_ICON_MASK_PMAP_ANIM "ship.chenjesu.icons"
-#define CHENJESU_MICON_MASK_PMAP_ANIM "ship.chenjesu.meleeicons"
 #define CHENJESU_BIG_MASK_PMAP_ANIM "ship.chenjesu.graphics.chenjesu.large"
+#define CHENJESU_CAPTAIN_MASK_PMAP_ANIM "ship.chenjesu.graphics.captain"
+#define CHENJESU_ICON_MASK_PMAP_ANIM "ship.chenjesu.icons"
 #define CHENJESU_MED_MASK_PMAP_ANIM "ship.chenjesu.graphics.chenjesu.medium"
+#define CHENJESU_MICON_MASK_PMAP_ANIM "ship.chenjesu.meleeicons"
 #define CHENJESU_SML_MASK_PMAP_ANIM "ship.chenjesu.graphics.chenjesu.small"
-#define SPARK_BIG_MASK_PMAP_ANIM "ship.chenjesu.graphics.spark.large"
-#define SPARK_MED_MASK_PMAP_ANIM "ship.chenjesu.graphics.spark.medium"
-#define SPARK_SML_MASK_PMAP_ANIM "ship.chenjesu.graphics.spark.small"
 #define DOGGY_BIG_MASK_PMAP_ANIM "ship.chenjesu.graphics.doggy.large"
 #define DOGGY_MED_MASK_PMAP_ANIM "ship.chenjesu.graphics.doggy.medium"
 #define DOGGY_SML_MASK_PMAP_ANIM "ship.chenjesu.graphics.doggy.small"
-#define CHENJESU_CAPTAIN_MASK_PMAP_ANIM "ship.chenjesu.graphics.captain"
+#define SPARK_BIG_MASK_PMAP_ANIM "ship.chenjesu.graphics.spark.large"
+#define SPARK_MED_MASK_PMAP_ANIM "ship.chenjesu.graphics.spark.medium"
+#define SPARK_SML_MASK_PMAP_ANIM "ship.chenjesu.graphics.spark.small"

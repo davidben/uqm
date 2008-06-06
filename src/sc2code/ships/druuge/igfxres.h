@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define DRUUGE_ICON_MASK_PMAP_ANIM "ship.druuge.icons"
-#define DRUUGE_MICON_MASK_PMAP_ANIM "ship.druuge.meleeicons"
 #define DRUUGE_BIG_MASK_PMAP_ANIM "ship.druuge.graphics.druuge.large"
-#define DRUUGE_MED_MASK_PMAP_ANIM "ship.druuge.graphics.druuge.medium"
-#define DRUUGE_SML_MASK_PMAP_ANIM "ship.druuge.graphics.druuge.small"
 #define DRUUGE_CANNON_BIG_MASK_PMAP_ANIM "ship.druuge.graphics.can.large"
 #define DRUUGE_CANNON_MED_MASK_PMAP_ANIM "ship.druuge.graphics.can.medium"
 #define DRUUGE_CANNON_SML_MASK_PMAP_ANIM "ship.druuge.graphics.can.small"
 #define DRUUGE_CAPT_MASK_PMAP_ANIM "ship.druuge.graphics.captain"
+#define DRUUGE_ICON_MASK_PMAP_ANIM "ship.druuge.icons"
+#define DRUUGE_MED_MASK_PMAP_ANIM "ship.druuge.graphics.druuge.medium"
+#define DRUUGE_MICON_MASK_PMAP_ANIM "ship.druuge.meleeicons"
+#define DRUUGE_SML_MASK_PMAP_ANIM "ship.druuge.graphics.druuge.small"

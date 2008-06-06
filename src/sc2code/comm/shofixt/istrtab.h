@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SHOFIXTI_CONVERSATION_PHRASES "comm.shofixti.dialogue"
 #define SHOFIXTI_COLOR_MAP "comm.shofixti.colortable"
+#define SHOFIXTI_CONVERSATION_PHRASES "comm.shofixti.dialogue"

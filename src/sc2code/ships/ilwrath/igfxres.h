@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ILWRATH_ICON_MASK_PMAP_ANIM "ship.ilwrath.icons"
-#define ILWRATH_MICON_MASK_PMAP_ANIM "ship.ilwrath.meleeicons"
-#define ILWRATH_BIG_MASK_PMAP_ANIM "ship.ilwrath.graphics.ilwrath.large"
-#define ILWRATH_MED_MASK_PMAP_ANIM "ship.ilwrath.graphics.ilwrath.medium"
-#define ILWRATH_SML_MASK_PMAP_ANIM "ship.ilwrath.graphics.ilwrath.small"
 #define FIRE_BIG_MASK_PMAP_ANIM "ship.ilwrath.graphics.fire.large"
 #define FIRE_MED_MASK_PMAP_ANIM "ship.ilwrath.graphics.fire.medium"
 #define FIRE_SML_MASK_PMAP_ANIM "ship.ilwrath.graphics.fire.small"
+#define ILWRATH_BIG_MASK_PMAP_ANIM "ship.ilwrath.graphics.ilwrath.large"
 #define ILWRATH_CAPTAIN_MASK_PMAP_ANIM "ship.ilwrath.graphics.captain"
+#define ILWRATH_ICON_MASK_PMAP_ANIM "ship.ilwrath.icons"
+#define ILWRATH_MED_MASK_PMAP_ANIM "ship.ilwrath.graphics.ilwrath.medium"
+#define ILWRATH_MICON_MASK_PMAP_ANIM "ship.ilwrath.meleeicons"
+#define ILWRATH_SML_MASK_PMAP_ANIM "ship.ilwrath.graphics.ilwrath.small"

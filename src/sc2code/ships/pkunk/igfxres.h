@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PKUNK_ICON_MASK_PMAP_ANIM "ship.pkunk.icons"
-#define PKUNK_MICON_MASK_PMAP_ANIM "ship.pkunk.meleeicons"
-#define PKUNK_BIG_MASK_PMAP_ANIM "ship.pkunk.graphics.pkunk.large"
-#define PKUNK_MED_MASK_PMAP_ANIM "ship.pkunk.graphics.pkunk.medium"
-#define PKUNK_SML_MASK_PMAP_ANIM "ship.pkunk.graphics.pkunk.small"
 #define BUG_BIG_MASK_PMAP_ANIM "ship.pkunk.graphics.bug.large"
 #define BUG_MED_MASK_PMAP_ANIM "ship.pkunk.graphics.bug.medium"
 #define BUG_SML_MASK_PMAP_ANIM "ship.pkunk.graphics.bug.small"
+#define PKUNK_BIG_MASK_PMAP_ANIM "ship.pkunk.graphics.pkunk.large"
 #define PKUNK_CAPTAIN_MASK_PMAP_ANIM "ship.pkunk.graphics.captain"
+#define PKUNK_ICON_MASK_PMAP_ANIM "ship.pkunk.icons"
+#define PKUNK_MED_MASK_PMAP_ANIM "ship.pkunk.graphics.pkunk.medium"
+#define PKUNK_MICON_MASK_PMAP_ANIM "ship.pkunk.meleeicons"
+#define PKUNK_SML_MASK_PMAP_ANIM "ship.pkunk.graphics.pkunk.small"

@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SPATHI_PMAP_ANIM "comm.spathi.graphics"
 #define SPATHI_HOME_PMAP_ANIM "comm.spahome.graphics"
+#define SPATHI_PMAP_ANIM "comm.spathi.graphics"

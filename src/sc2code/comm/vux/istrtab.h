@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define VUX_CONVERSATION_PHRASES "comm.vux.dialogue"
 #define VUX_COLOR_MAP "comm.vux.colortable"
+#define VUX_CONVERSATION_PHRASES "comm.vux.dialogue"

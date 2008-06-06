@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SUPOX_CONVERSATION_PHRASES "comm.supox.dialogue"
 #define SUPOX_COLOR_MAP "comm.supox.colortable"
+#define SUPOX_CONVERSATION_PHRASES "comm.supox.dialogue"

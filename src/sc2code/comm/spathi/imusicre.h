@@ -2,6 +2,6 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SPATHI_MUSIC "comm.spathi.music"
-#define SPAHOME_MUSIC "comm.spahome.music"
 #define FWIFFO_MUSIC "comm.spafwiff.music"
+#define SPAHOME_MUSIC "comm.spahome.music"
+#define SPATHI_MUSIC "comm.spathi.music"

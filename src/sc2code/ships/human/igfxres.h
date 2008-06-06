@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define HUMAN_ICON_MASK_PMAP_ANIM "ship.earthling.icons"
-#define HUMAN_MICON_MASK_PMAP_ANIM "ship.earthling.meleeicons"
 #define HUMAN_BIG_MASK_PMAP_ANIM "ship.earthling.graphics.human.large"
+#define HUMAN_CAPTAIN_MASK_PMAP_ANIM "ship.earthling.graphics.captain"
+#define HUMAN_ICON_MASK_PMAP_ANIM "ship.earthling.icons"
 #define HUMAN_MED_MASK_PMAP_ANIM "ship.earthling.graphics.human.medium"
+#define HUMAN_MICON_MASK_PMAP_ANIM "ship.earthling.meleeicons"
 #define HUMAN_SML_MASK_PMAP_ANIM "ship.earthling.graphics.human.small"
 #define SATURN_BIG_MASK_PMAP_ANIM "ship.earthling.graphics.saturn.large"
 #define SATURN_MED_MASK_PMAP_ANIM "ship.earthling.graphics.saturn.medium"
 #define SATURN_SML_MASK_PMAP_ANIM "ship.earthling.graphics.saturn.small"
-#define HUMAN_CAPTAIN_MASK_PMAP_ANIM "ship.earthling.graphics.captain"

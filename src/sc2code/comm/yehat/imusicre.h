@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define YEHAT_MUSIC "comm.yehat.music"
 #define REBEL_MUSIC "comm.yehat.rebel.music"
+#define YEHAT_MUSIC "comm.yehat.music"

@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ORZ_CONVERSATION_PHRASES "comm.orz.dialogue"
 #define ORZ_COLOR_MAP "comm.orz.colortable"
+#define ORZ_CONVERSATION_PHRASES "comm.orz.dialogue"

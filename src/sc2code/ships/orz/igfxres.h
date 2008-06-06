@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ORZ_ICON_MASK_PMAP_ANIM "ship.orz.icons"
-#define ORZ_MICON_MASK_PMAP_ANIM "ship.orz.meleeicons"
-#define ORZ_BIG_MASK_PMAP_ANIM "ship.orz.graphics.orz.large"
-#define ORZ_MED_MASK_PMAP_ANIM "ship.orz.graphics.orz.medium"
-#define ORZ_SML_MASK_PMAP_ANIM "ship.orz.graphics.orz.small"
 #define HOWITZER_BIG_MASK_PMAP_ANIM "ship.orz.graphics.how.large"
 #define HOWITZER_MED_MASK_PMAP_ANIM "ship.orz.graphics.how.medium"
 #define HOWITZER_SML_MASK_PMAP_ANIM "ship.orz.graphics.how.small"
+#define ORZ_BIG_MASK_PMAP_ANIM "ship.orz.graphics.orz.large"
+#define ORZ_CAPTAIN_MASK_PMAP_ANIM "ship.orz.graphics.captain"
+#define ORZ_ICON_MASK_PMAP_ANIM "ship.orz.icons"
+#define ORZ_MED_MASK_PMAP_ANIM "ship.orz.graphics.orz.medium"
+#define ORZ_MICON_MASK_PMAP_ANIM "ship.orz.meleeicons"
+#define ORZ_SML_MASK_PMAP_ANIM "ship.orz.graphics.orz.small"
 #define TURRET_BIG_MASK_PMAP_ANIM "ship.orz.graphics.tur.large"
 #define TURRET_MED_MASK_PMAP_ANIM "ship.orz.graphics.tur.medium"
 #define TURRET_SML_MASK_PMAP_ANIM "ship.orz.graphics.tur.small"
-#define ORZ_CAPTAIN_MASK_PMAP_ANIM "ship.orz.graphics.captain"

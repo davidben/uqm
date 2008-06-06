@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define BLACKURQ_CONVERSATION_PHRASES "comm.kohrah.dialogue"
 #define BLACKURQ_COLOR_MAP "comm.kohrah.colortable"
+#define BLACKURQ_CONVERSATION_PHRASES "comm.kohrah.dialogue"

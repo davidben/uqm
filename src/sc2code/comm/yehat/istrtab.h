@@ -2,6 +2,6 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define YEHAT_CONVERSATION_PHRASES "comm.yehat.dialogue"
 #define REBEL_CONVERSATION_PHRASES "comm.yehat.rebel.dialogue"
 #define YEHAT_COLOR_MAP "comm.yehat.colortable"
+#define YEHAT_CONVERSATION_PHRASES "comm.yehat.dialogue"

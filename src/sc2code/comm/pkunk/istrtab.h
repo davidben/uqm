@@ -2,5 +2,5 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PKUNK_CONVERSATION_PHRASES "comm.pkunk.dialogue"
 #define PKUNK_COLOR_MAP "comm.pkunk.colortable"
+#define PKUNK_CONVERSATION_PHRASES "comm.pkunk.dialogue"
