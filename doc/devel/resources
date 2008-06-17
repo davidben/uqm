@@ -125,6 +125,9 @@ compile. Such resources will not be reflected in the RMP files, but
 will have their headers defined appropriately so that addon packs may
 provide values.
 
+Major reorganization of files may be done with the transform.py file;
+its usage string describes its script format.
+
 			    LEGACY SYSTEM
 			    -------------
 
