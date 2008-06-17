@@ -54,7 +54,7 @@
 #define GRY_GAS_XLAT_TAB "planet.greygas.translatetable"
 #define HALIDE_COLOR_TAB "planet.halide.colortable"
 #define HALIDE_XLAT_TAB "planet.halide.translatetable"
-#define HANGAR_COLOR_TAB "colortable.dockpani"
+#define HANGAR_COLOR_TAB "colortable.hangar"
 #define HYDROCARBON_COLOR_TAB "planet.hydrocarbon.colortable"
 #define HYDROCARBON_XLAT_TAB "planet.hydrocarbon.translatetable"
 #define HYPER_COLOR_TAB "colortable.hyperpal"
