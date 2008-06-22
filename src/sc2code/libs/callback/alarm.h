@@ -31,7 +31,7 @@ alarmTimeToMsUint32(AlarmTime time) {
 
 typedef struct Alarm Alarm;
 typedef void *AlarmCallbackArg;
-typedef void (*AlarmCallback)(AlarmCallbackArg *arg);
+typedef void (*AlarmCallback)(AlarmCallbackArg arg);
 
 struct Alarm {
 	size_t index;
