@@ -1296,8 +1296,8 @@ static int flash_changed;
 Mutex flash_mutex = 0;
 // XXX: these are currently defined in libs/graphics/sdl/3do_getbody.c
 //  they should be sorted out and cleaned up at some point
-extern void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
-		RECT *rdst, int num, int denom);
+extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
+		FRAME dstFrame, const RECT *rdst, int num, int denom);
 
 static int
 flash_rect_func (void *data)

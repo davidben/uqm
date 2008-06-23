@@ -34,7 +34,7 @@
 
 
 extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
-		FRAME dstFrame, RECT *rdst, int num, int denom);
+		FRAME dstFrame, const RECT *rdst, int num, int denom);
 
 static FlashContext *Flash_create (CONTEXT gfxContext, FRAME parent);
 static void Flash_fixState (FlashContext *context);

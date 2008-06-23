@@ -37,8 +37,8 @@ extern DWORD frame_mapRGBA (FRAME FramePtr, UBYTE r, UBYTE g,
 		UBYTE b, UBYTE a);
 extern void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
 		int x, int y);
-extern void arith_frame_blit (FRAME srcFrame, RECT *rsrc, FRAME dstFrame,
-		RECT *rdst, int num, int denom);
+extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
+		FRAME dstFrame, const RECT *rdst, int num, int denom);
 
 
 // RotatePlanet
