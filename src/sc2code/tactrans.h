@@ -19,9 +19,11 @@
 #ifndef _TACTRANS_H
 #define _TACTRANS_H
 
-bool battleEndReadyHuman (COUNT side);
-bool battleEndReadyComputer (COUNT side);
-bool battleEndReadyNetwork (COUNT side);
+bool battleEndReadyHuman (HumanInputContext *context);
+bool battleEndReadyComputer (ComputerInputContext *context);
+#ifdef NETPLAY
+bool battleEndReadyNetwork (NetworkInputContext *context);
+#endif
 
 #endif  /* _TACTRANS_H */
 
