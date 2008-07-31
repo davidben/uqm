@@ -1011,7 +1011,7 @@ When the last Ur-Quan was free of psychic compulsion -- when the last free Dnyar
 the combined might of the Ur-Quan star fleets met in orbit above the Dnyarri homeworld.
 They had come together to make two important decisions.
 First -- how to punish the few frightened Dnyarri left below on the planet's surface.
-Second -- how to insure that never again would the Ur-Quan be made slaves.
+Second -- how to ensure that never again would the Ur-Quan be made slaves.
 The first decision was made swiftly. The Dnyarri would not be allowed to die;
 ah, that was too kind a fate.
 Instead, the creatures would be genetically modified into sub-sentience
@@ -1202,7 +1202,7 @@ The job is complete. Your landers are ready.
 You are preparing for a mighty battle, eh?
 Well, let me give you some advice.
 You should consider using multiple Tracking modules, since this will greatly improve your aim
-however, never add more than three to ship. Any more would be useless.
+however, never add more than three to your ship. Any more would be useless.
 
 #(OK_BUY_NEW_TECH_10)	melno153.ogg
 A little superconductive spray-paint and Presto!
