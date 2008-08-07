@@ -94,6 +94,7 @@ debugKeyPressed (void)
 //	Scale_PerfTest ();
 
 	// Informational:
+//	dumpStrings (stdout);
 //	dumpEvents (stderr);
 //	dumpPlanetTypes(stderr);
 //	debugHook = dumpUniverseToFile;
@@ -1362,6 +1363,80 @@ resetEnergyBattle(void) {
 	SetContext (OldContext);
 }
 
+////////////////////////////////////////////////////////////////////////////
+
+// This function should help in making sure that gamestr.h matches
+// gamestrings.txt.
+void
+dumpStrings(FILE *out) {
+#define STRINGIZE(a) #a
+#define MAKE_STRING_CATEGORY(prefix) \
+		{ \
+			/* .name  = */ STRINGIZE(prefix ## _BASE), \
+			/* .base  = */ prefix ## _BASE, \
+			/* .count = */ prefix ## _COUNT \
+		}
+	struct {
+		const char *name;
+		size_t base;
+		size_t count;
+	} categories[] = {
+		{ "0", 0, 0 },
+		MAKE_STRING_CATEGORY(STAR_STRING),
+		MAKE_STRING_CATEGORY(DEVICE_STRING),
+		MAKE_STRING_CATEGORY(CARGO_STRING),
+		MAKE_STRING_CATEGORY(ELEMENTS_STRING),
+		MAKE_STRING_CATEGORY(SCAN_STRING),
+		MAKE_STRING_CATEGORY(STAR_NUMBER),
+		MAKE_STRING_CATEGORY(PLANET_NUMBER),
+		MAKE_STRING_CATEGORY(MONTHS_STRING),
+		MAKE_STRING_CATEGORY(FEEDBACK_STRING),
+		MAKE_STRING_CATEGORY(STARBASE_STRING),
+		MAKE_STRING_CATEGORY(ENCOUNTER_STRING),
+		MAKE_STRING_CATEGORY(NAVIGATION_STRING),
+		MAKE_STRING_CATEGORY(NAMING_STRING),
+		MAKE_STRING_CATEGORY(MELEE_STRING),
+		MAKE_STRING_CATEGORY(SAVEGAME_STRING),
+		MAKE_STRING_CATEGORY(OPTION_STRING),
+		MAKE_STRING_CATEGORY(QUITMENU_STRING),
+		MAKE_STRING_CATEGORY(STATUS_STRING),
+		MAKE_STRING_CATEGORY(FLAGSHIP_STRING),
+		MAKE_STRING_CATEGORY(ORBITSCAN_STRING),
+		MAKE_STRING_CATEGORY(MAINMENU_STRING),
+		MAKE_STRING_CATEGORY(NETMELEE_STRING),
+		MAKE_STRING_CATEGORY(RECORDING_STRING),
+		{ "GAMESTR_COUNT", GAMESTR_COUNT, (size_t) -1 }
+	};
+	size_t numCategories = sizeof categories / sizeof categories[0];
+	size_t numStrings = GetStringTableCount (GameStrings);
+	size_t stringI;
+	size_t categoryI = 0;
+
+	// Start with a sanity check to see if gamestr.h has been changed but
+	// not this file.
+	for (categoryI = 0; categoryI < numCategories - 1; categoryI++) {
+		if (categories[categoryI].base + categories[categoryI].count !=
+				categories[categoryI + 1].base) {
+			fprintf(stderr, "Error: String category list in dumpStrings() is "
+					"not up to date.\n");
+			return;
+		}
+	}
+	
+	if (GAMESTR_COUNT != numStrings) {
+		fprintf(stderr, "Warning: GAMESTR_COUNT is %d, but GameStrings "
+				"contains %d strings.\n", GAMESTR_COUNT, numStrings);
+	}
+
+	categoryI = 0;
+	for (stringI = 0; stringI < numStrings; stringI++) {
+		while (categoryI < numCategories &&
+				stringI >= categories[categoryI + 1].base)
+			categoryI++;
+		fprintf(out, "[ %s + %d ]  %s\n", categories[categoryI].name,
+				stringI - categories[categoryI].base, GAME_STRING(stringI));
+	}
+}
 
 #endif  /* DEBUG */
 

@@ -158,6 +158,11 @@ void resetEnergyBattle(void);
 // Move instantly across hyperspace/quasispace.
 extern BOOLEAN instantMove;
 
+
+// Dump all game strings.
+void dumpStrings(FILE *out);
+
+
 // To add some day:
 // - a function to fast forward the game clock to a specifiable time.
 
