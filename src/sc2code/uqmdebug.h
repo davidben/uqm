@@ -49,6 +49,8 @@ const char *eventName (BYTE func_index);
 
 // Give the flagship a decent equipment for debugging.
 void equipShip (void);
+// Give the player all devices.
+void giveDevices (void);
 
 // Remove all escort ships.
 void clearEscorts (void);

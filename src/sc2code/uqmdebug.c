@@ -64,6 +64,7 @@ debugKeyPressed (void)
 {
 	// State modifying:
 	equipShip ();
+	giveDevices ();
 
 	// Give the player the ships you can't ally with under normal
 	// conditions.
@@ -344,6 +345,39 @@ equipShip (void)
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
 		UnlockMutex (GraphicsLock);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+void
+giveDevices (void) {
+	SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);
+	SET_GAME_STATE (ARTIFACT_2_ON_SHIP, 1);
+	SET_GAME_STATE (ARTIFACT_3_ON_SHIP, 1);
+	SET_GAME_STATE (SUN_DEVICE_ON_SHIP, 1);
+	SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 1);
+	SET_GAME_STATE (ULTRON_CONDITION, 1);
+	//SET_GAME_STATE (ULTRON_CONDITION, 2);
+	//SET_GAME_STATE (ULTRON_CONDITION, 3);
+	//SET_GAME_STATE (ULTRON_CONDITION, 4);
+	SET_GAME_STATE (MAIDENS_ON_SHIP, 1);
+	SET_GAME_STATE (TALKING_PET_ON_SHIP, 1);
+	SET_GAME_STATE (AQUA_HELIX_ON_SHIP, 1);
+	SET_GAME_STATE (CLEAR_SPINDLE_ON_SHIP, 1);
+	SET_GAME_STATE (UMGAH_BROADCASTERS_ON_SHIP, 1);
+	SET_GAME_STATE (TAALO_PROTECTOR_ON_SHIP, 1);
+	SET_GAME_STATE (EGG_CASE0_ON_SHIP, 1);
+	SET_GAME_STATE (EGG_CASE1_ON_SHIP, 1);
+	SET_GAME_STATE (EGG_CASE2_ON_SHIP, 1);
+	SET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP, 1);
+	SET_GAME_STATE (VUX_BEAST_ON_SHIP, 1);
+	SET_GAME_STATE (PORTAL_SPAWNER_ON_SHIP, 1);
+	SET_GAME_STATE (PORTAL_KEY_ON_SHIP, 1);
+	SET_GAME_STATE (BURV_BROADCASTERS_ON_SHIP, 1);
+	SET_GAME_STATE (MOONBASE_ON_SHIP, 1);
+	
+	// Not strictly a device (although it originally was one).
+	SET_GAME_STATE (DESTRUCT_CODE_ON_SHIP, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////
