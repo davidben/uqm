@@ -161,7 +161,7 @@ crc_processDispQueue(crc_State *state) {
 #endif
 		LockElement(element, &elementPtr);
 
-		crc_processELEMENT(state, element);
+		crc_processELEMENT(state, elementPtr);
 
 		nextElement = GetSuccElement(elementPtr);
 		UnlockElement(element);
