@@ -344,10 +344,23 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 	if (!info->ext)
 	{
 		log_add (log_Warning, "SoundDecoder_Load(): Unsupported file type (%s)",
-				filename);
-		return NULL;
+			filename);			
+
+		if (runTime)
+		{
+			runTime = abs (runTime);
+			startTime = 0;
+			funcs = &nula_DecoderVtbl;
+		}
+		else
+		{		
+			return NULL;
+		}
 	}
-	funcs = info->funcs;
+	else
+	{
+		funcs = info->funcs;
+	}
 
 	if (!fileExists2 (dir, filename))
 	{
@@ -365,7 +378,7 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 		}
 	}
 
-	struct_size = info->funcs->GetStructSize ();
+	struct_size = funcs->GetStructSize ();
 	if (struct_size < SD_MIN_SIZE)
 		struct_size = SD_MIN_SIZE;
 
