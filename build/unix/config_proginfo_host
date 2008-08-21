@@ -222,6 +222,27 @@ LIB_zlib_DETECT="try_pkgconfig_lib zlib zlib"
 LIB_zlib_DEPEND_DETECT_BIN="pkgconfig"
 
 
+### pthread ###
+LIB_pthread_NAME="pthread"
+case "$HOST_SYSTEM" in
+	Linux)
+		LIB_pthread_CFLAGS=""
+		LIB_pthread_LDFLAGS=""
+		LIB_pthread_VERSION=""
+		;;
+	FreeBSD|OpenBSD)
+		LIB_pthread_CFLAGS="$(pthread-config --cflags)"
+		LIB_pthread_LDFLAGS="$(pthread-config --ldflags)"
+		LIB_pthread_VERSION="$(pthread-config --version)"
+		;;
+	*)
+		LIB_pthread_CFLAGS=""
+		LIB_pthread_LDFLAGS="-lpthread"
+		LIB_pthread_VERSION=""
+		;;
+esac
+
+
 # Additional platform-specific libraries for networking.
 LIB_netlibs_NAME="Platform-specific network libraries"
 case "$HOST_SYSTEM" in

@@ -20,8 +20,6 @@
 #ifndef _THREADLIB_H
 #define _THREADLIB_H
 
-#define THREADLIB SDL
-
 #define NAMED_SYNCHRO           /* Should synchronizable objects have names? */
 #define TRACK_CONTENTION       /* Should we report when a thread sleeps on synchronize? */
 

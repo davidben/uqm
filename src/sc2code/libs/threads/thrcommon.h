@@ -18,9 +18,11 @@
 #define _THRCOMMON_H
 
 
-#if THREADLIB == SDL
-#include "sdl/sdlthreads.h"
-#endif  /* THREADLIB == SDL */
+#if defined(THREADLIB_SDL)
+#	include "sdl/sdlthreads.h"
+#elif defined(THREADLIB_PTHREAD)
+#	include "pthread/posixthreads.h"
+#endif  /* defined(THREADLIB_PTHREAD) */
 
 
 #endif  /* _THR_COMMON_H */
