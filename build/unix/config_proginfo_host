@@ -243,7 +243,7 @@ SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
 
 SYMBOL_setenv_EXTRA="#include <stdlib.h>"
 
-SYMBOL_strcasecmp_EXTRA="#include <string.h>"
+SYMBOL_strcasecmp_EXTRA="#include <strings.h>"
 SYMBOL_strcasecmp_DEFNAME="HAVE_STRCASECMP_UQM"
 		# HAVE_STRCASECMP would conflict with SDL (SDL_config.h).
 
