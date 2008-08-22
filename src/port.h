@@ -503,5 +503,19 @@ typedef unsigned int wint_t;
 #	define UNBUFFERED_LOGFILE
 #endif
 
+#if defined(WIN32) || defined(__SYMBIAN32__)
+	// HAVE_DRIVE_LETTERS is defined to signify that DOS/Windows style drive
+	// letters are to be recognised on this platform.
+#	define HAVE_DRIVE_LETTERS
+	// HAVE_UNC_PATHS is defined to signify that Universal Naming Convention
+	// style paths are to be recognised on this platform.
+#	define HAVE_UNC_PATHS
+	// BACKSLASH_IS_PATH_SEPARATOR is defined to signify that the backslash
+	// character is to be recognised as a path separator on this platform.
+	// This does not affect the acceptance of forward slashes as path
+	// separators.
+#	define BACKSLASH_IS_PATH_SEPARATOR
+#endif
+
 #endif  /* _PORT_H */
 

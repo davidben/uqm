@@ -72,16 +72,16 @@ int copyFile (uio_DirHandle *srcDir, const char *srcName,
 		uio_DirHandle *dstDir, const char *newName);
 bool fileExists (const char *name);
 bool fileExists2(uio_DirHandle *dir, const char *fileName);
-#ifdef WIN32
+#ifdef HAVE_UNC_PATHS
 size_t skipUNCServerShare(const char *inPath);
-#endif
+#endif  /* HAVE_UNC_PATHS */
 
-#ifdef WIN32
+#ifdef HAVE_DRIVE_LETTERS
 static inline int isDriveLetter(int c)
 {
 	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
-#endif
+#endif  /* HAVE_DRIVE_LETTERS */
 
 #endif  /* _FILE_H */
 

@@ -29,11 +29,16 @@
 #include "misc.h"
 #include "libs/log.h"
 
+#ifdef HAVE_DRIVE_LETTERS
+#	include <ctype.h>
+			// For tolower()
+#endif  /* HAVE_DRIVE_LETTERS */
 #ifdef WIN32
 #	include <direct.h>
-#	include <ctype.h>
+			// For _getdcwd()
 #else
 #	include <pwd.h>
+			// For getpwuid()
 #endif
 
 /* Try to find a suitable value for %APPDATA% if it isn't defined on
@@ -72,7 +77,7 @@ mkdirhier (const char *path)
 	ptr = buf;
 	pathstart = path;
 
-#ifdef WIN32
+#ifdef HAVE_DRIVE_LETTERS
 	if (isDriveLetter(pathstart[0]) && pathstart[1] == ':')
 	{
 		// Driveletter + semicolon on Windows.
@@ -87,8 +92,13 @@ mkdirhier (const char *path)
 			log_add (log_Error, "Can't stat \"%s\": %s", buf, strerror (errno));
 			goto err;
 		}
-	} else if (pathstart[0] == '\\' && pathstart[1] == '\\') {
-		// Windows UNC path. (\\server\share\...)
+	}
+	else
+#endif  /* HAVE_DRIVE_LETTERS */
+#ifdef HAVE_UNC_PATHS
+	if (pathstart[0] == '\\' && pathstart[1] == '\\')
+	{
+		// Universal Naming Convention path. (\\server\share\...)
 		// Copy the server part as is; don't try to create directories for
 		// it, or stat it. Don't create a dir for the share either.
 		*(ptr++) = *(pathstart++);
@@ -119,7 +129,12 @@ mkdirhier (const char *path)
 			goto err;
 		}
 	}
-#endif
+#else
+	{
+		// Making sure that there is an 'else' case if HAVE_DRIVE_LETTERS is
+		// defined.
+	}
+#endif  /* HAVE_UNC_PATHS */
 
 	if (*pathstart == '/')
 		*(ptr++) = *(pathstart++);
@@ -487,9 +502,9 @@ expandPath (char *dest, size_t len, const char *src, int what)
 	{
 		/* Replacing backslashes in path by slashes. */
 		destptr = dest;
-#ifdef WIN32
+#ifdef HAVE_UNC_PATHS
 		{
-			// A Windows UNC path should always start with two backslashes
+			// A UNC path should always start with two backslashes
 			// and have a backslash in between the server and share part.
 			size_t skip = skipUNCServerShare (destptr);
 			if (skip != 0)
@@ -500,7 +515,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 				destptr += skip;
 			}
 		}
-#endif
+#endif  /* HAVE_UNC_PATHS */
 		while (*destptr != '\0')
 		{
 			if (*destptr == '\\')
@@ -521,17 +536,24 @@ expandPath (char *dest, size_t len, const char *src, int what)
 		char *endPart;
 
 		pathStart = dest;
-#ifdef WIN32
+#ifdef HAVE_DRIVE_LETTERS
 		if (isDriveLetter(pathStart[0]) && (pathStart[1] == ':'))
 		{
 			pathStart += 2;
 		}
 		else
+#endif  /* HAVE_DRIVE_LETTERS */
+#ifdef HAVE_UNC_PATHS
 		{
-			// Test for a UNC path.
+			// Test for a Universal Naming Convention path.
 			pathStart += skipUNCServerShare(pathStart);
 		}
-#endif
+#else
+		{
+			// Making sure that there is an 'else' case if HAVE_DRIVE_LETTERS is
+			// defined.
+		}
+#endif  /* HAVE_UNC_PATHS */
 		if (pathStart[0] == '/')
 			pathStart++;
 
@@ -619,7 +641,7 @@ err:
 	return -1;
 }
 
-#ifdef WIN32
+#ifdef HAVE_DRIVE_LETTERS
 // letter is 0 based: 0 = A, 1 = B, ...
 bool
 driveLetterExists(int letter)
@@ -630,7 +652,7 @@ driveLetterExists(int letter)
 
 	return ((drives >> letter) & 1) != 0;
 }
-#endif
+#endif  /* HAVE_DRIVE_LETTERS */
 
 // helper for expandPath, expanding an absolute path
 // returns a pointer to the end of the filled in part of dest.
@@ -648,7 +670,7 @@ expandPathAbsolute (char *dest, size_t destLen, const char *src,
 	}
 
 	orgSrc = src;
-#ifdef WIN32
+#ifdef HAVE_DRIVE_LETTERS
 	if (isDriveLetter(src[0]) && (src[1] == ':'))
 	{
 		int letter;
@@ -686,7 +708,7 @@ expandPathAbsolute (char *dest, size_t destLen, const char *src,
 		src += 2;
 	}
 	else
-#endif
+#endif  /* HAVE_DRIVE_LETTERS */
 	{
 		// Relative dir
 		if (getcwd (dest, destLen) == NULL)
@@ -709,9 +731,9 @@ expandPathAbsolute (char *dest, size_t destLen, const char *src,
 		destLen -= tempLen;
 	}
 	if (dest[-1] != '/'
-#ifdef WIN32
+#ifdef BACKSLASH_IS_PATH_SEPARATOR
 			&& dest[-1] != '\\'
-#endif
+#endif  /* BACKSLASH_IS_PATH_SEPARATOR */
 			)
 	{
 		// Need to add a slash.
@@ -738,7 +760,7 @@ strrchr2(const char *start, int c, const char *end) {
 	}
 }
 
-#ifdef WIN32
+#ifdef HAVE_UNC_PATHS
 // returns 0 if the path is not a valid UNC path.
 // Does not skip trailing slashes.
 size_t
@@ -766,6 +788,6 @@ skipUNCServerShare(const char *inPath) {
 	
 	return (size_t) (path - inPath);
 }
-#endif
+#endif  /* HAVE_UNC_PATHS */
 
 
