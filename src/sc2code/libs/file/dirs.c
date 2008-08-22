@@ -67,7 +67,7 @@ mkdirhier (const char *path)
 	struct stat statbuf;
 	
 	len = strlen (path);
-	buf = alloca (len + 2);  // one extra for possibly added '/'
+	buf = HMalloc (len + 2);  // one extra for possibly added '/'
 
 	ptr = buf;
 	pathstart = path;
@@ -85,7 +85,7 @@ mkdirhier (const char *path)
 		if (stat (buf, &statbuf) == -1)
 		{
 			log_add (log_Error, "Can't stat \"%s\": %s", buf, strerror (errno));
-			return -1;
+			goto err;
 		}
 	} else if (pathstart[0] == '\\' && pathstart[1] == '\\') {
 		// Windows UNC path. (\\server\share\...)
@@ -101,7 +101,7 @@ mkdirhier (const char *path)
 		if (*pathstart == '\0')
 		{
 			log_add (log_Error, "Incomplete UNC path \"%s\"", pathstart);
-			return -1;
+			goto err;
 		}
 
 		// Copy the path seperator.
@@ -116,7 +116,7 @@ mkdirhier (const char *path)
 		if (stat (buf, &statbuf) == -1)
 		{
 			log_add (log_Error, "Can't stat \"%s\": %s", buf, strerror (errno));
-			return -1;
+			goto err;
 		}
 	}
 #endif
@@ -145,7 +145,7 @@ mkdirhier (const char *path)
 			{
 				log_add (log_Error, "Can't stat \"%s\": %s", buf,
 						strerror (errno));
-				return -1;
+				goto err;
 			}
 			break;
 		}
@@ -171,7 +171,7 @@ mkdirhier (const char *path)
 		{
 			log_add (log_Error, "Error: Can't create %s: %s", buf,
 					strerror (errno));
-			return -1;
+			goto err;
 		}
 
 		if (*pathend == '\0')
@@ -196,6 +196,14 @@ mkdirhier (const char *path)
 		*ptr = '\0';
 	}
 	return 0;
+
+err:
+	{
+		int savedErrno = errno;
+		HFree (buf);
+		errno = savedErrno;
+	}
+	return -1;
 }
 
 // Get the user's home dir
@@ -243,14 +251,15 @@ int
 expandPath (char *dest, size_t len, const char *src, int what)
 {
 	char *destptr, *destend;
-	char *buf, *bufptr, *bufend;
+	char *buf = NULL;
+	char *bufptr, *bufend;
 	const char *srcend;
 
 #define CHECKLEN(bufname, n) \
 		if (bufname##ptr + (n) >= bufname##end) \
 		{ \
 			errno = ENAMETOOLONG; \
-			return -1; \
+			goto err; \
 		} \
 		else \
 			(void) 0
@@ -260,7 +269,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 
 	if (what & EP_ENVVARS)
 	{
-		buf = alloca (len);
+		buf = HMalloc (len);
 		bufptr = buf;
 		bufend = buf + len;
 		while (*src != '\0')
@@ -281,7 +290,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 					if (end == NULL)
 					{
 						errno = EINVAL;
-						return -1;
+						goto err;
 					}
 					
 					envNameLen = end - src;
@@ -366,7 +375,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 						if (end == NULL)
 						{
 							errno = EINVAL;
-							return -1;
+							goto err;
 						}
 						envNameLen = end - src;
 						end++;  // Skip the '}'
@@ -423,14 +432,14 @@ expandPath (char *dest, size_t len, const char *src, int what)
 			if (src[1] != '/')
 			{
 				errno = EINVAL;
-				return -1;
+				goto err;
 			}
 
 			home = getHomeDir ();
 			if (home == NULL)
 			{
 				errno = ENOENT;
-				return -1;
+				goto err;
 			}
 			homelen = strlen (home);
 		
@@ -441,7 +450,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 				if (destptr == NULL)
 				{
 					// errno is set
-					return -1;
+					goto err;
 				}
 				home += skip;
 				what &= ~EP_ABSOLUTE;
@@ -464,7 +473,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 		if (destptr == NULL)
 		{
 			// errno is set
-			return -1;
+			goto err;
 		}
 		src += skip;
 	}
@@ -551,7 +560,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 					{
 						// We ran out of path components to back out of.
 						errno = EINVAL;
-						return -1;
+						goto err;
 					}
 					destptr = pathStart;
 				}
@@ -600,6 +609,14 @@ expandPath (char *dest, size_t len, const char *src, int what)
 	}
 	
 	return 0;
+
+err:
+	if (buf != NULL) {
+		int savedErrno = errno;
+		HFree (buf);
+		errno = savedErrno;
+	}
+	return -1;
 }
 
 #ifdef WIN32
