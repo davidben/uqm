@@ -61,22 +61,22 @@ size_t uio_skipUNCServerShare(const char *inPath);
 size_t uio_getUNCServerShare(const char *inPath, char **outPath,
 		size_t *outLen);
 
-#ifdef WIN32
+#ifdef HAVE_DRIVE_LETTERS
 static inline int
 isDriveLetter(int c)
 {
 	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
-#endif
+#endif  /* HAVE_DRIVE_LETTERS */
 
 static inline int
 isPathDelimiter(int c)
 {
-#ifdef WIN32
+#ifdef BACKSLASH_IS_PATH_SEPARATOR
 	return c == '/' || c == '\\';
 #else
 	return c == '/';
-#endif
+#endif  /* BACKSLASH_IS_PATH_SEPARATOR */
 }
 
 int decomposePath(const char *path, uio_PathComp **pathComp,

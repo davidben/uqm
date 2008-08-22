@@ -340,20 +340,24 @@ stdio_getPDirEntryHandle(const uio_PDirHandle *pDirHandle, const char *name) {
 	const char *pathUpTo;
 	char *path;
 	struct stat statBuf;
-#ifdef WIN32
+#ifdef HAVE_DRIVE_LETTERS
 	char driveName[3];
-#endif
+#endif  /* HAVE_DRIVE_LETTERS */
 
-#ifdef WIN32
+#if defined(HAVE_DRIVE_LETTERS) || defined(HAVE_UNC_PATHS)
 	if (pDirHandle->extra->extra->upDir == NULL) {
 		// Top dir. Contains only drive letters and UNC \\server\share
 		// parts.
+#ifdef HAVE_DRIVE_LETTERS
 		if (isDriveLetter(name[0]) && name[1] == ':' && name[2] == '\0') {
 			driveName[0] = tolower(name[0]);
 			driveName[1] = ':';
 			driveName[2] = '\0';
 			name = driveName;
-		} else {
+		} else
+#endif  /* HAVE_DRIVE_LETTERS */
+#ifdef HAVE_UNC_PATHS
+		{
 			size_t uncLen;
 
 			uncLen = uio_skipUNCServerShare(name);
@@ -363,14 +367,20 @@ stdio_getPDirEntryHandle(const uio_PDirHandle *pDirHandle, const char *name) {
 				return NULL;
 			}
 		}
+#else /* !defined(HAVE_UNC_PATHS) */
+		{
+			// Make sure that there is an 'else' case if HAVE_DRIVE_LETTERS
+			// is defined.
+		}
+#endif  /* HAVE_UNC_PATHS */
 	}
-#endif
+#endif  /* defined(HAVE_DRIVE_LETTERS) || defined(HAVE_UNC_PATHS) */
 	
 	result = uio_GPDir_getPDirEntryHandle(pDirHandle, name);
 	if (result != NULL)
 		return result;
 
-#ifdef WIN32
+#if defined(HAVE_DRIVE_LETTERS) || defined(HAVE_UNC_PATHS)
 	if (pDirHandle->extra->extra->upDir == NULL) {
 		// Need to create a 'directory' for the drive letter or UNC
 		// "\\server\share" part.
@@ -383,7 +393,7 @@ stdio_getPDirEntryHandle(const uio_PDirHandle *pDirHandle, const char *name) {
 		return (uio_PDirEntryHandle *) uio_PDirHandle_new(
 				pDirHandle->pRoot, gPDir);
 	}
-#endif
+#endif  /* defined(HAVE_DRIVE_LETTERS) || defined(HAVE_UNC_PATHS) */
 	
 	pathUpTo = stdio_getPath(pDirHandle->extra);
 	if (pathUpTo == NULL) {
@@ -434,12 +444,12 @@ stdio_mount(uio_Handle *handle, int flags) {
 	assert (handle == NULL);
 	extra = stdio_GPDirData_new(
 			uio_strdup("") /* name */,
-#ifdef WIN32
-			// In MS Windows, full paths start with a drive letter.
+#if defined(HAVE_DRIVE_LETTERS) || defined(HAVE_UNC_PATHS)
+			// Full paths start with a drive letter or \\server\share
 			uio_strdup("") /* cached path */,
 #else
 			uio_strdup("/") /* cached path */,
-#endif
+#endif  /* HAVE_DRIVE_LETTERS */
 			NULL /* parent dir */);
 
 	result = uio_GPRoot_makePRoot(
@@ -711,15 +721,15 @@ stdio_getPath(uio_GPDir *gPDir) {
 		size_t upPathLen, nameLen;
 	
 		if (gPDir->extra->upDir == NULL) {
-#ifdef WIN32
-			// Drive letter still needs to follow.
+#if defined(HAVE_DRIVE_LETTERS) || defined(HAVE_UNC_PATHS)
+			// Drive letter or UNC \\server\share still needs to follow.
 			gPDir->extra->cachedPath = uio_malloc(1);
 			gPDir->extra->cachedPath[0] = '\0';
 #else
 			gPDir->extra->cachedPath = uio_malloc(2);
 			gPDir->extra->cachedPath[0] = '/';
 			gPDir->extra->cachedPath[1] = '\0';
-#endif
+#endif  /* defined(HAVE_DRIVE_LETTERS) || defined(HAVE_UNC_PATHS) */
 			return gPDir->extra->cachedPath;
 		}
 		
@@ -729,21 +739,22 @@ stdio_getPath(uio_GPDir *gPDir) {
 			return NULL;
 		}
 			
-#ifdef WIN32
+#if defined(HAVE_DRIVE_LETTERS) || defined(HAVE_UNC_PATHS)
 		if (upPath[0] == '\0') {
 			// The up dir is the root dir. Directly below the root dir are
-			// only dirs for drive letters. No '/' needs to be attached.
+			// only dirs for drive letters and UNC \\share\server parts.
+			// No '/' needs to be attached.
 			gPDir->extra->cachedPath = uio_strdup(gPDir->extra->name);
 			return gPDir->extra->cachedPath;
 		}
-#endif
+#endif  /* defined(HAVE_DRIVE_LETTERS) || defined(HAVE_UNC_PATHS) */
 		upPathLen = strlen(upPath);
-#ifndef WIN32
+#if !defined(HAVE_DRIVE_LETTERS) && !defined(HAVE_UNC_PATHS)
 		if (upPath[upPathLen - 1] == '/') {
 			// should only happen for "/"
 			upPathLen--;
 		}
-#endif
+#endif  /* !defined(HAVE_DRIVE_LETTERS) && !defined(HAVE_UNC_PATHS) */
 		nameLen = strlen(gPDir->extra->name);
 		if (upPathLen + nameLen + 1 >= PATH_MAX) {
 			errno = ENAMETOOLONG;

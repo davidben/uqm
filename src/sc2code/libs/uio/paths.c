@@ -367,9 +367,9 @@ decomposePath(const char *path, uio_PathComp **pathComp,
 	uio_PathComp **endResult = &result;
 	uio_bool absolute = false;
 	char *name;
-#ifdef WIN32
+#ifdef HAVE_UNC_PATHS
 	size_t nameLen;
-#endif
+#endif  /* HAVE_UNC_PATHS */
 
 	if (path[0] == '\0') {
 		errno = ENOENT;
@@ -377,7 +377,7 @@ decomposePath(const char *path, uio_PathComp **pathComp,
 	}
 
 	last = NULL;
-#ifdef WIN32
+#ifdef HAVE_UNC_PATHS
 	path += uio_getUNCServerShare(path, &name, &nameLen);
 	if (name != NULL) {
 		// UNC path
@@ -386,7 +386,10 @@ decomposePath(const char *path, uio_PathComp **pathComp,
 		endResult = &last->next;
 
 		absolute = true;
-	} else if (isDriveLetter(path[0]) && path[1] == ':') {
+	} else
+#endif  /* HAVE_UNC_PATHS */
+#ifdef HAVE_DRIVE_LETTERS
+	if (isDriveLetter(path[0]) && path[1] == ':') {
 		// DOS/Windows drive letter.
 		if (path[2] != '\0' && !isPathDelimiter(path[2])) {
 			errno = ENOENT;
@@ -398,7 +401,7 @@ decomposePath(const char *path, uio_PathComp **pathComp,
 		endResult = &last->next;
 		absolute = true;
 	} else
-#endif
+#endif  /* HAVE_DRIVE_LETTERS */
 	{
 		if (isPathDelimiter(*path)) {
 			absolute = true;
@@ -457,17 +460,20 @@ composePath(const uio_PathComp *pathComp, uio_bool absolute,
 	pathPtr = result;
 	ptr = pathComp;
 	if (absolute) {
-#ifdef WIN32
+#ifdef HAVE_UNC_PATHS
 		if (ptr->name[0] == '\\') {
 			// UNC path
 			assert(ptr->name[1] == '\\');
 			// Nothing to do.
-		} else if (ptr->nameLen == 2 && ptr->name[1] == ':'
+		} else
+#endif  /* HAVE_UNC_PATHS */
+#ifdef HAVE_DRIVE_LETTERS
+		if (ptr->nameLen == 2 && ptr->name[1] == ':'
 				&& isDriveLetter(ptr->name[0])) {
 			// Nothing to do.
 		}
 		else
-#endif
+#endif  /* HAVE_DRIVE_LETTERS */
 		{
 			*(pathPtr++) = '/';
 		}

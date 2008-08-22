@@ -32,6 +32,9 @@ Documentation:
   in the directory. "/a/../b" will always be functionally equivalent to
   "/b", even when "/a" is a symlink.
 
+Testing:
+- Test mounting an UNC directory
+
 Bugs:
 - 'openDir(repository, "dir/")' will have the trailing '/'
   in the dirHandle, which will cause problems.

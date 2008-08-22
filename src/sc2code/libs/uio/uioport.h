@@ -65,6 +65,23 @@
 #	endif
 #endif
 
+// Variations in path handling
+#if defined(WIN32) || defined(__SYMBIAN32__)
+	// HAVE_DRIVE_LETTERS is defined to signify that DOS/Windows style drive
+	// letters are to be recognised on this platform.
+#	define HAVE_DRIVE_LETTERS
+	// BACKSLASH_IS_PATH_SEPARATOR is defined to signify that the backslash
+	// character is to be recognised as a path separator on this platform.
+	// This does not affect the acceptance of forward slashes as path
+	// separators.
+#	define BACKSLASH_IS_PATH_SEPARATOR
+#endif
+#if defined(WIN32)
+	// HAVE_UNC_PATHS is defined to signify that Universal Naming Convention
+	// style paths are to be recognised on this platform.
+#	define HAVE_UNC_PATHS
+#endif
+
 // User ids
 #ifdef WIN32
 typedef short uid_t;

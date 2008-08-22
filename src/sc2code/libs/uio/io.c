@@ -238,12 +238,12 @@ uio_mountDir(uio_Repository *destRep, const char *mountPoint,
 		uio_MountInfo *mountInfo;
 		uio_MountTree *mountTree;
 		uio_PDirHandle *pRootHandle;
-#ifdef WIN32
+#ifdef BACKSLASH_IS_PATH_SEPARATOR
 		char *unixPath;
 		
 		unixPath = dosToUnixPath(inPath);
 		inPath = unixPath;
-#endif
+#endif  /* BACKSLASH_IS_PATH_SEPARATOR */
 
 		if (inPath[0] == '/')
 			inPath++;
@@ -252,9 +252,9 @@ uio_mountDir(uio_Repository *destRep, const char *mountPoint,
 				&endDirHandle, &endInPath);
 		if (*endInPath != '\0') {
 			// Path inside the filesystem to mount does not exist.
-#ifdef WIN32
+#ifdef BACKSLASH_IS_PATH_SEPARATOR
 			uio_free(unixPath);
-#endif
+#endif  /* BACKSLASH_IS_PATH_SEPARATOR */
 			uio_PDirHandle_unref(endDirHandle);
 			uio_PRoot_unrefMount(pRoot);
 			if (handle)
@@ -266,10 +266,10 @@ uio_mountDir(uio_Repository *destRep, const char *mountPoint,
 		dirName = uio_malloc(endInPath - inPath + 1);
 		memcpy(dirName, inPath, endInPath - inPath);
 		dirName[endInPath - inPath] = '\0';
-#ifdef WIN32
+#ifdef BACKSLASH_IS_PATH_SEPARATOR
 		// InPath is a copy with the paths fixed.
 		uio_free(unixPath);
-#endif
+#endif  /* BACKSLASH_IS_PATH_SEPARATOR */
 		mountInfo = uio_MountInfo_new(fsType, NULL, endDirHandle, dirName,
 				autoMount, NULL, flags);
 		uio_repositoryAddMount(destRep, mountInfo,
