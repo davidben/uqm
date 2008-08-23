@@ -34,6 +34,7 @@ typedef SWORD              SIZE;
 
 typedef unsigned char   UNICODE;
 
+
 typedef enum
 {
 	FALSE = 0,
@@ -73,6 +74,14 @@ typedef DWORD    (*PDWORDFUNC) (void);
 			// once we find someone with a 64 bits Windows machine.
 			// Leaving it alone for now.
 #	define _PACKED
+#	define _ALIGNED_ON(bytes)
+#elif defined(__ARMCC__)
+#	define _PACKED __attribute__((packed))
+#	define _ALIGNED_ANY __attribute__((aligned))
+#	define _ALIGNED_ON(bytes) __attribute__((aligned(bytes)))
+#elif defined(__WINSCW__)
+#	define _PACKED
+#	define _ALIGNED_ANY
 #	define _ALIGNED_ON(bytes)
 #endif
 
