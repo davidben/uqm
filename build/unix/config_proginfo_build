@@ -237,14 +237,14 @@ PROG_pkgconfig_VERSION='$(pkg-config --version)'
 
 
 ### mwccsym2 ###
-PROG_mwccsym2_NAME="Nokia Codewarrior C/C++ Compiler for Windows/x86"
+PROG_mwccsym2_NAME="Nokia CodeWarrior C/C++ Compiler for Windows/x86"
 PROG_mwccsym2_FILE="mwccsym2"
 PROG_mwccsym2_ACTION=""
 PROG_mwccsym2_VERSION='$(mwccsym2 -version)'
 
 
 ### mwldsym2 ###
-PROG_mwldsym2_NAME="Nokia Codewarrior Linker for Windows/x86"
+PROG_mwldsym2_NAME="Nokia CodeWarrior Linker for Windows/x86"
 PROG_mwldsym2_FILE="mwldsym2"
 PROG_mwldsym2_ACTION=""
 PROG_mwldsym2_VERSION='$(mwldsym2 -version)'
