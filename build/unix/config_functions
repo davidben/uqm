@@ -354,6 +354,10 @@ have_program() {
 	eval TEMP_PRESENT="\$PROG_${PROG}_PRESENT"
 	if [ -z "$TEMP_PRESENT" ]; then
 		eval "PROG_${PROG}_PRESENT"=1
+	fi
+
+	eval TEMP_PRESENT="\$PROG_${PROG}_PRESENT"
+	if [ "$TEMP_PRESENT" -eq 1 ]; then
 		build_message "$TEMP_NAME not found."
 		return 1
 	fi
@@ -506,6 +510,10 @@ EOF
 	eval TEMP_PRESENT="\$LIB_${LIB}_PRESENT"
 	if [ -z "$TEMP_PRESENT" ]; then
 		eval "LIB_${LIB}_PRESENT"=1
+	fi
+
+	eval TEMP_PRESENT="\$LIB_${LIB}_PRESENT"
+	if [ "$TEMP_PRESENT" -eq 1 ]; then
 		build_message "$TEMP_NAME not found."
 		return 1
 	fi
