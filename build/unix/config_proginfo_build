@@ -67,6 +67,56 @@ case "$HOST_SYSTEM" in
 		EXTRA_PLATFORM_GCC_FLAGS_LINK='-arch ppc -arch i386'
 		useGccBuildTools
 		;;
+	WINSCW)
+		EXTRA_WINSCW_FLAGS_COMPILE='-msgstyle gcc -gccinc -wchar_t off -align 4 -warnings on -w nohidevirtual,nounusedexpr -enum int -str pool -exc ms -trigraphs on -nostdinc -d _UNICODE -d __SYMBIAN32__ -d __SERIES60_30__ -d __SERIES60_3X__ -d __CW32__ -d __WINS__ -d __WINSCW__ -d __EXE__ -d __SUPPORT_CPP_EXCEPTIONS__ -I$BUILD_EPOCROOT/epoc32/include -I$BUILD_EPOCROOT/epoc32/include/stdapis -I$BUILD_EPOCROOT/epoc32/include/variant -include Symbian_OS_v9.1.hrh'
+		EXTRA_WINSCW_FLAGS_LINK='-library -msgstyle gcc -stdlib -noimplib -search'
+	
+		BUILDTOOL_PREPROC_C_COMMAND="\$PROG_mwccsym2_FILE -E $EXTRA_WINSCW_FLAGS_COMPILE"
+		BUILDTOOL_PREPROC_C_DEPEND='mwccsym2'
+	
+		BUILDTOOL_MKDEP_C_COMMAND="\$PROG_mwccsym2_FILE -MM -ext .o -gccdep $EXTRA_WINSCW_FLAGS_COMPILE"
+		BUILDTOOL_MKDEP_C_DEPEND='mwccsym2'
+	
+		BUILDTOOL_COMPILE_C_COMMAND="\$PROG_mwccsym2_FILE -c $EXTRA_WINSCW_FLAGS_COMPILE"
+		BUILDTOOL_COMPILE_C_DEPEND='mwccsym2'
+	
+		BUILDTOOL_PREPROC_OBJC_COMMAND="\$PROG_mwccsym2_FILE -E"
+		BUILDTOOL_PREPROC_OBJC_DEPEND='mwccsym2'
+	
+		BUILDTOOL_MKDEP_OBJC_COMMAND="\$PROG_mwccsym2_FILE -MM"
+		BUILDTOOL_MKDEP_OBJC_DEPEND='mwccsym2'
+	
+		BUILDTOOL_COMPILE_OBJC_COMMAND="\$PROG_mwccsym2_FILE -c"
+		BUILDTOOL_COMPILE_OBJC_DEPEND='mwccsym2'
+	
+		BUILDTOOL_LINK_COMMAND="\$PROG_mwldsym2_FILE $EXTRA_WINSCW_FLAGS_LINK"
+		BUILDTOOL_LINK_DEPEND='mwldsym2'
+		;;
+	ARMV5)
+		EXTRA_ARMV5_FLAGS_COMPILE='--gnu --apcs //inter --diag_suppress 66,161,611,654,997,1152,1300,1464,1488,6318,6331 --diag_error 1267 --arm --cpu ARM926EJ-S --fpu softvfp --exceptions --exceptions_unwind -D__MARM_INTERWORK__ --enum_is_int -Ono_known_library --fpmode ieee_no_fenv --export_all_vtbl --no_vfe --dllimport_runtime -D_UNICODE -D__SYMBIAN32__ -D__SERIES60_30__ -D__SERIES60_3X__ -D__ARMCC__ -D__EPOC32__ -D__MARM__ -D__EABI__ -D__ARMCC_2__ -D__ARMCC_2_2__ -D__MARM_ARMV5__ -D__SUPPORT_CPP_EXCEPTIONS__ -J$BUILD_EPOCROOT/epoc32/include -J$BUILD_EPOCROOT/epoc32/include/stdapis -J$BUILD_EPOCROOT/epoc32/include/variant --preinclude $BUILD_EPOCROOT/epoc32/include/RVCT2_2/RVCT2_2.h'
+		EXTRA_ARMV5_FLAGS_LINK=''
+	
+		BUILDTOOL_PREPROC_C_COMMAND="\$PROG_armcc_FILE -E $EXTRA_ARMV5_FLAGS_COMPILE"
+		BUILDTOOL_PREPROC_C_DEPEND='armcc'
+	
+		BUILDTOOL_MKDEP_C_COMMAND="\$PROG_armcc_FILE -MM --unix_depend_format $EXTRA_ARMV5_FLAGS_COMPILE"
+		BUILDTOOL_MKDEP_C_DEPEND='armcc'
+	
+		BUILDTOOL_COMPILE_C_COMMAND="\$PROG_armcc_FILE -c $EXTRA_ARMV5_FLAGS_COMPILE"
+		BUILDTOOL_COMPILE_C_DEPEND='armcc'
+	
+		BUILDTOOL_PREPROC_OBJC_COMMAND="\$PROG_armcc_FILE -E"
+		BUILDTOOL_PREPROC_OBJC_DEPEND='armcc'
+	
+		BUILDTOOL_MKDEP_OBJC_COMMAND="\$PROG_armcc_FILE -MM"
+		BUILDTOOL_MKDEP_OBJC_DEPEND='armcc'
+	
+		BUILDTOOL_COMPILE_OBJC_COMMAND="\$PROG_armcc_FILE -c"
+		BUILDTOOL_COMPILE_OBJC_DEPEND='armcc'
+	
+		BUILDTOOL_LINK_COMMAND="\$PROG_armar_FILE $EXTRA_ARMV5_FLAGS_LINK"
+		BUILDTOOL_LINK_DEPEND='armar'
+		;;
 	*)
 		useGccBuildTools
 		;;
@@ -172,7 +222,7 @@ PROG_windres_ACTION=""
 PROG_windres_VERSION='windres --version'
 
 
-### Rez resource compiler (for MacOS X) only ###
+### Rez resource compiler (for MacOS X) ###
 PROG_Rez_NAME="Rez resource compiler (Apple Developer Tools)"
 PROG_Rez_FILE="/Developer/Tools/Rez"
 PROG_Rez_ACTION=""
@@ -184,6 +234,41 @@ PROG_pkgconfig_NAME="pkg-config"
 PROG_pkgconfig_FILE="pkg-config"
 PROG_pkgconfig_ACTION=""
 PROG_pkgconfig_VERSION='$(pkg-config --version)'
+
+
+### mwccsym2 ###
+PROG_mwccsym2_NAME="Nokia Codewarrior C/C++ Compiler for Windows/x86"
+PROG_mwccsym2_FILE="mwccsym2"
+PROG_mwccsym2_ACTION=""
+PROG_mwccsym2_VERSION='$(mwccsym2 -version)'
+
+
+### mwldsym2 ###
+PROG_mwldsym2_NAME="Nokia Codewarrior Linker for Windows/x86"
+PROG_mwldsym2_FILE="mwldsym2"
+PROG_mwldsym2_ACTION=""
+PROG_mwldsym2_VERSION='$(mwldsym2 -version)'
+
+
+### armcc ###
+PROG_armcc_NAME="ARM/Thumb C/C++ Compiler"
+PROG_armcc_FILE="armcc"
+PROG_armcc_ACTION=""
+PROG_armcc_VERSION='$(armcc --vsn)'
+
+
+### armlink ###
+PROG_armlink_NAME="ARM Linker"
+PROG_armlink_FILE="armlink"
+PROG_armlink_ACTION=""
+PROG_armlink_VERSION='$(armlink --vsn)'
+
+
+### armar ###
+PROG_armar_NAME="ARM Archiver"
+PROG_armar_FILE="armar"
+PROG_armar_ACTION=""
+PROG_armar_VERSION='$(armar --vsn)'
 
 
 ##############################################################################
