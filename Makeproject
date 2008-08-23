@@ -8,6 +8,14 @@ else
 	uqm_OBJS=obj/release/  # Directory for object files
 	uqm_NAME=uqm           # File name of executable
 fi
+case "$HOST_SYSTEM" in
+	ARMV5|WINSCW)
+		uqm_NAME="$uqm_NAME.lib"
+		;;
+	MINGW32*|CYGWIN*)
+		uqm_NAME="$uqm_NAME.exe"
+		;;
+esac
 uqm_CFLAGS="$uqm_CFLAGS -Isrc -Isrc/sc2code -Isrc/sc2code/libs"
 if [ "$uqm_HAVE_REGEX" = 0 ]; then
 	uqm_CFLAGS="$uqm_CFLAGS -Isrc/regex"
