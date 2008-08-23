@@ -1,0 +1,13 @@
+# Definitions for build tools for the makefile used by the UQM build system.
+# This file defines the build commands for ARM tools.
+
+include buildtools-generic
+
+define act_mkdep_c
+	$(MKDEP_C) $(CFLAGS) -o "$(@D)/$(<F).o" "$<" --depend "$@"
+endef
+
+define act_link
+	$(LINK) --create "$@".lib $^ $(LDFLAGS)
+endef
+

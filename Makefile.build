@@ -17,29 +17,15 @@ define act
 endef
 endif
 
-define act_mkdep_c
-	$(MKDEP_C) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
-endef
-
-define act_mkdep_m
-	$(MKDEP_OBJC) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
-endef
-
-define act_windres
-	$(WINDRES) --include-dir $(dir $<) -o "$@" "$<"
-endef
-
-define act_cc
-	$(COMPILE_C) -o "$@" $(CFLAGS) "$<"
-endef
-
-define act_objcc
-	$(COMPILE_OBJC) -o "$@" $(CFLAGS) "$<"
-endef
-
-define act_link
-	$(LINK) -o "$@" $^ $(LDFLAGS)
-endef
+ifeq ($(HOST_SYSTEM),ARMV5)
+	include build/unix/make/buildtools-armv5
+else
+ifeq ($(HOST_SYSTEM),WINSCW)
+	include build/unix/make/buildtools-winscw
+else
+	include build/unix/make/buildtools-generic
+endif
+endif
 
 
 default:
