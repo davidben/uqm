@@ -407,11 +407,25 @@ stdio_getPDirEntryHandle(const uio_PDirHandle *pDirHandle, const char *name) {
 	}
 
 	if (stat(path, &statBuf) == -1) {
-		// errno is set.
-		int savedErrno = errno;
-		uio_free(path);
-		errno = savedErrno;
-		return NULL;
+#ifdef __SYMBIAN32__
+		// XXX: HACK: If we don't have access to a directory, we can still
+		// have access to the underlying entries. We don't actually know
+		// whether the entry is a directory, but I know of know way to find
+		// out. We just pretend that it is; worst case, a file which we can't
+		// access shows up as a directory which we can't access.
+		if (errno == EACCES) {
+			statBuf.st_mode = S_IFDIR;
+					// Fake a directory; the other fields of the stat
+					// structure are unused.
+		} else
+#endif
+		{
+			// errno is set.
+			int savedErrno = errno;
+			uio_free(path);
+			errno = savedErrno;
+			return NULL;
+		}
 	}
 	uio_free(path);
 
