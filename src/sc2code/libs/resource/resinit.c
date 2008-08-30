@@ -22,6 +22,9 @@
 #include "nameref.h"
 #include "types.h"
 #include "libs/log.h"
+#include "libs/gfxlib.h"
+#include "libs/sndlib.h"
+#include "coderes.h"
 #include "propfile.h"
 #include <ctype.h>
 #include <stdlib.h>
