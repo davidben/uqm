@@ -407,7 +407,10 @@ stdio_getPDirEntryHandle(const uio_PDirHandle *pDirHandle, const char *name) {
 	}
 
 	if (stat(path, &statBuf) == -1) {
+		// errno is set.
+		int savedErrno = errno;
 		uio_free(path);
+		errno = savedErrno;
 		return NULL;
 	}
 	uio_free(path);
