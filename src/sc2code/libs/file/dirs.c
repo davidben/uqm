@@ -641,7 +641,9 @@ err:
 	return -1;
 }
 
-#ifdef HAVE_DRIVE_LETTERS
+#if defined(HAVE_DRIVE_LETTERS) && defined(HAVE_CWD_PER_DRIVE)
+		// This code is only needed if we have a current working directory
+		// per drive.
 // letter is 0 based: 0 = A, 1 = B, ...
 bool
 driveLetterExists(int letter)
@@ -652,7 +654,7 @@ driveLetterExists(int letter)
 
 	return ((drives >> letter) & 1) != 0;
 }
-#endif  /* HAVE_DRIVE_LETTERS */
+#endif  /* if defined(HAVE_DRIVE_LETTERS) && defined(HAVE_CWD_PER_DRIVE) */
 
 // helper for expandPath, expanding an absolute path
 // returns a pointer to the end of the filled in part of dest.
