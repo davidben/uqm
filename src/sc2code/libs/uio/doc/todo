@@ -83,6 +83,8 @@ Extra features (not necessary for UQM):
   (the system rename() doesn't work cross-fs either, so keeping uio_rename()
   as it is makes sense, as I'm trying to stay close to the system functions,
   even though hiding file systems from the user would be nicer)
+- Add a readdir_r(). Right now, for Symbian readdir_r() is defined in
+  uioport.h, but the actual implementation is out of the uio tree.
 
 Optimisations (not necessary for UQM):
 - use mmap for fileBlocks
