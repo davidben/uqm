@@ -156,13 +156,23 @@ mkdirhier (const char *path)
 		
 		if (stat (buf, &statbuf) == -1)
 		{
-			if (errno != ENOENT)
+			if (errno == ENOENT)
+				break;
+#ifdef __SYMBIAN32__
+			// XXX: HACK: If we don't have access to a directory, we can
+			// still have access to the underlying entries. We don't
+			// actually know whether the entry is a directory, but I know of
+			// know way to find out. We just pretend that it is; if we were
+			// wrong, an error will occur when we try to do something with
+			// the directory. That /should/ not be a problem, as any such
+			// action should have its own error checking.
+			if (errno != EACCES)
+#endif			
 			{
 				log_add (log_Error, "Can't stat \"%s\": %s", buf,
 						strerror (errno));
 				goto err;
 			}
-			break;
 		}
 		
 		if (*pathend == '\0')
