@@ -30,7 +30,7 @@
 #include <time.h>
 
 
-#define PROFILE_ROTATION  1
+#undef PROFILE_ROTATION
 #define ROTATION_TIME 12
 
 // The initial size of the planet when zooming.  MUST BE ODD
