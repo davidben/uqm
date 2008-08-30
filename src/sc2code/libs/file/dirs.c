@@ -685,6 +685,13 @@ expandPathAbsolute (char *dest, size_t destLen, const char *src,
 		// Path is of the form "d:path", without a (back)slash after the
 		// semicolon.
 
+#ifdef REJECT_DRIVE_PATH_WITHOUT_SLASH
+		// We reject paths of the form "d:foo/bar".
+		errno = EINVAL;
+		return NULL;
+#elif defined(HAVE_CWD_PER_DRIVE)
+		// Paths of the form "d:foo/bar" are treated as "foo/bar" relative
+		// to the working directory of d:.
 		letter = tolower(src[0]) - 'a';
 
 		// _getdcwd() should only be called on drives that exist.
@@ -706,6 +713,19 @@ expandPathAbsolute (char *dest, size_t destLen, const char *src,
 		}
 
 		src += 2;
+#else  /* if !defined(HAVE_CWD_PER_DRIVE) */
+		// We treat paths of the form "d:foo/bar" as "d:/foo/bar".
+		if (destLen < 3) {
+			errno = ERANGE;
+			return NULL;
+		}
+		dest[0] = src[0];
+		dest[1] = ':';
+		dest[2] = '/';
+		*skipSrc = 2;
+		dest += 3;
+		return dest;
+#endif  /* HAVE_CWD_PER_DRIVE */
 	}
 	else
 #endif  /* HAVE_DRIVE_LETTERS */

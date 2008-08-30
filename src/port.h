@@ -518,7 +518,12 @@ typedef unsigned int wint_t;
 	// HAVE_UNC_PATHS is defined to signify that Universal Naming Convention
 	// style paths are to be recognised on this platform.
 #	define HAVE_UNC_PATHS
+	// HAVE_CWD_PER_DRIVE is defined to signify that every drive has its own
+	// current working directory.
+#	define HAVE_CWD_PER_DRIVE
 #endif
+// REJECT_DRIVE_PATH_WITHOUT_SLASH can also be defined, if paths of the form
+// "d:foo/bar" (without a slash after the drive letter) are to be rejected.
 
 #endif  /* _PORT_H */
 
