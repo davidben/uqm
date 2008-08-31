@@ -9,7 +9,7 @@ else
 	uqm_NAME=uqm           # File name of executable
 fi
 case "$HOST_SYSTEM" in
-	ARMV5|WINSCW)
+	ARMV5|WINSCW|GCCE)
 		uqm_NAME="uqm.lib"
 		;;
 	MINGW32*|CYGWIN*)

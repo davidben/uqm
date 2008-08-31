@@ -23,7 +23,11 @@ else
 ifeq ($(HOST_SYSTEM),WINSCW)
 	include build/unix/make/buildtools-winscw
 else
+ifeq ($(HOST_SYSTEM),GCCE)
+	include build/unix/make/buildtools-gcce
+else
 	include build/unix/make/buildtools-generic
+endif
 endif
 endif
 

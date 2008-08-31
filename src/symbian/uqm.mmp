@@ -39,5 +39,5 @@ LIBRARY libm.lib
 LIBRARY libz.lib
 LIBRARY libpthread.lib
 
-STATICLIBRARY SDL_image.lib
 STATICLIBRARY uqm.lib
+STATICLIBRARY SDL_image.lib

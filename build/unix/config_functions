@@ -1019,6 +1019,8 @@ set_host_system() {
 				HOST_SYSTEM="WINSCW" ;;
 			[Aa][Rr][Mm][Vv]5)
 				HOST_SYSTEM="ARMV5" ;;
+			[Gg][Cc][Cc][Ee])
+				HOST_SYSTEM="GCCE" ;;				
 			*)
 				build_message "Warning: host type '$BUILD_HOST' unknown. Using defaults."
 				;;

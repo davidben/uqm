@@ -117,6 +117,31 @@ case "$HOST_SYSTEM" in
 		BUILDTOOL_LINK_COMMAND="\$PROG_armar_FILE $EXTRA_ARMV5_FLAGS_LINK"
 		BUILDTOOL_LINK_DEPEND='armar'
 		;;
+	GCCE)
+		EXTRA_GCCE_FLAGS_COMPILE='-Wno-unknown-pragmas -march=armv5t -mapcs -pipe -nostdinc -msoft-float -D_UNICODE -D__GCCE__ -D__SYMBIAN32__ -D__SERIES60_30__ -D__SERIES60_3X__ -D__GCCE__ -D__EPOC32__ -D__MARM__ -D__EABI__ -D__MARM_ARMV5__ -D __REMOVE_PLATSEC_DIAGNOSTIC_STRINGS__ -D__PRODUCT_INCLUDE__=\"/epoc32/include/variant/Symbian_OS_v9.1.hrh\" -x c -include $BUILD_EPOCROOT/EPOC32/INCLUDE/GCCE/GCCE.h -I$BUILD_EPOCROOT/epoc32/include -I$BUILD_EPOCROOT/epoc32/include/stdapis -I$BUILD_EPOCROOT/epoc32/include/variant'
+		EXTRA_GCCE_FLAGS_LINK=''
+	
+		BUILDTOOL_PREPROC_C_COMMAND="\$PROG_gcce_FILE -E $EXTRA_GCCE_FLAGS_COMPILE"
+		BUILDTOOL_PREPROC_C_DEPEND='gcce'
+	
+		BUILDTOOL_MKDEP_C_COMMAND="\$PROG_gcce_FILE -MM $EXTRA_GCCE_FLAGS_COMPILE"
+		BUILDTOOL_MKDEP_C_DEPEND='gcce'
+	
+		BUILDTOOL_COMPILE_C_COMMAND="\$PROG_gcce_FILE -c $EXTRA_GCCE_FLAGS_COMPILE"
+		BUILDTOOL_COMPILE_C_DEPEND='gcce'
+	
+		BUILDTOOL_PREPROC_OBJC_COMMAND="\$PROG_gcce_FILE -E"
+		BUILDTOOL_PREPROC_OBJC_DEPEND='gcce'
+	
+		BUILDTOOL_MKDEP_OBJC_COMMAND="\$PROG_gcce_FILE -MM"
+		BUILDTOOL_MKDEP_OBJC_DEPEND='gcce'
+	
+		BUILDTOOL_COMPILE_OBJC_COMMAND="\$PROG_gcce_FILE -c"
+		BUILDTOOL_COMPILE_OBJC_DEPEND='gcce'
+	
+		BUILDTOOL_LINK_COMMAND="\$PROG_gcce_FILE $EXTRA_GCCE_FLAGS_LINK"
+		BUILDTOOL_LINK_DEPEND='gcce'
+		;;	
 	*)
 		useGccBuildTools
 		;;
@@ -269,6 +294,14 @@ PROG_armar_NAME="ARM Archiver"
 PROG_armar_FILE="armar"
 PROG_armar_ACTION=""
 PROG_armar_VERSION='$(armar --vsn)'
+
+
+### gcce ###
+PROG_gcce_NAME="GNU C Compiler (CodeSourcery ARM)"
+PROG_gcce_FILE="arm-none-symbianelf-gcc"
+PROG_gcce_ACTION=""
+PROG_gcce_VERSION='$(arm-none-symbianelf-gcc --version)'
+
 
 
 ##############################################################################
