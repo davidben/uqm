@@ -67,6 +67,16 @@ case "$HOST_SYSTEM" in
                       gcc -E -include SDL/SDL_version.h $LIB_SDL_CFLAGS - | \
                       tail -1 | tr -d ' ')
 		;;
+	WINSCW)
+		LIB_SDL_CFLAGS='-I$BUILD_EPOCROOT/epoc32/include/SDL'
+		LIB_SDL_LDFLAGS=''		
+		LIB_SDL_VERSION='1.2.13'
+		;;
+	ARMV5)
+		LIB_SDL_CFLAGS='-J$BUILD_EPOCROOT/epoc32/include/SDL'
+		LIB_SDL_LDFLAGS=''		
+		LIB_SDL_VERSION='1.2.13'
+		;;		
 	*)
 		LIB_SDL_CFLAGS='$(sdl-config --cflags)'
 		LIB_SDL_LDFLAGS='$(sdl-config --libs)'
@@ -89,6 +99,10 @@ case "$HOST_SYSTEM" in
 		LIB_SDL_image_CFLAGS=''
 		LIB_SDL_image_LDFLAGS="-framework SDL_image"
 	;;
+	ARMV5|WINSCW)
+		LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
+		LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS"
+		;;	
 	*)
 		LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
 		LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_image"
@@ -135,6 +149,9 @@ case "$HOST_SYSTEM" in
 		LIB_opengl_CFLAGS=""
 		LIB_opengl_LDFLAGS="-framework OpenGL"
 		;;
+	ARMV5|WINSCW)
+		LIB_opengl_DETECT="false"
+		;;
 	*)
 		LIB_opengl_CFLAGS=""
 		LIB_opengl_LDFLAGS="-lGL"
@@ -148,6 +165,11 @@ LIB_vorbis_NAME="libvorbis"
 LIB_vorbis_CFLAGS=""
 LIB_vorbis_LDFLAGS="-lvorbis"
 LIB_vorbis_VERSION=""
+case "$HOST_SYSTEM" in
+	ARMV5|WINSCW)
+		LIB_vorbis_DETECT="false"
+		;;
+esac
 
 
 ### Vorbisfile ###
@@ -175,8 +197,15 @@ case "$HOST_SYSTEM" in
 		;;
 esac
 LIB_vorbisfile_VERSION=""
-LIB_vorbisfile_DETECT="try_pkgconfig_lib vorbisfile vorbisfile"
-LIB_vorbisfile_DEPEND_DETECT_BIN="pkgconfig"
+case "$HOST_SYSTEM" in
+	ARMV5|WINSCW)
+		LIB_vorbisfile_DETECT="false"
+		;;
+	*)
+		LIB_vorbisfile_DETECT="try_pkgconfig_lib vorbisfile vorbisfile"
+		LIB_vorbisfile_DEPEND_DETECT_BIN="pkgconfig"
+		;;
+esac
 
 
 ### Tremor ###
@@ -190,6 +219,9 @@ case "$HOST_SYSTEM" in
 		# Assumed values - please let me know if you can verify this.
 		LIB_tremor_CFLAGS=""
 		LIB_tremor_LDFLAGS="-framework Tremor"
+		;;		
+	ARMV5|WINSCW)
+		LIB_tremor_DETECT="false"
 		;;
 	*)
 		LIB_tremor_CFLAGS=""
@@ -204,6 +236,11 @@ LIB_libmikmod_NAME="libmikmod"
 LIB_libmikmod_CFLAGS="$(libmikmod-config --cflags)"
 LIB_libmikmod_LDFLAGS="$(libmikmod-config --libs)"
 LIB_libmikmod_VERSION="$(libmikmod-config --version)"
+case "$HOST_SYSTEM" in
+	ARMV5|WINSCW)
+		LIB_libmikmod_DETECT="false"
+		;;
+esac
 
 
 ### zlib ###
@@ -213,13 +250,24 @@ case "$HOST_SYSTEM" in
 	MINGW32*|CYGWIN*|cegcc)
 		LIB_zlib_LDFLAGS="-lzdll"
 		;;
+	ARMV5|WINSCW)
+		LIB_zlib_LDFLAGS=""
+		;;
 	*)
 		LIB_zlib_LDFLAGS="-lz"
 		;;
 esac
 LIB_zlib_VERSION=""
-LIB_zlib_DETECT="try_pkgconfig_lib zlib zlib"
-LIB_zlib_DEPEND_DETECT_BIN="pkgconfig"
+case "$HOST_SYSTEM" in
+	ARMV5|WINSCW)
+		LIB_zlib_DETECT="true"
+		;;
+	*)
+		LIB_zlib_DETECT="try_pkgconfig_lib zlib zlib"
+		LIB_zlib_DEPEND_DETECT_BIN="pkgconfig"
+		;;
+esac
+
 
 
 ### pthread ###
@@ -235,6 +283,11 @@ case "$HOST_SYSTEM" in
 		LIB_pthread_LDFLAGS="$(pthread-config --ldflags)"
 		LIB_pthread_VERSION="$(pthread-config --version)"
 		;;
+	WINSCW|ARMV5)
+		LIB_pthread_CFLAGS=""
+		LIB_pthread_LDFLAGS=""
+		LIB_pthread_VERSION=""
+		;;					
 	*)
 		LIB_pthread_CFLAGS=""
 		LIB_pthread_LDFLAGS="-lpthread"
@@ -251,6 +304,9 @@ case "$HOST_SYSTEM" in
 		LIB_netlibs_LDFLAGS="-lsocket"
 		LIB_netlibs_VERSION=""
 		;;
+	ARMV5|WINSCW)
+		LIB_netlibs_DETECT="false"
+		;;
 esac
 
 
@@ -265,6 +321,7 @@ SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
 SYMBOL_setenv_EXTRA="#include <stdlib.h>"
 
 SYMBOL_strcasecmp_EXTRA="#include <strings.h>"
+
 SYMBOL_strcasecmp_DEFNAME="HAVE_STRCASECMP_UQM"
 		# HAVE_STRCASECMP would conflict with SDL (SDL_config.h).
 

@@ -1,5 +1,6 @@
 Changes towards version 0.7:
-- Pthread support - Gwl
+- Experimental support for Symbian S60 3rd edition - Mika & SvdB
+- Pthread support - Mika
 - Content Dirs completely reorganized; 3DO and PC segregation - Coredev
 - Voiceovers controlled by a synthetic '3dovoice' addon - Michael
 - CONVERSATION explicitly names text/voice/timestamps - Michael

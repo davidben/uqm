@@ -260,7 +260,11 @@ moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 	else if (flags & audio_QUALITY_LOW)
 	{
 		md_mode = DMODE_SOFT_MUSIC|DMODE_STEREO|DMODE_16BITS;
+#ifdef __SYMBIAN32__
+		md_mixfreq = 11025;
+#else
 		md_mixfreq = 22050;
+#endif		
 		md_reverb = 0;
 	}
 	else

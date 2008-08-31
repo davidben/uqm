@@ -24,6 +24,7 @@
 // Compilation related
 #ifdef _MSC_VER
 #	define inline __inline
+#elif defined(__SYMBIAN32__)
 #else
 #	define inline __inline__
 #	ifdef __MINGW32__

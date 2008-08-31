@@ -19,6 +19,8 @@
 
 #define MAX(a,b)    (((a) > (b)) ? (a) : (b))
 
+
+
 /* 
  
  32bit Zoomer with optional anti-aliasing by bilinear interpolation.
@@ -54,12 +56,22 @@ int zoomSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int smooth)
     /*
      * Allocate memory for row increments 
      */
-    if ((sax = (int *) alloca((dst->w + 1) * sizeof(Uint32))) == NULL) {
-	return (-1);
-    }
-    if ((say = (int *) alloca((dst->h + 1) * sizeof(Uint32))) == NULL) {
-	return (-1);
-    }
+
+#ifndef __SYMBIAN32__     
+    if ((sax = (int *) alloca((dst->w + 1) * sizeof(Uint32))) == NULL)
+		return (-1);
+    if ((say = (int *) alloca((dst->h + 1) * sizeof(Uint32))) == NULL)
+		return (-1);
+#else
+    if ((sax = (int *) HMalloc((dst->w + 1) * sizeof(Uint32))) == NULL)
+		return (-1);
+    if ((say = (int *) HMalloc((dst->h + 1) * sizeof(Uint32))) == NULL)
+    {
+    	HFree(sax);
+		return (-1);	
+	}
+#endif
+
 
     /*
      * Precalculate row increments 
@@ -196,6 +208,11 @@ int zoomSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int smooth)
 
     }
 
+#ifdef __SYMBIAN32__
+	HFree(sax);
+	HFree(say);	
+#endif
+
     return (0);
 }
 
@@ -223,12 +240,20 @@ int zoomSurfaceY(SDL_Surface * src, SDL_Surface * dst)
     /*
      * Allocate memory for row increments 
      */
-    if ((sax = (Uint32 *) alloca(dst->w * sizeof(Uint32))) == NULL) {
-	return (-1);
-    }
-    if ((say = (Uint32 *) alloca(dst->h * sizeof(Uint32))) == NULL) {
-	return (-1);
-    }
+#ifndef __SYMBIAN32__     
+    if ((sax = (Uint32 *) alloca(dst->w * sizeof(Uint32))) == NULL)
+		return (-1);
+    if ((say = (Uint32 *) alloca(dst->h * sizeof(Uint32))) == NULL)
+		return (-1);
+#else
+    if ((sax = (Uint32 *) HMalloc(dst->w * sizeof(Uint32))) == NULL)
+		return (-1);
+    if ((say = (Uint32 *) HMalloc(dst->h * sizeof(Uint32))) == NULL)
+    {
+    	HFree(sax);
+		return (-1);
+	}
+#endif    
 
     /*
      * Precalculate row increments 
@@ -302,6 +327,11 @@ int zoomSurfaceY(SDL_Surface * src, SDL_Surface * dst)
 	 */
 	dp += dgap;
     }
+
+#ifdef __SYMBIAN32__
+	HFree(sax);
+	HFree(say);	
+#endif
 
     return (0);
 }

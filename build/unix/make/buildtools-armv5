@@ -8,6 +8,6 @@ define act_mkdep_c
 endef
 
 define act_link
-	$(LINK) --create "$@".lib $^ $(LDFLAGS)
+	$(LINK) --create "$@" $^ $(LDFLAGS)
 endef
 

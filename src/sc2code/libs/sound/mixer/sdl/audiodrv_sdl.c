@@ -119,7 +119,7 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 		return -1;
 	}
 	log_add (log_Info, "SDL audio subsystem initialized.");
-	
+		
 	if (flags & audio_QUALITY_HIGH)
 	{
 		quality = MIX_QUALITY_HIGH;
@@ -129,8 +129,13 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 	else if (flags & audio_QUALITY_LOW)
 	{
 		quality = MIX_QUALITY_LOW;
+#ifdef __SYMBIAN32__
+		desired.freq = 11025;
+		desired.samples = 4096;
+#else
 		desired.freq = 22050;
 		desired.samples = 2048;
+#endif		
 	}
 	else
 	{
@@ -208,12 +213,12 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 	SetSFXVolume (sfxVolumeScale);
 	SetSpeechVolume (speechVolumeScale);
 	SetMusicVolume ((COUNT)musicVolume);
-		
+				
 	StreamDecoderTask = AssignTask (StreamDecoderTaskFunc, 1024, 
 		"audio stream decoder");
 
 	SDL_PauseAudio (0);
-	
+		
 	return 0;
 }
 

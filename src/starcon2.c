@@ -235,17 +235,17 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.scaler"))
 	{
-		const char *optarg = res_GetString ("config.scaler");
+		const char *arg = res_GetString ("config.scaler");
 
-		if (!strcmp (optarg, "bilinear"))
+		if (!strcmp (arg, "bilinear"))
 			options.gfxFlags |= TFB_GFXFLAGS_SCALE_BILINEAR;
-		else if (!strcmp (optarg, "biadapt"))
+		else if (!strcmp (arg, "biadapt"))
 			options.gfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPT;
-		else if (!strcmp (optarg, "biadv"))
+		else if (!strcmp (arg, "biadv"))
 			options.gfxFlags |= TFB_GFXFLAGS_SCALE_BIADAPTADV;
-		else if (!strcmp (optarg, "triscan"))
+		else if (!strcmp (arg, "triscan"))
 			options.gfxFlags |= TFB_GFXFLAGS_SCALE_TRISCAN;
-		else if (!strcmp (optarg, "hq"))
+		else if (!strcmp (arg, "hq"))
 			options.gfxFlags |= TFB_GFXFLAGS_SCALE_HQXX;	
 	}
 	if (res_HasKey ("config.scanlines") && res_GetBoolean ("config.scanlines"))

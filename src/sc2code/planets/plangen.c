@@ -1455,7 +1455,11 @@ TopoScale4x (BYTE *pDstTopo, BYTE *pSrcTopo, int num_faults, int fault_var)
 		},
 	};
 	
+#ifndef __SYMBIAN32__	
 	prevrow = (int *) alloca ((MAP_WIDTH * 4 + 1) * sizeof(prevrow[0]));
+#else
+	prevrow = (int *) HMalloc ((MAP_WIDTH * 4 + 1) * sizeof(prevrow[0]));
+#endif
 
 	var_allow = (num_faults << SCALE_SHIFT) / AVG_VARIANCE;
 	var_min = fault_var << SCALE_SHIFT;
@@ -1592,6 +1596,10 @@ TopoScale4x (BYTE *pDstTopo, BYTE *pSrcTopo, int num_faults, int fault_var)
 		// save last row point
 		prow[0] = elev[4][4];
 	}
+	
+#ifdef __SYMBIAN32__
+	HFree(prevrow);
+#endif	
 }
 
 

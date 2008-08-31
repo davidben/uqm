@@ -68,7 +68,7 @@ case "$HOST_SYSTEM" in
 		useGccBuildTools
 		;;
 	WINSCW)
-		EXTRA_WINSCW_FLAGS_COMPILE='-msgstyle gcc -gccinc -wchar_t off -align 4 -warnings on -w nohidevirtual,nounusedexpr -enum int -str pool -exc ms -trigraphs on -nostdinc -d _UNICODE -d __SYMBIAN32__ -d __SERIES60_30__ -d __SERIES60_3X__ -d __CW32__ -d __WINS__ -d __WINSCW__ -d __EXE__ -d __SUPPORT_CPP_EXCEPTIONS__ -I$BUILD_EPOCROOT/epoc32/include -I$BUILD_EPOCROOT/epoc32/include/stdapis -I$BUILD_EPOCROOT/epoc32/include/variant -include Symbian_OS_v9.1.hrh'
+		EXTRA_WINSCW_FLAGS_COMPILE="-msgstyle gcc -gccinc -dialect c99 -relax_pointers -wchar_t off -align 4 -warnings on -w nohidevirtual,nounusedexpr -enum int -str pool -exc ms -trigraphs on -nostdinc -d _UNICODE -d __SYMBIAN32__ -d __SERIES60_30__ -d __SERIES60_3X__ -d __CW32__ -d __WINS__ -d __WINSCW__ -d __EXE__ -d __SUPPORT_CPP_EXCEPTIONS__ -I$BUILD_EPOCROOT/epoc32/include -I$BUILD_EPOCROOT/epoc32/include/stdapis -I$BUILD_EPOCROOT/epoc32/include/variant -include Symbian_OS_v9.1.hrh"
 		EXTRA_WINSCW_FLAGS_LINK='-library -msgstyle gcc -stdlib -noimplib -search'
 	
 		BUILDTOOL_PREPROC_C_COMMAND="\$PROG_mwccsym2_FILE -E $EXTRA_WINSCW_FLAGS_COMPILE"

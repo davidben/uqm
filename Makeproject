@@ -10,7 +10,7 @@ else
 fi
 case "$HOST_SYSTEM" in
 	ARMV5|WINSCW)
-		uqm_NAME="$uqm_NAME.lib"
+		uqm_NAME="uqm.lib"
 		;;
 	MINGW32*|CYGWIN*)
 		uqm_NAME="$uqm_NAME.exe"
