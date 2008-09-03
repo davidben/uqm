@@ -54,11 +54,6 @@ SYSTEM_HOST_LDFLAGS=""
 ### SDL ###
 LIB_SDL_NAME="Simple DirectMedia Layer"
 case "$HOST_SYSTEM" in
-	FreeBSD)
-		LIB_SDL_CFLAGS='$(sdl11-config --cflags)'
-		LIB_SDL_LDFLAGS='$(sdl11-config --libs)'
-		LIB_SDL_VERSION='$(sdl11-config --version)'
-		;;
 	Darwin)
 		LIB_SDL_CFLAGS=''
 		LIB_SDL_LDFLAGS='-framework SDL -framework Cocoa -lobjc'
