@@ -7,6 +7,7 @@
 #include <eikstart.h>
 #include <badesca.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 const TUid KUidSdlApp={ 0xA000A0C3 };
 
@@ -143,19 +144,18 @@ void CSdlAppUi::ConstructL()
         
     iSDLWin = new (ELeave) CSDLWin;
     iSDLWin->ConstructL(ApplicationRect());
-            
-    iWait = new (ELeave) CExitWait(*this);
-    
-    iSdl = CSDL::NewL(CSDL::ENoFlags);
-    iSdlObserver = new (ELeave) CSDLObserver;
                 
+    iSdl = CSDL::NewL(CSDL::EEnableFocusStop);
+    iSdlObserver = new (ELeave) CSDLObserver;
+    
     iSdl->SetContainerWindowL(
                     iSDLWin->GetWindow(), 
                     iEikonEnv->WsSession(),
-                    *iEikonEnv->ScreenDevice());
-    
+                    *iEikonEnv->ScreenDevice());    
     iSdl->SetObserver(iSdlObserver);
+    iSdl->DisableKeyBlocking(*this);    
     
+    iWait = new (ELeave) CExitWait(*this);    
     CDesC8ArrayFlat* args = new (ELeave)CDesC8ArrayFlat(10);        
     iSdl->CallMainL(iWait->iStatus, *args, 75000);
     delete args;
@@ -170,17 +170,16 @@ void CSdlAppUi::HandleCommandL(TInt aCommand)
         case EAknCmdExit:
         case EAknSoftkeyExit:
         case EEikCmdExit:
-            iExit = ETrue;
-            if(iWait == NULL || !iWait->IsActive())
-                Exit(); 
+            exit(0);
             break;
+            
         default:
             break;
         }
     }
     
 void CSdlAppUi::DoExit(TInt aErr)
-    {
+    {    	
     delete iSdl;
     iSdl = NULL;
     
