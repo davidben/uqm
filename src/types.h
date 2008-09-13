@@ -74,17 +74,12 @@
 
 /* Figure out how to support 64-bit datatypes */
 #if !defined(UQM_INT64) && !defined(__STRICT_ANSI__)
-#	if defined(__GNUC__) || defined(__MWERKS__) || defined(__SUNPRO_C)
+#	if defined(__GNUC__) || defined(__MWERKS__) || defined(__SUNPRO_C) || defined(__ARMCC__)
 #		define UQM_INT64    long long
 #	elif defined(_MSC_VER) || defined(__BORLANDC__)
 #		define UQM_INT64    __int64
 #	endif
 #endif /* !__STRICT_ANSI__ */
-
-/* The 64-bit type isn't available on EPOC/Symbian OS */
-#ifdef __SYMBIAN32__
-#	undef UQM_INT64
-#endif
 
 // ISO C99 compatible boolean types. The ISO C99 standard defines:
 // - An object declared as type _Bool, large enough to store the values 0
