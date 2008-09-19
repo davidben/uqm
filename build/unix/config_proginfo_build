@@ -68,7 +68,7 @@ case "$HOST_SYSTEM" in
 		useGccBuildTools
 		;;
 	WINSCW)
-		EXTRA_WINSCW_FLAGS_COMPILE="-msgstyle gcc -gccinc -dialect c99 -relax_pointers -wchar_t off -align 4 -warnings on -w nohidevirtual,nounusedexpr -enum int -str pool -exc ms -trigraphs on -nostdinc -d _UNICODE -d __SYMBIAN32__ -d __SERIES60_30__ -d __SERIES60_3X__ -d __CW32__ -d __WINS__ -d __WINSCW__ -d __EXE__ -d __SUPPORT_CPP_EXCEPTIONS__ -I$BUILD_EPOCROOT/epoc32/include -I$BUILD_EPOCROOT/epoc32/include/stdapis -I$BUILD_EPOCROOT/epoc32/include/variant -include Symbian_OS_v9.1.hrh"
+		EXTRA_WINSCW_FLAGS_COMPILE="-msgstyle gcc -gccinc -dialect c99 -relax_pointers -wchar_t off -align 4 -warnings on -w nohidevirtual,nounusedexpr -enum int -str pool -exc ms -trigraphs on -nostdinc -d _UNICODE -d __SYMBIAN32__ -d __SERIES60_30__ -d __SERIES60_3X__ -d __CW32__ -d __WINS__ -d __WINSCW__ -d __EXE__ -d __SUPPORT_CPP_EXCEPTIONS__ -I$BUILD_EPOCROOT/epoc32/include -I$BUILD_EPOCROOT/epoc32/include/stdapis -I$BUILD_EPOCROOT/epoc32/include/variant"
 		EXTRA_WINSCW_FLAGS_LINK='-library -msgstyle gcc -stdlib -noimplib -search'
 	
 		BUILDTOOL_PREPROC_C_COMMAND="\$PROG_mwccsym2_FILE -E $EXTRA_WINSCW_FLAGS_COMPILE"
@@ -118,7 +118,7 @@ case "$HOST_SYSTEM" in
 		BUILDTOOL_LINK_DEPEND='armar'
 		;;
 	GCCE)
-		EXTRA_GCCE_FLAGS_COMPILE='-Wno-unknown-pragmas -march=armv5t -mapcs -pipe -nostdinc -msoft-float -D_UNICODE -D__GCCE__ -D__SYMBIAN32__ -D__SERIES60_30__ -D__SERIES60_3X__ -D__GCCE__ -D__EPOC32__ -D__MARM__ -D__EABI__ -D__MARM_ARMV5__ -D __REMOVE_PLATSEC_DIAGNOSTIC_STRINGS__ -D__PRODUCT_INCLUDE__=\"/epoc32/include/variant/Symbian_OS_v9.1.hrh\" -x c -include $BUILD_EPOCROOT/EPOC32/INCLUDE/GCCE/GCCE.h -I$BUILD_EPOCROOT/epoc32/include -I$BUILD_EPOCROOT/epoc32/include/stdapis -I$BUILD_EPOCROOT/epoc32/include/variant'
+		EXTRA_GCCE_FLAGS_COMPILE='-Wno-unknown-pragmas -march=armv5t -mapcs -pipe -nostdinc -msoft-float -D_UNICODE -D__GCCE__ -D__SYMBIAN32__ -D__SERIES60_30__ -D__SERIES60_3X__ -D__GCCE__ -D__EPOC32__ -D__MARM__ -D__EABI__ -D__MARM_ARMV5__ -D __REMOVE_PLATSEC_DIAGNOSTIC_STRINGS__ -x c -include $BUILD_EPOCROOT/EPOC32/INCLUDE/GCCE/GCCE.h -I$BUILD_EPOCROOT/epoc32/include -I$BUILD_EPOCROOT/epoc32/include/stdapis -I$BUILD_EPOCROOT/epoc32/include/variant'
 		EXTRA_GCCE_FLAGS_LINK=''
 	
 		BUILDTOOL_PREPROC_C_COMMAND="\$PROG_gcce_FILE -E $EXTRA_GCCE_FLAGS_COMPILE"

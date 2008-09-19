@@ -282,9 +282,7 @@ case "$HOST_SYSTEM" in
 		LIB_pthread_VERSION="$(pthread-config --version)"
 		;;
 	WINSCW|ARMV5|GCCE)
-		LIB_pthread_CFLAGS=""
-		LIB_pthread_LDFLAGS=""
-		LIB_pthread_VERSION=""
+		LIB_pthread_DETECT="true"
 		;;					
 	*)
 		LIB_pthread_CFLAGS=""
