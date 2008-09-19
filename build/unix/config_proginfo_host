@@ -231,12 +231,14 @@ LIB_tremor_VERSION=""
 
 ### libmikmod ###
 LIB_libmikmod_NAME="libmikmod"
-LIB_libmikmod_CFLAGS="$(libmikmod-config --cflags)"
-LIB_libmikmod_LDFLAGS="$(libmikmod-config --libs)"
-LIB_libmikmod_VERSION="$(libmikmod-config --version)"
 case "$HOST_SYSTEM" in
 	ARMV5|WINSCW|GCCE)
 		LIB_libmikmod_DETECT="false"
+		;;
+	*)
+		LIB_libmikmod_CFLAGS="$(libmikmod-config --cflags)"
+		LIB_libmikmod_LDFLAGS="$(libmikmod-config --libs)"
+		LIB_libmikmod_VERSION="$(libmikmod-config --version)"
 		;;
 esac
 
