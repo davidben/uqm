@@ -157,7 +157,7 @@ void CSdlAppUi::ConstructL()
     
     iWait = new (ELeave) CExitWait(*this);    
     CDesC8ArrayFlat* args = new (ELeave)CDesC8ArrayFlat(10);        
-    iSdl->CallMainL(iWait->iStatus, *args, 75000);
+    iSdl->CallMainL(iWait->iStatus, *args, CSDL::ENoParamFlags, 81920);
     delete args;
     
     iWait->Start();     
