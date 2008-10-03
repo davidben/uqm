@@ -1269,7 +1269,7 @@ ValidateOrbits (void)
 {
 	BYTE i;
 	BOOLEAN InnerSystem;
-	POINT old_pts[2];
+	POINT old_pts[2] = { { 0, 0 }, { 0, 0 } };
 	PLANET_DESC *pCurDesc;
 
 	InnerSystem = (BOOLEAN)(
