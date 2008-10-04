@@ -81,11 +81,20 @@ void forAllMoons (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 // Argument to UniverseRecurse()
 typedef struct
 {
-	void (*systemFunc) (const STAR_DESC *star, const SOLARSYS_STATE *system,
-			void *arg);
-	void (*planetFunc) (const PLANET_DESC *planet, void *arg);
+	void (*systemFuncPre) (const STAR_DESC *star,
+			const SOLARSYS_STATE *system, void *arg);
+			// Called for each system prior to recursing to its planets.
+	void (*systemFuncPost) (const STAR_DESC *star,
+			const SOLARSYS_STATE *system, void *arg);
+			// Called for each system after recursing to its planets.
+	void (*planetFuncPre) (const PLANET_DESC *planet, void *arg);
+			// Called for each planet prior to recursing to its moons.
+	void (*planetFuncPost) (const PLANET_DESC *planet, void *arg);
+			// Called for each planet after recursing to its moons.
 	void (*moonFunc) (const PLANET_DESC *moon, void *arg);
+			// Called for each moon.
 	void *arg;
+			// User data.
 } UniverseRecurseArg;
 // Recurse through all systems, planets, and moons in the universe.
 void UniverseRecurse (UniverseRecurseArg *universeRecurseArg);
@@ -121,6 +130,12 @@ COUNT calculateBioValue (const SOLARSYS_STATE *system,
 // Determine how much of each mineral type is present on a world
 void generateBioIndex(const SOLARSYS_STATE *system,
 		const PLANET_DESC *world, COUNT bio[]);
+
+// Tally the resources for each star system.
+void tallyResources (FILE *out);
+// Tally the resources for each star system, output to a file
+// "./ResourceTally".
+void tallyResourcesToFile (void);
 
 
 // Call a function for all planet types.

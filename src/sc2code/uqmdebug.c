@@ -50,6 +50,16 @@ static void dumpPlanetCallback (const PLANET_DESC *planet, void *arg);
 static void dumpMoonCallback (const PLANET_DESC *moon, void *arg);
 static void dumpWorld (FILE *out, const PLANET_DESC *world);
 
+typedef struct TallyResourcesArg TallyResourcesArg;
+static void tallySystemPreCallback (const STAR_DESC *star, const
+		SOLARSYS_STATE *system, void *arg);
+static void tallySystemPostCallback (const STAR_DESC *star, const
+		SOLARSYS_STATE *system, void *arg);
+static void tallyPlanetCallback (const PLANET_DESC *planet, void *arg);
+static void tallyMoonCallback (const PLANET_DESC *moon, void *arg);
+static void tallyResourcesWorld (TallyResourcesArg *arg,
+		const PLANET_DESC *world);
+
 static void dumpPlanetTypeCallback (int index, const PlanetFrame *planet,
 		void *arg);
 
@@ -100,6 +110,10 @@ debugKeyPressed (void)
 //	dumpPlanetTypes(stderr);
 //	debugHook = dumpUniverseToFile;
 			// This will cause dumpUniverseToFile to be called from the
+			// main loop. Calling it from here would give threading
+			// problems.
+//	debugHook = tallyResourcesToFile;
+			// This will cause tallyResourcesToFile to be called from the
 			// main loop. Calling it from here would give threading
 			// problems.
 
@@ -579,8 +593,10 @@ UniverseRecurse (UniverseRecurseArg *universeRecurseArg)
 	BOOLEAN clockRunning;
 	ACTIVITY savedActivity;
 	
-	if (universeRecurseArg->systemFunc == NULL
-			&& universeRecurseArg->planetFunc == NULL
+	if (universeRecurseArg->systemFuncPre == NULL
+			&& universeRecurseArg->systemFuncPost == NULL
+			&& universeRecurseArg->planetFuncPre == NULL
+			&& universeRecurseArg->planetFuncPost == NULL
 			&& universeRecurseArg->moonFunc == NULL)
 		return;
 	
@@ -624,19 +640,26 @@ starRecurse (STAR_DESC *star, void *arg)
 	pSolarSysState = &SolarSysState;
 	(*pSolarSysState->GenFunc) (GENERATE_PLANETS);
 
-	if (universeRecurseArg->systemFunc != NULL)
+	if (universeRecurseArg->systemFuncPre != NULL)
 	{
-		(*universeRecurseArg->systemFunc) (
+		(*universeRecurseArg->systemFuncPre) (
 				star, &SolarSysState, universeRecurseArg->arg);
 	}
 	
-	if (universeRecurseArg->planetFunc != NULL
+	if (universeRecurseArg->planetFuncPre != NULL
+			|| universeRecurseArg->planetFuncPost != NULL
 			|| universeRecurseArg->moonFunc != NULL)
 	{
 		forAllPlanets (star, &SolarSysState, planetRecurse,
 				(void *) universeRecurseArg);
 	}
 
+	if (universeRecurseArg->systemFuncPost != NULL)
+	{
+		(*universeRecurseArg->systemFuncPost) (
+				star, &SolarSysState, universeRecurseArg->arg);
+	}
+	
 	pSolarSysState = oldPSolarSysState;
 	CurStarDescPtr = oldStarDescPtr;
 	TFB_SeedRandom (oldSeed);
@@ -654,7 +677,7 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
 	system->pBaseDesc = planet;
 	planet->pPrevDesc = &system->SunDesc[0];
 
-	if (universeRecurseArg->planetFunc != NULL)
+	if (universeRecurseArg->planetFuncPre != NULL)
 	{
 		system->pOrbitalDesc = planet;
 		DoPlanetaryAnalysis (&system->SysInfo, planet);
@@ -662,7 +685,7 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
 				// GENERATE_ORBITAL will also call DoPlanetaryAnalysis,
 				// but with other GenFuncs this is not guaranteed.
 		(*system->GenFunc) (GENERATE_ORBITAL);
-		(*universeRecurseArg->planetFunc) (
+		(*universeRecurseArg->planetFuncPre) (
 				planet, universeRecurseArg->arg);
 	}
 
@@ -676,6 +699,18 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
 				(void *) universeRecurseArg);
 
 		TFB_SeedRandom (oldSeed);
+	}
+	
+	if (universeRecurseArg->planetFuncPost != NULL)
+	{
+		system->pOrbitalDesc = planet;
+		DoPlanetaryAnalysis (&system->SysInfo, planet);
+				// When GenerateRandomIP is used as GenFunc,
+				// GENERATE_ORBITAL will also call DoPlanetaryAnalysis,
+				// but with other GenFuncs this is not guaranteed.
+		(*system->GenFunc) (GENERATE_ORBITAL);
+		(*universeRecurseArg->planetFuncPost) (
+				planet, universeRecurseArg->arg);
 	}
 }
 
@@ -719,8 +754,10 @@ dumpUniverse (FILE *out)
 	
 	dumpUniverseArg.out = out;
 
-	universeRecurseArg.systemFunc = dumpSystemCallback;
-	universeRecurseArg.planetFunc = dumpPlanetCallback;
+	universeRecurseArg.systemFuncPre = dumpSystemCallback;
+	universeRecurseArg.systemFuncPost = NULL;
+	universeRecurseArg.planetFuncPre = dumpPlanetCallback;
+	universeRecurseArg.planetFuncPost = NULL;
 	universeRecurseArg.moonFunc = dumpMoonCallback;
 	universeRecurseArg.arg = (void *) &dumpUniverseArg;
 
@@ -1107,6 +1144,114 @@ generateMineralIndex(const SOLARSYS_STATE *system,
 		minerals[ElementCategory(system->SysInfo.PlanetInfo.CurType)] +=
 				HIBYTE (system->SysInfo.PlanetInfo.CurDensity);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+struct TallyResourcesArg
+{
+	FILE *out;
+	COUNT mineralCount;
+	COUNT bioCount;
+};
+
+void
+tallyResources (FILE *out)
+{
+	TallyResourcesArg tallyResourcesArg;
+	UniverseRecurseArg universeRecurseArg;
+	
+	tallyResourcesArg.out = out;
+
+	universeRecurseArg.systemFuncPre = tallySystemPreCallback;
+	universeRecurseArg.systemFuncPost = tallySystemPostCallback;
+	universeRecurseArg.planetFuncPre = tallyPlanetCallback;
+	universeRecurseArg.planetFuncPost = NULL;
+	universeRecurseArg.moonFunc = tallyMoonCallback;
+	universeRecurseArg.arg = (void *) &tallyResourcesArg;
+
+	UniverseRecurse (&universeRecurseArg);
+}
+
+void
+tallyResourcesToFile (void)
+{
+	FILE *out;
+
+#	define RESOURCE_TALLY_FILE "ResourceTally"
+	out = fopen(RESOURCE_TALLY_FILE, "w");
+	if (out == NULL)
+	{
+		fprintf(stderr, "Error: Could not open file '%s' for "
+				"writing: %s\n", RESOURCE_TALLY_FILE, strerror(errno));
+		return;
+	}
+
+	tallyResources (out);
+	
+	fclose(out);
+
+	fprintf(stdout, "*** Resource tally complete. The game may be in an "
+			"undefined state.\n");
+			// Data generation may have changed the game state,
+			// in particular for special planet generation.
+}
+
+static void
+tallySystemPreCallback (const STAR_DESC *star, const SOLARSYS_STATE *system,
+		void *arg)
+{
+	TallyResourcesArg *tallyResourcesArg = (TallyResourcesArg *) arg;
+	tallyResourcesArg->mineralCount = 0;
+	tallyResourcesArg->bioCount = 0;
+	
+	(void) star;  /* satisfy compiler */
+	(void) system;  /* satisfy compiler */
+}
+
+static void
+tallySystemPostCallback (const STAR_DESC *star, const SOLARSYS_STATE *system,
+		void *arg)
+{
+	UNICODE name[256];
+	TallyResourcesArg *tallyResourcesArg = (TallyResourcesArg *) arg;
+	FILE *out = tallyResourcesArg->out;
+
+	GetClusterName (star, name);
+	fprintf (out, "%s\t%d\t%d\n", name, tallyResourcesArg->mineralCount,
+			tallyResourcesArg->bioCount);
+
+	(void) star;  /* satisfy compiler */
+	(void) system;  /* satisfy compiler */
+}
+
+static void
+tallyPlanetCallback (const PLANET_DESC *planet, void *arg)
+{
+	tallyResourcesWorld ((TallyResourcesArg *) arg, planet);
+}
+
+static void
+tallyMoonCallback (const PLANET_DESC *moon, void *arg)
+{
+	tallyResourcesWorld ((TallyResourcesArg *) arg, moon);
+}
+
+static void
+tallyResourcesWorld (TallyResourcesArg *arg, const PLANET_DESC *world)
+{
+	if (world->data_index == (BYTE) ~0) {
+		// StarBase
+		return;
+	}
+	
+	if (world->data_index == (BYTE)(~0 - 1)) {
+		// Sa-Matra
+		return;
+	}
+
+	arg->bioCount += calculateBioValue (pSolarSysState, world),
+	arg->mineralCount += calculateMineralValue (pSolarSysState, world);
 }
 
 ////////////////////////////////////////////////////////////////////////////
