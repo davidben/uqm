@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- DrawTracedText abstraction (bug #1029), from Nic
 - Experimental support for Symbian S60 3rd edition - Mika & SvdB
 - Pthread support - Mika
 - Content Dirs completely reorganized; 3DO and PC segregation - Coredev

@@ -183,6 +183,7 @@ extern void DrawRectangle (RECT *pRect);
 extern void DrawFilledRectangle (RECT *pRect);
 extern void DrawLine (LINE *pLine);
 extern void font_DrawText (TEXT *pText);
+extern void font_DrawTracedText (TEXT *pText, COLOR text, COLOR trace);
 extern void DrawBatch (PRIMITIVE *pBasePrim, PRIM_LINKS PrimLinks,
 		BATCH_FLAGS BatchFlags);
 extern void BatchGraphics (void);

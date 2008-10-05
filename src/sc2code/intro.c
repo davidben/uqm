@@ -149,29 +149,11 @@ DoFadeScreen (PRESENTATION_INPUT_STATE* pPIS, const char *Src, BYTE FadeType)
 }
 
 static void
-DrawTracedText (TEXT *pText, COLOR Fore, COLOR Back)
-{
-	SetContextForeGroundColor (Back);
-	pText->baseline.x--;
-	font_DrawText (pText);
-	pText->baseline.x += 2;
-	font_DrawText (pText);
-	pText->baseline.x--;
-	pText->baseline.y--;
-	font_DrawText (pText);
-	pText->baseline.y += 2;
-	font_DrawText (pText);
-	pText->baseline.y--;
-	SetContextForeGroundColor (Fore);
-	font_DrawText (pText);
-}
-
-static void
 DrawTextEffect (TEXT *pText, COLOR Fore, COLOR Back, int Effect)
 {
 	if (Effect == 'T')
 	{
-		DrawTracedText (pText, Fore, Back);
+		font_DrawTracedText (pText, Fore, Back);
 	}
 	else
 	{

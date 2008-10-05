@@ -250,30 +250,8 @@ add_text (int status, TEXT *pTextIn)
 		else
 		{
 			// Alien speech
-
-			// Draw the background by drawing the same text in the
-			// background color one pixel shifted to all 4 directions.
-			SetContextForeGroundColor (CommData.AlienTextBColor);
-
-			--pText->baseline.x;
-			font_DrawText (pText);
-
-			++pText->baseline.x;
-			--pText->baseline.y;
-			font_DrawText (pText);
-
-			++pText->baseline.x;
-			++pText->baseline.y;
-			font_DrawText (pText);
-
-			--pText->baseline.x;
-			++pText->baseline.y;
-			font_DrawText (pText);
-
-			SetContextForeGroundColor (CommData.AlienTextFColor);
-
-			--pText->baseline.y;
-			font_DrawText (pText);
+			font_DrawTracedText (pText,
+					CommData.AlienTextFColor, CommData.AlienTextBColor);
 		}
 	} while (!eol && maxchars);
 	pText->pStr = pStr;

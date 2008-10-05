@@ -62,6 +62,30 @@ font_DrawText (TEXT *lpText)
 	DrawBatch (&_locPrim, 0, BATCH_SINGLE);
 }
 
+ 
+/* Draw the stroke by drawing the same text in the
+ * background color one pixel shifted to all 4 directions.
+ */
+void
+font_DrawTracedText (TEXT *pText, COLOR text, COLOR trace)
+{
+	// Preserve current foreground color for full correctness
+	COLOR oldfg = SetContextForeGroundColor (trace);
+	pText->baseline.x--;
+	font_DrawText (pText);
+	pText->baseline.x += 2;
+	font_DrawText (pText);
+	pText->baseline.x--;
+	pText->baseline.y--;
+	font_DrawText (pText);
+	pText->baseline.y += 2;
+	font_DrawText (pText);
+	pText->baseline.y--;
+	SetContextForeGroundColor (text);
+	font_DrawText (pText);
+	SetContextForeGroundColor (oldfg);
+}
+
 BOOLEAN
 GetContextFontLeading (SIZE *pheight)
 {
