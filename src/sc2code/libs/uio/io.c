@@ -257,8 +257,6 @@ uio_mountDir(uio_Repository *destRep, const char *mountPoint,
 #endif  /* BACKSLASH_IS_PATH_SEPARATOR */
 			uio_PDirHandle_unref(endDirHandle);
 			uio_PRoot_unrefMount(pRoot);
-			if (handle)
-				uio_close(handle);
 			errno = ENOENT;
 			return NULL;
 		}
