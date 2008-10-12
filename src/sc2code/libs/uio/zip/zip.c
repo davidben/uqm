@@ -43,6 +43,8 @@
 #endif
 
 
+#define DIR_STRUCTURE_READ_BUFSIZE 0x10000
+
 static int zip_badFile(zip_GPFileData *gPFileData, char *fileName);
 static int zip_fillDirStructure(uio_GPDir *top, uio_Handle *handle);
 #if zip_USE_HEADERS == zip_USE_LOCAL_HEADERS
@@ -583,7 +585,7 @@ zip_mount(uio_Handle *handle, int flags) {
 		int savedErrno = errno;
 #ifdef DEBUG
 		fprintf(stderr, "Error: failed to read the zip directory "
-				"structure - %d.\n", errno);
+				"structure - %s.\n", strerror(errno));
 #endif
 		uio_GPRoot_umount(result);
 		errno = savedErrno;
@@ -647,7 +649,11 @@ zip_fillDirStructureCentral(uio_GPDir *top, uio_Handle *handle) {
 	}
 
 	startCentralDir = makeUInt32(buf[16], buf[17], buf[18], buf[19]);
-	
+
+	// Enable read-ahead buffering, for speed.
+	uio_setFileBlockUsageHint(fileBlock, uio_FB_USAGE_FORWARD,
+			DIR_STRUCTURE_READ_BUFSIZE);
+
 	pos = startCentralDir;
 	while (numEntries--) {
 		if (zip_fillDirStructureCentralProcessEntry(top, fileBlock, &pos)
