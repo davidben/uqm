@@ -60,6 +60,7 @@ uio_DirHandle *contentDir;
 uio_DirHandle *configDir;
 uio_DirHandle *saveDir;
 uio_DirHandle *meleeDir;
+uio_MountHandle *contentMountHandle;
 
 char baseContentPath[PATH_MAX];
 
@@ -312,15 +313,14 @@ prepareMeleeDir (void) {
 static void
 mountContentDir (uio_Repository *repository, const char *contentPath)
 {
-	uio_MountHandle *contentHandle;
 	uio_DirHandle *packagesDir, *addonsDir;
 	static uio_AutoMount *autoMount[] = { NULL };
 	availableAddons = NULL;
 
-	contentHandle = uio_mountDir (repository, "/",
+	contentMountHandle = uio_mountDir (repository, "/",
 			uio_FSTYPE_STDIO, NULL, NULL, contentPath, autoMount,
 			uio_MOUNT_TOP | uio_MOUNT_RDONLY, NULL);
-	if (contentHandle == NULL)
+	if (contentMountHandle == NULL)
 	{
 		log_add (log_Fatal, "Fatal error: Could not mount content dir: %s",
 				strerror (errno));
@@ -338,7 +338,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath)
 	packagesDir = uio_openDir (repository, "/packages", 0);
 	if (packagesDir != NULL)
 	{
-		mountDirZips (contentHandle, packagesDir, "/");
+		mountDirZips (contentMountHandle, packagesDir, "/");
 		uio_closeDir (packagesDir);	
 	}
 
@@ -354,7 +354,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath)
 		return;
 	}
 
-	mountDirZips (contentHandle, addonsDir, "addons");
+	mountDirZips (contentMountHandle, addonsDir, "addons");
 			
 	availableAddons = uio_getDirList (addonsDir, "", "", match_MATCH_PREFIX);
 	if (availableAddons != NULL)
@@ -387,7 +387,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath)
 					 "not found; addon skipped.", addon);
 				continue;
 			}
-			mountDirZips (contentHandle, addonDir, mountname);
+			mountDirZips (contentMountHandle, addonDir, mountname);
 			uio_closeDir (addonDir);
 		}
 	}

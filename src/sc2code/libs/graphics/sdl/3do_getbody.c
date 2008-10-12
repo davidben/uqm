@@ -42,6 +42,8 @@ typedef struct anidata
 	int hotspot_y;
 } AniData;
 
+extern uio_Repository *repository;
+static uio_AutoMount *autoMount[] = { NULL };
 
 static void
 process_image (FRAME FramePtr, SDL_Surface *img[], AniData *ani, int cel_ct)
@@ -375,61 +377,100 @@ _GetCelData (uio_Stream *fp, DWORD length)
 {
 	int cel_total, cel_index, n;
 	DWORD opos;
-	char CurrentLine[1024], filename[1024];
+	char CurrentLine[1024], filename[PATH_MAX];
 	SDL_Surface **img;
 	AniData *ani;
 	DRAWABLE Drawable;
+	uio_MountHandle *aniMount = 0;
+	uio_DirHandle *aniDir = 0;
+	uio_Stream *aniFile = 0;
 	
 	opos = uio_ftell (fp);
 
 	{
 		char *s1, *s2;
+		char aniDirName[PATH_MAX];			
+		const char *aniFileName;
+		uint32 header = 0;
 
 		if (_cur_resfile_name == 0
 				|| (((s2 = 0), (s1 = strrchr (_cur_resfile_name, '/')) == 0)
 						&& (s2 = strrchr (_cur_resfile_name, '\\')) == 0))
+		{
 			n = 0;
+		}
 		else
 		{
 			if (s2 > s1)
 				s1 = s2;
 			n = s1 - _cur_resfile_name + 1;
+		}
+
+		uio_fread(&header, 4, 1, fp);
+		if (_cur_resfile_name && header == 0x04034b50)
+		{
+			// zipped ani file
+			if (n)
+			{
+				strncpy (aniDirName, _cur_resfile_name, n - 1);
+				aniDirName[n - 1] = 0;
+				aniFileName = _cur_resfile_name + n;
+			}
+			else
+			{
+				strcpy(aniDirName, ".");
+				aniFileName = _cur_resfile_name;
+			}
+			aniDir = uio_openDir (repository, aniDirName, 0);
+			aniMount = uio_mountDir (repository, aniDirName, uio_FSTYPE_ZIP,
+							aniDir, aniFileName, "/", autoMount,
+							uio_MOUNT_RDONLY | uio_MOUNT_ABOVE,
+							contentMountHandle);
+			aniFile = uio_fopen (aniDir, aniFileName, "r");
+			opos = 0;
+			n = 0;
+		}
+		else
+		{
+			// unpacked ani file
 			strncpy (filename, _cur_resfile_name, n);
+			aniFile = fp;
+			aniDir = contentDir;
 		}
 	}
 
 	cel_total = 0;
-	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp))
+	uio_fseek (aniFile, opos, SEEK_SET);
+	while (uio_fgets (CurrentLine, sizeof (CurrentLine), aniFile))
 	{
 		++cel_total;
 	}
 
-	img = HMalloc(sizeof (SDL_Surface *) * cel_total);
-	if (!img)
-	{
-		log_add (log_Warning, "Couldn't allocate space for '%s' images", _cur_resfile_name);
-
-		return NULL;
-	}
-
+	img = HMalloc (sizeof (SDL_Surface *) * cel_total);
 	ani = HMalloc (sizeof (AniData) * cel_total);
-	if (!ani)
+	if (!img || !ani)
 	{
+		log_add (log_Warning, "Couldn't allocate space for '%s'", _cur_resfile_name);
+		if (aniMount)
+		{
+			uio_fclose(aniFile);
+			uio_closeDir(aniDir);
+			uio_unmountDir(aniMount);
+		}
 		HFree (img);
-		log_add (log_Warning, "Couldn't allocate space for '%s' anidata", _cur_resfile_name);
-
+		HFree (ani);
 		return NULL;
 	}
 
 	cel_index = 0;
-	uio_fseek (fp, opos, SEEK_SET);
-	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && cel_index < cel_total)
+	uio_fseek (aniFile, opos, SEEK_SET);
+	while (uio_fgets (CurrentLine, sizeof (CurrentLine), aniFile) && cel_index < cel_total)
 	{
 		sscanf (CurrentLine, "%s %d %d %d %d", &filename[n], 
 			&ani[cel_index].transparent_color, &ani[cel_index].colormap_index, 
 			&ani[cel_index].hotspot_x, &ani[cel_index].hotspot_y);
 	
-		img[cel_index] = sdluio_loadImage (contentDir, filename);
+		img[cel_index] = sdluio_loadImage (aniDir, filename);
 		if (img[cel_index] == NULL)
 		{
 			const char *err;
@@ -451,7 +492,7 @@ _GetCelData (uio_Stream *fp, DWORD length)
 			++cel_index;
 		}
 
-		if ((int)uio_ftell (fp) - (int)opos >= (int)length)
+		if ((int)uio_ftell (aniFile) - (int)opos >= (int)length)
 			break;
 	}
 
@@ -482,6 +523,13 @@ _GetCelData (uio_Stream *fp, DWORD length)
 	if (Drawable == NULL)
 		log_add (log_Warning, "Couldn't get cel data for '%s'",
 				_cur_resfile_name);
+
+	if (aniMount)
+	{
+		uio_fclose(aniFile);
+		uio_closeDir(aniDir);
+		uio_unmountDir(aniMount);
+	}
 
 	HFree (img);
 	HFree (ani);
@@ -547,10 +595,44 @@ _GetFontData (uio_Stream *fp, DWORD length)
 	size_t numBCDs = 0;
 	int dirEntryI;
 	uio_DirHandle *fontDirHandle = NULL;
+	uio_MountHandle *fontMount = NULL;
 	FONT fontPtr = NULL;
 
 	if (_cur_resfile_name == 0)
 		goto err;
+
+	if (fp != (uio_Stream*)~0)
+	{
+		// font is zipped instead of being in a directory
+
+		char *s1, *s2;
+		int n;
+		const char *fontZipName;
+		char fontDirName[PATH_MAX];
+
+		if ((((s2 = 0), (s1 = strrchr (_cur_resfile_name, '/')) == 0)
+						&& (s2 = strrchr (_cur_resfile_name, '\\')) == 0))
+		{
+			strcpy(fontDirName, ".");
+			fontZipName = _cur_resfile_name;
+		}
+		else
+		{
+			if (s2 > s1)
+				s1 = s2;
+			n = s1 - _cur_resfile_name + 1;
+			strncpy (fontDirName, _cur_resfile_name, n - 1);
+			fontDirName[n - 1] = 0;
+			fontZipName = _cur_resfile_name + n;
+		}
+
+		fontDirHandle = uio_openDir (repository, fontDirName, 0);
+		fontMount = uio_mountDir (repository, _cur_resfile_name, uio_FSTYPE_ZIP,
+						fontDirHandle, fontZipName, "/", autoMount,
+						uio_MOUNT_RDONLY | uio_MOUNT_ABOVE,
+						contentMountHandle);
+		uio_closeDir (fontDirHandle);
+	}
 
 	fontDir = CaptureDirEntryTable (LoadDirEntryTable (contentDir,
 			_cur_resfile_name, ".", match_MATCH_SUBSTRING));
@@ -597,6 +679,8 @@ _GetFontData (uio_Stream *fp, DWORD length)
 	}
 	uio_closeDir (fontDirHandle);
 	DestroyDirEntryTable (ReleaseDirEntryTable (fontDir));
+	if (fontMount != 0)
+		uio_unmountDir(fontMount);
 
 #if 0
 	if (numBCDs == 0)
@@ -697,6 +781,10 @@ err:
 	
 	if (fontDir != 0)
 		DestroyDirEntryTable (ReleaseDirEntryTable (fontDir));
+
+	if (fontMount != 0)
+		uio_unmountDir(fontMount);
+
 	return 0;
 }
 

@@ -57,7 +57,7 @@ LoadFontFile (const char *pStr)
 		return 0;
 
 	fp = res_OpenResFile (contentDir, pStr, "rb");
-	if (fp == (uio_Stream *) ~0)
+	if (fp != NULL)
 	{
 		FONT hData;
 

@@ -50,6 +50,8 @@ extern uio_DirHandle *saveDir;
 extern uio_DirHandle *meleeDir;
 extern char baseContentPath[PATH_MAX];
 
+extern uio_MountHandle *contentMountHandle;
+
 extern uio_DirList *availableAddons;
 extern const char **optAddons;
 
