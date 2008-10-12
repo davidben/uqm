@@ -116,8 +116,6 @@ uio_accessFileBlockMmap(uio_FileBlock *block, off_t offset, size_t length,
 static inline ssize_t
 uio_accessFileBlockNoMmap(uio_FileBlock *block, off_t offset, size_t length,
 		char **buffer) {
-
-	// TODO: add read-ahead buffering
 	ssize_t numRead;
 	off_t start;
 	off_t end;
