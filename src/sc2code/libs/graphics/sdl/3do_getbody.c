@@ -391,7 +391,8 @@ _GetCelData (uio_Stream *fp, DWORD length)
 		char *s1, *s2;
 		char aniDirName[PATH_MAX];			
 		const char *aniFileName;
-		uint32 header = 0;
+		uint8 buf[4] = { 0, 0, 0, 0 };
+		uint32 header;
 
 		if (_cur_resfile_name == 0
 				|| (((s2 = 0), (s1 = strrchr (_cur_resfile_name, '/')) == 0)
@@ -406,8 +407,9 @@ _GetCelData (uio_Stream *fp, DWORD length)
 			n = s1 - _cur_resfile_name + 1;
 		}
 
-		uio_fread(&header, 4, 1, fp);
-		if (_cur_resfile_name && header == 0x04034b50)
+		uio_fread(buf, 4, 1, fp);
+		header = buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24);
+ 		if (_cur_resfile_name && header == 0x04034b50)
 		{
 			// zipped ani file
 			if (n)
