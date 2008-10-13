@@ -8,15 +8,22 @@
 #include <badesca.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <SDL/SDL_keysym.h>
 
 const TUid KUidSdlApp={ 0xA000A0C3 };
 
+class CSDL;
 
 class CSDLObserver : public CBase, public MSDLObserver
 {
 public:
+    CSDLObserver(CSDL* aSdl);
+
     TInt SdlEvent(TInt aEvent, TInt aParam);
     TInt SdlThreadEvent(TInt aEvent, TInt aParam);
+
+private:
+    CSDL* iSdl;    
 };
 
 class MExitWait
@@ -146,7 +153,7 @@ void CSdlAppUi::ConstructL()
     iSDLWin->ConstructL(ApplicationRect());
                 
     iSdl = CSDL::NewL(CSDL::EEnableFocusStop);
-    iSdlObserver = new (ELeave) CSDLObserver;
+    iSdlObserver = new (ELeave) CSDLObserver(iSdl);
     
     iSdl->SetContainerWindowL(
                     iSDLWin->GetWindow(), 
@@ -179,7 +186,7 @@ void CSdlAppUi::HandleCommandL(TInt aCommand)
     }
     
 void CSdlAppUi::DoExit(TInt aErr)
-    {    	
+    {       
     delete iSdl;
     iSdl = NULL;
     
@@ -247,9 +254,19 @@ GLDEF_C TInt E32Main()
     {
     return EikStart::RunApplication(NewApplication);
     }
-    
+
+CSDLObserver::CSDLObserver(CSDL* aSdl) : iSdl(aSdl)
+{
+}
+
 TInt CSDLObserver::SdlEvent(TInt aEvent, TInt aParam)
 {
+    if (aEvent == EEventKeyMapInit)
+    {
+        // starmap zoom
+        iSdl->SetSDLCode('3', SDLK_KP_PLUS);
+        iSdl->SetSDLCode('2', SDLK_KP_MINUS);
+    }
     return 0;
 }
 
