@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Case insensitive matching when looking for .zip/.uqm/.rmp files - SvdB
 - Added read-ahead buffering when reading zip index files. - SvdB
 - Added support for packed ani and font files - Mika
 - DrawTracedText abstraction (bug #1029), from Nic

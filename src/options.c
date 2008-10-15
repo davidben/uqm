@@ -408,7 +408,7 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle, const ch
 	static uio_AutoMount *autoMount[] = { NULL };
 	uio_DirList *dirList;
 
-	dirList = uio_getDirList (dirHandle, "", ".(zip|uqm)$",
+	dirList = uio_getDirList (dirHandle, "", "\\.([zZ][iI][pP]|[uU][qQ][mM])$",
 			match_MATCH_REGEX);
 	if (dirList != NULL)
 	{
@@ -435,7 +435,7 @@ loadIndices (uio_DirHandle *dir)
 	uio_DirList *indices;
 	int numLoaded = 0;
 
-	indices = uio_getDirList (dir, "", ".rmp$",
+	indices = uio_getDirList (dir, "", "\\.[rR][mM][pP]$",
 			match_MATCH_REGEX);		
 
 	if (indices != NULL)
