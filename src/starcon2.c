@@ -74,6 +74,7 @@ struct options_struct {
 	const char *configDir;
 	const char *contentDir;
 	const char **addons;
+	const char *addonDir;
 	int numAddons;
 	int gammaSet;
 	float gamma;
@@ -124,6 +125,7 @@ main (int argc, char *argv[])
 		/* .configDir = */          NULL,
 		/* .contentDir = */         NULL,
 		/* .addons = */             NULL,
+		/* .addonDir = */           NULL,
 		/* .numAddons = */          0,
 		/* .gammaSet = */           0,
 		/* .gamma = */              0.0f,
@@ -437,7 +439,7 @@ main (int argc, char *argv[])
 	speechVolumeScale = options.speechVolumeScale;
 	optAddons = options.addons;
 
-	prepareContentDir (options.contentDir, argv[0]);
+	prepareContentDir (options.contentDir, options.addonDir, argv[0]);
 	prepareMeleeDir ();
 	prepareSaveDir ();
 #if 0
@@ -500,6 +502,7 @@ enum
 	SOUND_OPT,
 	STEREOSFX_OPT,
 	ADDON_OPT,
+	ADDONDIR_OPT,
 	ACCEL_OPT,
 #ifdef NETPLAY
 	NETHOST1_OPT,
@@ -545,6 +548,7 @@ static struct option longOptions[] =
 	{"sound", 1, NULL, SOUND_OPT},
 	{"stereosfx", 0, NULL, STEREOSFX_OPT},
 	{"addon", 1, NULL, ADDON_OPT},
+	{"addondir", 1, NULL, ADDONDIR_OPT},
 	{"accel", 1, NULL, ACCEL_OPT},
 #ifdef NETPLAY
 	{"nethost1", 1, NULL, NETHOST1_OPT},
@@ -822,6 +826,9 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				options->addons[options->numAddons - 1] = optarg;
 				options->addons[options->numAddons] = NULL;
 				break;
+			case ADDONDIR_OPT:
+				options->addonDir = optarg;
+				break;
 			case ACCEL_OPT:
 				force_platform = PLATFORM_NULL;
 				if (!strcmp (optarg, "mmx"))
@@ -1012,6 +1019,7 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 			"FILE)");
 	log_add (log_User, "  --addon ADDON (using a specific addon; "
 			"may be specified multiple times)");
+	log_add (log_User, "  --addondir=ADDONDIR (directory where addons reside)");
 	log_add (log_User, "  --sound=DRIVER (openal, mixsdl, none; default "
 			"mixsdl)");
 	log_add (log_User, "  --stereosfx (enables positional sound effects, "

@@ -72,8 +72,11 @@ INPUT_TEMPLATE input_templates[6];
 
 static const char *findFileInDirs (const char *locs[], int numLocs,
 		const char *file);
-static void mountContentDir (uio_Repository *repository,
+static uio_MountHandle *mountContentDir (uio_Repository *repository,
 		const char *contentPath);
+static void mountAddonDir (uio_Repository *repository,
+		uio_MountHandle *contentMountHandle, const char *addonDirName);
+
 static void mountDirZips (uio_MountHandle *contentHandle,
 		uio_DirHandle *dirHandle, const char *mountPoint);
 
@@ -126,10 +129,11 @@ findFileInDirs (const char *locs[], int numLocs, const char *file)
 // execFile is the path to the uqm executable, as acquired through
 // main()'s argv[0].
 void
-prepareContentDir (const char *contentDirName, const char *execFile)
+prepareContentDir (const char *contentDirName, const char* addonDirName, const char *execFile)
 {
 	const char *testFile = "version";
 	const char *loc;
+	uio_MountHandle* contentMountHandle;
 
 	if (contentDirName == NULL)
 	{
@@ -176,8 +180,11 @@ prepareContentDir (const char *contentDirName, const char *execFile)
 	}
 	
 	log_add (log_Debug, "Using '%s' as base content dir.", baseContentPath);
+	contentMountHandle = mountContentDir (repository, baseContentPath);
 
-	mountContentDir (repository, baseContentPath);
+	if (addonDirName)
+		log_add (log_Debug, "Using '%s' as addon dir.", addonDirName);
+	mountAddonDir (repository, contentMountHandle, addonDirName);
 
 #ifndef __APPLE__
 	(void) execFile;
@@ -309,14 +316,12 @@ prepareMeleeDir (void) {
 	}
 }
 
-static void
+static uio_MountHandle *
 mountContentDir (uio_Repository *repository, const char *contentPath)
 {
-	uio_DirHandle *packagesDir, *addonsDir;
+	uio_DirHandle *packagesDir;
 	static uio_AutoMount *autoMount[] = { NULL };
 	uio_MountHandle *contentMountHandle;
-
-	availableAddons = NULL;
 
 	contentMountHandle = uio_mountDir (repository, "/",
 			uio_FSTYPE_STDIO, NULL, NULL, contentPath, autoMount,
@@ -343,6 +348,44 @@ mountContentDir (uio_Repository *repository, const char *contentPath)
 		uio_closeDir (packagesDir);	
 	}
 
+	return contentMountHandle;
+}
+
+static void
+mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
+		const char *addonDirName)
+{
+	uio_DirHandle *addonsDir;
+	static uio_AutoMount *autoMount[] = { NULL };
+	uio_MountHandle *mountHandle;
+
+	availableAddons = NULL;
+
+	if (addonDirName != NULL)
+	{
+		mountHandle = uio_mountDir (repository, "addons",
+				uio_FSTYPE_STDIO, NULL, NULL, addonDirName, autoMount,
+				uio_MOUNT_TOP | uio_MOUNT_RDONLY, NULL);
+		if (mountHandle == NULL)
+		{
+			log_add (log_Warning, "Warning: Could not mount addon directory: %s"
+					";\n\t'--addon' options are ignored.", strerror (errno));
+			return;
+		}
+	}
+	else
+	{
+		mountHandle = contentMountHandle;
+	}
+
+	contentDir = uio_openDir (repository, "/", 0);
+	if (contentDir == NULL)
+	{
+		log_add (log_Fatal, "Fatal error: Could not open content dir: %s",
+				strerror (errno));
+		exit (EXIT_FAILURE);
+	}
+
 	// NB: note the difference between addonsDir and addonDir.
 	//     the former is the dir 'addons', the latter a directory
 	//     in that dir.
@@ -355,7 +398,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath)
 		return;
 	}
 
-	mountDirZips (contentMountHandle, addonsDir, "addons");
+	mountDirZips (mountHandle, addonsDir, "addons");
 			
 	availableAddons = uio_getDirList (addonsDir, "", "", match_MATCH_PREFIX);
 	if (availableAddons != NULL)
@@ -388,7 +431,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath)
 					 "not found; addon skipped.", addon);
 				continue;
 			}
-			mountDirZips (contentMountHandle, addonDir, mountname);
+			mountDirZips (mountHandle, addonDir, mountname);
 			uio_closeDir (addonDir);
 		}
 	}
