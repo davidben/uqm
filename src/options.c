@@ -378,14 +378,6 @@ mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
 		mountHandle = contentMountHandle;
 	}
 
-	contentDir = uio_openDir (repository, "/", 0);
-	if (contentDir == NULL)
-	{
-		log_add (log_Fatal, "Fatal error: Could not open content dir: %s",
-				strerror (errno));
-		exit (EXIT_FAILURE);
-	}
-
 	// NB: note the difference between addonsDir and addonDir.
 	//     the former is the dir 'addons', the latter a directory
 	//     in that dir.
