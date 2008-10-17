@@ -426,8 +426,8 @@ _GetCelData (uio_Stream *fp, DWORD length)
 			aniDir = uio_openDir (repository, aniDirName, 0);
 			aniMount = uio_mountDir (repository, aniDirName, uio_FSTYPE_ZIP,
 							aniDir, aniFileName, "/", autoMount,
-							uio_MOUNT_RDONLY | uio_MOUNT_ABOVE,
-							contentMountHandle);
+							uio_MOUNT_RDONLY | uio_MOUNT_TOP,
+							NULL);
 			aniFile = uio_fopen (aniDir, aniFileName, "r");
 			opos = 0;
 			n = 0;
@@ -631,8 +631,8 @@ _GetFontData (uio_Stream *fp, DWORD length)
 		fontDirHandle = uio_openDir (repository, fontDirName, 0);
 		fontMount = uio_mountDir (repository, _cur_resfile_name, uio_FSTYPE_ZIP,
 						fontDirHandle, fontZipName, "/", autoMount,
-						uio_MOUNT_RDONLY | uio_MOUNT_ABOVE,
-						contentMountHandle);
+						uio_MOUNT_RDONLY | uio_MOUNT_TOP,
+						NULL);
 		uio_closeDir (fontDirHandle);
 	}
 

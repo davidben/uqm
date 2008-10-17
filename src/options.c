@@ -60,7 +60,6 @@ uio_DirHandle *contentDir;
 uio_DirHandle *configDir;
 uio_DirHandle *saveDir;
 uio_DirHandle *meleeDir;
-uio_MountHandle *contentMountHandle;
 
 char baseContentPath[PATH_MAX];
 
@@ -315,6 +314,8 @@ mountContentDir (uio_Repository *repository, const char *contentPath)
 {
 	uio_DirHandle *packagesDir, *addonsDir;
 	static uio_AutoMount *autoMount[] = { NULL };
+	uio_MountHandle *contentMountHandle;
+
 	availableAddons = NULL;
 
 	contentMountHandle = uio_mountDir (repository, "/",
