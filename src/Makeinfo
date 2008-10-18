@@ -1,12 +1,8 @@
 uqm_SUBDIRS="sc2code res"
 
-case "$HOST_SYSTEM" in
-	ARMV5|GCCE|WINSCW)
-		;;
-	*)
-		uqm_SUBDIRS="$uqm_SUBDIRS getopt"
-		;;
-esac
+if [ "$uqm_HAVE_GETOPT_LONG" = 0 ]; then
+	uqm_SUBDIRS="$uqm_SUBDIRS getopt"
+fi
 
 case "$HOST_SYSTEM" in
 	Darwin)
