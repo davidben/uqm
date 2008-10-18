@@ -6,12 +6,11 @@ unclear. If you encounter any problems or have suggestions how to improve this
 document, please report them to our Bugzilla at
    http://bugs.uqm.stack.nl/
    
-UQM's Symbian support is currently at experimental stage and is tested only on
-Nokia N73, which has too little memory to run it reliably for long time.
-Reports of successes and failures on other devices are very welcome.
+UQM's Symbian support is currently at experimental stage. Development is
+being done on Nokia N73, which has too little memory for longer playing
+sessions. Reports of successes and failures on other devices are very welcome.
 
 Known problems:
-- No OGG support so voices and 3DO music are not available.
 - No netmelee.
 
 
@@ -40,6 +39,9 @@ Prerequisites:
 - SDL for S60 3rd ed.
   * Download from http://koti.mbnet.fi/mertama/sdl.html
   * You also need the sources from http://www.libsdl.org/
+  
+- Tremor
+  * Check out from SVN repository at http://svn.xiph.org/trunk/Tremor/
 
 Building:
 ---------
@@ -51,7 +53,7 @@ Building:
 2) Subst your Symbian SDK to a new drive along the following example:
       subst z: C:\Symbian\9.1\S60_3rd_MR_2
       
-3) Put UQM sources inside the substed drive, if not already there.
+3) Put UQM sources and Tremor inside the substed drive, if not already there.
 
 4) Install and build SDL, instructions are inside the package.
 
@@ -60,10 +62,17 @@ Building:
       cd png\group
       bldmake bldfiles
       abld build
+      
+6) Build Tremor. First apply a patch found from UQM SVN repository
+   at trunk/symbian/tremor:
+      cd Tremor
+      patch -p0 </path/to/tremor_symbian.patch
+      bldmake bldfiles
+      abld build
 
-6) Open MSYS terminal. All following steps are done inside it.
+7) Open MSYS terminal. All following steps are done inside it.
 
-7) Two environment variables control the building, BUILD_EPOCROOT and BUILD_HOST.
+8) Two environment variables control the building, BUILD_EPOCROOT and BUILD_HOST.
    
    Set BUILD_EPOCROOT to point to the substed drive:
       export BUILD_EPOCROOT=/z
@@ -72,14 +81,14 @@ Building:
    for which target you want to build:
       export BUILD_HOST=GCCE
 
-8) Compile (you don't need to change any options from the interactive menu):
+9) Compile (you don't need to change any options from the interactive menu):
       ./build.sh uqm
 
-9) Install. It builds the content zip and puts everything to proper
-   place (WINSCW) or creates a self-signed SIS package (GCCE / ARMV5):
-      ./build.sh uqm install
+10) Install. It builds the content zip and puts everything to proper
+    place (WINSCW) or creates a self-signed SIS package (GCCE / ARMV5):
+       ./build.sh uqm install
       
-10) If you built for GCCE or ARMV5, you should now have uqm.sisx in the same
+11) If you built for GCCE or ARMV5, you should now have uqm.sisx in the same
     directory from where you did the build. Remember to also install SDL SIS
     package and if device does not support FP2, Open C plugins before
     attempting to run UQM on actual device.

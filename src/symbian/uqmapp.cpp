@@ -6,6 +6,7 @@
 #include <aknnotewrappers.h>
 #include <eikstart.h>
 #include <badesca.h>
+#include <bautils.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL/SDL_keysym.h>
@@ -84,6 +85,7 @@ private:
     void DoExit(TInt aErr);
     void HandleWsEventL(const TWsEvent& aEvent, CCoeControl* aDestination);
     void HandleResourceChangeL(TInt aType);
+    void AddCmdLineParamsL(CDesC8Array& aArgs);
 private:
     CExitWait* iWait;
     CSDLWin* iSDLWin;
@@ -163,8 +165,10 @@ void CSdlAppUi::ConstructL()
     iSdl->DisableKeyBlocking(*this);    
     
     iWait = new (ELeave) CExitWait(*this);    
-    CDesC8ArrayFlat* args = new (ELeave)CDesC8ArrayFlat(10);        
-    iSdl->CallMainL(iWait->iStatus, *args, CSDL::ENoParamFlags, 81920);
+    CDesC8ArrayFlat* args = new (ELeave)CDesC8ArrayFlat(10);
+    AddCmdLineParamsL(*args);
+    
+    iSdl->CallMainL(iWait->iStatus, *args, CSDL::ENoFlags, 81920);
     delete args;
     
     iWait->Start();     
@@ -217,7 +221,29 @@ void CSdlAppUi::HandleResourceChangeL(TInt aType)
             }                       
         }
     }
-        
+
+void CSdlAppUi::AddCmdLineParamsL(CDesC8Array& aArgs)
+    {       
+    _LIT8(KAddonParam, "--addondir=?:\\uqm-addons");
+    _LIT16(KTestFolder, "?:\\uqm-addons");
+    RFs fs;
+    
+    fs.Connect();   
+    for (TInt8 c = 'e'; c < 'z'; ++c)
+        {
+        TBuf16<32> buf(KTestFolder);
+        buf[0] = c;
+        if (BaflUtils::FolderExists(fs, buf))
+            {
+            TBuf8<32> arg(KAddonParam);
+            arg[11] = c;
+            aArgs.AppendL(arg);
+            break;
+            }
+        }
+    fs.Close();
+    }
+
 CSdlAppUi::~CSdlAppUi()
     {
     if(iWait != NULL)

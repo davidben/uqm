@@ -219,7 +219,7 @@ case "$HOST_SYSTEM" in
 		LIB_tremor_LDFLAGS="-framework Tremor"
 		;;		
 	ARMV5|WINSCW|GCCE)
-		LIB_tremor_DETECT="false"
+		LIB_tremor_DETECT="true"
 		;;
 	*)
 		LIB_tremor_CFLAGS=""

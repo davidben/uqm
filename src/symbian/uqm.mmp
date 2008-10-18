@@ -33,6 +33,7 @@ LIBRARY eikcore.lib
 LIBRARY ws32.lib
 LIBRARY bafl.lib
 LIBRARY euser.lib
+LIBRARY efsrv.lib
 LIBRARY sdl.lib
 LIBRARY libc.lib
 LIBRARY libm.lib
@@ -41,3 +42,4 @@ LIBRARY libpthread.lib
 
 STATICLIBRARY uqm.lib
 STATICLIBRARY SDL_image.lib
+STATICLIBRARY tremor.lib
