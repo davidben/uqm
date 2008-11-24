@@ -67,6 +67,7 @@ BOOLEAN FreeResource (RESOURCE res);
 COUNT CountResourceTypes (void);
 DWORD res_GetIntResource (RESOURCE res);
 BOOLEAN res_GetBooleanResource (RESOURCE res);
+const char *res_GetResourceType (RESOURCE res);
 
 void LoadResourceIndex (uio_DirHandle *dir, const char *filename);
 

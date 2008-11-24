@@ -73,6 +73,31 @@ err:
 	return NULL;
 }
 
+const char *
+res_GetResourceType (RESOURCE res)
+{
+	RESOURCE_INDEX resourceIndex;
+	ResourceDesc *desc;
+	
+	if (res == NULL_RESOURCE)
+	{
+		log_add (log_Warning, "Trying to get type of null resource");
+		return NULL;
+	}
+	
+	resourceIndex = _get_current_index_header ();
+	desc = lookupResourceDesc (resourceIndex, res);
+	if (desc == NULL)
+	{
+		log_add (log_Warning, "Trying to get type of undefined resource '%s'",
+				res);
+		return NULL;
+	}
+	
+	return desc->vtable->resType;
+}
+	
+
 // Get a resource by its resource ID.
 void *
 res_GetResource (RESOURCE res)
