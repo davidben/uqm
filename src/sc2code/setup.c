@@ -125,6 +125,11 @@ LoadKernel (int argc, char *argv[])
 		loadAddon ("remix");
 	}
 
+	if (optWhichIntro == OPT_3DO)
+	{
+		loadAddon ("3dovideo");
+	}
+
 	/* Now load the rest of the addons, in order. */
 	prepareAddons (optAddons);
 

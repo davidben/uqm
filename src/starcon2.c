@@ -134,7 +134,7 @@ main (int argc, char *argv[])
 		/* .whichCoarseScan = */    OPT_PC,
 		/* .whichMenu = */          OPT_PC,
 		/* .whichFont = */          OPT_PC,
-		/* .whichIntro = */         OPT_3DO,
+		/* .whichIntro = */         OPT_PC,
 		/* .whichShield	= */        OPT_PC,
 		/* .smoothScroll = */       OPT_PC,
 		/* .meleeScale = */         TFB_SCALE_TRILINEAR,
