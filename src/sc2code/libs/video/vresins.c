@@ -34,7 +34,7 @@ FreeLegacyVideoData (void *data)
 	if (pLV->audio)
 		HFree (pLV->audio);
 	if (pLV->speech)
-		HFree (pLV->video);
+		HFree (pLV->speech);
 	HFree (pLV);
 	
 	return TRUE;

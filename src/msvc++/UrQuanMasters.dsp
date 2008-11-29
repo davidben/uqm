@@ -916,6 +916,10 @@ SOURCE=..\sc2code\libs\video\dukvid.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\video\legacyplayer.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\video\vfileins.c
 # End Source File
 # Begin Source File
@@ -936,11 +940,19 @@ SOURCE=..\sc2code\libs\video\videodec.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\sc2code\libs\video\vidintrn.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\sc2code\libs\video\vidplayer.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\libs\video\vidplayer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\sc2code\libs\video\vresins.c
 # End Source File
 # End Group
 # Begin Group "threads"
