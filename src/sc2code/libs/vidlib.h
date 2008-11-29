@@ -49,6 +49,7 @@ extern VIDEO_REF VidPlaying (void);
 extern void VidDoInput (void);
 
 LEGACY_VIDEO LoadLegacyVideoInstance (RESOURCE res);
+BOOLEAN PlayLegacyVideo (LEGACY_VIDEO vid);
 BOOLEAN DestroyLegacyVideo (LEGACY_VIDEO vid);
 
 #endif /* _VIDLIB_H */

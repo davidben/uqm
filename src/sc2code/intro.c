@@ -31,9 +31,6 @@
 #include "libs/inplib.h"
 #include "libs/log.h"
 
-// TODO: Fold DoFMV and friends into libs/video; then we can get rid of this.
-#include "libs/video/vidintrn.h"
-
 #include <ctype.h>
 
 static BOOLEAN ShowSlidePresentation (STRING PresStr);
@@ -89,41 +86,6 @@ typedef struct {
 } SPINANIM_INPUT_STATE;
 
 static BOOLEAN DoPresentation (void *pIS);
-
-BOOLEAN
-DoFMVEx (const char *name, const char *audname, const char *speechname,
-		DWORD loopframe)
-{
-	VIDEO_REF VidRef;
-	MUSIC_REF AudRef = 0;
-	MUSIC_REF SpeechRef = 0;
-
-	VidRef = LoadVideoFile (name);
-	if (!VidRef)
-		return FALSE;
-	if (audname)
-		AudRef = LoadMusicFile (audname);
-	if (speechname)
-		SpeechRef = LoadMusicFile (speechname);
-
-	VidPlayEx (VidRef, AudRef, SpeechRef, loopframe);
-	VidDoInput ();
-	VidStop ();
-	
-	DestroyVideo (VidRef);
-	if (SpeechRef)
-		DestroyMusic (SpeechRef);
-	if (AudRef)
-		DestroyMusic (AudRef);
-
-	return TRUE;
-}
-
-BOOLEAN
-DoFMV (const char *name)
-{
-	return DoFMVEx (name, NULL, NULL, VID_NO_LOOP);
-}
 
 static BOOLEAN
 ParseColorString (const char *Src, COLOR* pColor)
@@ -860,8 +822,9 @@ ShowPresentation (RESOURCE res)
 	else if (!strcmp (resType, "3DOVID"))
 	{
 		LEGACY_VIDEO vid = LoadLegacyVideoInstance (res);
-		return DoFMVEx (vid->video, vid->audio, vid->speech, vid->loop);
+		BOOLEAN result = PlayLegacyVideo (vid);
 		DestroyLegacyVideo (vid);
+		return result;
 	}
 	
 	log_add (log_Warning, "Tried to present '%s', of non-presentable type '%s'", res, resType);

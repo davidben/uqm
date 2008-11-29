@@ -26,15 +26,9 @@ extern void Logo (void);
 extern void SplashScreen (void (* DoProcessing)(DWORD TimeOut));
 extern void Introduction (void);
 extern void Victory (void);
-
 extern void DoShipSpin (COUNT index, MUSIC_REF hMusic);
 
-extern BOOLEAN DoFMV (const char *name);
-extern BOOLEAN DoFMVEx (const char *name, const char *audname,
-		const char *speechname, DWORD loopframe);
-
 extern BOOLEAN ShowPresentation (RESOURCE presentation);
-extern BOOLEAN ShowPresentationFile (const char *name);
 
 #endif  /* _FMV_H */
 

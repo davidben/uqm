@@ -30,10 +30,6 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 
-
-/* Some ship spin animations contain extra frames that must be discarded. */
-#define SHIP_SPIN_LOOP_FRAME 89
-
 void
 DoShipSpin (COUNT index, MUSIC_REF hMusic)
 {
@@ -168,7 +164,7 @@ Victory (void)
 void
 Logo (void)
 {
-	DoFMV ("logo");
+	ShowPresentation ("slides.logo");
 }
 
 
