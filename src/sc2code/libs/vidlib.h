@@ -21,6 +21,7 @@
 
 #include "libs/compiler.h"
 #include "libs/sndlib.h"
+#include "libs/reslib.h"
 
 typedef enum
 {
@@ -29,9 +30,10 @@ typedef enum
 	SOFTWARE_FMV
 } VIDEO_TYPE;
 
-struct tfb_videoclip;
-
 typedef struct tfb_videoclip *VIDEO_REF;
+typedef struct legacy_video_desc *LEGACY_VIDEO;
+
+extern BOOLEAN InstallVideoResType (void);
 
 extern BOOLEAN InitVideoPlayer (BOOLEAN UseCDROM);
 extern void UninitVideoPlayer (void);
@@ -45,5 +47,8 @@ extern VIDEO_TYPE VidPlayEx (VIDEO_REF VidRef, MUSIC_REF AudRef,
 extern void VidStop (void);
 extern VIDEO_REF VidPlaying (void);
 extern void VidDoInput (void);
+
+LEGACY_VIDEO LoadLegacyVideoInstance (RESOURCE res);
+BOOLEAN DestroyLegacyVideo (LEGACY_VIDEO vid);
 
 #endif /* _VIDLIB_H */

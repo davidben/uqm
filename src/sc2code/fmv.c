@@ -39,7 +39,6 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 {
 #ifdef WANT_SHIP_SPINS
 	char vnbuf[32];
-	char snbuf[32];
 	BYTE clut_buf[1];
 	RECT old_r, r;
 
@@ -57,25 +56,13 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 
 	FreeHyperData ();
 
-	sprintf (vnbuf, "slides/spins/ship%02u.duk", (unsigned)index);
-	sprintf (snbuf, "slides/spins/ship%02u.aif", (unsigned)index);
-	if (optWhichIntro == OPT_PC || !DoFMVEx (vnbuf, "slides/spins/spin.aif", snbuf, SHIP_SPIN_LOOP_FRAME))
-	{
-		STRING f;
+	// TODO: It would be nice to have better resource names for these.
+	sprintf (vnbuf, "slides.spins.%02u", (unsigned)index);
+	ShowPresentation (vnbuf);
 
-		sprintf (vnbuf, "slides/spins/ship%02u.txt", (unsigned)index);
-		f = CaptureStringTable (LoadStringTableFile (contentDir, vnbuf));
-		if (f)
-		{
-			ShowPresentation (f);
-			/* BUG: Leak? This is also in ShowPresentationFile */
-			/* DestroyStringTable (ReleaseStringTable (f)); */
-
-			clut_buf[0] = FadeAllToBlack;
-			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
-			FlushColorXForms ();
-		}
-	}
+	clut_buf[0] = FadeAllToBlack;
+	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
+	FlushColorXForms ();
 
 	GetContextClipRect (&old_r);
 	r.corner.x = r.corner.y = 0;
@@ -156,11 +143,7 @@ Introduction (void)
 {
 	BYTE xform_buf[1];
 
-	/* by default we do 3DO cinematics; or PC slides when 3DO files are
-	 * not present */
-	if (optWhichIntro == OPT_PC || !DoFMV ("slides/intro/intro.duk"))
-		ShowPresentation ( CaptureStringTable (
-				LoadStringTable (INTROPRES_STRTAB)));
+	ShowPresentation (INTROPRES_STRTAB);
 
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
@@ -176,9 +159,7 @@ Victory (void)
 
 	/* by default we do 3DO cinematics; or PC slides when 3DO files are
 	 * not present */
-	if (optWhichIntro == OPT_PC || !DoFMV ("slides/ending/victory.duk"))
-		ShowPresentation ( CaptureStringTable (
-					LoadStringTable (FINALPRES_STRTAB)));
+	ShowPresentation (FINALPRES_STRTAB);
 		
 	xform_buf[0] = FadeAllToBlack;
 	XFormColorMap ((COLORMAPPTR)xform_buf, 0);

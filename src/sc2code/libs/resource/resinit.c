@@ -24,6 +24,7 @@
 #include "libs/log.h"
 #include "libs/gfxlib.h"
 #include "libs/sndlib.h"
+#include "libs/vidlib.h"
 #include "coderes.h"
 #include "propfile.h"
 #include <ctype.h>
@@ -182,6 +183,7 @@ InitResourceSystem (void)
 	InstallGraphicResTypes ();
 	InstallStringTableResType ();
 	InstallAudioResTypes ();
+	InstallVideoResType ();
 	InstallCodeResType ();
 
 	return ndx;

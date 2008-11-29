@@ -31,8 +31,12 @@
 #include "libs/inplib.h"
 #include "libs/log.h"
 
+// TODO: Fold DoFMV and friends into libs/video; then we can get rid of this.
+#include "libs/video/vidintrn.h"
+
 #include <ctype.h>
 
+static BOOLEAN ShowSlidePresentation (STRING PresStr);
 
 typedef struct
 {
@@ -85,7 +89,6 @@ typedef struct {
 } SPINANIM_INPUT_STATE;
 
 static BOOLEAN DoPresentation (void *pIS);
-static BOOLEAN DoSpinAnim (void *pIS);
 
 BOOLEAN
 DoFMVEx (const char *name, const char *audname, const char *speechname,
@@ -313,7 +316,7 @@ Present_DrawMovieFrame (PRESENTATION_INPUT_STATE* pPIS)
 BOOLEAN
 ShowPresentationFile (const char *name)
 {
-	return ShowPresentation (CaptureStringTable (
+	return ShowSlidePresentation (CaptureStringTable (
 			LoadStringTableFile (contentDir, name)));
 }
 
@@ -788,8 +791,8 @@ DoPresentation (void *pIS)
 	return FALSE;
 }
 
-BOOLEAN
-ShowPresentation (STRING PresStr)
+static BOOLEAN
+ShowSlidePresentation (STRING PresStr)
 {
 	CONTEXT OldContext;
 	FONT OldFont;
@@ -839,4 +842,28 @@ ShowPresentation (STRING PresStr)
 	UnlockMutex (GraphicsLock);
 
 	return TRUE;
+}
+
+BOOLEAN
+ShowPresentation (RESOURCE res)
+{
+	const char *resType = res_GetResourceType (res);
+	if (!resType)
+	{
+		return FALSE;
+	}
+	if (!strcmp (resType, "STRTAB"))
+	{
+		return ShowSlidePresentation (CaptureStringTable (
+			LoadStringTable (res)));
+	}
+	else if (!strcmp (resType, "3DOVID"))
+	{
+		LEGACY_VIDEO vid = LoadLegacyVideoInstance (res);
+		return DoFMVEx (vid->video, vid->audio, vid->speech, vid->loop);
+		DestroyLegacyVideo (vid);
+	}
+	
+	log_add (log_Warning, "Tried to present '%s', of non-presentable type '%s'", res, resType);
+	return FALSE;
 }
