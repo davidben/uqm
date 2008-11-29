@@ -76,11 +76,10 @@ VidPlaying ()
 }
 
 VIDEO_TYPE
-VidPlayEx (VIDEO_REF VidRef, MUSIC_REF AudRef, MUSIC_REF SpeechRef,
+VidPlayEx (VIDEO_REF vid, MUSIC_REF AudRef, MUSIC_REF SpeechRef,
 		DWORD LoopFrame)
 {
 	VIDEO_TYPE ret;
-	TFB_VideoClip* vid = (TFB_VideoClip*) VidRef;
 
 	if (!vid)
 		return NO_FMV;
@@ -108,10 +107,10 @@ VidPlayEx (VIDEO_REF VidRef, MUSIC_REF AudRef, MUSIC_REF SpeechRef,
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	// play video in the center of the screen
-	if (TFB_PlayVideo (VidRef, (SCREEN_WIDTH - vid->w) / 2,
+	if (TFB_PlayVideo (vid, (SCREEN_WIDTH - vid->w) / 2,
 			(SCREEN_HEIGHT - vid->h) / 2))
 	{
-		_cur_video = VidRef;
+		_cur_video = vid;
 		ret = SOFTWARE_FMV;
 		if (SpeechRef)
 		{
@@ -162,10 +161,8 @@ _init_video_file (const char *pStr)
 }
 
 BOOLEAN
-DestroyVideo (VIDEO_REF VideoRef)
+DestroyVideo (VIDEO_REF vid)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) VideoRef;
-
 	if (!vid)
 		return FALSE;
 

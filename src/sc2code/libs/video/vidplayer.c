@@ -283,9 +283,8 @@ video_play_task (void *data)
 }
 
 bool
-TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
+TFB_PlayVideo (VIDEO_REF vid, uint32 x, uint32 y)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) VidRef;
 	RECT scrn_r;
 	RECT clip_r = {{0, 0}, {vid->w, vid->h}};
 	RECT vid_r = {{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}};
@@ -368,7 +367,7 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 	{
 		vid->playing = false;
 		ClearSemaphore (vp_interthread_lock);
-		TFB_StopVideo (VidRef);
+		TFB_StopVideo (vid);
 
 		return false;
 	}
@@ -377,10 +376,8 @@ TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y)
 }
 
 void
-TFB_StopVideo (VIDEO_REF VidRef)
+TFB_StopVideo (VIDEO_REF vid)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) VidRef;
-
 	if (!vid)
 		return;
 
@@ -406,10 +403,8 @@ TFB_StopVideo (VIDEO_REF VidRef)
 }
 
 bool
-TFB_VideoPlaying (VIDEO_REF VidRef)
+TFB_VideoPlaying (VIDEO_REF vid)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) VidRef;
-
 	if (!vid)
 		return false;
 
@@ -420,7 +415,7 @@ static BOOLEAN
 TFB_DoVideoInput (void *pIS)
 {
 	VIDEO_INPUT_STATE* pVIS = (VIDEO_INPUT_STATE*) pIS;
-	TFB_VideoClip* vid = (TFB_VideoClip*) pVIS->CurVideo;
+	TFB_VideoClip* vid = pVIS->CurVideo;
 
 	if (!pVIS->CurVideo || !TFB_VideoPlaying (pVIS->CurVideo))
 		return FALSE;
@@ -478,7 +473,7 @@ TFB_VideoInput (VIDEO_REF VidRef)
 static void
 vp_BeginFrame (TFB_VideoDecoder* decoder)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) decoder->data;
+	TFB_VideoClip* vid = decoder->data;
 
 	if (vid)
 		TFB_DrawCanvas_Lock (vid->frame->NormalImg);
@@ -487,7 +482,7 @@ vp_BeginFrame (TFB_VideoDecoder* decoder)
 static void
 vp_EndFrame (TFB_VideoDecoder* decoder)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) decoder->data;
+	TFB_VideoClip* vid = decoder->data;
 
 	if (vid)
 		TFB_DrawCanvas_Unlock (vid->frame->NormalImg);
@@ -496,7 +491,7 @@ vp_EndFrame (TFB_VideoDecoder* decoder)
 static void*
 vp_GetCanvasLine (TFB_VideoDecoder* decoder, uint32 line)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) decoder->data;
+	TFB_VideoClip* vid = decoder->data;
 
 	if (!vid)
 		return NULL;
@@ -516,7 +511,7 @@ vp_GetTicks (TFB_VideoDecoder* decoder)
 static bool
 vp_SetTimer (TFB_VideoDecoder* decoder, uint32 msecs)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) decoder->data;
+	TFB_VideoClip* vid = decoder->data;
 
 	if (!vid)
 		return false;

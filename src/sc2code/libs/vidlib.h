@@ -29,7 +29,9 @@ typedef enum
 	SOFTWARE_FMV
 } VIDEO_TYPE;
 
-typedef DWORD VIDEO_REF;
+struct tfb_videoclip;
+
+typedef struct tfb_videoclip *VIDEO_REF;
 
 extern BOOLEAN InitVideoPlayer (BOOLEAN UseCDROM);
 extern void UninitVideoPlayer (void);
