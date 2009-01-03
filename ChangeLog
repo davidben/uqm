@@ -1,4 +1,7 @@
 Changes towards version 0.7:
+- Index loading/saving now can operate on subtrees - Michael
+- Videos vs. slide now controlled by a '3dovideo' addon - Michael
+- New video resource type for 3DO videos - Michael
 - Allow reaching 999.9:999.9 in HyperSpace (bug #628), from Nic
 - Use system getopt_long() when available - SvdB
 - Added --addondir commandline option - Mika
