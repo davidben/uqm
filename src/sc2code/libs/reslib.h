@@ -99,11 +99,11 @@ extern DIRENTRY_REF LoadDirEntryTable (uio_DirHandle *dirHandle,
 /* Key-Value resources */
 void res_ClearTables (void);
 
-void res_LoadFilename (uio_DirHandle *path, const char *fname);
-void res_SaveFilename (uio_DirHandle *path, const char *fname, const char *root);
+void res_LoadFilename (uio_DirHandle *path, const char *fname, const char *prefix);
+void res_SaveFilename (uio_DirHandle *path, const char *fname, const char *root, BOOLEAN strip_root);
 
-void res_LoadFile (uio_Stream *fname);
-void res_SaveFile (uio_Stream *fname, const char *root);
+void res_LoadFile (uio_Stream *fname, const char *prefix);
+void res_SaveFile (uio_Stream *fname, const char *root, BOOLEAN strip_root);
 
 BOOLEAN res_HasKey (const char *key);
 

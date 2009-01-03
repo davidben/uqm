@@ -150,7 +150,7 @@ initKeyConfig (void)
 	int i;
 
 	/* First, load in the menu keys */
-	res_LoadFilename (contentDir, "menu.key");
+	res_LoadFilename (contentDir, "menu.key", NULL);
 	for (i = 0; i < NUM_MENU_KEYS; i++)
 	{
 		if (!menu_res_names[i])
@@ -178,7 +178,9 @@ initKeyConfig (void)
 		}
 	}
 	
-	res_LoadFile (fp);
+	res_LoadFile (fp, NULL);
+	// TODO RES070
+	// res_LoadFile (fp, "keys.");
 	res_CloseResFile (fp);
 
 	register_flight_controls ();
@@ -457,7 +459,9 @@ SaveKeyConfiguration (uio_DirHandle *path, const char *fname)
 	f = res_OpenResFile (path, fname, "wb");
 	if (f) 
 	{
-		res_SaveFile (f, "keys.");
+		res_SaveFile (f, "keys.", FALSE);
+		// TODO RES070
+		// res_SaveFile (f, "keys.", TRUE);
 		res_CloseResFile (f);
 	} 
 }

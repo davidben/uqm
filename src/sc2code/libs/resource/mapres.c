@@ -178,7 +178,7 @@ res_HasKey (const char *key)
 }
 
 void
-res_LoadFile (uio_Stream *s)
+res_LoadFile (uio_Stream *s, const char *prefix)
 {
 	check_map_init ();
 	
@@ -187,11 +187,11 @@ res_LoadFile (uio_Stream *s)
 		return;
 	}
 	
-	PropFile_from_file (s, res_PutString);
+	PropFile_from_file (s, res_PutString, prefix);
 }
 
 void
-res_LoadFilename (uio_DirHandle *path, const char *fname)
+res_LoadFilename (uio_DirHandle *path, const char *fname, const char *prefix)
 {
 	check_map_init ();
 	
@@ -200,11 +200,11 @@ res_LoadFilename (uio_DirHandle *path, const char *fname)
 		return;
 	}
 	
-	PropFile_from_filename (path, fname, res_PutString);
+	PropFile_from_filename (path, fname, res_PutString, prefix);
 }
 
 void
-res_SaveFile (uio_Stream *f, const char *prefix)
+res_SaveFile (uio_Stream *f, const char *prefix, BOOLEAN strip_root)
 {
 	CharHashTable_Iterator *i;
 	int prefix_len = 0;
@@ -220,7 +220,11 @@ res_SaveFile (uio_Stream *f, const char *prefix)
 		const char *key = CharHashTable_iteratorKey (i);
 		const char *value = (const char *)CharHashTable_iteratorValue (i);
 		if (!prefix || !strncmp (prefix, key, prefix_len)) {
-			WriteResFile (key, 1, strlen (key), f);
+			if (prefix && strip_root) {
+				WriteResFile (key+prefix_len, 1, strlen (key) - prefix_len, f);
+			} else {
+				WriteResFile (key, 1, strlen (key), f);
+			}
 			PutResFileChar(' ', f);
 			PutResFileChar('=', f);
 			PutResFileChar(' ', f);
@@ -233,14 +237,14 @@ res_SaveFile (uio_Stream *f, const char *prefix)
 }
 
 void
-res_SaveFilename (uio_DirHandle *path, const char *fname, const char *prefix)
+res_SaveFilename (uio_DirHandle *path, const char *fname, const char *prefix, BOOLEAN strip_root)
 {
 	uio_Stream *f;
 	
 	check_map_init ();
 	f = res_OpenResFile (path, fname, "wb");
 	if (f) {
-		res_SaveFile (f, prefix);
+		res_SaveFile (f, prefix, strip_root);
 		res_CloseResFile (f);
 	}
 }

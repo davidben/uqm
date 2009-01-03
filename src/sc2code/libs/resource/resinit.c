@@ -192,7 +192,7 @@ InitResourceSystem (void)
 void
 LoadResourceIndex (uio_DirHandle *dir, const char *rmpfile)
 {
-	PropFile_from_filename (dir, rmpfile, process_resource_desc);
+	PropFile_from_filename (dir, rmpfile, process_resource_desc, NULL);
 }
 
 void

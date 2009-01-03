@@ -24,7 +24,7 @@
 #include "reslib.h"
 
 void
-PropFile_from_string (char *d, PROPERTY_HANDLER handler)
+PropFile_from_string (char *d, PROPERTY_HANDLER handler, const char *prefix)
 {
 	int len, i;
 
@@ -84,12 +84,19 @@ PropFile_from_string (char *d, PROPERTY_HANDLER handler)
 		   make a new map entry. */
 		d[key_end] = '\0';
 		d[value_end] = '\0';
-		handler (d+key_start, d+value_start);
+		if (prefix) {
+			char buf[256];
+			snprintf(buf, 255, "%s%s", prefix, d+key_start);
+			buf[255]=0;
+			handler(buf, d+value_start);
+		} else {
+			handler (d+key_start, d+value_start);
+		}
 	}
 }
 
 void
-PropFile_from_file (uio_Stream *f, PROPERTY_HANDLER handler)
+PropFile_from_file (uio_Stream *f, PROPERTY_HANDLER handler, const char *prefix)
 {
 	long flen;
 	char *data;
@@ -104,17 +111,17 @@ PropFile_from_file (uio_Stream *f, PROPERTY_HANDLER handler)
 	flen = ReadResFile (data, 1, flen, f);
 	data[flen] = '\0';
 
-	PropFile_from_string (data, handler);
+	PropFile_from_string (data, handler, prefix);
 	free (data);
 }
 
 void
-PropFile_from_filename (uio_DirHandle *path, const char *fname, PROPERTY_HANDLER handler)
+PropFile_from_filename (uio_DirHandle *path, const char *fname, PROPERTY_HANDLER handler, const char *prefix)
 {
 	uio_Stream *f = res_OpenResFile (path, fname, "rt");
 	if (!f) {
 		return;
 	}
-	PropFile_from_file (f, handler);
+	PropFile_from_file (f, handler, prefix);
 	res_CloseResFile(f);
 }

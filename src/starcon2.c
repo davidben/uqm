@@ -210,7 +210,10 @@ main (int argc, char *argv[])
 	PlayerControls[1] = CONTROL_TEMPLATE_JOY_1;
 
 	// Fill in the options struct based on uqm.cfg
-	res_LoadFilename (configDir, "uqm.cfg");
+	res_LoadFilename (configDir, "uqm.cfg", NULL);
+	// TODO RES070
+	// res_LoadFilename (configDir, "uqm.cfg", "config.");
+	
 	if (res_HasKey ("config.reswidth"))
 	{
 		options.width = res_GetInteger ("config.reswidth");

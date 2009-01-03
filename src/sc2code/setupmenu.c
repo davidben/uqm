@@ -1371,6 +1371,8 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	res_PutString ("keys.5.name", input_templates[4].name);
 	res_PutString ("keys.6.name", input_templates[5].name);
 
-	res_SaveFilename (configDir, "uqm.cfg", "config.");
+	res_SaveFilename (configDir, "uqm.cfg", "config.", FALSE);
+	// TODO RES070
+	// res_SaveFilename (configDir, "uqm.cfg", "config.", TRUE);
 	SaveKeyConfiguration (configDir, "flight.cfg");
 }
