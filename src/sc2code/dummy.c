@@ -319,7 +319,7 @@ BOOLEAN
 InstallCodeResType ()
 {
 	return (InstallResTypeVectors ("SHIP",
-			GetCodeResData, _ReleaseCodeResData));
+			GetCodeResData, _ReleaseCodeResData, NULL));
 }
 
 

@@ -144,19 +144,19 @@ process_resource_desc (const char *key, const char *value)
 	}
 }
 
-void
+static void
 UseDescriptorAsRes (const char *descriptor, RESOURCE_DATA *resdata)
 {
 	resdata->ptr = (void *)descriptor;
 }
 
-void
+static void
 DescriptorToInt (const char *descriptor, RESOURCE_DATA *resdata)
 {
 	resdata->num = atoi (descriptor);
 }
 
-void
+static void
 DescriptorToBoolean (const char *descriptor, RESOURCE_DATA *resdata)
 {
 	if (!strcasecmp (descriptor, "true"))
@@ -169,6 +169,25 @@ DescriptorToBoolean (const char *descriptor, RESOURCE_DATA *resdata)
 	}
 }
 
+static void
+RawDescriptor (RESOURCE_DATA *resdata, char *buf, unsigned int size)
+{
+	snprintf (buf, size, "%s", (char *)resdata->ptr);
+}
+
+static void
+IntToString (RESOURCE_DATA *resdata, char *buf, unsigned int size)
+{
+	snprintf (buf, size, "%d", resdata->num);
+}
+
+
+static void
+BooleanToString (RESOURCE_DATA *resdata, char *buf, unsigned int size)
+{
+	snprintf (buf, size, "%s", resdata->num ? "true" : "false");
+}
+
 RESOURCE_INDEX
 InitResourceSystem (void)
 {
@@ -176,10 +195,10 @@ InitResourceSystem (void)
 	
 	_set_current_index_header (ndx);
 
-	InstallResTypeVectors ("UNKNOWNRES", UseDescriptorAsRes, NULL);
-	InstallResTypeVectors ("STRING", UseDescriptorAsRes, NULL);
-	InstallResTypeVectors ("INT32", DescriptorToInt, NULL);
-	InstallResTypeVectors ("BOOLEAN", DescriptorToBoolean, NULL);
+	InstallResTypeVectors ("UNKNOWNRES", UseDescriptorAsRes, NULL, NULL);
+	InstallResTypeVectors ("STRING", UseDescriptorAsRes, NULL, RawDescriptor);
+	InstallResTypeVectors ("INT32", DescriptorToInt, NULL, IntToString);
+	InstallResTypeVectors ("BOOLEAN", DescriptorToBoolean, NULL, BooleanToString);
 	InstallGraphicResTypes ();
 	InstallStringTableResType ();
 	InstallAudioResTypes ();
@@ -190,9 +209,55 @@ InitResourceSystem (void)
 }
 
 void
-LoadResourceIndex (uio_DirHandle *dir, const char *rmpfile)
+LoadResourceIndex (uio_DirHandle *dir, const char *rmpfile, const char *prefix)
 {
-	PropFile_from_filename (dir, rmpfile, process_resource_desc, NULL);
+	PropFile_from_filename (dir, rmpfile, process_resource_desc, prefix);
+}
+
+void
+SaveResourceIndex (uio_DirHandle *dir, const char *rmpfile, const char *root, BOOLEAN strip_root)
+{
+	uio_Stream *f;
+	CharHashTable_Iterator *it;
+	unsigned int prefix_len;
+	
+	f = res_OpenResFile (dir, rmpfile, "wb");
+	if (!f) {
+		/* TODO: Warning message */
+		return;
+	}
+	prefix_len = root ? strlen (root) : 0;
+	for (it = CharHashTable_getIterator (_get_current_index_header ()->map);
+	     !CharHashTable_iteratorDone (it);
+	     it = CharHashTable_iteratorNext (it)) {
+		char *key = CharHashTable_iteratorKey (it);
+		if (!root || !strncmp (root, key, prefix_len)) {
+			ResourceDesc *value = CharHashTable_iteratorValue (it);
+			if (!value) {
+				log_add(log_Warning, "Resource %s had no value", key);
+			} else if (!value->vtable) {
+				log_add(log_Warning, "Resource %s had no type", key);
+			} else if (value->vtable->toString) {
+				char buf[256];
+				value->vtable->toString (&value->resdata, buf, 256);
+				buf[255]=0;
+				if (root && strip_root) {
+					WriteResFile (key+prefix_len, 1, strlen (key) - prefix_len, f);
+				} else {
+					WriteResFile (key, 1, strlen (key), f);
+				}
+				PutResFileChar(' ', f);
+				PutResFileChar('=', f);
+				PutResFileChar(' ', f);
+				WriteResFile (value->vtable->resType, 1, strlen (value->vtable->resType), f);
+				PutResFileChar(':', f);
+				WriteResFile (buf, 1, strlen (buf), f);
+				PutResFileNewline(f);
+			}
+		}
+	}
+	res_CloseResFile (f);
+	CharHashTable_freeIterator (it);
 }
 
 void
@@ -204,7 +269,7 @@ UninitResourceSystem (void)
 
 BOOLEAN
 InstallResTypeVectors (const char *resType, ResourceLoadFun *loadFun,
-		ResourceFreeFun *freeFun)
+		ResourceFreeFun *freeFun, ResourceStringFun *stringFun)
 {
 	ResourceHandlers *handlers;
 	ResourceDesc *result;
@@ -223,6 +288,7 @@ InstallResTypeVectors (const char *resType, ResourceLoadFun *loadFun,
 	}
 	handlers->loadFun = loadFun;
 	handlers->freeFun = freeFun;
+	handlers->toString = stringFun;
 	handlers->resType = resType;
 	
 	result = HMalloc (sizeof (ResourceDesc));

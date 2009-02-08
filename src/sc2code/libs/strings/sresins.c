@@ -33,9 +33,9 @@ GetBinaryTableFileData (const char *pathname, RESOURCE_DATA *resdata)
 BOOLEAN
 InstallStringTableResType (void)
 {
-	InstallResTypeVectors ("STRTAB", GetStringTableFileData, FreeResourceData);
-	InstallResTypeVectors ("BINTAB", GetBinaryTableFileData, FreeResourceData);
-	InstallResTypeVectors ("CONVERSATION", _GetConversationData, FreeResourceData);
+	InstallResTypeVectors ("STRTAB", GetStringTableFileData, FreeResourceData, NULL);
+	InstallResTypeVectors ("BINTAB", GetBinaryTableFileData, FreeResourceData, NULL);
+	InstallResTypeVectors ("CONVERSATION", _GetConversationData, FreeResourceData, NULL);
 	return TRUE;
 }
 

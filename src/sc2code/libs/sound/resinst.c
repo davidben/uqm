@@ -33,8 +33,8 @@ GetMusicFileData (const char *pathname, RESOURCE_DATA *resdata)
 BOOLEAN
 InstallAudioResTypes (void)
 {
-	InstallResTypeVectors ("SNDRES", GetSoundBankFileData, _ReleaseSoundBankData);
-	InstallResTypeVectors ("MUSICRES", GetMusicFileData, _ReleaseMusicData);
+	InstallResTypeVectors ("SNDRES", GetSoundBankFileData, _ReleaseSoundBankData, NULL);
+	InstallResTypeVectors ("MUSICRES", GetMusicFileData, _ReleaseMusicData, NULL);
 	return (TRUE);
 }
 

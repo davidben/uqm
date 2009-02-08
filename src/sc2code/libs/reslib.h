@@ -41,6 +41,7 @@ extern const char *_cur_resfile_name;
 
 typedef void (ResourceLoadFun) (const char *pathname, RESOURCE_DATA *resdata);
 typedef BOOLEAN (ResourceFreeFun) (void *handle);
+typedef void (ResourceStringFun) (RESOURCE_DATA *handle, char *buf, unsigned int size);
 				  
 typedef void *(ResourceLoadFileFun) (uio_Stream *fp, DWORD len);
 
@@ -60,7 +61,7 @@ BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 
 RESOURCE_INDEX InitResourceSystem ();
 void UninitResourceSystem (void);
-BOOLEAN InstallResTypeVectors (const char *res_type, ResourceLoadFun *loadFun, ResourceFreeFun *freeFun);
+BOOLEAN InstallResTypeVectors (const char *res_type, ResourceLoadFun *loadFun, ResourceFreeFun *freeFun, ResourceStringFun *stringFun);
 void *res_GetResource (RESOURCE res);
 void *res_DetachResource (RESOURCE res);
 BOOLEAN FreeResource (RESOURCE res);
@@ -69,7 +70,8 @@ DWORD res_GetIntResource (RESOURCE res);
 BOOLEAN res_GetBooleanResource (RESOURCE res);
 const char *res_GetResourceType (RESOURCE res);
 
-void LoadResourceIndex (uio_DirHandle *dir, const char *filename);
+void LoadResourceIndex (uio_DirHandle *dir, const char *filename, const char *prefix);
+void SaveResourceIndex (uio_DirHandle *dir, const char *rmpfile, const char *root, BOOLEAN strip_root);
 
 void *GetResourceData (uio_Stream *fp, DWORD length);
 

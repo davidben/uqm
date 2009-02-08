@@ -28,6 +28,7 @@ typedef struct resource_handlers
 	const char *resType;
 	ResourceLoadFun *loadFun;
 	ResourceFreeFun *freeFun;
+	ResourceStringFun *toString;
 } ResourceHandlers;
 
 typedef struct resource_desc

@@ -159,7 +159,7 @@ err:
 BOOLEAN
 InstallVideoResType (void)
 {
-	InstallResTypeVectors ("3DOVID", GetLegacyVideoData, FreeLegacyVideoData);
+	InstallResTypeVectors ("3DOVID", GetLegacyVideoData, FreeLegacyVideoData, NULL);
 	return TRUE;
 }
 
