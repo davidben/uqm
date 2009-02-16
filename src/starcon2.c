@@ -103,6 +103,7 @@ static int parseIntOption (const char *str, int *result,
 		const char *optName);
 static int parseFloatOption (const char *str, float *f,
 		const char *optName);
+static void parseIntVolume (int intVol, float *vol);
 static int parseVolume (const char *str, float *vol, const char *optName);
 static int InvalidArgument (const char *supplied, const char *opt_name);
 static int Check_PC_3DO_opt (const char *value, DWORD mask, const char *opt,
@@ -210,9 +211,7 @@ main (int argc, char *argv[])
 	PlayerControls[1] = CONTROL_TEMPLATE_JOY_1;
 
 	// Fill in the options struct based on uqm.cfg
-	res_LoadFilename (configDir, "uqm.cfg", NULL);
-	// TODO RES070
-	// res_LoadFilename (configDir, "uqm.cfg", "config.");
+	LoadResourceIndex (configDir, "uqm.cfg", "config.");
 	
 	if (res_HasKey ("config.reswidth"))
 	{
@@ -381,18 +380,18 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.musicvol"))
 	{
-		parseVolume (res_GetString ("config.musicvol"), 
-				&options.musicVolumeScale, "music volume");
+		parseIntVolume (res_GetInteger ("config.musicvol"), 
+				&options.musicVolumeScale);
 	}		
 	if (res_HasKey ("config.sfxvol"))
 	{
-		parseVolume (res_GetString ("config.sfxvol"), 
-				&options.sfxVolumeScale, "SFX volume");
+		parseIntVolume (res_GetInteger ("config.sfxvol"), 
+				&options.sfxVolumeScale);
 	}		
 	if (res_HasKey ("config.speechvol"))
 	{
-		parseVolume (res_GetString ("config.speechvol"), 
-				&options.speechVolumeScale, "speech volume");
+		parseIntVolume (res_GetInteger ("config.speechvol"), 
+				&options.speechVolumeScale);
 	}		
 
 	{	/* remove old control template names */
@@ -907,6 +906,25 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 	return EXIT_SUCCESS;
 }
 
+static void
+parseIntVolume (int intVol, float *vol)
+{
+	if (intVol < 0)
+	{
+		*vol = 0.0f;
+		return;
+	}
+
+	if (intVol > 100)
+	{
+		*vol = 1.0f;
+		return;
+	}
+
+	*vol = intVol / 100.0f;
+	return;
+}
+
 static int
 parseVolume (const char *str, float *vol, const char *optName)
 {
@@ -925,20 +943,7 @@ parseVolume (const char *str, float *vol, const char *optName)
 				"for '%s'.", optName);
 		return -1;
 	}
-
-	if (intVol < 0)
-	{
-		*vol = 0.0f;
-		return 0;
-	}
-
-	if (intVol > 100)
-	{
-		*vol = 1.0f;
-		return 0;
-	}
-
-	*vol = intVol / 100.0f;
+	parseIntVolume (intVol, vol);
 	return 0;
 }
 

@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- .cfg files are now kept as subtrees of the resource map - Michael
+- Flight control data no longer unnecessarily copied to config directory - Michael
 - Index loading/saving now can operate on subtrees - Michael
 - Videos vs. slide now controlled by a '3dovideo' addon - Michael
 - New video resource type for 3DO videos - Michael

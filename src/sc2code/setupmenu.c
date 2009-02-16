@@ -328,6 +328,7 @@ do_editkeys (WIDGET *self, int event)
 static void
 change_template (WIDGET_CHOICE *self, int oldval)
 {
+	(void) oldval;
 	populate_editkeys (self->selected);
 }
 
@@ -517,8 +518,6 @@ OnTextEntryChange (TEXTENTRY_STATE *pTES)
 static BOOLEAN
 OnTextEntryFrame (TEXTENTRY_STATE *pTES)
 {
-	WIDGET_TEXTENTRY *widget = (WIDGET_TEXTENTRY *) pTES->CbParam;
-
 	redraw_menu ();
 
 	SleepThreadUntil (pTES->NextTime);
@@ -1371,8 +1370,6 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	res_PutString ("keys.5.name", input_templates[4].name);
 	res_PutString ("keys.6.name", input_templates[5].name);
 
-	res_SaveFilename (configDir, "uqm.cfg", "config.", FALSE);
-	// TODO RES070
-	// res_SaveFilename (configDir, "uqm.cfg", "config.", TRUE);
+	SaveResourceIndex (configDir, "uqm.cfg", "config.", TRUE);
 	SaveKeyConfiguration (configDir, "flight.cfg");
 }

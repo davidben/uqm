@@ -23,6 +23,7 @@
 #include "types.h"
 #include "libs/log.h"
 #include "libs/gfxlib.h"
+#include "libs/reslib.h"
 #include "libs/sndlib.h"
 #include "libs/vidlib.h"
 #include "coderes.h"
@@ -127,18 +128,7 @@ process_resource_desc (const char *key, const char *value)
 	{
 		if (!CharHashTable_add (map, key, newDesc))
 		{
-			ResourceDesc *oldDesc = (ResourceDesc *)CharHashTable_find (map, key);
-			if (oldDesc != NULL)
-			{
-				if (newDesc->resdata.ptr != NULL)
-				{
-					/* XXX: It might be nice to actually clean it up properly */
-					log_add (log_Warning, "LEAK WARNING: Replaced '%s' while it was live", key);
-				}
-				HFree (oldDesc->fname);
-				HFree (oldDesc);
-			}
-			CharHashTable_remove (map, key);
+			res_Remove (key);
 			CharHashTable_add (map, key, newDesc);
 		}
 	}
@@ -188,9 +178,20 @@ BooleanToString (RESOURCE_DATA *resdata, char *buf, unsigned int size)
 	snprintf (buf, size, "%s", resdata->num ? "true" : "false");
 }
 
+static RESOURCE_INDEX curResourceIndex;
+
+void
+_set_current_index_header (RESOURCE_INDEX newResourceIndex)
+{
+	curResourceIndex = newResourceIndex;
+}
+
 RESOURCE_INDEX
 InitResourceSystem (void)
 {
+	if (curResourceIndex) {
+		return curResourceIndex;
+	}
 	RESOURCE_INDEX ndx = allocResourceIndex ();
 	
 	_set_current_index_header (ndx);
@@ -206,6 +207,15 @@ InitResourceSystem (void)
 	InstallCodeResType ();
 
 	return ndx;
+}
+
+RESOURCE_INDEX
+_get_current_index_header (void)
+{
+	if (!curResourceIndex) {
+		InitResourceSystem ();
+	}
+	return curResourceIndex;
 }
 
 void
@@ -303,4 +313,124 @@ InstallResTypeVectors (const char *resType, ResourceLoadFun *loadFun,
 
 	map = _get_current_index_header ()->map;
 	return CharHashTable_add (map, key, result) != 0;
+}
+
+/* These replace the mapres.c calls and probably should be split out at some point. */
+const char *
+res_GetString (const char *key)
+{
+	RESOURCE_INDEX idx = _get_current_index_header ();
+	ResourceDesc *desc = lookupResourceDesc (idx, key);
+	if (!desc || !desc->resdata.ptr || strcmp(desc->vtable->resType, "STRING"))
+		return NULL;
+	return (const char *)desc->resdata.ptr;
+}
+
+void
+res_PutString (const char *key, const char *value)
+{
+	RESOURCE_INDEX idx = _get_current_index_header ();
+	ResourceDesc *desc = lookupResourceDesc (idx, key);
+	int srclen, dstlen;
+	if (!desc || !desc->resdata.ptr || strcmp(desc->vtable->resType, "STRING"))
+	{
+		/* TODO: This is kind of roundabout. We can do better by refactoring newResourceDesc */
+		process_resource_desc(key, "STRING:undefined");
+		desc = lookupResourceDesc (idx, key);
+	}
+	srclen = strlen (value);
+	dstlen = strlen (desc->resdata.ptr);
+	if (srclen > dstlen) {
+		char *newValue = HMalloc(srclen + 1);
+		char *oldValue = desc->fname;
+		log_add(log_Warning, "Reallocating string space for '%s'", key);
+		strncpy (newValue, value, srclen + 1);
+		desc->resdata.ptr = newValue;
+		desc->fname = newValue;
+		HFree (oldValue);
+	} else {
+		strncpy (desc->resdata.ptr, value, srclen + 1);
+	}
+}
+
+int
+res_GetInteger (const char *key)
+{
+	RESOURCE_INDEX idx = _get_current_index_header ();
+	ResourceDesc *desc = lookupResourceDesc (idx, key);
+	if (!desc || strcmp(desc->vtable->resType, "INT32"))
+	{
+		// TODO: Better error handling
+		return 0;
+	}
+	return desc->resdata.num;
+}
+
+void
+res_PutInteger (const char *key, int value)
+{
+	RESOURCE_INDEX idx = _get_current_index_header ();
+	ResourceDesc *desc = lookupResourceDesc (idx, key);
+	if (!desc || strcmp(desc->vtable->resType, "INT32"))
+	{
+		/* TODO: This is kind of roundabout. We can do better by refactoring newResourceDesc */
+		process_resource_desc(key, "INT32:0");
+		desc = lookupResourceDesc (idx, key);
+	}
+	desc->resdata.num = value;
+}
+
+BOOLEAN
+res_GetBoolean (const char *key)
+{
+	RESOURCE_INDEX idx = _get_current_index_header ();
+	ResourceDesc *desc = lookupResourceDesc (idx, key);
+	if (!desc || strcmp(desc->vtable->resType, "BOOLEAN"))
+	{
+		// TODO: Better error handling
+		return FALSE;
+	}
+	return desc->resdata.num ? TRUE : FALSE;
+}
+
+void
+res_PutBoolean (const char *key, BOOLEAN value)
+{
+	RESOURCE_INDEX idx = _get_current_index_header ();
+	ResourceDesc *desc = lookupResourceDesc (idx, key);
+	if (!desc || strcmp(desc->vtable->resType, "BOOLEAN"))
+	{
+		/* TODO: This is kind of roundabout. We can do better by refactoring newResourceDesc */
+		process_resource_desc(key, "BOOLEAN:false");
+		desc = lookupResourceDesc (idx, key);
+	}
+	desc->resdata.num = value;
+}
+
+BOOLEAN
+res_HasKey (const char *key)
+{
+	RESOURCE_INDEX idx = _get_current_index_header ();
+	return (lookupResourceDesc(idx, key) != NULL);
+}
+
+BOOLEAN
+res_Remove (const char *key)
+{
+	CharHashTable_HashTable *map = _get_current_index_header ()->map;
+	ResourceDesc *oldDesc = (ResourceDesc *)CharHashTable_find (map, key);
+	if (oldDesc != NULL)
+	{
+		if (oldDesc->resdata.ptr != NULL)
+		{
+			log_add (log_Warning, "WARNING: Replacing '%s' while it is live", key);
+			if (oldDesc->vtable && oldDesc->vtable->freeFun)
+			{
+				oldDesc->vtable->freeFun(oldDesc->resdata.ptr);
+			}
+		}
+		HFree (oldDesc->fname);
+		HFree (oldDesc);
+	}
+	return CharHashTable_remove (map, key);
 }

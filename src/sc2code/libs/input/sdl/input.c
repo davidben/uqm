@@ -146,11 +146,10 @@ register_flight_controls (void)
 static void
 initKeyConfig (void)
 {
-	uio_Stream *fp;
 	int i;
 
 	/* First, load in the menu keys */
-	res_LoadFilename (contentDir, "menu.key", NULL);
+	LoadResourceIndex (contentDir, "menu.key", "menu.");
 	for (i = 0; i < NUM_MENU_KEYS; i++)
 	{
 		if (!menu_res_names[i])
@@ -158,30 +157,15 @@ initKeyConfig (void)
 		register_menu_controls (i);
 	}
 	
-	fp = res_OpenResFile (configDir, "flight.cfg", "rt");
-	if (!fp)
+	LoadResourceIndex (configDir, "flight.cfg", "keys.");
+	if (!res_HasKey ("keys.1.name"))
 	{
-		if (copyFile (contentDir, "uqm.key",
-			configDir, "flight.cfg") == -1)
-		{
-			log_add (log_Fatal, "Error: Could not copy default key config "
-				"to user config dir: %s.", strerror (errno));
-			exit (EXIT_FAILURE);
-		}
-		log_add (log_Info, "Copying default key config file to user "
-			"config dir.");
-		
-		if ((fp = res_OpenResFile (configDir, "flight.cfg", "rt")) == NULL)
-		{
-			log_add (log_Fatal, "Error: Could not open flight.cfg");
-			exit (EXIT_FAILURE);
-		}
+		/* Either flight.cfg doesn't exist, or we're using an old version
+		   of flight.cfg, and thus we wound up loading untyped values into
+		   'keys.keys.1.name' and such.  Load the defaults from the content
+		   directory. */
+		LoadResourceIndex (contentDir, "uqm.key", "keys.");
 	}
-	
-	res_LoadFile (fp, NULL);
-	// TODO RES070
-	// res_LoadFile (fp, "keys.");
-	res_CloseResFile (fp);
 
 	register_flight_controls ();
 
@@ -454,16 +438,7 @@ RebindInputState (int template, int control, int index)
 void
 SaveKeyConfiguration (uio_DirHandle *path, const char *fname)
 {
-	uio_Stream *f;
-	
-	f = res_OpenResFile (path, fname, "wb");
-	if (f) 
-	{
-		res_SaveFile (f, "keys.", FALSE);
-		// TODO RES070
-		// res_SaveFile (f, "keys.", TRUE);
-		res_CloseResFile (f);
-	} 
+	SaveResourceIndex (path, fname, "keys.", TRUE);
 }
 
 void
