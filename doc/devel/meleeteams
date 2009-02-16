@@ -11,7 +11,7 @@ A SuperMelee team consists of the following data:
                        /* \0-terminated
            };
 
-The file uqm.cfg contains:
+The file melee.cfg contains:
  0 -   0   Player Control for player 1 (bottom player)
            One of:
               1 - Human controlled
