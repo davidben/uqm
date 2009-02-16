@@ -18,9 +18,9 @@ The file uqm.cfg contains:
               6 - Computer controlled
               8 - Network controlled (added later)
            or'ed with one of:
-             16 - Standard computer control rating
-             32 - Good computer control rating
-             64 - Awesome computer control rating
+             16 - Standard computer control rating (was 8 originally)
+             32 - Good computer control rating (was 16 originally)
+             64 - Awesome computer control rating (was 32 originally)
  1 -  69   TEAM_IMAGE for player 1, as described above
 70 - 139   Bytes 0-69 repeated for player 2 (top player)
 
