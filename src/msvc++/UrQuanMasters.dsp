@@ -680,19 +680,11 @@ SOURCE=..\sc2code\libs\resource\loadres.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\mapres.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\sc2code\libs\resource\propfile.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\sc2code\libs\resource\propfile.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\resource\resdata.c
 # End Source File
 # Begin Source File
 
