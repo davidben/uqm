@@ -8,11 +8,11 @@ A SuperMelee team consists of the following data:
  0 - 13        uint8_t ShipList[MELEE_FLEET_SIZE];
                        /* Originally 6*2 ships, now 7*2 */
 14 - 68        char TeamName[MAX_TEAM_CHARS + 1 + 24];
-                       /* \0-terminated
+                       /* \0-terminated */
            };
 
 The file melee.cfg contains:
- 0 -   0   Player Control for player 1 (bottom player)
+ 0 -   0   Player Control for the bottom player
            One of:
               1 - Human controlled
               6 - Computer controlled
@@ -21,8 +21,10 @@ The file melee.cfg contains:
              16 - Standard computer control rating (was 8 originally)
              32 - Good computer control rating (was 16 originally)
              64 - Awesome computer control rating (was 32 originally)
- 1 -  69   TEAM_IMAGE for player 1, as described above
-70 - 139   Bytes 0-69 repeated for player 2 (top player)
+ 1 -  69   TEAM_IMAGE for the top player, as described above
+70 -  70   Player Control for the top player, as byte 0
+71 - 139   TEAM_IMAGE for the bottom player, as described above
+Note the mixed up order for top and bottom player.
 
 The entries in ShipList are:
   0 - Androsynth Guardian
