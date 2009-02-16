@@ -189,10 +189,11 @@ _set_current_index_header (RESOURCE_INDEX newResourceIndex)
 RESOURCE_INDEX
 InitResourceSystem (void)
 {
+	RESOURCE_INDEX ndx;
 	if (curResourceIndex) {
 		return curResourceIndex;
 	}
-	RESOURCE_INDEX ndx = allocResourceIndex ();
+	ndx = allocResourceIndex ();
 	
 	_set_current_index_header (ndx);
 
