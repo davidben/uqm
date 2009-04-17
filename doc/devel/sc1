@@ -131,7 +131,8 @@ Resource type 7 (scenario):
    off  len
   0x00   16     Title (\0 terminated)
   0x10    ?     Short description (\0 terminated)
-     ?    ?     Unknown (probably description of fleets and bases)
+     ?    ?     Unknown (probably description of star systems, Space Spines,
+                fleets and bases (maybe random seeds?))
   0x80  840(?)  Long description (\0 terminated)
 
 
