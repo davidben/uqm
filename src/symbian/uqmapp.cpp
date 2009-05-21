@@ -292,6 +292,12 @@ TInt CSDLObserver::SdlEvent(TInt aEvent, TInt aParam)
         // starmap zoom
         iSdl->SetSDLCode('3', SDLK_KP_PLUS);
         iSdl->SetSDLCode('2', SDLK_KP_MINUS);
+        
+        iSdl->SetSDLCode('A', SDLK_KP_PLUS);
+        iSdl->SetSDLCode('Z', SDLK_KP_MINUS);
+        
+        iSdl->SetSDLCode('a', SDLK_KP_PLUS);
+        iSdl->SetSDLCode('z', SDLK_KP_MINUS);        
     }
     return 0;
 }
