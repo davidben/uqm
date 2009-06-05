@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SLYLANDRO_FONT "comm.slyhome.font"
+#define SLYLANDRO_FONT "comm.slylandro.font"

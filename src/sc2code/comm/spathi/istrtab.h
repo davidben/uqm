@@ -4,5 +4,5 @@
 
 #define SPATHI_COLOR_MAP "comm.spathi.colortable"
 #define SPATHI_CONVERSATION_PHRASES "comm.spathi.dialogue"
-#define SPATHI_HOME_COLOR_MAP "comm.spahome.colortable"
-#define SPATHI_HOME_CONVERSATION_PHRASES "comm.spahome.dialogue"
+#define SPATHI_HOME_COLOR_MAP "comm.safeones.colortable"
+#define SPATHI_HOME_CONVERSATION_PHRASES "comm.safeones.dialogue"
