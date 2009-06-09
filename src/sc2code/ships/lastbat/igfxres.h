@@ -2,13 +2,13 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define GENERATOR_BIG_MASK_ANIM "ship.lastbat.graphics.gen.large"
-#define GENERATOR_MED_MASK_PMAP_ANIM "ship.lastbat.graphics.gen.medium"
-#define GENERATOR_SML_MASK_PMAP_ANIM "ship.lastbat.graphics.gen.small"
-#define SAMATRA_BIG_MASK_ANIM "ship.lastbat.graphics.lastbat.large"
-#define SAMATRA_CAPTAIN_MASK_PMAP_ANIM "ship.lastbat.graphics.captain"
-#define SAMATRA_MED_MASK_PMAP_ANIM "ship.lastbat.graphics.lastbat.medium"
-#define SAMATRA_SML_MASK_PMAP_ANIM "ship.lastbat.graphics.lastbat.small"
-#define SENTINEL_BIG_MASK_ANIM "ship.lastbat.graphics.sen.large"
-#define SENTINEL_MED_MASK_PMAP_ANIM "ship.lastbat.graphics.sen.medium"
-#define SENTINEL_SML_MASK_PMAP_ANIM "ship.lastbat.graphics.sen.small"
+#define GENERATOR_BIG_MASK_ANIM "ship.samatra.graphics.generator.large"
+#define GENERATOR_MED_MASK_PMAP_ANIM "ship.samatra.graphics.generator.medium"
+#define GENERATOR_SML_MASK_PMAP_ANIM "ship.samatra.graphics.generator.small"
+#define SAMATRA_BIG_MASK_ANIM "ship.samatra.graphics.samatra.large"
+#define SAMATRA_CAPTAIN_MASK_PMAP_ANIM "ship.samatra.graphics.captain"
+#define SAMATRA_MED_MASK_PMAP_ANIM "ship.samatra.graphics.samatra.medium"
+#define SAMATRA_SML_MASK_PMAP_ANIM "ship.samatra.graphics.samatra.small"
+#define SENTINEL_BIG_MASK_ANIM "ship.samatra.graphics.sentinel.large"
+#define SENTINEL_MED_MASK_PMAP_ANIM "ship.samatra.graphics.sentinel.medium"
+#define SENTINEL_SML_MASK_PMAP_ANIM "ship.samatra.graphics.sentinel.small"

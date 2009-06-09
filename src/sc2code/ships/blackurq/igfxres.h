@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define BUZZSAW_BIG_MASK_PMAP_ANIM "ship.kohrah.graphics.buz.large"
-#define BUZZSAW_MED_MASK_PMAP_ANIM "ship.kohrah.graphics.buz.medium"
-#define BUZZSAW_SML_MASK_PMAP_ANIM "ship.kohrah.graphics.buz.small"
+#define BUZZSAW_BIG_MASK_PMAP_ANIM "ship.kohrah.graphics.buzzsaw.large"
+#define BUZZSAW_MED_MASK_PMAP_ANIM "ship.kohrah.graphics.buzzsaw.medium"
+#define BUZZSAW_SML_MASK_PMAP_ANIM "ship.kohrah.graphics.buzzsaw.small"
 #define GAS_BIG_MASK_PMAP_ANIM "ship.kohrah.graphics.gas.large"
 #define GAS_MED_MASK_PMAP_ANIM "ship.kohrah.graphics.gas.medium"
 #define GAS_SML_MASK_PMAP_ANIM "ship.kohrah.graphics.gas.small"
-#define KOHR_AH_BIG_MASK_PMAP_ANIM "ship.kohrah.graphics.blackurq.large"
+#define KOHR_AH_BIG_MASK_PMAP_ANIM "ship.kohrah.graphics.marauder.large"
 #define KOHR_AH_CAPTAIN_MASK_PMAP_ANIM "ship.kohrah.graphics.captain"
 #define KOHR_AH_ICON_MASK_PMAP_ANIM "ship.kohrah.icons"
-#define KOHR_AH_MED_MASK_PMAP_ANIM "ship.kohrah.graphics.blackurq.medium"
+#define KOHR_AH_MED_MASK_PMAP_ANIM "ship.kohrah.graphics.marauder.medium"
 #define KOHR_AH_MICON_MASK_PMAP_ANIM "ship.kohrah.meleeicons"
-#define KOHR_AH_SML_MASK_PMAP_ANIM "ship.kohrah.graphics.blackurq.small"
+#define KOHR_AH_SML_MASK_PMAP_ANIM "ship.kohrah.graphics.marauder.small"

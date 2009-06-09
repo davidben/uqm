@@ -52,7 +52,7 @@ static RESOURCE code_resources[] = {
 		MMRNMHRM_CODE,
 		SIS_CODE,
 		SAMATRA_CODE,
-		PROBE_CODE };
+		URQUAN_DRONE_CODE };
 
 RACE_DESC *
 load_ship (SPECIES_ID SpeciesID, BOOLEAN LoadBattleData)

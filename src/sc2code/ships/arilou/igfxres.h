@@ -2,12 +2,12 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define ARILOU_BIG_MASK_PMAP_ANIM "ship.arilou.graphics.arilou.large"
+#define ARILOU_BIG_MASK_PMAP_ANIM "ship.arilou.graphics.skiff.large"
 #define ARILOU_CAPTAIN_MASK_PMAP_ANIM "ship.arilou.graphics.captain"
 #define ARILOU_ICON_MASK_PMAP_ANIM "ship.arilou.icons"
-#define ARILOU_MED_MASK_PMAP_ANIM "ship.arilou.graphics.arilou.medium"
+#define ARILOU_MED_MASK_PMAP_ANIM "ship.arilou.graphics.skiff.medium"
 #define ARILOU_MICON_MASK_PMAP_ANIM "ship.arilou.meleeicons"
-#define ARILOU_SML_MASK_PMAP_ANIM "ship.arilou.graphics.arilou.small"
+#define ARILOU_SML_MASK_PMAP_ANIM "ship.arilou.graphics.skiff.small"
 #define WARP_BIG_MASK_PMAP_ANIM "ship.arilou.graphics.warp.large"
 #define WARP_MED_MASK_PMAP_ANIM "ship.arilou.graphics.warp.medium"
 #define WARP_SML_MASK_PMAP_ANIM "ship.arilou.graphics.warp.small"

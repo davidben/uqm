@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define PROBE_CODE "ship.probe.code"
+#define URQUAN_DRONE_CODE "ship.drone.code"

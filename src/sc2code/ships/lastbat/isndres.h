@@ -2,4 +2,4 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define SAMATRA_SHIP_SOUNDS "ship.lastbat.sounds"
+#define SAMATRA_SHIP_SOUNDS "ship.samatra.sounds"

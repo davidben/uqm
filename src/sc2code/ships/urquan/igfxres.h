@@ -2,15 +2,15 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define FIGHTER_BIG_MASK_PMAP_ANIM "ship.urquan.graphics.fight.large"
-#define FIGHTER_MED_MASK_PMAP_ANIM "ship.urquan.graphics.fight.medium"
-#define FIGHTER_SML_MASK_PMAP_ANIM "ship.urquan.graphics.fight.small"
+#define FIGHTER_BIG_MASK_PMAP_ANIM "ship.urquan.graphics.fighter.large"
+#define FIGHTER_MED_MASK_PMAP_ANIM "ship.urquan.graphics.fighter.medium"
+#define FIGHTER_SML_MASK_PMAP_ANIM "ship.urquan.graphics.fighter.small"
 #define FUSION_BIG_MASK_PMAP_ANIM "ship.urquan.graphics.fusion.large"
 #define FUSION_MED_MASK_PMAP_ANIM "ship.urquan.graphics.fusion.medium"
 #define FUSION_SML_MASK_PMAP_ANIM "ship.urquan.graphics.fusion.small"
-#define URQUAN_BIG_MASK_PMAP_ANIM "ship.urquan.graphics.urquan.large"
+#define URQUAN_BIG_MASK_PMAP_ANIM "ship.urquan.graphics.dreadnought.large"
 #define URQUAN_CAPTAIN_MASK_PMAP_ANIM "ship.urquan.graphics.captain"
 #define URQUAN_ICON_MASK_PMAP_ANIM "ship.urquan.icons"
-#define URQUAN_MED_MASK_PMAP_ANIM "ship.urquan.graphics.urquan.medium"
+#define URQUAN_MED_MASK_PMAP_ANIM "ship.urquan.graphics.dreadnought.medium"
 #define URQUAN_MICON_MASK_PMAP_ANIM "ship.urquan.meleeicons"
-#define URQUAN_SML_MASK_PMAP_ANIM "ship.urquan.graphics.urquan.small"
+#define URQUAN_SML_MASK_PMAP_ANIM "ship.urquan.graphics.dreadnought.small"
