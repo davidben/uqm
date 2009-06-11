@@ -3,4 +3,4 @@
    instead and regenerate. */
 
 #define UTWIG_MUSIC "comm.utwig.music"
-#define UTWIG_ULTRON_MUSIC "comm.utwigult.music"
+#define UTWIG_ULTRON_MUSIC "comm.utwig.ultron.music"

@@ -2,6 +2,6 @@
    should not be edited directly.  Modify the master resource list
    instead and regenerate. */
 
-#define GAME_SOUNDS "sounds.game"
-#define LANDER_SOUNDS "sounds.landsnds"
+#define GAME_SOUNDS "sounds.battle"
+#define LANDER_SOUNDS "sounds.lander"
 #define MENU_SOUNDS "sounds.menu"
