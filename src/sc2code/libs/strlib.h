@@ -92,6 +92,8 @@ wchar_t toWideLower(wchar_t ch);
 #define STR_EARTH_SIGN      "\xE2\x99\x81"
 #define WCHAR_MIDDLE_DOT    0x00b7
 #define STR_MIDDLE_DOT      "\xC2\xB7"
+#define WCHAR_BULLET        0x2022
+#define STR_BULLET          "\xE2\x80\xA2"
 
 #endif /* _STRLIB_H */
 
