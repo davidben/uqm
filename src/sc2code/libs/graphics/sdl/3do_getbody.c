@@ -659,7 +659,7 @@ _GetFontData (uio_Stream *fp, DWORD length)
 
 		char_name = GetDirEntryAddress (SetAbsDirEntryTableIndex (
 				fontDir, dirEntryI));
-		if (sscanf (char_name, "%u.", &charIndex) != 1)
+		if (sscanf (char_name, "%x.", &charIndex) != 1)
 			continue;
 			
 		if (charIndex > 0xffff)
