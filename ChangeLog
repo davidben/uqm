@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Content reorg: some race comm and ships renamed, ship files renamed,
+  many ani files renamed, new naming scheme for ani frames and voice - Alex
 - .cfg files are now kept as subtrees of the resource map - Michael
 - Flight control data no longer unnecessarily copied to config directory - Michael
 - Index loading/saving now can operate on subtrees - Michael
