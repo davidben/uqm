@@ -1,66 +1,66 @@
-#(NEUTRAL_SPACE_HELLO_1)	utwig000.ogg
+#(NEUTRAL_SPACE_HELLO_1)	utwig-000.ogg
 Ugh. I suppose, as a courtesy, I should extend an appropriate greeting.
 On behalf of the Utwig Proctors I truly hope, for your sake
 that your day has been better than ours
 although this really isn't saying that much.
 
-#(NEUTRAL_SPACE_HELLO_2)	utwig001.ogg
+#(NEUTRAL_SPACE_HELLO_2)	utwig-001.ogg
 Just go away. Leave us to ponder our grief.
 
-#(HOSTILE_SPACE_HELLO_1)	utwig002.ogg
+#(HOSTILE_SPACE_HELLO_1)	utwig-002.ogg
 Yagh! Your attitude toward us is not acceptable!
 We apologize for having to deal with you this way,
 but since the loss of the Ultron, we have no choice.
 As we prepare to die, so should you.
 
-#(HOSTILE_SPACE_HELLO_2)	utwig003.ogg
+#(HOSTILE_SPACE_HELLO_2)	utwig-003.ogg
 You have caught us in a private, dark moment.
 We must guarantee your silence with your complete and total destruction.
 
-#(BOMB_WORLD_HELLO_1)	utwig004.ogg
+#(BOMB_WORLD_HELLO_1)	utwig-004.ogg
 Attention alien vessel: this world is under the full jurisdiction of the Utwig Proctorate.
 We extend a subdued but civil greeting.
 
-#(BOMB_WORLD_HELLO_2)	utwig005.ogg
+#(BOMB_WORLD_HELLO_2)	utwig-005.ogg
 You have arrived at a most inopportune time.
 Collectively, our species is dealing with a great remorse.
 Nevertheless in order to foster a spirit of interspecies good will
 we pull ourselves from our intense cycle of self-analysis
 and offer this greeting which, we hope, will suffice.
 
-#(HOSTILE_BOMB_HELLO_1)	utwig006.ogg
+#(HOSTILE_BOMB_HELLO_1)	utwig-006.ogg
 Oh woe. We find your presence here disconcerting.
 In order to deal with the situation in such a way that we maintain some semblance of authority
 we are forced to deploy our forces against your armada.
 Prepare yourselves for battle.
 
-#(HOSTILE_BOMB_HELLO_2)	utwig007.ogg
+#(HOSTILE_BOMB_HELLO_2)	utwig-007.ogg
 In a fit of depression I find it necessary to vent my irreconcilable frustration on you.
 I normally do not engage in such fervent activities
 but I now find myself inspired to do my best to annihilate you with expediency.
 
-#(NEUTRAL_HOMEWORLD_HELLO_1)	utwig008.ogg
+#(NEUTRAL_HOMEWORLD_HELLO_1)	utwig-008.ogg
 Normally we would not bother to acknowledge your presence
 but you find us in a state of moderate depression
 instead of our normal cycle of self-destructive tendencies.
 
-#(NEUTRAL_HOMEWORLD_HELLO_2)	utwig009.ogg
+#(NEUTRAL_HOMEWORLD_HELLO_2)	utwig-009.ogg
 Alien vessel. Grieve for the loss of both the Utwig and the Universe at large.
 
-#(NEUTRAL_HOMEWORLD_HELLO_3)	utwig010.ogg
+#(NEUTRAL_HOMEWORLD_HELLO_3)	utwig-010.ogg
 You disturb our routine of eternal grieving
 yet we extend to you the courtesy of acknowledgment.
 
-#(NEUTRAL_HOMEWORLD_HELLO_4)	utwig011.ogg
+#(NEUTRAL_HOMEWORLD_HELLO_4)	utwig-011.ogg
 I am so depressed. You can try to cheer me up if you want to.
 
-#(HOSTILE_HOMEWORLD_HELLO_1)	utwig012.ogg
+#(HOSTILE_HOMEWORLD_HELLO_1)	utwig-012.ogg
 You have angered the spirit of the Utwig.
 Although depressed almost to the point of an inability to perform any actions whatsoever
 we find within ourselves the verve required to engage you in a duel to the death.
 Indeed, we will find satisfaction in your demise or in our release from our mortal burden.
 
-#(HOSTILE_HOMEWORLD_HELLO_2)	utwig013.ogg
+#(HOSTILE_HOMEWORLD_HELLO_2)	utwig-013.ogg
 Attention Offending vessel! Your presence here is deeply appreciated!
 You have stirred us from our depression-induced apathy
 to the point where our desire actually registers as a sensation!
@@ -71,7 +71,7 @@ We thank you for this opportunity!
 #(why_you_here)
 For what purpose do you linger at this location?
 
-#(WE_GUARD_BOMB)	utwig014.ogg
+#(WE_GUARD_BOMB)	utwig-014.ogg
 We are the stewards of the Bomb.
 We keep it from those who would use it unwisely.
 In addition, we are prepared to act under the direction of the Proctorate
@@ -80,7 +80,7 @@ should we decide to make a final atonement for our most grievous blunder.
 #(what_about_bomb)
 Hmm, this must be a pretty special Bomb to have all of you keeping an eye on it.
 
-#(ABOUT_BOMB)	utwig015.ogg
+#(ABOUT_BOMB)	utwig-015.ogg
 You are correct. It is a relic of Precursor origin.
 It has the power to destroy entire planetary objects, perhaps even galaxies.
 The Utwig have been entrusted by fate to watch over this device
@@ -89,7 +89,7 @@ so that it will be used in the way that it was intended by destiny.
 #(give_us_bomb_or_die)
 We have an urgent need for this device. Give us the Bomb.
 
-#(GUARDS_WARN)	utwig016.ogg
+#(GUARDS_WARN)	utwig-016.ogg
 We cannot relinquish control of this instrument of power!
 You cannot have the Bomb.
 Any attempt on your part to change this current arrangement
@@ -98,14 +98,14 @@ will be met with fearsome Utwig resistance!
 #(demand_bomb)
 We will now take the Bomb. Give it to us.
 
-#(GUARDS_FIGHT)	utwig017.ogg
+#(GUARDS_FIGHT)	utwig-017.ogg
 Our anguish serves only to fuel our resolve concerning the jurisdiction of this device.
 We stand ready!
 
 #(may_we_have_bomb)
 Wow, that is pretty neat! May we have the Bomb?
 
-#(NO_BOMB)	utwig018.ogg
+#(NO_BOMB)	utwig-018.ogg
 Yes, it IS a remarkable device.
 It is understandable that you would like to possess it yourselves.
 Our mandate, however, requires that we maintain full control of the Bomb.
@@ -113,7 +113,7 @@ Our mandate, however, requires that we maintain full control of the Bomb.
 #(please)
 Oh, please can't we have it? It would make us really happy!
 
-#(SORRY_NO_BOMB)	utwig019.ogg
+#(SORRY_NO_BOMB)	utwig-019.ogg
 No, we are sorry. You cannot have the Bomb.
 Besides being against our orders, imagine what would happen if for some reason
 our Proctors decide to use it to destroy our civilization.
@@ -122,7 +122,7 @@ How would we explain its absence?
 #(whats_up_bomb)
 Tell us about the Bomb. What's the scoop?
 
-#(GENERAL_INFO_BOMB_1)	utwig020.ogg
+#(GENERAL_INFO_BOMB_1)	utwig-020.ogg
 During standard exploration procedures we came across what appeared to be
 an ancient Precursor supply base.
 It had been dismantled and appeared to be empty.
@@ -133,7 +133,7 @@ capable of reducing moon-sized objects to particulate dust clouds.
 We believe that it was either accidentally forgotten
 or simply left because of a lack of room on the departing vessel.
 
-#(GENERAL_INFO_BOMB_2)	utwig021.ogg
+#(GENERAL_INFO_BOMB_2)	utwig-021.ogg
 The Bomb may have been left here by mistake.
 We suspect that if activated, it will turn this entire planet
 into nothing more than an expanding mass of tiny dirt clods.
@@ -145,25 +145,25 @@ is a disaster of epic proportions.
 #(bye_bomb)
 This Bomb is pretty dangerous and you guys are crazy. I'm getting out of here!
 
-#(GOODBYE_BOMB)	utwig022.ogg
+#(GOODBYE_BOMB)	utwig-022.ogg
 Ha ha, don't worry. Hey! I laughed! How could I do that?
 Now I sink into a depression that leaves me speechless.
 
 #(hey_wait_got_ultron)
 Whoa there, hold your horses! Look at this! We've got your Ultron!
 
-#(TAUNT_US_BUT_WE_LOOK)	utwig023.ogg
+#(TAUNT_US_BUT_WE_LOOK)	utwig-023.ogg
 Taunting us buys you nothing except to steel our resolve to end your existence.
 In fact, we will humor you in your little game.
 You have seconds to show us whatever bric-a-brac you possess.
 We will then commence with the cessation of your existence.
 
-#(TRICKED_US_1)	utwig024.ogg
+#(TRICKED_US_1)	utwig-024.ogg
 I expected no less.
 You hold before us nothing more than a reminder of a past mistake that offends us to no end.
 We now commence your termination.
 
-#(TRICKED_US_2)	utwig025.ogg
+#(TRICKED_US_2)	utwig-025.ogg
 I am speechless with rage... and yet, I must speak!
 How dare you flaunt the collective embarrassment of the Utwig?!
 You will now pay for your severe breach of etiquette!
@@ -176,7 +176,7 @@ This is Captain
 #(we_are_vindicator2)
 . Please respond.
 
-#(WOULD_BE_HAPPY_BUT)	utwig026.ogg
+#(WOULD_BE_HAPPY_BUT)	utwig-026.ogg
 What good would that do -- I mean, why should we?
 We agonized for hours wondering if it was a cruel twist of fate
 or simply a serious case of butterfingery.
@@ -193,7 +193,7 @@ I do not know. Even now my mind writhes in anguish of indecision, lest the outco
 #(why_sad)
 Hmm, I detect that recent events have not gone your way. Why don't you start at the beginning?
 
-#(ULTRON_BROKE)	utwig027.ogg
+#(ULTRON_BROKE)	utwig-027.ogg
 *Sigh* All right, I'll try, but you know, it really doesn't matter.
 After all, we have a famous Utwig saying: when one loses the reason for existence
 one tends to get less motivated.
@@ -207,7 +207,7 @@ Ah, cruel irony! The loss of the Ultron grieves us all!
 #(what_ultron)
 Um, yes, of course, the Ultron. We grieve. How sad. Now, what was it again?
 
-#(GLORIOUS_ULTRON)	utwig028.ogg
+#(GLORIOUS_ULTRON)	utwig-028.ogg
 Bah! It doesn't matter! Besides being of no concern to you
 I find discussion of this matter, well, distasteful.
 *Sigh.* The Ultron was not only the thing which assures total and complete meaning of life for you and I
@@ -218,7 +218,7 @@ It has been since, well, rendered inoperative.
 #(dont_be_babies)
 Just because you busted your Ultra-thingy, don't be a bunch of cry-babies!
 
-#(MOCK_OUR_PAIN)	utwig029.ogg
+#(MOCK_OUR_PAIN)	utwig-029.ogg
 Gah! Now you've really done it!
 Your blatant transgressions have me hopping mad!
 Hop hop hop! Okay, that's it! Put up your dukes! Nobody makes fun of the Ultron!
@@ -226,7 +226,7 @@ Hop hop hop! Okay, that's it! Put up your dukes! Nobody makes fun of the Ultron!
 #(real_sorry_about_ultron)
 Sniff. That reminds me when my pet dog Splib, ran in front of a... rock chipper!
 
-#(APPRECIATE_SYMPATHY)	utwig030.ogg
+#(APPRECIATE_SYMPATHY)	utwig-030.ogg
 You are kind. If we could wield the Ultron to resurrect your Splib, we would.
 But I suddenly am overcome with waves of depression.
 I must retire now to perform rituals of anguish.
@@ -235,7 +235,7 @@ Waves of trauma wash across my being even now. I must go.
 #(what_about_you_1)
 A truly unique set of events put you in your current state. Am I right?
 
-#(ABOUT_US_1)	utwig031.ogg
+#(ABOUT_US_1)	utwig-031.ogg
 Hah, to say the least!
 Our past is one of a glorious and proud people coupled with a cataclysm that rocks the Universe
 to its very core!
@@ -264,7 +264,7 @@ We were oblivious to its tragic implication.
 #(what_about_you_2)
 Yow! Absolutely fascinating. But what exactly do you mean by tragic?
 
-#(ABOUT_US_2)	utwig032.ogg
+#(ABOUT_US_2)	utwig-032.ogg
 In order for you to truly understand the situation, you need to know more about the Ultron
 and its unique capabilities.
 You see, when the Druuge discovered the Ultron they knew that it was ours.
@@ -285,7 +285,7 @@ They can testify to its power!
 #(what_about_you_3)
 Hmm, sounds like things were going pretty well. So what happened?
 
-#(ABOUT_US_3)	utwig033.ogg
+#(ABOUT_US_3)	utwig-033.ogg
 Yes, things were perfect. What happened is, well, I... it is difficult to talk about.
 But I saw it happen. I witnessed the Chinz-Rahl celebration.
 I felt the Ultron fill the empty place that I did not know was there.
@@ -318,7 +318,7 @@ I suddenly sink into a chasm of depression. I must go.
 #(what_about_urquan_1)
 Do you know anything about the enslaving Ur-Quan?
 
-#(ABOUT_URQUAN_1)	utwig034.ogg
+#(ABOUT_URQUAN_1)	utwig-034.ogg
 We know nothing of this species that you mention.
 However, while we are on the subject of evil and powerful species
 we have encountered a particularly gruesome race that seemed to come from the direction of Arcturus.
@@ -340,7 +340,7 @@ This lack of meaning is what drives my species to the serious contemplation of a
 #(what_about_urquan_2)
 Yes, that is really a pity. So what more do you know about the Kohr-Ah?
 
-#(ABOUT_URQUAN_2)	utwig035.ogg
+#(ABOUT_URQUAN_2)	utwig-035.ogg
 Aagghh! Your query once again painfully reminds me of the Ultron and what it was for the Universe!
 I could tell you all and correct ALL that is wrong in the Universe!
 All I can tell you is that the Kohr-Ah live to kill.
@@ -359,18 +359,18 @@ Let us cease our discussion concerning these matters.
 #(got_ultron)
 Hey guys, guess what we've got! We've got THE ULTRON! Wanna see it?
 
-#(DONT_WANT_TO_LOOK)	utwig036.ogg
+#(DONT_WANT_TO_LOOK)	utwig-036.ogg
 Gaaah! Should I set my gaze upon such a sight I might suffer sleepless nights for years on end!
 It is a symbol of the collective Utwig failure.
 It is our ultimate tragedy!
 
-#(SICK_TRICK_1)	utwig037.ogg
+#(SICK_TRICK_1)	utwig-037.ogg
 Why do you flaunt the husk which once was the Ultron?
 Can't you see how much we suffer? Is this not enough?
 This thing you possess... this husk of lost destiny, it is the symbol of the Ultimate Utwig Anguish!
 Do - Not - Tor - ment - Me - So!
 
-#(SICK_TRICK_2)	utwig038.ogg
+#(SICK_TRICK_2)	utwig-038.ogg
 AAAHHH!! Stop! I know that I deserve it but I cannot bear it.
 Stop, please! To view this thing... I would rather bare my face
 and work all of its parts in a grotesque display of self-degradation! Leave now!
@@ -378,10 +378,10 @@ and work all of its parts in a grotesque display of self-degradation! Leave now!
 #(bye_neutral)
 We now terminate communication in a civil, yet efficient manner.
 
-#(GOODBYE_NEUTRAL)	utwig039.ogg
+#(GOODBYE_NEUTRAL)	utwig-039.ogg
 As do we. Go now with neither malice nor joy.
 
-#(TOO_LATE)	utwig040.ogg
+#(TOO_LATE)	utwig-040.ogg
 It is too late.
 
 #(name_1)
@@ -398,7 +398,7 @@ The Empire of
 #(name_41)
  
 
-#(HAPPY_DAYS)	utwig041.ogg
+#(HAPPY_DAYS)	utwig-041.ogg
 AAAHHH!! Every divot, every crack on Its surface is etched forever in my soul!
 Remove It from my sight lest I purge my... hey!
 that is not the devastated Ultron
@@ -418,7 +418,7 @@ but the Ultron reveals that YOU will!
 I thank you for your part in the grand scheme. We now recover that which is ours via destiny
 and proceed to perform our essential service for the universe.
 
-#(OK_ATTACK_KOHRAH)	utwig042.ogg
+#(OK_ATTACK_KOHRAH)	utwig-042.ogg
 BUT WAIT!!
 The Ultron throbs and whistles! Matters of significance are being relayed to our brains.
 It has been so long since we communicated with the ultimate in such a manner
@@ -434,7 +434,7 @@ Now, Captain, we must leave to prepare our battle fleets. Wish us luck!
 #(whats_up_after_space)
 Tell us what events have transpired since we last met.
 
-#(GENERAL_INFO_AFTER_SPACE_1)	utwig043.ogg
+#(GENERAL_INFO_AFTER_SPACE_1)	utwig-043.ogg
 We have met the Kohr-Ah in battle, and... well, let me explain.
 Initially, when our forces swept to the Horologii stars
 they proved effective against the armaments of the Kohr-Ah.
@@ -443,7 +443,7 @@ and absorb the brunt of their fiery corona, allowing our Supox allies to concent
 However, the costs were high... very high.
 I should don the facial effigy of Remorse For Lost Comrades.
 
-#(GENERAL_INFO_AFTER_SPACE_2)	utwig044.ogg
+#(GENERAL_INFO_AFTER_SPACE_2)	utwig-044.ogg
 As you know, we were forced to withdraw from the Kohr-Ah offensive.
 Although we were able to make good account of ourselves, our casualties were high.
 In our attempt to balance the Doctrinal Conflict between the Kohr-Ah and the Ur-Quan
@@ -454,7 +454,7 @@ I can think of no mask that properly expresses how I feel concerning this situat
 #(what_now_after_space)
 Given what you have learned, what do you think we should do now?
 
-#(DO_THIS_AFTER_SPACE)	utwig045.ogg
+#(DO_THIS_AFTER_SPACE)	utwig-045.ogg
 We have done all that we can. There are no others capable of significant intervention.
 Certain doom grows imminent for all of us. We lament.
 But wait!...listen closely! The Ultron intervenes! There is a solution!
@@ -467,14 +467,14 @@ I would don it with rash impudence ignoring all etiquette and procedures!
 #(bye_after_space)
 We thank you for your aid. We go now to address the matters at hand.
 
-#(GOODBYE_AFTER_SPACE)	utwig046.ogg
+#(GOODBYE_AFTER_SPACE)	utwig-046.ogg
 Excellent! The Ultron's coruscations indicate that your future actions are laced with great potential!
 Proceed with our heartiest endorsement!
 
 #(whats_up_before_space)
 We are pleased that we were of assistance in the recovery of your Ultron.
 
-#(GENERAL_INFO_BEFORE_SPACE_1)	utwig047.ogg
+#(GENERAL_INFO_BEFORE_SPACE_1)	utwig-047.ogg
 Indeed! We are in the process of reacclimating our brains to its metawave gyrations.
 Even now we are compelled to implement a plan of interference, thwarting the goals of the Kohr-Ah.
 We sense through the influence of the Ultron that these creatures of evil
@@ -484,7 +484,7 @@ that will serve to preserve the diversity in the galaxy.
 We prepare an armada composed of the collective might of both the Utwig and Supox forces
 that will pursue the invaders with the intent of foiling their plan of doom.
 
-#(GENERAL_INFO_BEFORE_SPACE_2)	utwig048.ogg
+#(GENERAL_INFO_BEFORE_SPACE_2)	utwig-048.ogg
 We have determined that the Kohr-Ah are engaging in battle with the species you call Ur-Quan.
 We are unable to determine the cause of this conflict.
 Even meticulous employment of the Ultron in this matter has yielded only minimal insight.
@@ -494,7 +494,7 @@ we must let the two species cancel each other out via attrition through combat.
 #(what_now_before_space)
 Does the remarkable device suggest to us a potential course of action?
 
-#(DO_THIS_BEFORE_SPACE)	utwig049.ogg
+#(DO_THIS_BEFORE_SPACE)	utwig-049.ogg
 Your request is within our capabilities. One moment
 Mmmm, emanations from the Ultron... orange furry air breathes tender yawns
 Yes, it all becomes clear now... you must do something with the great Bomb
@@ -506,13 +506,13 @@ Ah! IMPROVED! That's it!  The Bomb must be improved to fulfill its final destiny
 #(bye_before_space)
 We anticipate an era of glory for the Utwig! Farewell!
 
-#(GOODBYE_BEFORE_SPACE)	utwig050.ogg
+#(GOODBYE_BEFORE_SPACE)	utwig-050.ogg
 There is much for us to do. May the Ultron be with you!
 
 #(how_went_war)
 What were the results of your actions against the Ur-Quan and Kohr-Ah?
 
-#(ABOUT_BATTLE)	utwig051.ogg
+#(ABOUT_BATTLE)	utwig-051.ogg
 Ah Captain! The battle against the Kohr-Ah was fearsome.
 As we and our allied Supox approached the main force
 we found that the Kohr-Ah and the species you call the Ur-Quan
@@ -526,7 +526,7 @@ Battered in the extreme, we were forced to withdraw.
 #(how_goes_war)
 How is your engagement with the Kohr-Ah and Ur-Quan going?
 
-#(BATTLE_HAPPENS_1)	utwig052.ogg
+#(BATTLE_HAPPENS_1)	utwig-052.ogg
 Even as I speak, brave Utwig and noble Supox launch themselves against the merciless arsenal of the Kohr-Ah.
 We continue to refine our tactics.
 Alas, the Kohr-Ah are winning their war with the Ur-Quan.
@@ -535,13 +535,13 @@ so we fight only the Kohr-Ah in hopes of weakening their stand against the Ur-Qu
 The Ur-Quan complicate matters by blasting our vessels with fusion bolts
 thus we have made it a policy to avoid Ur-Quan ships whenever possible.
 
-#(BATTLE_HAPPENS_2)	utwig053.ogg
+#(BATTLE_HAPPENS_2)	utwig-053.ogg
 We have discovered that the Kohr-Ah, in addition to their formidable battle vessels
 will soon possess an immense ship capable of inflicting destruction on a vast scale.
 I do not need to examine the pulsations of the Ultron to know that they will use this instrument
 to implement their stated objective, the elimination of all intelligent life besides their own.
 
-#(FLEET_ON_WAY)	utwig054.ogg
+#(FLEET_ON_WAY)	utwig-054.ogg
 Even as I utter these words, the combined military resource of both the Utwig and Supox
 proceed toward Horologii to intercept the Kohr-Ah.
 Besides the importance of our efforts, the Ultron indicates
@@ -550,13 +550,13 @@ all futures which include our survival are contingent on the actions that you no
 #(learn_new_info)
 I'm glad things are looking up. Anything in the way of new developments?
 
-#(NO_NEW_INFO)	utwig055.ogg
+#(NO_NEW_INFO)	utwig-055.ogg
 Even now we acclimate to the great power of the Ultron
 but are overwhelmed with the resources that the Ultron offers
 in effect, we have grown rusty in its use.
 As soon as we regain our proficiency, we will be able to accommodate all your requests.
 
-#(SAMATRA)	utwig056.ogg
+#(SAMATRA)	utwig-056.ogg
 The Kohr-Ah will soon possess a seemingly invincible vessel called the Sa-Matra.
 I cannot give you specifics regarding this matter other than its general location
 somewhere in the Crateris constellation.
@@ -566,14 +566,14 @@ The Ultron indicates that you must somehow destroy this thing or the Kohr-Ah wil
 #(what_now_homeworld)
 What course of action does the Ultron, your powerful attribute amplifier, recommend for us now?
 
-#(HOPE_KILL_EACH_OTHER)	utwig057.ogg
+#(HOPE_KILL_EACH_OTHER)	utwig-057.ogg
 We can only hope that our efforts to balance the forces of the Ur-Quan and the Kohr-Ah
 will permit them to mutually annihilate each other.
 
 #(how_is_ultron)
 It seems that you are making good use of the Ultron. Is this so?
 
-#(ULTRON_IS_GREAT)	utwig058.ogg
+#(ULTRON_IS_GREAT)	utwig-058.ogg
 You ask a question that I hesistate to answer. You see, normally at this point
 I would don the mask of Rampant Jubilation and Jumping With Ecstatic Glee.
 This mask is seldom worn, for few events merit its complexity.
@@ -588,13 +588,13 @@ that I will now cause you to drop the subject altogether.
 #(bye_allied_homeworld)
 We acknowledge the celestial Ultron and your assistance. We will now be on our way.
 
-#(GOODBYE_ALLIED_HOMEWORLD)	utwig059.ogg
+#(GOODBYE_ALLIED_HOMEWORLD)	utwig-059.ogg
 It is as the Ultron wills. So be it. We bid you the very best luck.
 Although it is true that all possibilities can be realized through proper utilization of the Ultron
 we are, as yet, deficient operators of this grand device.
 We will, however, make a best attempt to help you from afar.
 
-#(ALLIED_HOMEWORLD_HELLO_1)	utwig060.ogg
+#(ALLIED_HOMEWORLD_HELLO_1)	utwig-060.ogg
 Ah! It is the legendary Earth Captain! A grand celebration is in order!
 We prepare now for the festivities!
 Many will bow before you and offer their profuse thanks!
@@ -602,7 +602,7 @@ Proceed now to our main spaceport and then on to the parade!
 The two week celebration of great thanks will begin! Joy!
 What? You are too busy? Alas... perhaps another time.
 
-#(ALLIED_HOMEWORLD_HELLO_2)	utwig061.ogg
+#(ALLIED_HOMEWORLD_HELLO_2)	utwig-061.ogg
 Our spirits are lifted by your visit!
 I sense through the Ultron's powers that you are curious
 about the status of your well-deserved facial appliance. Fear not!
@@ -611,7 +611,7 @@ with the re-establishment of the Ultron within the structure of the Utwig wholen
 we proceed with the design and implementation of what will truly be the pinnacle of Utwig ingenuity.
 At long last, you will be able to cover your unsightly mug with distinction!
 
-#(ALLIED_HOMEWORLD_HELLO_3)	utwig062.ogg
+#(ALLIED_HOMEWORLD_HELLO_3)	utwig-062.ogg
 Ah, I see that it is the great Earth Captain honoring my lowly self with undeserved attention.
 Even now my skin prickles with embarrassment since I am unable to don a mask
 that accurately indicates my awed and respectful attitude toward you.
@@ -620,7 +620,7 @@ of redefining and restructuring our entire countenance catalog.
 The results will be dramatic since the Ultron is now integrated in this process.
 In the meantime, I beg that you bear with us while we complete this task.
 
-#(ALLIED_HOMEWORLD_HELLO_4)	utwig063.ogg
+#(ALLIED_HOMEWORLD_HELLO_4)	utwig-063.ogg
 I am honored to encounter your greatness!
 Currently, our collective creative force is engaged in a project to honor you.
 We are in the process of transforming a planetary body
@@ -631,7 +631,7 @@ When you don this mask, we will see the eyes come alive.
 When you speak, all will hear. When you smile, we will rejoice!
 I sense your excitement concerning this project!
 
-#(HELLO_BEFORE_KOHRAH_SPACE_1)	utwig064.ogg
+#(HELLO_BEFORE_KOHRAH_SPACE_1)	utwig-064.ogg
 Suddenly I am overcome with embarrassment!
 I possess the distinguished honor of addressing the legendary Earth Captain!
 Please excuse my lack of proper facial appliance.
@@ -643,7 +643,7 @@ The proccess is extremely time-consuming since even the best-trained beetle colo
 will build a thousand rejects for every successful foundation.
 Alas, it will be many years before any of the Utwig will be able to wear such a mask.
 
-#(HELLO_BEFORE_KOHRAH_SPACE_2)	utwig065.ogg
+#(HELLO_BEFORE_KOHRAH_SPACE_2)	utwig-065.ogg
 Do my eyes deceive me? Am I a victim of a glorious vision?
 I believe that I see before me the legendary Earth Captain!
 We have conducted a complete survey of the Utwig
@@ -653,12 +653,12 @@ Imagine, when development is completed in perhaps less than ten years
 you may esthetically conceal the constant reminder of your bestial aspects
 and walk with pride amongst those of sophisticated intellect!
 
-#(HELLO_DURING_KOHRAH_SPACE_1)	utwig066.ogg
+#(HELLO_DURING_KOHRAH_SPACE_1)	utwig-066.ogg
 The Ultron indicates that you must leave the area immediately! You are in extreme danger!
 This area is currently controlled by either the Ur-Quan or the Kohr-Ah, we are not sure.
 We are currently engaging the Kohr-Ah in an attempt to balance the conflict. Stay clear!
 
-#(HELLO_DURING_KOHRAH_SPACE_2)	utwig067.ogg
+#(HELLO_DURING_KOHRAH_SPACE_2)	utwig-067.ogg
 Battle rages in the immediate area. Beware!
 The Ur-Quan and the Kohr-Ah are engaged in a conflict of doctrinal extremes.
 The Ur-Quan argument seems inferior.
@@ -666,18 +666,18 @@ You must clear the area before you become a victim of either the Ur-Quan or Kohr
 Leave now! We shall remain in an attempt to balance the conflict
 so that the two forces of evil might more effectively negate each other.
 
-#(HELLO_AFTER_KOHRAH_SPACE_1)	utwig068.ogg
+#(HELLO_AFTER_KOHRAH_SPACE_1)	utwig-068.ogg
 We extend our sincere greetings to the remarkable being
 that returned to the Utwig the meaning for our continued existence.
 We have returned from a conflict of a grand scale with our fleet battered
 but our masks of Valor and Derring-Do held high!
 
-#(HELLO_AFTER_KOHRAH_SPACE_2)	utwig069.ogg
+#(HELLO_AFTER_KOHRAH_SPACE_2)	utwig-069.ogg
 Ah, it is the most recently appointed Ultron Saint -- the Captain from Earth!
 We flick our facial appliances collectively in a smart salute indicating both respect and gratitude.
 How can we assist you?
 
-#(UP_TO_YOU)	utwig070.ogg
+#(UP_TO_YOU)	utwig-070.ogg
 The prognosticating harmonics of the Ultron reveal a truth.
 We Utwig have done all that CAN be done to aid you.
 Our tasks must now be confined to directing the many channels of causation.
@@ -686,24 +686,24 @@ Feel confident that we are using the Ultron to this end.
 #(can_you_help)
 Material aid from you would tilt the balance in the favor of Good.
 
-#(HOW_HELP)	utwig071.ogg
+#(HOW_HELP)	utwig-071.ogg
 Hmm... a reasonable request. Give us a second while we consult the Ultimate.
 
-#(DONT_NEED)	utwig072.ogg
+#(DONT_NEED)	utwig-072.ogg
 The Ultron confirms the evidence of our ocularities
 you are strong, smart and capable.
 Your fleet is at maximum strength and your ethics are sound.
 Further assistance would be redundant.
 
-#(HAVE_4_SHIPS)	utwig073.ogg
+#(HAVE_4_SHIPS)	utwig-073.ogg
 Just so. The Ultron has hummed its assent.
 Take possession of four of our Jugger craft this instant!
 
-#(NO_ULTRON_AT_BOMB)	utwig074.ogg
+#(NO_ULTRON_AT_BOMB)	utwig-074.ogg
 We are the stewards of the Bomb.
 Taunting us buys you nothing. Go now!
 
-#(OUT_TAKES)	utwig075.ogg
+#(OUT_TAKES)	utwig-075.ogg
 Hello again, heroic humanoid!
 Ever since you returned the Ultron to us
 everything has been WONDERFUL... just perfect!

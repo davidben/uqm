@@ -1,4 +1,4 @@
-#(HELLO_NOW_DOWN_TO_BUSINESS_1)	melno000.ogg
+#(HELLO_NOW_DOWN_TO_BUSINESS_1)	melnorme-000.ogg
 I am Trade Master Greenish in command of the Melnorme starship
 `Inevitably Successful in All Circumstances.' 
 I bid you a formal welcome, Captain.
@@ -6,17 +6,17 @@ Though we Melnorme have just recently arrived in this region of space
 we have long desired to make contact with your species 
 and look forward to an extended profitable relationship.
 
-#(HELLO_NOW_DOWN_TO_BUSINESS_2)	melno001.ogg
+#(HELLO_NOW_DOWN_TO_BUSINESS_2)	melnorme-001.ogg
 As a master trader in the Melnorme merchant fleet, I greet you, Captain.
 News of your species and your unusual vessel has travelled quickly.
 I need not say how eager we are to trade with you and your kind! 
 Now, how can I be of service to you?
 
-#(HELLO_NOW_DOWN_TO_BUSINESS_3)	melno002.ogg
+#(HELLO_NOW_DOWN_TO_BUSINESS_3)	melnorme-002.ogg
 Hello again, human space captain. 
 Perhaps during this encounter, we will be able to establish a successful, businesslike relationship.
 
-#(KNOW_OF_YOU)	melno003.ogg
+#(KNOW_OF_YOU)	melnorme-003.ogg
 Even before our first meeting, we knew of you, Captain.
 Though your struggle to free Earth shall be a long and difficult challenge
 fraught with great danger and mystery
@@ -25,7 +25,7 @@ we have great confidence in you and your abilities.
 #(how_know)
 How did you know about us before meeting us?
 
-#(KNOW_BECAUSE)	melno004.ogg
+#(KNOW_BECAUSE)	melnorme-004.ogg
 We gather information from a thousand secret sources in space and time.
 Our charge for revealing even one of these sources would be so high
 that your species would be in debt to us for centuries.
@@ -33,14 +33,14 @@ that your species would be in debt to us for centuries.
 #(what_about_yourselves)
 What can you tell us about yourselves?
 
-#(NO_TALK_ABOUT_OURSELVES)	melno005.ogg
+#(NO_TALK_ABOUT_OURSELVES)	melnorme-005.ogg
 Our origins and purposes are, frankly, mysterious and due to several unavoidable factors
 we are unable to discuss ourselves in any great detail.
 
 #(what_factors)
 What are these 'unavoidable factors'?
 
-#(FACTORS_ARE)	melno006.ogg
+#(FACTORS_ARE)	melnorme-006.ogg
 First and foremost among these factors
 is our unwillingness to GIVE away information
 about our history, psychology and mental powers,
@@ -53,7 +53,7 @@ ARE available, for a nominal sum of Credits.
 #(what_about_universe)
 Do you have any information which might be useful to us?
 
-#(NO_FREE_LUNCH)	melno007.ogg
+#(NO_FREE_LUNCH)	melnorme-007.ogg
 Absolutely. 
 Our primary trade good IS information.
 Why, right here on my display screen, I have something
@@ -65,7 +65,7 @@ at which time we shall also discuss the nature of our fees.
 #(giving_is_good_1)
 Fees! Surely your culture is far beyond such pettiness as money?
 
-#(GIVING_IS_BAD_1)	melno008.ogg
+#(GIVING_IS_BAD_1)	melnorme-008.ogg
 You are of course correct.
 We long ago abandoned currency,
 and now only deal with commodities that have intrinsic value, such as valuable information.
@@ -73,7 +73,7 @@ and now only deal with commodities that have intrinsic value, such as valuable i
 #(giving_is_good_2)
 But our cause is just! Isn't altruism the highest pinnacle of morality?
 
-#(GIVING_IS_BAD_2)	melno009.ogg
+#(GIVING_IS_BAD_2)	melnorme-009.ogg
 No, it is not.
 In fact, in our culture, `giving'
 with no fair exchange of goods or services,
@@ -86,7 +86,7 @@ Shall we begin trading now?
 #(trade_is_for_the_weak)
 `Trade' is for the weak.  We TAKE what we want!
 
-#(WERE_NOT_AFRAID)	melno010.ogg
+#(WERE_NOT_AFRAID)	melnorme-010.ogg
 We reel with inchoate fear, and are thrown into a sudden panic.  
 Being peaceful by nature
 We would no doubt be unprepared for your sudden hostility
@@ -96,46 +96,46 @@ A weapon system which is fully locked on your command bridge, by the way.
 #(no_trade_now)
 We cannot continue this conversation. Goodbye.
 
-#(OK_NO_TRADE_NOW_BYE)	melno011.ogg
+#(OK_NO_TRADE_NOW_BYE)	melnorme-011.ogg
 When you wish to trade with us, seek any supergiant star system.
 We shall be there.
 
-#(HELLO_AND_DOWN_TO_BUSINESS_1)	melno012.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_1)	melnorme-012.ogg
 Yes, let us get down to business.
 
-#(HELLO_AND_DOWN_TO_BUSINESS_2)	melno013.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_2)	melnorme-013.ogg
 How nice to see you again, Captain.
 
-#(HELLO_AND_DOWN_TO_BUSINESS_3)	melno014.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_3)	melnorme-014.ogg
 I had itchy pods this morning, Captain, and here you are!
 
-#(HELLO_AND_DOWN_TO_BUSINESS_4)	melno015.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_4)	melnorme-015.ogg
 What a coincidence! I was just talking about you with a Keel-Verezy captain. 
 They expressed great interest in your explorations and struggles against the Ur-Quan
 but, like all Verezy, I'm afraid they were hesitant to introduce themselves for fear of
 well, frightening you. 
 In any event, it is our pleasure to meet you once again.
 
-#(HELLO_AND_DOWN_TO_BUSINESS_5)	melno016.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_5)	melnorme-016.ogg
 Once again we meet to exchange valuable tangibles.
 Isn't this fun?!
 
-#(HELLO_AND_DOWN_TO_BUSINESS_6)	melno017.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_6)	melnorme-017.ogg
 Your arrival was predicted by our Tzo crystal's vibrations.
 We already know why you are here and what you need from us; however
 etiquette requires that we act as though we are ignorant of your desires.
 
-#(HELLO_AND_DOWN_TO_BUSINESS_7)	melno018.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_7)	melnorme-018.ogg
 This very morning, I was just saying to subordinate Ochre
 `Fe-Fi-Fo-Fum! I smell the feet of a Hu-Hu-Man!'
 We laughed and laughed. What a synchronicity!
 
-#(HELLO_AND_DOWN_TO_BUSINESS_8)	melno019.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_8)	melnorme-019.ogg
 I must warn you, Captain
 this is the time of the month we Melnorme drive exceptionally hard bargains.
 Beware!
 
-#(HELLO_AND_DOWN_TO_BUSINESS_9)	melno020.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_9)	melnorme-020.ogg
 LOOK OUT!
 Hoy! What a close call!
 Captain, why did you try to run down that Keel-Verezy vessel!?
@@ -143,30 +143,30 @@ You almost smashed it into flinders!
 What!? You didn't see it? Surely you -- oh
 Never mind.
 
-#(HELLO_AND_DOWN_TO_BUSINESS_10) melno021.ogg
+#(HELLO_AND_DOWN_TO_BUSINESS_10) melnorme-021.ogg
 Welcome back, Captain! You are our favorite customer.
 
 #(whats_my_credit)
 What's my Credit balance, if you please?
 
-#(HELLO_SLIGHTLY_ANGRY_1)	melno022.ogg
+#(HELLO_SLIGHTLY_ANGRY_1)	melnorme-022.ogg
 So, the violent one has returned.
 Have you come back to seek our forgiveness
 or to attack our defenseless vessel once more?
 
-#(HELLO_SLIGHTLY_ANGRY_2)	melno023.ogg
+#(HELLO_SLIGHTLY_ANGRY_2)	melnorme-023.ogg
 You have disappointed us
 though to be truthful
 we had some hints that our relationship would be difficult at first
 due to your species' emotional immaturity.
 
-#(HELLO_SLIGHTLY_ANGRY_3)	melno024.ogg
+#(HELLO_SLIGHTLY_ANGRY_3)	melnorme-024.ogg
 We require a formal apology.
 
 #(explore_relationship)
 Can we discuss establishing an alliance?
 
-#(EXAMPLE_OF_RELATIONSHIP)	melno025.ogg
+#(EXAMPLE_OF_RELATIONSHIP)	melnorme-025.ogg
 Your question reveals a certain lack of understanding
 about the nature of friendly, inter-species relationships. 
 We shall clarify the situation. 
@@ -178,7 +178,7 @@ Is this clear?
 #(excuse_1)
 Look, mistakes happen.  Don't get so bent out of shape!
 
-#(NO_EXCUSE_1)	melno026.ogg
+#(NO_EXCUSE_1)	melnorme-026.ogg
 The Spathi once used a similar excuse
 after an unfortunate incident at their base on Algol IV.
 They didn't like the climate there
@@ -191,20 +191,20 @@ though short-lived, regret.
 #(excuse_2)
 Let's just forget our battle ever happened, ok?
 
-#(NO_EXCUSE_2)	melno027.ogg
+#(NO_EXCUSE_2)	melnorme-027.ogg
 No.
 
 #(excuse_3)
 What do you want from me, a formal apology?
 
-#(NO_EXCUSE_3)	melno028.ogg
+#(NO_EXCUSE_3)	melnorme-028.ogg
 There is a small possibility that an apology would set things right.
 But it would have to be genuine.
 
 #(we_apologize)
 I apologize. I'm sorry. Please forgive me, I beg you.
 
-#(APOLOGY_ACCEPTED) melno029.ogg
+#(APOLOGY_ACCEPTED) melnorme-029.ogg
 Well, since you put it so nicely
 you seem so genuinely repentant
 we'll give you another chance to become trading partners with us.
@@ -214,26 +214,26 @@ Or the next time we won't be such nice guys.
 #(so_we_can_attack)
 This seems like a great opportunity to attack you again.
 
-#(DECEITFUL_HUMAN) melno030.ogg
+#(DECEITFUL_HUMAN) melnorme-030.ogg
 Deceitful human!
 
 #(bye_melnorme_slightly_angry)
 I'm leaving now.  Goodbye.
 
-#(MELNORME_SLIGHTLY_ANGRY_GOODBYE) melno031.ogg
+#(MELNORME_SLIGHTLY_ANGRY_GOODBYE) melnorme-031.ogg
 Farewell, violent human.
 
-#(HELLO_HATE_YOU_1) melno032.ogg
+#(HELLO_HATE_YOU_1) melnorme-032.ogg
 We thought you were a nice guy.
 Boy, were we wrong!
 Now go away and leave us alone.
 
-#(HELLO_HATE_YOU_2) melno033.ogg
+#(HELLO_HATE_YOU_2) melnorme-033.ogg
 So, the jerk is back.
 What do you want from us this time?
 Never mind, we don't want to know.
 
-#(HELLO_HATE_YOU_3) melno034.ogg
+#(HELLO_HATE_YOU_3) melnorme-034.ogg
 We will hate you forever.
 It is no use coming back here in the hopes that we will ever change our minds.
 We won't!
@@ -244,13 +244,13 @@ Die, eye-freak.
 #(you_hate_us_so_we_go_away)
 Goodbye.
 
-#(HATE_YOU_GOODBYE) melno035.ogg
+#(HATE_YOU_GOODBYE) melnorme-035.ogg
 Don't ever come back!
 
-#(WE_FIGHT_AGAIN) melno036.ogg
+#(WE_FIGHT_AGAIN) melnorme-036.ogg
 This time you shall pay for your transgressions!
 
-#(RESCUE_EXPLANATION) melno037.ogg
+#(RESCUE_EXPLANATION) melnorme-037.ogg
 According to our scanners and other sensitive devices
 you are immobile in HyperSpace with no fuel reserves.
 This is a serious situation.
@@ -266,25 +266,25 @@ However
 as a gesture of good will, and in the spirit of friendship, we offer our assistance!
 For a nominal fee.
 
-#(RESCUE_AGAIN_1) melno038.ogg
+#(RESCUE_AGAIN_1) melnorme-038.ogg
 Once more we find ourselves in a position to help you.
 How wonderful.
 
-#(RESCUE_AGAIN_2) melno039.ogg
+#(RESCUE_AGAIN_2) melnorme-039.ogg
 Have you ever considered buying more fuel tanks?
 Just a friendly suggestion, Captain.
 
-#(RESCUE_AGAIN_3) melno040.ogg
+#(RESCUE_AGAIN_3) melnorme-040.ogg
 We have come to help you once more, Captain.
 
-#(RESCUE_AGAIN_4) melno041.ogg
+#(RESCUE_AGAIN_4) melnorme-041.ogg
 We MUST stop meeting like this, Captain!
 Ha, ha, ha!
 
-#(RESCUE_AGAIN_5) melno042.ogg
+#(RESCUE_AGAIN_5) melnorme-042.ogg
 Out of fuel again, eh, Captain?
 
-#(CHANGED_MIND)	melno043.ogg
+#(CHANGED_MIND)	melnorme-043.ogg
 Have you changed your mind
 and decided to accept our offer of assistance?
 
@@ -294,7 +294,7 @@ No thanks, I don't need your help right now.
 #(yes_changed_mind)
 Perhaps I was hasty in refusing your offer. What was it again?
 
-#(SHOULD_WE_HELP_YOU) melno044.ogg
+#(SHOULD_WE_HELP_YOU) melnorme-044.ogg
 Would you like us to help you at this time?
 
 #(yes_help)
@@ -303,16 +303,16 @@ Yes, I would appreciate your assistance. What is your fee?
 #(no_help)
 I don't need your help at this time. Maybe later, though.
 
-#(RESCUE_OFFER)	melno045.ogg
+#(RESCUE_OFFER)	melnorme-045.ogg
 You have no Credit balance in our mercantile computer
 and our scanners show you that you possess no useful trade goods
 but, perhaps we can work out a special deal.
 In exchange for our giving you enough fuel to
 
-#(RESCUE_TANKS)	melno046.ogg
+#(RESCUE_TANKS)	melnorme-046.ogg
 fill your tanks, we will take:
 
-#(RESCUE_HOME)	melno047.ogg
+#(RESCUE_HOME)	melnorme-047.ogg
 get you home, we will take:
 
 #(take_it)
@@ -321,49 +321,49 @@ I find I have no choice. I accept your offer... grudgingly.
 #(leave_it)
 This offer is absurd! I refuse.
 
-#(HAPPY_TO_HAVE_RESCUED) melno048.ogg
+#(HAPPY_TO_HAVE_RESCUED) melnorme-048.ogg
 The exchange of fuel for equipment is complete.
 As always, it is a pleasure doing business with you.
 Goodbye, Captain.
 
-#(MAYBE_SEE_YOU_LATER)	melno049.ogg
+#(MAYBE_SEE_YOU_LATER)	melnorme-049.ogg
 Well then, we bid you farewell.
 We hope to see you again
 though with you sitting here, dead in space
 vulnerable and alone
 we won't hold our breath.
 
-#(GOODBYE_AND_GOODLUCK)	melno050.ogg
+#(GOODBYE_AND_GOODLUCK)	melnorme-050.ogg
 Good luck, Captain.
 
-#(GOODBYE_AND_GOODLUCK_AGAIN)	melno051.ogg
+#(GOODBYE_AND_GOODLUCK_AGAIN)	melnorme-051.ogg
 Until we meet again, Captain.
 
-#(HELLO_PISSED_OFF_1)	melno052.ogg
+#(HELLO_PISSED_OFF_1)	melnorme-052.ogg
 The Human has returned.
 He hopes to either convince us of his sorrow over his past wrong-doings
 or he intends to compel us to give/render unreasonable bargains by force.
 
-#(HELLO_PISSED_OFF_2) melno053.ogg
+#(HELLO_PISSED_OFF_2) melnorme-053.ogg
 Ahhh-YING!! Ahhh-YING! Ahhh-YING! Ahhh-Y
 Oh sorry, Captain. I was just meditating on the sorry state of your consciousness.
 Do you perceive any improvement?
 
-#(HELLO_PISSED_OFF_3)	melno054.ogg
+#(HELLO_PISSED_OFF_3)	melnorme-054.ogg
 Perhaps I can be of some assistance to you in this time of confusion and travail
 either make a sincere apology to us, or depart.
 
 #(beg_forgiveness)
 We beg your forgiveness for our unwarranted aggression.
 
-#(LOTS_TO_MAKE_UP_FOR)	melno055.ogg
+#(LOTS_TO_MAKE_UP_FOR)	melnorme-055.ogg
 Even if we were to accept your words as truth
 you have a lot to make up for.
 
 #(you_are_so_right)
 We stand prepared to make reparations for our previous conduct.
 
-#(ONE_LAST_CHANCE)	melno056.ogg
+#(ONE_LAST_CHANCE)	melnorme-056.ogg
 Hmm
 hmm... hmm... hmm.
 Oh, very well then.
@@ -381,10 +381,10 @@ Ok, it's a deal, but ONLY the non-essentials!
 #(no_strip_now)
 What kind of sucker do you think I am? Forget it!
 
-#(NOT_WORTH_STRIPPING)	melno057.ogg
+#(NOT_WORTH_STRIPPING)	melnorme-057.ogg
 It's not worth stripping.
 
-#(FAIR_JUSTICE)	melno058.ogg
+#(FAIR_JUSTICE)	melnorme-058.ogg
 Removal of non-essential equipment is complete.
 We are satisfied with the exchange, and believe that we can now pursue
 a productive business relationship.
@@ -393,19 +393,19 @@ We shall forget the mistakes you made in the past. Mostly.
 #(bye_melnorme_pissed_off)
 Goodbye.
 
-#(MELNORME_PISSED_OFF_GOODBYE)	melno059.ogg
+#(MELNORME_PISSED_OFF_GOODBYE)	melnorme-059.ogg
 Good riddance.
 
 #(fight_some_more)
 Prepare to be destroyed.
 
-#(OK_FIGHT_SOME_MORE)	melno060.ogg
+#(OK_FIGHT_SOME_MORE)	melnorme-060.ogg
 No, YOU prepare to be destroyed!
 
 #(why_blue_light)
 Why did your bridge just turn blue?
 
-#(BLUE_IS_MAD)	melno061.ogg
+#(BLUE_IS_MAD)	melnorme-061.ogg
 To us, blue ambience signifies a response to an unexpected threat
 it shows that we are under emotional distress
 and not incidentally
@@ -414,7 +414,7 @@ it also lets us see our weapon consoles more clearly.
 #(we_strong_1)
 We have no fear of you, Melnorme!
 
-#(YOU_NOT_STRONG_1) melno062.ogg
+#(YOU_NOT_STRONG_1) melnorme-062.ogg
 Oh, you should.
 Once the Dramya thought they could steal from us.
 You don't see too many Dramya around these days, do you?
@@ -422,13 +422,13 @@ You don't see too many Dramya around these days, do you?
 #(we_strong_2)
 We have the most powerful ship in this part of the galaxy.
 
-#(YOU_NOT_STRONG_2) melno063.ogg
+#(YOU_NOT_STRONG_2) melnorme-063.ogg
 Perhaps that is true, but you have only one ship.
 
 #(we_strong_3)
 Why shouldn't we just take what we want from you by force?
 
-#(YOU_NOT_STRONG_3)	melno064.ogg
+#(YOU_NOT_STRONG_3)	melnorme-064.ogg
 Because it's against the law, and besides
 if you steal from us, the other Melnorme ships will have to raise their prices
 and other innocent space aliens will have to pay for your wrong-doing.
@@ -437,7 +437,7 @@ Now that's not fair, is it?
 #(just_testing)
 Look, we were just testing your intentions.  We're actually peaceful and friendly.
 
-#(REALLY_TESTING)	melno065.ogg
+#(REALLY_TESTING)	melnorme-065.ogg
 You have an odd way of making friends, Captain.
 Are you certain that you aren't just tricking us
 so that you can attack us the moment our back is turned?
@@ -445,16 +445,16 @@ so that you can attack us the moment our back is turned?
 #(yes_really_testing)
 I promise, we won't do anything sneaky like that.
 
-#(TEST_RESULTS)	melno066.ogg
+#(TEST_RESULTS)	melnorme-066.ogg
 We believe you.
 
 #(youre_on)
 Let's just test out that weapon system, shall we?... IN COMBAT!
 
-#(YOU_GIVE_US_NO_CHOICE) melno067.ogg
+#(YOU_GIVE_US_NO_CHOICE) melnorme-067.ogg
 You give us no choice.
 
-#(TRADING_INFO)	melno068.ogg
+#(TRADING_INFO)	melnorme-068.ogg
 Since this is your first time trading with us, let me explain how our system works.
 We are interested in purchasing certain items, specifically
 biological data on alien life forms
@@ -468,7 +468,7 @@ To facilitate trade, we translate all your sales into Interstar Credits
 with which you may make purchases.
 If you have any questions, don't hesitate to ask.
 
-#(BUY_OR_SELL)	melno069.ogg
+#(BUY_OR_SELL)	melnorme-069.ogg
 Now, what can we do for you today?
 
 #(goodbye)
@@ -483,48 +483,48 @@ I would like to make some purchases.
 #(sell)
 I have some items I would like to sell.
 
-#(TURNED_PURPLE_BECAUSE)	melno070.ogg
+#(TURNED_PURPLE_BECAUSE)	melnorme-070.ogg
 That's a good question with a very interesting answer!
 The fee for this information is 12,000,000 Credits.
 
-#(NOTHING_TO_SELL)	melno071.ogg
+#(NOTHING_TO_SELL)	melnorme-071.ogg
 We appreciate your intentions, but you have nothing we wish to buy.
 
-#(WHAT_TO_SELL)	melno072.ogg
+#(WHAT_TO_SELL)	melnorme-072.ogg
 What would you like to sell, Captain?
 
-#(OK_DONE_SELLING) melno073.ogg
+#(OK_DONE_SELLING) melnorme-073.ogg
 As you wish.
 
 #(sell_life_data)
 I have some data on alien lifeforms.
 
-#(SOLD_LIFE_DATA1)	melno074.ogg
+#(SOLD_LIFE_DATA1)	melnorme-074.ogg
 The 
 
-#(SOLD_LIFE_DATA2)	melno203.ogg
+#(SOLD_LIFE_DATA2)	melnorme-203.ogg
  units of biological data we downloaded from your ship earn you 
 
-#(SOLD_LIFE_DATA3)	melno204.ogg
+#(SOLD_LIFE_DATA3)	melnorme-204.ogg
  Credits.
 
 #(sell_rainbow_locations)
 I wish to sell you Rainbow world locations.
 
-#(SOLD_RAINBOW_LOCATIONS1)	melno075.ogg
+#(SOLD_RAINBOW_LOCATIONS1)	melnorme-075.ogg
 Your ship's log indicates that you discovered the whereabouts of 
 
-#(SOLD_RAINBOW_LOCATIONS2)	melno205.ogg
+#(SOLD_RAINBOW_LOCATIONS2)	melnorme-205.ogg
  of the Rainbow worlds which so fascinate us.
 In exchange, we will give you 
 
-#(SOLD_RAINBOW_LOCATIONS3)	melno204.ogg
+#(SOLD_RAINBOW_LOCATIONS3)	melnorme-204.ogg
  Credits.
 
 #(sell_precursor_find)
 We found a Precursor artifact. Do you want it?
 
-#(SOLD_PRECURSOR_FIND)	melno076.ogg
+#(SOLD_PRECURSOR_FIND)	melnorme-076.ogg
 Always! Absolutely!
 In exchange we will give you
 N Credits
@@ -535,20 +535,20 @@ On second thought, I don't think I want to sell anything.
 #(done_selling)
 I am done selling, for now.
 
-#(NEED_CREDIT)	melno077.ogg
+#(NEED_CREDIT)	melnorme-077.ogg
 You need Credits to purchase our trade items.
 To earn Credits you must sell us the items we desire, which are:
 biological data on alien lifeforms
 and the coordinates of certain strange worlds whose radiant energies defy all scanners
 producing a rainbow-like image.
 
-#(WHAT_TO_BUY)	melno078.ogg
+#(WHAT_TO_BUY)	melnorme-078.ogg
 What trade items would you like to buy today?
 
-#(WHAT_MORE_TO_BUY) melno079.ogg
+#(WHAT_MORE_TO_BUY) melnorme-079.ogg
 Would you like to purchase anything else?
 
-#(OK_DONE_BUYING) melno080.ogg
+#(OK_DONE_BUYING) melnorme-080.ogg
 Very well then.
 
 #(buy_fuel)
@@ -560,13 +560,13 @@ I am done buying, for now.
 #(be_leaving_now)
 I shall be leaving now.
 
-#(HOW_MUCH_FUEL)	melno081.ogg
+#(HOW_MUCH_FUEL)	melnorme-081.ogg
 How much fuel do you wish to purchase?
 
 #(buy_1_fuel)
 1 unit of fuel.
 
-#(GOT_FUEL)	melno082.ogg
+#(GOT_FUEL)	melnorme-082.ogg
 Fuel transferred to your vessel.
 
 #(buy_5_fuel)
@@ -581,7 +581,7 @@ Fuel transferred to your vessel.
 #(done_buying_fuel)
 I am done buying fuel.
 
-#(FRIENDLY_GOODBYE)	melno083.ogg
+#(FRIENDLY_GOODBYE)	melnorme-083.ogg
 It has been a pleasure dealing with you, Captain.
 We look forward to your next visit.
 
@@ -590,16 +590,16 @@ Your present balance is
 #(CREDIT_IS1)
  Credits.
 
-#(NEED_MORE_CREDIT0)	melno084.ogg
+#(NEED_MORE_CREDIT0)	melnorme-084.ogg
 Unfortunately this purchase requires 
-#(NEED_MORE_CREDIT1)	melno206.ogg
+#(NEED_MORE_CREDIT1)	melnorme-206.ogg
  additional Credits.
 
-#(BUY_FUEL_INTRO)	melno085.ogg
+#(BUY_FUEL_INTRO)	melnorme-085.ogg
 As you know, we carry a large supply of fuel on board which is compatible with your engine system.
 We will be happy to sell this substance to you at a cost of 1 Credit per fuel unit.
 
-#(NO_ROOM_FOR_FUEL)	melno086.ogg
+#(NO_ROOM_FOR_FUEL)	melnorme-086.ogg
 Your ship's capacity is insufficient to hold that much fuel.
 
 #(buy_info)
@@ -623,7 +623,7 @@ I am done buying information.
 #(no_buy_info)
 I do not wish to buy information at this time.
 
-#(BUY_INFO_INTRO)	melno087.ogg
+#(BUY_INFO_INTRO)	melnorme-087.ogg
 As you know, in our many centuries of star-trading
 we Melnorme have come to learn much about what happens in our galaxy
 both now and in the ancient past.
@@ -631,16 +631,16 @@ We have also kept records on the diverse alien races in your region of space.
 We will share this crucial knowledge with you for a fee of 75 Credits per informative fact.
 No refunds.
 
-#(OK_BUY_INFO)	melno088.ogg
+#(OK_BUY_INFO)	melnorme-088.ogg
 How wonderful, Captain!
 
-#(OK_NO_BUY_INFO)	melno089.ogg
+#(OK_NO_BUY_INFO)	melnorme-089.ogg
 What else would you like to buy?
 
-#(OK_DONE_BUYING_INFO)	melno090.ogg
+#(OK_DONE_BUYING_INFO)	melnorme-090.ogg
 What else would you like to buy?
 
-#(OK_BUY_EVENT_1)	melno091.ogg
+#(OK_BUY_EVENT_1)	melnorme-091.ogg
 While you probably believe that the Shofixti are extinct
 having caused their sun to flare with a device identical to the Utwig's super-bomb
 the truth is not so simple.
@@ -661,12 +661,12 @@ Fortunately for you, Captain, ZEX is considered... well... perverse, by his fell
 This is because ZEX actually enjoys the presence of human beings.
 To acquire the Shofixti females, you will have to appease ZEX, or kill him.
 
-#(OK_BUY_EVENT_2)	melno092.ogg
+#(OK_BUY_EVENT_2)	melnorme-092.ogg
 The Ur-Quan are presently at war with a race called the Kohr-Ah.
 They are fighting within a large spherical region of space centered around the Crateris star group.
 Although it is probably too early to tell, it would appear that the Kohr-Ah are winning.
 
-#(OK_BUY_EVENT_3)	melno093.ogg
+#(OK_BUY_EVENT_3)	melnorme-093.ogg
 No doubt you are familiar with an alien race called the Umgah who live in the Orionis constellation.
 While they are renowned for their potent and often cruel sense of humor
 they have outdone themselves in recent years.
@@ -680,7 +680,7 @@ and slaughtered the entire priest caste.
 Their reasons for this ghastly move included over-taxation, lack of `quality death in ceremony'
 and the general feeling that the priests had made Dogar and Kazon's pronouncements overly complex.
 
-#(OK_BUY_EVENT_4)	melno094.ogg
+#(OK_BUY_EVENT_4)	melnorme-094.ogg
 As you know, there are weaknesses in the division between dimensions.
 For example, your vessel uses such weaknesses to enter HyperSpace.
 However, there are other weak spots in the galaxy which lead to yet different dimensions.
@@ -688,7 +688,7 @@ One such portal exists nearby, between the Chandrasekhar and Columbae constellat
 The portal opens only a short time each month starting on the 17th.
 Since we have never entered the portal, we can give no more information on this subject.
 
-#(OK_BUY_EVENT_5)	melno095.ogg
+#(OK_BUY_EVENT_5)	melnorme-095.ogg
 As you are probably aware, Ur-Quan starships -- you call them `Dreadnoughts', I believe
 possess effective self-annihilation circuits which prevent other races
 from reverse-engineering Ur-Quan technological secrets.
@@ -696,7 +696,7 @@ However, we have become aware of a shipwrecked dreadnought which has remained la
 You will find the remains of the ship on the surface of a blue world orbiting Alpha Pavonis.
 We suspect you will find at least one item of interest there, possibly two.
 
-#(OK_BUY_EVENT_6)	melno096.ogg
+#(OK_BUY_EVENT_6)	melnorme-096.ogg
 You may have noticed the presence of an increasingly large number of red probe vessels
 which move with great speed and attack relentlessly.
 We are sorry to say that this is our catalog item 2418-B.
@@ -705,7 +705,7 @@ The product is not being used in a correct manner.
 Should you wish to confront the actual wrong-doers
 we suggest you search the planets in Beta Corvi for the probes' owners.
 
-#(OK_BUY_EVENT_7)	melno097.ogg
+#(OK_BUY_EVENT_7)	melnorme-097.ogg
 Not more than fifty years ago
 the Druuge were informed by the now-extinct Burvixese race
 of a powerful alien nation called the Utwig.
@@ -727,7 +727,7 @@ Fortunately for us all, the Utwig did not pay the Druuge's requested price -- th
 and instead gave them a collection of `historical oddments and genuine artifacts'
 which to this day, the Druuge are trying to unload on unwary buyers.
 
-#(OK_BUY_EVENT_8)	melno098.ogg
+#(OK_BUY_EVENT_8)	melnorme-098.ogg
 The Utwig, who live in the Aquarii constellation, have grown very depressed of late.
 They accidentally broke the supposed `Ultron' sold to them by the felonious Druuge.
 As a consequence, they are morose and melancholic
@@ -741,7 +741,7 @@ an Aqua Helix somewhere in Thraddash space
 and a Clear Spindle, which is currently in the possession of the Pkunk.
 Captain, that was the last current event we have for sale.
 
-#(OK_BUY_ALIEN_RACE_1)	melno099.ogg
+#(OK_BUY_ALIEN_RACE_1)	melnorme-099.ogg
 The Zoq-Fot-Pik are a friendly co-op of three alien species all native to the same world.
 They are presently suffering severe collateral damage
 from the ritual combat between the Ur-Quan and the Kohr-Ah.
@@ -752,14 +752,14 @@ In addition, the Zoq-Fot-Pik met the Chenjesu early on in the war, and are eager
 who can protect them from their enemies. 
 In case you are interested, the Zoq-Fot-Pik homeworld is at coordinates 400.0:543.7, planet I.
 
-#(OK_BUY_ALIEN_RACE_2)	melno100.ogg
+#(OK_BUY_ALIEN_RACE_2)	melnorme-100.ogg
 The Ilwrath are presently attacking the Pkunk in the Lacaille and Krueger constellations.
 These beings have slavish devotion to their dark gods Dogar and Kazon
 which in the past few years has been used against them by the Umgah.
 If you need to manipulate the Ilwrath, we suggest you discover the Umgah's technique
 and duplicate it.
 
-#(OK_BUY_ALIEN_RACE_3)	melno101.ogg
+#(OK_BUY_ALIEN_RACE_3)	melnorme-101.ogg
 The Pkunk are a mystical off-shoot of the Yehat species
 who left their bird-brothers long ago to found a peaceful enclave in the Krueger and Giclas stars.
 At the present time, the Pkunk are defending themselves against the Ilwrath
@@ -768,7 +768,7 @@ The Pkunk may be unwilling to make a formal alliance with you
 but we have confidence that if you explain yourself honestly
 they will help your efforts against the Ur-Quan.
 
-#(OK_BUY_ALIEN_RACE_4)	melno102.ogg
+#(OK_BUY_ALIEN_RACE_4)	melnorme-102.ogg
 The creatures presently fighting the Ur-Quan are called the Kohr-Ah.
 They are an Ur-Quan sub-species who split off from the main species many thousands of years ago.
 Their present fight is a ritual reenacting of a major difference of opinion
@@ -777,7 +777,7 @@ The Kohr-Ah are immune to reason, having long ago lost the ability to see their 
 They live in a self-maintained paradox: to ensure their safety and security
 the Kohr-Ah fight an endless battle against all other sentient species.
 
-#(OK_BUY_ALIEN_RACE_5)	melno103.ogg
+#(OK_BUY_ALIEN_RACE_5)	melnorme-103.ogg
 I must warn you about some very bad people.
 `Is this worth so many credits?' you ask yourself.
 I assure you, it is!
@@ -790,7 +790,7 @@ Do not fall for their tricks! There are hidden costs -- secret tariffs!
 So that you may avoid them, I will tell you that their main trade world is Zeta Persei I.
 Why are you smiling, Captain?
 
-#(OK_BUY_ALIEN_RACE_6)	melno104.ogg
+#(OK_BUY_ALIEN_RACE_6)	melnorme-104.ogg
 The Burvixese race evolved on the planet Arcturus I.
 They lived there in a relatively benevolent manner
 until the Kohr-Ah came and destroyed them during the course of 2 or 3 unfortunate days.
@@ -806,7 +806,7 @@ was homing in on their HyperWave radiations, the Druuge shut down all their tran
 and erected a powerful HyperWave beacon on the surface of the Burvixese moon.
 The Kohr-Ah changed course, attacked the poor Burvixese and sadly, destroyed them all.
 
-#(OK_BUY_ALIEN_RACE_7)	melno105.ogg
+#(OK_BUY_ALIEN_RACE_7)	melnorme-105.ogg
 The Thraddash are an arrogant, stubborn, and thick-skinned species
 who reside in the Draconis and Apodis star systems.
 They have little or no respect for anything but force, which they admire greatly.
@@ -815,7 +815,7 @@ In addition, they guard some kind of sacred relic at the star system Zeta Dracon
 though we do not know the true nature of this artifact.
 The Thraddash homeworld is at Delta Draconis.
 
-#(OK_BUY_ALIEN_RACE_8)	melno106.ogg
+#(OK_BUY_ALIEN_RACE_8)	melnorme-106.ogg
 After the war, the Chenjesu and the Mmrnmhrm chose to be slave-shielded
 on the Chenjesu's homeworld at Procyon.
 We suspect that they are melding their two species to form some kind of new, hybrid race
@@ -824,7 +824,7 @@ However, by our calculations, this process will take many decades, if not centur
 Should you wish to talk to them, we recommend you invest in a
 HyperWave broadcasting system which is powerful enough to penetrate the shield around their world.
 
-#(OK_BUY_ALIEN_RACE_9)	melno107.ogg
+#(OK_BUY_ALIEN_RACE_9)	melnorme-107.ogg
 The Mycon are using this time while the Ur-Quan have their attention elsewhere
 to expand their sphere of influence as fast as possible.
 The Mycon colonize planets by launching tough spore-pods from orbit
@@ -834,7 +834,7 @@ the tendrils suddenly thrust up out of the planet and create huge calderas
 not incidentally filling the planet's atmosphere with the Mycon's preferred gases
 clouds of super-heated steam and sulphuric acid.
 
-#(OK_BUY_ALIEN_RACE_10)	melno108.ogg
+#(OK_BUY_ALIEN_RACE_10)	melnorme-108.ogg
 Following the end of the War, the Androsynth began experimenting with Inter-Dimensional Fatigue
 a process which is related to your faster-than-light drive
 but involves dimensions far more alien than HyperSpace.
@@ -842,7 +842,7 @@ They had just made a major breakthrough when they were suddenly wiped out by a r
 who appeared seemingly out of nowhere.
 Actually, we don't know what the Orz did to the Androsynth -- they're just all gone.
 
-#(OK_BUY_ALIEN_RACE_11)	melno109.ogg
+#(OK_BUY_ALIEN_RACE_11)	melnorme-109.ogg
 The Arilou Lalee'lay are a mysterious race of IDF beings
 IDF meaning, Inter-Dimensional Fatigue
 They do not reside in this galaxy, or in fact, anywhere in this universe.
@@ -854,7 +854,7 @@ Though the Arilou Lalee'lay always smile and are never overtly hostile
 we believe that they have a secret agenda which somehow involves your planet, Earth.
 These secret plans may or may not cause grief and woe to you Earthlings.
 
-#(OK_BUY_ALIEN_RACE_12)	melno110.ogg
+#(OK_BUY_ALIEN_RACE_12)	melnorme-110.ogg
 Just under 20 years ago, the brave and suicidal Shofixti annihilated their species
 by exploding a Precursor device -- some kind of bomb -- in the interior of their sun.
 The resulting storm of solar flares cooked the life off the Shofixti homeworld
@@ -864,7 +864,7 @@ In actuality, there are still at least a dozen Shofixti left alive in the galaxy
 One or two are at Delta Gorno, guarding the dead hulk of their once beautiful world.
 Others can be found in VUX space.
 
-#(OK_BUY_ALIEN_RACE_13)	melno111.ogg
+#(OK_BUY_ALIEN_RACE_13)	melnorme-111.ogg
 The Slylandro are a mostly non-solid, sentient race who live in a gas giant at Beta Corvi.
 We recently sold them a self-replicating exploration probe
 which has somehow turned hostile and attacks everything it detects.
@@ -872,7 +872,7 @@ If such encounters have angered you, Captain, please do NOT address your concern
 We possess a formal Waiver of Damages, authorized by a Slylandro Speaker
 and are in no way responsible for the situation.
 
-#(OK_BUY_ALIEN_RACE_14)	melno112.ogg
+#(OK_BUY_ALIEN_RACE_14)	melnorme-112.ogg
 The cowardly Spathi live at the single planet orbiting Epsilon Gruis.
 They do not actually live on their world, rather they reside on its airless moon.
 The reason? A xenomorphic species, which craves the sweet-flavored flesh of the Spathi
@@ -886,7 +886,7 @@ Should you wish to consult with the Spathi Ruling Council
 you will need to know the Secret Spathi Cypher -- a password, which is
 `Huffi-Muffi-Guffi'.
 
-#(OK_BUY_ALIEN_RACE_15)	melno113.ogg
+#(OK_BUY_ALIEN_RACE_15)	melnorme-113.ogg
 Like you Earthlings, when the war with the Ur-Quan was lost
 the Syreen chose to be slave-shielded. Their new world is at Betelgeuse.
 The Syreen's starbase is crewed by the starship commanders and crew
@@ -895,7 +895,7 @@ Though the Syreen hate the Ur-Quan with a vengeance, they are unlikely to offer 
 unless you reveal to them the truth behind the tragedy of their original homeworld, Syra
 which was destroyed by the birth of a Mycon `Deep Child' a century ago.
 
-#(OK_BUY_ALIEN_RACE_16)	melno114.ogg
+#(OK_BUY_ALIEN_RACE_16)	melnorme-114.ogg
 When the Ur-Quan entered Gamma Serpentis -- the home star of the Yehat
 their Queen made a sudden change of allegiance and allied with the Ur-Quan Hierarchy.
 They became Ur-Quan combat thralls.
@@ -906,7 +906,7 @@ when they destroyed their own star system to slow down the Ur-Quan Armada.
 Captain, you have heard all that we have to say about aliens indigenous to this region.
 Should we learn more in the near future, we shall be certain to sell it to you.
 
-#(OK_BUY_HISTORY_1)	melno115.ogg
+#(OK_BUY_HISTORY_1)	melnorme-115.ogg
 Almost twenty-five thousand of your years ago, there existed near this region of space
 an association of starfaring races called the `Sentient Milieu'.
 This group formed over several thousand years to mutually enrich their respective cultures
@@ -915,7 +915,7 @@ and to afford themselves a degree of protection from external hostilities via mi
 Of the seven most active Milieu members, the most famous race -- indeed you know them well, Captain
 were the Ur-Quan.
 
-#(OK_BUY_HISTORY_2)	melno116.ogg
+#(OK_BUY_HISTORY_2)	melnorme-116.ogg
 The Ur-Quan evolved on a harsh planet orbiting a star outside this region of space.
 They were solitary predators, like your praying mantis, Captain, or polar bear
 who had a very limited set of social behaviors, most of which dealt with sex.
@@ -930,7 +930,7 @@ The Ur-Quan recognized the benefits that such a system provided
 and once more conquered the hunting beast within themselves
 to become cooperative, productive members of the Milieu. This lasted for several thousands of years.
 
-#(OK_BUY_HISTORY_3)	melno117.ogg
+#(OK_BUY_HISTORY_3)	melnorme-117.ogg
 Just over twenty thousand years ago
 when your ancestors were learning to chart the course of the moon and stars on animal horns
 the Sentient Milieu spanned five hundred light years and included the membership of a hundred worlds.
@@ -948,7 +948,7 @@ Then the Ur-Quan returned to the heart of the Milieu, landing on its capital pla
 Within hours, every resident of the planet was a Dnyarri slave.
 Within a month, Dnyarri-compelled starships had spread the evil, psychic creatures across the entire Milieu.
 
-#(OK_BUY_HISTORY_4)	melno118.ogg
+#(OK_BUY_HISTORY_4)	melnorme-118.ogg
 When the Dnyarri took control over the Milieu, one race fought back -- the Taalo.
 These slow, quiet creatures were silicon-based life forms
 but bore little resemblance to the modern Chenjesu.
@@ -963,7 +963,7 @@ which they thought would give other races psychic immunity like their own.
 What happened to this device, this shield? It's hard to say.
 Maybe it was destroyed in the attack on their homeworld, maybe not.
 
-#(OK_BUY_HISTORY_5)	melno119.ogg
+#(OK_BUY_HISTORY_5)	melnorme-119.ogg
 In the Dnyarri's new empire, the Ur-Quan were the favored slaves.
 This is probably because the Ur-Quan were the most psychically sensitive, the most easily compelled.
 As the centuries of Dnyarri dominance passed, what was once the Sentient Milieu
@@ -980,7 +980,7 @@ and the Black Ur-Quan, who filled the ranks of basic laborer and combat soldier.
 Then, a chance discovery by an Ur-Quan named Kzer-Za
 led to the violent overthrow of the Dnyarri Slave Empire.
 
-#(OK_BUY_HISTORY_6)	melno120.ogg
+#(OK_BUY_HISTORY_6)	melnorme-120.ogg
 The Ur-Quan named Kzer-Za was a Green, a researcher specializing in repairing the mental damage
 inflicted by long-term exposure to the Dnyarri's psychic compulsion.
 By this point in history, the Dnyarri had grown lax in their dominance
@@ -1006,7 +1006,7 @@ The Dnyarri could not bring themselves to make the necessary mental connection w
 They were slaughtered by the thousands.
 The Ur-Quan Slave revolt was won.
 
-#(OK_BUY_HISTORY_7)	melno121.ogg
+#(OK_BUY_HISTORY_7)	melnorme-121.ogg
 When the last Ur-Quan was free of psychic compulsion -- when the last free Dnyarri was dead
 the combined might of the Ur-Quan star fleets met in orbit above the Dnyarri homeworld.
 They had come together to make two important decisions.
@@ -1022,7 +1022,7 @@ acting as translators, making physical contact with other species
 whom the Ur-Quan now considered grossly inferior to themselves and revolting.
 The second decision -- how to ensure their freedom permanently -- caused great turmoil.
 
-#(OK_BUY_HISTORY_8)	melno122.ogg
+#(OK_BUY_HISTORY_8)	melnorme-122.ogg
 Following the successful Ur-Quan slave revolt
 the Ur-Quan met to decide how to ensure their freedom.
 The Green Ur-Quan, who called themselves the Kzer-Za in honor of the Ur-Quan who triggered the revolt
@@ -1039,7 +1039,7 @@ and that each of them had to remain in agony for years in order to defeat the Dn
 The followers of Kzer-Za and Kohr-Ah were all on the brink of madness
 but neither side would submit, and so they fought a bloody civil war.
 
-#(OK_BUY_HISTORY_9)	melno123.ogg
+#(OK_BUY_HISTORY_9)	melnorme-123.ogg
 This is the last historical item we have for sale.
 The civil war between the Green Ur-Quan, the followers of Kzer-Za
 and their opponents, the death-dealing Kohr-Ah, lasted for decades.
@@ -1060,7 +1060,7 @@ in a large area centered near the Crateris constellation.
 If the Kohr-Ah win this battle, Captain, the Kzer-Za will stand aside and let them kill us all.
 We believe it is your destiny to prevent this from happening.
 
-#(INFO_ALL_GONE)	melno124.ogg
+#(INFO_ALL_GONE)	melnorme-124.ogg
 We regret to say that you have exhausted our supply of genuinely valuable information.
 However we DO have many thousands of useless facts and that we will gladly sell you
 at a substantial discount. Are you interested?
@@ -1078,10 +1078,10 @@ I do not want to purchase any more technology.
 #(fill_me_up)
 Fill all my fuel tanks to maximum capacity.
 
-#(OK_FILL_YOU_UP)	melno125.ogg
+#(OK_FILL_YOU_UP)	melnorme-125.ogg
 Yes sir, fill 'er up, right away!
 
-#(BUY_NEW_TECH_INTRO)	melno126.ogg
+#(BUY_NEW_TECH_INTRO)	melnorme-126.ogg
 Investment! Ah yes, you are so right.
 These technological breakthroughs don't cost you Credit
 they EARN you Credit!
@@ -1092,148 +1092,148 @@ somewhere in the galaxy
 at some point in the future.
 All technologies cost 150 Credits.
 
-#(OK_BUY_NEW_TECH)	melno127.ogg
+#(OK_BUY_NEW_TECH)	melnorme-127.ogg
 Right now we are offering 
 
-#(OK_NO_BUY_NEW_TECH)	melno128.ogg
+#(OK_NO_BUY_NEW_TECH)	melnorme-128.ogg
 What else would you like to buy?
 
-#(OK_DONE_BUYING_NEW_TECH) melno129.ogg
+#(OK_DONE_BUYING_NEW_TECH) melnorme-129.ogg
 Would you like to purchase anything else?
 
-#(OK_DONE_BUYING_FUEL)	melno130.ogg
+#(OK_DONE_BUYING_FUEL)	melnorme-130.ogg
 Would you like to purchase anything else?
 
-#(NEW_TECH_1)	melno131.ogg
+#(NEW_TECH_1)	melnorme-131.ogg
 The technology we are now offering includes plans for building
 blaster weapons twice as powerful as your ion-bolt guns.
 
-#(NEW_TECH_2)	melno132.ogg
+#(NEW_TECH_2)	melnorme-132.ogg
 The technology we are now offering includes specifications for constructing
 modifications to your planet landers which will double their speed.
 
-#(NEW_TECH_3)	melno133.ogg
+#(NEW_TECH_3)	melnorme-133.ogg
 The technology we are now offering includes details on how to add
 'point-defense' laser defense systems for your flagship.
 
-#(NEW_TECH_4)	melno134.ogg
+#(NEW_TECH_4)	melnorme-134.ogg
 The technology we are now offering includes plans for building
 improvements to your planet landers which make them resistant to hostile alien lifeforms.
 
-#(NEW_TECH_5)	melno135.ogg
+#(NEW_TECH_5)	melnorme-135.ogg
 The technology we are now offering includes blueprints
 which show how to increase your lander's cargo space
 to double its present volume.
 
-#(NEW_TECH_6)	melno136.ogg
+#(NEW_TECH_6)	melnorme-136.ogg
 The technology we are now offering includes blueprints which show how to add
 double-capacity fuel tanks.
 
-#(NEW_TECH_7)	melno137.ogg
+#(NEW_TECH_7)	melnorme-137.ogg
 The technology we are now offering includes plans for improving the rate of fire
 on your lander's stunray bolt-beamer gun.
 
-#(NEW_TECH_8)	melno138.ogg
+#(NEW_TECH_8)	melnorme-138.ogg
 The technology we are now offering includes details for building
 modifications to your planet landers which make them resistant to earthquakes.
 
-#(NEW_TECH_9)	melno139.ogg
+#(NEW_TECH_9)	melnorme-139.ogg
 The technology we are now offering includes plans for adding
 auto-tracking modules which improve the aim of all your weapons.
 
-#(NEW_TECH_10)	melno140.ogg
+#(NEW_TECH_10)	melnorme-140.ogg
 The technology we are now offering includes plans for adding
 improvements to your planet landers which make them resistant to inclement planet weather.
 
-#(NEW_TECH_11)	melno141.ogg
+#(NEW_TECH_11)	melnorme-141.ogg
 The technology we are now offering is everything you need to know to assemble
 modifications to your planet landers which make them resistant to planetary hot-spots.
 
-#(NEW_TECH_12)	melno142.ogg
+#(NEW_TECH_12)	melnorme-142.ogg
 The technology we are now offering is plans for building
 'Hellbore Cannons', a weapon much more destructive than a simple blaster.
 
-#(NEW_TECH_13)	melno143.ogg
+#(NEW_TECH_13)	melnorme-143.ogg
 The technology we are now offering includes details on how to develop
 Shiva Furnace modules which generate energy for your combat batteries
 twice as fast as your standard dynamos.
 
-#(OK_BUY_NEW_TECH_1)	melno144.ogg
+#(OK_BUY_NEW_TECH_1)	melnorme-144.ogg
 Please remember that these weapons consume energy from your combat batteries
 faster than your familiar ion-bolt guns.
 You may wish to compensate for this by building additional dynamo modules for your flagship.
 
-#(OK_BUY_NEW_TECH_2)	melno145.ogg
+#(OK_BUY_NEW_TECH_2)	melnorme-145.ogg
 Ah yes, speed! An excellent choice for the relentless hunter
 and craven coward as well.
 These modifications are simple enough to be put in place immediately.
 Your landers should be properly equipped in no time.
 
-#(OK_BUY_NEW_TECH_3)	melno146.ogg
+#(OK_BUY_NEW_TECH_3)	melnorme-146.ogg
 These little babies are great for defense, but because of their limited range
 they may not make a good offensive weapon.
 However, the more you build for your vessel the more damage each laser strike will do.
 
-#(OK_BUY_NEW_TECH_4)	melno147.ogg
+#(OK_BUY_NEW_TECH_4)	melnorme-147.ogg
 Our reinforcement procedures on your landers are complete.
 Now, provided your crew will stop putting their hands out the windows
 they will be much better protected against hostile lifeforms.
 
-#(OK_BUY_NEW_TECH_5)	melno148.ogg
+#(OK_BUY_NEW_TECH_5)	melnorme-148.ogg
 I hope this makes your resource gathering more cost-effective, Captain.
 
-#(OK_BUY_NEW_TECH_6)	melno149.ogg
+#(OK_BUY_NEW_TECH_6)	melnorme-149.ogg
 We hope that these improved tanks will make more module slots available on your flagship
 which you can fill with other, more useful equipment.
 
-#(OK_BUY_NEW_TECH_7)	melno150.ogg
+#(OK_BUY_NEW_TECH_7)	melnorme-150.ogg
 After some wild game, hmmm? Well, the changes we made should really make a difference!
 Unless of course that wiring went in backwards
 in which case you won't be able to shoot at all, or take off for that matter.
 Don't worry, Captain. We stand behind our work. If something goes wrong
 just bring it back to us, and we'll fix it pronto!
 
-#(OK_BUY_NEW_TECH_8)	melno151.ogg
+#(OK_BUY_NEW_TECH_8)	melnorme-151.ogg
 With the addition of these safety belts and heavy-duty shock absorbers
 your lander occupants should be much safer when an untimely earthquake strikes.
 The job is complete. Your landers are ready.
 
-#(OK_BUY_NEW_TECH_9)	melno152.ogg
+#(OK_BUY_NEW_TECH_9)	melnorme-152.ogg
 You are preparing for a mighty battle, eh?
 Well, let me give you some advice.
 You should consider using multiple Tracking modules, since this will greatly improve your aim
 however, never add more than three to your ship. Any more would be useless.
 
-#(OK_BUY_NEW_TECH_10)	melno153.ogg
+#(OK_BUY_NEW_TECH_10)	melnorme-153.ogg
 A little superconductive spray-paint and Presto!
 Your lander can sustain a direct hit by a lightning bolt
 without crisping the passengers inside... usually.
 Since the job is so easy that a nymph could do it
 I expect all your landers will be treated in less than an hour.
 
-#(OK_BUY_NEW_TECH_11)	melno154.ogg
+#(OK_BUY_NEW_TECH_11)	melnorme-154.ogg
 With these new ablative-plasma heat shields, your crew will be substantially safer on hot worlds
 but like all our lander modifications, this protection is not perfect, so remain cautious.
 Since the changes to your landers are straightforward
 your landers should be fitted with the heat shields by the time you return to your ship.
 
-#(OK_BUY_NEW_TECH_12)	melno155.ogg
+#(OK_BUY_NEW_TECH_12)	melnorme-155.ogg
 Captain, just a suggestion!
 Hellbore Cannon are energy gulpers, so unless you want to have a long delay between shots
 I would suggest you add Dynamos or even Shiva Furnaces to your ship.
 
-#(OK_BUY_NEW_TECH_13)	melno156.ogg
+#(OK_BUY_NEW_TECH_13)	melnorme-156.ogg
 I am certain you will appreciate this new module, Captain!
 With it you should be able to destroy and devastate twice as fast as before.
 
-#(CHARITY)	melno157.ogg
+#(CHARITY)	melnorme-157.ogg
 Since you have no useful, easily removeable equipment on your vessel
 we have decided to provide you with fuel at no cost.
 Please do not make the mistake of thinking of this as a `gift' or act of altruism
 we are merely investing in our relationship with you, the customer.
 We are certain that in the long run, this will prove to be a most profitable investment.
 
-#(NEW_TECH_ALL_GONE)	melno158.ogg
+#(NEW_TECH_ALL_GONE)	melnorme-158.ogg
 Commander, that is the limit of the new technology we can offer you.
 If I may say so, you have been an excellent customer.
 Thank you!
@@ -1241,43 +1241,43 @@ Thank you!
 #(we_are_from_alliance0)
 We come in peace, representing 
 
-#(STRIP_HEAD)	melno159.ogg
+#(STRIP_HEAD)	melnorme-159.ogg
 We will take 
 
-#(LANDERS)	melno160.ogg
+#(LANDERS)	melnorme-160.ogg
  of your Planet Landers
 
-#(THRUSTERS)	melno161.ogg
+#(THRUSTERS)	melnorme-161.ogg
  of your Fusion Thrusters
 
-#(JETS)	melno162.ogg
+#(JETS)	melnorme-162.ogg
  of your Turning Jets
 
-#(PODS)	melno163.ogg
+#(PODS)	melnorme-163.ogg
  of your empty Crew Pods
 
-#(BAYS)	melno164.ogg
+#(BAYS)	melnorme-164.ogg
  of your empty Storage Bays
 
-#(DYNAMOS)	melno165.ogg
+#(DYNAMOS)	melnorme-165.ogg
  of your Dynamo modules
 
-#(FURNACES)	melno166.ogg
+#(FURNACES)	melnorme-166.ogg
  of your Shiva Furnaces
 
-#(GUNS)	melno167.ogg
+#(GUNS)	melnorme-167.ogg
  of your Ion-Bolt Guns
 
-#(BLASTERS)	melno168.ogg
+#(BLASTERS)	melnorme-168.ogg
  of your Blasters
 
-#(CANNONS)	melno169.ogg
+#(CANNONS)	melnorme-169.ogg
  of your Hellbore Cannons
 
-#(TRACKERS)	melno170.ogg
+#(TRACKERS)	melnorme-170.ogg
  of your Auto-Tracking Modules
 
-#(DEFENSES)	melno171.ogg
+#(DEFENSES)	melnorme-171.ogg
  of your Point-Defense Lasers
 
 #(name_1)
@@ -1294,95 +1294,95 @@ The Empire of
 #(name_41)
 !
 
-#(ENUMERATE_ONE)	melno172.ogg
+#(ENUMERATE_ONE)	melnorme-172.ogg
 one
 
-#(ENUMERATE_TWO)	melno173.ogg
+#(ENUMERATE_TWO)	melnorme-173.ogg
 two
 
-#(ENUMERATE_THREE)	melno174.ogg
+#(ENUMERATE_THREE)	melnorme-174.ogg
 three
 
-#(ENUMERATE_FOUR)	melno175.ogg
+#(ENUMERATE_FOUR)	melnorme-175.ogg
 four
 
-#(ENUMERATE_FIVE)	melno176.ogg
+#(ENUMERATE_FIVE)	melnorme-176.ogg
 five
 
-#(ENUMERATE_SIX)	melno177.ogg
+#(ENUMERATE_SIX)	melnorme-177.ogg
 six
 
-#(ENUMERATE_SEVEN)	melno178.ogg
+#(ENUMERATE_SEVEN)	melnorme-178.ogg
 seven
 
-#(ENUMERATE_EIGHT)	melno179.ogg
+#(ENUMERATE_EIGHT)	melnorme-179.ogg
 eight
 
-#(ENUMERATE_NINE)	melno180.ogg
+#(ENUMERATE_NINE)	melnorme-180.ogg
 nine
 
-#(ENUMERATE_TEN)	melno181.ogg
+#(ENUMERATE_TEN)	melnorme-181.ogg
 ten
 
-#(ENUMERATE_ELEVEN)	melno182.ogg
+#(ENUMERATE_ELEVEN)	melnorme-182.ogg
 eleven
 
-#(ENUMERATE_TWELVE)	melno183.ogg
+#(ENUMERATE_TWELVE)	melnorme-183.ogg
 twelve
 
-#(ENUMERATE_THIRTEEN)	melno184.ogg
+#(ENUMERATE_THIRTEEN)	melnorme-184.ogg
 thirteen
 
-#(ENUMERATE_FOURTEEN)	melno185.ogg
+#(ENUMERATE_FOURTEEN)	melnorme-185.ogg
 fourteen
 
-#(ENUMERATE_FIFTEEN)	melno186.ogg
+#(ENUMERATE_FIFTEEN)	melnorme-186.ogg
 fifteen
 
-#(ENUMERATE_SIXTEEN)	melno187.ogg
+#(ENUMERATE_SIXTEEN)	melnorme-187.ogg
 sixteen
 
-#(END_LIST_WITH_AND)	melno188.ogg
+#(END_LIST_WITH_AND)	melnorme-188.ogg
 and
 
 #(ENUMERATE_ZERO)
 zero
 
-#(ENUMERATE_SEVENTEEN)	melno190.ogg
+#(ENUMERATE_SEVENTEEN)	melnorme-190.ogg
 seventeen
 
-#(ENUMERATE_EIGHTEEN)	melno191.ogg
+#(ENUMERATE_EIGHTEEN)	melnorme-191.ogg
 eighteen
 
-#(ENUMERATE_NINETEEN)	melno192.ogg
+#(ENUMERATE_NINETEEN)	melnorme-192.ogg
 nineteen
 
-#(ENUMERATE_TWENTY)	melno193.ogg
+#(ENUMERATE_TWENTY)	melnorme-193.ogg
 twenty
 
-#(ENUMERATE_THIRTY)	melno194.ogg
+#(ENUMERATE_THIRTY)	melnorme-194.ogg
 thirty
 
-#(ENUMERATE_FOURTY)	melno195.ogg
+#(ENUMERATE_FOURTY)	melnorme-195.ogg
 fourty
 
-#(ENUMERATE_FIFTY)	melno196.ogg
+#(ENUMERATE_FIFTY)	melnorme-196.ogg
 fifty
 
-#(ENUMERATE_SIXTY)	melno197.ogg
+#(ENUMERATE_SIXTY)	melnorme-197.ogg
 sixty
 
-#(ENUMERATE_SEVENTY)	melno198.ogg
+#(ENUMERATE_SEVENTY)	melnorme-198.ogg
 seventy
 
-#(ENUMERATE_EIGHTY)	melno199.ogg
+#(ENUMERATE_EIGHTY)	melnorme-199.ogg
 eighty
 
-#(ENUMERATE_NINETY)	melno200.ogg
+#(ENUMERATE_NINETY)	melnorme-200.ogg
 ninety
 
-#(ENUMERATE_HUNDRED)	melno201.ogg
+#(ENUMERATE_HUNDRED)	melnorme-201.ogg
 hundred
 
-#(ENUMERATE_THOUSAND)	melno202.ogg
+#(ENUMERATE_THOUSAND)	melnorme-202.ogg
 thousand

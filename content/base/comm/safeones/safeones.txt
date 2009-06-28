@@ -1,13 +1,13 @@
 #(killed_fwiffo)
 I am afraid Fwiffo is no longer with the living.
 
-#(POOR_FWIFFO)	spaho000.ogg
+#(POOR_FWIFFO)	safeones-000.ogg
 Somehow, Captain, we are not surprised.
 
 #(fwiffo_fine)
 What Fwiffo? Oh, he's fine, just great. Really! Doing swell.
 
-#(NOT_LIKELY)	spaho001.ogg
+#(NOT_LIKELY)	safeones-001.ogg
 Well then, surely you would have no trouble letting Fwiffo approach the viewscreen for a little chat
 would you, Captain?
 We thought not.
@@ -15,42 +15,42 @@ We thought not.
 #(we_attack_again)
 Our new course of action involves combat.
 
-#(WE_FIGHT_AGAIN)	spaho002.ogg
+#(WE_FIGHT_AGAIN)	safeones-002.ogg
 New? New!? This is not a new thing. Your violent ways are, as they say in your language, as old as the hats.
 
 #(bye_no_ally_offer)
 We must go, but we shall return soon.
 
-#(GOODBYE_NO_ALLY_OFFER)	spaho003.ogg
+#(GOODBYE_NO_ALLY_OFFER)	safeones-003.ogg
 Please don't hurry on our account.
 
 #(bye_angry_spathi)
 I can tell you are upset, and so we shall leave.
 
-#(GOODBYE_ANGRY_SPATHI)	spaho004.ogg
+#(GOODBYE_ANGRY_SPATHI)	safeones-004.ogg
 Suddenly we grow less upset.
 
 #(why_dont_you_do_it)
 Why don't you do it?
 
-#(WE_WONT_BECAUSE)	spaho005.ogg
+#(WE_WONT_BECAUSE)	safeones-005.ogg
 Two reasons.
 Firstly, we have an unreasoning fear that the Evil Ones will devour us all painfully.
 Secondly, in the rare cases where we have overcome our fear, and ventured to Spathiwa's surface
 the Spathi who landed were all devoured painfully.
 
-#(MEAN_GUYS_RETURN)	spaho006.ogg
+#(MEAN_GUYS_RETURN)	safeones-006.ogg
 Look, look everyone! It's the violent creature from Earth.
 I wonder how many of our encrustlings it wants to devour today?
 
 #(we_apologize)
 We regret our past deeds, so why dwell on the past? Let's look forward to a bright new future, together!
 
-#(DONT_BELIEVE)	spaho007.ogg
+#(DONT_BELIEVE)	safeones-007.ogg
 I am probably just an old stick-in-the-mud, Captain, but I just can't let go of the idea
 that this is all part of some devious trick of yours to torture and kill my species.
 
-#(HELLO_AGAIN)	spaho008.ogg
+#(HELLO_AGAIN)	safeones-008.ogg
 We did not expect to see you again so soon, Hunam!
 Our prognosticators had indicated that you would not return for at least 30 years
 and now I fear, they will lose their tenure as a consequence.
@@ -58,15 +58,15 @@ How sad. I expect each had thousands of encrustlings to feed who will now go hun
 Here's an idea! Leave now and do not return until the appointed time.
 This premature visit shall remain our little secret, eh?
 
-#(HATE_YOU_FOREVER)	spaho009.ogg
+#(HATE_YOU_FOREVER)	safeones-009.ogg
 We, the High Ruling Council of Spathiwa have just passed a new law.
 Your continued existence is now a crime!
 With the authority of justice, we attack!
 
-#(WHAT_IS_PASSWORD)	spaho010.ogg
+#(WHAT_IS_PASSWORD)	safeones-010.ogg
 What is the Secret Cypher?
 
-#(WHAT_IS_PASSWORD_AGAIN)	spaho011.ogg
+#(WHAT_IS_PASSWORD_AGAIN)	safeones-011.ogg
 We'll give you just one more chance.
 What is the Cypher?
 
@@ -95,13 +95,13 @@ Screw this Cypher business -- can't we just talk?
 #(good_password)
 Huffi-Muffi-Guffi.
 
-#(WRONG_PASSWORD)	spaho012.ogg
+#(WRONG_PASSWORD)	safeones-012.ogg
 You do not know the Secret Cypher!
 Therefore, you must be an evil, dangerous alien invader
 intent on killing all of us in some horrible fashion!
 We have every right to prevent this.
 
-#(NO_PASSWORD)	spaho013.ogg
+#(NO_PASSWORD)	safeones-013.ogg
 You have tried to trick us with a clever deception
 however, we are ever wary and have uncovered your evil scheme!
 While we abhor violence, we have found that under circumstances like this
@@ -111,10 +111,10 @@ Like so.
 #(what_do_i_get)
 Once I've given you the Cypher, what do I get?
 
-#(YOU_GET_TO_LIVE)	spaho014.ogg
+#(YOU_GET_TO_LIVE)	safeones-014.ogg
 You get to live a bit longer.
 
-#(YES_GOOD_PASSWORD)	spaho015.ogg
+#(YES_GOOD_PASSWORD)	safeones-015.ogg
 We are The Safe Ones -- the Spathi High Council.
 You have given us the correct Cypher and so you will not be destroyed immediately.
 Now, if you please, tell us how you acquired our most Secret Spathi Cypher
@@ -124,14 +124,14 @@ even when threatened with considerable pain.
 #(spathi_on_pluto)
 We met a Spathi on Pluto... uh, we became good friends!
 
-#(WHERE_SPATHI)	spaho016.ogg
+#(WHERE_SPATHI)	safeones-016.ogg
 And just where is this Spathi `friend' now?
 Never mind -- the answer is all too obvious in your tiny, dry eyes.
 
 #(hostage)
 We have Fwiffo on board. He can vouch for our good intentions!
 
-#(GUN_TO_HEAD)	spaho017.ogg
+#(GUN_TO_HEAD)	safeones-017.ogg
 If you held a weapon to Fwiffo's head, he would say anything you wanted him to say.
 In fact, if you held a vegetable to his head
 he would probably say anything you wanted him to say.
@@ -139,10 +139,10 @@ he would probably say anything you wanted him to say.
 #(we_come_in_peace)
 We come in peace, and with good will.
 
-#(OF_COURSE)	spaho018.ogg
+#(OF_COURSE)	safeones-018.ogg
 No doubt.
 
-#(KILLED_SPATHI)	spaho019.ogg
+#(KILLED_SPATHI)	safeones-019.ogg
 No, you ARRIVED in peace.
 You CAME in a somewhat more violent manner
 as indicated by this report from the Spathi patrol vessel you attacked.
@@ -150,7 +150,7 @@ as indicated by this report from the Spathi patrol vessel you attacked.
 #(misunderstanding)
 Uh, that was just kind of a misunderstanding.
 
-#(JUST_MISUNDERSTANDING)	spaho020.ogg
+#(JUST_MISUNDERSTANDING)	safeones-020.ogg
 Of course Captain, we realize that misunderstandings happen... occasionally.
 Let us just hope that no similar `misunderstanding' causes us to open fire on you
 with our planetary defense batteries.
@@ -158,19 +158,19 @@ with our planetary defense batteries.
 #(give_us_resources)
 As a gesture of good will, could you spare some mineral resources?
 
-#(NO_RESOURCES)	spaho021.ogg
+#(NO_RESOURCES)	safeones-021.ogg
 No.
 
 #(resources_please)
 Now that our alliance is firmly established, could you please transport large quantities of valuable minerals to our ship?
 
-#(SORRY_NO_RESOURCES)	spaho022.ogg
+#(SORRY_NO_RESOURCES)	safeones-022.ogg
 No.
 
 #(bye_ally)
 Goodbye Council members.
 
-#(GOODBYE_ALLY)	spaho023.ogg
+#(GOODBYE_ALLY)	safeones-023.ogg
 Goodbye hunam.
 
 #(what_about_hierarchy)
@@ -191,10 +191,10 @@ Do you have any information on the Precursors?
 #(enough_info)
 That's enough info for now.
 
-#(OK_ENOUGH_INFO)	spaho024.ogg
+#(OK_ENOUGH_INFO)	safeones-024.ogg
 Good. I don't feel much like talking about that anyway.
 
-#(ABOUT_HIERARCHY)	spaho025.ogg
+#(ABOUT_HIERARCHY)	safeones-025.ogg
 Since we never wanted to be in the Hierarchy, and we're afraid of all the other members
 our knowledge on this subject is a bit limited, but I'll tell you what I know.
 The Hierarchy is the construct of the Ur-Quan. It exists to maintain their supreme authority
@@ -209,7 +209,7 @@ and the mysterious Mycon, who ramble endlessly about people, places and events f
 as though they happened just today.
 If there are other Hierarchy races, we are not aware of them.
 
-#(ABOUT_HISTORY)	spaho026.ogg
+#(ABOUT_HISTORY)	safeones-026.ogg
 Before the Evil Ones appeared, we Spathi were a simple folk
 we were content with our calm lives, our rude huts
 and our coarse-woven turtle-neck sweaters.
@@ -222,7 +222,7 @@ It was as though they had arrived suddenly on the surface of our planet
 transported there by some unknown agency... but that is nonsense
 who could be so cruel?!
 
-#(ABOUT_ALLIANCE)	spaho027.ogg
+#(ABOUT_ALLIANCE)	safeones-027.ogg
 You mean the one we helped demolish? That one?
 Well, we had some contact with Alliance members before the Ur-Quan showed up.
 Mostly with the Chenjesu, who stopped off here occasionally
@@ -234,7 +234,7 @@ which we considered within our sphere of influence.
 When we explained this to the Mmrnmhrm, they politely withdrew from the contested star system
 and never bothered us again.
 
-#(ABOUT_OTHER)	spaho028.ogg
+#(ABOUT_OTHER)	safeones-028.ogg
 Since we tend to stay close to home -- preferably in the living room
 we know little about other races beyond our neighbors, such as the Umgah.
 Before being subjugated by the Ur-Quan, the Umgah were a contented and peaceable race
@@ -246,7 +246,7 @@ declaring the arrival of the 'Grand Master Planet Eaters' or some such nonsense.
 This caused several alien cultures to go mad with panic
 including, you might be surprised to know, ourselves.
 
-#(ABOUT_PRECURSORS)	spaho029.ogg
+#(ABOUT_PRECURSORS)	safeones-029.ogg
 Like all other races, we have found evidence of the Precursors scattered throughout our space.
 Our belief is that the Precursors are not really gone, they simply came to their senses one day
 and used their superior technology to invent some kind of perfect invisibility shield
@@ -260,7 +260,7 @@ I suspect that even garbage from the Precursors would be of incredible value.
 #(little_mistake)
 Uh... sorry about that little mistake... we thought we had gotten all of those creatures.
 
-#(BIG_MISTAKE)	spaho030.ogg
+#(BIG_MISTAKE)	safeones-030.ogg
 That was not a LITTLE mistake.
 A LITTLE mistake is leaving the top off the eye cream or forgetting to clean your lid in the morning.
 Now on the other hand, a BIG mistake might be, say
@@ -271,24 +271,24 @@ That's a BIG mistake.
 #(bye_before_party)
 We shall return after we have completed the quest.
 
-#(QUEST_AGAIN)	spaho031.ogg
+#(QUEST_AGAIN)	safeones-031.ogg
 So... the hunam coward has returned.
 You know, if the Ur-Quan discover we have been fraternizing with you
 we're going to be in serious trouble.
 Perhaps it would be better if you just leave.
 Unless you're here to accept the quest, that is.
 
-#(GOODBYE_BEFORE_PARTY)	spaho032.ogg
+#(GOODBYE_BEFORE_PARTY)	safeones-032.ogg
 Unless you are killed and eaten, which is fairly likely.
 
-#(GOOD_START)	spaho033.ogg
+#(GOOD_START)	safeones-033.ogg
 You have made a good start and are to be commended.
 Now go finish the job.
 
 #(something_fishy)
 Hey, are you up to something fishy?
 
-#(NOTHING_FISHY)	spaho034.ogg
+#(NOTHING_FISHY)	safeones-034.ogg
 Fishy! Fishy? What is this fishy?
 No, nothing fishy here -- totally fishless.
 There, now that that's resolved
@@ -297,34 +297,34 @@ is there anything else you would like to talk about, Captain?
 #(surrender)
 We demand an immediate surrender!
 
-#(NO_SURRENDER)	spaho035.ogg
+#(NO_SURRENDER)	safeones-035.ogg
 I'm sorry, I must have an embarrassing waxy build-up in my hearing hole.
 What did you say?
 
 #(surrender_or_die)
 If you won't surrender, we must destroy you.
 
-#(DEFEND_OURSELVES)	spaho036.ogg
+#(DEFEND_OURSELVES)	safeones-036.ogg
 There ARE other options you know, but if you insist...
 
 #(hand_in_friendship)
 We offer our hand in friendship. Join us and our many allies.
 
-#(TOO_AFRAID)	spaho037.ogg
+#(TOO_AFRAID)	safeones-037.ogg
 We are too afraid of the Ur-Quan to consider such an alliance.
 They would most certainly punish us with extreme tortures.
 
 #(stronger)
 We're stronger than the Ur-Quan. You're better off with us.
 
-#(YOURE_NOT)	spaho038.ogg
+#(YOURE_NOT)	safeones-038.ogg
 Hello! Hello! Awaken from your dreamy state Hunam!
 Now is the time for realism, not wild fancy!
 
 #(yes_we_are)
 Yes we ARE strong enough! Look at our Precursor vessel. Is it not unique?
 
-#(NO_YOURE_NOT)	spaho039.ogg
+#(NO_YOURE_NOT)	safeones-039.ogg
 Yes, your vessel is unique, and here is the crux of the problem.
 A `Unique', meaning singular, starship is not equal to the task of destroying the entire Ur-Quan armada.
 If you had, say, ten thousand similar starships, we could take your boasts more seriously.
@@ -332,7 +332,7 @@ If you had, say, ten thousand similar starships, we could take your boasts more 
 #(how_prove)
 Look, what do I have to do to prove this to you - destroy your entire star fleet?
 
-#(BETTER_IDEA)	spaho040.ogg
+#(BETTER_IDEA)	safeones-040.ogg
 Well, that would probably work
 but I have a better idea -- a test
 one of those questy kind of things.
@@ -340,24 +340,24 @@ one of those questy kind of things.
 #(share_info)
 Would you be willing to share some information with us?
 
-#(NO_INFO)	spaho041.ogg
+#(NO_INFO)	safeones-041.ogg
 No.
 
-#(WE_UNDERSTAND)	spaho042.ogg
+#(WE_UNDERSTAND)	safeones-042.ogg
 We understand.
 That's why we live on this inhospitable moon, instead of our nice, warm home planet.
 
 #(prove_strength)
 Ok, to prove our strength and bravery we will perform this test without even knowing what it is!
 
-#(YOUR_BEHAVIOR)	spaho043.ogg
+#(YOUR_BEHAVIOR)	safeones-043.ogg
 Your behavior makes clear the very slight distinction between bravery
 and suicidal stupidity.
 
 #(what_test)
 Well, what kind of test do you have in mind?
 
-#(BEFORE_ACCEPT)	spaho044.ogg
+#(BEFORE_ACCEPT)	safeones-044.ogg
 Let us explain the sad history of our species.
 Once upon a time, many thousands of years ago
 we inhabited the warm, safe surface of our home planet, Spathiwa.
@@ -376,13 +376,13 @@ but none of our innovations was a match for the Evil Ones' natural cunning and f
 Finally, with no other option available, we fled our world and took up residence here on our own moon
 where we have resided, most uncomfortably, for the last three hundred years.
 
-#(WIPE_EVIL)	spaho045.ogg
+#(WIPE_EVIL)	safeones-045.ogg
 You must wipe the Evil Ones from the face of Spathiwa!
 
 #(think_more)
 Gee, I'd like to think about this some more before making any commitments.
 
-#(COWARD)	spaho046.ogg
+#(COWARD)	safeones-046.ogg
 Don't feel bad about being a coward. It's natural.
 
 #(tell_evil)
@@ -391,7 +391,7 @@ Tell me more about these Evil Ones.
 #(i_accept)
 Ok, I accept!  Start packing your bags, eyeball dudes, you'll be home in no time.
 
-#(AWAIT_RETURN)	spaho047.ogg
+#(AWAIT_RETURN)	safeones-047.ogg
 We will await your return with great anticipation.
 Simultaneously, we will prepare a short, poignant eulogy to mourn your demise.
 
@@ -401,18 +401,18 @@ Can we talk about that test again?
 #(already_got_them)
 What a coincidence! It's your lucky day -- we just eliminated all of those guys!
 
-#(EARLY_BIRD_CHECK)	spaho048.ogg
+#(EARLY_BIRD_CHECK)	safeones-048.ogg
 What?! Can this be a true fact and not a false lie?
 We will send an exploration team to investigate your claim.
 If what you have said is true, we shall be forever... er
 substantially in debt to you for a long, though unspecified, period of time.
 Goodbye.
 
-#(NOT_SURPRISED)	spaho049.ogg
+#(NOT_SURPRISED)	safeones-049.ogg
 I'm not surprised. We certainly won't go there.
 Why should you be any less craven than ourselves?
 
-#(TEST_AGAIN)	spaho050.ogg
+#(TEST_AGAIN)	safeones-050.ogg
 You must wipe the Evil Ones from the face of Spathiwa!
 They are creatures from the darkest pits of hell
 whose relentless passion for our fleshy parts
@@ -422,10 +422,10 @@ and take up unhappy residence on this cold, airless moon.
 #(too_dangerous)
 Nah, this sounds too dangerous.
 
-#(WE_AGREE)	spaho051.ogg
+#(WE_AGREE)	safeones-051.ogg
 You're right. It is. Don't even consider reconsidering.
 
-#(HOW_GO_EFFORTS)	spaho052.ogg
+#(HOW_GO_EFFORTS)	safeones-052.ogg
 How go your foolishly courageous and noble efforts to rid the Evil Ones from our beloved Spathiwa?
 
 #(killed_them_all_1)
@@ -434,13 +434,13 @@ Although we lost many crew, we have eliminated the scourge.
 #(killed_them_all_2)
 We killed them all, yup we sure did.
 
-#(WILL_CHECK_1)	spaho053.ogg
+#(WILL_CHECK_1)	safeones-053.ogg
 This is wonderful -- too good to be true!
 We will immediately begin transporting Spathi from this unpleasant moon down to the safe surface.
 We shall send encrustlings and the infirm elderly first, as a special honor!
 Please come back later to receive your accolades.
 
-#(WILL_CHECK_2)	spaho054.ogg
+#(WILL_CHECK_2)	safeones-054.ogg
 Fool me once, shame on you.
 Fool me twice, shame on...er
 even MORE shame on you!
@@ -450,10 +450,10 @@ but I suppose we'll check again.
 #(zapped_a_few)
 Well, we zapped a few of them, but some got away.
 
-#(RETURN_COMPLETE)	spaho055.ogg
+#(RETURN_COMPLETE)	safeones-055.ogg
 Return when you have completed the job.
 
-#(MUST_DESTROY_ALL)	spaho056.ogg
+#(MUST_DESTROY_ALL)	safeones-056.ogg
 You must destroy them all, and swiftly!
 They breed like Shofixti, and will replenish their numbers in days.
 
@@ -463,12 +463,12 @@ Well to be honest, we haven't even landed there yet.
 #(saw_creatures)
 We landed and saw the creatures but left right away.
 
-#(YOU_FORTUNATE)	spaho057.ogg
+#(YOU_FORTUNATE)	safeones-057.ogg
 You are fortunate to have survived
 but to complete the quest, and earn our friendship
 you must annihilate them all!
 
-#(YOU_LIED_1)	spaho058.ogg
+#(YOU_LIED_1)	safeones-058.ogg
 You failed us!
 There were creatures all over!
 They attacked the unsuspecting Spathi the second our ships unloaded and took off.
@@ -477,7 +477,7 @@ We can only conclude, that in your eagerness to return us to our world
 you neglected to eliminate ALL the Evil Ones from the surface.
 The job is incomplete until their presence is scoured from the surface of Spathiwa!
 
-#(YOU_LIED_2)	spaho059.ogg
+#(YOU_LIED_2)	safeones-059.ogg
 What kind of fools do you take us for?
 Your lying is pointless.
 From this day forward we are enemies forever!
@@ -491,21 +491,21 @@ No sweat. We'll return later, when you have more time for us.
 #(bye_from_party_3)
 Hey, I can understand your excitement, so I'll just come back in a while.
 
-#(GOODBYE_FROM_PARTY)	spaho060.ogg
+#(GOODBYE_FROM_PARTY)	safeones-060.ogg
 Goodbye.
 
-#(MUST_PARTY_1)	spaho061.ogg
+#(MUST_PARTY_1)	safeones-061.ogg
 Oh joy! Oh happiness! We rejoice and make merry in celebration of our imminent return to our homeworld.
 You are most heroic and helpful - thank you, thank you, thank you!
 But now I must return to our festivities.
 Please feel free to come back any time!
 
-#(MUST_PARTY_2)	spaho062.ogg
+#(MUST_PARTY_2)	safeones-062.ogg
 Oh, you're back
 greeaat.
 Um... our celebrations are still going on, can you come back later?
 
-#(MUST_PARTY_3)	spaho063.ogg
+#(MUST_PARTY_3)	safeones-063.ogg
 Oh, hello Hunam. Your arrival is timed most poorly.
 You called just when it was my turn at the Ja-ja pole
 and now I have to wait in line all over again.
@@ -514,20 +514,20 @@ Do you think you could return at some point in the future?
 #(deals_a_deal)
 Hey! A deal's a deal! What about our alliance?
 
-#(WAIT_A_WHILE)	spaho064.ogg
+#(WAIT_A_WHILE)	safeones-064.ogg
 Why don't you just wait a while, until after we are resettled on our homeworld?
 We can discuss details at that time.
 
 #(how_long)
 How long do you expect this to take?
 
-#(TEN_YEARS)	spaho065.ogg
+#(TEN_YEARS)	safeones-065.ogg
 Ten, fifteen years tops.
 
 #(reneging)
 Am I correct in understanding that you refuse to live up to your end of the bargain?
 
-#(ADULT_VIEW)	spaho066.ogg
+#(ADULT_VIEW)	safeones-066.ogg
 No, no, no!
 We are simply taking a more adult, `welcome to the real world' view of the situation.
 We cannot simply say, `Hurrah!' and form an alliance with you this very moment.
@@ -536,7 +536,7 @@ Surely you see that?
 #(return_beasts)
 You know, those creatures aren't dead. We have them in suspended animation.  How would you like us to return them to the surface?
 
-#(WHAT_RELATIONSHIP)	spaho067.ogg
+#(WHAT_RELATIONSHIP)	safeones-067.ogg
 NO!... er,... no... please!
 (sigh)
 exactly what kind of relationship were you thinking of?
@@ -544,38 +544,38 @@ exactly what kind of relationship were you thinking of?
 #(minds_and_might)
 A mutually beneficial alliance of minds and might.
 
-#(HUH)	spaho068.ogg
+#(HUH)	safeones-068.ogg
 Huh?
 
 #(fellowship)
 An egalitarian fellowship of sentient lifeforms.
 
-#(WHAT)	spaho069.ogg
+#(WHAT)	safeones-069.ogg
 What?
 
 #(do_as_we_say)
 The kind where you do everything EXACTLY as we say.
 
-#(DEPART_FOR_EARTH)	spaho070.ogg
+#(DEPART_FOR_EARTH)	safeones-070.ogg
 Oh, ok... we're quite familiar with that arrangement.
 Very well... I'll bet we will regret this decision later on, but you leave me with no choice.
 We will comply with your needs.
 A Spathi delegation will depart immediately for the planet Earth.
 
-#(HELLO_ALLIES_1)	spaho071.ogg
+#(HELLO_ALLIES_1)	safeones-071.ogg
 Welcome back to Spathiwa, Captain.
 We hope the material we provided your starbase engineers was sufficient for your needs.
 
-#(HELLO_ALLIES_2)	spaho072.ogg
+#(HELLO_ALLIES_2)	safeones-072.ogg
 What can we, the High Spathi Ruling Council, do for you?
 
-#(HELLO_ALLIES_3)	spaho073.ogg
+#(HELLO_ALLIES_3)	safeones-073.ogg
 Hello Captain, what brings you here today?
 
 #(whats_up)
 Have there been any developments of significance?
 
-#(GENERAL_INFO_1)	spaho074.ogg
+#(GENERAL_INFO_1)	safeones-074.ogg
 Perhaps Captain. I will explain.
 We have been investigating the `Caster which we took away from the Umgah
 after the `Jud the Vug' scandal, 8 years ago.
@@ -583,7 +583,7 @@ We have uncovered evidence of something strange going on between the Umgah and t
 We suspect that the Umgah were using the `Caster to pull off some kind of long-term joke on the Ilwrath
 but we are unable to glean any more details.
 
-#(GENERAL_INFO_2)	spaho075.ogg
+#(GENERAL_INFO_2)	safeones-075.ogg
 Yes, and the news is not good.
 As you know, Androsynth space borders our own, and while we never really liked the Androsynth
 it seemed that they weren't out to kill us as everyone else seems to be.
@@ -591,7 +591,7 @@ Imagine our shock when we learned that they had been invaded and eaten by those 
 Well actually we don't know if the Orz ate anybody, but we're sure they did something creepy.
 I sure hope you're not considering an alliance with them, Captain, they are dangerous.
 
-#(GENERAL_INFO_3)	spaho076.ogg
+#(GENERAL_INFO_3)	safeones-076.ogg
 I guess we forgot to tell you this a while ago... sorry
 but we've been so busy lately, working on the shie-- er... preparations for returning to Spathiwa
 that I'm afraid it just slipped my mind.
@@ -615,18 +615,18 @@ At least, we assume so. We can't be really sure, because all of the Spathi on bo
 were curled tightly in their shellcases, and couldn't hear very well.
 Maybe if you get the opportunity Captain, you can try to ask the question again.
 
-#(GENERAL_INFO_4)	spaho077.ogg
+#(GENERAL_INFO_4)	safeones-077.ogg
 Developments?! What developments!? Whatever are you talking about, Captain?
 Are you implying we are up to something -- that we have some kind of secret plan!?
 How wrong you are, Captain! Our feelings are injured by your unwarranted accusation.
 Apologies would be appropriate at this time.
 
-#(GENERAL_INFO_5)	spaho078.ogg
+#(GENERAL_INFO_5)	safeones-078.ogg
 No Captain, no news.
 
 #(like_some_info)
 Would you supply us with certain specific bits of information?
 
-#(WHAT_ABOUT)	spaho079.ogg
+#(WHAT_ABOUT)	safeones-079.ogg
 Certainly, about what?
 

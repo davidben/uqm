@@ -1,4 +1,4 @@
-#(SENSE_EVIL)	black000.ogg
+#(SENSE_EVIL)	kohrah-000.ogg
 We sense... something... something ancient... a sickly smell... a chilling wind.
 My ancestors scream from within their chambers in my mind
 but I cannot understand their words.
@@ -6,13 +6,13 @@ This feeling... a memory? It sickens us, and for the first time in our lives
 for the first time in generations
 We fear.
 
-#(HELLO_AND_DIE_1)	black001.ogg
+#(HELLO_AND_DIE_1)	kohrah-001.ogg
 We are the Ur-Quan Kohr-Ah.
 We cleanse our destiny.
 You will soon die.
 Make whatever rituals are necessary for your species.
 
-#(HELLO_AND_DIE_2)	black002.ogg
+#(HELLO_AND_DIE_2)	kohrah-002.ogg
 We are the Ur-Quan Kohr-Ah.
 Your presence here is premature.
 We fight the Kzer-Za for supremacy of Doctrine
@@ -20,42 +20,42 @@ and possession of the Sa-Matra.
 When the battle is won, our task is simple.
 We cleanse. You are the filth.
 
-#(HELLO_AND_DIE_3)	black003.ogg
+#(HELLO_AND_DIE_3)	kohrah-003.ogg
 We are the Ur-Quan Kohr-Ah.
 You have evaded our attempts to cleanse.
 You are no longer filth. You are a threat.
 Threats deserve greater attention than filth.
 
-#(HELLO_AND_DIE_4)	black004.ogg
+#(HELLO_AND_DIE_4)	kohrah-004.ogg
 We are the Ur-Quan Kohr-Ah.
 Our nature, the fulfillment of our fate
 requires your destruction.
 
-#(HELLO_AND_DIE_5)	black005.ogg
+#(HELLO_AND_DIE_5)	kohrah-005.ogg
 We are the Ur-Quan Kohr-Ah.
 Our nature, the fulfillment of our fate
 requires your destruction.
 
-#(HELLO_AND_DIE_6)	black006.ogg
+#(HELLO_AND_DIE_6)	kohrah-006.ogg
 We are the Ur-Quan Kohr-Ah.
 Our nature, the fulfillment of our fate
 requires your destruction.
 
-#(HELLO_AND_DIE_7)	black007.ogg
+#(HELLO_AND_DIE_7)	kohrah-007.ogg
 We are the Ur-Quan Kohr-Ah.
 Our nature, the fulfillment of our fate
 requires your destruction.
 
-#(HELLO_AND_DIE_8)	black008.ogg
+#(HELLO_AND_DIE_8)	kohrah-008.ogg
 We are the Ur-Quan Kohr-Ah.
 Our nature, the fulfillment of our fate
 requires your destruction.
 
-#(HELLO_SAMATRA)	black009.ogg
+#(HELLO_SAMATRA)	kohrah-009.ogg
 FILTH! YOU may NOT approach the Sa-Matra.
 Your death was inevitable, but now it is also imminent.
 
-#(WE_KILL_ALL_1)	black010.ogg
+#(WE_KILL_ALL_1)	kohrah-010.ogg
 We are the Ur-Quan Kohr-Ah.
 We have won the ritual war against our cousins, the Kzer-Za.
 Our Doctrine, the Path of Now and Forever, shall be dominant
@@ -65,15 +65,15 @@ Then we shall take possession of the Sa-Matra and move on
 to find new intelligence
 new filth to cleanse.
 
-#(WE_KILL_ALL_2)	black011.ogg
+#(WE_KILL_ALL_2)	kohrah-011.ogg
 We are the Ur-Quan Kohr-Ah.
 Prepare for the cleansing.
 
-#(WE_KILL_ALL_3)	black012.ogg
+#(WE_KILL_ALL_3)	kohrah-012.ogg
 We are the Ur-Quan Kohr-Ah.
 Prepare for the cleansing.
 
-#(WE_KILL_ALL_4)	black013.ogg
+#(WE_KILL_ALL_4)	kohrah-013.ogg
 We are the Ur-Quan Kohr-Ah.
 Prepare for the cleansing.
 
@@ -89,7 +89,7 @@ What has made you this way? It is insane!
 #(why_kill_all_4)
 I cannot understand why you do this.
 
-#(KILL_BECAUSE_1)	black014.ogg
+#(KILL_BECAUSE_1)	kohrah-014.ogg
 We do not kill. We cleanse.
 Cleansing is necessary to ensure our eternal freedom and security.
 Indeed, you fail to understand: there is no death.
@@ -98,28 +98,28 @@ Each termination brings around the new chance
 the possibility to be born an Ur-Quan.
 We merely present this opportunity, make it available to all.
 
-#(KILL_BECAUSE_2)	black015.ogg
+#(KILL_BECAUSE_2)	kohrah-015.ogg
 Our Path of Now and Forever is self-justifying, it needs no confirmation.
 We cleanse. That is all. There is no more.
 
-#(KILL_BECAUSE_3)	black016.ogg
+#(KILL_BECAUSE_3)	kohrah-016.ogg
 You have not asked properly.
 If you do not ask properly, we will not discuss this matter.
 Instead, we cleanse.
 
-#(KILL_BECAUSE_4)	black017.ogg
+#(KILL_BECAUSE_4)	kohrah-017.ogg
 Your understanding is not necessary.
 
 #(please_dont_kill_1)
 Please, for the love of reason! Stop this madness!
 
-#(WILL_KILL_1)	black018.ogg
+#(WILL_KILL_1)	kohrah-018.ogg
 We have listened. We are unmoved. The cleansing will proceed.
 
 #(please_dont_kill_2)
 Your logic is faulty. How can you have security in the midst of an endless war?
 
-#(WILL_KILL_2)	black019.ogg
+#(WILL_KILL_2)	kohrah-019.ogg
 The cleansing ensures our freedom and security.
 Threats to this freedom and security are confined to non-Ur-Quan intelligent life forms.
 To preserve our freedom and security, we cleanse such threats.
@@ -127,7 +127,7 @@ To preserve our freedom and security, we cleanse such threats.
 #(please_dont_kill_3)
 Stop killing people! You have to stop!
 
-#(WILL_KILL_3)	black020.ogg
+#(WILL_KILL_3)	kohrah-020.ogg
 We do not have to stop. No one can make us stop except the Kzer-Za
 and they have lost the war. Our doctrine is now dominant.
 The cleansing will continue.
@@ -135,7 +135,7 @@ The cleansing will continue.
 #(please_dont_kill_4)
 Is there anything we can do to make you stop the killing?
 
-#(WILL_KILL_4)	black021.ogg
+#(WILL_KILL_4)	kohrah-021.ogg
 If you eliminate all non-Ur-Quan sentient races, including yourselves
 then we will stop.
 We have made this offer before. No one accepts.
@@ -153,26 +153,26 @@ We leave now. We will stop you, somehow.
 #(bye_frenzy_4)
 We leave now. We will stop you, somehow.
 
-#(GOODBYE_AND_DIE_FRENZY_1)	black022.ogg
+#(GOODBYE_AND_DIE_FRENZY_1)	kohrah-022.ogg
 You may not leave. You are filth.
 You shall be cleansed.
 
-#(GOODBYE_AND_DIE_FRENZY_2)	black023.ogg
+#(GOODBYE_AND_DIE_FRENZY_2)	kohrah-023.ogg
 You may not leave. You are filth.
 You shall be cleansed.
 
-#(GOODBYE_AND_DIE_FRENZY_3)	black024.ogg
+#(GOODBYE_AND_DIE_FRENZY_3)	kohrah-024.ogg
 You may not leave. You are filth.
 You shall be cleansed.
 
-#(GOODBYE_AND_DIE_FRENZY_4)	black025.ogg
+#(GOODBYE_AND_DIE_FRENZY_4)	kohrah-025.ogg
 You may not leave. You are filth.
 You shall be cleansed.
 
 #(threat_1)
 If you attack us, we will destroy you. Don't even try it.
 
-#(RESISTANCE_IS_USELESS_1)	black026.ogg
+#(RESISTANCE_IS_USELESS_1)	kohrah-026.ogg
 Over five thousand races have made such a claim.
 We survived. They did not.
 Nor shall you.
@@ -180,26 +180,26 @@ Nor shall you.
 #(threat_2)
 Resistance is useless. Our victory is inevitable!
 
-#(RESISTANCE_IS_USELESS_2)	black027.ogg
+#(RESISTANCE_IS_USELESS_2)	kohrah-027.ogg
 It is not.
 
 #(threat_3)
 You have attacked us before, and we survived! You cannot defeat us. Submit!
 
-#(RESISTANCE_IS_USELESS_3)	black028.ogg
+#(RESISTANCE_IS_USELESS_3)	kohrah-028.ogg
 We did. You did. Yes we can. No.
 
 #(threat_4)
 Surrender or die.
 
-#(RESISTANCE_IS_USELESS_4)	black029.ogg
+#(RESISTANCE_IS_USELESS_4)	kohrah-029.ogg
 Our counter to your statement is simpler
 just `die'.
 
 #(key_phrase)
 Hold! What you are doing to us is wrong! Why do you do this thing?
 
-#(RESPONSE_TO_KEY_PHRASE)	black030.ogg
+#(RESPONSE_TO_KEY_PHRASE)	kohrah-030.ogg
 THE WORDS!... the Words... the words
 Alien, you have spoken the Words. You have spoken them rightly.
 We will explain to you about the Dnyarri, our slavemasters
@@ -216,7 +216,7 @@ We cleanse the galaxy of such threats.
 #(why_do_you_destroy)
 Kohr-Ah, tell us about yourselves.
 
-#(WE_WERE_SLAVES)	black031.ogg
+#(WE_WERE_SLAVES)	kohrah-031.ogg
 We evolved on a hostile world, the descendants of solitary hunters.
 In a world where one species is the dominant killer
 one's only threat is one's brother, one's sister, anyone of one's species.
@@ -233,7 +233,7 @@ became the Milieu's scouts, their solitary explorers.
 #(relationship_with_urquan)
 Who were the Taalo?
 
-#(WE_ARE_URQUAN_TOO)	black032.ogg
+#(WE_ARE_URQUAN_TOO)	kohrah-032.ogg
 Of all the species we have met, only the Taalo did not trigger our instinctive territoriality.
 They were the only people we could stand with, or talk to, without the hunter inside us screaming
 `Kill the interloper! Rip out its life!'
@@ -248,7 +248,7 @@ The Taalo would not fight back... they died.
 #(what_about_culture)
 Who or what are the Dnyarri?
 
-#(BONE_GARDENS)	black033.ogg
+#(BONE_GARDENS)	kohrah-033.ogg
 It was on a routine planetfall that one of our Milieu scoutships first met the Dnyarri
 the creatures you know as our Talking Pets.
 But the Dnyarri were different then.
@@ -261,7 +261,7 @@ Within weeks, the Dnyarri controlled all races but one... the Taalo.
 #(how_leave_me_alone)
 How did you defeat the Dnyarri?
 
-#(YOU_DIE)	black034.ogg
+#(YOU_DIE)	kohrah-034.ogg
 For thousands of years, we were unthinking slaves to the Dnyarri.
 Like the five other surviving races of the old Milieu, we had no choice.
 The Dnyarri's compulsion was too strong to resist.
@@ -284,7 +284,7 @@ To live in endless screaming pain for months on end? No you cannot.
 #(guess_thats_all)
 I guess that's it. Thanks for the info. We'll just leave now.
 
-#(THEN_DIE)	black035.ogg
+#(THEN_DIE)	kohrah-035.ogg
 No, it is not. There is more you must hear.
 When the war was over, the great Kohr-Ah rose from our ranks
 and declared the Path of Now and Forever. We would cleanse the galaxy.
@@ -306,7 +306,7 @@ But now, it is time for us to cleanse you.
 #(what_are_you_hovering_over)
 What are you hanging over?
 
-#(BONE_PILE)	black036.ogg
+#(BONE_PILE)	kohrah-036.ogg
 My trophy bone-pit.
 In here is one skeleton from each of the races which I personally exterminated.
 I fondle these bones and recall the fine cleansing.
@@ -316,7 +316,7 @@ unless they are accidentally vaporized.
 #(you_sure_are_creepy)
 You sure are creepy.
 
-#(YES_CREEPY)	black037.ogg
+#(YES_CREEPY)	kohrah-037.ogg
 Seeing that I represent your imminent death
 as well as the termination of your entire species
 I think your fear is well justified.
@@ -325,13 +325,13 @@ Nonetheless, you require cleansing.
 #(stop_that_gross_blinking)
 Stop that gross blinking!
 
-#(DIE_HUMAN)	black038.ogg
+#(DIE_HUMAN)	kohrah-038.ogg
 The time has come. You require cleansing.
 
 #(plead_1)
 Please don't destroy this ship. We mean you no harm!
 
-#(PLEADING_IS_USELESS_1)	black039.ogg
+#(PLEADING_IS_USELESS_1)	kohrah-039.ogg
 In the twenty thousand years of our Mission
 we have heard more pleas for mercy than you can possibly imagine.
 Civilizations which saw their doom before them called upon their geniuses to calm us
@@ -340,21 +340,21 @@ to no avail.
 #(plead_2)
 If you let us go, we'll tell you a big secret!
 
-#(PLEADING_IS_USELESS_2)	black040.ogg
+#(PLEADING_IS_USELESS_2)	kohrah-040.ogg
 We are self-sufficient. We need nothing. We want nothing
 beyond the total destruction of all non-Ur-Quan sentience.
 
 #(plead_3)
 What if we promise to be your slaves? Will you let us live then?
 
-#(PLEADING_IS_USELESS_3)	black041.ogg
+#(PLEADING_IS_USELESS_3)	kohrah-041.ogg
 The ignominy of slaving we leave to our Kzer-Za cousins.
 We have no need for inferiors as servants.
 
 #(plead_4)
 Don't attack us! We are not your enemies!
 
-#(PLEADING_IS_USELESS_4)	black042.ogg
+#(PLEADING_IS_USELESS_4)	kohrah-042.ogg
 You are right.
 You are not our enemy.
 We have NO enemy
@@ -368,14 +368,14 @@ So we cleanse.
 #(bye)
 I've heard enough of your madness for now. Goodbye.
 
-#(GOODBYE_AND_DIE)	black043.ogg
+#(GOODBYE_AND_DIE)	kohrah-043.ogg
 Before we destroy other thinking beings we share with them this comforting fact
 This life of yours... which shall end immediately following this statement
 is but one of many lives you will live.
 Perhaps, in your next incarnation
 you will be born an Ur-Quan.
 
-#(GAME_OVER_DUDE)	black044.ogg
+#(GAME_OVER_DUDE)	kohrah-044.ogg
 Attention human!
 This broadcast is to inform you of your defeat.
 We, the Kohr-Ah, have destroyed all the sentient species in this region of space
@@ -383,7 +383,7 @@ and now we have eliminated the Starbase orbiting your planet Earth as well.
 Your efforts to resist us are futile.
 You are defeated!
 
-#(OUT_TAKES) black045.ogg
+#(OUT_TAKES) kohrah-045.ogg
 We are the Ur-Quan Kohr-Ah
 The followers of the Path of Now and Forever!
 You are filth. We shall cleanse.

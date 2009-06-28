@@ -1,4 +1,4 @@
-#(HOSTILE_SPACE_HELLO_1)	thrad000.ogg
+#(HOSTILE_SPACE_HELLO_1)	thraddash-000.ogg
 So, what's this? SNORT! An unknown alien species?
 How wonderful! Someone new to fight!
 We, the Thraddash of Culture Nineteen -- famous Ur-Quan Combat Thralls
@@ -10,13 +10,13 @@ This is the way of the Thraddash! We fight and learn and improve!
 All other cultural schemes are inferior. This is a proven fact.
 What have you to say before we begin combat?
 
-#(HOSTILE_SPACE_HELLO_2)	thrad001.ogg
+#(HOSTILE_SPACE_HELLO_2)	thraddash-001.ogg
 SNORT! What a laugh! You are the least battle-worthy creature I've ever seen commanding a starship.
 We are the Ur-Quan fighting slaves of Culture Nineteen.
 Please don't run away. We wish to be your species' new role-models!
 Unfortunately, to do this, we may need to blast you into your component atoms.
 
-#(HOSTILE_SPACE_HELLO_3)	thrad002.ogg
+#(HOSTILE_SPACE_HELLO_3)	thraddash-002.ogg
 Attention weak, ugly humans aboard that wallowing garbage scow of a ship, SNORT!
 Unless you are even more inferior that we believe and that's hard to imagine
 you already know who we are -- the Thraddash of Culture Nineteen
@@ -24,12 +24,12 @@ We are the original Ur-Quan fighting slaves, the cream of their elite forces
 your instructors in the harsh realities of life.
 SNORT! It is time for your next lesson.
 
-#(HOSTILE_SPACE_HELLO_4)	thrad003.ogg
+#(HOSTILE_SPACE_HELLO_4)	thraddash-003.ogg
 Inferior Aliens. You have once again intruded upon the territory of the Thraddash.
 This is a patrolled region of space. Your presence here is considered an act of War!
 How wonderful!
 
-#(HOSTILE_HOMEWORLD_HELLO_1)	thrad004.ogg
+#(HOSTILE_HOMEWORLD_HELLO_1)	thraddash-004.ogg
 HA! View the stupid weak alien who has appeared here at our homeworld!
 What do you desire, creature? Our Friendship? Our submission?!
 HARG! HARG! HARG!
@@ -44,7 +44,7 @@ that any victories you may score here through a sheer stroke of luck
 WILL NOT be added to your personal victory tally!
 Now what do you wish of us before we attack?
 
-#(HOSTILE_HOMEWORLD_HELLO_2)	thrad005.ogg
+#(HOSTILE_HOMEWORLD_HELLO_2)	thraddash-005.ogg
 Attention cowardly alien human thing!
 You escaped our instructional session, SNORT! But this time things are different.
 We, the Ur-Quan slaves of Culture Nineteen,
@@ -52,14 +52,14 @@ have engaged in a long-term build-up of weapons, assuring us that we shall preva
 If you wish merely to count coup, seek our ships in space.
 Now do you wish to speak, or shall we simply start blasting?
 
-#(HOSTILE_HOMEWORLD_HELLO_3)	thrad006.ogg
+#(HOSTILE_HOMEWORLD_HELLO_3)	thraddash-006.ogg
 I am Korgk, battle-slave foreman of Culture Nineteen.
 You may be interested to know that our model ZK-53 computer
 has determined that you have only a fleeting 1.6% chance
 of surviving a battle with our homeworld guardian fleet.
 Shall we test this assertion?
 
-#(HOSTILE_HOMEWORLD_HELLO_4)	thrad007.ogg
+#(HOSTILE_HOMEWORLD_HELLO_4)	thraddash-007.ogg
 Foolish Aliens! Shall you never learn the futility
 of trying to conquer our homeworld through direct attack?
 It is impossible! SNORT! We Thraddash will toast your tootsies.
@@ -72,7 +72,7 @@ Thraddash of Culture Nineteen: we sense a bit of hostility here. Why?
 #(whats_up_hostile_2)
 What has made you this way? Why are you so brutal?
 
-#(GENERAL_INFO_HOSTILE_1)	thrad008.ogg
+#(GENERAL_INFO_HOSTILE_1)	thraddash-008.ogg
 Hostility!
 HARG! HARG! HARG!
 We are not `hostile'. Hostility is unwarranted aggression! SNORT! 
@@ -90,7 +90,7 @@ who wiped out Culture Twelve's army, thus beginning the long and glorious Cultur
 SNORT! Now THAT'S hostility!
 We, on the other hand, merely want to kill you.
 
-#(GENERAL_INFO_HOSTILE_2)	thrad009.ogg
+#(GENERAL_INFO_HOSTILE_2)	thraddash-009.ogg
 Brutal!? You don't know the MEANING of brutal until you've heard the story of Culture Three!
 How brutal WAS Culture Three you ask?
 Culture Three was SO brutal that they maimed, tortured, enslaved, and in general brutalized
@@ -109,7 +109,7 @@ SNORT! You couldn't be more right!
 Culture Three was, as you can well understand, only the third Thraddash Culture
 and was therefore far from the tempered perfection you have encountered here and now.
 
-#(GENERAL_INFO_HOSTILE_3)	thrad010.ogg
+#(GENERAL_INFO_HOSTILE_3)	thraddash-010.ogg
 NO! We will not answer any more of your foolish questions!
 Instead, you will answer OUR questions, such as
 who is responsible for those berserk red probes that keep attacking our ships?
@@ -117,7 +117,7 @@ Are these devices your robot emissaries of death? Hmm?
 No! Don't answer, I can see it in your eyes. You've given it all away! SNORT! I know the truth now.
 The only thing that confuses me is WHY do the probes approach from the direction of Vega?
 
-#(GENERAL_INFO_HOSTILE_4)	thrad011.ogg
+#(GENERAL_INFO_HOSTILE_4)	thraddash-011.ogg
 Back to the subject of the probes!
 We found one orbiting a strange planet in the Epsilon Draconis system.
 The planet causes our scanners to malfunction, producing a wildly colored image.
@@ -129,7 +129,7 @@ we will have to extract the information from you in more painful ways.
 #(what_about_you_1)
 What can you tell us of your species?
 
-#(ABOUT_US_1)	thrad012.ogg
+#(ABOUT_US_1)	thraddash-012.ogg
 Talk! Bah, talk is for sissies, weaklings like those of Culture Fourteen.
 For ten thousand years, we Thraddash have fought and died, learned and improved.
 Then, along came Culture Fourteen which claimed that all this -- this perfect method...
@@ -147,7 +147,7 @@ peace is a failure.
 #(what_about_you_2)
 So violent, Rhino-Dudes! What more can you tell us about your Culture Nineteen?
 
-#(ABOUT_US_2)	thrad013.ogg
+#(ABOUT_US_2)	thraddash-013.ogg
 What!?! SNORT! MORE talk?
 It amazes me that you ever got out of the orbit of your home planet!
 Yak! Yak! Yak! -- Yammer! Yammer! Yammer!
@@ -171,7 +171,7 @@ Frustrating, huh?
 #(what_about_urquan_1)
 You mention the Ur-Quan. What is your relationship with them?
 
-#(ABOUT_URQUAN_1)	thrad014.ogg
+#(ABOUT_URQUAN_1)	thraddash-014.ogg
 A foolish question! We are their slaves, dolt! What else would we be?
 When the Ur-Quan first appeared in our space over fifty years ago
 coming from the direction of the Ophiuchi stars
@@ -192,7 +192,7 @@ perhaps NOW the Ur-Quan will let us fight at their side as TRUE battle thralls.
 #(what_about_urquan_2)
 Why didn't you fight against the Alliance, and where ARE the Ur-Quan?
 
-#(ABOUT_URQUAN_2)	thrad015.ogg
+#(ABOUT_URQUAN_2)	thraddash-015.ogg
 We wanted to, OH how we wanted to!
 After all, we were the first battle thralls the Ur-Quan enslaved in this part of space
 we thought we had priority!...
@@ -210,7 +210,7 @@ So forget it! No secrets!
 #(got_idea)
 Hey, I've got an idea! Why don't you go impress your Ur-Quan masters AND show-off your Afterburner modification by attacking the Ur-Quan's enemy!?
 
-#(GOOD_IDEA)	thrad016.ogg
+#(GOOD_IDEA)	thraddash-016.ogg
 WHAT FOOLISH STUPIDITY! HARG! HARG! HARG!
 WHY THAT'S AS DUMB AN IDEA AS -- what did you say?
 Attack the Ur-Quan's enemy? Help them win their war?
@@ -222,18 +222,18 @@ you may leave alive, and when we return from our glorious campaign
 we may even honor you with a retelling of the many great battles we shall certainly win.
 Until then, get lost.
 
-#(WE_GO_TO_IMPRESS_URQUAN_1)	thrad017.ogg
+#(WE_GO_TO_IMPRESS_URQUAN_1)	thraddash-017.ogg
 The Ur-Quan will be mightily impressed by our combat prowess
 when we blast their enemies from space!
 We build up a charging fury! Stay out of our path!
 
-#(WE_GO_TO_IMPRESS_URQUAN_2)	thrad018.ogg
+#(WE_GO_TO_IMPRESS_URQUAN_2)	thraddash-018.ogg
 Our individual skills, our superior fighting ships
 and our objectively correct political views
 are sure to greatly impress our Ur-Quan Masters!
 To Arms! SNORT! To Arms!
 
-#(WE_IMPRESSING_URQUAN_1)	thrad019.ogg
+#(WE_IMPRESSING_URQUAN_1)	thraddash-019.ogg
 Oh! The Weapons!! The devastating bolts of sheer energy! SNORT!
 The dark ships -- the Ur-Quan's enemies, they bow before our superior technologies!
 The morbid, relentless wheels of heart-pounding destructiveness
@@ -241,7 +241,7 @@ are nothing more than an inconvenience!
 Oh, yes! I am sure that we are demonstrating to the Ur-Quan
 the worthiness of our excellent Culture Nineteen!
 
-#(WE_IMPRESSING_URQUAN_2)	thrad020.ogg
+#(WE_IMPRESSING_URQUAN_2)	thraddash-020.ogg
 We look forward to success!
 The way is challenging, but our Turbo-Thrusters are at 200% and our guns stand ready!
 We have engaged the dark ships and achieved victory!
@@ -250,7 +250,7 @@ The Ur-Quan know we are here! SNORT! They see our valor!...
 We have tried to make contact with them on the usual HyperWave bands, but to no avail.
 Even so, I am still quite sure that we are impressing them GREATLY!
 
-#(WE_IMPRESSED_URQUAN_1)	thrad021.ogg
+#(WE_IMPRESSED_URQUAN_1)	thraddash-021.ogg
 The great gouts of flame! SNORT! The accuracy of our shooting!
 We killed THOUSANDS... well at least HUNDREDS!
 It was wonderful! It was delirious!
@@ -260,7 +260,7 @@ They were so frightened of us, they froze in their tracks.
 That's how scared they were!
 Ah, such fighting! SNORT! We will not soon see the like again!
 
-#(WE_IMPRESSED_URQUAN_2)	thrad022.ogg
+#(WE_IMPRESSED_URQUAN_2)	thraddash-022.ogg
 Oh Yes! We have mightily impressed the Ur-Quan!
 We destroyed several of their enemy's dreaded black ships
 and severely damaged many more.
@@ -268,12 +268,12 @@ Our losses? Well, yes, there were a few.
 But we are still very strong!
 Make no mistake about that!
 
-#(HOSTILE_HELIX_HELLO_1)	thrad023.ogg
+#(HOSTILE_HELIX_HELLO_1)	thraddash-023.ogg
 WARNING! You have entered Thraddash Secured Space!
 There is nothing valuable here!
 Go away!
 
-#(HOSTILE_HELIX_HELLO_2)	thrad024.ogg
+#(HOSTILE_HELIX_HELLO_2)	thraddash-024.ogg
 Begone Stupid, Ugly Ones!
 SNORT!
 Leave before we break from our guard posts and give you a good Thraddashing!
@@ -281,7 +281,7 @@ Leave before we break from our guard posts and give you a good Thraddashing!
 #(submit_1)
 Your blustering does not impress me. We have requirements which you will fulfill, NOW!
 
-#(NO_SUBMIT_1)	thrad025.ogg
+#(NO_SUBMIT_1)	thraddash-025.ogg
 Hunh?
 Hnyarg?!
 WHAT?!
@@ -292,7 +292,7 @@ WE WILL DEEESTROY YOUUU AND EVERYBODY ON YOUR SHIP!!
 #(submit_2)
 I have secret weapons of great power. Submit, or I shall evaporate your planet.
 
-#(NO_SUBMIT_2)	thrad026.ogg
+#(NO_SUBMIT_2)	thraddash-026.ogg
 HARG! HARG! HARG!
 We like secret weapons!
 We will now give you the opportunity to give them to us.
@@ -300,14 +300,14 @@ We will now give you the opportunity to give them to us.
 #(be_friends_1)
 We wish nothing from you, save your friendship.
 
-#(NO_FRIENDS_1)	thrad027.ogg
+#(NO_FRIENDS_1)	thraddash-027.ogg
 Perhaps, after we have made you our slaves, we can accomodate your wishes.
 Until then...
 
 #(be_friends_2)
 You are strong! We like strong! We be friends, now, okay?
 
-#(NO_FRIENDS_2)	thrad028.ogg
+#(NO_FRIENDS_2)	thraddash-028.ogg
 We are strong. You are weak. And HARG! HARG!...
 we HATE weak.
 We do not need weak friends! We only want slaves and teachers.
@@ -318,7 +318,7 @@ Such logic must be obvious even to a stupid being like yourself.
 #(how_impressed_urquan_1)
 How did impressing the Ur-Quan work out?
 
-#(IMPRESSED_LIKE_SO_1)	thrad029.ogg
+#(IMPRESSED_LIKE_SO_1)	thraddash-029.ogg
 It was glorious, truly glorious!... for the most part.
 It would have been entirely glorious except for two factors.
 Factor One: we lost over half our battle fleet during the two-week fracas.
@@ -331,7 +331,7 @@ than when they conquered us in the first place.
 #(how_impressed_urquan_2)
 Would you describe the Ur-Quan's enemy ships?
 
-#(IMPRESSED_LIKE_SO_2)	thrad030.ogg
+#(IMPRESSED_LIKE_SO_2)	thraddash-030.ogg
 They were black as space itself, with only the occasional glint off their hulls as they turned to fire.
 Their weapons were extremely primitive, nothing more than fast-spinning disks of dense metal
 yet they penetrated our defensive screens, and inflicted grievous damage
@@ -344,34 +344,34 @@ Puny human, your time is almost up. Prepare yourself for defeat!
 #(bye_hostile_1)
 We leave in peace.
 
-#(GOODBYE_HOSTILE_1)	thrad031.ogg
+#(GOODBYE_HOSTILE_1)	thraddash-031.ogg
 What? You leave before the lesson begins? We have so much to teach you!
 Let us show you just one thing, it's called the `Surprise Attack'.
 
 #(bye_hostile_2)
 I guess we'll just be going now.
 
-#(GOODBYE_HOSTILE_2)	thrad032.ogg
+#(GOODBYE_HOSTILE_2)	thraddash-032.ogg
 Then I guess we'll just be attacking you now.
 
 #(why_you_here_hostile)
 Explain your presence here, Thraddash.
 
-#(NONE_OF_YOUR_CONCERN)	thrad033.ogg
+#(NONE_OF_YOUR_CONCERN)	thraddash-033.ogg
 It is none of your concern, human, SNORT!
 Now leave this world before we get REALLY mad!
 
 #(demand_to_land)
 What are you hiding down there? I demand to land!
 
-#(NO_DEMAND)	thrad034.ogg
+#(NO_DEMAND)	thraddash-034.ogg
 You will make no demands, stupid captain human dog!
 Instead, you will die!
 
 #(what_about_this_world)
 So what's so special about this world? Why all the guards?
 
-#(BLUE_HELIX)	thrad035.ogg
+#(BLUE_HELIX)	thraddash-035.ogg
 Very well, since we have a huge number of ships here
 I guess there can't be much harm in explaining this to you
 PROVIDED YOU LEAVE WHEN WE'RE DONE!
@@ -389,7 +389,7 @@ Sorry.
 #(whats_helix_hostile)
 Aw, geez. Come on. That was UNFAIR!
 
-#(HELIX_IS_HOSTILE)	thrad036.ogg
+#(HELIX_IS_HOSTILE)	thraddash-036.ogg
 Okay, okay. I guess you're right, it was a bit cruel. I'll tell you.
 Let's see, where was I? Oh, right
 on the dark continent of Funt
@@ -404,7 +404,7 @@ the sign of any Culture's authority.
 #(i_need_to_land_lie)
 Uh... I left something important on the surface last week. Can I just go down and get it?
 
-#(CAUGHT_LIE)	thrad037.ogg
+#(CAUGHT_LIE)	thraddash-037.ogg
 Okay. Go ahead.
 Hey, WAIT A MINUTE!
 You are after our most ancient and important relic, AREN'T YOU?
@@ -415,23 +415,23 @@ You shall suffer their same fate -- OBLIVION!
 #(bye_hostile_helix)
 We have decided to leave. Goodbye.
 
-#(GOODBYE_HOSTILE_HELIX)	thrad038.ogg
+#(GOODBYE_HOSTILE_HELIX)	thraddash-038.ogg
 If you hurry, we won't kill you. Goodbye.
 
-#(DIE_THIEF_1)	thrad039.ogg
+#(DIE_THIEF_1)	thraddash-039.ogg
 So it's you! The Thief! The skulking little human weasel!
 SNORT! We should not have left the Aqua Helix Planet unguarded!
 You have shown us a weakness in ourselves, and for that we thank you.
 But we desire the return of the Helix, and since I suspect you won't give it willingly
 SNORT! Eat Flaming Death You Gravy Sucking Pig!
 
-#(DIE_THIEF_2)	thrad040.ogg
+#(DIE_THIEF_2)	thraddash-040.ogg
 Ahoy stupid human. You are arrogant and absurd!
 You took our wonderful, ancient, sacred Aqua Helix, and refuse to return it!
 This makes us mad, EXTREMELY mad!
 Prepare to meet thy Doom, alien Thief!
 
-#(AMAZING_PERFORMANCE)	thrad041.ogg
+#(AMAZING_PERFORMANCE)	thraddash-041.ogg
 Admirable! Admirable! We have never witnessed such awesome combat capabilities!
 You have destroyed so many of us! We are humbled in your presence!
 We thought you were a weakling, a coward, a pitiful sniveling wimp.
@@ -443,13 +443,13 @@ Wait! I've got it! It's the way you respond to our hailing calls each time we me
 Just as they say, first impressions are SO important!
 So tell us, please! Tell us how WE should present ourselves.
 
-#(IMPRESSIVE_PERFORMANCE)	thrad042.ogg
+#(IMPRESSIVE_PERFORMANCE)	thraddash-042.ogg
 Well, Humans have some backbone after all, but not as much as the Ur-Quan.
 A Human ship is a poor second to the Ur-Quan Dreadnought.
 Your weapons do not have the killing strength of an Ur-Quan fusion blast.
 SNORT! The Ur-Quan are still your betters.
 
-#(ADEQUATE_PERFORMANCE)	thrad043.ogg
+#(ADEQUATE_PERFORMANCE)	thraddash-043.ogg
 Perhaps Humans can fight after all, if our reports are accurate.
 We will test this hypothesis in the laboratory of life -- IN GLORIOUS BATTLE!
 Your puny, inadequate weaponry is no match for the Thraddash Mark 6 Blaster
@@ -457,24 +457,24 @@ with its 4 Megawatt energy discharge.
 Nor can your slow, bloated tubs compare to our Flash Turbo-Boosted warships!
 We have nothing to fear!
 
-#(HELLO_POLITE_1)	thrad044.ogg
+#(HELLO_POLITE_1)	thraddash-044.ogg
 Hello and good day! How are you today?
 We are just fine, thank you! Are your mates and offspring well?
 How simply marvelous!
 
-#(HELLO_POLITE_2)	thrad045.ogg
+#(HELLO_POLITE_2)	thraddash-045.ogg
 We are the polite and courteous Thraddash!
 We greet you with all appropriate felicitations.
 
-#(HELLO_POLITE_3)	thrad046.ogg
+#(HELLO_POLITE_3)	thraddash-046.ogg
 Most erudite greetings to you.
 As always, we will be most pleased to enter into meaningful discourse with your elevated person.
 
-#(HELLO_POLITE_4)	thrad047.ogg
+#(HELLO_POLITE_4)	thraddash-047.ogg
 Greetings and salutations! We trust that all is well with you
 and that your stay will be pleasant and beneficial.
 
-#(HELLO_RHYME_1)	thrad048.ogg
+#(HELLO_RHYME_1)	thraddash-048.ogg
 We are the rhyming simons
 blancmange rhymes with orange
 space is the place
@@ -482,13 +482,13 @@ the stars in their courses
 cannot catch the horses?
 SNORT! This is hard!
 
-#(HELLO_RHYME_2)	thrad049.ogg
+#(HELLO_RHYME_2)	thraddash-049.ogg
 Blood is red, bruises are blue
 When strangers come here, we run them through!
 HARG! HARG! HARG!
 Good one, eh?
 
-#(HELLO_RHYME_3)	thrad050.ogg
+#(HELLO_RHYME_3)	thraddash-050.ogg
 There once was a Thraddash named Mak-Roni
 whose ship was in total caco-phony
 He got lost in Apodis
@@ -496,7 +496,7 @@ and died in Draconis
 Because all that he ate was baloney!
 HARG! HARG! HARG!
 
-#(HELLO_RHYME_4)	thrad051.ogg
+#(HELLO_RHYME_4)	thraddash-051.ogg
 Constantly moving are
 space, stars, time
 SNORT!
@@ -504,51 +504,51 @@ form not function
 meets in death
 remembered.
 
-#(HELLO_PIG_LATIN_1)	thrad052.ogg
+#(HELLO_PIG_LATIN_1)	thraddash-052.ogg
 Eway areyay ethay igpay atinlay eakingspay Addashthray! Ortsnay!
 
-#(HELLO_PIG_LATIN_2)	thrad053.ogg
+#(HELLO_PIG_LATIN_2)	thraddash-053.ogg
 Ombatcay! Ecklessray ouragecay! Eakingspay igpay atinlay!
 Eway aryay ategray orfay eesethay easonsray!
 
-#(HELLO_PIG_LATIN_3)	thrad054.ogg
+#(HELLO_PIG_LATIN_3)	thraddash-054.ogg
 Ellohay umanhay! Elcomeway ackbay! E'veway eenbay xpectingay ouyay.
 
-#(HELLO_PIG_LATIN_4)	thrad055.ogg
+#(HELLO_PIG_LATIN_4)	thraddash-055.ogg
 Eway aypay espectray otay ouryay eategray eachertay!
 
-#(HELLO_LIKE_YOU_1)	thrad056.ogg
+#(HELLO_LIKE_YOU_1)	thraddash-056.ogg
 This is Grah of the starship Hot Pulsing Thrusters.
 
-#(HELLO_LIKE_YOU_2)	thrad057.ogg
+#(HELLO_LIKE_YOU_2)	thraddash-057.ogg
 Greetings! I am Captain Chudd in command of the Blazing Guns of Glory!
 
-#(HELLO_LIKE_YOU_3)	thrad058.ogg
+#(HELLO_LIKE_YOU_3)	thraddash-058.ogg
 Attention! This is the starship Overwhelmer.
 
-#(HELLO_LIKE_YOU_4)	thrad059.ogg
+#(HELLO_LIKE_YOU_4)	thraddash-059.ogg
 I am commander Dthunk.
 
-#(WELCOME_SPACE0)	thrad060.ogg
+#(WELCOME_SPACE0)	thraddash-060.ogg
 We of 
-#(WELCOME_SPACE1)	thrad061.ogg
+#(WELCOME_SPACE1)	thraddash-061.ogg
  are glad to meet you here in space, oh wise Teacher from Earth!
 
-#(WELCOME_HOMEWORLD0)	thrad062.ogg
+#(WELCOME_HOMEWORLD0)	thraddash-062.ogg
 Your presence here at our homeworld fills all of us 
-#(WELCOME_HOMEWORLD1)	thrad063.ogg
+#(WELCOME_HOMEWORLD1)	thraddash-063.ogg
  with awe. We are honored, wise human.
 
-#(WELCOME_HELIX0)	thrad064.ogg
+#(WELCOME_HELIX0)	thraddash-064.ogg
 Hoy-yo-HO! The super-strong human has returned to this, our most important planet.
 We, 
-#(WELCOME_HELIX1)	thrad065.ogg
+#(WELCOME_HELIX1)	thraddash-065.ogg
 , bid you welcome.
 
 #(why_you_here_ally)
 What's so special about this planet?
 
-#(GUARDING_HELIX_ALLY)	thrad066.ogg
+#(GUARDING_HELIX_ALLY)	thraddash-066.ogg
 We orbit here guarding that most precious of our relics, that which we hold most dearly
 that which has been at the heart of all our Cultures
 (except for Culture Nine, and they don't really count)
@@ -558,7 +558,7 @@ the Aqua Helix!
 #(whats_helix_ally)
 So what about this `Aqua Helix' thing? Does it do any tricks?
 
-#(HELIX_IS_ALLY)	thrad067.ogg
+#(HELIX_IS_ALLY)	thraddash-067.ogg
 The Aqua Helix is our most precious relic.
 For the totality of our historical memory, the Helix has been with us.
 It guides, motivates and rewards. It is the twisty-thing that launched a thousand ships!
@@ -577,14 +577,14 @@ Therefore, the Aqua Helix IS great! The matter is resolved.
 #(may_i_land)
 That sounds really cool! You won't mind if I go down and just kinda look at it, would you?
 
-#(SURE_LAND)	thrad068.ogg
+#(SURE_LAND)	thraddash-068.ogg
 Why certainly, go ahead and land on the planet and take a look at the most precious of all our relics
 the relic we hold most dear, as have all our Cultures...
 
 #(whats_up_ally)
 Have there been any developments here that I, your Great Teacher, should know of?
 
-#(GENERAL_INFO_ALLY_1)	thrad069.ogg
+#(GENERAL_INFO_ALLY_1)	thraddash-069.ogg
 Yes, Teacher, there is at least one event of note.
 We may have once mentioned our encounters with the tumbling red probes
 the ones that attack relentlessly while spouting bizarre peace offerings.
@@ -594,7 +594,7 @@ Uh.. no, Captain, we don't know what the opposite of Vega is, that's not what we
 We now believe that the probes are RETURNING to Vega.
 As yet we do not know the nature of their mission.
 
-#(GENERAL_INFO_ALLY_2)	thrad070.ogg
+#(GENERAL_INFO_ALLY_2)	thraddash-070.ogg
 Yes, wise human, let us elaborate.
 Two years ago we monitored the entry of two ships into our space.
 One was clearly a Dreadnought, the ship of our ex-masters, the Ur-Quan.
@@ -604,7 +604,7 @@ Eventually, the Ur-Quan destroyed the black ship, but not before receiving morta
 The last we saw of the ship, it was tumbling out of control towards Alpha Pavonis.
 We do not know its eventual fate.
 
-#(GENERAL_INFO_ALLY_3)	thrad071.ogg
+#(GENERAL_INFO_ALLY_3)	thraddash-071.ogg
 Now that you are our new role-model, I guess it's time to spill the beans on the Ur-Quan.
 Unfortunately, we never really got any beans -- secret bits of information, that is.
 However, maybe you would like to know about the last time we saw the Ur-Quan.
@@ -614,7 +614,7 @@ which told us to remain in our old sphere of influence, obey the slave laws, and
 The Dreadnought fleet departed in the direction of the Crateris constellation
 but where they are now is unknown.
 
-#(GENERAL_INFO_ALLY_4)	thrad072.ogg
+#(GENERAL_INFO_ALLY_4)	thraddash-072.ogg
 This doesn't really count as News, Teacher
 but War is truly magnificent isn't it?
 The gut wrenching sight of molten warships!
@@ -622,14 +622,14 @@ The boiling blood of depressurized soldiers!
 I just love it!...
 ...don't you?
 
-#(HOW_SHOULD_WE_ACT)	thrad073.ogg
+#(HOW_SHOULD_WE_ACT)	thraddash-073.ogg
 We need to learn so much from you, such as
 How should we act in our new Culture? What is our direction, our ethical base?
 
 #(friendly)
 Be kind at all times and in all places. Treat each stranger you meet as your best friend.
 
-#(OK_FRIENDLY)	thrad074.ogg
+#(OK_FRIENDLY)	thraddash-074.ogg
 Friendly? Kind? The wisdom escapes me.... ah yes! I understand now!
 Being kind, being friendly...this will allow intruders to let their guard down
 and when we kill them, they will be too surprised to react!
@@ -638,7 +638,7 @@ What a great plan, human! You are truly a great Teacher!
 #(wacky)
 Lighten up! Be kind of... you know... Wacky! Here, try watching these vids: Monty Python and the Marx Brothers.
 
-#(OK_WACKY)	thrad075.ogg
+#(OK_WACKY)	thraddash-075.ogg
 Wacky!...Wacky? I do not understand. We shall watch these vids of yours.
 We shall study them, to learn to be... wacky.
 Then, when we are wacky enough, we shall test our new wackiness in combat
@@ -648,7 +648,7 @@ Thank you, Great Teacher.
 #(just_like_us)
 Look, if you really want a model for your Culture, then be just like us!
 
-#(OK_JUST_LIKE_YOU)	thrad076.ogg
+#(OK_JUST_LIKE_YOU)	thraddash-076.ogg
 Aha! I see it now. We proceed carefully
 we take no undue risks. We slowly build up our strength
 and only attack when we have overwhelming odds on our side!
@@ -657,7 +657,7 @@ trying to drag out every last bit of information, and if they are not cooperativ
 we will threaten them with instant death!
 We will be just like you!
 
-#(WORK_TO_DO)	thrad077.ogg
+#(WORK_TO_DO)	thraddash-077.ogg
 We have much work to do to implement these sweeping cultural changes.
 Transferring from the allegiances and mores of one culture to another
 is a difficult and time-consuming task.
@@ -667,7 +667,7 @@ Return later to see our brave new world.
 #(contemplative)
 Try being more contemplative. Consider the many facets of a single gem... and stuff like that.
 
-#(OK_CONTEMPLATIVE)	thrad078.ogg
+#(OK_CONTEMPLATIVE)	thraddash-078.ogg
 Aha! Contemplation, yes! New thought and realizations! With our new studious ways
 we shall uncover new methods, inventions and schemes
 allowing us to conquer entire civilizations with ease!
@@ -676,31 +676,31 @@ Brilliant, human, brilliant!
 #(how_goes_culture)
 So how is the new Culture developing?
 
-#(CONTEMP_GOES_1)	thrad079.ogg
+#(CONTEMP_GOES_1)	thraddash-079.ogg
 Augh! If it were not for our certainty in your wisdom, great Teacher from Earth
 we would not have remained a `Contemplative' culture for more than a single day
 As it is, we have contemplated our strategies, tactics, our weapons, the stars
 the planets, and even our navels
 which for a Thraddash is very uncomfortable and requires at least two mirrors.
 
-#(CONTEMP_GOES_2)	thrad080.ogg
+#(CONTEMP_GOES_2)	thraddash-080.ogg
 So studious! So quiet! So contemplative! SNORT!
 We are not made for this. We are beginning to break out in spots!
 
-#(FRIENDLY_GOES_1)	thrad081.ogg
+#(FRIENDLY_GOES_1)	thraddash-081.ogg
 To be frank, Great Teacher, friendliness suits us Thraddash poorly.
 For example, we Thraddash do not have the necessary muscles to `smile' as you suggested we do
 so we are now using small plastic prosthetic devices to prop up our lips into the required position.
 Very uncomfortable.
 
-#(FRIENDLY_GOES_2)	thrad082.ogg
+#(FRIENDLY_GOES_2)	thraddash-082.ogg
 Try as we might, we just can't make this friendly thing work, Teacher.
 Even your idea about exchanging the ritual gifts, the `Fruit Cakes' has had problems.
 It seems that nobody actually wants to eat the Fruit Cakes
 however, on the plus side, due to the Fruit Cakes' density and other physical characteristics
 they make excellent projectile weapons!
 
-#(WACKY_GOES_1)	thrad083.ogg
+#(WACKY_GOES_1)	thraddash-083.ogg
 We have studied and studied the vids you left with us, oh Great Teacher
 but we fear we are unable to grasp the essential truth and power of being wacky.
 For example, last month, in an attempt to be spontaneously absurd
@@ -713,7 +713,7 @@ The penguin, the vidscreen, and a large section of the wall were destroyed.
 You see, Captain. Perhaps we are not suited to being wacky
 and SNIFF!... that was my only penguin.
 
-#(WACKY_GOES_2)	thrad084.ogg
+#(WACKY_GOES_2)	thraddash-084.ogg
 We are getting a better handle on this wacky thing.
 The key? Slapstick!
 We Thraddash have found our mode, our idiom, our way to be wacky.
@@ -723,7 +723,7 @@ HARG! HARG! HARG! We like and understand this perfectly, Captain.
 And with the addition of our native elements, high-explosives and nausea gas
 Thraddash space has become Pratfall City!
 
-#(LIKE_YOU_GOES_1)	thrad085.ogg
+#(LIKE_YOU_GOES_1)	thraddash-085.ogg
 Things are proceeding well, Captain.
 We have discovered one item which may interest you.
 There is an unusual world orbiting Epsilon Draconis, in close solar orbit.
@@ -735,7 +735,7 @@ The text goes on to say that these Dumps are in some kind of pattern
 though what the pattern may be remains a mystery.
 For now, that is all.
 
-#(LIKE_YOU_GOES_2)	thrad086.ogg
+#(LIKE_YOU_GOES_2)	thraddash-086.ogg
 A long-range scouting team was sent to explore the stars in the Lyncis constellation.
 On planet I of Delta Lyncis, they encountered a life form so dangerous, so hostile
 that it almost killed the entire landing party.
@@ -745,22 +745,22 @@ and we hope this information has been of use.
 #(bye_ally)
 Goodbye to you, my Thraddash students.
 
-#(GOODBYE_ALLY_1)	thrad087.ogg
+#(GOODBYE_ALLY_1)	thraddash-087.ogg
 We eagerly await your return, Great Teacher.
 
-#(GOODBYE_ALLY_2)	thrad088.ogg
+#(GOODBYE_ALLY_2)	thraddash-088.ogg
 We will await your return and further enlightenment with great anticipation.
 
-#(GOODBYE_ALLY_3)	thrad089.ogg
+#(GOODBYE_ALLY_3)	thraddash-089.ogg
 Try not to get killed, Teacher.
 
-#(GOODBYE_ALLY_4)	thrad090.ogg
+#(GOODBYE_ALLY_4)	thraddash-090.ogg
 Farewell Great Teacher.
 
 #(be_polite)
 Try being polite and friendly in your greetings.
 
-#(OK_POLITE)	thrad091.ogg
+#(OK_POLITE)	thraddash-091.ogg
 Ok, we will be polite.
 That will cause visitors to let their guard down,
 then we attack them!
@@ -769,7 +769,7 @@ Yes, that is an excellent plan!
 #(speak_pig_latin)
 To really capture the spirit of Interstellar Diplomactic Protocol you should speak pig latin.
 
-#(OK_PIG_LATIN)	thrad092.ogg
+#(OK_PIG_LATIN)	thraddash-092.ogg
 Pig-Latin, eh? Isn't that where you take the first letter or two of a word, put it at the end
 and then add an `ay' at the very end? Hmm.. let me try
 `Upidstay Eaturecray! Eparepray otay ieday!'
@@ -780,7 +780,7 @@ Just one question, Great Teacher. How do you say `example' in pig latin?
 #(use_rhymes)
 I know for a fact that rhyming in your introductions wins big points.
 
-#(OK_RHYMES)	thrad093.ogg
+#(OK_RHYMES)	thraddash-093.ogg
 Rhymes? Like in poetry? SNORT!
 Isn't that kind of... you know... not-tough stuff?
 SNORT! What am I saying! You are the Great Teacher! You know best!
@@ -789,13 +789,13 @@ If rhyming is necessary, then Teacher, we will be rhyming all the timing.
 #(just_the_way_we_do)
 Just greet people the way we do.
 
-#(OK_WAY_YOU_DO)	thrad094.ogg
+#(OK_WAY_YOU_DO)	thraddash-094.ogg
 Hmmm... okay. I see.
 When necessary, we will be obsequious and kowtow
 and the rest of the time, we will bluster and threaten!
 How simple!
 
-#(WHAT_NAME_FOR_CULTURE)	thrad095.ogg
+#(WHAT_NAME_FOR_CULTURE)	thraddash-095.ogg
 Now that we understand the nuances of introduction, Great Teacher
 we have an even more significant question.
 Your devastation of our battle forces have shown us
@@ -815,7 +815,7 @@ Okay, the
 #(you_decide)
 I think it is important that with this new direction, you decide on your new name.
 
-#(OK_CULTURE_20)	thrad096.ogg
+#(OK_CULTURE_20)	thraddash-096.ogg
 You are wise, Great Teacher. I will think long and hard on this matter
 GRUNT!
 It must reflect the profound changes in our social order.
@@ -828,7 +828,7 @@ Culture Twenty!
 #(fat)
 How about `The Fat Obstreperous Jerks'?
 
-#(OK_FAT)	thrad097.ogg
+#(OK_FAT)	thraddash-097.ogg
 I like it! This name, being such an obvious contrast to our true nature
 will fool our enemies into believing we are harmless
 because surely only fools would let themselves be known by such a name!
@@ -841,17 +841,17 @@ It will be `The Glorious Slave Empire of
 #(the_slave_empire1)
 '!
 
-#(OK_SLAVE)	thrad098.ogg
+#(OK_SLAVE)	thraddash-098.ogg
 Ulp! Well... you're the one with the big starship.
 So be it.
 
-#(FAT_JERKS)	thrad099.ogg
+#(FAT_JERKS)	thraddash-099.ogg
 Fat Obstreperous Jerks
 
-#(CULTURE)	thrad100.ogg
+#(CULTURE)	thraddash-100.ogg
 Culture Twenty
 
-#(SLAVE_EMPIRE)	thrad101.ogg
+#(SLAVE_EMPIRE)	thraddash-101.ogg
 The Glorious Slave Empire
 
 #(name_1)
@@ -868,7 +868,7 @@ The Empire of
 #(name_41)
  
 
-#(HAVING_FUN_WITH_ILWRATH_1)	thrad102.ogg
+#(HAVING_FUN_WITH_ILWRATH_1)	thraddash-102.ogg
 Oh! The Glory of these many battles!
 The stupid Ilwrath are easy kills for our valiant warriors, SNORT!
 We kill fully two of them for every one of us who perishes!
@@ -877,14 +877,14 @@ but that is not truly significant!
 It was your wisdom and guidance that made this all possible, Great Teacher!
 Thank you! Thank you! Thank you!
 
-#(HAVING_FUN_WITH_ILWRATH_2)	thrad103.ogg
+#(HAVING_FUN_WITH_ILWRATH_2)	thraddash-103.ogg
 The exploding starships! The screaming crew!
 The direct hits, the cunning escapes!
 These are the moments we live for!
 Now we must return to the great battles!
 Farewell, Great Teacher.
 
-#(GO_AWAY_FIGHTING_ILWRATH_1)	thrad104.ogg
+#(GO_AWAY_FIGHTING_ILWRATH_1)	thraddash-104.ogg
 So, it is a stupid, ungainly human.
 I thought we killed you... never mind. It is unimportant now.
 We are in the midst of a great and glorious war.
@@ -895,14 +895,14 @@ Why am I wasting my time here with you?
 I could be out there, winning honor and glory fighting the idiot spiders.
 Depart human, your death is not worth the cost of my ammunition.
 
-#(GO_AWAY_FIGHTING_ILWRATH_2)	thrad105.ogg
+#(GO_AWAY_FIGHTING_ILWRATH_2)	thraddash-105.ogg
 Stop bothering us, human!
 Can't you see that we are fighting the most perfect war of our Nineteen Cultures?
 We have brought the Ilwrath to their knee equivalents!
 Now all that remains is the coup de grace -- their final annihilation!
 So clear my path, alien dog, before I blast it clear myself!
 
-#(OUT_TAKES) thrad106.ogg
+#(OUT_TAKES) thraddash-106.ogg
 SNORT! I am furious and ready to KILL!
 Throughout this entire game, I've done nothing but bluster and threaten!
 I've had no opportunity to show my true skills as an actor, my depth and range.

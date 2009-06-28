@@ -1,23 +1,23 @@
-#(HOMEWORLD_HELLO_1)	yehat000.ogg
+#(HOMEWORLD_HELLO_1)	yehat-000.ogg
 It is sure and a true thing that the alien interloper has now been warned
 not to approach Caer Zeep-Reep, the Queen's High Perch
 lest it be blasted without further warning!
 
-#(HOMEWORLD_HELLO_2)	yehat001.ogg
+#(HOMEWORLD_HELLO_2)	yehat-001.ogg
 It is a shocking thing to see the return of the human renegade!
 One knows this will not be boding well with her Majesty today.
 
 #(whats_up_homeworld)
 What has happened in the twenty years since our species last met?
 
-#(GENERAL_INFO_HOMEWORLD_1)	yehat002.ogg
+#(GENERAL_INFO_HOMEWORLD_1)	yehat-002.ogg
 It is a wondering thought that crosses my mind human starship Captain.
 Are ye not knowing that the cause of our Queen and empire
 is now allied with the fortunes of the mighty Ur-Quan?...
 ...and that yer presence here is being only the end of yer life?
 Haven't ye got the sense, human, to know this simple thing?
 
-#(GENERAL_INFO_HOMEWORLD_2)	yehat003.ogg
+#(GENERAL_INFO_HOMEWORLD_2)	yehat-003.ogg
 Ye are asking the words of a mindless child, human!
 Here, in the Hall of the Queen's High Perch
 ye shall not be finding the sympathies ye so vainly seek.
@@ -36,7 +36,7 @@ I,
 #(i_demand_you_ally_homeworld3)
 , demand that you uphold your duties as allies of the human species!
 
-#(ENEMY_MUST_DIE)	yehat004.ogg
+#(ENEMY_MUST_DIE)	yehat-004.ogg
 Are ye DAFT human!? Have ye not heard our words?
 You and yer kind are slaves, just as we
 but you humans have been confined within a shield of slaves!
@@ -48,7 +48,7 @@ We must be getting about the business of killing you!
 #(at_least_help_us_homeworld)
 You must help us. Surely you owe us this much, at least!
 
-#(NO_HELP_ENEMY)	yehat005.ogg
+#(NO_HELP_ENEMY)	yehat-005.ogg
 It is an unbelieveable thing!
 Ye speak the words that ruffle our feathers and cause our blood to boil!
 We, the loyal servants of our Queen, bless her Beak, will not be helping the likes of you
@@ -57,7 +57,7 @@ or any of the traitor Yehat bastards ye may have found among the ranks of the st
 #(give_info)
 Surely giving us some scraps of information would be okay, wouldn't it?
 
-#(NO_INFO_FOR_ENEMY)	yehat006.ogg
+#(NO_INFO_FOR_ENEMY)	yehat-006.ogg
 Our Queen has spoken the commands to us, and we are obeying her words!
 No assistance, of any kind at all, shall be given to you, human
 so do not be making the assumptions, that ye know a right thing from a wrong!
@@ -67,12 +67,12 @@ We shall not be giving ye a SCRAP OF MEAT!... much less our secrets.
 #(what_about_pkunk_royalist)
 We have encountered an offshoot of your species, the Pkunk. Tell us about them.
 
-#(PKUNK_ABSORBED_ROYALIST)	yehat007.ogg
+#(PKUNK_ABSORBED_ROYALIST)	yehat-007.ogg
 The Pkunk have been absorbed.
 They are no more. This is how it should be.
 Now the matter is settled, human. Do not be bringing it up again...
 
-#(HATE_PKUNK_ROYALIST)	yehat008.ogg
+#(HATE_PKUNK_ROYALIST)	yehat-008.ogg
 The cowards live?!! This is unbelievable!!
 It is a SAD, SAD day to be hearing this thing from ye, human.
 The P... the Pku... I canna even say their vile name!
@@ -84,13 +84,13 @@ Or better yet do not be talking about them at all!
 #(bye_homeworld)
 You disappoint us. We expected more from you. Goodbye.
 
-#(GOODBYE_AND_DIE_HOMEWORLD)	yehat009.ogg
+#(GOODBYE_AND_DIE_HOMEWORLD)	yehat-009.ogg
 So human, now ye be thinking that ye shall slink away
 to commit some vile treason and dirty our Queen's good name. Isn't this true?
 Do not be answering! We know the truth.
 We will not let ye pass!
 
-#(SPACE_HELLO_1)	yehat010.ogg
+#(SPACE_HELLO_1)	yehat-010.ogg
 What am I seeing on my view screen!?
 It is none other than the flattened old face of our friends the human!
 But old ally, are ye not knowing that we, the Yehat are allied with the Ur-Quan now?...
@@ -99,24 +99,24 @@ are clear violations of yer Oath of Fealty?!
 Whatever shall we do? It just isn't a right thing to kill you, human,
 but as a loyal member of my Clan, I must obey the wishes of our Queen!
 
-#(SPACE_HELLO_2)	yehat011.ogg
+#(SPACE_HELLO_2)	yehat-011.ogg
 Human, what are you doing back here!? Are you totally off yer perch!?
 We have sympathies fer yer cause, tis true
 but we must obey the orders of our Queen, however much we may disagree with them!
 
-#(SPACE_HELLO_3)	yehat012.ogg
+#(SPACE_HELLO_3)	yehat-012.ogg
 Human! I am beginning to think that ye are touched, fer sure!
 Ye tempt fate and our sympathy too much, I think.
 This time, perhaps we cannot be as much yer friends as ye would like.
 
-#(SPACE_HELLO_4)	yehat013.ogg
+#(SPACE_HELLO_4)	yehat-013.ogg
 Human! Human. You try our souls with yer return!
 What is it ye be wanting now?
 
 #(whats_up_space_1)
 We should be allies... friends! Explain why this cannot be.
 
-#(GENERAL_INFO_SPACE_1)	yehat014.ogg
+#(GENERAL_INFO_SPACE_1)	yehat-014.ogg
 Your words are flying in the face of the facts, human.
 We are no longer being your allies.
 But unlike the nobles of our homeworld, we, of the Starship Clans
@@ -126,7 +126,7 @@ The Queen's decision to be joining the Hierarchy, pains us!
 #(whats_up_space_2)
 How did the Ur-Quan defeat you? What happened?
 
-#(GENERAL_INFO_SPACE_2)	yehat015.ogg
+#(GENERAL_INFO_SPACE_2)	yehat-015.ogg
 WE - WERE - NOT - DEFEATED, HUMAN!!!!
 Never! Never in the two-thousand years of the Veep-Neep Queens
 have the Yehat ever, EVER suffered a defeat!
@@ -141,7 +141,7 @@ and the fight is over before it is even begun. AWK!
 #(whats_up_space_3)
 What about your legendary honor? Your courage? What would the Shofixti think?!
 
-#(GENERAL_INFO_SPACE_3)	yehat016.ogg
+#(GENERAL_INFO_SPACE_3)	yehat-016.ogg
 (sob!)... (whimper) We have fallen so far. (sob!)
 We are not being the same (whimper!) great birds of prey your people were once knowing and trusting.
 We have each betrayed the honor of our Clan, (whimper!)... just as our Queen
@@ -153,7 +153,7 @@ the shame!... Oh the shame!... it would be unbearable!
 #(whats_up_space_4)
 Aren't you just slaves to the Ur-Quan?
 
-#(GENERAL_INFO_SPACE_4)	yehat017.ogg
+#(GENERAL_INFO_SPACE_4)	yehat-017.ogg
 NO!  WE ARE NOT SLAVES!! WE ARE!... We are!... we are...
 Battle Thralls.
 
@@ -169,7 +169,7 @@ By your honor, Yehat captain, I,
 #(i_demand_you_ally_space3)
  call upon the Starship Clans to honor their word and fight for our cause!
 
-#(WE_CANNOT_1)	yehat018.ogg
+#(WE_CANNOT_1)	yehat-018.ogg
 As much as my heart cries to aid ye, valiant human, I cannot!
 Each of us is sworn first to our Queen who
 has commanded us to treat ye as an enemy of the Crown!
@@ -177,7 +177,7 @@ has commanded us to treat ye as an enemy of the Crown!
 #(obligation)
 Your species' obligation cannot simply be forgotten! What about your honor, your pride!?
 
-#(WE_CANNOT_2)	yehat019.ogg
+#(WE_CANNOT_2)	yehat-019.ogg
 Can't ye see that ye are killing me human?
 The shame!... the awful shame of it!
 What ye say is true, we SHOULD be under the same wing
@@ -187,14 +187,14 @@ and there is nothing I can be doing about it now!
 #(at_least_help_us_space)
 At least help us with materials for our struggle!
 
-#(SORRY_CANNOT)	yehat020.ogg
+#(SORRY_CANNOT)	yehat-020.ogg
 We cannot!
 To be doing so would be a direct violation of our royal Queen's commands!
 
 #(dishonor)
 Think Yehat. The sheer dishonor of it all.
 
-#(HERES_A_HINT)	yehat021.ogg
+#(HERES_A_HINT)	yehat-021.ogg
 We cannot be giving ye material aid, Captain.
 But perhaps ye can make use of this information, Captain.
 When we were fighting the Great War against the Mycons
@@ -210,12 +210,12 @@ you may discover this secret, and it may help ye in yer quest.
 #(what_about_pkunk_space)
 Tell us about the Pkunk.
 
-#(PKUNK_ABSORBED_SPACE)	yehat022.ogg
+#(PKUNK_ABSORBED_SPACE)	yehat-022.ogg
 This is a matter for the Yehat, human, and ONLY for the Yehat.
 The Pkunk have been absorbed... and that is being the end of it.
 Do not ask further about this matter.
 
-#(HATE_PKUNK_SPACE)	yehat023.ogg
+#(HATE_PKUNK_SPACE)	yehat-023.ogg
 You have met them!?? The wretched creatures are alive?!!
 You should be telling us where they are, Captain!
 Tell us so that we can be correcting the mistake made a thousand years ago
@@ -225,11 +225,11 @@ By all rights, we should have eliminated the craven cowards down to the last bir
 #(bye_space)
 Goodbye Yehat... our allies and friends.
 
-#(GO_IN_PEACE)	yehat024.ogg
+#(GO_IN_PEACE)	yehat-024.ogg
 Though honoring our past commitment we are not,
 we will be letting you go in peace.
 
-#(GOODBYE_AND_DIE_SPACE)	yehat025.ogg
+#(GOODBYE_AND_DIE_SPACE)	yehat-025.ogg
 You are causing us sorrow, human, sorrow indeed,
 because now we must obey the commands of our Queen and destroy you.
 
@@ -239,13 +239,13 @@ This may come as a shock, but the Shofixti are reborn.
 #(shofixti_alive_2)
 We have a Shofixti Captain here with us. Now do you believe?
 
-#(SEND_HIM_OVER_1)	yehat026.ogg
+#(SEND_HIM_OVER_1)	yehat-026.ogg
 If this is being a true thing, there will be many changes.
 But we are a species long wise in the ways of deceit.
 Ye must be proving these words ye say, Captain.
 Send the Shofixti to us as a way of proof.
 
-#(SEND_HIM_OVER_2)	yehat027.ogg
+#(SEND_HIM_OVER_2)	yehat-027.ogg
 Ye are lying to us once, Captain. Now we need the hard evidence.
 Order yer supposed Shofixti to come to us, Captain.
 
@@ -255,19 +255,19 @@ Well I don't have one right HERE.
 #(not_send)
 I will not subject one of my officers to such danger. How do I know you won't just kill him?
 
-#(JUST_A_TRICK_1)	yehat028.ogg
+#(JUST_A_TRICK_1)	yehat-028.ogg
 It is a trick then, isn't it! And nothing more.
 Human, we have been patient with ye up to this point, but now ye have gone too far.
 Ye have most skillfully rubbed the salt into our wounds, and ye shall pay fer it in blood!
 
-#(JUST_A_TRICK_2)	yehat029.ogg
+#(JUST_A_TRICK_2)	yehat-029.ogg
 Another TRICK!
 Yer lying tongue has doomed ye!
 
 #(ok_send)
 All right, I'll send over the Shofixti... but don't mess with him, okay?
 
-#(WE_REVOLT)	yehat030.ogg
+#(WE_REVOLT)	yehat-030.ogg
 We are scanning the separation of a vessel from yer fleet, Captain
 and indeed, its configuration matches that of a Shofixti Scout vessel.
 This had better not be a trick, Captain!
@@ -291,7 +291,7 @@ we shall TEAR THE QUEEN FROM HER THRONE!
 The two-thousand year reign of the Veep-Neep Queens IS OVER!
 THE REVOLUTION HAS BEGUN!
 
-#(ROYALIST_SPACE_HELLO_1)	yehat031.ogg
+#(ROYALIST_SPACE_HELLO_1)	yehat-031.ogg
 Human... ye shall never be fully comprehending the damage you are doing now to our Yehat culture.
 For fully TWO THOUSAND YEARS there has been peace between the Clans!...
 ...and now you have cast the ancient seed of dissension between our beaks!
@@ -300,16 +300,16 @@ While the Zeep-Zeep traitors may be your allies, Captain
 I can be assuring you that we, of the Feep-Eeep Starship Clan
 are wanting nothing more dearly than your death!
 
-#(ROYALIST_SPACE_HELLO_2)	yehat032.ogg
+#(ROYALIST_SPACE_HELLO_2)	yehat-032.ogg
 It is the human Agitator who would see Her Radiant Majesty pulled from the High Perch!
 Ye will rue the day ye devised this wicked scheme!
 
-#(ROYALIST_HOMEWORLD_HELLO_1)	yehat033.ogg
+#(ROYALIST_HOMEWORLD_HELLO_1)	yehat-033.ogg
 Human! Like all heroes, ye be as brainless as ye are brave.
 Do ye not know, that here there be none of the traitorous Zeep-Zeep Starship Clans!
 Ye are as good as dead, human.
 
-#(ROYALIST_HOMEWORLD_HELLO_2)	yehat034.ogg
+#(ROYALIST_HOMEWORLD_HELLO_2)	yehat-034.ogg
 Cease yer bloody taunting, human!
 Ye dance like a sick breeg, never engaging us in battle-to-the-death
 as honor and true courage are demanding!
@@ -317,26 +317,26 @@ as honor and true courage are demanding!
 #(how_is_rebellion)
 So, how's the revolution going for you guys?
 
-#(ROYALIST_REBELLION_1)	yehat035.ogg
+#(ROYALIST_REBELLION_1)	yehat-035.ogg
 Revolution!? Ye compliment yerself unnecessarily, Captain.
 This is nothing more than a... band of thugs trying to undo the peace of a hundred generations!
 We will roast the traitors in their ships, and crack the eggs in their Clanhome
 so that never again will the Zeep-Zeep criminals be flying though our stars.
 
-#(ROYALIST_REBELLION_2)	yehat036.ogg
+#(ROYALIST_REBELLION_2)	yehat-036.ogg
 Do not be worrying yerself, Captain! Victory is almost within our grasp.
 
 #(sorry_about_revolution)
 Gosh, I'm sorry about this revolution thing. I didn't mean any harm.
 
-#(ALL_YOUR_FAULT)	yehat037.ogg
+#(ALL_YOUR_FAULT)	yehat-037.ogg
 The pain and suffering of this useless conflict are being nothing but a tragic waste of life.
 Congratulate yourself, Captain. The source of all this death and misery is yerself.
 
 #(bye_royalist)
 Goodbye Royalist fool!
 
-#(GOODBYE_AND_DIE_ROYALIST)	yehat038.ogg
+#(GOODBYE_AND_DIE_ROYALIST)	yehat-038.ogg
 Now ye must pay fer yer crimes, human!
 
 #(name_1)
@@ -352,7 +352,7 @@ The United Federation of Worlds
 The Empire of 
 #(name_41)
  
-#(OUT_TAKES) yehat039.ogg
+#(OUT_TAKES) yehat-039.ogg
 So, I suppose you are wondering what I'm doing at this control console
 well, I guess I can tell you now.
 I'm writing a screenplay!

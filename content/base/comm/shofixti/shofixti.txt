@@ -12,31 +12,31 @@ The Empire of
 #(name_41)
  
 
-#(tanaka) shofi000.ogg
+#(tanaka) shofixti-000.ogg
 Tanaka
 
-#(katana) shofi001.ogg
+#(katana) shofixti-001.ogg
 Katana
 
-#(HOSTILE_KATANA_1)	shofi002.ogg
+#(HOSTILE_KATANA_1)	shofixti-002.ogg
 I, Katana the Warrior, have travelled for long years through space, finally to come home
 only to witness you blasting my brother to atoms!
 Now you die!
 
-#(HOSTILE_KATANA_2)	shofi003.ogg
+#(HOSTILE_KATANA_2)	shofixti-003.ogg
 The Ur-Quan has returned! How unusually brave
 for a leprous, non-functional sex organ, like yourself.
 
-#(HOSTILE_KATANA_3)	shofi004.ogg
+#(HOSTILE_KATANA_3)	shofixti-004.ogg
 Evil murderer, you think to taunt me.
 Ha! And again I say, Ha!
 I have faced far worse than you
 You pitiful imitation of six-weeks dead Dhrang!
 
-#(HOSTILE_KATANA_4)	shofi005.ogg
+#(HOSTILE_KATANA_4)	shofixti-005.ogg
 I swear by the hero, Daikon, this time I will kill you.
 
-#(HOSTILE_TANAKA_1)	shofi006.ogg
+#(HOSTILE_TANAKA_1)	shofixti-006.ogg
 Attention huge alien vessel!
 Though most of my sensory instruments are malfunctioning
 my mass indicator shows the huge size of your vessel
@@ -48,34 +48,34 @@ all six of my sisters
 in fact, my entire species.
 Prepare to die!
 
-#(HOSTILE_TANAKA_2)	shofi007.ogg
+#(HOSTILE_TANAKA_2)	shofixti-007.ogg
 Ah, so the cowardly slug-spawn has returned!
 You were most fortunate last time, you hideous, pouchless freak!
 But this time I shall surely destroy your vessel
 you slithering eater of putrid hairballs!
 
-#(HOSTILE_TANAKA_3)	shofi008.ogg
+#(HOSTILE_TANAKA_3)	shofixti-008.ogg
 I see you're back for even more humiliation, you flatulent, Ur-Quan pus-cup.
 
-#(HOSTILE_TANAKA_4)	shofi009.ogg
+#(HOSTILE_TANAKA_4)	shofixti-009.ogg
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
-#(HOSTILE_TANAKA_5)	shofi010.ogg
+#(HOSTILE_TANAKA_5)	shofixti-010.ogg
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
-#(HOSTILE_TANAKA_6)	shofi011.ogg
+#(HOSTILE_TANAKA_6)	shofixti-011.ogg
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
-#(HOSTILE_TANAKA_7)	shofi012.ogg
+#(HOSTILE_TANAKA_7)	shofixti-012.ogg
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
-#(HOSTILE_TANAKA_8)	shofi013.ogg
+#(HOSTILE_TANAKA_8)	shofixti-013.ogg
 I'll kill you this time you pitiful, weakling fancier of herd animal excrement!
 
 #(dont_attack)
 Don't attack -- we're not the Ur-Quan! We're your allies!
 
-#(TYPICAL_PLOY)	shofi014.ogg
+#(TYPICAL_PLOY)	shofixti-014.ogg
 A typical Ur-Quan gambit... which has failed.
 And now I howl the scream of death!
 Kyaiee!
@@ -83,21 +83,21 @@ Kyaiee!
 #(hey_stop)
 Hey, stop shooting! Someone could get hurt!
 
-#(ONLY_STOP)	shofi015.ogg
+#(ONLY_STOP)	shofixti-015.ogg
 I will only stop when you are dead!
 Kyaiee!
 
 #(look_you_are)
 Look, you're getting me REALLY pissed-off!  Stop attacking and talk!
 
-#(TOO_BAD)	shofi016.ogg
+#(TOO_BAD)	shofixti-016.ogg
 Too bad.
 Kyaiee!
 
 #(dont_know)
 Don't you know the war is over?
 
-#(NEVER)	shofi017.ogg
+#(NEVER)	shofixti-017.ogg
 For me it will never be over!
 Kyaiee!
 
@@ -106,14 +106,14 @@ Look
 #(look1)
 , the war is over -- really!
 
-#(FOR_YOU)	shofi018.ogg
+#(FOR_YOU)	shofixti-018.ogg
 For you perhaps, fat cowardly lard-log!
 Kyaiee!
 
 #(no_bloodshed)
 There is no point in further bloodshed.
 
-#(YES_BLOODSHED)	shofi019.ogg
+#(YES_BLOODSHED)	shofixti-019.ogg
 Oh yes there is!
 When you have shed enough blood, You Will Die!
 Kyaiee!
@@ -121,40 +121,40 @@ Kyaiee!
 #(dont_want_to_fight)
 Gee, if that's the way you feel, then I'll be on my way.
 
-#(MUST_FIGHT_YOU_URQUAN_1)	shofi020.ogg
+#(MUST_FIGHT_YOU_URQUAN_1)	shofixti-020.ogg
 Oh no you don't!
 Kyaiee!
 
-#(MUST_FIGHT_YOU_URQUAN_2)	shofi021.ogg
+#(MUST_FIGHT_YOU_URQUAN_2)	shofixti-021.ogg
 Oh no you don't!
 Kyaiee!
 
-#(MUST_FIGHT_YOU_URQUAN_3)	shofi022.ogg
+#(MUST_FIGHT_YOU_URQUAN_3)	shofixti-022.ogg
 Oh no you don't!
 Kyaiee!
 
-#(MUST_FIGHT_YOU_URQUAN_4)	shofi023.ogg
+#(MUST_FIGHT_YOU_URQUAN_4)	shofixti-023.ogg
 Oh no you don't!
 Kyaiee!
 
 #(no_one_insults)
 No one insults us like that you toothless, piebald, impotent roof-rabbit!
 
-#(YOU_LIMP)	shofi024.ogg
+#(YOU_LIMP)	shofixti-024.ogg
 You limp, bloodless sack of decaying flesh Ur-Quan! You die!
 Kyaiee!
 
 #(mighty_words)
 Those are mighty words from a dripping, snout-rotted little furball!
 
-#(HANG_YOUR)	shofi025.ogg
+#(HANG_YOUR)	shofixti-025.ogg
 I will hang your withered reproductive organs from my posterior monitor!
 Kyaiee!
 
 #(donkey_breath)
 Look donkey breath - one more insult and it's vapor city for you!
 
-#(DGRUNTI)	shofi026.ogg
+#(DGRUNTI)	shofixti-026.ogg
 Why you wallowing, phlegm-filled Dgrunti belly-licker, you
 hey
 Ur-Quans never insulted me before!
@@ -175,21 +175,21 @@ I am the nice, friendly ally WHO YOU'VE BEEN TRYING TO KILL -- YOU IDIOT, MORON 
 #(i_am_guy)
 I am the guy who called you donkey-breath, you violent little varmint.
 
-#(SO_SORRY)	shofi027.ogg
+#(SO_SORRY)	shofixti-027.ogg
 Oh. I am sorriest
 I must be reprimanded.
 When we report back to Star Control...
 
-#(MUST_UNDERSTAND)	shofi028.ogg
+#(MUST_UNDERSTAND)	shofixti-028.ogg
 Hyai! What a fool I am!
 When you failed to launch fighter craft, I should have guessed.
 Just one of those mistakes you make in war...
 
-#(NICE_BUT_WHAT_IS_DONKEY)	shofi029.ogg
+#(NICE_BUT_WHAT_IS_DONKEY)	shofixti-029.ogg
 Ah, Earth humor! Very funny! Ha-ha-ha!
 But what is don...
 
-#(IS_DEFEAT_TRUE)	shofi030.ogg
+#(IS_DEFEAT_TRUE)	shofixti-030.ogg
 Suddenly your words ring in my ears.
 Captain, is this true? Have the Ur-Quan been destroyed?
 Has the ultimate sacrifice of my people resulted in freedom for the Alliance?
@@ -203,7 +203,7 @@ I'm sorry to be the one to tell you, but the Alliance got its butt blasted.
 #(clobbered)
 Er... maybe we should talk about this later.
 
-#(VERY_SAD_KILL_SELF)	shofi031.ogg
+#(VERY_SAD_KILL_SELF)	shofixti-031.ogg
 HYAIEEE!
 I am a defeated warrior! A worthless shell!
 I must die!!!!
@@ -211,13 +211,13 @@ I must die!!!!
 #(important_duty)
 No, wait, Shofixti! I have an important duty for you to perform.
 
-#(WHAT_DUTY)	shofi032.ogg
+#(WHAT_DUTY)	shofixti-032.ogg
 What might that be?
 
 #(need_you_for_duty)
 Shofixti, I am now your new commander. I order you not to kill yourself.  You are to remain here and guard your solar system.
 
-#(OK_WILL_BE_SENTRY)	shofi033.ogg
+#(OK_WILL_BE_SENTRY)	shofixti-033.ogg
 To fight again? Against the Ur-Quan?
 Yes.  But no
 I cannot leave my homeworld unguarded. I will remain here and keep a solitary vigil.
@@ -226,7 +226,7 @@ Goodbye.
 #(dont_do_it)
 Don't do it, old Warrior! You still have much to live for!
 
-#(YES_I_DO_IT)	shofi034.ogg
+#(YES_I_DO_IT)	shofixti-034.ogg
 Like what?!
 My race is dead. My world is an airless rock. And I've seen all my FunRoms at least a hundred times.
 My life is over.
@@ -237,7 +237,7 @@ Unless you want to annihilate me yourself.
 #(go_ahead)
 Fine. Go ahead. Kill yourself, you violent little weasel.
 
-#(ON_SECOND_THOUGHT)	shofi035.ogg
+#(ON_SECOND_THOUGHT)	shofixti-035.ogg
 Wait! I have had a sudden realization!
 If you are here, in such an amazing ship
 that means there is yet hope to defeat the evil Ur-Quan pus-dogs!
@@ -256,7 +256,7 @@ I can give you the opportunity to replenish your species.
 #(hope_you_have)
 Shofixti, I have something a lot better than FunRoms. Are you interested?
 
-#(SOUNDS_GREAT_BUT_HOW)	shofi036.ogg
+#(SOUNDS_GREAT_BUT_HOW)	shofixti-036.ogg
 I am intrigued, Captain, but what are you talking about?
 
 #(females)
@@ -268,7 +268,7 @@ We can make available a bevy of fecund Shofixti nubiles.
 #(rat_babes)
 What would you say to rat-babes galore?
 
-#(LEAPING_HAPPINESS)	shofi037.ogg
+#(LEAPING_HAPPINESS)	shofixti-037.ogg
 Great leaping mounds of happiness!
 You shall be honored forever, Captain, as the savior of the Shofixti race!
 I have been granted the ultimate reward, er..  duty.
@@ -295,14 +295,14 @@ So what were you doing here
 #(why_here1)
 ?
 
-#(I_GUARD)	shofi038.ogg
+#(I_GUARD)	shofixti-038.ogg
 I guard the homeworld. I seek revenge against its destroyers, the Ur-Quan and their
 vile battle thralls. I await the return of the hero Daikon and the rebirth of my species.
 
 #(where_world)
 Where is your life-filled homeworld, Kyabetsu?
 
-#(BLEW_IT_UP)	shofi039.ogg
+#(BLEW_IT_UP)	shofixti-039.ogg
 My people blew up the sun, heh, heh, heh!
 Or at least they caused it to flare like a nova, destroying the many hundreds of
 Hierarchy vessels that had invaded our system to enslave us Shofixti.
@@ -310,7 +310,7 @@ Hierarchy vessels that had invaded our system to enslave us Shofixti.
 #(how_survive)
 If your sun went nova, how did you survive?
 
-#(NOT_HERE)	shofi040.ogg
+#(NOT_HERE)	shofixti-040.ogg
 I wasn't here when they made the sun flare.
 I was assigned to a Yehat squadron as a forward scout performing a deep recon in Mycon space.
 We were sent to investigate reports of unusual Mycon activity around Beta Brahe.
@@ -327,7 +327,7 @@ but I had been cut off from my squadron, and had to travel home alone.
 #(what_happened)
 So what happened to your ship?
 
-#(MET_VUX)	shofi041.ogg
+#(MET_VUX)	shofixti-041.ogg
 On my way home, I encountered a VUX Intruder.
 Before I destroyed it, the VUX was able to affix some of those vile limpet things to my ship
 and I had to return home at a greatly diminished speed.
@@ -341,7 +341,7 @@ I'd never seen a planet like that before, so maybe you should investigate?
 #(glory_device)
 When we were fighting, why didn't you use your Glory Device?
 
-#(SWITCH_BROKE)	shofi042.ogg
+#(SWITCH_BROKE)	shofixti-042.ogg
 During my battle with the VUX, I decided to employ the weapon.
 But I guess I used too much gusto
 and the switch broke.
@@ -349,10 +349,10 @@ and the switch broke.
 #(bye)
 Goodbye, Tanaka.
 
-#(GOODBYE)	shofi043.ogg
+#(GOODBYE)	shofixti-043.ogg
 Good hunting.
 
-#(FRIENDLY_HELLO)	shofi044.ogg
+#(FRIENDLY_HELLO)	shofixti-044.ogg
 Greetings Captain. It is good to see you again.
 
 #(report0)
@@ -360,10 +360,10 @@ What's your report
 #(report1)
 ?
 
-#(NOTHING_NEW)	shofi045.ogg
+#(NOTHING_NEW)	shofixti-045.ogg
 Nothing new to report, sir.
 
-#(OUT_TAKES)	shofi046.ogg
+#(OUT_TAKES)	shofixti-046.ogg
 Ah, I see someone approaches, but who is it?
 Ho, ho! It is the creature which I wrongly called a disgusting Ur-Quan slimewad
 and a cowardly slug-spawn

@@ -1,37 +1,37 @@
-#(NEUTRAL_SPACE_HELLO_1)	supox000.ogg
+#(NEUTRAL_SPACE_HELLO_1)	supox-000.ogg
 Greetings Fellow Carbon Creature, may your roots always be well watered.
 
-#(NEUTRAL_SPACE_HELLO_2)	supox001.ogg
+#(NEUTRAL_SPACE_HELLO_2)	supox-001.ogg
 Hello, Voyager. May the light always reach your leaves.
 
-#(NEUTRAL_HOMEWORLD_HELLO_1)	supox002.ogg
+#(NEUTRAL_HOMEWORLD_HELLO_1)	supox-002.ogg
 Greetings Fellow Carbon Creature, may your roots always be well watered.
 
-#(NEUTRAL_HOMEWORLD_HELLO_2)	supox003.ogg
+#(NEUTRAL_HOMEWORLD_HELLO_2)	supox-003.ogg
 Hello, Voyager. May the light always reach your leaves.
 
-#(HOSTILE_SPACE_HELLO_1)	supox004.ogg
+#(HOSTILE_SPACE_HELLO_1)	supox-004.ogg
 So it is you, the blockers of the warm green sunlight
 the water poisoners
 the heinous uprooters of flowering shrubbery.
 Begone before our wrath overcomes our peaceful nature.
 
-#(HOSTILE_SPACE_HELLO_2)	supox005.ogg
+#(HOSTILE_SPACE_HELLO_2)	supox-005.ogg
 You diandrous malefic vegetarians!
 Your visage darkens our skies.
 May your rotting bodies provide our nutrients for kinder generations.
 We ignore you, as we ignore the pale, tasteless light of your wan home star.
 
-#(ALLIED_HOMEWORLD_HELLO_1)	supox006.ogg
+#(ALLIED_HOMEWORLD_HELLO_1)	supox-006.ogg
 Hail Fellow and Well Met. We trust that your seed distributes widely.
 
-#(ALLIED_HOMEWORLD_HELLO_2)	supox007.ogg
+#(ALLIED_HOMEWORLD_HELLO_2)	supox-007.ogg
 Be Welcome Friendly Allies. We hope that the Good Green Sunlight warms you.
 
-#(ALLIED_HOMEWORLD_HELLO_3)	supox008.ogg
+#(ALLIED_HOMEWORLD_HELLO_3)	supox-008.ogg
 Greetings and Salutations. May fertilizer flow on your roots.
 
-#(ALLIED_HOMEWORLD_HELLO_4)	supox009.ogg
+#(ALLIED_HOMEWORLD_HELLO_4)	supox-009.ogg
 Hello there Good Folk. May your flowers always be pollinated.
 
 #(i_am0)
@@ -40,7 +40,7 @@ I am Captain
 #(i_am1)
  from Earth. We come in peace.
 
-#(WE_ARE_SUPOX)	supox010.ogg
+#(WE_ARE_SUPOX)	supox-010.ogg
 I am Captain Ala-la'la. We come in peace.
 
 #(my_ship0)	 
@@ -49,7 +49,7 @@ Our starship is called
 #(my_ship1)
 .
 
-#(OUR_SHIP)	supox011.ogg
+#(OUR_SHIP)	supox-011.ogg
 Our starship is called the Tender Shoot.
 
 #(from_alliance0)
@@ -58,13 +58,13 @@ We are
 #(from_alliance1)
  From Earth.
 
-#(FROM_SUPOX)	supox012.ogg
+#(FROM_SUPOX)	supox-012.ogg
 We are the Supox Utricularia from Earth.
 
 #(are_you_copying)
 You're from Earth??? Hey! Are you just copying whatever I say?
 
-#(YEAH_SORRY)	supox013.ogg
+#(YEAH_SORRY)	supox-013.ogg
 Oh yes, we apologize for the confusion, our homeworld is also called `Earth',
 or more properly `Vlik', which means `Perfectly Good and Nutritious Dirt'.
 `Earth' is pretty close, is it not?
@@ -72,7 +72,7 @@ or more properly `Vlik', which means `Perfectly Good and Nutritious Dirt'.
 #(why_copy)
 Why do you copy our speech and mannerisms?
 
-#(SYMBIOTS)	supox014.ogg
+#(SYMBIOTS)	supox-014.ogg
 We learn and we adapt. We are symbionts.
 Our first step in making friends is always to copy them.
 This is our idiom.
@@ -80,7 +80,7 @@ This is our idiom.
 #(tell_us_of_your_species)
 Symbionts, how interesting! Please tell us more.
 
-#(OUR_SPECIES)	supox015.ogg
+#(OUR_SPECIES)	supox-015.ogg
 Our kind evolved on a beautiful planet orbiting the wonderfully green-hued star, Root.
 From the canopy of the great jungles to the shores of the azure seas
 Our species has flowered and grown well.
@@ -90,14 +90,14 @@ who supplied us with nutrients while we supplied them with reproductive assistan
 #(plants_arent_intelligent)
 C'mon, plants can't be intelligent! Our top scientists and science fiction writers have proven it!
 
-#(PROVES_WERE_SPECIAL)	supox016.ogg
+#(PROVES_WERE_SPECIAL)	supox-016.ogg
 Yes. This has been confirmed by our people as well. Strange, is it not?
 Many of our people regard this inconsistency as proof of our divine origin.
 
 #(anyone_around_here)
 So this is your neighborhood, huh? Any other sentients nearby?
 
-#(UTWIG_NEARBY)	supox017.ogg
+#(UTWIG_NEARBY)	supox-017.ogg
 We share this region of space with the Utwig, the Wearers of Masks.
 We have a strong cultural bond with the Utwig.
 They have been the foundation around which we have grown our starfaring culture.
@@ -109,7 +109,7 @@ Usually they are most festive and fun.
 #(what_relation_to_utwig)
 Are the Utwig friends of yours?
 
-#(UTWIG_ALLIES)	supox018.ogg
+#(UTWIG_ALLIES)	supox-018.ogg
 Oh yes, we have a strong cultural bond with the Utwig.
 They have been the foundation around which we have grown our starfaring culture.
 We are not only allies, but we are also friends.
@@ -120,13 +120,13 @@ Usually they are most festive and fun.
 #(whats_wrong_with_utwig)
 Oh dear, what has caused the Utwig such distress?
 
-#(BROKE_ULTRON)	supox019.ogg
+#(BROKE_ULTRON)	supox-019.ogg
 They broke their Ultron.
 
 #(whats_ultron)
 Ultron? What's an Ultron?
 
-#(TAKE_ULTRON)	supox020.ogg
+#(TAKE_ULTRON)	supox-020.ogg
 The Druuge, the cruel, sallow trading race who sold the device to the Utwig
 called the device the `Ultron' and claimed that it would give the Utwig super-powers.
 Unfortunately, the Utwig believed the Druuge and bought the Ultron.
@@ -145,7 +145,7 @@ Here! You take the Ultron, maybe you can do something with it.
 #(what_do_i_do_now)
 Er, ah, thanks, I think. What do I do with it?
 
-#(FIX_IT)	supox021.ogg
+#(FIX_IT)	supox-021.ogg
 We thought that if we could get the Ultron working again, it would cheer them up.
 So we tried to figure out how to fix the darn thing
 or at least get some of the flashing bits working again.
@@ -157,21 +157,21 @@ Then you could give it to the Utwig and maybe they wouldn't be so depressed.
 #(thanks_now_we_eat_you)
 Why thanks. You know you remind me of Broccoli, and I'm rather partial to Broccoli with a light cheese sauce.
 
-#(HIDEOUS_MONSTERS)	supox022.ogg
+#(HIDEOUS_MONSTERS)	supox-022.ogg
 Arrgh, you hideous monsters, vegetarians, defilers of the leaf, uprooters.
 Begone, or we shall uproot you!
 
 #(got_fixed_ultron)
 This time we are sure we have repaired the Ultron completely.
 
-#(GOOD_GIVE_TO_UTWIG)	supox023.ogg
+#(GOOD_GIVE_TO_UTWIG)	supox-023.ogg
 Oh Wonderful, Oh Rapturous Light of the Green Sun!
 Please convey it immediately to the Utwig, they will be elated!
 
 #(look_i_repaired_lots)
 We hope we have repaired the Ultron completely.
 
-#(ALMOST_THERE)	supox024.ogg
+#(ALMOST_THERE)	supox-024.ogg
 Yes! Yes!
 But, but no... it is still not quite as brightly lit as it once was.
 One more repair job should do it!
@@ -179,7 +179,7 @@ One more repair job should do it!
 #(look_i_slightly_repaired)
 We have fixed the Ultron.
 
-#(GREAT_DO_MORE)	supox025.ogg
+#(GREAT_DO_MORE)	supox-025.ogg
 Great! Great!
 Oh, dear
 It is true that you have repaired the Ultron... somewhat
@@ -189,17 +189,17 @@ Your efforts are valid, merely incomplete.
 #(where_get_repairs)
 Where do you think I can find repair materials for this `Ultron' thing?
 
-#(ANCIENT_RHYME)	supox026.ogg
+#(ANCIENT_RHYME)	supox-026.ogg
 Perhaps a good place to start would be the Druuge
 since they were the ones who sold it to the Utwig in the first place.
 
 #(bye_neutral)
 We're off now! See you later, Supox friends.
 
-#(GOODBYE_NEUTRAL)	supox027.ogg
+#(GOODBYE_NEUTRAL)	supox-027.ogg
 May Sunlight and Water always fall upon you.
 
-#(ABOUT_BATTLE)	supox028.ogg
+#(ABOUT_BATTLE)	supox-028.ogg
 Hello Captain.
 We fought the Kohr-Ah; our buddies the Utwig did some pretty serious damage
 to several fleets, but we mostly just watched helplessly.
@@ -207,37 +207,37 @@ The Ur-Quan did not seem to realize that we were helping them
 and as often as not they attacked us too!
 We may have delayed the outcome of the fight, but it still seems clear that the Kohr-Ah are winning.
 
-#(HELLO_BEFORE_KOHRAH_SPACE_1)	supox029.ogg
+#(HELLO_BEFORE_KOHRAH_SPACE_1)	supox-029.ogg
 Hello Fellow Warriors. We go to uproot our enemies!
 
-#(HELLO_BEFORE_KOHRAH_SPACE_2)	supox030.ogg
+#(HELLO_BEFORE_KOHRAH_SPACE_2)	supox-030.ogg
 Greetings Garden Guardians. We shall block the Kohr-Ah's sunlight and frost their leaves!
 
-#(HELLO_DURING_KOHRAH_SPACE_1)	supox031.ogg
+#(HELLO_DURING_KOHRAH_SPACE_1)	supox-031.ogg
 Human! Your presence here is comforting, but perhaps you had better leave the area
 our combat with the Kohr-Ah is fierce, and you could be destroyed.
 
-#(HELLO_DURING_KOHRAH_SPACE_2)	supox032.ogg
+#(HELLO_DURING_KOHRAH_SPACE_2)	supox-032.ogg
 Greetings again, Captain. We hope you thrive.
 We fight on bravely, but the course of events does not appear to be moving in our favor.
 
-#(HELLO_AFTER_KOHRAH_SPACE_1)	supox033.ogg
+#(HELLO_AFTER_KOHRAH_SPACE_1)	supox-033.ogg
 Ah, our human friend... we are so tired... the battle so difficult...
 
-#(HELLO_AFTER_KOHRAH_SPACE_2)	supox034.ogg
+#(HELLO_AFTER_KOHRAH_SPACE_2)	supox-034.ogg
 Hello again faunal comrade. We are spent, and must grow new bark.
 
 #(whats_up_after_space)
 Tell me more about the battle with the Kohr-Ah.
 
-#(GENERAL_INFO_AFTER_SPACE_1)	supox035.ogg
+#(GENERAL_INFO_AFTER_SPACE_1)	supox-035.ogg
 We met the Kohr-Ah at the sides of our Utwig allies.
 The destructive power of the black ships was greater than anticipated
 however we did eventually develop tactics in conjunction with the Utwig
 that were effective against them. We destroyed dozens of their battleships!
 Alas, we lost many of our brothers to the spinning blades and the fiery ring.
 
-#(GENERAL_INFO_AFTER_SPACE_2)	supox036.ogg
+#(GENERAL_INFO_AFTER_SPACE_2)	supox-036.ogg
 As dictated by the Utwig, our policy was to focus our weapons on the Kohr-Ah only.
 In this way, we would reduce the strength of the black fleet, thus evening the balance of power
 between the Ur-Quan and the Kohr-Ah. The plan worked well, save for one slight factor.
@@ -247,30 +247,30 @@ and fired upon our vessels at every opportunity.
 #(what_now_after_space)
 What do you think we should do now?
 
-#(DO_THIS_AFTER_SPACE)	supox037.ogg
+#(DO_THIS_AFTER_SPACE)	supox-037.ogg
 We are but humble plants, mere saplings in knowledge of such things.
 If you seek wisdom, visit the Utwig Proctors.
 
 #(bye_after_space)
 Goodbye Supox. Thanks for everything.
 
-#(GOODBYE_AFTER_SPACE)	supox038.ogg
+#(GOODBYE_AFTER_SPACE)	supox-038.ogg
 Fare thee well.
 
 #(whats_up_before_space)
 So what are you doing?
 
-#(GENERAL_INFO_BEFORE_SPACE_1)	supox039.ogg
+#(GENERAL_INFO_BEFORE_SPACE_1)	supox-039.ogg
 Our Utwig allies have instructed us to prepare for combat, and so we make ready!
 Our destination is Antares, where we shall face the Kohr-Ah in battle!
 
-#(GENERAL_INFO_BEFORE_SPACE_2)	supox040.ogg
+#(GENERAL_INFO_BEFORE_SPACE_2)	supox-040.ogg
 We make our way to an epic confrontation with the Kohr-Ah!
 
 #(what_now_before_space)
 So what should we do now?
 
-#(DO_THIS_BEFORE_SPACE)	supox041.ogg
+#(DO_THIS_BEFORE_SPACE)	supox-041.ogg
 We must defer to the Utwig, who have superior knowledge of such things.
 They specifically instructed us to inform you
 that you should NOT endanger yourself by joining us in this battle.
@@ -279,7 +279,7 @@ Your destiny lies along a more subtle though crucial course.
 #(bye_before_space)
 G'bye plant dudes.
 
-#(GOODBYE_BEFORE_SPACE)	supox042.ogg
+#(GOODBYE_BEFORE_SPACE)	supox-042.ogg
 Wish us luck, human.
 
 #(how_went_war)
@@ -288,7 +288,7 @@ What happened at Antares? Describe the struggle.
 #(how_goes_war)
 How fares the battle against the Kohr-Ah?
 
-#(BATTLE_HAPPENS_1)	supox043.ogg
+#(BATTLE_HAPPENS_1)	supox-043.ogg
 Fearsome, human, fearsome! We have not yet evolved tactics
 which are useful against the Kohr-Ah Marauder vessels.
 The dark ships launch spinning wheels of metal... we are mown down like
@@ -297,26 +297,26 @@ ports open up around its perimeter, jetting forth gouts of flaming plasma.
 Not only do these flames melt through our hulls like a scythe
 but they are also an effective defense against our glob weapon.
 
-#(BATTLE_HAPPENS_2)	supox044.ogg
+#(BATTLE_HAPPENS_2)	supox-044.ogg
 We are having greater success, human, praise the light!
 We have learned that we must work in tandem with our Utwig allies
 letting them absorb the brunt of the Kohr-Ah firepower on their shields
 while we play the role of opportunist, striking only when the Kohr-Ah is de-energized
 and then retreating to permit our Utwig allies to renew the cycle.
 
-#(FLEET_ON_WAY)	supox045.ogg
+#(FLEET_ON_WAY)	supox-045.ogg
 Even as we speak, the Utwig and Supox fleets streak toward Horologii
 where they hope to strike a major blow against the Kohr-Ah forces.
 
 #(learn_new_info)
 Have your fighting forces learned anything I should know?
 
-#(NO_NEW_INFO)	supox046.ogg
+#(NO_NEW_INFO)	supox-046.ogg
 No, not as yet. Although the region of space they are fighting in is new to us
 our vessels are not engaging in any form of research
 reducing the Kohr-Ah's strength is their prime directive.
 
-#(SAMATRA)	supox047.ogg
+#(SAMATRA)	supox-047.ogg
 During the battle, one of our ships intercepted a signal
 from an Ur-Quan vessel to a Kohr-Ah ship.
 The contents of the message was simple, `Sa-Matra'.
@@ -326,11 +326,11 @@ entered HyperSpace and sped off in the direction of the Crateris stars.
 #(what_now_homeworld)
 So now what do we do?
 
-#(HOPE_KILL_EACH_OTHER)	supox048.ogg
+#(HOPE_KILL_EACH_OTHER)	supox-048.ogg
 We can only hope that the opposing forces of the Ur-Quan and Kohr-Ah
 are sufficiently even in power, that they reduce each other to insignificance.
 
-#(UP_TO_YOU)	supox049.ogg
+#(UP_TO_YOU)	supox-049.ogg
 Our hopes that the Ur-Quan and Kohr-Ah would destroy each other have been in vain.
 Once victorious, the Kohr-Ah will proceed on their grim cruise of destruction.
 I believe you and your people are our only hope now.
@@ -339,21 +339,21 @@ You must find some way to stop the Kohr-Ah.
 #(can_you_help)
 Two leaves pull water from the same root.
 
-#(HOW_HELP)	supox050.ogg
+#(HOW_HELP)	supox-050.ogg
 Such wisdom! Your meanings run deep, we ponder their significance.
 Ah, yes! You wish us to give you assistance... such as our fighting ships!
 
-#(DONT_NEED)	supox051.ogg
+#(DONT_NEED)	supox-051.ogg
 Yet, you seem to possess a fleet in concert with your need.
 We will reserve what few ships we have left for our final defense against the Kohr-Ah.
 
-#(HAVE_4_SHIPS)	supox052.ogg
+#(HAVE_4_SHIPS)	supox-052.ogg
 Your words have merit. We shall dispatch a pod of our starships to join your fleet.
 
 #(give_info)
 Is there any knowledge which you alone possess?
 
-#(GOOD_HINTS)	supox053.ogg
+#(GOOD_HINTS)	supox-053.ogg
 Knowledge is the purview of the Utwig. We Supox are but the effectuators.
 In truth though, we have learned a fact or two unknown to others.
 We did not think anyone would care in the slightest, but since you ask, listen.
@@ -372,14 +372,14 @@ Strange, is it not?
 #(how_is_ultron)
 So how are the Utwig liking their Ultron?
 
-#(ULTRON_IS_GREAT)	supox054.ogg
+#(ULTRON_IS_GREAT)	supox-054.ogg
 They are beyond ecstatic, well into the range of rapture or perhaps even pegged on epiphany.
 If you wish to learn the true depth of their joy, talk with them yourself.
 
 #(bye_allied_homeworld)
 Goodbye Leafy Ones.
 
-#(GOODBYE_ALLIED_HOMEWORLD)	supox055.ogg
+#(GOODBYE_ALLIED_HOMEWORLD)	supox-055.ogg
 Farewell Friendly Folk.
 
 #(name_1)
@@ -396,7 +396,7 @@ The Empire of
 #(name_41)
  
 
-#(OUT_TAKES)	supox056.ogg
+#(OUT_TAKES)	supox-056.ogg
 Whew! I'm glad that's all over.
 That was tough, playing second banana to the Utwig.
 Now I'm hungry, but I'm sick and tired of sunlight, sunlight, sunlight!

@@ -1,64 +1,64 @@
-#(WE_ARE0)	zoqfo000.ogg
+#(WE_ARE0)	zoqfotpik-000.ogg
 Attention starship!
 We are the Zoq-Fot-Pik.
-#(WE_ARE1)	zoqfo001.ogg
+#(WE_ARE1)	zoqfotpik-001.ogg
 Make no hostile actions!
-#(WE_ARE2)	zoqfo002.ogg
+#(WE_ARE2)	zoqfotpik-002.ogg
 We come in peace, and with good will.
-#(WE_ARE3)	zoqfo003.ogg
+#(WE_ARE3)	zoqfotpik-003.ogg
 But if you make one false move, you're vapor!
-#(WE_ARE4)	zoqfo004.ogg
+#(WE_ARE4)	zoqfotpik-004.ogg
 Don't worry, my companion is just a bit nervous...
-#(WE_ARE5)	zoqfo005.ogg
+#(WE_ARE5)	zoqfotpik-005.ogg
 No, I'm not!
-#(WE_ARE6)	zoqfo006.ogg
+#(WE_ARE6)	zoqfotpik-006.ogg
 ...and argumentative.
-#(WE_ARE7)	zoqfo007.ogg
+#(WE_ARE7)	zoqfotpik-007.ogg
 No, I'm not.
 
-#(SCOUT_HELLO0)	zoqfo008.ogg
+#(SCOUT_HELLO0)	zoqfotpik-008.ogg
 We are a scout vessel
 dispatched from our homeworld.
-#(SCOUT_HELLO1)	zoqfo009.ogg
+#(SCOUT_HELLO1)	zoqfotpik-009.ogg
 We have travelled far
 through hostile, uncharted space
 to find you.
 We hail from the green dwarf star at coordinates
 ziggerfau-gerrrnuf, Ah-ah, Pahoy-hoy.
-#(SCOUT_HELLO2)	zoqfo010.ogg
+#(SCOUT_HELLO2)	zoqfotpik-010.ogg
 No, you idiot, in their coordinate system!
-#(SCOUT_HELLO3)	zoqfo011.ogg
+#(SCOUT_HELLO3)	zoqfotpik-011.ogg
 Oh! Er
 Coordinates 400.0 : 543.7.
 
-#(INIT_HOME_HELLO0)	zoqfo012.ogg
+#(INIT_HOME_HELLO0)	zoqfotpik-012.ogg
 You have arrived at our homeworld.
-#(INIT_HOME_HELLO1)	zoqfo013.ogg
+#(INIT_HOME_HELLO1)	zoqfotpik-013.ogg
 And we've got a billion ships here!
-#(INIT_HOME_HELLO2)	zoqfo014.ogg
+#(INIT_HOME_HELLO2)	zoqfotpik-014.ogg
 We are fortunate that you have found us in our time of need.
-#(INIT_HOME_HELLO3)	zoqfo015.ogg
+#(INIT_HOME_HELLO3)	zoqfotpik-015.ogg
 So don't even think of trying to attack us!
 
 #(which_fot)
 Which one of you creatures is the Fot?
 
-#(HE_IS0)	zoqfo016.ogg
+#(HE_IS0)	zoqfotpik-016.ogg
 He is.
-#(HE_IS1)	zoqfo017.ogg
+#(HE_IS1)	zoqfotpik-017.ogg
 No, she is!
-#(HE_IS2)	zoqfo018.ogg
+#(HE_IS2)	zoqfotpik-018.ogg
 No, I'm not!
-#(HE_IS3)	zoqfo019.ogg
+#(HE_IS3)	zoqfotpik-019.ogg
 Yes, you are.
-#(HE_IS4)	zoqfo020.ogg
+#(HE_IS4)	zoqfotpik-020.ogg
 Cripes! We've been through this a million times!
-#(HE_IS5)	zoqfo021.ogg
+#(HE_IS5)	zoqfotpik-021.ogg
 That doesn't change anything. You're the Fot!
-#(HE_IS6)	zoqfo022.ogg
+#(HE_IS6)	zoqfotpik-022.ogg
 Faugh!
 Well, Captain, as you can see, this is a point of some contention.
-#(HE_IS7)	zoqfo023.ogg
+#(HE_IS7)	zoqfotpik-023.ogg
 Fot!
 
 #(we_are_vindicator0)
@@ -68,188 +68,188 @@ We are
 #(we_are_vindicator2)
  from Earth.  What are your intentions?
 
-#(WE_GLAD0)	zoqfo024.ogg
+#(WE_GLAD0)	zoqfotpik-024.ogg
 Hurrah!
 Then we've finally found our saviors!
-#(WE_GLAD1)	zoqfo025.ogg
+#(WE_GLAD1)	zoqfotpik-025.ogg
 Maybe.
-#(WE_GLAD2)	zoqfo026.ogg
+#(WE_GLAD2)	zoqfotpik-026.ogg
 At last, our search is over!
 It is just as the great Crystal ones promised!
-#(WE_GLAD3)	zoqfo027.ogg
+#(WE_GLAD3)	zoqfotpik-027.ogg
 They look sneaky.
 I think they're lying.
-#(WE_GLAD4)	zoqfo028.ogg
+#(WE_GLAD4)	zoqfotpik-028.ogg
 Quiet, fool!
 Can't you see our nightmare is over!?
 This ship is from the Great Crystal One's fabled Alliance
 the Alliance of Free Stars!
-#(WE_GLAD5)	zoqfo029.ogg
+#(WE_GLAD5)	zoqfotpik-029.ogg
 Maybe.
 
 #(quiet_toadies)
 SILENCE BLATHERING TOADIES! We are your new masters.
 
-#(TOLD_YOU0)	zoqfo030.ogg
+#(TOLD_YOU0)	zoqfotpik-030.ogg
 We are disappointed.
-#(TOLD_YOU1)	zoqfo031.ogg
+#(TOLD_YOU1)	zoqfotpik-031.ogg
 See! I TOLD you!
-#(TOLD_YOU2)	zoqfo032.ogg
+#(TOLD_YOU2)	zoqfotpik-032.ogg
 We had hoped that our species could be friends.
-#(TOLD_YOU3)	zoqfo033.ogg
+#(TOLD_YOU3)	zoqfotpik-033.ogg
 Never in a million years! Just look at their beady eyes!
-#(TOLD_YOU4)	zoqfo034.ogg
+#(TOLD_YOU4)	zoqfotpik-034.ogg
 But in the spirit of understanding...
-#(TOLD_YOU5)	zoqfo035.ogg
+#(TOLD_YOU5)	zoqfotpik-035.ogg
 Oh, no! You're not even considering...
-#(TOLD_YOU6)	zoqfo036.ogg
+#(TOLD_YOU6)	zoqfotpik-036.ogg
 ...We will forgive you this transgression.
-#(TOLD_YOU7)	zoqfo037.ogg
+#(TOLD_YOU7)	zoqfotpik-037.ogg
 Sheesh! What a pushover you are!
 
 #(your_race)
 Before we go on, can you tell us more about your species?
 
-#(YEARS_AGO0)	zoqfo038.ogg
+#(YEARS_AGO0)	zoqfotpik-038.ogg
 In our ancient past, four species evolved intelligence on our homeworld.
-#(YEARS_AGO1)	zoqfo039.ogg	
+#(YEARS_AGO1)	zoqfotpik-039.ogg	
 Simultaneously.
-#(YEARS_AGO2)	zoqfo040.ogg
+#(YEARS_AGO2)	zoqfotpik-040.ogg
 They were the Zoq...
-#(YEARS_AGO3)	zoqfo041.ogg
+#(YEARS_AGO3)	zoqfotpik-041.ogg
 ...the Fot...
-#(YEARS_AGO4)	zoqfo042.ogg
+#(YEARS_AGO4)	zoqfotpik-042.ogg
 ...the Pik...
-#(YEARS_AGO5)	zoqfo043.ogg
+#(YEARS_AGO5)	zoqfotpik-043.ogg
 ...and the Zebranky.
-#(YEARS_AGO6)	zoqfo044.ogg
+#(YEARS_AGO6)	zoqfotpik-044.ogg
 We three, the Zoq, Fot, and Pik evolved in such a way
 as to acquire sustenance from many sources...
-#(YEARS_AGO7)	zoqfo045.ogg
+#(YEARS_AGO7)	zoqfotpik-045.ogg
 ...from airborne zooplankton...
-#(YEARS_AGO8)	zoqfo046.ogg
+#(YEARS_AGO8)	zoqfotpik-046.ogg
 ...from solar and ambient energies...
-#(YEARS_AGO9)	zoqfo047.ogg
+#(YEARS_AGO9)	zoqfotpik-047.ogg
 ...and from rocky fungal clingers.
-#(YEARS_AGO10)	zoqfo048.ogg
+#(YEARS_AGO10)	zoqfotpik-048.ogg
 Our favorite!
-#(YEARS_AGO11)	zoqfo049.ogg
+#(YEARS_AGO11)	zoqfotpik-049.ogg
 The Zebranky also consumed a variety of foods
 namely: the Zoq
 the Fot
 and the Pik.
-#(YEARS_AGO12)	zoqfo050.ogg
+#(YEARS_AGO12)	zoqfotpik-050.ogg
 To survive the predations of the Zebranky
 we banded together
 annihilated the Zebranky...
-#(YEARS_AGO13)	zoqfo051.ogg
+#(YEARS_AGO13)	zoqfotpik-051.ogg
 ...and formed the cooperative union you now encounter.
 
 #(where_from)
 What do you seek from us?
 
-#(TRAVELED_FAR0)	zoqfo052.ogg
+#(TRAVELED_FAR0)	zoqfotpik-052.ogg
 We are a relatively peaceful group of species.
-#(TRAVELED_FAR1)	zoqfo053.ogg
+#(TRAVELED_FAR1)	zoqfotpik-053.ogg
 Unless we're angry.
-#(TRAVELED_FAR2)	zoqfo054.ogg
+#(TRAVELED_FAR2)	zoqfotpik-054.ogg
 So we find ourselves in need of help.
-#(TRAVELED_FAR3)	zoqfo055.ogg
+#(TRAVELED_FAR3)	zoqfotpik-055.ogg
 We only need a LITTLE!
-#(TRAVELED_FAR4)	zoqfo056.ogg
+#(TRAVELED_FAR4)	zoqfotpik-056.ogg
 Because of our desperate situation.
-#(TRAVELED_FAR5)	zoqfo057.ogg
+#(TRAVELED_FAR5)	zoqfotpik-057.ogg
 `Desperate' is too strong a word.
 I think `troublesome' is more like it.
 
 #(what_emergency)
 What `nightmare' are you talking about? What's the matter?
 
-#(UNDER_ATTACK0)	zoqfo058.ogg
+#(UNDER_ATTACK0)	zoqfotpik-058.ogg
 Our planets are under attack from an invading horde!
-#(UNDER_ATTACK1)	zoqfo059.ogg
+#(UNDER_ATTACK1)	zoqfotpik-059.ogg
 We do not know who they are, or why they are here.
-#(UNDER_ATTACK2)	zoqfo060.ogg
+#(UNDER_ATTACK2)	zoqfotpik-060.ogg
 We are being blown to bits.
-#(UNDER_ATTACK3)	zoqfo061.ogg
+#(UNDER_ATTACK3)	zoqfotpik-061.ogg
 Fleets of alien ships appear out of nowhere
 then unleash terrible destructive energies.
-#(UNDER_ATTACK4)	zoqfo062.ogg
+#(UNDER_ATTACK4)	zoqfotpik-062.ogg
 Fortunately...
-#(UNDER_ATTACK5)	zoqfo063.ogg
+#(UNDER_ATTACK5)	zoqfotpik-063.ogg
 ...they release these energies on each other.
-#(UNDER_ATTACK6)	zoqfo064.ogg
+#(UNDER_ATTACK6)	zoqfotpik-064.ogg
 Unfortunately...
-#(UNDER_ATTACK7)	zoqfo065.ogg
+#(UNDER_ATTACK7)	zoqfotpik-065.ogg
 ...they favor combat near strong gravity wells.
 Their stray shots regularly strike the surface of our planets
 often with tragic results.
-#(UNDER_ATTACK8)	zoqfo066.ogg
+#(UNDER_ATTACK8)	zoqfotpik-066.ogg
 Fortunately...
-#(UNDER_ATTACK9)	zoqfo067.ogg
+#(UNDER_ATTACK9)	zoqfotpik-067.ogg
 ...they have never found our homeworld, only our colony planets.
-#(UNDER_ATTACK10)	zoqfo068.ogg
+#(UNDER_ATTACK10)	zoqfotpik-068.ogg
 Unfortunately...
-#(UNDER_ATTACK11)	zoqfo069.ogg
+#(UNDER_ATTACK11)	zoqfotpik-069.ogg
 ...all of our colonies have perished as a consequence.
 
 #(tough_luck)
 Hey, space is a tough place where wimps eat flaming plasma death.
 
-#(NOT_HELPFUL0)	zoqfo070.ogg
+#(NOT_HELPFUL0)	zoqfotpik-070.ogg
 Oh, dear.
-#(NOT_HELPFUL1)	zoqfo071.ogg
+#(NOT_HELPFUL1)	zoqfotpik-071.ogg
 I told you he looked like a creep!
-#(NOT_HELPFUL2)	zoqfo072.ogg
+#(NOT_HELPFUL2)	zoqfotpik-072.ogg
 No! We must try to understand.
 His ways are not like our own.
-#(NOT_HELPFUL3)	zoqfo073.ogg
+#(NOT_HELPFUL3)	zoqfotpik-073.ogg
 You mean his WHOLE SPECIES are jerks?
-#(NOT_HELPFUL4)	zoqfo074.ogg
+#(NOT_HELPFUL4)	zoqfotpik-074.ogg
 Let us give him one more chance.
-#(NOT_HELPFUL5)	zoqfo075.ogg
+#(NOT_HELPFUL5)	zoqfotpik-075.ogg
 Just look at him! He's a killer, I tell you!
 
 #(what_look_like)
 Who is attacking you? What do they look like?
 
-#(LOOK_LIKE0)	zoqfo076.ogg
+#(LOOK_LIKE0)	zoqfotpik-076.ogg
 Some of the vessels are huge, green battleships
 which launch wave after wave of small fighters.
-#(LOOK_LIKE1)	zoqfo077.ogg
+#(LOOK_LIKE1)	zoqfotpik-077.ogg
 The other ships are black as space
 and their hulls are carved with strange alien writing.
-#(LOOK_LIKE2)	zoqfo078.ogg
+#(LOOK_LIKE2)	zoqfotpik-078.ogg
 In combat the two ships seem evenly matched.
-#(LOOK_LIKE3)	zoqfo079.ogg
+#(LOOK_LIKE3)	zoqfotpik-079.ogg
 One fires blasts of fusion energy
 while the other launches spinning projectiles.
 
 #(valuable_info)
 You have given us valuable information. Goodbye.
 
-#(GOODBYE0)	zoqfo080.ogg
+#(GOODBYE0)	zoqfotpik-080.ogg
 If you must go now, we understand.
-#(GOODBYE1)	zoqfo081.ogg
+#(GOODBYE1)	zoqfotpik-081.ogg
 That's it?! You're leaving?!!
-#(GOODBYE2)	zoqfo082.ogg
+#(GOODBYE2)	zoqfotpik-082.ogg
 We hope that on your next visit
 we can establish a mutual assistance pact.
-#(GOODBYE3)	zoqfo083.ogg
+#(GOODBYE3)	zoqfotpik-083.ogg
 I can't believe that he's just leaving us here!
 ...what a jerk.
 
 #(all_very_interesting)
 Yes, yes, that's all very interesting, but now we are going to attack you!
 
-#(SEE_TOLD_YOU0)	zoqfo084.ogg
+#(SEE_TOLD_YOU0)	zoqfotpik-084.ogg
 What?
-#(SEE_TOLD_YOU1)	zoqfo085.ogg
+#(SEE_TOLD_YOU1)	zoqfotpik-085.ogg
 See! I told you.!...
 ...but would you listen... NO!
-#(SEE_TOLD_YOU2)	zoqfo086.ogg
+#(SEE_TOLD_YOU2)	zoqfotpik-086.ogg
 I don't understand!
-#(SEE_TOLD_YOU3)	zoqfo087.ogg
+#(SEE_TOLD_YOU3)	zoqfotpik-087.ogg
 So what does all your nicey-nice to the alien get us?
 Nothing! That's what!
 You should have done what I said
@@ -258,23 +258,23 @@ and told him we were the Precursors.
 #(how_can_i_help)
 We want to help. What can we do?
 
-#(ALLY_WITH_US0)	zoqfo088.ogg
+#(ALLY_WITH_US0)	zoqfotpik-088.ogg
 We would like to establish
 a formal mutual-assistance pact
 with your species.
-#(ALLY_WITH_US1)	zoqfo089.ogg
+#(ALLY_WITH_US1)	zoqfotpik-089.ogg
 One of those `You scratch my vent
 I'll scratch your flipper' set-ups.
-#(ALLY_WITH_US2)	zoqfo090.ogg
+#(ALLY_WITH_US2)	zoqfotpik-090.ogg
 And as a sign of our good faith
 we will provide you with skilled Captains
 and plans for building our `Stinger' starships.
-#(ALLY_WITH_US3)	zoqfo091.ogg
+#(ALLY_WITH_US3)	zoqfotpik-091.ogg
 In return, if the bad guys find our homeworld
 you'll rush over here and vaporize 'em.
-#(ALLY_WITH_US4)	zoqfo092.ogg
+#(ALLY_WITH_US4)	zoqfotpik-092.ogg
 That is, essentially, correct.
-#(ALLY_WITH_US5)	zoqfo093.ogg
+#(ALLY_WITH_US5)	zoqfotpik-093.ogg
 Great deal, eh?
 You can't afford to pass it up!
 So what do you say?
@@ -282,48 +282,48 @@ So what do you say?
 #(decide_later)
 Uh... I need to consult with our, er... our Grand-High Poobah!
 
-#(PLEASE_HURRY0)	zoqfo094.ogg
+#(PLEASE_HURRY0)	zoqfotpik-094.ogg
 Please hurry back with word from your Poobah.
 Millions of lives are at stake!
-#(PLEASE_HURRY1)	zoqfo095.ogg
+#(PLEASE_HURRY1)	zoqfotpik-095.ogg
 Not the least of which is mine.
 
-#(EMMISSARIES0)	zoqfo096.ogg
+#(EMMISSARIES0)	zoqfotpik-096.ogg
 These are the words we have prayed for!
-#(EMMISSARIES1)	zoqfo097.ogg
+#(EMMISSARIES1)	zoqfotpik-097.ogg
 Hey! This trip's not a waste after all!
-#(EMMISSARIES2)	zoqfo098.ogg
+#(EMMISSARIES2)	zoqfotpik-098.ogg
 More than anything, we seek an ally
 to help us survive in this hostile universe.
-#(EMMISSARIES3)	zoqfo099.ogg
+#(EMMISSARIES3)	zoqfotpik-099.ogg
 We are having some problems of that general nature.
-#(EMMISSARIES4)	zoqfo100.ogg
+#(EMMISSARIES4)	zoqfotpik-100.ogg
 But we are only emissaries.
 You must meet with our leaders.
 They are wiser... more powerful beings!
-#(EMMISSARIES5)	zoqfo101.ogg
+#(EMMISSARIES5)	zoqfotpik-101.ogg
 They look just like us, though.
-#(EMMISSARIES6)	zoqfo102.ogg
+#(EMMISSARIES6)	zoqfotpik-102.ogg
 Fly to the star called Alpha Tucanae.
 The planet closest to the sun is our home.
-#(EMMISSARIES7)	zoqfo103.ogg
+#(EMMISSARIES7)	zoqfotpik-103.ogg
 And if possible, hurry.
 
 #(sure)
 You are under attack by the Ur-Quan, our enemy as well.  Therefore, speaking for all the People of Earth, I accept your offer.
 
-#(WE_ALLY0)	zoqfo104.ogg
+#(WE_ALLY0)	zoqfotpik-104.ogg
 How wonderful!
-#(WE_ALLY1)	zoqfo105.ogg
+#(WE_ALLY1)	zoqfotpik-105.ogg
 Hurray!
-#(WE_ALLY2)	zoqfo106.ogg
+#(WE_ALLY2)	zoqfotpik-106.ogg
 How marvelous!
-#(WE_ALLY3)	zoqfo107.ogg
+#(WE_ALLY3)	zoqfotpik-107.ogg
 Yee-ha!
-#(WE_ALLY4)	zoqfo108.ogg
+#(WE_ALLY4)	zoqfotpik-108.ogg
 Captain, we shall begin fulfilling our commitment at once!
 We will begin transporting our officers to your base immediately!
-#(WE_ALLY5)	zoqfo109.ogg
+#(WE_ALLY5)	zoqfotpik-109.ogg
 Why, heck!
 Maybe I'll even make the trip to your planet!
 I'd make a good starship captain, Captain!
@@ -334,7 +334,7 @@ with a thrusting stinger tongue attack!
 #(never)
 What? Protect you failures? No way! You're too lame!
 
-#(WE_ENEMIES0)	zoqfo110.ogg
+#(WE_ENEMIES0)	zoqfotpik-110.ogg
 We have revealed ourselves to you.
 We have held out our appendages to you in friendship!...
 ...and you have treated us like dead Zebrankys.
@@ -342,399 +342,399 @@ It takes a great deal to anger one of my species, Captain
 BUT YOU HAVE JUST SUCCEEDED!
 Attention Shipmates! Man the spray gun! Hoist the tongue!
 PREPARE FOR BATTLE!
-#(WE_ENEMIES1)	zoqfo111.ogg
+#(WE_ENEMIES1)	zoqfotpik-111.ogg
 Yeah.
 Let's toast those creeps!
 
-#(HOSTILE_HELLO_10)	zoqfo112.ogg
+#(HOSTILE_HELLO_10)	zoqfotpik-112.ogg
 Coming here was pointless, human.
 Our species are at war.
-#(HOSTILE_HELLO_11)	zoqfo113.ogg
+#(HOSTILE_HELLO_11)	zoqfotpik-113.ogg
 Right!
 Prepare to die, alien scum!
 
-#(HOSTILE_HELLO_20)	zoqfo114.ogg
+#(HOSTILE_HELLO_20)	zoqfotpik-114.ogg
 If you had allied with us, Captain
-#(HOSTILE_HELLO_21)	zoqfo115.ogg
+#(HOSTILE_HELLO_21)	zoqfotpik-115.ogg
 Which you didn't!
-#(HOSTILE_HELLO_22)	zoqfo116.ogg
+#(HOSTILE_HELLO_22)	zoqfotpik-116.ogg
 We would gladly tell you what we have learned
-#(HOSTILE_HELLO_23)	zoqfo117.ogg
+#(HOSTILE_HELLO_23)	zoqfotpik-117.ogg
 Which we won't!
-#(HOSTILE_HELLO_24)	zoqfo118.ogg
+#(HOSTILE_HELLO_24)	zoqfotpik-118.ogg
 Regarding the two warring alien factions
 the Ur-Quan and their siblings, the Kohr-Ah.
-#(HOSTILE_HELLO_25)	zoqfo119.ogg
+#(HOSTILE_HELLO_25)	zoqfotpik-119.ogg
 But now you'll NEVER know!
 
-#(HOSTILE_HELLO_30)	zoqfo120.ogg
+#(HOSTILE_HELLO_30)	zoqfotpik-120.ogg
 With whatever remaining forces we have
 we will do our best to destroy you.
-#(HOSTILE_HELLO_31)	zoqfo121.ogg
+#(HOSTILE_HELLO_31)	zoqfotpik-121.ogg
 Yeah! And she means it too!
 
-#(HOSTILE_HELLO_40)	zoqfo122.ogg
+#(HOSTILE_HELLO_40)	zoqfotpik-122.ogg
 Your villainy is beyond possible forgiveness!
 We are compelled by our anger to destroy you.
-#(HOSTILE_HELLO_41)	zoqfo123.ogg
+#(HOSTILE_HELLO_41)	zoqfotpik-123.ogg
 He's probably just gonna run away again.
 The coward!
 
-#(NEUTRAL_HOME_HELLO_10)	zoqfo124.ogg
+#(NEUTRAL_HOME_HELLO_10)	zoqfotpik-124.ogg
 Ah! It is the alien from the Chenjesu's Alliance!
-#(NEUTRAL_HOME_HELLO_11)	zoqfo125.ogg
+#(NEUTRAL_HOME_HELLO_11)	zoqfotpik-125.ogg
 Just look at those weapon pods on his ship.
-#(NEUTRAL_HOME_HELLO_12)	zoqfo126.ogg
+#(NEUTRAL_HOME_HELLO_12)	zoqfotpik-126.ogg
 We hope that during this visit
 we can make clear to your species
 the benefits of a mutual-assistance pact.
-#(NEUTRAL_HOME_HELLO_13)	zoqfo127.ogg
+#(NEUTRAL_HOME_HELLO_13)	zoqfotpik-127.ogg
 But we're also armed to the teeth
 so don't try stealing our atmosphere or anything sneaky like that!
 
-#(NEUTRAL_HOME_HELLO_20)	zoqfo128.ogg
+#(NEUTRAL_HOME_HELLO_20)	zoqfotpik-128.ogg
 Once more, the Alliance starship has returned.
-#(NEUTRAL_HOME_HELLO_21)	zoqfo129.ogg
+#(NEUTRAL_HOME_HELLO_21)	zoqfotpik-129.ogg
 Yeah. I bet THIS is the time they try to trick us.
-#(NEUTRAL_HOME_HELLO_22)	zoqfo130.ogg
+#(NEUTRAL_HOME_HELLO_22)	zoqfotpik-130.ogg
 Alien Captain, do you bring word from your Leaders?
-#(NEUTRAL_HOME_HELLO_23)	zoqfo131.ogg
+#(NEUTRAL_HOME_HELLO_23)	zoqfotpik-131.ogg
 If he does, I bet it's something like
 `Submit or be Eaten'!
 
-#(ALLIED_HOME_HELLO_10)	zoqfo132.ogg
+#(ALLIED_HOME_HELLO_10)	zoqfotpik-132.ogg
 Hello friend and ally!
-#(ALLIED_HOME_HELLO_11)	zoqfo133.ogg
+#(ALLIED_HOME_HELLO_11)	zoqfotpik-133.ogg
 Got any presents for us?
-#(ALLIED_HOME_HELLO_12)	zoqfo134.ogg
+#(ALLIED_HOME_HELLO_12)	zoqfotpik-134.ogg
 We hope your struggle against the Ur-Quan goes well!
-#(ALLIED_HOME_HELLO_13)	zoqfo135.ogg
+#(ALLIED_HOME_HELLO_13)	zoqfotpik-135.ogg
 Darn! He never gives us anything.
 
-#(ALLIED_HOME_HELLO_20)	zoqfo136.ogg
+#(ALLIED_HOME_HELLO_20)	zoqfotpik-136.ogg
 Welcome back to our world.
-#(ALLIED_HOME_HELLO_21)	zoqfo137.ogg
+#(ALLIED_HOME_HELLO_21)	zoqfotpik-137.ogg
 Yeah, welcome back to our world!
-#(ALLIED_HOME_HELLO_22)	zoqfo138.ogg
+#(ALLIED_HOME_HELLO_22)	zoqfotpik-138.ogg
 I just said that.
-#(ALLIED_HOME_HELLO_23)	zoqfo139.ogg
+#(ALLIED_HOME_HELLO_23)	zoqfotpik-139.ogg
 So? It doesn't mean I can't say it too.
 Besides, you always get to talk first.
 That's not fair!
-#(ALLIED_HOME_HELLO_24)	zoqfo140.ogg
+#(ALLIED_HOME_HELLO_24)	zoqfotpik-140.ogg
 Sorry, that's just the way it is.
-#(ALLIED_HOME_HELLO_25)	zoqfo141.ogg
+#(ALLIED_HOME_HELLO_25)	zoqfotpik-141.ogg
 Well why?! That doesn't make sense.
-#(ALLIED_HOME_HELLO_26)	zoqfo142.ogg
+#(ALLIED_HOME_HELLO_26)	zoqfotpik-142.ogg
 Look, don't ask me.
 I think it's something technical.
-#(ALLIED_HOME_HELLO_27)	zoqfo143.ogg
+#(ALLIED_HOME_HELLO_27)	zoqfotpik-143.ogg
 Yeah, right. I'm so sure.
 What a lame excuse.
 
-#(ALLIED_HOME_HELLO_30)	zoqfo144.ogg
+#(ALLIED_HOME_HELLO_30)	zoqfotpik-144.ogg
 Greetings Captain.
 What can your allies do for you?
-#(ALLIED_HOME_HELLO_31)	zoqfo145.ogg
+#(ALLIED_HOME_HELLO_31)	zoqfotpik-145.ogg
 Your favorite allies!
 
-#(ALLIED_HOME_HELLO_40)	zoqfo146.ogg
+#(ALLIED_HOME_HELLO_40)	zoqfotpik-146.ogg
 Hello human ally.
 We are at your service.
-#(ALLIED_HOME_HELLO_41)	zoqfo147.ogg
+#(ALLIED_HOME_HELLO_41)	zoqfotpik-147.ogg
 What do you want?
 
-#(THANKS_FOR_RESCUE0)	zoqfo148.ogg
+#(THANKS_FOR_RESCUE0)	zoqfotpik-148.ogg
 Our Savior! Our Savior!
 You have rescued us from certain destruction!
-#(THANKS_FOR_RESCUE1)	zoqfo149.ogg
+#(THANKS_FOR_RESCUE1)	zoqfotpik-149.ogg
 Howee-baby! That was a close one!
-#(THANKS_FOR_RESCUE2)	zoqfo150.ogg
+#(THANKS_FOR_RESCUE2)	zoqfotpik-150.ogg
 The black ship appeared in orbit several days ago
 and began raining down bolts of destructive energy
 on the surface of our planet!
-#(THANKS_FOR_RESCUE3)	zoqfo151.ogg
+#(THANKS_FOR_RESCUE3)	zoqfotpik-151.ogg
 Fortunately...
-#(THANKS_FOR_RESCUE4)	zoqfo152.ogg
+#(THANKS_FOR_RESCUE4)	zoqfotpik-152.ogg
 ...we were able to focus our planetary shields
 to deflect the energy blasts away from our cities.
-#(THANKS_FOR_RESCUE5)	zoqfo153.ogg
+#(THANKS_FOR_RESCUE5)	zoqfotpik-153.ogg
 Unfortunately...
-#(THANKS_FOR_RESCUE6)	zoqfo154.ogg
+#(THANKS_FOR_RESCUE6)	zoqfotpik-154.ogg
 Large sections of our planet's beautiful wilderness
 have been annihilated... entire ecosystems destroyed.
-#(THANKS_FOR_RESCUE7)	zoqfo155.ogg
+#(THANKS_FOR_RESCUE7)	zoqfotpik-155.ogg
 Oh! That makes me REALLY mad!
 I mean, attacking helpless, intelligent, alien species
 that's one thing,
 but toasting our cute little wood Jukes and tree Narfs
 that is really low!
-#(THANKS_FOR_RESCUE8)	zoqfo156.ogg
+#(THANKS_FOR_RESCUE8)	zoqfotpik-156.ogg
 If the black ship had been accompanied by others of its kind
 we wouldn't have been able stop the rain of destruction.
 They would have killed us all.
-#(THANKS_FOR_RESCUE9)	zoqfo157.ogg
+#(THANKS_FOR_RESCUE9)	zoqfotpik-157.ogg
 Well in that case, better those Jukes and Narfs than us, right?
-#(THANKS_FOR_RESCUE10)	zoqfo158.ogg
+#(THANKS_FOR_RESCUE10)	zoqfotpik-158.ogg
 Captain, it is clear that in matters of war
 you are more capable than ourselves.
 With this in mind, we would like to give you
 our four finest starships and crew.
 I hope they bring you many victories.
-#(THANKS_FOR_RESCUE11)	zoqfo159.ogg
+#(THANKS_FOR_RESCUE11)	zoqfotpik-159.ogg
 Try not to lose them all right away.
 
 #(bye_homeworld)
 Bye Zoq. Bye Fot. Bye Pik.
 
-#(GOODBYE_HOME0)	zoqfo160.ogg
+#(GOODBYE_HOME0)	zoqfotpik-160.ogg
 Goodbye Captain.
-#(GOODBYE_HOME1)	zoqfo161.ogg
+#(GOODBYE_HOME1)	zoqfotpik-161.ogg
 See ya.
 
 #(whats_up_homeworld)
 So, what's happening around here?
 
-#(GENERAL_INFO_10)	zoqfo162.ogg
+#(GENERAL_INFO_10)	zoqfotpik-162.ogg
 We had a close call last week.
-#(GENERAL_INFO_11)	zoqfo163.ogg
+#(GENERAL_INFO_11)	zoqfotpik-163.ogg
 One of those black ships was snooping around the system.
-#(GENERAL_INFO_12)	zoqfo164.ogg
+#(GENERAL_INFO_12)	zoqfotpik-164.ogg
 But before it got to our world
 some of the Green ships warped in
 destroyed the black vessel
 and then left immediately.
-#(GENERAL_INFO_13)	zoqfo165.ogg
+#(GENERAL_INFO_13)	zoqfotpik-165.ogg
 We got lucky.
 
-#(GENERAL_INFO_20)	zoqfo166.ogg
+#(GENERAL_INFO_20)	zoqfotpik-166.ogg
 It's been pretty quiet, Captain.
 Nothing new to report.
-#(GENERAL_INFO_21)	zoqfo167.ogg
+#(GENERAL_INFO_21)	zoqfotpik-167.ogg
 Are you CRAZY?! What about the Frungy Championships!?
-#(GENERAL_INFO_22)	zoqfo168.ogg
+#(GENERAL_INFO_22)	zoqfotpik-168.ogg
 Why should we tell the Earth Captain about that?
 He wouldn't be interested.
-#(GENERAL_INFO_23)	zoqfo169.ogg
+#(GENERAL_INFO_23)	zoqfotpik-169.ogg
 Oh, yeah? How do you know?
-#(GENERAL_INFO_24)	zoqfo170.ogg
+#(GENERAL_INFO_24)	zoqfotpik-170.ogg
 Because I'M not even interested.
 Nobody with any brains is interested in Frungy!
-#(GENERAL_INFO_25)	zoqfo171.ogg
+#(GENERAL_INFO_25)	zoqfotpik-171.ogg
 Well what about me, huh?
 I LOVE Frungy! It's the Sport of Kings!
-#(GENERAL_INFO_26)	zoqfo172.ogg
+#(GENERAL_INFO_26)	zoqfotpik-172.ogg
 Sheesh!
-#(GENERAL_INFO_27)	zoqfo173.ogg
+#(GENERAL_INFO_27)	zoqfotpik-173.ogg
 Oh, all right
 he wouldn't know any of the teams anyway.
 
-#(GENERAL_INFO_30)	zoqfo174.ogg
+#(GENERAL_INFO_30)	zoqfotpik-174.ogg
 Although this may not pertain to the Ur-Quan
 we have received an interesting report
 from one of our deep space scouts.
-#(GENERAL_INFO_31)	zoqfo175.ogg
+#(GENERAL_INFO_31)	zoqfotpik-175.ogg
 She found a strange metal door-thing
 embedded in the surface of an alien planet.
-#(GENERAL_INFO_32)	zoqfo176.ogg
+#(GENERAL_INFO_32)	zoqfotpik-176.ogg
 Although she and her crew spent many days
 trying to open the door
-#(GENERAL_INFO_33)	zoqfo177.ogg
+#(GENERAL_INFO_33)	zoqfotpik-177.ogg
 they failed utterly to so much as budge it.
-#(GENERAL_INFO_34)	zoqfo178.ogg
+#(GENERAL_INFO_34)	zoqfotpik-178.ogg
 The reported location of this alien artifact
 is Epsilon Camelopardalis I-A.
-#(GENERAL_INFO_35)	zoqfo179.ogg
+#(GENERAL_INFO_35)	zoqfotpik-179.ogg
 Go open it!
 I bet there's something cool inside!
 
-#(GENERAL_INFO_40)	zoqfo180.ogg
+#(GENERAL_INFO_40)	zoqfotpik-180.ogg
 We may not have told you this before, Captain
 but my species is somewhat sensitive
 to certain meta-psychic vibrations.
-#(GENERAL_INFO_41)	zoqfo181.ogg
+#(GENERAL_INFO_41)	zoqfotpik-181.ogg
 Oh, no! Not this mental stuff again!
-#(GENERAL_INFO_42)	zoqfo182.ogg
+#(GENERAL_INFO_42)	zoqfotpik-182.ogg
 Although my friend's species
 has difficulty understanding our powers
 I can guarantee you, Captain
 that our limited abilities are quite real.
-#(GENERAL_INFO_43)	zoqfo183.ogg
+#(GENERAL_INFO_43)	zoqfotpik-183.ogg
 Oh, yeah! Remember that time
 you said you could fix our broken chronometers
 with your `sympathetic psionic waves'?
 More like `pathetic waves' if you ask me!
 Nyark! Nyark! Nyark!
-#(GENERAL_INFO_44)	zoqfo184.ogg
+#(GENERAL_INFO_44)	zoqfotpik-184.ogg
 Even through all this negative energy, Captain
 we have discovered that...
-#(GENERAL_INFO_45)	zoqfo185.ogg
+#(GENERAL_INFO_45)	zoqfotpik-185.ogg
 ...and THEN there was the time
 you said you could bend dorfs with just your...
-#(GENERAL_INFO_46)	zoqfo186.ogg
+#(GENERAL_INFO_46)	zoqfotpik-186.ogg
 SHUT UP!
-#(GENERAL_INFO_47)	zoqfo187.ogg
+#(GENERAL_INFO_47)	zoqfotpik-187.ogg
 ...sorry.
-#(GENERAL_INFO_48)	zoqfo188.ogg
+#(GENERAL_INFO_48)	zoqfotpik-188.ogg
 As I was saying, before I was so RUDELY interrupted!...
-#(GENERAL_INFO_49)	zoqfo189.ogg
+#(GENERAL_INFO_49)	zoqfotpik-189.ogg
 I said I was sorry.
-#(GENERAL_INFO_410)	zoqfo190.ogg
+#(GENERAL_INFO_410)	zoqfotpik-190.ogg
 Our most talented Seers have detected
 some ominous and powerful meta-psychic signals
 from the direction of the Orionis constellation.
-#(GENERAL_INFO_411)	zoqfo191.ogg
+#(GENERAL_INFO_411)	zoqfotpik-191.ogg
 Faker.
 
 #(any_war_news)
 Any news about the war between the two alien races?
 
-#(UTWIG_DELAY0)	zoqfo192.ogg
+#(UTWIG_DELAY0)	zoqfotpik-192.ogg
 Our scouts have witnessed an exciting event
 in the Horologii star system.
-#(UTWIG_DELAY1)	zoqfo193.ogg
+#(UTWIG_DELAY1)	zoqfotpik-193.ogg
 Yeah! Big news!
-#(UTWIG_DELAY2)	zoqfo194.ogg
+#(UTWIG_DELAY2)	zoqfotpik-194.ogg
 Two alien races have entered that region of space
 from the coreward direction.
-#(UTWIG_DELAY3)	zoqfo195.ogg
+#(UTWIG_DELAY3)	zoqfotpik-195.ogg
 One of the races look like big talkin' weeds
 and the other wears a funny mask.
-#(UTWIG_DELAY4)	zoqfo196.ogg
+#(UTWIG_DELAY4)	zoqfotpik-196.ogg
 And they are attacking our enemies!
-#(UTWIG_DELAY5)	zoqfo197.ogg
+#(UTWIG_DELAY5)	zoqfotpik-197.ogg
 Well, ONE of our enemies, anyway.
-#(UTWIG_DELAY6)	zoqfo198.ogg
+#(UTWIG_DELAY6)	zoqfotpik-198.ogg
 Yes, the new aliens seem to be confining their hostilities
 to the sinister Kohr-Ah.
-#(UTWIG_DELAY7)	zoqfo199.ogg
+#(UTWIG_DELAY7)	zoqfotpik-199.ogg
 Actually, that's good news.
-#(UTWIG_DELAY8)	zoqfo200.ogg
+#(UTWIG_DELAY8)	zoqfotpik-200.ogg
 By focusing on the Kohr-Ah
 who have been winning their war up to this point...
-#(UTWIG_DELAY9)	zoqfo201.ogg
+#(UTWIG_DELAY9)	zoqfotpik-201.ogg
 They've been plastering the Ur-Quan.
-#(UTWIG_DELAY10)	zoqfo202.ogg
+#(UTWIG_DELAY10)	zoqfotpik-202.ogg
 The balance of power has been equalized somewhat...
-#(UTWIG_DELAY11)	zoqfo203.ogg
+#(UTWIG_DELAY11)	zoqfotpik-203.ogg
 But the Kohr-Ah will STILL probably win!
-#(UTWIG_DELAY12)	zoqfo204.ogg
+#(UTWIG_DELAY12)	zoqfotpik-204.ogg
 But we estimate that the efforts of these new alien races
 has delayed the Kohr-Ah's eventual victory
 by nine to twelve months.
-#(UTWIG_DELAY13)	zoqfo205.ogg
+#(UTWIG_DELAY13)	zoqfotpik-205.ogg
 Still, it's better than nothing!
 
-#(KOHRAH_WINNING0)	zoqfo206.ogg
+#(KOHRAH_WINNING0)	zoqfotpik-206.ogg
 We have modified a few of our Stinger starships
 for long-range reconnaissance missions.
-#(KOHRAH_WINNING1)	zoqfo207.ogg
+#(KOHRAH_WINNING1)	zoqfotpik-207.ogg
 We strapped a bunch of fuel tanks on their hulls.
-#(KOHRAH_WINNING2)	zoqfo208.ogg
+#(KOHRAH_WINNING2)	zoqfotpik-208.ogg
 The scouts were ordered to investigate the progress of the war
 between the green ships, who we now know as the `Ur-Quan'
 and the black ships, flown by the `Kohr-Ah'.
-#(KOHRAH_WINNING3)	zoqfo209.ogg
+#(KOHRAH_WINNING3)	zoqfotpik-209.ogg
 We sent out ten... two came back
-#(KOHRAH_WINNING4)	zoqfo210.ogg
+#(KOHRAH_WINNING4)	zoqfotpik-210.ogg
 But the information they gathered was worth the cost.
-#(KOHRAH_WINNING5)	zoqfo211.ogg
+#(KOHRAH_WINNING5)	zoqfotpik-211.ogg
 Unless you were one of the scouts, I suppose?
 Nyark! Nyark! Nyark!
-#(KOHRAH_WINNING6)	zoqfo212.ogg
+#(KOHRAH_WINNING6)	zoqfotpik-212.ogg
 SHUT UP!
-#(KOHRAH_WINNING7)	zoqfo213.ogg
+#(KOHRAH_WINNING7)	zoqfotpik-213.ogg
 ...sorry.
-#(KOHRAH_WINNING8)	zoqfo214.ogg
+#(KOHRAH_WINNING8)	zoqfotpik-214.ogg
 Anyway, as I was saying, the intelligence they gathered
 indicates that the Kohr-Ah will win their war
 sometime near the beginning of the year 2158.
-#(KOHRAH_WINNING9)	zoqfo215.ogg
+#(KOHRAH_WINNING9)	zoqfotpik-215.ogg
 Unless someone evens up the alien forces
 by destroying about a bazillion Kohr-Ah ships.
 
-#(URQUAN_NEARLY_GONE0)	zoqfo216.ogg
+#(URQUAN_NEARLY_GONE0)	zoqfotpik-216.ogg
 Our reconnaissance ships have returned once more
-#(URQUAN_NEARLY_GONE1)	zoqfo217.ogg
+#(URQUAN_NEARLY_GONE1)	zoqfotpik-217.ogg
 With bad news.
-#(URQUAN_NEARLY_GONE2)	zoqfo218.ogg
+#(URQUAN_NEARLY_GONE2)	zoqfotpik-218.ogg
 Based on what they have seen
 the Kohr-Ah will defeat the Ur-Quan
 in less than six months.
-#(URQUAN_NEARLY_GONE3)	zoqfo219.ogg
+#(URQUAN_NEARLY_GONE3)	zoqfotpik-219.ogg
 Bummer.
-#(URQUAN_NEARLY_GONE4)	zoqfo220.ogg
+#(URQUAN_NEARLY_GONE4)	zoqfotpik-220.ogg
 And based on our last encounter with the Kohr-Ah
 we expect that when they win their war with the Ur-Quan
 the Kohr-Ah will move through this entire region of space
 destroying all intelligent life.
-#(URQUAN_NEARLY_GONE5)	zoqfo221.ogg
+#(URQUAN_NEARLY_GONE5)	zoqfotpik-221.ogg
 Major bummer!
 
-#(KOHRAH_FRENZY0)	zoqfo222.ogg
+#(KOHRAH_FRENZY0)	zoqfotpik-222.ogg
 I fear we have received our last scouting reports, Captain.
-#(KOHRAH_FRENZY1)	zoqfo223.ogg
+#(KOHRAH_FRENZY1)	zoqfotpik-223.ogg
 Poor Yip, Tun and Haffy! I'll really miss those guys!
-#(KOHRAH_FRENZY2)	zoqfo224.ogg
+#(KOHRAH_FRENZY2)	zoqfotpik-224.ogg
 Although none of our scouts returned home alive
-#(KOHRAH_FRENZY3)	zoqfo225.ogg
+#(KOHRAH_FRENZY3)	zoqfotpik-225.ogg
 ...and Jiff... and Fod... and (sniff!)...
 ...and my best pal, Rogi!
-#(KOHRAH_FRENZY4)	zoqfo226.ogg
+#(KOHRAH_FRENZY4)	zoqfotpik-226.ogg
 They were able to send a last message.
 The Kohr-Ah have won their war against the Ur-Quan
 and they have begun their hideous death march.
-#(KOHRAH_FRENZY5)	zoqfo227.ogg
+#(KOHRAH_FRENZY5)	zoqfotpik-227.ogg
 (sniff!)
-#(KOHRAH_FRENZY6)	zoqfo228.ogg
+#(KOHRAH_FRENZY6)	zoqfotpik-228.ogg
 The only piece of knowledge we have
 that may help you defeat them
 is a fragment of a transmission we received
 from our agent Buppo who was in the Crateris constellation.
-#(KOHRAH_FRENZY7)	zoqfo229.ogg
+#(KOHRAH_FRENZY7)	zoqfotpik-229.ogg
 They got Buppo too?!...(SOB!)
-#(KOHRAH_FRENZY8)	zoqfo230.ogg
+#(KOHRAH_FRENZY8)	zoqfotpik-230.ogg
 He reported that the Kohr-Ah had something
 `big, dangerous and important as hell'
 in one of the nearby star systems.
 That was all we got before Buppo's signal was cut off.
-#(KOHRAH_FRENZY9)	zoqfo231.ogg
+#(KOHRAH_FRENZY9)	zoqfotpik-231.ogg
 (SOB!)
-#(KOHRAH_FRENZY10)	zoqfo232.ogg
+#(KOHRAH_FRENZY10)	zoqfotpik-232.ogg
 You have got to stop the Kohr-Ah, Captain!...
 ...before they kill us all.
-#(KOHRAH_FRENZY11)	zoqfo233.ogg
+#(KOHRAH_FRENZY11)	zoqfotpik-233.ogg
 (sniff!)
 
-#(NO_WAR_NEWS0)	zoqfo234.ogg
+#(NO_WAR_NEWS0)	zoqfotpik-234.ogg
 No. We have nothing new to report.
-#(NO_WAR_NEWS1)	zoqfo235.ogg
+#(NO_WAR_NEWS1)	zoqfotpik-235.ogg
 Nope! Not a thing.
 
 #(i_want_alliance)
 I have travelled here to seek an alliance between our peoples.
 
-#(GOOD0)	zoqfo236.ogg
+#(GOOD0)	zoqfotpik-236.ogg
 How wonderful! We accept!
-#(GOOD1)	zoqfo237.ogg
+#(GOOD1)	zoqfotpik-237.ogg
 Hurray!
-#(GOOD2)	zoqfo238.ogg
+#(GOOD2)	zoqfotpik-238.ogg
 How marvelous!
-#(GOOD3)	zoqfo239.ogg
+#(GOOD3)	zoqfotpik-239.ogg
 Yee-ha!
-#(GOOD4)	zoqfo240.ogg
+#(GOOD4)	zoqfotpik-240.ogg
 Captain, we are delighted that your people have made this choice!
-#(GOOD5)	zoqfo241.ogg
+#(GOOD5)	zoqfotpik-241.ogg
 Now WE won't get slaughtered!
-#(GOOD6)	zoqfo242.ogg
+#(GOOD6)	zoqfotpik-242.ogg
 In exchange for our cooperation helping you with captains and ship designs
 all that we ask for is your protection.
-#(GOOD7)	zoqfo243.ogg
+#(GOOD7)	zoqfotpik-243.ogg
 So we don't get slaughtered!
-#(GOOD8)	zoqfo244.ogg
+#(GOOD8)	zoqfotpik-244.ogg
 We shall begin fulfilling our commitment at once!
 We will transport officers and our Stinger design to your base immediately!
-#(GOOD9)	zoqfo245.ogg
+#(GOOD9)	zoqfotpik-245.ogg
 Why, heck!
 Maybe I'll even make the trip to your planet!
 I'd make a good starship captain, Captain!
@@ -745,170 +745,170 @@ with a thrusting stinger tongue attack!
 #(want_specific_info)
 I would like some specific information.
 
-#(WHAT_SPECIFIC_INFO0)	zoqfo246.ogg
+#(WHAT_SPECIFIC_INFO0)	zoqfotpik-246.ogg
 Sure. What do you want to know?
-#(WHAT_SPECIFIC_INFO1)	zoqfo247.ogg
+#(WHAT_SPECIFIC_INFO1)	zoqfotpik-247.ogg
 Just ask away!
 
 #(enough_info)
 That's enough info for now, thanks!
 
-#(OK_ENOUGH_INFO)	zoqfo248.ogg
+#(OK_ENOUGH_INFO)	zoqfotpik-248.ogg
 Anything else?
 
 #(what_about_others)
 What do you know about other alien races?
 
-#(ABOUT_OTHERS0)	zoqfo249.ogg
+#(ABOUT_OTHERS0)	zoqfotpik-249.ogg
 Not much, to tell the truth.
-#(ABOUT_OTHERS1)	zoqfo250.ogg
+#(ABOUT_OTHERS1)	zoqfotpik-250.ogg
 This space exploration stuff is kinda new to us.
-#(ABOUT_OTHERS2)	zoqfo251.ogg
+#(ABOUT_OTHERS2)	zoqfotpik-251.ogg
 Besides the green alien ships...
-#(ABOUT_OTHERS3)	zoqfo252.ogg
+#(ABOUT_OTHERS3)	zoqfotpik-252.ogg
 Which have only tried to kill us.
-#(ABOUT_OTHERS4)	zoqfo253.ogg
+#(ABOUT_OTHERS4)	zoqfotpik-253.ogg
 ...and the black alien ships...
-#(ABOUT_OTHERS5)	zoqfo254.ogg
+#(ABOUT_OTHERS5)	zoqfotpik-254.ogg
 Which have actually been QUITE SUCCESSFUL at killing us.
-#(ABOUT_OTHERS6)	zoqfo255.ogg
+#(ABOUT_OTHERS6)	zoqfotpik-255.ogg
 The only other starships we have encountered
 are strange tumbling red probes
 which profess to be on a peaceful mission...
-#(ABOUT_OTHERS7)	zoqfo256.ogg
+#(ABOUT_OTHERS7)	zoqfotpik-256.ogg
 ...but then attack like slavering Zebrankys.
-#(ABOUT_OTHERS8)	zoqfo257.ogg
+#(ABOUT_OTHERS8)	zoqfotpik-257.ogg
 We believe that the probes are actually robotic scouts
 which have suffered some kind of malfunction
 resulting in their aberrant behavior.
-#(ABOUT_OTHERS9)	zoqfo258.ogg
+#(ABOUT_OTHERS9)	zoqfotpik-258.ogg
 And what's worse, they are multiplying.
-#(ABOUT_OTHERS10)	zoqfo259.ogg
+#(ABOUT_OTHERS10)	zoqfotpik-259.ogg
 Yes, that's true.
 The probes seem to be replicating at a geometric rate.
-#(ABOUT_OTHERS11)	zoqfo260.ogg
+#(ABOUT_OTHERS11)	zoqfotpik-260.ogg
 AIEE! That means if there was only one last week
 then next month... ah
 wait a minute... let me calculate
 uh
 That means, next month there will be
 ...A WHOLE MESS OF THOSE THINGS!
-#(ABOUT_OTHERS12)	zoqfo261.ogg
+#(ABOUT_OTHERS12)	zoqfotpik-261.ogg
 By back-tracing the probes' course paths
 we have been able to calculate
 that the source of the probes
 is somewhere on a direct line
 that includes our star, and Epsilon Muscae.
-#(ABOUT_OTHERS13)	zoqfo262.ogg
+#(ABOUT_OTHERS13)	zoqfotpik-262.ogg
 Go get 'em, Captain!
 
 #(what_about_zebranky)
 Tell me more about your people.
 
-#(ABOUT_ZEBRANKY0)	zoqfo263.ogg
+#(ABOUT_ZEBRANKY0)	zoqfotpik-263.ogg
 Ah! Cultural exchange. A good idea.
-#(ABOUT_ZEBRANKY1)	zoqfo264.ogg
+#(ABOUT_ZEBRANKY1)	zoqfotpik-264.ogg
 Yeah! Let's tell him about Frungy!
-#(ABOUT_ZEBRANKY2)	zoqfo265.ogg
+#(ABOUT_ZEBRANKY2)	zoqfotpik-265.ogg
 Be quiet, you fool! He asked a serious question!
 He doesn't want to know about Frungy.
-#(ABOUT_ZEBRANKY3)	zoqfo266.ogg
+#(ABOUT_ZEBRANKY3)	zoqfotpik-266.ogg
 How do you know? What makes you so smart?
 You never even asked him if he wants to know about Frungy.
 Why, I'll bet right now he's wondering
 `What is this wonderful sport, Frungy?', `How is it played?'
 `What kind of equipment do you need to play Frungy?'
 and `I wonder who's ahead in the Frungy Championships?'
-#(ABOUT_ZEBRANKY4)	zoqfo267.ogg
+#(ABOUT_ZEBRANKY4)	zoqfotpik-267.ogg
 AUGH! Will you SHUT UP ABOUT FRUNGY?!
 If you say another word about that STUPID GAME
 I'm going to lose control and blow a cloud of spores at you!
-#(ABOUT_ZEBRANKY5)	zoqfo268.ogg
+#(ABOUT_ZEBRANKY5)	zoqfotpik-268.ogg
 Yech! Okay, okay. Don't blow your sac.
 I won't mention Frungy again, I promise.
-#(ABOUT_ZEBRANKY6)	zoqfo269.ogg
+#(ABOUT_ZEBRANKY6)	zoqfotpik-269.ogg
 Well, Captain, as you can probably see
 our culture's predominant trait
 its greatest strength AND weakness
 is the diverse interactions between Zoq, Fot, and Pik.
-#(ABOUT_ZEBRANKY7)	zoqfo270.ogg
+#(ABOUT_ZEBRANKY7)	zoqfotpik-270.ogg
 FRUNGY! FRUNGY! FRUNGY!
 
 #(what_about_past)
 What was your history like?
 
-#(ABOUT_PAST0)	zoqfo271.ogg
+#(ABOUT_PAST0)	zoqfotpik-271.ogg
 Our past? Quite a broad topic for this short conversation
 but we'll share a key piece of our history with you.
-#(ABOUT_PAST1)	zoqfo272.ogg
+#(ABOUT_PAST1)	zoqfotpik-272.ogg
 After we killed off the last Zebranky
 we faced an interesting question.
-#(ABOUT_PAST2)	zoqfo273.ogg
+#(ABOUT_PAST2)	zoqfotpik-273.ogg
 Should we proceed, and establish a culture
 which would advance in art, technology and social sophistication?...
-#(ABOUT_PAST3)	zoqfo274.ogg
+#(ABOUT_PAST3)	zoqfotpik-274.ogg
 ...Or should we just go back into the forest
 and kick back and enjoy ourselves
 knowing that a Zebranky wasn't gonna jump out of the bush and eat us!
-#(ABOUT_PAST4)	zoqfo275.ogg
+#(ABOUT_PAST4)	zoqfotpik-275.ogg
 Well, we DID go back into the forest.
 We stayed there for about five thousand years and had a great time...
-#(ABOUT_PAST5)	zoqfo276.ogg
+#(ABOUT_PAST5)	zoqfotpik-276.ogg
 ...then, one stormy day, a Zoq, a Fot, and a Pik were walking up a steep path
 looking for something good to eat, when a bolt of lightning struck nearby.
 With a huge flash of light, the bolt of energy
 carved a strangely-shaped chunk of granite out of a cliff.
-#(ABOUT_PAST6)	zoqfo277.ogg
+#(ABOUT_PAST6)	zoqfotpik-277.ogg
 It was a disk, with a hole in the middle!
 As the rock began to roll down the hill, toward the three terrified beings
 some dry grass got caught in its hole, and since the rock was still hot
 the grass caught on fire.
-#(ABOUT_PAST7)	zoqfo278.ogg
+#(ABOUT_PAST7)	zoqfotpik-278.ogg
 When the rock finally got to the Zoq, the Fot, and the Pik
 they simultaneously discovered the Wheel, Fire, and Religion
 thus catapulting them on to the road of progress.
-#(ABOUT_PAST8)	zoqfo279.ogg
+#(ABOUT_PAST8)	zoqfotpik-279.ogg
 Which has led us to this day, Captain.
 Oh! How did the flaming wheel give religion to our Culture, you ask?
-#(ABOUT_PAST9)	zoqfo280.ogg
+#(ABOUT_PAST9)	zoqfotpik-280.ogg
 I will explain.
 You see, when it got to the threesome, the flaming wheel was going at a pretty good clip
 and it ran smack into the Zoq, killing him.
-#(ABOUT_PAST10)	zoqfo281.ogg
+#(ABOUT_PAST10)	zoqfotpik-281.ogg
 The Fot and the Pik felt so bad
 they really liked that Zoq!...
 ...that they decided the Zoq hadn't really died when the wheel flattened him
 he had just gone to `a better place.'
-#(ABOUT_PAST11)	zoqfo282.ogg
+#(ABOUT_PAST11)	zoqfotpik-282.ogg
 Presumably one without lethal flaming wheels.
 
 #(what_about_stinger)
 Can you describe your `Stinger' starship?
 
-#(ABOUT_STINGER0)	zoqfo283.ogg
+#(ABOUT_STINGER0)	zoqfotpik-283.ogg
 The Stinger is the peak of our technological prowess.
-#(ABOUT_STINGER1)	zoqfo284.ogg
+#(ABOUT_STINGER1)	zoqfotpik-284.ogg
 It's totally awesome!
-#(ABOUT_STINGER2)	zoqfo285.ogg
+#(ABOUT_STINGER2)	zoqfotpik-285.ogg
 These vessels are cheap to build
 and can be quite effective in short range combat.
-#(ABOUT_STINGER3)	zoqfo286.ogg
+#(ABOUT_STINGER3)	zoqfotpik-286.ogg
 They turn on a... on a
 well a small round thing that's REAL small!
-#(ABOUT_STINGER4)	zoqfo287.ogg
+#(ABOUT_STINGER4)	zoqfotpik-287.ogg
 Remember though, against most ships
 the Stinger must close distance immediately
 and give unrelenting tongue attacks
 until either the enemy or the Stinger are destroyed.
-#(ABOUT_STINGER5)	zoqfo288.ogg
+#(ABOUT_STINGER5)	zoqfotpik-288.ogg
 Yeah! The tonguing is the best part!
 
 #(what_about_guy_in_back)
 Does that guy in back ever say anything?
 
-#(ABOUT_GUY0)	zoqfo289.ogg
+#(ABOUT_GUY0)	zoqfotpik-289.ogg
 Nope.
-#(ABOUT_GUY1)	zoqfo290.ogg
+#(ABOUT_GUY1)	zoqfotpik-290.ogg
 Not a word.
 
 #(name_1)
@@ -925,48 +925,48 @@ The Empire of
 #(name_41)
 's
 
-#(OUT_TAKES0) zoqfo291.ogg
+#(OUT_TAKES0) zoqfotpik-291.ogg
 Thank you for playing The Ur-Quan Masters.
 
-#(OUT_TAKES1) zoqfo292.ogg
+#(OUT_TAKES1) zoqfotpik-292.ogg
 This game has been brought to you by
 Frungy! The Sport of Kings!
 
-#(OUT_TAKES2) zoqfo293.ogg
+#(OUT_TAKES2) zoqfotpik-293.ogg
 No it wasn't!
 
-#(OUT_TAKES3) zoqfo293.ogg
+#(OUT_TAKES3) zoqfotpik-293.ogg
 Yes it was!
 
-#(OUT_TAKES4) zoqfo294.ogg
+#(OUT_TAKES4) zoqfotpik-294.ogg
 Frungy had nothing to do with it!
 This game was about war, slavery, intolerance
 heroism, justice, and the inevitable triumph of Good over Evil!
 
-#(OUT_TAKES5) zoqfo291.ogg
+#(OUT_TAKES5) zoqfotpik-291.ogg
 Are you crazy?! The developers got millions in Frungy endorsements!
 
-#(OUT_TAKES6) zoqfo293.ogg
+#(OUT_TAKES6) zoqfotpik-293.ogg
 No they didn't.
 
-#(OUT_TAKES7) zoqfo293.ogg
+#(OUT_TAKES7) zoqfotpik-293.ogg
 Yes they did.
 
-#(OUT_TAKES8) zoqfo293.ogg
+#(OUT_TAKES8) zoqfotpik-293.ogg
 No they didn't!
 
-#(OUT_TAKES9) zoqfo293.ogg
+#(OUT_TAKES9) zoqfotpik-293.ogg
 Yes they did!
 
-#(OUT_TAKES10) zoqfo293.ogg
+#(OUT_TAKES10) zoqfotpik-293.ogg
 Did not!
 
-#(OUT_TAKES11) zoqfo293.ogg
+#(OUT_TAKES11) zoqfotpik-293.ogg
 Did too!
 
-#(OUT_TAKES12) zoqfo293.ogg
+#(OUT_TAKES12) zoqfotpik-293.ogg
 Did not!
 
-#(OUT_TAKES13) zoqfo293.ogg
+#(OUT_TAKES13) zoqfotpik-293.ogg
 Did too!
 

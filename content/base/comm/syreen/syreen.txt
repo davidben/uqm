@@ -1,4 +1,4 @@
-#(HELLO_BEFORE_AMBUSH_1)	syree000.ogg
+#(HELLO_BEFORE_AMBUSH_1)	syreen-000.ogg
 Attention unidentified space vessel!
 Be Warned! This slave world and its inhabitants belong to the Ur-Quan.
 I am Starbase Commander Talana of the slave planet Gaia.
@@ -8,21 +8,21 @@ Is my monitor display correct?!
 Is that a human commanding that vessel?
 Who are you?
 
-#(HELLO_BEFORE_AMBUSH_2)	syree001.ogg
+#(HELLO_BEFORE_AMBUSH_2)	syreen-001.ogg
 Hello again, pleasant Human.
 It warms me to greet you again.
 
-#(HELLO_BEFORE_AMBUSH_3)	syree002.ogg
+#(HELLO_BEFORE_AMBUSH_3)	syreen-002.ogg
 Welcome back, Earthling.
 What do you wish of us?
 
-#(HELLO_BEFORE_AMBUSH_4)	syree003.ogg
+#(HELLO_BEFORE_AMBUSH_4)	syreen-003.ogg
 Yes, Captain?
 
 #(we_are_vice_squad)
 We're the Ethics Police. Justify that costume... Immediately!
 
-#(OK_VICE)	syree004.ogg
+#(OK_VICE)	syreen-004.ogg
 Huh? What ARE you talking about?
 This is the uniform of a Syreen Commander.
 The climate aboard this starbase is maintained at a constant 22 degrees C.
@@ -31,7 +31,7 @@ What are we supposed to wear in here... parkas?
 #(we_are_the_one_for_you_baby)
 I am the right one for you, baby!
 
-#(MAYBE_CAPTAIN)	syree005.ogg
+#(MAYBE_CAPTAIN)	syreen-005.ogg
 Ah, yes... I had almost forgotten the sophistication of human social graces.
 Manners were never the Earthlings' strong point, were they?
 Your species' undeniable appeal can be found... elsewhere.
@@ -45,7 +45,7 @@ I am Captain
 #(we_are_vindicator2)
 .
 
-#(WELCOME_VINDICATOR0)	syree006.ogg
+#(WELCOME_VINDICATOR0)	syreen-006.ogg
 Hello Captain 
 
 #(WELCOME_VINDICATOR1)
@@ -57,11 +57,11 @@ Hello Captain
 #(we_are_impressed)
 We're... we're.. we're greatly impressed!
 
-#(SO_AM_I_CAPTAIN)	syree007.ogg
+#(SO_AM_I_CAPTAIN)	syreen-007.ogg
 So am I, Captain. So am I.
 Earthlings are so... so... earthy!
 
-#(HOW_CAN_YOU_BE_HERE)	syree008.ogg
+#(HOW_CAN_YOU_BE_HERE)	syreen-008.ogg
 But you haven't answered my question fully.
 Why are you here? Where are you from?
 Has the slave shield been lifted from Earth?
@@ -71,7 +71,7 @@ Simply put, Captain...what do you want from us?
 #(we_here_to_help)
 We have come here to free you from slavery to the Ur-Quan!
 
-#(NO_NEED_HELP)	syree009.ogg
+#(NO_NEED_HELP)	syreen-009.ogg
 Look friend, I appreciate your offer, but we don't want your help.
 Why? I'll tell you why
 because we're not going to do anything to antagonize the Ur-Quan. That's why.
@@ -82,7 +82,7 @@ That's a lot more than we ever had before the War... before the Ur-Quan became o
 #(we_need_help)
 To be honest, we need your help to destroy the Ur-Quan.
 
-#(CANT_GIVE_HELP)	syree010.ogg
+#(CANT_GIVE_HELP)	syreen-010.ogg
 Look Captain... I like you... even though you're an obnoxious human... I like you.
 In another time, we might have become good friends... perhaps more
 but that's a fantasy, and my job is dealing with reality.
@@ -93,7 +93,7 @@ Don't get all judgmental on me, Captain... you don't know what we've been throug
 #(i_need_you)
 Hey, baby... what I need is you!
 
-#(OK_NEED)	syree011.ogg
+#(OK_NEED)	syreen-011.ogg
 Look. Human. Get this through your head.
 Under other circumstances, I might be interested in your antics, you're kind of cute
 but we've got a serious situation here and we don't have time to fool around.
@@ -104,7 +104,7 @@ Now get serious... please.
 #(i_need_touch_o_vision)
 What I need right now, is a Touch-o-Vision.
 
-#(TOUCH_O_VISION)	syree012.ogg
+#(TOUCH_O_VISION)	syreen-012.ogg
 Look. Human. Get this through your head.
 Under other circumstances, I might be interested in your antics, you're kind of cute
 but we've got a serious situation here and we don't have time to fool around.
@@ -115,7 +115,7 @@ Now get serious... please.
 #(know_about_deep_children)
 Talana, have you ever heard of the `Deep Children?'
 
-#(WHAT_ABOUT_DEEP_CHILDREN)	syree013.ogg
+#(WHAT_ABOUT_DEEP_CHILDREN)	syreen-013.ogg
 Yes, I think so. Aren't they part of the Mycon religion somehow?
 We have recordings of Mycon HyperWave transmissions from the War... pretty weird stuff.
 The Mycons just kind of.. rambled, never making much sense.
@@ -125,7 +125,7 @@ but we couldn't ever understand what they were talking about.
 #(mycons_involved)
 What if I told you that Mycon Deep Children shatter planet crusts... like your Syra?
 
-#(WHAT_PROOF)	syree014.ogg
+#(WHAT_PROOF)	syreen-014.ogg
 What?! What did you say?!
 Human, you had better not be joking. Syra is not a subject for Earth humor.
 Now what do you mean, shatter planet crusts? How?
@@ -135,7 +135,7 @@ Do you have proof that it was something else... these Deep Children?
 #(have_no_proof)
 I don't have proof YET, but I am certain the Mycons destroyed your world.
 
-#(NEED_PROOF)	syree015.ogg
+#(NEED_PROOF)	syreen-015.ogg
 Captain, if what you say is true, it would turn my world upside down.
 You have no sorrow to match what each of us Syreen feels every day of our lives
 when we remember what we have lost... Syra... our Eden.
@@ -149,13 +149,13 @@ But until then... do not mention the subject again. It is too painful.
 #(have_proof)
 Talana. I have brought proof that the Mycon Deep Children destroyed your world Syra.
 
-#(SEE_PROOF)	syree016.ogg
+#(SEE_PROOF)	syreen-016.ogg
 Let me see this proof, Captain!
 
 #(look_at_egg_sacks)
 Look at these fungal egg sacks. We found them near a crustal puncture on a shattered world.
 
-#(HORRIBLE_TRUTH)	syree017.ogg
+#(HORRIBLE_TRUTH)	syreen-017.ogg
 Great gods! These fragments... they are IDENTICAL to the debris we found near the punctures on Syra!
 We never guessed that the fragments might be organic!
 To have survived re-entry!... nothing organic would remain!... unless
@@ -169,7 +169,7 @@ provided you first help us seek our revenge against the Mycon race... help us to
 #(what_doing_here)
 So, Commander Talana, what are you doing here?
 
-#(OUR_NEW_WORLD)	syree018.ogg
+#(OUR_NEW_WORLD)	syreen-018.ogg
 When the Ur-Quan conquered us, over twenty years ago
 I was only a young girl living in Habitat Thirty-One.
 My older sister, Diani, was a starship officer in the Space Patrol
@@ -197,7 +197,7 @@ I was selected as the new commander.
 #(what_about_war)
 So what happened to you at the end of the war?
 
-#(ABOUT_WAR)	syree019.ogg
+#(ABOUT_WAR)	syreen-019.ogg
 When we first met your people, we'd been wandering through the stars for almost seventy-five years,
 ever since the death of Syra... our home planet.
 We joined your Alliance, and I use the word `joined' loosely, because we had no other choice.
@@ -220,7 +220,7 @@ but we've got a good life here, and we don't want to lose it.
 #(help_us)
 If you love freedom and hate the Ur-Quan, why won't you help us?
 
-#(WONT_HELP)	syree020.ogg
+#(WONT_HELP)	syreen-020.ogg
 Like I said before, Captain, we would like to help
 but we are unwilling to risk losing Gaia.
 Unless you can find a much more compelling reason for us to get involved
@@ -229,7 +229,7 @@ you are on your own.
 #(what_about_history)
 Would you tell me a bit about your people and your culture?
 
-#(BEFORE_WAR)	syree021.ogg
+#(BEFORE_WAR)	syreen-021.ogg
 Our species are almost identical, almost too close a match to be just a coincidence.
 Our bodies are very similar, Captain.
 Ha! ha! Except for... certain parts...
@@ -249,7 +249,7 @@ when the technological superiority of the farmers curtailed any major conflict.
 #(what_about_homeworld)
 What was Syra like?
 
-#(ABOUT_HOMEWORLD)	syree022.ogg
+#(ABOUT_HOMEWORLD)	syreen-022.ogg
 It was our paradise, Captain, our Eden.
 Earth is the only world we know of whose variety and richness of life even comes close to Syra.
 Again, like so many other things about our two species, our worlds were very much the same
@@ -261,7 +261,7 @@ We spend twenty hours awake, followed by ten hours... horizontal.
 #(what_happened)
 What happened to Syra?
 
-#(DONT_KNOW_HOW)	syree023.ogg
+#(DONT_KNOW_HOW)	syreen-023.ogg
 This subject is very difficult for us, Captain,
 but I will try to recount those sad days.
 Like your solar system, ours had a large population of comets and asteroids.
@@ -285,14 +285,14 @@ and clouds of poison gas and superheated steam created a death shroud around Syr
 #(what_about_outfit)
 Come on now, isn't that outfit, knife included, a bit absurd?
 
-#(HOPE_YOU_LIKE_IT)	syree024.ogg
+#(HOPE_YOU_LIKE_IT)	syreen-024.ogg
 Maybe some other time, Captain, I can show you the hidden functionality of my uniform
 knife included!
 
 #(where_mates)
 What happened to the males of your species?
 
-#(MATES_KILLED)	syree025.ogg
+#(MATES_KILLED)	syreen-025.ogg
 When Syra was destroyed, the only people who survived were in orbit
 and most of them were members of our newly established, mostly female, Space Patrol.
 From their ships, their orbital platforms and their lunar outposts they watched Syra die.
@@ -311,14 +311,14 @@ looking for a new home.
 #(get_lonely)
 Don't you ever get... lonely? Hmmm?
 
-#(MAKE_OUT_ALL_RIGHT)	syree026.ogg
+#(MAKE_OUT_ALL_RIGHT)	syreen-026.ogg
 Ha! ha! ha! Don't worry about us, Captain!
 We make out all right.
 
 #(bye)
 Goodbye, Commander Talana. I will be back.
 
-#(GOODBYE)	syree027.ogg
+#(GOODBYE)	syreen-027.ogg
 Until then, Earthling.
 
 #(MUST_ACT)	
@@ -330,7 +330,7 @@ you first help us seek our revenge against the Mycon race... help us to destroy 
 #(whats_next_step)
 Okay. So what do you want us to do?
 
-#(OPEN_VAULT)	syree028.ogg
+#(OPEN_VAULT)	syreen-028.ogg
 Our first step is to get some mobility.
 We have some fine starship officers on board, and they are all eager to go after the Mycons,
 but without our Penetrator starships, we're totally ineffectual.
@@ -341,7 +341,7 @@ but we believe they have sealed them in some kind of deep vault in the surface o
 #(where_is_it)
 Do you know where your ships are?
 
-#(DONT_KNOW_WHERE)	syree029.ogg
+#(DONT_KNOW_WHERE)	syreen-029.ogg
 No, that's your job.
 But maybe we have some clues to help you find them.
 The starship officers who flew the Penetrators to the vault did so with total sensor black-out.
@@ -354,10 +354,10 @@ the farthest they could have travelled is about 200 HyperSpace distance units.
 #(been_there)
 I've already been there. The vault is on the moon of Epsilon Camelopardalis I, but I couldn't open it.
 
-#(GREAT)	syree030.ogg
+#(GREAT)	syreen-030.ogg
 Wonderful! Then the job is already almost complete!
 
-#(GIVE_SHUTTLE)	syree031.ogg
+#(GIVE_SHUTTLE)	syreen-031.ogg
 Captain! We have assembled a small team of our most skilled officers.
 we will send them to your ship on board their own small shuttle.
 We feel that in the interests of efficiency, we keep our officers away from your crew
@@ -374,11 +374,11 @@ Just remember, I'm doing this for you Sweet Cakes!
 #(if_i_die)
 If I die... just remember that I... I... really like you!
 
-#(GOOD_LUCK)	syree032.ogg
+#(GOOD_LUCK)	syreen-032.ogg
 Good luck, brave Earthling. When your mission is successful
 maybe then we can... get to know each other better.
 
-#(OK_FOUND_VAULT)	syree033.ogg
+#(OK_FOUND_VAULT)	syreen-033.ogg
 Good, now we can proceed with our plan for REVENGE against the Mycon!
 From our analysis of the Deep Child fragments you showed to us
 and a review of the recorded Mycon transmissions from the War
@@ -398,7 +398,7 @@ Then we shall destroy them!
 #(what_now)
 Are you sure the Mycon are going to fall for this? Why should they believe me?
 
-#(HERES_THE_PLAN)	syree034.ogg
+#(HERES_THE_PLAN)	syreen-034.ogg
 For all their evil, Captain, the Mycon are a naive race.
 They have great difficulty understanding deception.
 If you tell them what they wish to hear, they will believe you.
@@ -406,7 +406,7 @@ If you tell them what they wish to hear, they will believe you.
 #(whats_my_reward)
 So! What if I die doing all this dangerous stuff? What about... us?
 
-#(HERES_REWARD)	syree035.ogg
+#(HERES_REWARD)	syreen-035.ogg
 I'm afraid BOTH our duties will be dangerous, Captain.
 We may never see each other again.
 But for now, at least, there's this...
@@ -414,10 +414,10 @@ But for now, at least, there's this...
 #(bye_after_vault)
 I'll miss you, Talana.
 
-#(GOODBYE_AFTER_VAULT)	syree036.ogg
+#(GOODBYE_AFTER_VAULT)	syreen-036.ogg
 Don't worry, my human. We will be together again... some day.
 
-#(HELLO_AFTER_AMBUSH_1)	syree037.ogg
+#(HELLO_AFTER_AMBUSH_1)	syreen-037.ogg
 SUCCESS, Captain! The Mycons' fleet is in shambles!
 JUSTICE IS OURS!
 We have revenged ourselves against the heinous Mycons!
@@ -435,14 +435,14 @@ and Captain, now that we have taken our revenge on the Mycon
 we give you our starship officers and Penetrator designs so that you can add our ships
 to your fleet.
 
-#(HELLO_AFTER_AMBUSH_2)	syree038.ogg
+#(HELLO_AFTER_AMBUSH_2)	syreen-038.ogg
 Hello brave Earthling. Your return is welcome.
 My people, the Syreen, shall be forever in your debt.
 In fact, many of my officers wish to thank you... personally... for your efforts on our behalf.
 I suggest you set aside a week sometime in the near future
 so that you can properly receive your hero's welcome aboard this starbase.
 
-#(HELLO_AFTER_AMBUSH_3)	syree039.ogg
+#(HELLO_AFTER_AMBUSH_3)	syreen-039.ogg
 Oh, Captain! The flush of victory still has my body quivering!
 For so many years we have dreamed of putting the death of our beloved homeworld behind us
 and now this has finally come to pass!
@@ -452,14 +452,14 @@ And you know what, Captain?
 I have plans... Plans you would be most interested in hearing
 but I shall save them for later... when we can meet... privately.
 
-#(HELLO_AFTER_AMBUSH_4)	syree040.ogg
+#(HELLO_AFTER_AMBUSH_4)	syreen-040.ogg
 Ah! My beautiful Captain from Earth!
 What can I do for you... please tell me.
 
 #(what_now_after_ambush)
 Is there anything else I can do to you - um! - I mean, do FOR you.
 
-#(DO_THIS_AFTER_AMBUSH)	syree041.ogg
+#(DO_THIS_AFTER_AMBUSH)	syreen-041.ogg
 Captain, the next step is to pull down the slave shield from our planet.
 In my opinion, the only people who could do that are the Chenjesu
 and as far as I know, they are under a shield of their own.
@@ -472,7 +472,7 @@ You will have to find their weak spot, and then strike it with everything you've
 #(what_about_you)
 So what happens to you now?
 
-#(ABOUT_ME)	syree042.ogg
+#(ABOUT_ME)	syreen-042.ogg
 I expect I'm going to be pretty busy for the next few months
 overseeing repairs to our fleet of Penetrator starships
 and preparing some kind of defensive system for this starbase.
@@ -481,39 +481,39 @@ If and when the Ur-Quan return here, we want to have a little surprise ready for
 #(whats_up_after_ambush)
 So, what's new Talana?
 
-#(GENERAL_INFO_AFTER_AMBUSH_1)	syree043.ogg
+#(GENERAL_INFO_AFTER_AMBUSH_1)	syreen-043.ogg
 Not a great deal, Captain. You seem to be the biggest source of excitement around here.
 I've had requests from just about every officer under my command
 to be transferred to your Earth Starbase to serve under you.
 If I wasn't running this Starbase, I'd be first in line.
 
-#(GENERAL_INFO_AFTER_AMBUSH_2)	syree044.ogg
+#(GENERAL_INFO_AFTER_AMBUSH_2)	syreen-044.ogg
 We have been intercepting a concentration of Hierarchy broadcasts
 but we cannot translate their content.
 They all appear to be originating from the direction of the Horologii constellation.
 
-#(GENERAL_INFO_AFTER_AMBUSH_3)	syree045.ogg
+#(GENERAL_INFO_AFTER_AMBUSH_3)	syreen-045.ogg
 Nothing new to report, Captain.
 
-#(GENERAL_INFO_AFTER_AMBUSH_4)	syree046.ogg
+#(GENERAL_INFO_AFTER_AMBUSH_4)	syreen-046.ogg
 Nothing new to report, Captain.
 
 #(bye_after_ambush)
 Goodbye Talana.
 
-#(GOODBYE_AFTER_AMBUSH)	syree047.ogg
+#(GOODBYE_AFTER_AMBUSH)	syreen-047.ogg
 Goodbye my human.
 
-#(FOUND_VAULT_YET_1)	syree048.ogg
+#(FOUND_VAULT_YET_1)	syreen-048.ogg
 Have you found the ship vault yet?
 
-#(FOUND_VAULT_YET_2)	syree049.ogg
+#(FOUND_VAULT_YET_2)	syreen-049.ogg
 Any success finding our ships, Captain?
 
 #(vault_hint)
 Er... no. Have you got any idea where it is, even a guess?
 
-#(OK_HINT)	syree050.ogg
+#(OK_HINT)	syreen-050.ogg
 Only that the vault is at a red or maybe orange star, and not too far from our position.
 
 #(found_vault)
@@ -522,28 +522,28 @@ Yes! We found it on the moon of Epsilon Camelopardalis I.
 #(bye_before_vault)
 Goodbye, Talana. I'm off to find the vault!
 
-#(GOODBYE_BEFORE_VAULT)	syree051.ogg
+#(GOODBYE_BEFORE_VAULT)	syreen-051.ogg
 Good luck, Captain.
 
 #(what_do_i_get_for_this)
 So what do I get for this, eh? Hmm? Eh?
 
-#(GRATITUDE)	syree052.ogg
+#(GRATITUDE)	syreen-052.ogg
 You will receive more gratitude than you know what to do with, Captain.
 
 #(not_sure)
 Uh... I'm just not sure. This sounds dangerous.
 
-#(PLEASE)	syree053.ogg
+#(PLEASE)	syreen-053.ogg
 Please, Captain, we need your help!
 
-#(READY_FOR_AMBUSH)	syree054.ogg
+#(READY_FOR_AMBUSH)	syreen-054.ogg
 We will wait here for the Mycons.
 
 #(repeat_plan)
 Could you repeat the plan again?
 
-#(OK_REPEAT_PLAN)	syree055.ogg
+#(OK_REPEAT_PLAN)	syreen-055.ogg
 Ok, here's the plan, again.
 You must go to the Mycons and tell them about a world at the Organon star system.
 Tell them that you have found the perfect world for their hideous Deep Children.
@@ -553,17 +553,17 @@ Then we shall destroy them.
 #(bye_before_ambush)
 Good luck, Talana.
 
-#(GOODBYE_BEFORE_AMBUSH)	syree056.ogg
+#(GOODBYE_BEFORE_AMBUSH)	syreen-056.ogg
 Same to you, my human.
 
 #(what_about_us)
 I guess what I mean is... What about us, Talana?
 
-#(ABOUT_US)	syree057.ogg
+#(ABOUT_US)	syreen-057.ogg
 I'm afraid our duties will keep us apart, Captain
 But for now, at least, there's this...
 
-#(MORE_COMFORTABLE)	syree058.ogg
+#(MORE_COMFORTABLE)	syreen-058.ogg
 That's more like it... now 
 let me help you off with this
 yes... now aren't you a lot more comfortable?
@@ -571,7 +571,7 @@ yes... now aren't you a lot more comfortable?
 #(in_the_spirit)
 I see! Well, in the spirit of interspecies communication, let me just say, COWABUNGA!
 
-#(OK_SPIRIT)	syree059.ogg
+#(OK_SPIRIT)	syreen-059.ogg
 Oooh! Say that word again!
 It makes me feel so excited!
 It makes me want to do something nice for you
@@ -582,7 +582,7 @@ and especially, this!
 #(what_in_mind)
 Hey... what have you got in mind here?
 
-#(SOMETHING_LIKE_THIS)	syree060.ogg
+#(SOMETHING_LIKE_THIS)	syreen-060.ogg
 Well to start off, I thought we'd do something like this
 unless your species isn't limber enough
 and then I thought we could move on to something a bit more like... Mmmm... this.
@@ -593,7 +593,7 @@ even though I've never done it before!
 #(hands_off)
 Hey! Hands off lady! I'm not THAT kind of Captain.
 
-#(OK_WONT_USE_HANDS)	syree061.ogg
+#(OK_WONT_USE_HANDS)	syreen-061.ogg
 Oh, Captain... I would never think of doing something unpleasant to you
 quite the opposite in fact.
 But if you want me to keep my hands off... I can use other... things...
@@ -604,7 +604,7 @@ and this right about here.
 #(why_lights_off)
 Ahh... why are the lights off?
 
-#(LIGHTS_OFF_BECAUSE)	syree062.ogg
+#(LIGHTS_OFF_BECAUSE)	syreen-062.ogg
 Because, my darling, if the light was on, I couldn't do this...
 or this...
 or this...
@@ -613,7 +613,7 @@ or, umm... this.
 #(evil_monster)
 You're not going to turn into some weird alien monster now, and bite my head off, are you?
 
-#(NOT_EVIL_MONSTER)	syree063.ogg
+#(NOT_EVIL_MONSTER)	syreen-063.ogg
 Ha!-ha!-ha! An alien monster? Me?
 ME?! WHY CAAPTAIN! WHYEVER DOO YOOU SAAY THAAAT!!!
 REEAARRGGGG!!!!
@@ -622,13 +622,13 @@ REEAARRGGGG!!!!
 #(disease)
 Very funny. Look, I'd be more comfortable if we just turned the lights back on.
 
-#(JUST_RELAX)	syree064.ogg
+#(JUST_RELAX)	syreen-064.ogg
 Just relax, my silly human Captain. Let me take care of everything.
 
 #(what_happens_if_i_touch_this)
 Hmmm... what happens if I do this?
 
-#(THIS_HAPPENS)	syree065.ogg
+#(THIS_HAPPENS)	syreen-065.ogg
 ...mmm
 MMMm!...
 Ohh!...
@@ -638,7 +638,7 @@ does that answer your question?
 #(are_you_sure_this_is_ok)
 Are you sure this is okay? I'm nervous.
 
-#(YES_SURE)	syree066.ogg
+#(YES_SURE)	syreen-066.ogg
 Please don't worry, my darling human
 we have all the time in the world
 and my door locks securely.
@@ -646,28 +646,28 @@ and my door locks securely.
 #(boy_they_never_taught)
 Boy-oh-boy! They never taught me stuff like this back at Unzervalt!
 
-#(THEN_LET_ME_TEACH)	syree067.ogg
+#(THEN_LET_ME_TEACH)	syreen-067.ogg
 Then let me teach you what you need to know
 we will begin with the fundamentals of basic Syreen physiology...
 
 #(not_much_more_to_say)
 Hmm, uh.. well, uh, I guess I don't have much more to say, do I?
 
-#(THEN_STOP_TALKING)	syree068.ogg
+#(THEN_STOP_TALKING)	syreen-068.ogg
 Then stop wasting your lips on words, you silly fool
 and come here!...
 
-#(LATER)	syree069.ogg
+#(LATER)	syreen-069.ogg
 (...several hours later...)  
 
-#(SEX_GOODBYE)	syree070.ogg
+#(SEX_GOODBYE)	syreen-070.ogg
 Goodbye Captain, darling... we each have our jobs to do
 now you must go!
 But you will remain always in my mind and heart
 and deep within me, I know that someday, when all this madness has come to an end
 we will be together like this... again.
 
-#(OUT_TAKES) syree071.ogg
+#(OUT_TAKES) syreen-071.ogg
 In case you were wondering about me... don't worry! I'm doing fine!
 In fact, I just talked with the designers and they have assured me
 that the sequel will be all about me! Isn't that great!
