@@ -71,6 +71,7 @@ void prepareConfigDir (const char *configDirName);
 void prepareMeleeDir (void);
 void prepareSaveDir (void);
 void prepareAddons (const char **addons);
+void prepareShadowAddons (const char **addons);
 
 BOOLEAN loadAddon (const char *addon);
 int loadIndices (uio_DirHandle *baseDir);

@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Allow addons to override any content by placing zips into their
+  'shadow-content' dir - Alex
 - Content reorg: font chars now use hexadecimal numbering - Alex
 - Content reorg: some race comm and ships renamed, ship files renamed,
   many ani files renamed, new naming scheme for ani frames and voice - Alex

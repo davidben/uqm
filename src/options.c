@@ -77,8 +77,8 @@ static uio_MountHandle *mountContentDir (uio_Repository *repository,
 static void mountAddonDir (uio_Repository *repository,
 		uio_MountHandle *contentMountHandle, const char *addonDirName);
 
-static void mountDirZips (uio_MountHandle *contentHandle,
-		uio_DirHandle *dirHandle, const char *mountPoint);
+static void mountDirZips (uio_DirHandle *dirHandle, const char *mountPoint,
+		int relativeFlags, uio_MountHandle *relativeHandle);
 
 
 // Looks for a file 'file' in all 'numLocs' locations from 'locs'.
@@ -344,7 +344,7 @@ mountContentDir (uio_Repository *repository, const char *contentPath)
 	packagesDir = uio_openDir (repository, "/packages", 0);
 	if (packagesDir != NULL)
 	{
-		mountDirZips (contentMountHandle, packagesDir, "/");
+		mountDirZips (packagesDir, "/", uio_MOUNT_BELOW, contentMountHandle);
 		uio_closeDir (packagesDir);	
 	}
 
@@ -390,7 +390,7 @@ mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
 		return;
 	}
 
-	mountDirZips (mountHandle, addonsDir, "addons");
+	mountDirZips (addonsDir, "addons", uio_MOUNT_BELOW, mountHandle);
 			
 	availableAddons = uio_getDirList (addonsDir, "", "", match_MATCH_PREFIX);
 	if (availableAddons != NULL)
@@ -423,7 +423,7 @@ mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
 					 "not found; addon skipped.", addon);
 				continue;
 			}
-			mountDirZips (mountHandle, addonDir, mountname);
+			mountDirZips (addonDir, mountname, uio_MOUNT_BELOW, mountHandle);
 			uio_closeDir (addonDir);
 		}
 	}
@@ -439,7 +439,8 @@ mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
 }
 
 static void
-mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle, const char *mountPoint)
+mountDirZips (uio_DirHandle *dirHandle, const char *mountPoint,
+		int relativeFlags, uio_MountHandle *relativeHandle)
 {
 	static uio_AutoMount *autoMount[] = { NULL };
 	uio_DirList *dirList;
@@ -454,8 +455,8 @@ mountDirZips (uio_MountHandle *contentHandle, uio_DirHandle *dirHandle, const ch
 		{
 			if (uio_mountDir (repository, mountPoint, uio_FSTYPE_ZIP,
 					dirHandle, dirList->names[i], "/", autoMount,
-					uio_MOUNT_BELOW | uio_MOUNT_RDONLY,
-					contentHandle) == NULL)
+					relativeFlags | uio_MOUNT_RDONLY,
+					relativeHandle) == NULL)
 			{
 				log_add (log_Warning, "Warning: Could not mount '%s': %s.",
 						dirList->names[i], strerror (errno));
@@ -513,7 +514,7 @@ loadAddon (const char *addon)
 		return FALSE;
 	}
 
-	loadIndices (addonDir);		
+	loadIndices (addonDir);
 
 	uio_closeDir (addonDir);
 	uio_closeDir (addonsDir);
@@ -521,10 +522,47 @@ loadAddon (const char *addon)
 }
 
 void
+prepareShadowAddons (const char **addons)
+{
+	uio_DirHandle *addonsDir;
+	const char *shadowDirName = "shadow-content";
+
+	addonsDir = uio_openDirRelative (contentDir, "addons", 0);
+	// If anything fails here, it will fail again later, so
+	// we'll just keep quiet about it for now
+	if (addonsDir == NULL)
+		return;
+
+	for (; *addons != NULL; addons++)
+	{
+		const char *addon = *addons;
+		uio_DirHandle *addonDir;
+		uio_DirHandle *shadowDir;
+
+		addonDir = uio_openDirRelative (addonsDir, addon, 0);
+		if (addonDir == NULL)
+			continue;
+
+		// Mount addon's "shadow-content" on top of "/"
+		shadowDir = uio_openDirRelative (addonDir, shadowDirName, 0);
+		if (shadowDir)
+		{
+			log_add (log_Debug, "Mounting shadow content of '%s' addon", addon);
+			mountDirZips (shadowDir, "/", uio_MOUNT_TOP, NULL);
+			uio_closeDir (shadowDir);
+		}
+		uio_closeDir (addonDir);
+	}
+
+	uio_closeDir (addonsDir);
+}
+
+void
 prepareAddons (const char **addons)
 {
 	for (; *addons != NULL; addons++)
 	{
+		log_add (log_Info, "Loading addon '%s'", *addons);
 		if (!loadAddon (*addons))
 		{
 			break;
