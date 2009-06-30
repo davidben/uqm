@@ -36,23 +36,58 @@
 #include "libs/mathlib.h"
 
 
+static inline long
+signedDivWithError (long val, long divisor)
+{
+	int invert = 0;
+	if (val < 0)
+	{
+		invert = 1;
+		val = -val;
+	}
+	val = (val + ROUNDING_ERROR (divisor)) / divisor;
+	return invert ? -val : val;
+}
 
-#define UNIVERSE_TO_DISPX(ux) \
-		(COORD)(((((long)(ux) - pMenuState->flash_rect1.corner.x) \
-		<< LOBYTE (pMenuState->delta_item)) \
-		* SIS_SCREEN_WIDTH / (MAX_X_UNIVERSE + 1)) + ((SIS_SCREEN_WIDTH - 1) >> 1))
-#define UNIVERSE_TO_DISPY(uy) \
-		(COORD)(((((long)pMenuState->flash_rect1.corner.y - (uy)) \
-		<< LOBYTE (pMenuState->delta_item)) \
-		* SIS_SCREEN_HEIGHT / (MAX_Y_UNIVERSE + 1)) + ((SIS_SCREEN_HEIGHT - 1) >> 1))
-#define DISP_TO_UNIVERSEX(dx) \
-		((COORD)((((long)((dx) - ((SIS_SCREEN_WIDTH - 1) >> 1)) \
-		* (MAX_X_UNIVERSE + 1)) >> LOBYTE (pMenuState->delta_item)) \
-		/ SIS_SCREEN_WIDTH) + pMenuState->flash_rect1.corner.x)
-#define DISP_TO_UNIVERSEY(dy) \
-		((COORD)((((long)(((SIS_SCREEN_HEIGHT - 1) >> 1) - (dy)) \
-		* (MAX_Y_UNIVERSE + 1)) >> LOBYTE (pMenuState->delta_item)) \
-		/ SIS_SCREEN_HEIGHT) + pMenuState->flash_rect1.corner.y)
+#define MAP_FIT_X ((MAX_X_UNIVERSE + 1) / SIS_SCREEN_WIDTH + 1)
+
+static inline COORD
+universeToDispx (COORD ux)
+{
+	return signedDivWithError ((((long)ux - pMenuState->flash_rect1.corner.x)
+			<< LOBYTE (pMenuState->delta_item))
+			* SIS_SCREEN_WIDTH, MAX_X_UNIVERSE + MAP_FIT_X)
+			+ ((SIS_SCREEN_WIDTH - 1) >> 1);
+}
+#define UNIVERSE_TO_DISPX(ux)  universeToDispx(ux)
+
+static inline COORD
+universeToDispy (COORD uy)
+{
+	return signedDivWithError ((((long)pMenuState->flash_rect1.corner.y - uy)
+			<< LOBYTE (pMenuState->delta_item))
+			* SIS_SCREEN_HEIGHT, MAX_Y_UNIVERSE + 2)
+			+ ((SIS_SCREEN_HEIGHT - 1) >> 1);
+}
+#define UNIVERSE_TO_DISPY(uy)  universeToDispy(uy)
+
+static inline COORD
+dispxToUniverse (COORD dx)
+{
+	return (((long)(dx - ((SIS_SCREEN_WIDTH - 1) >> 1))
+			* (MAX_X_UNIVERSE + MAP_FIT_X)) >> LOBYTE (pMenuState->delta_item))
+			/ SIS_SCREEN_WIDTH + pMenuState->flash_rect1.corner.x;
+}
+#define DISP_TO_UNIVERSEX(dx)  dispxToUniverse(dx)
+
+static inline COORD
+dispyToUniverse (COORD dy)
+{
+	return (((long)(((SIS_SCREEN_HEIGHT - 1) >> 1) - dy)
+			* (MAX_Y_UNIVERSE + 2)) >> LOBYTE (pMenuState->delta_item))
+			/ SIS_SCREEN_HEIGHT + pMenuState->flash_rect1.corner.y;
+}
+#define DISP_TO_UNIVERSEY(dy)  dispyToUniverse(dy)
 
 static BOOLEAN transition_pending;
 
@@ -619,43 +654,29 @@ UpdateCursorLocation (MENU_STATE *pMS, int sx, int sy, const POINT *newpt)
 
 	if (sx)
 	{
-		pMS->first_item.x =
-				DISP_TO_UNIVERSEX (s.origin.x) - sx;
+		pMS->first_item.x = DISP_TO_UNIVERSEX (s.origin.x) - sx;
 		while (UNIVERSE_TO_DISPX (pMS->first_item.x) == pt.x)
-		{
 			pMS->first_item.x += sx;
-			if (pMS->first_item.x < 0)
-			{
-				pMS->first_item.x = 0;
-				break;
-			}
-			else if (pMS->first_item.x > MAX_X_UNIVERSE)
-			{
-				pMS->first_item.x = MAX_X_UNIVERSE;
-				break;
-			}
-		}
+		
+		if (pMS->first_item.x < 0)
+			pMS->first_item.x = 0;
+		else if (pMS->first_item.x > MAX_X_UNIVERSE)
+			pMS->first_item.x = MAX_X_UNIVERSE;
+
 		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
 	}
 
 	if (sy)
 	{
-		pMS->first_item.y =
-				DISP_TO_UNIVERSEY (s.origin.y) + sy;
+		pMS->first_item.y = DISP_TO_UNIVERSEY (s.origin.y) + sy;
 		while (UNIVERSE_TO_DISPY (pMS->first_item.y) == pt.y)
-		{
 			pMS->first_item.y -= sy;
-			if (pMS->first_item.y < 0)
-			{
-				pMS->first_item.y = 0;
-				break;
-			}
-			else if (pMS->first_item.y > MAX_Y_UNIVERSE)
-			{
-				pMS->first_item.y = MAX_Y_UNIVERSE;
-				break;
-			}
-		}
+
+		if (pMS->first_item.y < 0)
+			pMS->first_item.y = 0;
+		else if (pMS->first_item.y > MAX_Y_UNIVERSE)
+			pMS->first_item.y = MAX_Y_UNIVERSE;
+
 		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
 	}
 
@@ -706,6 +727,19 @@ UpdateCursorInfo (MENU_STATE *pMS, UNICODE *prevbuf)
 	{
 		pMS->first_item = BestSDPtr->star_pt;
 		GetClusterName (BestSDPtr, buf);
+	}
+	else
+	{	// No star found. Reset the coordinates to the cursor's location
+		pMS->first_item.x = DISP_TO_UNIVERSEX (pt.x);
+		if (pMS->first_item.x < 0)
+			pMS->first_item.x = 0;
+		else if (pMS->first_item.x > MAX_X_UNIVERSE)
+			pMS->first_item.x = MAX_X_UNIVERSE;
+		pMS->first_item.y = DISP_TO_UNIVERSEY (pt.y);
+		if (pMS->first_item.y < 0)
+			pMS->first_item.y = 0;
+		else if (pMS->first_item.y > MAX_Y_UNIVERSE)
+			pMS->first_item.y = MAX_Y_UNIVERSE;
 	}
 
 	if (GET_GAME_STATE (ARILOU_SPACE))
