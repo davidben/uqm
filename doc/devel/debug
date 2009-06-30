@@ -11,8 +11,8 @@ to be called the next iteration of the main game loop (which will occur
 when the current activity (IP, HyperSpace, Communication, Battle) changes.
 By setting this, a function can be called from the main loop, thereby
 eliminating threading issues that may otherwise arrise.
-The debug key can be specified in keys.cfg by adding a line with a text
-similar to "Debug: key F11".
+The debug key can be specified in user's override.cfg by adding a line
+with a text similar to "debug.1 = STRING:key F12".
 An interactive way to access various debugging code, similar to
 the uio debug mode (see below) is in the works.
 

@@ -150,6 +150,7 @@ initKeyConfig (void)
 
 	/* First, load in the menu keys */
 	LoadResourceIndex (contentDir, "menu.key", "menu.");
+	LoadResourceIndex (configDir, "override.cfg", "menu.");
 	for (i = 0; i < NUM_MENU_KEYS; i++)
 	{
 		if (!menu_res_names[i])

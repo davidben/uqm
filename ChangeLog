@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Load override.cfg from user's dir to add or override menu controls - Alex
 - Allow addons to override any content by placing zips into their
   'shadow-content' dir - Alex
 - Content reorg: font chars now use hexadecimal numbering - Alex

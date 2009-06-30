@@ -37,6 +37,8 @@ typedef struct resource_desc
 	char *fname;
 	ResourceHandlers *vtable;
 	RESOURCE_DATA resdata;
+	// refcount is rudimentary as nothing really frees the descriptors
+	unsigned refcount;
 } ResourceDesc;
 
 struct resource_index_desc
