@@ -462,7 +462,7 @@ GenerateSOL (BYTE control)
 					COUNT angle;
 
 					/* Starbase: */
-					pSolarSysState->MoonDesc[0].data_index = (BYTE)~0;
+					pSolarSysState->MoonDesc[0].data_index = HIERARCHY_STARBASE;
 					pSolarSysState->MoonDesc[0].radius = MIN_MOON_RADIUS;
 					angle = HALF_CIRCLE + QUADRANT;
 					pSolarSysState->MoonDesc[0].location.x =

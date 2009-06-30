@@ -152,15 +152,13 @@ GenerateMoons (void)
 			pMoonDesc->temp_color = pCurDesc->temp_color;
 
 			data_index = pMoonDesc->data_index;
-			if (data_index == (BYTE)~0)
+			if (data_index == HIERARCHY_STARBASE)
 			{
-				/* Starbase */
 				pMoonDesc->image.frame =
 						SetAbsFrameIndex (SpaceJunkFrame, 16);
 			}
-			else if (data_index == (BYTE)(~0 - 1))
+			else if (data_index == SA_MATRA)
 			{
-				/* Sa-Matra */
 				pMoonDesc->image.frame =
 						SetAbsFrameIndex (SpaceJunkFrame, 19);
 			}

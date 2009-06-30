@@ -235,8 +235,7 @@ DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr, PLANET_DESC *pPlanetDesc)
 {
 	DWORD old_seed;
 
-					/* Earth Starbase */
-	if (pPlanetDesc->data_index == (BYTE)~0)
+	if (pPlanetDesc->data_index == HIERARCHY_STARBASE)
 		return (0);
 
 	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);

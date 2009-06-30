@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Change hardcoded Starbase and Sa-Matra values to pretty enum values
+  (bug #1047), from Nic
 - Load override.cfg from user's dir to add or override menu controls - Alex
 - Allow addons to override any content by placing zips into their
   'shadow-content' dir - Alex

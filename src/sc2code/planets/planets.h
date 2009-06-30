@@ -113,8 +113,6 @@ enum
 #define MIN_MOON_RADIUS 35
 #define MOON_DELTA 20
 
-#define PLANET_SHIELDED (1 << 7)
-
 typedef struct planet_desc
 {
 	DWORD rand_seed;

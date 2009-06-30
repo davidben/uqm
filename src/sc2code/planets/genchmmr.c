@@ -41,7 +41,7 @@ GenerateChmmr (BYTE control)
 				COUNT angle;
 				DWORD rand_val;
 
-				pSolarSysState->MoonDesc[0].data_index = (BYTE)~0;
+				pSolarSysState->MoonDesc[0].data_index = HIERARCHY_STARBASE;
 				pSolarSysState->MoonDesc[0].radius = MIN_MOON_RADIUS;
 				rand_val = TFB_Random ();
 				angle = NORMALIZE_ANGLE (LOWORD (rand_val));

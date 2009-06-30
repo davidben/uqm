@@ -186,7 +186,7 @@ GenerateSamatra (BYTE control)
 				COUNT angle;
 				DWORD rand_val;
 
-				pSolarSysState->MoonDesc[0].data_index = (BYTE)(~0 - 1);
+				pSolarSysState->MoonDesc[0].data_index = SA_MATRA;
 				pSolarSysState->MoonDesc[0].radius = MIN_MOON_RADIUS
 						+ (2 * MOON_DELTA);
 				rand_val = TFB_Random ();
