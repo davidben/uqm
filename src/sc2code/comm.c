@@ -1444,9 +1444,9 @@ InitCommunication (CONVERSATION which_comm)
 		}
 	}
 
-	if (which_comm == URQUAN_PROBE_CONVERSATION)
+	if (which_comm == URQUAN_DRONE_CONVERSATION)
 	{
-		status = URQUAN_PROBE_SHIP;
+		status = URQUAN_DRONE_SHIP;
 		which_comm = URQUAN_CONVERSATION;
 	}
 	else

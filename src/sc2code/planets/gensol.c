@@ -413,7 +413,7 @@ GenerateSOL (BYTE control)
 					GET_GAME_STATE_32 (URQUAN_PROBE_GRPOFFS0);
 			if (GLOBAL (BattleGroupRef) == 0)
 			{
-				CloneShipFragment (URQUAN_PROBE_SHIP,
+				CloneShipFragment (URQUAN_DRONE_SHIP,
 						&GLOBAL (npc_built_ship_q), 0);
 				GLOBAL (BattleGroupRef) = PutGroupInfo (GROUPS_ADD_NEW, 1);
 				ReinitQueue (&GLOBAL (npc_built_ship_q));
