@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Rounding-error correction in log(x|y)ToUniverse (bug #1046), from Nic
 - Change hardcoded Starbase and Sa-Matra values to pretty enum values
   (bug #1047), from Nic
 - Load override.cfg from user's dir to add or override menu controls - Alex

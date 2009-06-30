@@ -92,11 +92,18 @@ extern int ScreenHeight;
 #define UNIT_SCREEN_WIDTH 63
 #define UNIT_SCREEN_HEIGHT 50
 
+#define LOG_UNITS_X      ((SDWORD)(LOG_SPACE_WIDTH >> 4) * SECTOR_WIDTH)
+#define LOG_UNITS_Y      ((SDWORD)(LOG_SPACE_HEIGHT >> 4) * SECTOR_HEIGHT)
+#define UNIVERSE_UNITS_X (((MAX_X_UNIVERSE + 1) >> 4) * 10)
+#define UNIVERSE_UNITS_Y (((MAX_Y_UNIVERSE + 1) >> 4))
+
+#define ROUNDING_ERROR(div)  ((div) >> 1)
+
 static inline COORD
 logxToUniverse (SDWORD lx)
 {
-	return (COORD) ((lx * ((MAX_X_UNIVERSE + 1) >> 4)) * 10
-			/ ((SDWORD) ((LOG_SPACE_WIDTH) >> 4) * SECTOR_WIDTH));
+	return (COORD) ((lx * UNIVERSE_UNITS_X + ROUNDING_ERROR(LOG_UNITS_X))
+			/ LOG_UNITS_X);
 }
 #define LOGX_TO_UNIVERSE(lx) \
 		logxToUniverse (lx)
@@ -104,27 +111,25 @@ static inline COORD
 logyToUniverse (SDWORD ly)
 {
 	return (COORD) (MAX_Y_UNIVERSE -
-			(COORD)(((SDWORD) (ly) * ((MAX_Y_UNIVERSE + 1) >> 4))
-			/ ((SDWORD) ((LOG_SPACE_HEIGHT) >> 4) * SECTOR_HEIGHT)));
+			((ly * UNIVERSE_UNITS_Y + ROUNDING_ERROR(LOG_UNITS_Y))
+			/ LOG_UNITS_Y));
 }
 #define LOGY_TO_UNIVERSE(ly) \
 		logyToUniverse (ly)
 static inline SDWORD
 universeToLogx (COORD ux)
 {
-	return ((SDWORD) ux * ((SDWORD) ((LOG_SPACE_WIDTH) >> 4) * SECTOR_WIDTH)
-			+ ((((MAX_X_UNIVERSE + 1) >> 4) * 10) >> 1))
-			/ (((MAX_X_UNIVERSE + 1) >> 4) * 10);
+	return (ux * LOG_UNITS_X + ROUNDING_ERROR(UNIVERSE_UNITS_X))
+			/ UNIVERSE_UNITS_X;
 }
 #define UNIVERSE_TO_LOGX(ux) \
 		universeToLogx (ux)
 static inline SDWORD
 universeToLogy (COORD uy)
 {
-	return ((SDWORD) (MAX_Y_UNIVERSE - uy)
-			* ((SDWORD) ((LOG_SPACE_HEIGHT) >> 4) * SECTOR_HEIGHT)
-			+ (((MAX_Y_UNIVERSE + 1) >> 4) >> 1))
-			/ ((MAX_Y_UNIVERSE + 1) >> 4);
+	return ((MAX_Y_UNIVERSE - uy) * LOG_UNITS_Y
+			+ ROUNDING_ERROR(UNIVERSE_UNITS_Y))
+			/ UNIVERSE_UNITS_Y;
 }
 #define UNIVERSE_TO_LOGY(uy) \
 		universeToLogy (uy)
