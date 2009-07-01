@@ -1077,6 +1077,7 @@ static void
 PlayerResponseInput (ENCOUNTER_STATE *pES)
 {
 	BYTE response;
+	DWORD TimeIn = GetTimeCounter ();
 
 	if (pES->top_response == (BYTE)~0)
 	{
@@ -1152,6 +1153,8 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 			UnbatchGraphics ();
 			UnlockMutex (GraphicsLock);
 		}
+
+		SleepThreadUntil (TimeIn + ONE_SECOND / 20);
 	}
 }
 

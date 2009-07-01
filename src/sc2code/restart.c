@@ -114,8 +114,9 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 static BOOLEAN
 DoRestart (MENU_STATE *pMS)
 {
-	static DWORD InTime;
+	static DWORD LastInputTime;
 	static DWORD InactTimeOut;
+	DWORD TimeIn = GetTimeCounter ();
 
 	/* Cancel any presses of the Pause key. */
 	GamePaused = FALSE;
@@ -158,15 +159,15 @@ DoRestart (MENU_STATE *pMS)
 			PulsedInputState.menu[KEY_MENU_SELECT] || MouseButtonDown))
 
 	{
-		if (GetTimeCounter () - InTime < InactTimeOut)
-			return (TRUE);
+		if (GetTimeCounter () - LastInputTime > InactTimeOut)
+		{
+			SleepThreadUntil (FadeMusic (0, ONE_SECOND));
+			StopMusic ();
+			FadeMusic (NORMAL_VOLUME, 0);
 
-		SleepThreadUntil (FadeMusic (0, ONE_SECOND));
-		StopMusic ();
-		FadeMusic (NORMAL_VOLUME, 0);
-
-		GLOBAL (CurrentActivity) = (ACTIVITY)~0;
-		return (FALSE);
+			GLOBAL (CurrentActivity) = (ACTIVITY)~0;
+			return (FALSE);
+		}
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
@@ -192,7 +193,7 @@ DoRestart (MENU_STATE *pMS)
 				SetupMenu ();
 				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
 						MENU_SOUND_SELECT);
-				InTime = GetTimeCounter ();
+				LastInputTime = GetTimeCounter ();
 				SetTransitionSource (NULL);
 				BatchGraphics ();
 				DrawRestartMenuGraphic (pMS);
@@ -255,7 +256,9 @@ DoRestart (MENU_STATE *pMS)
 		UnbatchGraphics ();
 	}
 
-	InTime = GetTimeCounter ();
+	LastInputTime = GetTimeCounter ();
+	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
+
 	return (TRUE);
 }
 

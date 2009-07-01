@@ -496,22 +496,24 @@ DoManipulateDevices (MENU_STATE *pMS)
 		NewState = pMS->CurState - 1;
 		if (back)
 		{
-			if (NewState-- == 0)
-				NewState = 0;
+			if (NewState > 0)
+				--NewState;
 
 			if ((SIZE)NewState < NewTop && (NewTop -= MAX_VIS_DEVICES) < 0)
 				NewTop = 0;
 		}
 		else if (forward)
 		{
-			if (++NewState == (BYTE)pMS->first_item.x)
+			++NewState;
+			if (NewState == (BYTE)pMS->first_item.x)
 				NewState = (BYTE)(pMS->first_item.x - 1);
 
 			if (NewState >= NewTop + MAX_VIS_DEVICES)
 				NewTop = NewState;
 		}
 
-		if (++NewState != pMS->CurState)
+		++NewState;
+		if (NewState != pMS->CurState)
 		{
 			if (NewTop != pMS->first_item.y)
 			{
@@ -522,6 +524,8 @@ SelectDevice:
 			DrawDevices (pMS, (BYTE)(pMS->CurState - 1), (BYTE)(NewState - 1));
 			pMS->CurState = NewState;
 		}
+
+		SleepThread (ONE_SECOND / 30);
 	}
 
 	return (TRUE);

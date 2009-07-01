@@ -453,6 +453,10 @@ TFB_DoVideoInput (void *pIS)
 		}
 		// non a/s decoder seeking is not supported yet
 	}
+	else
+	{
+		SleepThread (ONE_SECOND / 30);
+	}
 
 	return TRUE;
 }

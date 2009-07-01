@@ -340,16 +340,19 @@ DoDiscardCargo (MENU_STATE *pMS)
 		NewState = pMS->CurState - 1;
 		if (back)
 		{
-			if (NewState-- == 0)
-				NewState = NUM_ELEMENT_CATEGORIES - 1;
+			if (NewState == 0)
+				NewState += NUM_ELEMENT_CATEGORIES;
+			--NewState;
 		}
 		else if (forward)
 		{
-			if (++NewState == NUM_ELEMENT_CATEGORIES)
+			++NewState;
+			if (NewState == NUM_ELEMENT_CATEGORIES)
 				NewState = 0;
 		}
 
-		if (++NewState != pMS->CurState)
+		++NewState;
+		if (NewState != pMS->CurState)
 		{
 SelectCargo:
 			DrawCargoStrings ((BYTE)(pMS->CurState - 1), (BYTE)(NewState - 1));
@@ -360,6 +363,8 @@ SelectCargo:
 			pMS->CurState = NewState;
 		}
 	}
+
+	SleepThread (ONE_SECOND / 30);
 
 	return (TRUE);
 }

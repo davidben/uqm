@@ -668,6 +668,7 @@ static BOOLEAN DoScan (MENU_STATE *pMS);
 static BOOLEAN
 PickPlanetSide (MENU_STATE *pMS)
 {
+	DWORD TimeIn = GetTimeCounter ();
 	BOOLEAN select, cancel;
 	select = PulsedInputState.menu[KEY_MENU_SELECT];
 	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
@@ -844,12 +845,10 @@ ExitPlanetSide:
 		if (new_pt.x != pSolarSysState->MenuState.first_item.x
 				|| new_pt.y != pSolarSysState->MenuState.first_item.y)
 		{
-			DWORD TimeIn;
-
-			TimeIn = GetTimeCounter ();
 			SetPlanetLoc (new_pt);
-			SleepThreadUntil (TimeIn + ONE_SECOND / 40);
 		}
+
+		SleepThreadUntil (TimeIn + ONE_SECOND / 40);
 	}
 
 	return (TRUE);

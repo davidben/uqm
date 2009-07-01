@@ -188,7 +188,7 @@ FRAME MeleeFrame;
 		// Loaded from melee/melebkgd.ani
 static FRAME BuildPickFrame;
 		// Constructed.
-DWORD InTime;
+DWORD LastInputTime;
 MELEE_STATE *pMeleeState;
 
 BOOLEAN DoMelee (MELEE_STATE *pMS);
@@ -1014,9 +1014,11 @@ DeleteCurrentShip (MELEE_STATE *pMS)
 static void
 AdvanceCursor (MELEE_STATE *pMS)
 {
-	if (++pMS->col == NUM_MELEE_COLUMNS)
+	++pMS->col;
+	if (pMS->col == NUM_MELEE_COLUMNS)
 	{
-		if (++pMS->row < NUM_MELEE_ROWS)
+		++pMS->row;
+		if (pMS->row < NUM_MELEE_ROWS)
 			pMS->col = 0;
 		else
 		{
@@ -1047,8 +1049,11 @@ OnTeamNameChange (TEXTENTRY_STATE *pTES)
 static BOOLEAN
 DoEdit (MELEE_STATE *pMS)
 {
+	DWORD TimeIn = GetTimeCounter ();
+
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
+	
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT | MENU_SOUND_DELETE);
 	if (!pMS->Initialized)
 	{
@@ -1078,7 +1083,7 @@ DoEdit (MELEE_STATE *pMS)
 		pMS->MeleeOption = START_MELEE;
 		pMS->InputFunc = DoMelee;
 		UnlockMutex (GraphicsLock);
-		InTime = GetTimeCounter ();
+		LastInputTime = GetTimeCounter ();
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
 			&& (PulsedInputState.menu[KEY_MENU_SELECT] ||
@@ -1151,13 +1156,13 @@ DoEdit (MELEE_STATE *pMS)
 		{
 			if (PulsedInputState.menu[KEY_MENU_LEFT])
 			{
-				if (col-- == 0)
-					col = 0;
+				if (col > 0)
+					--col;
 			}
 			else if (PulsedInputState.menu[KEY_MENU_RIGHT])
 			{
-				if (++col == NUM_MELEE_COLUMNS)
-					col = NUM_MELEE_COLUMNS - 1;
+				if (col < NUM_MELEE_COLUMNS - 1)
+					++col;
 			}
 
 			if (PulsedInputState.menu[KEY_MENU_UP])
@@ -1205,6 +1210,8 @@ DoEdit (MELEE_STATE *pMS)
 	flushPacketQueues ();
 #endif
 
+	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
+
 	return (TRUE);
 }
 
@@ -1212,6 +1219,8 @@ DoEdit (MELEE_STATE *pMS)
 static BOOLEAN
 DoPickShip (MELEE_STATE *pMS)
 {
+	DWORD TimeIn = GetTimeCounter ();
+
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
@@ -1302,12 +1311,14 @@ DoPickShip (MELEE_STATE *pMS)
 
 		if (PulsedInputState.menu[KEY_MENU_LEFT])
 		{
-			if (NewStarShip-- % NUM_PICK_COLS == 0)
+			if (NewStarShip % NUM_PICK_COLS == 0)
 				NewStarShip += NUM_PICK_COLS;
+			--NewStarShip;
 		}
 		else if (PulsedInputState.menu[KEY_MENU_RIGHT])
 		{
-			if (++NewStarShip % NUM_PICK_COLS == 0)
+			++NewStarShip;
+			if (NewStarShip % NUM_PICK_COLS == 0)
 				NewStarShip -= NUM_PICK_COLS;
 		}
 		
@@ -1335,6 +1346,8 @@ DoPickShip (MELEE_STATE *pMS)
 			DrawMeleeShipStrings (pMS, NewStarShip);
 		}
 	}
+
+	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
 
 	return (TRUE);
 }
@@ -1836,6 +1849,7 @@ StartMeleeButtonPressed (MELEE_STATE *pMS)
 static BOOLEAN
 DoConnectingDialog (MELEE_STATE *pMS)
 {
+	DWORD TimeIn = GetTimeCounter ();
 	COUNT which_side = (pMS->MeleeOption == NET_TOP) ? 1 : 0;
 	NetConnection *conn;
 
@@ -1947,7 +1961,7 @@ DoConnectingDialog (MELEE_STATE *pMS)
 
 	flushPacketQueues ();
 
-	SleepThread (30);
+	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
 
 	return TRUE;
 }
@@ -2021,6 +2035,8 @@ nextControlType (COUNT which_side)
 BOOLEAN
 DoMelee (MELEE_STATE *pMS)
 {
+	DWORD TimeIn = GetTimeCounter ();
+
 	BOOLEAN force_select = FALSE;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
@@ -2047,7 +2063,7 @@ DoMelee (MELEE_STATE *pMS)
 				
 			XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
 		}
-		InTime = GetTimeCounter ();
+		LastInputTime = GetTimeCounter ();
 		return TRUE;
 	}
 
@@ -2060,7 +2076,7 @@ DoMelee (MELEE_STATE *pMS)
 	{
 		// Start editing the teams.
 		LockMutex (GraphicsLock);
-		InTime = GetTimeCounter ();
+		LastInputTime = GetTimeCounter ();
 		Deselect (pMS->MeleeOption);
 		UnlockMutex (GraphicsLock);
 		pMS->MeleeOption = EDIT_MELEE;
@@ -2086,19 +2102,19 @@ DoMelee (MELEE_STATE *pMS)
 		NewMeleeOption = pMS->MeleeOption;
 		if (PulsedInputState.menu[KEY_MENU_UP])
 		{
-			InTime = GetTimeCounter ();
-			if (NewMeleeOption-- == TOP_ENTRY)
-				NewMeleeOption = TOP_ENTRY;
+			LastInputTime = GetTimeCounter ();
+			if (NewMeleeOption != TOP_ENTRY)
+				--NewMeleeOption;
 		}
 		else if (PulsedInputState.menu[KEY_MENU_DOWN])
 		{
-			InTime = GetTimeCounter ();
-			if (NewMeleeOption++ == QUIT_BOT)
-				NewMeleeOption = QUIT_BOT;
+			LastInputTime = GetTimeCounter ();
+			if (NewMeleeOption != QUIT_BOT)
+				++NewMeleeOption;
 		}
 
 		if ((PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
-				&& GetTimeCounter () - InTime > ONE_SECOND * 10)
+				&& GetTimeCounter () - LastInputTime > ONE_SECOND * 10)
 		{
 			force_select = TRUE;
 			NewMeleeOption = START_MELEE;
@@ -2143,7 +2159,7 @@ DoMelee (MELEE_STATE *pMS)
 					pMS->Initialized = FALSE;
 					pMS->side = pMS->MeleeOption == LOAD_TOP ? 0 : 1;
 					DoLoadTeam (pMS);
-					InTime = GetTimeCounter ();
+					LastInputTime = GetTimeCounter ();
 					break;
 				case SAVE_TOP:
 				case SAVE_BOT:
@@ -2207,6 +2223,8 @@ DoMelee (MELEE_STATE *pMS)
 
 	check_for_disconnections (pMS);
 #endif
+
+	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
 
 	return (TRUE);
 }
@@ -2694,6 +2712,4 @@ closeFeedback (NetConnection *conn)
 }
 
 #endif  /* NETPLAY */
-
-
 

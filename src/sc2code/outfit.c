@@ -801,7 +801,10 @@ ExitOutfit:
 		}
 
 		if (pMS->CurState == OUTFIT_DOFUEL)
+		{
 			ChangeFuelQuantity ();
+			SleepThread (ONE_SECOND / 30);
+		}
 		else
 			DoMenuChooser (pMS, PM_FUEL);
 	}

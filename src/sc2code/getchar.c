@@ -419,6 +419,8 @@ DoTextEntry (TEXTENTRY_STATE *pTES)
 		
 	if (pTES->FrameCallback)
 		return pTES->FrameCallback (pTES);
+	else
+		SleepThread (ONE_SECOND / 30);
 
 	return TRUE;
 }

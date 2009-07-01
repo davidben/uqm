@@ -328,6 +328,8 @@ RefocusView (MELEE_STATE *pMS, COUNT index)
 BOOLEAN
 DoLoadTeam (MELEE_STATE *pMS)
 {
+	DWORD TimeIn = GetTimeCounter ();
+
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return FALSE;
 
@@ -433,6 +435,8 @@ DoLoadTeam (MELEE_STATE *pMS)
 			UnlockMutex (GraphicsLock);
 		}
 	}
+
+	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
 
 	return TRUE;
 }

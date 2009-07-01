@@ -1174,6 +1174,8 @@ OnStarNameFrame (TEXTENTRY_STATE *pTES)
 		DrawMatchedStarName (pTES);
 		UpdateFuelRequirement (pMS);
 	}
+
+	SleepThread (ONE_SECOND / 30);
 	
 	return TRUE;
 }
@@ -1229,6 +1231,7 @@ DoMoveCursor (MENU_STATE *pMS)
 #define MAX_ACCEL_DELAY (ONE_SECOND / 8)
 #define STEP_ACCEL_DELAY (ONE_SECOND / 120)
 	static UNICODE last_buf[CURSOR_INFO_BUFSIZE];
+	DWORD TimeIn = GetTimeCounter ();
 
 	pMS->MenuRepeatDelay = (COUNT)pMS->CurState;
 	if (!pMS->Initialized)
@@ -1339,6 +1342,8 @@ DoMoveCursor (MENU_STATE *pMS)
 			UpdateCursorInfo (pMS, last_buf);
 			UpdateFuelRequirement (pMS);
 		}
+
+		SleepThreadUntil (TimeIn + MIN_ACCEL_DELAY);
 	}
 
 	{

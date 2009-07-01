@@ -915,6 +915,7 @@ DoPickGame (MENU_STATE *pMS)
 	BYTE NewState;
 	SUMMARY_DESC *pSD;
 	BOOLEAN first_time;
+	DWORD TimeIn = GetTimeCounter ();
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
@@ -1185,6 +1186,8 @@ ChangeGameSelection:
 			SetFlashRect (NULL, (FRAME)0);
 			UnlockMutex (GraphicsLock);
 		}
+		
+		SleepThreadUntil (TimeIn + ONE_SECOND / 30);
 	}
 
 	return (TRUE);
