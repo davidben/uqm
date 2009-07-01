@@ -369,8 +369,6 @@ mmrnmhrm_postprocess (ELEMENT *ElementPtr)
 		ProcessSound (SetAbsSoundIndex (
 						/* TRANSFORM */
 				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
-		DeltaEnergy (ElementPtr,
-				-StarShipPtr->RaceDescPtr->characteristics.special_energy_cost);
 
 		StarShipPtr->weapon_counter = 0;
 
@@ -434,11 +432,9 @@ mmrnmhrm_preprocess (ELEMENT *ElementPtr)
 		if ((StarShipPtr->cur_status_flags & SPECIAL)
 				&& StarShipPtr->special_counter == 0)
 		{
-			if (StarShipPtr->RaceDescPtr->ship_info.energy_level <
-					StarShipPtr->RaceDescPtr->characteristics.special_energy_cost)
-				DeltaEnergy (ElementPtr,
-						-StarShipPtr->RaceDescPtr->characteristics.special_energy_cost); /* so text will flash */
-			else
+			/* Either we transform or text will flash */
+			if (DeltaEnergy (ElementPtr,
+					-StarShipPtr->RaceDescPtr->characteristics.special_energy_cost))
 			{
 				if (ElementPtr->next.image.farray == StarShipPtr->RaceDescPtr->ship_data.ship)
 					ElementPtr->next.image.farray =
