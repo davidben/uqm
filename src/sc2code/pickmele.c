@@ -529,6 +529,7 @@ GetMeleeStarShips (COUNT playerMask, HSTARSHIP *ships)
 	BOOLEAN ok;
 	GETMELEE_STATE gmstate;
 	TimeCount now;
+	COUNT i;
 
 #ifdef NETPLAY
 	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
@@ -554,8 +555,10 @@ GetMeleeStarShips (COUNT playerMask, HSTARSHIP *ships)
 	now = GetTimeCounter ();
 	gmstate.InputFunc = DoGetMelee;
 	gmstate.Initialized = FALSE;
-	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
+	for (i = 0; i < NUM_PLAYERS; ++i)
 	{
+		// We have to use TFB_Random() results in specific order
+		playerI = GetPlayerOrder (i);
 		gmstate.player[playerI].selecting =
 				(playerMask & (1 << playerI)) != 0;
 		gmstate.player[playerI].ships_left = battle_counter[playerI];
