@@ -27,6 +27,8 @@ static audio_Driver audiodrv;
 /* The globals that control the sound drivers. */
 int snddriver, soundflags;
 
+volatile bool audio_inited = false;
+
 /*
  * Declarations for driver init funcs
  */
@@ -74,12 +76,19 @@ initAudio (sint32 driver, sint32 flags)
 				"NOTICE: Try running UQM with '--sound=none' option");
 		exit (EXIT_FAILURE);
 	}
+	
+	audio_inited = true;
+	
 	return ret;
 }
 
 void
 unInitAudio (void)
 {
+	if (!audio_inited)
+		return;
+
+	audio_inited = false;
 	audiodrv.Uninitialize ();
 }
 

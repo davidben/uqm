@@ -39,6 +39,8 @@
 #include "uqmversion.h"
 #include "options.h"
 
+volatile int MainExited = FALSE;
+
 // Open or close the periodically occuring QuasiSpace portal.
 // A seperate thread is always inside this function when the player
 // is in hyperspace. This thread awakens every BATTLE_FRAME_RATE seconds.
@@ -96,6 +98,13 @@ BackgroundInitKernel (DWORD TimeOut)
 	}
 }
 
+void
+SignalStopMainThread (void)
+{
+	GamePaused = FALSE;
+	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+}
+
 /* TODO: Remove these declarations once threading is gone. */
 extern int snddriver, soundflags;
 
@@ -125,11 +134,13 @@ while (--ac > 0)
 }
 #endif // CREATE_JOURNAL
 
-	/* TODO: Put initAudio back in main where it belongs once threading
-	 *       is gone.
-	 */
-	extern sint32 initAudio (sint32 driver, sint32 flags);
-	initAudio (snddriver, soundflags);
+	{
+		/* TODO: Put initAudio back in main where it belongs once threading
+		 *       is gone.
+		 */
+		extern sint32 initAudio (sint32 driver, sint32 flags);
+		initAudio (snddriver, soundflags);
+	}
 
 	if (!LoadKernel (0,0))
 	{
@@ -258,9 +269,7 @@ while (--ac > 0)
 	FreeGameData ();
 	FreeKernel ();
 
-	// XXX: the abort can now be changed to something cleaner;
-	//   something to terminate the for(;;) loop in main()
-	TFB_Abort ();
+	MainExited = TRUE;
 
 	(void) threadArg;  /* Satisfying compiler (unused parameter) */
 	return 0;

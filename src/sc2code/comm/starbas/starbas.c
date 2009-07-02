@@ -1753,7 +1753,8 @@ SellMinerals (RESPONSE_REF R)
 			total += amount * GLOBAL (ElementWorth[i]);
 			do
 			{
-				if (!Sleepy || AnyButtonPress (TRUE))
+				if (!Sleepy || AnyButtonPress (TRUE) ||
+						(GLOBAL (CurrentActivity) & CHECK_ABORT))
 				{
 					Sleepy = FALSE;
 					GLOBAL_SIS (ElementAmounts[i]) = 0;

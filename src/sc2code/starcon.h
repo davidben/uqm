@@ -17,6 +17,9 @@
 #ifndef _STARCON_H
 #define _STARCON_H
 
+extern volatile int MainExited;
+extern void SignalStopMainThread (void);
+
 extern int Starcon2Main (void *threadArg);
 extern void FreeGameData (void);
 

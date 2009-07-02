@@ -60,7 +60,6 @@ static DWORD GestaltRepeatDelay, GestaltTime;
 static BOOLEAN OldGestalt, CachedGestalt;
 static DWORD _max_accel, _min_accel, _step_accel;
 static BOOLEAN _gestalt_keys;
-int ExitState;
 
 static MENU_SOUND_FLAGS sound_0, sound_1;
 
@@ -352,9 +351,6 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 			JournalInput (InputState);
 #endif /* CREATE_JOURNAL */
 		}
-
-		if (CurrentInputState.menu[KEY_EXIT])
-			ExitState = ConfirmExit ();
 
 		soundFlags = MenuKeysToSoundFlags (&PulsedInputState);
 			

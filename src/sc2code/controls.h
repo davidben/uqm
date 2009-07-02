@@ -102,7 +102,6 @@ void SetDefaultMenuRepeatDelay (void);
 void ResetKeyRepeat (void);
 BOOLEAN PauseGame (void);
 BOOLEAN DoConfirmExit (void);
-void TFB_Abort (void);
 BOOLEAN WaitAnyButtonOrQuit (BOOLEAN CheckSpecial);
 void WaitForNoInput (SIZE Duration);
 BOOLEAN ConfirmExit (void);

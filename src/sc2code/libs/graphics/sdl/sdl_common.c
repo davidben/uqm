@@ -56,11 +56,7 @@ TFB_GRAPHICS_BACKEND *graphics_backend = NULL;
 #define FPS_PERIOD 100
 int RenderedFrames = 0;
 
-void
-TFB_Abort (void)
-{
-	abortFlag = TRUE;
-}
+volatile int QuitPosted = 0;
 
 void
 TFB_PreInit (void)
@@ -208,8 +204,7 @@ TFB_ProcessEvents ()
 				// TODO
 				break;
 			case SDL_QUIT:
-				log_showBox (false, false);
-				exit (EXIT_SUCCESS);
+				QuitPosted = 1;
 				break;
 			case SDL_VIDEORESIZE:    /* User resized video mode */
 				// TODO
@@ -222,7 +217,7 @@ TFB_ProcessEvents ()
 		}
 	}
 
-	if (ImmediateInputState.menu[KEY_ABORT] || abortFlag)
+	if (ImmediateInputState.menu[KEY_ABORT])
 	{
 		log_showBox (false, false);
 		exit (EXIT_SUCCESS);

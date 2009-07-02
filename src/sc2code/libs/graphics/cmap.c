@@ -18,6 +18,7 @@
 
 #include "gfx_common.h"
 #include "libs/tasklib.h"
+#include "libs/inplib.h"
 #include "libs/log.h"
 #include <string.h>
 
@@ -605,6 +606,9 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 
 	if (!ColorMapPtr)
 		return (0);
+
+	if (QuitPosted) // Don't make users wait for fades
+		TimeInterval = 0;
 
 	what = *ColorMapPtr;
 	if (what >= (int)FadeAllToWhite && what <= (int)FadeSomeToColor)

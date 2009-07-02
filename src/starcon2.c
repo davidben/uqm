@@ -29,6 +29,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/sound/sound.h"
 #include "libs/input/input_common.h"
+#include "libs/inplib.h"
 #include "libs/tasklib.h"
 #include "controls.h"
 #include "element.h"
@@ -146,6 +147,7 @@ main (int argc, char *argv[])
 		/* .speechVolumeScale = */  1.0f,
 	};
 	int optionsResult;
+	int i;
 
 	log_init (15);
 
@@ -476,21 +478,47 @@ main (int argc, char *argv[])
 
 	StartThread (Starcon2Main, NULL, 1024, "Starcon2Main");
 
-	for (;;)
+	for (i = 0; i < 2000 && !MainExited; )
 	{
+		if (QuitPosted)
+		{	/* Try to stop the main thread, but limited number of times */
+			SignalStopMainThread ();
+			++i;
+		}
+
 		TFB_ProcessEvents ();
 		ProcessThreadLifecycles ();
 		TFB_FlushGraphics ();
 	}
 
-#if 0
-	unInitTempDir ();
-#endif
-	uninitIO ();
+	/* Currently, we use atexit() callbacks everywhere, so we
+	 *   cannot simply call unInitAudio() and the like, because other
+	 *   tasks might still be using it */
+	if (MainExited)
+	{
+		// Not yet: TFB_UninitInput ();
+		unInitAudio ();
+		uninit_communication ();
+		UninitColorMaps ();
+		// Not yet: TFB_UninitGraphics ();
 
 #ifdef NETPLAY
-	Network_uninit ();
+		NetManager_uninit ();
+		Alarm_uninit ();
+		Network_uninit ();
 #endif
+
+		// Not yet: CleanupTaskSystem ();
+		UnInitTimeSystem ();
+#if 0
+		unInitTempDir ();
+#endif
+		uninitIO ();
+		UnInitThreadSystem ();
+		mem_uninit ();
+	}
+
+	log_showBox (false, false);
 	
 	return EXIT_SUCCESS;
 }

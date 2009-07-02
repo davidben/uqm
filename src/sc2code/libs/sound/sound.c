@@ -17,8 +17,9 @@
  */
 
 #include "sound.h"
-#include "../compiler.h"
-#include "../tasklib.h"
+#include "libs/compiler.h"
+#include "libs/tasklib.h"
+#include "libs/inplib.h"
 
 static Task FadeTask;
 static SIZE TTotal;
@@ -118,6 +119,8 @@ WaitForSoundEnd (COUNT Channel)
 			SoundPlaying () : ChannelPlaying (Channel))
 	{
 		SleepThread (ONE_SECOND / 20);
+		if (QuitPosted) // Don't make users wait for sounds to end
+			break;
 	}
 }
 
@@ -183,6 +186,9 @@ DWORD
 FadeMusic (BYTE end_vol, SIZE TimeInterval)
 {
 	DWORD TimeOut;
+
+	if (QuitPosted) // Don't make users wait for fades
+		TimeInterval = 0;
 
 	if (FadeTask)
 	{
