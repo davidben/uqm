@@ -83,7 +83,7 @@ GenerateScout (BYTE control)
 void
 GenerateZoqFotPik (BYTE control)
 {
-	if (CurStarDescPtr->Index == ZOQ_SCOUT_DEFINED)
+	if (CurStarDescPtr && CurStarDescPtr->Index == ZOQ_SCOUT_DEFINED)
 	{
 		GenerateScout (control);
 		return;

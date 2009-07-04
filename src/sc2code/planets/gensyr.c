@@ -63,7 +63,7 @@ GenerateTrap (BYTE control)
 void
 GenerateSyreen (BYTE control)
 {
-	if (CurStarDescPtr->Index == MYCON_TRAP_DEFINED)
+	if (CurStarDescPtr && CurStarDescPtr->Index == MYCON_TRAP_DEFINED)
 	{
 		GenerateTrap (control);
 		return;

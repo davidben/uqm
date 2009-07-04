@@ -176,7 +176,7 @@ GenerateAndrosynth (BYTE control)
 void
 GenerateOrz (BYTE control)
 {
-	if (CurStarDescPtr->Index == ANDROSYNTH_DEFINED)
+	if (CurStarDescPtr && CurStarDescPtr->Index == ANDROSYNTH_DEFINED)
 	{
 		GenerateAndrosynth (control);
 		return;
