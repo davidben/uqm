@@ -1242,7 +1242,8 @@ PickGame (MENU_STATE *pMS)
 
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
-		if (CommData.ConversationPhrases
+		// TODO: Need a better test for in-encounter
+		if (CommData.ConversationPhrasesRes
 				|| !(pSolarSysState
 				&& pSolarSysState->MenuState.Initialized < 3))
 		{
@@ -1266,7 +1267,9 @@ PickGame (MENU_STATE *pMS)
 			IP_frame ();
 
 
-			if (CommData.ConversationPhrases == 0 && !PLRPlaying ((MUSIC_REF)~0))
+			// TODO: Need a better test for in-encounter
+			if (!CommData.ConversationPhrasesRes
+					&& !PLRPlaying ((MUSIC_REF)~0))
 			{
 				if (pSolarSysState->MenuState.Initialized < 3)
 				{

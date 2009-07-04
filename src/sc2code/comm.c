@@ -1404,6 +1404,9 @@ HailAlien (void)
 	SetContextFont (OldFont);
 	DestroyFont (PlayerFont);
 
+	// Some support code tests either of these to see if the
+	// game is currently in comm or encounter
+	CommData.ConversationPhrasesRes = 0;
 	CommData.ConversationPhrases = 0;
 	pCurInputState = 0;
 }
