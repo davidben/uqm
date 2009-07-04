@@ -380,7 +380,6 @@ static void
 LoadGameState (GAME_STATE *GSPtr, DECODE_REF fh)
 {
 	BYTE dummy8;
-	DWORD tmpd;
 
 	cread_8   (fh, &dummy8); /* obsolete */
 	cread_8   (fh, &GSPtr->glob_flags);
@@ -401,8 +400,9 @@ LoadGameState (GAME_STATE *GSPtr, DECODE_REF fh)
 	/* STAMP ShipStamp */
 	cread_16  (fh, &GSPtr->ShipStamp.origin.x);
 	cread_16  (fh, &GSPtr->ShipStamp.origin.y);
-	cread_32  (fh, &tmpd); /* abused ptr to store DWORD */
-	GSPtr->ShipStamp.frame = (FRAME)tmpd;
+	cread_16  (fh, &GSPtr->ShipFacing);
+	cread_8   (fh, &GSPtr->ip_planet);
+	cread_8   (fh, &GSPtr->in_orbit);
 
 	/* VELOCITY_DESC velocity */
 	cread_16  (fh, &GSPtr->velocity.TravelAngle);

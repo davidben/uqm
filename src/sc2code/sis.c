@@ -1588,7 +1588,7 @@ SaveFlagshipState (void)
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 	{
 		// Player is in HyperSpace or QuasiSpace.
-		// Update 'GLOBAL (ShipStamp.frame)' to the direction the flagship
+		// Update 'GLOBAL (ShipFacing)' to the direction the flagship
 		// is facing.
 
 		HELEMENT hElement, hNextElement;
@@ -1606,8 +1606,8 @@ SaveFlagshipState (void)
 				STARSHIP *StarShipPtr;
 
 				GetElementStarShip (ElementPtr, &StarShipPtr);
-				GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (
-						StarShipPtr->ShipFacing + 1, 0);
+				// XXX: Solar system reentry test depends on ShipFacing != 0
+				GLOBAL (ShipFacing) = StarShipPtr->ShipFacing + 1;
 				hNextElement = 0;
 			}
 			UnlockElement (hElement);
@@ -1616,22 +1616,19 @@ SaveFlagshipState (void)
 	else if (pSolarSysState)
 	{
 		// Player is in a solar system.
-		UWORD index1, index2;
-		FRAME frame;
-
-		frame = GLOBAL (ShipStamp.frame);
-
 		if (pSolarSysState->MenuState.Initialized < 3)
 		{
-			index1 = GetFrameIndex (frame) + 1;
+			// XXX: Solar system reentry test depends on ShipFacing != 0
+			GLOBAL (ShipFacing) = GetFrameIndex (GLOBAL (ShipStamp.frame)) + 1;
+			GLOBAL (in_orbit) = 0;
 			if (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
 			{
-				index2 = 0;
+				GLOBAL (ip_planet) = 0;
 			}
 			else
 			{
-				index2 = (UWORD)(pSolarSysState->pBaseDesc->pPrevDesc
-						- pSolarSysState->PlanetDesc + 1);
+				GLOBAL (ip_planet) = pSolarSysState->pBaseDesc->pPrevDesc
+						- pSolarSysState->PlanetDesc + 1;
 				GLOBAL (ip_location) =
 						pSolarSysState->SunDesc[0].location;
 			}
@@ -1639,7 +1636,8 @@ SaveFlagshipState (void)
 		else
 		{
 			// In orbit around a planet.
-			
+			BYTE moon;
+
 			// Update the starinfo.dat file if necessary.
 			if (GET_GAME_STATE (PLANETARY_CHANGE))
 			{
@@ -1647,17 +1645,14 @@ SaveFlagshipState (void)
 				SET_GAME_STATE (PLANETARY_CHANGE, 0);
 			}
 
-			index1 = LOWORD (frame);
-			index2 = 1;
+			// GLOBAL (ip_planet) is already set
+			moon = 1; /* the planet itself */
 			if (pSolarSysState->pOrbitalDesc !=
 					pSolarSysState->pBaseDesc->pPrevDesc)
-				index2 += pSolarSysState->pOrbitalDesc
+				moon += pSolarSysState->pOrbitalDesc
 						- pSolarSysState->pBaseDesc + 1;
-			index2 = MAKE_WORD (HIWORD (frame), index2);
+			GLOBAL (in_orbit) = moon;
 		}
-
-		GLOBAL (ShipStamp.frame) =
-				(FRAME)MAKE_DWORD (index1, index2);
 	}
 }
 

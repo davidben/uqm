@@ -501,7 +501,7 @@ UninitEncounter (void)
 					DrawSISMessage (NULL);
 					if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 						DrawHyperCoords (GLOBAL (ShipStamp.origin));
-					else if (HIWORD (GLOBAL (ShipStamp.frame)) == 0)
+					else if (GLOBAL (ip_planet) == 0)
 						DrawHyperCoords (CurStarDescPtr->star_pt);
 					else
 						DrawSISTitle(GLOBAL_SIS (PlanetName));

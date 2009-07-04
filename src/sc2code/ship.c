@@ -454,15 +454,17 @@ spawn_ship (STARSHIP *StarShipPtr)
 		{
 			StarShipPtr->ShipFacing = NORMALIZE_FACING (TFB_Random ());
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
-			{
-				COUNT facing;
-
-				facing = LOWORD (GLOBAL (ShipStamp.frame));
+			{	// Only one ship is ever spawned in HyperSpace -- flagship
+				COUNT facing = GLOBAL (ShipFacing);
+				// XXX: Solar system reentry test depends on ShipFacing != 0
 				if (facing > 0)
 					--facing;
 
-				GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (
-						StarShipPtr->ShipFacing + 1, 0);
+				// XXX: This appears to set the facing to a random value
+				//   for when the ship returns from an encounter back
+				//   to HyperSpace. However, it is overwritten later
+				//   in sis.c. See also r1614.
+				//GLOBAL (ShipFacing) = StarShipPtr->ShipFacing + 1;
 				StarShipPtr->ShipFacing = facing;
 			}
 			ShipElementPtr->current.image.frame =

@@ -367,7 +367,10 @@ SaveGameState (const GAME_STATE *GSPtr, DECODE_REF fh)
 	/* STAMP ShipStamp */
 	cwrite_16  (fh, GSPtr->ShipStamp.origin.x);
 	cwrite_16  (fh, GSPtr->ShipStamp.origin.y);
-	cwrite_32  (fh, (DWORD)GSPtr->ShipStamp.frame); /* abused ptr to store DWORD */
+	cwrite_16  (fh, GSPtr->ShipFacing);
+	cwrite_8   (fh, GSPtr->ip_planet);
+	cwrite_8   (fh, GSPtr->in_orbit);
+
 	/* VELOCITY_DESC velocity */
 	cwrite_16  (fh, GSPtr->velocity.TravelAngle);
 	cwrite_16  (fh, GSPtr->velocity.vector.width);
@@ -648,7 +651,6 @@ RetrySave:
 		GAME_STATE_FILE *fp;
 		DWORD flen;
 		COUNT num_links;
-		FRAME frame;
 		POINT pt;
 		STAR_DESC SD;
 		char buf[256], file[PATH_MAX];
@@ -659,9 +661,7 @@ RetrySave:
 		else
 			memset (&SD, 0, sizeof (SD));
 
-		// XXX: Backup: ShipStamp.frame is abused to store DWORD info
-		//    SaveFlagshipState() overwrites it with a DWORD value
-		frame = GLOBAL (ShipStamp.frame);
+		// XXX: Backup: SaveFlagshipState() overwrites ip_location
 		pt = GLOBAL (ip_location);
 		SaveFlagshipState ();
 		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
@@ -671,9 +671,10 @@ RetrySave:
 
 		SaveGameState (&GlobData.Game_state, fh);
 
+		// XXX: Restore
 		GLOBAL (ip_location) = pt;
-		// XXX: Restore: ShipStamp.frame is abused to store DWORD info
-		GLOBAL (ShipStamp.frame) = frame;
+		// Only relevant when loading a game and must be cleaned
+		GLOBAL (in_orbit) = 0;
 
 		SaveRaceQueue (fh, &GLOBAL (avail_race_q));
 		// START_INTERPLANETARY is only set when saving from Homeworld

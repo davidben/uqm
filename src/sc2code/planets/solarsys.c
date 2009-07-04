@@ -224,13 +224,10 @@ LoadSolarSys (void)
 	};
 
 	pSolarSysState->MenuState.CurState = 0;
-	pSolarSysState->MenuState.Initialized =
-			HIBYTE (HIWORD (GLOBAL (ShipStamp.frame)));
+	pSolarSysState->MenuState.Initialized = GLOBAL (in_orbit);
 	if (pSolarSysState->MenuState.Initialized)
 	{
-		GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (
-				LOWORD (GLOBAL (ShipStamp.frame)),
-				LOBYTE (HIWORD (GLOBAL (ShipStamp.frame))));
+		GLOBAL (in_orbit) = 0;
 		++pSolarSysState->MenuState.Initialized;
 	}
 	else
@@ -324,7 +321,7 @@ LoadSolarSys (void)
 					sort_array[i + 1];
 	}
 
-	i = LOBYTE (HIWORD (GLOBAL (ShipStamp.frame)));
+	i = GLOBAL (ip_planet);
 	if (i == 0)
 		pSolarSysState->pBaseDesc =
 				pSolarSysState->pOrbitalDesc = pSolarSysState->PlanetDesc;
@@ -372,7 +369,8 @@ LoadSolarSys (void)
 	}
 	else
 	{
-		i = LOWORD (GLOBAL (ShipStamp.frame));
+		i = GLOBAL (ShipFacing);
+		// XXX: Solar system reentry test depends on ShipFacing != 0
 		if (i == 0)
 			++i;
 
@@ -1433,7 +1431,7 @@ InitSolarSys (void)
 
 	pSolarSysState->MenuState.InputFunc = DoFlagshipCommands;
 
-	Reentry = (BOOLEAN)(GLOBAL (ShipStamp.frame) != 0);
+	Reentry = (GLOBAL (ShipFacing) != 0);
 	if (!Reentry)
 	{
 		GLOBAL (autopilot.x) = ~0;
@@ -1540,7 +1538,8 @@ UninitSolarSys (void)
 	else if ((GLOBAL (CurrentActivity) & START_ENCOUNTER) && EncounterGroup)
 	{
 		GetGroupInfo (GLOBAL (BattleGroupRef), EncounterGroup);
-		if (HIWORD (GLOBAL (ShipStamp.frame)) == 0)
+		// Generate the encounter location name based on the closest planet
+		if (GLOBAL (ip_planet) == 0)
 		{
 			BYTE i;
 			DWORD best_dist;

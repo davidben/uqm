@@ -483,7 +483,9 @@ doInstantMove (void)
 			GLOBAL (CurrentActivity) &= ~IN_BATTLE;
 
 			// Enter IP:
-			GLOBAL (ShipStamp.frame) = 0;
+			GLOBAL (ShipFacing) = 0;
+			GLOBAL (ip_planet) = 0;
+			GLOBAL (in_orbit) = 0;
 					// This causes the ship position in IP to be reset.
 			GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 		}

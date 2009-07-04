@@ -155,7 +155,10 @@ ExitConversation (RESPONSE_REF R)
 		/* transport player to Earth */
 		GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (SOL_X);
 		GLOBAL_SIS (log_y) = UNIVERSE_TO_LOGY (SOL_Y);
-		GLOBAL (ShipStamp.frame) = (FRAME)MAKE_DWORD (1, EARTH_INDEX + 1);
+		GLOBAL (ShipFacing) = 1;
+		/* At Earth or at Starbase */
+		GLOBAL (ip_planet) = EARTH_INDEX + 1;
+		GLOBAL (in_orbit) = 0;
 		/* XXX : this should be unhardcoded eventually */
 		GLOBAL (ip_location.x) = EARTH_OUTER_X;
 		GLOBAL (ip_location.y) = EARTH_OUTER_Y;
