@@ -1531,9 +1531,13 @@ UninitSolarSys (void)
 	if (GLOBAL (CurrentActivity) & END_INTERPLANETARY)
 	{
 		GLOBAL (CurrentActivity) &= ~END_INTERPLANETARY;
-		(*pSolarSysState->GenFunc) (UNINIT_NPCS);
-
-		SET_GAME_STATE (USED_BROADCASTER, 0);
+		
+		if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
+		{	// These are game state changing ops and so cannot be
+			// called once another game has been loaded!
+			(*pSolarSysState->GenFunc) (UNINIT_NPCS);
+			SET_GAME_STATE (USED_BROADCASTER, 0);
+		}
 	}
 	else if ((GLOBAL (CurrentActivity) & START_ENCOUNTER) && EncounterGroup)
 	{

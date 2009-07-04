@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Fixed crashes and potential weirdness when loading savegames from
+  a Homeworld encounter screen - Alex
 - Cleanup of GLOBAL(ShipStamp.frame) abuse; fixes bug #1054 - Alex
 - Game attempts to exit cleanly under normal circustances (bug #52) - Alex
 - Fixed Mmrnmhrm's X-Form transformation without energy use (bug #1004) - Alex
