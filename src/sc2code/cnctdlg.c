@@ -548,6 +548,9 @@ DoMeleeConnectDialog (CONNECT_DIALOG_STATE *state)
 {
 	BOOLEAN changed;
 
+	/* Cancel any presses of the Pause key. */
+	GamePaused = FALSE;
+
 	if (!state->Initialized)
 	{
 		state->Initialized = TRUE;

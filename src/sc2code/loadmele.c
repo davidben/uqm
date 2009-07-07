@@ -330,6 +330,9 @@ DoLoadTeam (MELEE_STATE *pMS)
 {
 	DWORD TimeIn = GetTimeCounter ();
 
+	/* Cancel any presses of the Pause key. */
+	GamePaused = FALSE;
+
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return FALSE;
 

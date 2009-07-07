@@ -426,6 +426,9 @@ PropagateResults (void)
 static BOOLEAN
 DoSetupMenu (SETUP_MENU_STATE *pInputState)
 {
+	/* Cancel any presses of the Pause key. */
+	GamePaused = FALSE;
+
 	if (!pInputState->initialized) 
 	{
 		SetDefaultMenuRepeatDelay ();

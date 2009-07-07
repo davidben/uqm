@@ -1051,6 +1051,9 @@ DoEdit (MELEE_STATE *pMS)
 {
 	DWORD TimeIn = GetTimeCounter ();
 
+	/* Cancel any presses of the Pause key. */
+	GamePaused = FALSE;
+
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 	
@@ -1220,6 +1223,9 @@ static BOOLEAN
 DoPickShip (MELEE_STATE *pMS)
 {
 	DWORD TimeIn = GetTimeCounter ();
+
+	/* Cancel any presses of the Pause key. */
+	GamePaused = FALSE;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
@@ -1397,6 +1403,9 @@ DoConfirmSettings (MELEE_STATE *pMS)
 #ifdef NETPLAY
 	ssize_t numDone;
 #endif
+
+	/* Cancel any presses of the Pause key. */
+	GamePaused = FALSE;
 
 	if (PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
@@ -1853,6 +1862,9 @@ DoConnectingDialog (MELEE_STATE *pMS)
 	COUNT which_side = (pMS->MeleeOption == NET_TOP) ? 1 : 0;
 	NetConnection *conn;
 
+	/* Cancel any presses of the Pause key. */
+	GamePaused = FALSE;
+
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
@@ -2036,8 +2048,11 @@ BOOLEAN
 DoMelee (MELEE_STATE *pMS)
 {
 	DWORD TimeIn = GetTimeCounter ();
-
 	BOOLEAN force_select = FALSE;
+
+	/* Cancel any presses of the Pause key. */
+	GamePaused = FALSE;
+
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
