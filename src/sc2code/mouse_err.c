@@ -20,5 +20,5 @@
 void
 MouseError (void)
 {
-	DoPopupWindow (GAME_STRING (MAINMENU_STRING_BASE + 56));
+	DoPopupWindow (GAME_STRING (MAINMENU_STRING_BASE + 54));
 }

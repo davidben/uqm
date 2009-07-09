@@ -123,12 +123,6 @@ enum
 	EXIT_MENU_SETTING
 };
 
-enum
-{
-	NO_QUIT_MENU,
-	YES_QUIT_MENU
-};
-
 static void
 FeedbackSetting (BYTE which_setting)
 {
@@ -182,26 +176,6 @@ FeedbackSetting (BYTE which_setting)
 		case CHANGE_SHIP_SETTING:
 			utf8StringCopy (buf, sizeof (buf),
 					GAME_STRING (NAMING_STRING_BASE + 0));
-			break;
-	}
-
-	LockMutex (GraphicsLock);
-	DrawStatusMessage (buf);
-	UnlockMutex (GraphicsLock);
-}
-
-static void
-FeedbackQuit (BYTE which_setting)
-{
-	const UNICODE *buf = "";
-
-	switch (which_setting)
-	{
-		case NO_QUIT_MENU:
-			buf = GAME_STRING (QUITMENU_STRING_BASE + 3); // "Don't Quit"
-			break;
-		case YES_QUIT_MENU:
-			buf = GAME_STRING (QUITMENU_STRING_BASE + 4); // "Quit Game"
 			break;
 	}
 
@@ -499,52 +473,6 @@ DoSettings (MENU_STATE *pMS)
 	return (TRUE);
 }
 
-static BOOLEAN
-DoQuitMenu (MENU_STATE *pMS)
-{
-	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
-
-	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-
-	if (!pMS->Initialized)
-	{
-		DrawMenuStateStrings (PM_NO_QUIT, pMS->CurState);
-		FeedbackQuit (pMS->CurState);
-		pMS->Initialized = TRUE;
-		pMS->InputFunc = DoQuitMenu;
-	}
-	else if (PulsedInputState.menu[KEY_MENU_CANCEL]
-			|| (PulsedInputState.menu[KEY_MENU_SELECT]
-			&& pMS->CurState == NO_QUIT_MENU))
-	{
-		LockMutex (GraphicsLock);
-		DrawStatusMessage (NULL);
-		UnlockMutex (GraphicsLock);
-
-		pMS->CurState = QUIT_GAME;
-		pMS->InputFunc = DoGameOptions;
-		pMS->Initialized = 0;
-	}
-	else if (PulsedInputState.menu[KEY_MENU_SELECT])
-	{
-		switch (pMS->CurState)
-		{
-			case NO_QUIT_MENU:
-				break;
-			case YES_QUIT_MENU:
-				GLOBAL (CurrentActivity) |= CHECK_ABORT;
-				ExitRequested = FALSE;
-				break;
-		}
-		FeedbackQuit (pMS->CurState);
-	}
-	else if (DoMenuChooser (pMS, PM_NO_QUIT))
-		FeedbackQuit (pMS->CurState);
-
-	return (TRUE);
-}
-
 static void
 DrawCargo (COUNT redraw_state)
 {
@@ -778,8 +706,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		{
 			s.origin.x = SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 6;
 			s.origin.y = 0;
-			s.frame = SetRelFrameIndex (
-					pLocMenuState->ModuleFrame, 0);
+			s.frame = SetRelFrameIndex (pLocMenuState->ModuleFrame, 0);
 			DrawStamp (&s);
 			s.origin.x = SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
 			s.frame = IncFrameIndex (s.frame);
@@ -940,7 +867,7 @@ DoPickGame (MENU_STATE *pMS)
 		{
 			extern FRAME PlayFrame;
 
-			pMS->ModuleFrame = SetAbsFrameIndex (PlayFrame, 41);
+			pMS->ModuleFrame = SetAbsFrameIndex (PlayFrame, 39);
 		}
 
 		LockMutex (GraphicsLock);
@@ -1330,9 +1257,8 @@ DoGameOptions (MENU_STATE *pMS)
 						//      to a FRAME.
 				return PickGame (pMS);
 			case QUIT_GAME:
-				pMS->Initialized = FALSE;
-				pMS->CurState = NO_QUIT_MENU;
-				pMS->InputFunc = DoQuitMenu;
+				if (ConfirmExit ())
+					return FALSE;
 				break;
 			case SETTINGS:
 				pMS->Initialized = FALSE;

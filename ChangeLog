@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Game settings Quit menu now delegates to F10 quit (bug #462) - Alex
 - Do not pause the game in places where not relevant (bug #984) - Alex
 - Fixed crashes and potential weirdness when loading savegames from
   a Homeworld encounter screen (bug #997) - Alex
