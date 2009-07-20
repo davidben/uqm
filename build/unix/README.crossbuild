@@ -26,7 +26,7 @@ If your host system is big-endian, set the environment variable
 have to do anything.
 	export BUILD_HOST_ENDIAN=little
 
-If you're using pkg-config (adviced), set the environment variable
+If you're using pkg-config (advised), set the environment variable
 PKG_CONFIG_PATH' to the pkgconfig directory of the cross environment.
 This dir normally resides in the 'lib/' directory.
 	export PKG_CONFIG_PATH=$CROSS_ROOT/lib/pkgconfig
