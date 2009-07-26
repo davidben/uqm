@@ -548,6 +548,9 @@ START_GAME_STATE
 	ADD_GAME_STATE (SUN_DEVICE_UNGUARDED, 1)
 
 	ADD_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1)
+			/* The Rosy Sphere is aboard the flagship, i.e. It has been
+			 * acquired from the Druuge, but not yet inserted in the broken
+			 * Ultron. cf. ROSY_SPHERE */
 
 	ADD_GAME_STATE (CHMMR_HOME_VISITS, 3)
 	ADD_GAME_STATE (CHMMR_EMERGING, 1)
@@ -604,6 +607,8 @@ START_GAME_STATE
 	ADD_GAME_STATE (DRUUGE_VISITS, 3)
 	ADD_GAME_STATE (DRUUGE_HOME_VISITS, 3)
 	ADD_GAME_STATE (ROSY_SPHERE, 1)
+			/* The play has or has had the Rosy Sphere.
+			 * cf. ROSY_SHERE_ON_SHIP */
 	ADD_GAME_STATE (SCANNED_MAIDENS, 1)
 	ADD_GAME_STATE (SCANNED_FRAGMENTS, 1)
 	ADD_GAME_STATE (SCANNED_CASTER, 1)
