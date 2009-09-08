@@ -82,8 +82,6 @@ extern int ScreenHeight;
 		((UNIVERSE_TO_LOGY (MAX_Y_UNIVERSE + 1) > UNIVERSE_TO_LOGY (-1) ? \
 				UNIVERSE_TO_LOGY (MAX_Y_UNIVERSE + 1) : UNIVERSE_TO_LOGY (-1)) \
 				- 1L)
-#define SECTOR_WIDTH 195
-#define SECTOR_HEIGHT 25
 
 #define SPHERE_RADIUS_INCREMENT 11
 
@@ -92,10 +90,28 @@ extern int ScreenHeight;
 #define UNIT_SCREEN_WIDTH 63
 #define UNIT_SCREEN_HEIGHT 50
 
+// Bug #945: Simplified, these set the speed of SIS in Hyperspace and
+//   Quasispace. The ratio between UNIVERSE_UNITS_ and LOG_UNITS_ is
+//   what sets the speed, and it should be 1:16 to match the original.
+//   The unit factors are reduced to keep the translation math within
+//   32 bits. The original math is unnecessarily complex and depends
+//   on the screen resolution when it should not.
+//   Using the new math will break old savegames.
+#ifdef NORMALIZED_HYPERSPACE_SPEED
+#define LOG_UNITS_X      ((SDWORD)(UNIVERSE_UNITS_X * 16))
+#define LOG_UNITS_Y      ((SDWORD)(UNIVERSE_UNITS_Y * 16))
+#define UNIVERSE_UNITS_X (((MAX_X_UNIVERSE + 1) >> 4))
+#define UNIVERSE_UNITS_Y (((MAX_Y_UNIVERSE + 1) >> 4))
+#else
+// Original (and now broken) Hyperspace speed factors
+#define SECTOR_WIDTH 195
+#define SECTOR_HEIGHT 25
+
 #define LOG_UNITS_X      ((SDWORD)(LOG_SPACE_WIDTH >> 4) * SECTOR_WIDTH)
 #define LOG_UNITS_Y      ((SDWORD)(LOG_SPACE_HEIGHT >> 4) * SECTOR_HEIGHT)
 #define UNIVERSE_UNITS_X (((MAX_X_UNIVERSE + 1) >> 4) * 10)
 #define UNIVERSE_UNITS_Y (((MAX_Y_UNIVERSE + 1) >> 4))
+#endif
 
 #define ROUNDING_ERROR(div)  ((div) >> 1)
 
