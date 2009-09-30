@@ -223,6 +223,11 @@ typedef struct
 	UNICODE PlanetName[SIS_NAME_SIZE];
 } SIS_STATE;
 
+// XXX: Theoretically, a player can have 17 devices on board without
+//   cheating (18 if never visited the Starbase). We only provide
+//   room for 16 below, which is not really a problem since this
+//   is only used for displaying savegame summaries. There is also
+//   room for only 16 devices on screen.
 #define MAX_EXCLUSIVE_DEVICES 16
 
 typedef struct

@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Fixed crash when saving a game into the last slot while having
+  too many devices on board - Alex
 - Allow any sound data format to be graphed by comm oscilloscope; also
   auto-adjust the scope for different gain levels (bug #1064) - Alex
 - Game settings Quit menu now delegates to F10 quit (bug #462) - Alex

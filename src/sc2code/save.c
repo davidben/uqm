@@ -499,7 +499,8 @@ PrepareSummary (SUMMARY_DESC *SummPtr)
 		}
 	}
 
-	SummPtr->NumDevices = InventoryDevices (SummPtr->DeviceList);
+	SummPtr->NumDevices = InventoryDevices (SummPtr->DeviceList,
+			MAX_EXCLUSIVE_DEVICES);
 
 	SummPtr->Flags = GET_GAME_STATE (LANDER_SHIELDS)
 			| (GET_GAME_STATE (IMPROVED_LANDER_SPEED) << (4 + 0))

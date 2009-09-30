@@ -30,7 +30,7 @@ extern BOOLEAN Devices (MENU_STATE *pMS);
 extern void DrawCargoStrings (BYTE OldElement, BYTE NewElement);
 extern void ShowRemainingCapacity (void);
 
-extern SIZE InventoryDevices (BYTE *pDeviceMap);
+extern SIZE InventoryDevices (BYTE *pDeviceMap, COUNT Size);
 
 #endif /* _SHIPCONT_H */
 
