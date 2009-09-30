@@ -237,3 +237,31 @@ audio_BufferData (audio_Object bufobj, uint32 format, void* data,
 	audiodrv.BufferData (bufobj, audiodrv.EnumLookup[format], data, size,
 			freq);
 }
+
+bool
+audio_GetFormatInfo (uint32 format, int *channels, int *sample_size)
+{
+	switch (format)
+	{
+	case audio_FORMAT_MONO8:
+		*channels = 1;
+		*sample_size = sizeof (uint8);
+		return true;
+
+	case audio_FORMAT_STEREO8:
+		*channels = 2;
+		*sample_size = sizeof (uint8);
+		return true;
+	
+	case audio_FORMAT_MONO16:
+		*channels = 1;
+		*sample_size = sizeof (sint16);
+		return true;
+
+	case audio_FORMAT_STEREO16:
+		*channels = 2;
+		*sample_size = sizeof (sint16);
+		return true;
+	}
+	return false;
+}

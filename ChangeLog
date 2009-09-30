@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Allow any sound data format to be graphed by comm oscilloscope; also
+  auto-adjust the scope for different gain levels (bug #1064) - Alex
 - Game settings Quit menu now delegates to F10 quit (bug #462) - Alex
 - Do not pause the game in places where not relevant (bug #984) - Alex
 - Fixed crashes and potential weirdness when loading savegames from

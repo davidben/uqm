@@ -75,11 +75,11 @@ typedef struct tfb_soundsource
 	sint32 start_time;
 	void *positional_object;
 
-	// for oscilloscope
+	// Cyclic waveform buffer for oscilloscope
 	void *sbuffer; 
-	uint32 sbuf_start;
+	uint32 sbuf_start;        // cyclic buffer tail (confusing, eh?)
 	uint32 sbuf_size;
-	uint32 sbuf_offset;
+	uint32 sbuf_offset;       // cyclic buffer head
 	uint32 sbuf_lasttime;
 	// keep track for paused tracks
 	uint32 pause_time;

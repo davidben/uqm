@@ -164,4 +164,6 @@ void audio_GetBufferi (audio_Object bufobj, audio_BufferProp pname,
 void audio_BufferData (audio_Object bufobj, uint32 format, void* data,
 		uint32 size, uint32 freq);
 
+bool audio_GetFormatInfo (uint32 format, int *channels, int *sample_size);
+
 #endif /* _AUDIOCORE_H */
