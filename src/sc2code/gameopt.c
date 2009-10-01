@@ -804,7 +804,8 @@ ShowSummary (SUMMARY_DESC *pSD)
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 		t.align = ALIGN_CENTER;
-		t.baseline.x = SIS_SCREEN_WIDTH - 57 - 3 + (SIS_TITLE_WIDTH >> 1);
+		t.baseline.x = SIS_SCREEN_WIDTH - SIS_TITLE_BOX_WIDTH - 3
+				+ (SIS_TITLE_WIDTH >> 1);
 		if (pSD->Activity == IN_STARBASE)
 			utf8StringCopy (buf, sizeof (buf),
 					GAME_STRING (STARBASE_STRING_BASE));

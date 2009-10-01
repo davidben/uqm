@@ -112,6 +112,7 @@ DrawSISTitle (UNICODE *pStr)
 {
 	TEXT t;
 	CONTEXT OldContext;
+	RECT r;
 
 	t.baseline.x = SIS_TITLE_WIDTH >> 1;
 	t.baseline.y = SIS_TITLE_HEIGHT - 2;
@@ -120,16 +121,12 @@ DrawSISTitle (UNICODE *pStr)
 	t.CharCount = (COUNT)~0;
 
 	OldContext = SetContext (OffScreenContext);
-{
-RECT r;
-
-r.corner.x = SIS_ORG_X + SIS_SCREEN_WIDTH - 57 + 1;
-r.corner.y = SIS_ORG_Y - SIS_TITLE_HEIGHT;
-r.extent.width = SIS_TITLE_WIDTH;
-r.extent.height = SIS_TITLE_HEIGHT - 1;
-SetContextFGFrame (Screen);
-SetContextClipRect (&r);
-}
+	r.corner.x = SIS_ORG_X + SIS_SCREEN_WIDTH - SIS_TITLE_BOX_WIDTH + 1;
+	r.corner.y = SIS_ORG_Y - SIS_TITLE_HEIGHT;
+	r.extent.width = SIS_TITLE_WIDTH;
+	r.extent.height = SIS_TITLE_HEIGHT - 1;
+	SetContextFGFrame (Screen);
+	SetContextClipRect (&r);
 	SetContextFont (TinyFont);
 
 	BatchGraphics ();
