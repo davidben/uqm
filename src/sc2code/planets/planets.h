@@ -255,5 +255,8 @@ extern void GeneratePlanetMask (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame);
 extern void DeltaTopography (COUNT num_iterations, SBYTE *DepthArray,
 		RECT *pRect, SIZE depth_delta);
 
+extern UNICODE* GetNamedPlanetaryBody (void);
+extern void GetPlanetOrMoonName (UNICODE *buf, COUNT bufsize);
+
 #endif /* _PLANETS_H */
 

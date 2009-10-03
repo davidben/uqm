@@ -125,6 +125,33 @@ MakeScanValue (UNICODE *buf, long val, const UNICODE *extra)
 }
 
 static void
+GetPlanetTitle (UNICODE *buf, COUNT bufsize)
+{
+	int val;
+	UNICODE *named = GetNamedPlanetaryBody ();
+	if (named)
+	{
+		utf8StringCopy (buf, bufsize, named);
+		return;
+	}
+
+	// Unnamed body, use world type
+	val = pSolarSysState->pOrbitalDesc->data_index & ~PLANET_SHIELDED;
+	if (val >= FIRST_GAS_GIANT)
+	{
+		sprintf (buf, "%s", GAME_STRING (SCAN_STRING_BASE + 4 + 51));
+					// Gas Giant
+	}
+	else
+	{
+		sprintf (buf, "%s %s",
+				GAME_STRING (SCAN_STRING_BASE + 4 + val),
+				GAME_STRING (SCAN_STRING_BASE + 4 + 50));
+						// World
+	}
+}
+
+static void
 PrintCoarseScanPC (void)
 {
 #define SCAN_LEADING_PC 14
@@ -133,66 +160,10 @@ PrintCoarseScanPC (void)
 	RECT r;
 	UNICODE buf[200];
 
+	GetPlanetTitle (buf, sizeof (buf));
+
 	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
-
-	if (CurStarDescPtr->Index == SOL_DEFINED)
-	{
-		if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
-				&pSolarSysState->SunDesc[0])
-			utf8StringCopy (buf, sizeof (buf), GLOBAL_SIS (PlanetName));
-		else
-		{
-			switch (pSolarSysState->pOrbitalDesc->pPrevDesc
-					- pSolarSysState->PlanetDesc)
-			{
-				case 2: /* EARTH */
-					utf8StringCopy (buf, sizeof (buf),
-							GAME_STRING (PLANET_NUMBER_BASE + 9));
-					break;
-				case 4: /* JUPITER */
-					switch (pSolarSysState->pOrbitalDesc
-							- pSolarSysState->MoonDesc)
-					{
-						case 0:
-							utf8StringCopy (buf, sizeof (buf),
-									GAME_STRING (PLANET_NUMBER_BASE + 10));
-							break;
-						case 1:
-							utf8StringCopy (buf, sizeof (buf),
-									GAME_STRING (PLANET_NUMBER_BASE + 11));
-							break;
-						case 2:
-							utf8StringCopy (buf, sizeof (buf),
-									GAME_STRING (PLANET_NUMBER_BASE + 12));
-							break;
-						case 3:
-							utf8StringCopy (buf, sizeof (buf),
-									GAME_STRING (PLANET_NUMBER_BASE + 13));
-							break;
-					}
-					break;
-				case 5: /* SATURN */
-					utf8StringCopy (buf, sizeof (buf),
-							GAME_STRING (PLANET_NUMBER_BASE + 14));
-					break;
-				case 7: /* NEPTUNE */
-					utf8StringCopy (buf, sizeof (buf),
-							GAME_STRING (PLANET_NUMBER_BASE + 15));
-					break;
-			}
-		}
-	}
-	else
-	{
-		val = pSolarSysState->pOrbitalDesc->data_index & ~PLANET_SHIELDED;
-		if (val >= FIRST_GAS_GIANT)
-			sprintf (buf, "%s", GAME_STRING (SCAN_STRING_BASE + 4 + 51));
-		else
-			sprintf (buf, "%s %s",
-					GAME_STRING (SCAN_STRING_BASE + 4 + val),
-					GAME_STRING (SCAN_STRING_BASE + 4 + 50));
-	}
 
 	t.align = ALIGN_CENTER;
 	t.baseline.x = SIS_SCREEN_WIDTH >> 1;
@@ -375,65 +346,10 @@ PrintCoarseScan3DO (void)
 	STAMP s;
 	UNICODE buf[200];
 
+	GetPlanetTitle (buf, sizeof (buf));
+
 	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
-
-	if (CurStarDescPtr->Index == SOL_DEFINED)
-	{
-		if (pSolarSysState->pOrbitalDesc->pPrevDesc == &pSolarSysState->SunDesc[0])
-			utf8StringCopy (buf, sizeof (buf), GLOBAL_SIS (PlanetName));
-		else
-		{
-			switch (pSolarSysState->pOrbitalDesc->pPrevDesc
-					- pSolarSysState->PlanetDesc)
-			{
-				case 2: /* EARTH */
-					utf8StringCopy (buf, sizeof (buf),
-							GAME_STRING (PLANET_NUMBER_BASE + 9));
-					break;
-				case 4: /* JUPITER */
-					switch (pSolarSysState->pOrbitalDesc
-							- pSolarSysState->MoonDesc)
-					{
-						case 0:
-							utf8StringCopy (buf, sizeof (buf),
-									GAME_STRING (PLANET_NUMBER_BASE + 10));
-							break;
-						case 1:
-							utf8StringCopy (buf, sizeof (buf),
-									GAME_STRING (PLANET_NUMBER_BASE + 11));
-							break;
-						case 2:
-							utf8StringCopy (buf, sizeof (buf),
-									GAME_STRING (PLANET_NUMBER_BASE + 12));
-							break;
-						case 3:
-							utf8StringCopy (buf, sizeof (buf),
-									GAME_STRING (PLANET_NUMBER_BASE + 13));
-							break;
-					}
-					break;
-				case 5: /* SATURN */
-					utf8StringCopy (buf, sizeof (buf),
-							GAME_STRING (PLANET_NUMBER_BASE + 14));
-					break;
-				case 7: /* NEPTUNE */
-					utf8StringCopy (buf, sizeof (buf),
-							GAME_STRING (PLANET_NUMBER_BASE + 15));
-					break;
-			}
-		}
-	}
-	else
-	{
-		val = pSolarSysState->pOrbitalDesc->data_index & ~PLANET_SHIELDED;
-		if (val >= FIRST_GAS_GIANT)
-			sprintf (buf, "%s", GAME_STRING (SCAN_STRING_BASE + 4 + 51));
-		else
-			sprintf (buf, "%s %s",
-					GAME_STRING (SCAN_STRING_BASE + 4 + val),
-					GAME_STRING (SCAN_STRING_BASE + 4 + 50));
-	}
 
 	t.align = ALIGN_CENTER;
 	t.baseline.x = SIS_SCREEN_WIDTH >> 1;

@@ -804,17 +804,26 @@ ShowSummary (SUMMARY_DESC *pSD)
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 		t.align = ALIGN_CENTER;
-		t.baseline.x = SIS_SCREEN_WIDTH - SIS_TITLE_BOX_WIDTH - 3
+		t.baseline.x = SIS_SCREEN_WIDTH - SIS_TITLE_BOX_WIDTH - 4
 				+ (SIS_TITLE_WIDTH >> 1);
-		if (pSD->Activity == IN_STARBASE)
-			utf8StringCopy (buf, sizeof (buf),
-					GAME_STRING (STARBASE_STRING_BASE));
-		else if (pSD->Activity == IN_PLANET_ORBIT)
-			utf8StringCopy (buf, sizeof (buf), GLOBAL_SIS (PlanetName));
-		else
-			sprintf (buf, "%03u.%01u : %03u.%01u",
-					r.corner.x / 10, r.corner.x % 10,
-					r.corner.y / 10, r.corner.y % 10);
+		switch (pSD->Activity)
+		{
+			case IN_STARBASE:
+				utf8StringCopy (buf, sizeof (buf), // Starbase
+						GAME_STRING (STARBASE_STRING_BASE));
+				break;
+			case IN_LAST_BATTLE:
+				utf8StringCopy (buf, sizeof (buf), // Sa-Matra
+						GAME_STRING (PLANET_NUMBER_BASE + 32));
+				break;
+			case IN_PLANET_ORBIT:
+				utf8StringCopy (buf, sizeof (buf), GLOBAL_SIS (PlanetName));
+				break;
+			default:
+				sprintf (buf, "%03u.%01u : %03u.%01u",
+						r.corner.x / 10, r.corner.x % 10,
+						r.corner.y / 10, r.corner.y % 10);
+		}
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 

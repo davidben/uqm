@@ -467,17 +467,26 @@ PrepareSummary (SUMMARY_DESC *SummPtr)
 {
 	SummPtr->SS = GlobData.SIS_state;
 
-	switch (SummPtr->Activity = LOBYTE (GLOBAL (CurrentActivity)))
+	SummPtr->Activity = LOBYTE (GLOBAL (CurrentActivity));
+	switch (SummPtr->Activity)
 	{
 		case IN_HYPERSPACE:
 			if (GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
 				SummPtr->Activity = IN_QUASISPACE;
 			break;
 		case IN_INTERPLANETARY:
+			// Get a better planet name for summary
+			GetPlanetOrMoonName (SummPtr->SS.PlanetName,
+					sizeof (SummPtr->SS.PlanetName));
 			if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) == (BYTE)~0)
 				SummPtr->Activity = IN_STARBASE;
 			else if (pSolarSysState && pSolarSysState->MenuState.Initialized >= 3)
 				SummPtr->Activity = IN_PLANET_ORBIT;
+			break;
+		case IN_LAST_BATTLE:
+			utf8StringCopy (SummPtr->SS.PlanetName,
+					sizeof (SummPtr->SS.PlanetName),
+					GAME_STRING (PLANET_NUMBER_BASE + 32)); // Sa-Matra
 			break;
 	}
 
