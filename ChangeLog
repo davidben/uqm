@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Fixed inputting numbers with the numpad, except directx (bug #934) - Alex
 - Better location description in savegame summaries (bug #844) - Alex
 - Fixed crash when saving a game into the last slot while having
   too many devices on board - Alex

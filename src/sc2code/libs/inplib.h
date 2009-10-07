@@ -43,8 +43,8 @@ extern volatile int QuitPosted;
 
 /* Functions for dealing with Character Mode */
 
-void EnableCharacterMode (void);
-void DisableCharacterMode (void);
+void EnterCharacterMode (void);
+void ExitCharacterMode (void);
 wchar_t GetNextCharacter (void);
 wchar_t GetLastCharacter (void);
 

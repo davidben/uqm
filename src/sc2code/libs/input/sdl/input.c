@@ -42,7 +42,7 @@ static int *kbdstate = NULL;
 
 static BOOLEAN InputInitialized = FALSE;
 
-static BOOLEAN _in_character_mode = FALSE;
+static BOOLEAN in_character_mode = FALSE;
 
 static const char *menu_res_names[] = {
 	"pause",
@@ -217,7 +217,7 @@ TFB_InitInput (int driver, int flags)
 	}
 #endif /* HAVE_JOYSTICK */
 
-	_in_character_mode = FALSE;
+	in_character_mode = FALSE;
 	resetKeyboardState ();
 
 	/* Prepare the Virtual Controller system. */
@@ -239,22 +239,20 @@ TFB_UninitInput (void)
 	HFree (kbdstate);
 }
 
-// XXX: not currently used -- character mode is always on
 void
-EnableCharacterMode (void)
+EnterCharacterMode (void)
 {
 	kbdhead = kbdtail = 0;
 	lastchar = 0;
-	_in_character_mode = TRUE;
+	in_character_mode = TRUE;
 	VControl_ResetInput ();
 }
 
-// XXX: not currently used -- character mode is always on
 void
-DisableCharacterMode (void)
+ExitCharacterMode (void)
 {
 	VControl_ResetInput ();
-	_in_character_mode = FALSE;
+	in_character_mode = FALSE;
 	kbdhead = kbdtail = 0;
 	lastchar = 0;
 }
@@ -294,6 +292,16 @@ ProcessMouseEvent (const SDL_Event *e)
 	}
 }
 
+static inline int
+is_numpad_char_event (const SDL_Event *Event)
+{
+	return in_character_mode &&
+			(Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP) &&
+			(Event->key.keysym.mod & KMOD_NUM) &&  /* NumLock is ON */
+			Event->key.keysym.unicode > 0 &&       /* Printable char */
+			Event->key.keysym.sym >= SDLK_KP0 &&   /* Keypad key */
+			Event->key.keysym.sym <= SDLK_KP_PLUS;
+}
 
 void
 ProcessInputEvent (const SDL_Event *Event)
@@ -302,7 +310,11 @@ ProcessInputEvent (const SDL_Event *Event)
 		return;
 	
 	ProcessMouseEvent (Event);
-	VControl_HandleEvent (Event);
+
+	// In character mode with NumLock on, numpad chars bypass VControl
+	// so that menu arrow events are not produced
+	if (!is_numpad_char_event (Event))
+		VControl_HandleEvent (Event);
 
 	if (Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP)
 	{	// process character input event, if any

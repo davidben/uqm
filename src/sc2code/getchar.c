@@ -170,8 +170,10 @@ DoTextEntry (TEXTENTRY_STATE *pTES)
 		}
 
 		pTES->CacheStr = HMalloc (pTES->MaxSize * sizeof (*pTES->CacheStr));
-		
+
+		EnterCharacterMode ();
 		DoInput (pTES, TRUE);
+		ExitCharacterMode ();
 
 		if (pTES->CacheStr)
 			HFree (pTES->CacheStr);
