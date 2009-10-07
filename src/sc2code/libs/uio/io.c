@@ -1033,9 +1033,9 @@ static inline void uio_EntriesContext_delete(uio_EntriesContext *entriesContext)
 static inline void uio_EntriesContext_free(uio_EntriesContext
 		*entriesContext);
 
-// The caller may modify the elements of dirHandle->names, but
-// dirHandle->names itself, and the rest of the elements of dirHandle
-// should be left alone, so that they will be freed by uio_DirList_free().
+// The caller may modify the elements of the .names field of the result, but
+// .names itself, and the rest of the elements of dirList should be left
+// alone, so that they will be freed by uio_DirList_free().
 uio_DirList *
 uio_getDirList(uio_DirHandle *dirHandle, const char *path, const char *pattern,
 		match_MatchType matchType) {
