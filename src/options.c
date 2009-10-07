@@ -64,8 +64,6 @@ uio_MountHandle* contentMountHandle;
 
 char baseContentPath[PATH_MAX];
 
-uio_DirList *availableAddons;
-
 extern uio_Repository *repository;
 extern uio_DirHandle *rootDir;
 
@@ -358,8 +356,7 @@ mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
 	uio_DirHandle *addonsDir;
 	static uio_AutoMount *autoMount[] = { NULL };
 	uio_MountHandle *mountHandle;
-
-	availableAddons = NULL;
+	uio_DirList *availableAddons;
 
 	if (addonDirName != NULL)
 	{
@@ -396,22 +393,37 @@ mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
 	if (availableAddons != NULL)
 	{
 		int i, count;
-		count = availableAddons->numNames;
 		
-		if (count != 1)
+		// count the actual addon dirs
+		count = 0;
+		for (i = 0; i < availableAddons->numNames; ++i)
 		{
-			log_add (log_Info, "%d available addon packs.", count);
+			struct stat sb;
+
+			if (availableAddons->names[i][0] == '.' ||
+					uio_stat (addonsDir, availableAddons->names[i], &sb) == -1
+					|| !S_ISDIR (sb.st_mode))
+			{	// this dir entry ignored
+				availableAddons->names[i] = NULL;
+				continue;
+			}
+			++count;
 		}
-		else
-		{
-			log_add (log_Info, "1 available addon pack.");
-		}
-		for (i = 0; i < count; i++)
+		log_add (log_Info, "%d available addon pack%s.", count,
+				count == 1 ? "" : "s");
+
+		count = 0;
+		for (i = 0; i < availableAddons->numNames; ++i)
 		{
 			static char mountname[128];
 			uio_DirHandle *addonDir;
 			const char *addon = availableAddons->names[i];
-			log_add (log_Info, "    %d. %s", i+1, addon);
+			
+			if (!addon)
+				continue;
+
+			++count;
+			log_add (log_Info, "    %d. %s", count, addon);
 		
 			snprintf(mountname, 128, "addons/%s", addon);
 			mountname[127]=0;
@@ -433,8 +445,6 @@ mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
 	}
 
 	uio_DirList_free (availableAddons);
-	availableAddons = NULL;
-
 	uio_closeDir (addonsDir);
 }
 

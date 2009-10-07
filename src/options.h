@@ -50,7 +50,6 @@ extern uio_DirHandle *saveDir;
 extern uio_DirHandle *meleeDir;
 extern char baseContentPath[PATH_MAX];
 
-extern uio_DirList *availableAddons;
 extern const char **optAddons;
 
 /* These get edited by TEXTENTRY widgets, so they should have room to
