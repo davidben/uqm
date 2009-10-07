@@ -1717,7 +1717,7 @@ DoFlagshipCommands (MENU_STATE *pMS)
 
 				NewState = pMS->CurState;
 				if (LastActivity == CHECK_LOAD)
-					select = TRUE;
+					select = TRUE; // Selected LOAD from main menu
 				if (select)
 				{
 					if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)

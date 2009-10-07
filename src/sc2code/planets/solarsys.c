@@ -1236,7 +1236,9 @@ IP_frame (void)
 		LockMutex (GraphicsLock);
 		DrawStatusMessage (NULL);
 		if (LastActivity == CHECK_LOAD)
+		{	// Selected LOAD from main menu
 			pSolarSysState->MenuState.CurState = (ROSTER + 1) + 1;
+		}
 		else
 		{
 			UnlockMutex (GraphicsLock);

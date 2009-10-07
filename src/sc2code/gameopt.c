@@ -898,7 +898,11 @@ Restart:
 		pMS->ModuleFrame = 0;
 		pMS->CurState = (BYTE)pMS->delta_item;
 		ResumeMusic ();
-		if (pSolarSysState)
+		if (LastActivity == CHECK_LOAD)
+		{	// Selected LOAD from main menu, and now canceled
+			GLOBAL (CurrentActivity) |= CHECK_ABORT;
+		}
+		else if (pSolarSysState)
 		{
 #define DRAW_REFRESH (1 << 5)
 #define REPAIR_SCAN (1 << 6)
@@ -1098,13 +1102,11 @@ ChangeGameSelection:
 				}
 				font_DrawText (&t);
 			}
-			if (LastActivity == CHECK_LOAD)
+			if (LastActivity == CHECK_LOAD && first_time)
 			{
 				BYTE clut_buf[] = {FadeAllToColor};
 
 				UnbatchGraphics ();
-
-				LastActivity = 0;
 				XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
 			}
 			else
@@ -1236,7 +1238,7 @@ DoGameOptions (MENU_STATE *pMS)
 		return (FALSE);
 
 	if (LastActivity == CHECK_LOAD)
-		force_select = TRUE;
+		force_select = TRUE; // Selected LOAD from main menu
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
