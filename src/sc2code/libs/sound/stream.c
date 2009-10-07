@@ -601,7 +601,7 @@ GraphForegroundStream (uint8 *data, sint32 width, sint32 height)
 		// Record the maximum amplitude (sort of)
 		frame_sum += max_a;
 		++frames;
-		if (frames == 8)
+		if (frames == AGC_FRAME_COUNT)
 		{	// Got a full page
 			frame_sum /= AGC_FRAME_COUNT;
 			// Record the page
