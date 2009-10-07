@@ -184,8 +184,8 @@ main (int argc, char *argv[])
 			UQM_PATCH_VERSION, UQM_EXTRA_VERSION,
 			__DATE__, __TIME__);
 #ifdef NETPLAY
-	log_add (log_User, "Netplay protocol version %d.%d. Minimum required "
-			"remote UQM version is %d.%d.%d.",
+	log_add (log_User, "Netplay protocol version %d.%d. Netplay opponent "
+			"must have UQM %d.%d.%d or later.",
 			NETPLAY_PROTOCOL_VERSION_MAJOR, NETPLAY_PROTOCOL_VERSION_MINOR,
 			NETPLAY_MIN_UQM_VERSION_MAJOR, NETPLAY_MIN_UQM_VERSION_MINOR,
 			NETPLAY_MIN_UQM_VERSION_PATCH);
