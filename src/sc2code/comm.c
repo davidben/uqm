@@ -372,50 +372,6 @@ DrawSISComWindow (void)
 
 		SetContext (OldContext);
 	}
-#ifdef NEVER
-	else
-	{
-#define NUM_CREDITS 5
-		BYTE j;
-		TEXT t;
-		STRING OldStrings;
-		extern STRING CreditStrings;
-
-		t.baseline.x = SCREEN_WIDTH >> 1;
-		t.baseline.y = RADAR_Y - 5;
-		t.align = ALIGN_CENTER;
-
-		OldContext = SetContext (ScreenContext);
-
-		OldStrings = SetRelStringTableIndex (CreditStrings, -NUM_CREDITS);
-		SetContextFont (MicroFont);
-		BatchGraphics ();
-		for (j = 0; j < NUM_CREDITS; ++j)
-		{
-			SetContextForeGroundColor (BLACK_COLOR);
-			t.pStr = (UNICODE *)GetStringAddress (OldStrings);
-			t.CharCount = GetStringLength (OldStrings);
-			OldStrings = SetRelStringTableIndex (OldStrings, 1);
-			font_DrawText (&t);
-			SetContextForeGroundColor (WHITE_COLOR);
-			t.pStr = (BYTE*)GetStringAddress (CreditStrings);
-			t.CharCount = GetStringLength (CreditStrings);
-			CreditStrings = SetRelStringTableIndex (CreditStrings, 1);
-			font_DrawText (&t);
-
-			if (j)
-				t.baseline.y += 12;
-			else
-			{
-				t.baseline.y += 16;
-				SetContextFont (StarConFont);
-			}
-		}
-		UnbatchGraphics ();
-
-		SetContext (OldContext);
-	}
-#endif /* NEVER */
 }
 
 void
