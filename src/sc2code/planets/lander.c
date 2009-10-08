@@ -31,6 +31,7 @@
 #include "element.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
+#include "libs/log.h"
 
 
 //define SPIN_ON_LAUNCH to let the planet spin while
@@ -1660,11 +1661,13 @@ SetVelocityComponents (
 			{
 				HELEMENT hExplosionElement;
 
-				++pMS->CurState;
 				hExplosionElement = AllocElement ();
 				if (hExplosionElement)
 				{
 					ELEMENT *ExplosionElementPtr;
+
+					// Advance the state only once we've got the element
+					++pMS->CurState;
 
 					LockElement (hExplosionElement, &ExplosionElementPtr);
 
@@ -1691,6 +1694,12 @@ SetVelocityComponents (
 					PlaySound (SetAbsSoundIndex (
 							LanderSounds, LANDER_DESTROYED
 							), NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
+				}
+				else
+				{	// We could not allocate because the queue was full, but
+					// we will get another chance on the next iteration
+					log_add (log_Warning, "DoPlanetSide(): could not"
+							" allocate explosion element!");
 				}
 			}
 

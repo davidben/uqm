@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Lander will no longer hang when killed on planets with a lot of
+  natural disasters (bug #584) - Alex
 - Canceling load from the main menu returns to main menu (bug #679) - Alex
 - Fixed inputting numbers with the numpad, except directx (bug #934) - Alex
 - Better location description in savegame summaries (bug #844) - Alex
