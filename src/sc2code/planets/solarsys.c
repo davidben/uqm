@@ -871,11 +871,6 @@ UndrawShip (void)
 	SIZE radius, delta_x, delta_y;
 	BOOLEAN LeavingInnerSystem;
 
-#ifdef SHOW_RADAR
-	extern void DrawIPRadar (BOOLEAN FirstTime);
-	DrawIPRadar (FALSE);
-#endif /* SHOW_RADAR */
-
 	LeavingInnerSystem = FALSE;
 	radius = pSolarSysState->SunDesc[0].radius;
 	if (GLOBAL (ShipStamp.origin.x) < 0
