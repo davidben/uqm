@@ -348,6 +348,9 @@ displayBox (const char *title, bool isError, const char *msg)
 static void
 displayBox (const char *title, bool isError, const char *msg)
 {
+	(void) title;
+	(void) isError;
+	(void) msg;
 	// do something here
 }
 
@@ -356,6 +359,9 @@ displayBox (const char *title, bool isError, const char *msg)
 static void
 displayBox (const char *title, bool isError, const char *msg)
 {
+	(void) title;
+	(void) isError;
+	(void) msg;
 	// do nothing here
 }
 
