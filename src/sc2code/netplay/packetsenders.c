@@ -124,7 +124,7 @@ sendFleet(NetConnection *conn, NetplaySide side, const BYTE *ships,
 	packet = Packet_Fleet_create(side, numShips);
 
 	for (i = 0; i < numShips; i++) {
-		packet->ships[i].index = (uint32) i;
+		packet->ships[i].index = (uint8) i;
 		packet->ships[i].ship = ships[i];
 	}
 
