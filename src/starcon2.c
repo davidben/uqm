@@ -236,8 +236,8 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.usegl"))
 	{
-		options.gfxDriver = res_GetBoolean ("config.usegl") ? TFB_GFXDRIVER_SDL_OPENGL :
-			TFB_GFXDRIVER_SDL_PURE;
+		options.gfxDriver = res_GetBoolean ("config.usegl") ?
+				TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE;
 	}
 	if (res_HasKey ("config.scaler"))
 	{
@@ -254,11 +254,13 @@ main (int argc, char *argv[])
 		else if (!strcmp (arg, "hq"))
 			options.gfxFlags |= TFB_GFXFLAGS_SCALE_HQXX;	
 	}
-	if (res_HasKey ("config.scanlines") && res_GetBoolean ("config.scanlines"))
+	if (res_HasKey ("config.scanlines") &&
+			res_GetBoolean ("config.scanlines"))
 	{
 		options.gfxFlags |= TFB_GFXFLAGS_SCANLINES;
 	}
-	if (res_HasKey ("config.fullscreen") && res_GetBoolean ("config.fullscreen"))
+	if (res_HasKey ("config.fullscreen") &&
+			res_GetBoolean ("config.fullscreen"))
 	{
 		options.gfxFlags |= TFB_GFXFLAGS_FULLSCREEN;
 	}
@@ -268,19 +270,23 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.textmenu"))
 	{
-		options.whichMenu = res_GetBoolean ("config.textmenu") ? OPT_PC : OPT_3DO;
+		options.whichMenu = res_GetBoolean ("config.textmenu") ?
+				OPT_PC : OPT_3DO;
 	}
 	if (res_HasKey ("config.textgradients"))
 	{
-		options.whichFonts = res_GetBoolean ("config.textgradients") ? OPT_PC : OPT_3DO;
+		options.whichFonts = res_GetBoolean ("config.textgradients") ?
+				OPT_PC : OPT_3DO;
 	}
 	if (res_HasKey ("config.iconicscan"))
 	{
-		options.whichCoarseScan = res_GetBoolean ("config.iconicscan") ? OPT_3DO : OPT_PC;
+		options.whichCoarseScan = res_GetBoolean ("config.iconicscan") ?
+				OPT_3DO : OPT_PC;
 	}
 	if (res_HasKey ("config.smoothscroll"))		
 	{
-		options.smoothScroll = res_GetBoolean ("config.smoothscroll") ? OPT_3DO : OPT_PC;
+		options.smoothScroll = res_GetBoolean ("config.smoothscroll") ?
+				OPT_3DO : OPT_PC;
 	}
 	if (res_HasKey ("config.3domusic"))
 	{
@@ -292,7 +298,8 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.3domovies"))
 	{
-		options.whichIntro = res_GetBoolean ("config.3domovies") ? OPT_3DO : OPT_PC;
+		options.whichIntro = res_GetBoolean ("config.3domovies") ?
+				OPT_3DO : OPT_PC;
 	}
 	if (res_HasKey ("config.showfps") && res_GetBoolean ("config.showfps"))
 	{
@@ -300,7 +307,8 @@ main (int argc, char *argv[])
 	}
 	if (res_HasKey ("config.smoothmelee"))
 	{
-		options.meleeScale = res_GetBoolean ("config.smoothmelee") ? TFB_SCALE_TRILINEAR : TFB_SCALE_STEP;
+		options.meleeScale = res_GetBoolean ("config.smoothmelee") ?
+				TFB_SCALE_TRILINEAR : TFB_SCALE_STEP;
 	}
 	if (res_HasKey ("config.positionalsfx"))
 	{
@@ -1036,10 +1044,10 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	log_add (log_User, "  -o, --opengl (default off)");
 	log_add (log_User, "  -x, --nogl (default on)");
 	log_add (log_User, "  -k, --keepaspectratio (default off)");
-	log_add (log_User, "  -c, --scale=MODE (bilinear, biadapt, biadv, triscan, "
-			"hq or none (default) )");
-	log_add (log_User, "  -b, --meleezoom=MODE (step, aka pc, or smooth, aka 3do; "
-			"default is 3do)");
+	log_add (log_User, "  -c, --scale=MODE (bilinear, biadapt, biadv, "
+			"triscan, hq or none (default) )");
+	log_add (log_User, "  -b, --meleezoom=MODE (step, aka pc, or smooth, "
+			"aka 3do; default is 3do)");
 	log_add (log_User, "  -s, --scanlines (default off)");
 	log_add (log_User, "  -p, --fps (default off)");
 	log_add (log_User, "  -g, --gamma=CORRECTIONVALUE (default 1.0, which "
@@ -1052,11 +1060,12 @@ usage (FILE *out, const struct options_struct *defaultOptions)
 	log_add (log_User, "  -q, --audioquality=QUALITY (high, medium or low, "
 			"default medium)");
 	log_add (log_User, "  -u, --nosubtitles");
-	log_add (log_User, "  -l, --logfile=FILE (sends console output to logfile "
-			"FILE)");
+	log_add (log_User, "  -l, --logfile=FILE (sends console output to "
+			"logfile FILE)");
 	log_add (log_User, "  --addon ADDON (using a specific addon; "
 			"may be specified multiple times)");
-	log_add (log_User, "  --addondir=ADDONDIR (directory where addons reside)");
+	log_add (log_User, "  --addondir=ADDONDIR (directory where addons "
+			"reside)");
 	log_add (log_User, "  --sound=DRIVER (openal, mixsdl, none; default "
 			"mixsdl)");
 	log_add (log_User, "  --stereosfx (enables positional sound effects, "
@@ -1126,18 +1135,16 @@ Check_PC_3DO_opt (const char *value, DWORD mask, const char *optName,
 static const char *
 PC_3DO_optString (DWORD optMask)
 {
-	if (optMask & OPT_3DO)
+	switch (optMask & (OPT_3DO | OPT_PC))
 	{
-		if (optMask & OPT_PC)
-			return "both";
-		return "3do";
-	}
-	else
-	{
-		if (optMask & OPT_PC)
+		case OPT_3DO:
+			return "3do";
+		case OPT_PC:
 			return "pc";
-		return "none";
+		case (OPT_3DO | OPT_PC):
+			return "both";
+		default:  /* 0 */
+			return "none";
 	}
 }
-
 
