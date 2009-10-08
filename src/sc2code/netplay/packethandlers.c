@@ -51,7 +51,7 @@ static bool
 testNetState(bool condition, PacketType type) {
 	if (!condition) {
 		log_add(log_Error, "Packet of type '%s' received from wrong "
-				"state.\n", packetTypeData[type].name);
+				"state.", packetTypeData[type].name);
 		errno = EBADMSG;
 	}
 	return condition;
@@ -95,7 +95,7 @@ PacketHandler_Init(NetConnection *conn, const Packet_Init *packet) {
 			packet->protoVersion.minor != NETPLAY_PROTOCOL_VERSION_MINOR) {
 		sendAbort (conn, AbortReason_versionMismatch);
 		abortFeedback(conn, AbortReason_versionMismatch);
-		log_add(log_Error, "Protocol version %d.%d not supported.\n",
+		log_add(log_Error, "Protocol version %d.%d not supported.",
 				packet->protoVersion.major, packet->protoVersion.minor);
 		errno = ENOSYS;
 		return -1;
@@ -108,7 +108,7 @@ PacketHandler_Init(NetConnection *conn, const Packet_Init *packet) {
 		sendAbort (conn, AbortReason_versionMismatch);
 		abortFeedback(conn, AbortReason_versionMismatch);
 		log_add(log_Error, "Remote side is running a version of UQM that "
-				"is too old (%d.%d.%d; %d.%d.%d is required).\n",
+				"is too old (%d.%d.%d; %d.%d.%d is required).",
 				packet->uqmVersion.major, packet->uqmVersion.minor,
 				packet->uqmVersion.patch, NETPLAY_MIN_UQM_VERSION_MAJOR,
 				NETPLAY_MIN_UQM_VERSION_MINOR, NETPLAY_MIN_UQM_VERSION_PATCH);
@@ -191,7 +191,7 @@ static bool
 checkYourTurn(NetConnection *conn, PacketType type) {
 	if (conn->stateFlags.myTurn) {
 		log_add(log_Warning, "Packet of type '%s' received in an "
-				"inappropriate turn.\n", packetTypeData[type].name);
+				"inappropriate turn.", packetTypeData[type].name);
 		errno = EBADMSG;
 		return false;
 	}
@@ -249,7 +249,7 @@ PacketHandler_Fleet(NetConnection *conn, const Packet_Fleet *packet) {
 		// There is not enough room in the packet to contain all
 		// the ships it says it contains.
 		log_add(log_Warning, "Invalid fleet size. Specified size is %d, "
-				"actual size = %d\n",
+				"actual size = %d",
 				numShips, (len - sizeof packet) / sizeof(packet->ships[0]));
 		errno = EBADMSG;
 		return -1;
@@ -489,7 +489,7 @@ PacketHandler_InputDelay(NetConnection *conn,
 	delay = ntoh32(packet->delay);
 	if (delay > 60 * BATTLE_FRAME_RATE) {
 		log_add(log_Error, "NETPLAY: [%d]     Received absurdly large "
-				"input delay value (%d).\n", conn->player, delay);
+				"input delay value (%d).", conn->player, delay);
 		return -1;
 	}
 	conn->stateFlags.inputDelay = ntoh32(packet->delay);
@@ -572,7 +572,7 @@ PacketHandler_FrameCount(NetConnection *conn,
 	
 	frameCount = (BattleFrameCounter) ntoh32(packet->frameCount);
 #ifdef NETPLAY_DEBUG
-	log_add(log_Debug, "NETPLAY: [%d] <== Received battleFrameCount %u.\n",
+	log_add(log_Debug, "NETPLAY: [%d] <== Received battleFrameCount %u.",
 			conn->player, (unsigned int) frameCount);
 #endif
 
@@ -612,7 +612,7 @@ PacketHandler_Checksum(NetConnection *conn, const Packet_Checksum *packet) {
 	if (frameNr % interval != 0) {
 		log_add(log_Warning, "NETPLAY: [%d] <== Received checksum "
 				"for frame %u, while we only expect checksums on frames "
-				"divisable by %u -- discarding.\n", conn->player,
+				"divisable by %u -- discarding.", conn->player,
 				(unsigned int) frameNr, interval);
 		return 0;
 				// No need to close the connection; checksums are not
@@ -627,7 +627,7 @@ PacketHandler_Checksum(NetConnection *conn, const Packet_Checksum *packet) {
 	if (frameNr > battleFrameCount + delay + 1) {
 		log_add(log_Warning, "NETPLAY: [%d] <== Received checksum "
 				"for a frame too far in the future (frame %u, current "
-				"is %u, input delay is %u) -- discarding.\n", conn->player,
+				"is %u, input delay is %u) -- discarding.", conn->player,
 				(unsigned int) frameNr, battleFrameCount, delay);
 		return 0;
 				// No need to close the connection; checksums are not
@@ -644,7 +644,7 @@ PacketHandler_Checksum(NetConnection *conn, const Packet_Checksum *packet) {
 	if (frameNr + delay < battleFrameCount) {
 		log_add(log_Warning, "NETPLAY: [%d] <== Received checksum "
 				"for a frame too far in the past (frame %u, current "
-				"is %u, input delay is %u) -- discarding.\n", conn->player,
+				"is %u, input delay is %u) -- discarding.", conn->player,
 				(unsigned int) frameNr, battleFrameCount, delay);
 		return 0;
 				// No need to close the connection; checksums are not
