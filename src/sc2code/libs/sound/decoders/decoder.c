@@ -321,6 +321,7 @@ SoundDecoder_Lookup (const char* fileext)
 TFB_SoundDecoder*
 SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 		uint32 buffer_size, uint32 startTime, sint32 runTime)
+			// runTime < 0 specifies a default length for a nul decoder
 {	
 	const char* pext;
 	TFB_RegSoundDecoder* info;
@@ -417,7 +418,9 @@ SoundDecoder_Load (uio_DirHandle *dir, char *filename,
 	}
 
 	decoder->length -= startTime / 1000.0f;
-	if (runTime > 0 && runTime / 1000.0 < decoder->length)
+	if (decoder->length < 0)
+		decoder->length = 0;
+	else if (runTime > 0 && runTime / 1000.0 < decoder->length)
 		decoder->length = (float)(runTime / 1000.0);
 
 	decoder->start_sample = (uint32)(startTime / 1000.0f * decoder->frequency);

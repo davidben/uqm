@@ -23,7 +23,7 @@ typedef struct tfb_soundchain
 	float start_time;
 	int tag_me;
 	uint32 track_num;
-	void *text;
+	UNICODE *text;
 	TFB_TrackCB callback;
 	struct tfb_soundchain *next;
 } TFB_SoundChain;
@@ -35,10 +35,10 @@ typedef struct tfb_soundchaindata
 
 } TFB_SoundChainData;
 
-extern TFB_SoundChain *first_chain;
+extern TFB_SoundChain *chain_head;
 
 TFB_SoundChain *create_soundchain (TFB_SoundDecoder *decoder, float startTime);
 void destroy_soundchain (TFB_SoundChain *chain);
-TFB_SoundChain *get_previous_chain (TFB_SoundChain *first_chain, TFB_SoundChain *current_chain);
+TFB_SoundChain *get_chain_previous (TFB_SoundChain *head, TFB_SoundChain *current);
 
 #endif // TRACKINT_H

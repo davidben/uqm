@@ -907,7 +907,7 @@ DoConvSummary (SUMMARY_STATE *pSS)
 	if (!pSS->Initialized)
 	{
 		pSS->PrintNext = TRUE;
-		pSS->NextSub = first_chain;
+		pSS->NextSub = chain_head;
 		pSS->LeftOver = NULL;
 		pSS->MenuRepeatDelay = 0;
 		pSS->InputFunc = DoConvSummary;
