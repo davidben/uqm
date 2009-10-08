@@ -2045,6 +2045,90 @@ nextControlType (COUNT which_side)
 	DrawControls (which_side, TRUE);
 }
 
+static MELEE_OPTIONS
+MeleeOptionDown (MELEE_OPTIONS current) {
+	if (current == QUIT_BOT)
+		return QUIT_BOT;
+	return current + 1;
+}
+
+static MELEE_OPTIONS
+MeleeOptionUp (MELEE_OPTIONS current)
+{
+	if (current == TOP_ENTRY)
+		return TOP_ENTRY;
+	return current - 1;
+}
+
+static void
+MeleeOptionSelect (MELEE_STATE *pMS)
+{
+	switch (pMS->MeleeOption)
+	{
+		case START_MELEE:
+			StartMeleeButtonPressed (pMS);
+			break;
+		case LOAD_TOP:
+		case LOAD_BOT:
+			pMS->Initialized = FALSE;
+			pMS->side = pMS->MeleeOption == LOAD_TOP ? 0 : 1;
+			DoLoadTeam (pMS);
+			LastInputTime = GetTimeCounter ();
+			break;
+		case SAVE_TOP:
+		case SAVE_BOT:
+			pMS->side = pMS->MeleeOption == SAVE_TOP ? 0 : 1;
+			if (pMS->SideState[pMS->side].star_bucks)
+				DoSaveTeam (pMS);
+			else
+				PlayMenuSound (MENU_SOUND_FAILURE);
+			break;
+		case QUIT_BOT:
+			GLOBAL (CurrentActivity) |= CHECK_ABORT;
+			break;
+#ifdef NETPLAY
+		case NET_TOP:
+		case NET_BOT:
+		{
+			COUNT which_side;
+			BOOLEAN confirmed;
+
+			if (pMS->flash_task)
+			{
+				ConcludeTask (pMS->flash_task);
+				pMS->flash_task = 0;
+			}
+
+			which_side = pMS->MeleeOption == NET_TOP ? 1 : 0;
+			confirmed = MeleeConnectDialog (which_side);
+			RedrawMeleeFrame ();
+			if (confirmed)
+			{
+				pMS->Initialized = FALSE;
+				pMS->InputFunc = DoConnectingDialog;
+			}
+			else
+			{
+				if (!pMS->flash_task)
+				{
+					pMS->flash_task = AssignTask (flash_selection_func,
+							2048, "flash melee selection");
+				}
+			}
+
+			break;
+		}
+#endif  /* NETPLAY */
+		case CONTROLS_TOP:
+		case CONTROLS_BOT:
+		{
+			COUNT which_side = (pMS->MeleeOption == CONTROLS_TOP) ? 1 : 0;
+			nextControlType (which_side);
+			break;
+		}
+	}
+}
+
 BOOLEAN
 DoMelee (MELEE_STATE *pMS)
 {
@@ -2119,14 +2203,12 @@ DoMelee (MELEE_STATE *pMS)
 		if (PulsedInputState.menu[KEY_MENU_UP])
 		{
 			LastInputTime = GetTimeCounter ();
-			if (NewMeleeOption != TOP_ENTRY)
-				--NewMeleeOption;
+			NewMeleeOption = MeleeOptionUp (pMS->MeleeOption);
 		}
 		else if (PulsedInputState.menu[KEY_MENU_DOWN])
 		{
 			LastInputTime = GetTimeCounter ();
-			if (NewMeleeOption != QUIT_BOT)
-				++NewMeleeOption;
+			NewMeleeOption = MeleeOptionDown (pMS->MeleeOption);
 		}
 
 		if ((PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
@@ -2163,74 +2245,9 @@ DoMelee (MELEE_STATE *pMS)
 
 		if (PulsedInputState.menu[KEY_MENU_SELECT] || force_select)
 		{
-			switch (pMS->MeleeOption)
-			{
-				case START_MELEE:
-					StartMeleeButtonPressed (pMS);
-					if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-						return (FALSE);
-					break;
-				case LOAD_TOP:
-				case LOAD_BOT:
-					pMS->Initialized = FALSE;
-					pMS->side = pMS->MeleeOption == LOAD_TOP ? 0 : 1;
-					DoLoadTeam (pMS);
-					LastInputTime = GetTimeCounter ();
-					break;
-				case SAVE_TOP:
-				case SAVE_BOT:
-					pMS->side = pMS->MeleeOption == SAVE_TOP ? 0 : 1;
-					if (pMS->SideState[pMS->side].star_bucks)
-						DoSaveTeam (pMS);
-					else
-						PlayMenuSound (MENU_SOUND_FAILURE);
-					break;
-	 			case QUIT_BOT:
-					GLOBAL (CurrentActivity) |= CHECK_ABORT;
-					break;
-#ifdef NETPLAY
-				case NET_TOP:
-				case NET_BOT:
-				{
-					COUNT which_side;
-					BOOLEAN confirmed;
-
-					if (pMS->flash_task)
-					{
-						ConcludeTask (pMS->flash_task);
-						pMS->flash_task = 0;
-					}
-
-					which_side = pMS->MeleeOption == NET_TOP ? 1 : 0;
-					confirmed = MeleeConnectDialog (which_side);
-					RedrawMeleeFrame ();
-					if (confirmed)
-					{
-						pMS->Initialized = FALSE;
-						pMS->InputFunc = DoConnectingDialog;
-					}
-					else
-					{
-						if (!pMS->flash_task)
-						{
-							pMS->flash_task = AssignTask (
-									flash_selection_func, 2048,
-									"flash melee selection");
-						}
-					}
-
-					break;
-				}
-#endif
-				case CONTROLS_TOP:
-				case CONTROLS_BOT:
-				{
-					COUNT which_side =
-							(pMS->MeleeOption == CONTROLS_TOP) ? 1 : 0;
-					nextControlType (which_side);
-					break;
-				}
-			}
+			MeleeOptionSelect (pMS);
+			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+				return (FALSE);
 		}
 	}
 
