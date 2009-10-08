@@ -1732,14 +1732,14 @@ StartMelee (MELEE_STATE *pMS)
 
 	do
 	{
+		if (!SetPlayerInputAll ())
+			break;
 		LockMutex (GraphicsLock);
 		BuildAndDrawShipList (pMS);
 		UnlockMutex (GraphicsLock);
 
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
-		if (!SetPlayerInputAll ())
-			break;
 		load_gravity_well ((BYTE)((COUNT)TFB_Random () %
 					NUMBER_OF_PLANET_TYPES));
 		Battle ();
