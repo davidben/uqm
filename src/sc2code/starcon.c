@@ -162,7 +162,10 @@ while (--ac > 0)
 	while (StartGame ())
 	{
 		// Initialise a new game
-		SetPlayerInputAll ();
+		if (!SetPlayerInputAll ()) {
+			log_add (log_Fatal, "Could not set player input.");
+			explode ();  // Does not return;
+		}
 		InitSIS ();
 		InitGameClock ();
 		AddInitialGameEvents();

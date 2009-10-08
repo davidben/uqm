@@ -231,7 +231,7 @@ InitGameKernel (void)
 	return TRUE;
 }
 
-void
+bool
 SetPlayerInput (COUNT playerI)
 {
 	assert (PlayerInput[playerI] == NULL);
@@ -243,7 +243,7 @@ SetPlayerInput (COUNT playerI)
 			break;
 		case COMPUTER_CONTROL:
 		case CYBORG_CONTROL:
-			// COMPUTER_CONTROL is used in SuperMelee; the computer choses
+			// COMPUTER_CONTROL is used in SuperMelee; the computer chooses
 			// the ships and fights the battles.
 			// CYBORG_CONTROL is used in the full game; the computer only
 			// fights the battles. XXX: This will need to be handled
@@ -260,23 +260,32 @@ SetPlayerInput (COUNT playerI)
 			break;
 #endif
 		default:
-			fprintf (stderr, "Invalid control method in SetPlayerInput().\n");
+			log_add (log_Fatal,
+					"Invalid control method in SetPlayerInput().");
 			explode ();  /* Does not return */
 	}
+
+	return PlayerInput[playerI] != NULL;
 }
 
-void
+bool
 SetPlayerInputAll (void)
 {
 	COUNT playerI;
 	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
-		SetPlayerInput (playerI);
+		if (!SetPlayerInput (playerI))
+			return false;
+	return true;
 }
 
 void
 ClearPlayerInput (COUNT playerI)
 {
-	assert (PlayerInput[playerI] != NULL);
+	if (PlayerInput[playerI] == NULL) {
+		log_add (log_Debug, "ClearPlayerInput(): PlayerInput[%d] was NULL.",
+				playerI);
+		return;
+	}
 
 	PlayerInput[playerI]->handlers->deleteContext (PlayerInput[playerI]);
 	PlayerInput[playerI] = NULL;

@@ -1738,7 +1738,8 @@ StartMelee (MELEE_STATE *pMS)
 
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
-		SetPlayerInputAll ();
+		if (!SetPlayerInputAll ())
+			break;
 		load_gravity_well ((BYTE)((COUNT)TFB_Random () %
 					NUMBER_OF_PLANET_TYPES));
 		Battle ();

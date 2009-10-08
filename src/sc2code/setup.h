@@ -67,8 +67,8 @@ extern void FreeKernel (void);
 int initIO (void);
 void uninitIO (void);
 
-void SetPlayerInput (COUNT playerI);
-void SetPlayerInputAll (void);
+bool SetPlayerInput (COUNT playerI);
+bool SetPlayerInputAll (void);
 void ClearPlayerInput (COUNT playerI);
 void ClearPlayerInputAll (void);
 
