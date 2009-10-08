@@ -38,7 +38,7 @@ static TFB_SoundChain *last_sub = NULL; //last element in the chain with a subti
 static Mutex track_mutex; //protects cur_track and track_count
 void recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *head,
 			sint32 offset);
-bool is_sample_playing(TFB_SoundSample* samp);
+static bool is_sample_playing(TFB_SoundSample* samp);
 
 void destroy_sound_sample (TFB_SoundSample *sample);
 
