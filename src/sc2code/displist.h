@@ -21,8 +21,8 @@
 
 #include <assert.h>
 #include "port.h"
-#include "compiler.h"
-#include "misc.h"
+#include "libs/compiler.h"
+#include "libs/misc.h"
 
 // Note that we MUST use the QUEUE_TABLE variant at this time, because
 // certain gameplay elements depend on it. Namely, the maximum number

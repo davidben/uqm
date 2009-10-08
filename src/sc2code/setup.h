@@ -61,6 +61,9 @@ BOOLEAN InitContexts (void);
 void UninitPlayerInput (void);
 BOOLEAN InitGameKernel (void);
 
+extern BOOLEAN LoadKernel (int argc, char *argv[]);
+extern void FreeKernel (void);
+
 int initIO (void);
 void uninitIO (void);
 

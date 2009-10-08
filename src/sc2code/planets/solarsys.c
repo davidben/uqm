@@ -26,6 +26,8 @@
 #include "resinst.h"
 #include "settings.h"
 #include "lander.h"
+#include "ipdisp.h"
+#include "process.h"
 #include "load.h"
 #include "setup.h"
 #include "sounds.h"

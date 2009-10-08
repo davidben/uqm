@@ -41,6 +41,7 @@ BOOLEAN selectShipNetwork (NetworkInputContext *context, GETMELEE_STATE *gms);
 
 #include "flash.h"
 #include "libs/timelib.h"
+#include "init.h"
 
 struct getmelee_struct {
 	BOOLEAN (*InputFunc) (struct getmelee_struct *pInputState);

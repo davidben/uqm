@@ -19,25 +19,11 @@
 #ifndef _ELEMENT_H
 #define _ELEMENT_H
 
-#include "battle.h"
 #include "displist.h"
 #include "units.h"
 #include "velocity.h"
 #include "libs/gfxlib.h"
 
-#define BATTLE_FRAME_RATE (ONE_SECOND / 24)
-
-#define SHIP_INFO_HEIGHT 65
-#define CAPTAIN_XOFFS 4
-#define CAPTAIN_YOFFS (SHIP_INFO_HEIGHT + 4)
-#define SHIP_STATUS_HEIGHT (STATUS_HEIGHT >> 1)
-#define BAD_GUY_YOFFS 0
-#define GOOD_GUY_YOFFS SHIP_STATUS_HEIGHT
-#define STARCON_TEXT_HEIGHT 7
-#define TINY_TEXT_HEIGHT 9
-
-#define BATTLE_CREW_X 10
-#define BATTLE_CREW_Y (64 - SAFE_Y)
 
 #define NORMAL_LIFE 1
 
@@ -157,6 +143,11 @@ struct element
 	HELEMENT hTarget;
 };
 
+extern QUEUE disp_q;
+// The maximum number of elements is chosen to provide a slight margin.
+// Currently, it is maximum *known used* in Melee + 30
+#define MAX_DISPLAY_ELEMENTS 150
+
 #define MAX_DISPLAY_PRIMS 330
 extern COUNT DisplayFreeList;
 extern PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
@@ -200,19 +191,10 @@ extern void FreeElement (HELEMENT hElement);
 #define GetSuccElement(l) _GetSuccLink (l)
 extern void RemoveElement (HLINK hLink);
 
-extern void RedrawQueue (BOOLEAN clear);
-extern BOOLEAN DeltaEnergy (ELEMENT *ElementPtr, SIZE energy_delta);
-extern BOOLEAN DeltaCrew (ELEMENT *ElementPtr, SIZE crew_delta);
-
-extern void PreProcessStatus (ELEMENT *ShipPtr);
-extern void PostProcessStatus (ELEMENT *ShipPtr);
-
+// XXX: The following functions should not really be here
 extern void spawn_planet (void);
 extern void spawn_asteroid (ELEMENT *ElementPtr);
-extern void animation_preprocess (ELEMENT *ElementPtr);
 extern void do_damage (ELEMENT *ElementPtr, SIZE damage);
-extern void collision (ELEMENT *ElementPtr0, POINT *pPt0,
-		ELEMENT *ElementPtr1, POINT *pPt1);
 extern void crew_preprocess (ELEMENT *ElementPtr);
 extern void crew_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 		ELEMENT *ElementPtr1, POINT *pPt1);
@@ -221,42 +203,11 @@ extern void AbandonShip (ELEMENT *ShipPtr, ELEMENT *TargetPtr,
 extern BOOLEAN TimeSpaceMatterConflict (ELEMENT *ElementPtr);
 extern COUNT PlotIntercept (ELEMENT *ElementPtr0,
 		ELEMENT *ElementPtr1, COUNT max_turns, COUNT margin_of_error);
-extern BOOLEAN LoadKernel (int argc, char *argv[]);
-extern void FreeKernel (void);
-
-extern void InitDisplayList (void);
 
 extern void InitGalaxy (void);
 extern void MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy);
-extern void ship_preprocess (ELEMENT *ElementPtr);
-extern void ship_postprocess (ELEMENT *ElementPtr);
-extern void ship_death (ELEMENT *ShipPtr);
-extern BOOLEAN hyper_transition (ELEMENT *ElementPtr);
 
 extern BOOLEAN CalculateGravity (ELEMENT *ElementPtr);
-extern void SetUpElement (ELEMENT *ElementPtr);
-
-extern void BattleSong (BOOLEAN DoPlay);
-extern void FreeBattleSong (void);
-
-extern void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
-
-
-typedef UWORD STATUS_FLAGS;
-
-/* STATUS_FLAGS - heat of battle specific flags */
-#define LEFT                   (1 << 0)
-#define RIGHT                  (1 << 1)
-#define THRUST                 (1 << 2)
-#define WEAPON                 (1 << 3)
-#define SPECIAL                (1 << 4)
-#define LOW_ON_ENERGY          (1 << 5)
-#define SHIP_BEYOND_MAX_SPEED  (1 << 6)
-#define SHIP_AT_MAX_SPEED      (1 << 7)
-#define SHIP_IN_GRAVITY_WELL   (1 << 8)
-#define PLAY_VICTORY_DITTY     (1 << 9)
-
-extern STATUS_FLAGS inertial_thrust (ELEMENT *ElementPtr);
 
 
 #endif /* _ELEMENT_H */

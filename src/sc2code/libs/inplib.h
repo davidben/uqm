@@ -20,7 +20,7 @@
 #define _INPLIB_H
 
 #include <stddef.h>
-#include "compiler.h"
+#include "libs/compiler.h"
 #include "libs/uio.h"
 
 typedef DWORD INPUT_STATE;

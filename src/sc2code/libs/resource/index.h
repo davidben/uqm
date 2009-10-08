@@ -20,7 +20,7 @@
 #define _INDEX_H
 
 #include <stdio.h>
-#include "reslib.h"
+#include "libs/reslib.h"
 #include "libs/uio/charhashtable.h"
 
 typedef struct resource_handlers

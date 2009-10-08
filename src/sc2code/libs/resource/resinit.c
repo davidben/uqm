@@ -17,7 +17,7 @@
  */
 
 #include "resintrn.h"
-#include "misc.h"
+#include "libs/misc.h"
 #include "options.h"
 #include "nameref.h"
 #include "types.h"

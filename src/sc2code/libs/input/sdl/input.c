@@ -24,7 +24,7 @@
 #include "libs/input/input_common.h"
 #include "libs/input/sdl/vcontrol.h"
 #include "libs/input/sdl/keynames.h"
-#include "misc.h"
+#include "libs/misc.h"
 #include "controls.h"
 #include "libs/file.h"
 #include "libs/log.h"

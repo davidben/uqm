@@ -23,7 +23,7 @@
 
 #include "port.h"
 #include "types.h"
-#include "uio.h"
+#include "libs/uio.h"
 
 #ifndef OVCODEC_NONE
 #	ifdef _MSC_VER

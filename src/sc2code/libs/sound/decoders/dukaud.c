@@ -23,7 +23,7 @@
 #include "libs/misc.h"
 #include "port.h"
 #include "types.h"
-#include "uio.h"
+#include "libs/uio.h"
 #include "dukaud.h"
 #include "decoder.h"
 #include "endian_uqm.h"

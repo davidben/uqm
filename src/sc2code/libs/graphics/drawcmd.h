@@ -19,7 +19,7 @@
 #ifndef DRAWCMD_H
 #define DRAWCMD_H
 
-#include "graphics/tfb_draw.h"
+#include "libs/graphics/tfb_draw.h"
 
 enum
 {

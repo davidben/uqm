@@ -19,12 +19,16 @@
 #include "build.h"
 #include "colors.h"
 #include "cons_res.h"
+#include "races.h"
 #include "element.h"
+#include "tactrans.h"
+#include "pickship.h"
+#include "process.h"
 #include "globdata.h"
 #include "init.h"
 #include "port.h"
 #include "resinst.h"
-#include "reslib.h"
+#include "libs/reslib.h"
 #include "nameref.h"
 #include "setup.h"
 #include "units.h"
@@ -281,7 +285,6 @@ UninitShips (void)
 			hElement != 0; hElement = hNextElement)
 	{
 		ELEMENT *ElementPtr;
-		extern void new_ship (ELEMENT *ElementPtr);
 
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetSuccElement (ElementPtr);

@@ -29,7 +29,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "libs/decomp/lzh.h"
-#include "reslib.h"
+#include "libs/reslib.h"
 
 PLZHCODE_DESC _lpCurCodeDesc;
 STREAM_TYPE _StreamType;

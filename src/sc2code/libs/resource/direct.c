@@ -17,7 +17,7 @@
  */
 
 #include "libs/strings/strintrn.h"
-#include "misc.h"
+#include "libs/misc.h"
 #include "port.h"
 #include "libs/uio.h"
 #include <sys/stat.h>

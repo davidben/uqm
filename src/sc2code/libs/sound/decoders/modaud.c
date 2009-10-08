@@ -24,7 +24,7 @@
 #include "port.h"
 #include "types.h"
 #include "endian_uqm.h"
-#include "uio.h"
+#include "libs/uio.h"
 #include "decoder.h"
 #include "libs/sound/audiocore.h"
 #include "libs/log.h"

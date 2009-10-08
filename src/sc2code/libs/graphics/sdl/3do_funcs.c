@@ -23,8 +23,8 @@
 #include "opengl.h"
 #include "primitives.h"
 #include "units.h"
-#include "graphics/drawcmd.h"
-#include "graphics/tfb_draw.h"
+#include "libs/graphics/drawcmd.h"
+#include "libs/graphics/tfb_draw.h"
 
 
 int batch_depth = 0;

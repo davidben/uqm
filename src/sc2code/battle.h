@@ -23,8 +23,6 @@
 typedef DWORD BattleFrameCounter;
 #endif
 
-#include "displist.h"
-		// for QUEUE
 #include "init.h"
 		// For NUM_SIDES
 
@@ -34,11 +32,6 @@ typedef struct battlestate_struct {
 	BOOLEAN first_time;
 	DWORD NextTime;
 } BATTLE_STATE;
-
-extern QUEUE disp_q;
-// The maximum number of elements is chosen to provide a slight margin.
-// Currently, it is maximum *known used* in Melee + 30
-#define MAX_DISPLAY_ELEMENTS 150
 
 extern BYTE battle_counter[NUM_SIDES];
 extern BOOLEAN instantVictory;
@@ -54,5 +47,9 @@ COUNT GetPlayerOrder (COUNT i);
 
 BOOLEAN Battle (void);
 
-#endif  /* _BATTLE_H */
+#define BATTLE_FRAME_RATE (ONE_SECOND / 24)
 
+extern void BattleSong (BOOLEAN DoPlay);
+extern void FreeBattleSong (void);
+
+#endif  /* _BATTLE_H */

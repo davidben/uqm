@@ -21,7 +21,7 @@
 #include <ctype.h>
 #include "libs/log.h"
 #include "propfile.h"
-#include "reslib.h"
+#include "libs/reslib.h"
 
 void
 PropFile_from_string (char *d, PROPERTY_HANDLER handler, const char *prefix)

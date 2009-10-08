@@ -15,7 +15,7 @@
  */
 
 #include <string.h>
-#include "file.h"
+#include "libs/file.h"
 #include "options.h"
 #include "sound.h"
 #include "libs/reslib.h"

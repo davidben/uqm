@@ -20,9 +20,9 @@
 #define _RESLIB_H
 
 //#include <stdio.h>
-#include "compiler.h"
+#include "libs/compiler.h"
 #include "port.h"
-#include "misc.h"
+#include "libs/misc.h"
 #include "libs/uio.h"
 
 typedef struct resource_index_desc RESOURCE_INDEX_DESC;
@@ -59,6 +59,7 @@ long LengthResFile (uio_Stream *fp);
 BOOLEAN res_CloseResFile (uio_Stream *fp);
 BOOLEAN DeleteResFile (uio_DirHandle *dir, const char *filename);
 
+RESOURCE_INDEX InitResourceSystem (void);
 void UninitResourceSystem (void);
 BOOLEAN InstallResTypeVectors (const char *res_type, ResourceLoadFun *loadFun, ResourceFreeFun *freeFun, ResourceStringFun *stringFun);
 void *res_GetResource (RESOURCE res);

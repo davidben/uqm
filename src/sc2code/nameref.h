@@ -19,7 +19,7 @@
 #ifndef _NAMEREF_H
 #define _NAMEREF_H
 
-#include "reslib.h"
+#include "libs/reslib.h"
 
 #define LoadCodeRes     LoadCodeResInstance
 #define LoadGraphic     (DRAWABLE)LoadGraphicInstance

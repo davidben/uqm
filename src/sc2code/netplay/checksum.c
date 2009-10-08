@@ -28,6 +28,8 @@
 		// for DUMP_CRC_OPS
 #include "netconnection.h"
 #include "netmelee.h"
+#include "tactrans.h"
+		// for new_ship
 #include "libs/log.h"
 #include "libs/mathlib.h"
 #include "libs/misc.h"
@@ -125,7 +127,6 @@ crc_processELEMENT(crc_State *state, const ELEMENT *val) {
 		// the side this ship is on. This must be excluded from the checksum
 		// as this does not have to be the same for both sides.
 		{
-			extern void new_ship(ELEMENT *ElementPtr);
 			BYTE turn_wait = val->turn_wait;
 			
 			if (val->preprocess_func == new_ship)

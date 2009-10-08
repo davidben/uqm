@@ -147,7 +147,7 @@ typedef struct textentry_state
 	
 } TEXTENTRY_STATE;
 
-BOOLEAN DoTextEntry (TEXTENTRY_STATE *pTES);
+extern BOOLEAN DoTextEntry (TEXTENTRY_STATE *pTES);
 
 #endif
 

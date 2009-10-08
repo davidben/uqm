@@ -65,6 +65,7 @@ FRAME MiscDataFrame;
 FRAME FontGradFrame;
 Mutex GraphicsLock;
 STRING GameStrings;
+QUEUE disp_q;
 
 uio_Repository *repository;
 uio_DirHandle *rootDir;
@@ -178,7 +179,7 @@ InitContexts (void)
 	return TRUE;
 }
 
-BOOLEAN
+static BOOLEAN
 InitKernel (void)
 {
 	COUNT counter;

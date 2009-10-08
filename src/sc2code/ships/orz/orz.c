@@ -18,6 +18,7 @@
 
 #include "ships/ship.h"
 #include "ships/orz/resinst.h"
+#include "ship.h"
 
 #include "colors.h"
 #include "globdata.h"

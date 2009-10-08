@@ -18,11 +18,12 @@
 
 #include "weapon.h"
 
-#include "build.h"
 #include "colors.h"
 #include "globdata.h"
+#include "status.h"
 #include "init.h"
 #include "races.h"
+#include "ship.h"
 #include "setup.h"
 #include "sounds.h"
 #include "units.h"

@@ -31,7 +31,7 @@
 #include <string.h>
 #include "port.h"
 #include "types.h"
-#include "uio.h"
+#include "libs/uio.h"
 #include "endian_uqm.h"
 #include "libs/misc.h"
 #include "libs/log.h"

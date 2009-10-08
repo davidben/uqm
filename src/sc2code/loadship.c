@@ -22,6 +22,7 @@
 #include "globdata.h"
 #include "nameref.h"
 #include "races.h"
+#include "init.h"
 
 static RESOURCE code_resources[] = {
 		NULL_RESOURCE,

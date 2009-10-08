@@ -18,6 +18,7 @@
 
 #include "ships/ship.h"
 #include "ships/thradd/resinst.h"
+#include "ship.h"
 
 #include "globdata.h"
 

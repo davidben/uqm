@@ -19,7 +19,7 @@
 #ifndef PROPFILE_H_
 #define PROPFILE_H_
 
-#include "uio.h"
+#include "libs/uio.h"
 
 typedef void (*PROPERTY_HANDLER) (const char *, const char *);
 

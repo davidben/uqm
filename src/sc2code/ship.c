@@ -16,11 +16,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "ship.h"
+
 #include "build.h"
 #include "collide.h"
 #include "colors.h"
 #include "globdata.h"
+#include "status.h"
+#include "hyper.h"
+#include "tactrans.h"
+#include "pickship.h"
 #include "intel.h"
+#include "init.h"
+#include "battle.h"
 #include "pickmele.h"
 #include "races.h"
 #include "setup.h"
@@ -186,14 +194,10 @@ ship_preprocess (ELEMENT *ElementPtr)
 
 			if (ElementPtr->hTarget == 0)
 			{
-				extern void ship_transition (ELEMENT *ElementPtr);
-
 				ship_transition (ElementPtr);
 			}
 			else
 			{
-				extern BOOLEAN OpponentAlive (STARSHIP *TestStarShipPtr);
-
 				ElementPtr->hTarget = 0;
 				if (!PLRPlaying ((MUSIC_REF)~0) && OpponentAlive (StarShipPtr))
 					BattleSong (TRUE);
@@ -268,8 +272,6 @@ ship_preprocess (ELEMENT *ElementPtr)
 		if (!OBJECT_CLOAKED (ElementPtr)
 				&& LOBYTE (GLOBAL (CurrentActivity)) <= IN_ENCOUNTER)
 		{
-			extern void spawn_ion_trail (ELEMENT *ElementPtr);
-
 			spawn_ion_trail (ElementPtr);
 		}
 	}

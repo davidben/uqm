@@ -16,10 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "ipdisp.h"
+
 #include "collide.h"
 #include "globdata.h"
 #include "init.h"
 #include "races.h"
+#include "process.h"
 #include "grpinfo.h"
 #include "encount.h"
 #include "libs/mathlib.h"

@@ -18,8 +18,8 @@
 
 // See doc/devel/planettopo for details.
 
-#include "gfxlib.h"
-#include "mathlib.h"
+#include "libs/gfxlib.h"
+#include "libs/mathlib.h"
 #include "planets.h"
 
 void

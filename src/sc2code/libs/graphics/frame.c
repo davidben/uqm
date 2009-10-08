@@ -17,7 +17,6 @@
  */
 
 #include "gfxintrn.h"
-#include "declib.h"
 #include "gfx_common.h"
 #include "tfb_draw.h"
 #include "tfb_prim.h"

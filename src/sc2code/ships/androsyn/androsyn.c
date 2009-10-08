@@ -18,6 +18,7 @@
 
 #include "ships/ship.h"
 #include "ships/androsyn/resinst.h"
+#include "ship.h"
 
 #include "libs/mathlib.h"
 

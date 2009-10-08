@@ -19,7 +19,7 @@
 #ifndef _INPINTRN_H
 #define _INPINTRN_H
 
-#include "inplib.h"
+#include "libs/inplib.h"
 
 
 #endif /* _INPINTRN_H */

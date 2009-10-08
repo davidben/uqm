@@ -20,7 +20,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "vcontrol.h"
-#include "misc.h"
+#include "libs/misc.h"
 #include "keynames.h"
 #include "libs/log.h"
 #include "libs/reslib.h"

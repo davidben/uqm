@@ -55,6 +55,20 @@ typedef HLINK HSTARSHIP;
 #define PLAYER_CAPTAIN    (1 << 13)
 		/* The protagonist himself is on board. He gets a different color. */
 
+typedef UWORD STATUS_FLAGS;
+
+/* STATUS_FLAGS - heat of battle specific flags */
+#define LEFT                   (1 << 0)
+#define RIGHT                  (1 << 1)
+#define THRUST                 (1 << 2)
+#define WEAPON                 (1 << 3)
+#define SPECIAL                (1 << 4)
+#define LOW_ON_ENERGY          (1 << 5)
+#define SHIP_BEYOND_MAX_SPEED  (1 << 6)
+#define SHIP_AT_MAX_SPEED      (1 << 7)
+#define SHIP_IN_GRAVITY_WELL   (1 << 8)
+#define PLAY_VICTORY_DITTY     (1 << 9)
+
 /* These track the old resource package orderings for the ship resource indices */
 typedef enum
 {
@@ -655,21 +669,6 @@ enum
 // Should be the same as in plandata.c
 #define SOL_X  1752
 #define SOL_Y  1450
-
-extern BOOLEAN InitKernel (void);
-
-extern void DrawCaptainsWindow (STARSHIP *StarShipPtr);
-extern BOOLEAN GetNextStarShip (STARSHIP *LastStarShipPtr,
-		COUNT which_side);
-extern BOOLEAN GetInitialStarShips (void);
-extern HSTARSHIP GetEncounterStarShip (STARSHIP *LastStarShipPtr,
-		COUNT which_player);
-extern void DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect);
-
-extern BOOLEAN load_animation (FRAME *pixarray, RESOURCE big_res,
-		RESOURCE med_res, RESOURCE sml_res);
-extern BOOLEAN free_image (FRAME *pixarray);
-extern void NotifyOthers (COUNT which_race, BYTE target_loc);
 
 #endif /* _RACES_H */
 

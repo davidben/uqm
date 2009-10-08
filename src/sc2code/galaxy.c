@@ -21,6 +21,7 @@
 #include "element.h"
 #include "globdata.h"
 #include "init.h"
+#include "process.h"
 #include "units.h"
 #include "options.h"
 #include "libs/compiler.h"

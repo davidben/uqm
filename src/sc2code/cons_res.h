@@ -17,8 +17,8 @@
 #ifndef CONS_RES_H_
 #define CONS_RES_H_
 
-#include "gfxlib.h"
-#include "sndlib.h"
+#include "libs/gfxlib.h"
+#include "libs/sndlib.h"
 
 void load_gravity_well (BYTE selector);
 void free_gravity_well (void);

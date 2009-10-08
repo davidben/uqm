@@ -18,7 +18,7 @@
 
 #include "port.h"
 #include "strintrn.h"
-#include "uio.h"
+#include "libs/uio.h"
 #include "libs/reslib.h"
 
 

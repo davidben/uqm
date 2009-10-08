@@ -234,7 +234,6 @@ extern PLAN_GEN_FUNC GenerateIP (BYTE Index);
 extern void DrawSystem (SIZE radius, BOOLEAN IsInnerSystem);
 extern void DrawOval (RECT *pRect, BYTE num_off_pixels);
 extern void DrawFilledOval (RECT *pRect);
-extern void DoMissions (void);
 extern void FillOrbits (SOLARSYS_STATE *system, BYTE NumPlanets,
 		PLANET_DESC *pBaseDesc, BOOLEAN TypesDefined);
 extern void ScanSystem (void);

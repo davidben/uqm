@@ -22,11 +22,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "port.h"
-#include "uio.h"
+#include "libs/uio.h"
 #include "config.h"
 #include "types.h"
 #include "filintrn.h"
-#include "misc.h"
+#include "libs/misc.h"
 #include "libs/log.h"
 
 static int copyError(uio_Handle *srcHandle, uio_Handle *dstHandle,

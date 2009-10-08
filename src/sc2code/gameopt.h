@@ -16,7 +16,7 @@
 #ifndef _GAMEOPT_H
 #define _GAMEOPT_H
 
-#include "compiler.h"
+#include "libs/compiler.h"
 #include "libs/gfxlib.h"
 
 extern void ConfirmSaveLoad (STAMP *MsgStamp);

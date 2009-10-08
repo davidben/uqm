@@ -19,7 +19,7 @@
 #ifndef _MEMLIB_H
 #define _MEMLIB_H
 
-#include "compiler.h"
+#include "libs/compiler.h"
 
 extern BOOLEAN mem_init (void);
 extern BOOLEAN mem_uninit (void);

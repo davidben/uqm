@@ -19,7 +19,7 @@
 #ifdef GFXMODULE_SDL
 
 #include "sdl_common.h"
-#include "graphics/tfb_draw.h"
+#include "libs/graphics/tfb_draw.h"
 #include "libs/log.h"
 
 static void

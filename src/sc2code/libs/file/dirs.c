@@ -25,8 +25,8 @@
 #include "port.h"
 #include "config.h"
 #include "filintrn.h"
-#include "compiler.h"
-#include "misc.h"
+#include "libs/compiler.h"
+#include "libs/misc.h"
 #include "libs/log.h"
 
 #ifdef HAVE_DRIVE_LETTERS

@@ -17,9 +17,9 @@
 #ifndef _VIDEODEC_H
 #define _VIDEODEC_H
 
-#include "vidlib.h"
+#include "libs/vidlib.h"
 #include "libs/video/video.h"
-#include "reslib.h"
+#include "libs/reslib.h"
 
 // forward-declare
 typedef struct tfb_videodecoder TFB_VideoDecoder;

@@ -16,10 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "build.h"
+#include "status.h"
 #include "colors.h"
 #include "globdata.h"
 #include "races.h"
+#include "ship.h"
 #include "setup.h"
 #include "options.h"
 
@@ -410,8 +411,6 @@ PostProcessStatus (ELEMENT *ShipPtr)
 
 			if (StarShipPtr->RaceDescPtr->ship_info.crew_level == 0)
 			{
-#define CAPTAIN_WIDTH 55
-#define CAPTAIN_HEIGHT 30
 				BYTE i;
 				COLOR c;
 				RECT r;

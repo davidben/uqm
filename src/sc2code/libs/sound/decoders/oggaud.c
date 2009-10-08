@@ -24,7 +24,7 @@
 #include "libs/log.h"
 #include "port.h"
 #include "types.h"
-#include "uio.h"
+#include "libs/uio.h"
 #include "decoder.h"
 #ifdef OVCODEC_TREMOR
 #	include <tremor/ivorbiscodec.h>

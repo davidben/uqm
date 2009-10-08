@@ -19,7 +19,7 @@
 #ifndef _SNDLIB_H
 #define _SNDLIB_H
 
-#include "strlib.h"
+#include "libs/strlib.h"
 
 typedef STRING_TABLE SOUND_REF;
 typedef STRING SOUND;

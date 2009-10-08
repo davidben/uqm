@@ -32,9 +32,9 @@
 #include "libs/inplib.h"
 #include "libs/tasklib.h"
 #include "controls.h"
-#include "element.h"
+#include "battle.h"
 		// For BATTLE_FRAME_RATE
-#include "file.h"
+#include "libs/file.h"
 #include "port.h"
 #include "libs/memlib.h"
 #include "libs/platform.h"

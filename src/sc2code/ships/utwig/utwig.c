@@ -18,6 +18,7 @@
 
 #include "ships/ship.h"
 #include "ships/utwig/resinst.h"
+#include "ship.h"
 
 #include "globdata.h"
 #include "libs/mathlib.h"

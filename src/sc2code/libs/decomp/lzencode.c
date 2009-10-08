@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 #include "lzh.h"
-#include "reslib.h"
+#include "libs/reslib.h"
 
 static UWORD match_position, match_length;
 static SWORD *lson;

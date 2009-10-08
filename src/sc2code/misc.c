@@ -19,6 +19,8 @@
 #include "element.h"
 #include "init.h"
 #include "races.h"
+#include "ship.h"
+#include "status.h"
 #include "setup.h"
 #include "sounds.h"
 #include "weapon.h"

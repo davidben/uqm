@@ -20,7 +20,7 @@
 #define _RESINTRN_H
 
 #include <string.h>
-#include "reslib.h"
+#include "libs/reslib.h"
 #include "index.h"
 
 ResourceDesc *lookupResourceDesc (RESOURCE_INDEX idx, RESOURCE res);

@@ -29,6 +29,7 @@
 #include "load.h"
 #include "util.h"
 #include "lander.h"
+#include "process.h"
 #include "setup.h"
 #include "sounds.h"
 #include "state.h"
@@ -1252,8 +1253,6 @@ GeneratePlanetSide (void)
 			}
 			else
 			{
-				extern void object_animation (ELEMENT *ElementPtr);
-
 				NodeElementPtr->current.image.frame = f;
 				NodeElementPtr->next.image.frame = SetRelFrameIndex (
 						f, NUM_SCANDOT_TRANSITIONS - 1);

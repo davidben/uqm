@@ -15,7 +15,7 @@
  */
 
 #include <stdlib.h>
-#include "misc.h"
+#include "libs/misc.h"
 #include "sdlthreads.h"
 #ifdef PROFILE_THREADS
 #include <signal.h>

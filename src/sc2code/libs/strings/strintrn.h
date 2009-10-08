@@ -21,8 +21,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "strlib.h"
-#include "reslib.h"
+#include "libs/strlib.h"
+#include "libs/reslib.h"
 
 struct string_table_entry
 {

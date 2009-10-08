@@ -26,7 +26,7 @@ typedef struct BattleStateData BattleStateData;
 #include "types.h"
 
 #include "battle.h"
-		// for BattleFrameCounter
+		// for BattleFrameCounter, BATTLE_FRAME_RATE
 
 struct BattleStateData {
 	NETCONNECTION_STATE_DATA_COMMON

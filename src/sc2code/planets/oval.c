@@ -18,8 +18,8 @@
 
 #include "units.h"
 #include "libs/gfxlib.h"
-#include "graphics/context.h"
-#include "graphics/drawable.h"
+#include "libs/graphics/context.h"
+#include "libs/graphics/drawable.h"
 
 
 #define NUM_QUADS 4

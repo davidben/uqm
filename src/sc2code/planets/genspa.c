@@ -19,6 +19,7 @@
 #include "build.h"
 #include "encount.h"
 #include "globdata.h"
+#include "ipdisp.h"
 #include "lifeform.h"
 #include "nameref.h"
 #include "resinst.h"

@@ -19,8 +19,8 @@
 #ifndef _GFXLIB_H
 #define _GFXLIB_H
 
-#include "compiler.h"
-#include "reslib.h"
+#include "libs/compiler.h"
+#include "libs/reslib.h"
 
 typedef struct context_desc CONTEXT_DESC;
 typedef struct frame_desc FRAME_DESC;

@@ -23,13 +23,6 @@
 #include "displist.h"
 #include "libs/compiler.h"
 
-#define CREW_XOFFS 4
-#define ENERGY_XOFFS 52
-#define GAUGE_YOFFS (SHIP_INFO_HEIGHT - 10)
-#define UNIT_WIDTH 2
-#define UNIT_HEIGHT 1
-#define STAT_WIDTH (1 + UNIT_WIDTH + 1 + UNIT_WIDTH + 1)
-
 #define NAME_OFFSET 5
 #define NUM_CAPTAINS_NAMES 16
 
@@ -66,15 +59,6 @@ extern int SetEscortCrewComplement (COUNT which_ship, COUNT crew_level,
 extern RACE_DESC *load_ship (SPECIES_ID SpeciesID, BOOLEAN LoadBattleData);
 extern void free_ship (RACE_DESC *RaceDescPtr, BOOLEAN FreeIconData,
 		BOOLEAN FreeBattleData);
-
-extern void DrawCrewFuelString (COORD y, SIZE state);
-extern void ClearShipStatus (COORD y);
-extern void OutlineShipStatus (COORD y);
-extern void InitShipStatus (SHIP_INFO *ShipInfoPtr, BYTE captains_name_index,
-		RECT *pClipRect);
-extern void DeltaStatistics (SHIP_INFO *ShipInfoPtr, SIZE crew_delta,
-		SIZE energy_delta);
-extern void DrawBattleCrewAmount (SHIP_INFO *ShipInfoPtr);
 
 #endif /* _BUILD_H */
 

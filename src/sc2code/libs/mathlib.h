@@ -19,7 +19,7 @@
 #ifndef _MATHLIB_H
 #define _MATHLIB_H
 
-#include "compiler.h"
+#include "libs/compiler.h"
 #include "math/random.h"
 
 extern COUNT square_root (DWORD value);

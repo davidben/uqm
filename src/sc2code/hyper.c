@@ -23,6 +23,8 @@
 #include "colors.h"
 #include "controls.h"
 #include "encount.h"
+#include "ship.h"
+#include "process.h"
 #include "globdata.h"
 #include "init.h"
 #include "nameref.h"

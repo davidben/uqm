@@ -17,7 +17,7 @@
  */
 
 #include "resintrn.h"
-#include "declib.h"
+#include "libs/declib.h"
 
 void *
 GetResourceData (uio_Stream *fp, DWORD length)

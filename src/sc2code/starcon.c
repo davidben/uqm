@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 #include "encount.h"
-#include "element.h"
+#include "battle.h"
 #include "fmv.h"
 #include "gameev.h"
 #include "types.h"

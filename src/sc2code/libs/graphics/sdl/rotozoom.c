@@ -13,7 +13,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "misc.h"
+#include "libs/misc.h"
 #include "port.h"
 #include "rotozoom.h"
 

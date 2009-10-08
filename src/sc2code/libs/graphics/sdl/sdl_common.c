@@ -32,7 +32,7 @@
 #include "libs/uio.h"
 #include "libs/log.h"
 #include "controls.h"
-#include "vidlib.h"
+#include "libs/vidlib.h"
 		// XXX: Should not be included from here.
 #include "uqmdebug.h"
 #include SDL_INCLUDE(SDL_thread.h)

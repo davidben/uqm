@@ -18,8 +18,8 @@
 #define _UQM_VIDEO_H
 
 #include "options.h"
-#include "misc.h"
-#include "vidlib.h"
+#include "libs/misc.h"
+#include "libs/vidlib.h"
 #include "libs/graphics/tfb_draw.h"
 #include "types.h"
 #include "videodec.h"

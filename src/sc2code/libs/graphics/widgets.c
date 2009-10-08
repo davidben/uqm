@@ -14,10 +14,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "graphics/gfx_common.h"
-#include "graphics/widgets.h"
+#include "gfx_common.h"
+#include "widgets.h"
 #include "colors.h"
-#include "strlib.h"
+#include "libs/strlib.h"
 #include "setup.h"
 #include "units.h"
 

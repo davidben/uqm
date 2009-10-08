@@ -21,10 +21,10 @@
 #include "save.h"
 
 #include "build.h"
-#include "declib.h"
+#include "libs/declib.h"
 #include "controls.h"
 #include "encount.h"
-#include "file.h"
+#include "libs/file.h"
 #include "gamestr.h"
 #include "globdata.h"
 #include "options.h"

@@ -22,6 +22,9 @@
 #include "gamestr.h"
 #include "options.h"
 #include "starbase.h"
+#include "battle.h"
+		// For BATTLE_FRAME_RATE
+#include "element.h"
 #include "setup.h"
 #include "state.h"
 #include "libs/graphics/gfx_common.h"

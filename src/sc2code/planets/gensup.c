@@ -20,6 +20,7 @@
 #include "encount.h"
 #include "globdata.h"
 #include "lander.h"
+#include "ipdisp.h"
 #include "nameref.h"
 #include "resinst.h"
 #include "state.h"

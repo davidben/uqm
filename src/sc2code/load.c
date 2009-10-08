@@ -21,9 +21,9 @@
 #include "load.h"
 
 #include "build.h"
-#include "declib.h"
+#include "libs/declib.h"
 #include "encount.h"
-#include "file.h"
+#include "libs/file.h"
 #include "globdata.h"
 #include "load.h"
 #include "options.h"

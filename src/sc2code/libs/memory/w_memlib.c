@@ -24,7 +24,7 @@
 //#include "tool.h"
 //#include "utils.h"
 //#include "pcwin.h"
-#include "compiler.h"
+#include "libs/compiler.h"
 #ifdef LEGACY_HANDLE_ALLOCATOR
 #include "libs/threadlib.h"
 #endif

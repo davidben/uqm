@@ -18,6 +18,7 @@
 
 #include "ships/ship.h"
 #include "ships/supox/resinst.h"
+#include "ship.h"
 
 #include "libs/mathlib.h"
 

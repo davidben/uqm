@@ -20,8 +20,8 @@
 #define _SNDINTRN_H
 
 #include <stdio.h>
-#include "sndlib.h"
-#include "reslib.h"
+#include "libs/sndlib.h"
+#include "libs/reslib.h"
 
 extern void *_GetMusicData (uio_Stream *fp, DWORD length);
 extern BOOLEAN _ReleaseMusicData (void *handle);

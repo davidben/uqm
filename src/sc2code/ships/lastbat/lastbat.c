@@ -21,6 +21,8 @@
 
 #include "colors.h"
 #include "globdata.h"
+#include "battle.h"
+		// For BATTLE_FRAME_RATE
 #include "libs/mathlib.h"
 #include "libs/timelib.h"
 

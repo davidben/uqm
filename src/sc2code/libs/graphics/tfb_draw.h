@@ -40,7 +40,7 @@ typedef struct tfb_palette
 	UBYTE unused;
 } TFB_Palette;
 
-#include "graphics/gfx_common.h"
+#include "libs/graphics/gfx_common.h"
 #include "cmap.h"
 
 typedef struct tfb_image

@@ -26,7 +26,7 @@
 #include "nameref.h"
 #include "settings.h"
 #include "setup.h"
-#include "vidlib.h"
+#include "libs/vidlib.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 

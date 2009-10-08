@@ -19,7 +19,7 @@
 #ifndef _STRLIB_H
 #define _STRLIB_H
 
-#include "compiler.h"
+#include "libs/compiler.h"
 #include "port.h"
 #include "libs/uio.h"
 

@@ -16,12 +16,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "lander.h"
+
 #include "cons_res.h"
 #include "controls.h"
 #include "colors.h"
 #include "encount.h"
+#include "process.h"
 #include "gamestr.h"
-#include "lander.h"
 #include "lifeform.h"
 #include "scan.h"
 #include "nameref.h"

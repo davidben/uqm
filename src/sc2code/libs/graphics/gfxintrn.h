@@ -22,8 +22,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "gfxlib.h"
-#include "reslib.h"
+#include "libs/gfxlib.h"
+#include "libs/reslib.h"
 #include "context.h"
 #include "drawable.h"
 #include "font.h"

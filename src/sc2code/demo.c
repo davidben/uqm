@@ -17,7 +17,8 @@
  */
 
 #include "demo.h"
-#include "declib.h"
+#include "libs/declib.h"
+#include "setup.h"
 
 #if DEMO_MODE || CREATE_JOURNAL
 static DECODE_REF journal_fh;

@@ -21,7 +21,7 @@
 #include "comm.h"
 #include "commglue.h"
 #include "encount.h"
-#include "reslib.h"
+#include "libs/reslib.h"
 
 #endif  /* _COMMALL_H */
 

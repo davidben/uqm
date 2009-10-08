@@ -16,12 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "battle.h"
 #include "master.h"
 #include "nameref.h"
-#include "reslib.h"
+#include "libs/reslib.h"
 #include "gamestr.h"
 #include "init.h"
+#include "element.h"
 #include "hyper.h"
 #include "planets/lander.h"
 #include "starcon.h"

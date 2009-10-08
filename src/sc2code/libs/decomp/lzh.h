@@ -19,8 +19,8 @@
 #ifndef _LZH_H
 #define _LZH_H
 
-#include "declib.h"
-#include "misc.h"
+#include "libs/declib.h"
+#include "libs/misc.h"
 
 /* LZSS Parameters */
 

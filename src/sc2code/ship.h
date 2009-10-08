@@ -1,5 +1,3 @@
-//Copyright Paul Reiche, Fred Ford. 1992-2002
-
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,30 +11,25 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TRACKPLAYER_H
-#define TRACKPLAYER_H
+#ifndef UQM_SHIP_H_INCL_
+#define UQM_SHIP_H_INCL_
 
 #include "libs/compiler.h"
+#include "races.h"
+#include "element.h"
 
+extern BOOLEAN GetNextStarShip (STARSHIP *LastStarShipPtr, COUNT which_side);
+extern BOOLEAN GetInitialStarShips (void);
 
-typedef void (*TFB_TrackCB) (void);
+extern void animation_preprocess (ELEMENT *ElementPtr);
+extern void ship_preprocess (ELEMENT *ElementPtr);
+extern void ship_postprocess (ELEMENT *ElementPtr);
+extern void collision (ELEMENT *ElementPtr0, POINT *pPt0,
+		ELEMENT *ElementPtr1, POINT *pPt1);
 
-#define ACCEL_SCROLL_SPEED 300
+extern STATUS_FLAGS inertial_thrust (ELEMENT *ElementPtr);
 
-void ResumeTrack(void);
-void PauseTrack(void);
-COUNT PlayingTrack(void);
-void JumpTrack(void);
-void FastForward_Smooth(void);
-int FastForward_Page(void);
-void FastReverse_Smooth(void);
-void FastReverse_Page(void);
-void StopTrack(void);
-void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, TFB_TrackCB cb);
-void SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText);
-int GetSoundInfo (int max_len);
-
-#endif
+#endif  /* UQM_SHIP_H_INCL_ */

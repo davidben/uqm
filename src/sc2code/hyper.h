@@ -19,9 +19,11 @@
 #ifndef _HYPER_H
 #define _HYPER_H
 
+#include "element.h"
 
 extern void FreeHyperData (void);
 extern void check_hyperspace_encounter (void);
+extern BOOLEAN hyper_transition (ELEMENT *ElementPtr);
 
 #endif /* _HYPER_H */
 

@@ -16,10 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "pickship.h"
+
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
 #include "pickmele.h"
+#include "battle.h"
 #include "races.h"
 #include "resinst.h"
 #include "nameref.h"

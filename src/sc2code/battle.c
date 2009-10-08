@@ -21,6 +21,11 @@
 #include "battlecontrols.h"
 #include "controls.h"
 #include "init.h"
+#include "element.h"
+#include "ship.h"
+#include "process.h"
+#include "tactrans.h"
+		// for flee_preprocess()
 #include "intel.h"
 #ifdef NETPLAY
 #	include "netplay/netmelee.h"
@@ -39,7 +44,6 @@
 #include "libs/mathlib.h"
 
 
-QUEUE disp_q;
 BYTE battle_counter[NUM_SIDES];
 		// The number of ships still available for battle to each side.
 		// A ship that has warped out is no longer available.
@@ -81,8 +85,6 @@ DoRunAway (STARSHIP *StarShipPtr)
 			&& ElementPtr->mass_points != MAX_SHIP_MASS * 10
 			&& !(ElementPtr->state_flags & APPEARING))
 	{
-		extern void flee_preprocess (ELEMENT *);
-
 		battle_counter[0]--;
 
 		ElementPtr->turn_wait = 3;

@@ -16,10 +16,16 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "tactrans.h"
+
 #include "battlecontrols.h"
 #include "build.h"
 #include "collide.h"
 #include "globdata.h"
+#include "element.h"
+#include "ship.h"
+#include "status.h"
+#include "battle.h"
 #include "init.h"
 #ifdef NETPLAY
 #	include "netplay/netmelee.h"

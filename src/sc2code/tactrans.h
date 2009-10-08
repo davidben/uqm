@@ -19,11 +19,23 @@
 #ifndef _TACTRANS_H
 #define _TACTRANS_H
 
+#include "libs/compiler.h"
+#include "races.h"
+#include "element.h"
+#include "battlecontrols.h"
+
 bool battleEndReadyHuman (HumanInputContext *context);
 bool battleEndReadyComputer (ComputerInputContext *context);
 #ifdef NETPLAY
 bool battleEndReadyNetwork (NetworkInputContext *context);
 #endif
+
+extern void ship_transition (ELEMENT *ElementPtr);
+extern BOOLEAN OpponentAlive (STARSHIP *TestStarShipPtr);
+extern void new_ship (ELEMENT *ElementPtr);
+extern void ship_death (ELEMENT *ShipPtr);
+extern void spawn_ion_trail (ELEMENT *ElementPtr);
+extern void flee_preprocess (ELEMENT *ElementPtr);
 
 #endif  /* _TACTRANS_H */
 

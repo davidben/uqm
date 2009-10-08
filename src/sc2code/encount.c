@@ -28,6 +28,7 @@
 #include "gamestr.h"
 #include "globdata.h"
 #include "init.h"
+#include "pickship.h"
 #include "intel.h"
 #include "nameref.h"
 #include "resinst.h"

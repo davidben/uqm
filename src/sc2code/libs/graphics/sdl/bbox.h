@@ -14,9 +14,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "gfxlib.h"
-#include "graphics/tfb_draw.h"
-#include "graphics/gfx_common.h"
+#include "libs/gfxlib.h"
+#include "libs/graphics/tfb_draw.h"
+#include "libs/graphics/gfx_common.h"
 
 #ifndef _BBOX_H_
 #define _BBOX_H_

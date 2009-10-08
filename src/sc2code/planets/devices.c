@@ -28,7 +28,7 @@
 #include "grpinfo.h"
 #include "sounds.h"
 #include "util.h"
-#include "strlib.h"
+#include "libs/strlib.h"
 
 
 // If DEBUG_DEVICES is defined, the device list shown in the game will

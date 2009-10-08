@@ -19,12 +19,13 @@
 #include "melee.h"
 
 #include "build.h"
+#include "status.h"
 #include "colors.h"
 #include "comm.h"
 		// for getLineWithinWidth
 #include "cons_res.h"
 #include "controls.h"
-#include "file.h"
+#include "libs/file.h"
 #include "fmv.h"
 #include "gamestr.h"
 #include "globdata.h"

@@ -27,6 +27,7 @@
 //#include "reslib.h"
 #include "intel.h"
 #include "races.h"
+#include "status.h"
 #include "sounds.h"
 #include "weapon.h"
 

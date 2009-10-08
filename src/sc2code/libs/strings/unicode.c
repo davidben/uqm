@@ -20,7 +20,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include "strlib.h"
+#include "libs/strlib.h"
 #include "libs/log.h"
 
 

@@ -19,7 +19,7 @@
 #ifndef _CODERES_H
 #define _CODERES_H
 
-#include "reslib.h"
+#include "libs/reslib.h"
 
 extern BOOLEAN InstallCodeResType (void);
 extern void *LoadCodeResInstance (RESOURCE res);

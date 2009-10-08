@@ -18,7 +18,7 @@
 
 #include "sndintrn.h"
 #include "options.h"
-#include "reslib.h"
+#include "libs/reslib.h"
 #include <string.h>
 
 
