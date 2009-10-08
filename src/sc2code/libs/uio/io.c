@@ -39,6 +39,10 @@
 #	include "memdebug.h"
 #endif
 
+#if 0
+static int uio_accessDir(uio_DirHandle *dirHandle, const char *path,
+		int mode);
+#endif
 static int uio_statDir(uio_DirHandle *dirHandle, const char *path,
 		struct stat *statBuf);
 static int uio_statOneDir(uio_PDirHandle *pDirHandle, struct stat *statBuf);
@@ -415,6 +419,134 @@ uio_rename(uio_DirHandle *oldDir, const char *oldPath,
 }
 
 int
+uio_access(uio_DirHandle *dir, const char *path, int mode) {
+	(void) dir;
+	(void) path;
+	(void) mode;
+	errno = ENOSYS;  // Not implemented.
+	return -1;
+
+#if 0
+	uio_PDirHandle *pReadDir;
+	uio_MountInfo *readMountInfo;
+	char *name;
+	int result;
+
+	if (uio_getPhysicalAccess(dir, path, O_RDONLY, 0,
+			&readMountInfo, &pReadDir, NULL,
+			NULL, NULL, NULL, &name) == -1) {
+		// XXX: I copied this part from uio_stat(). Is this what I need?
+		if (uio_accessDir(dir, path, statBuf) == -1) {
+			// errno is set
+			return -1;
+		}
+		return 0;
+	}
+
+	if (pReadDir->pRoot->handler->access == NULL) {
+		uio_PDirHandle_unref(pReadDir);
+		uio_free(name);
+		errno = ENOSYS;
+		return -1;
+	}
+
+	result = (pReadDir->pRoot->handler->access)(pReadDir, name, mode);
+	if (result == -1) {
+		int savedErrno = errno;
+		uio_PDirHandle_unref(pReadDir);
+		uio_free(name);
+		errno = savedErrno;
+		return -1;
+	}
+
+	uio_PDirHandle_unref(pReadDir);
+	uio_free(name);
+	return result;
+#endif
+}
+
+#if 0
+// auxiliary function to uio_access
+static int
+uio_accessDir(uio_DirHandle *dirHandle, const char *path, int mode) {
+	int numPDirHandles;
+	uio_PDirHandle **pDirHandles;
+
+	if (mode & R_OK)
+	{
+		// Read permission is always granted. Nothing to check here.
+	}
+
+	if (uio_getPathPhysicalDirs(dirHandle, path, strlen(path),
+				&pDirHandles, &numPDirHandles, NULL) == -1) {
+		// errno is set
+		return -1;
+	}
+
+	if (numPDirHandles == 0) {
+		errno = ENOENT;
+		return -1;
+	}
+
+	if (mode & F_OK)
+	{
+		// We need to check whether each of the directories is complete
+
+		// WORK
+	}
+
+	if (mode & W_OK) {
+		// If there is any directory where writing is allowed, then
+		// we can write.
+
+		// WORK
+		errno = ENOENT;
+		return -1;
+
+#if 0
+		if (uio_statOneDir(pDirHandles[0], statBuf) == -1) {
+			int savedErrno = errno;
+			uio_PDirHandles_delete(pDirHandles, numPDirHandles);
+			errno = savedErrno;
+			return -1;
+		}
+		// TODO: atm, fstat'ing a dir will show the info for the topmost
+		//       dir. Maybe it would make sense of merging the bits. (How?)
+
+#if 0
+		for (i = 1; i < numPDirHandles; i++) {
+			struct stat statOne;
+			uio_PDirHandle *pDirHandle;
+
+			if (statOneDir(pDirHandles[i], &statOne) == -1) {
+				// errno is set
+				int savedErrno = errno;
+				uio_PDirHandles_delete(pDirHandles, numPDirHandles);
+				errno = savedErrno;
+				return -1;
+			}
+
+			// Merge dirs:
+
+
+		}
+#endif
+#endif
+	}
+
+	if (mode & X_OK) {
+		// XXX: Not implemented.
+		uio_PDirHandles_delete(pDirHandles, numPDirHandles);
+		errno = ENOSYS;
+		return -1;
+	}
+
+	uio_PDirHandles_delete(pDirHandles, numPDirHandles);
+	return 0;
+}
+#endif
+
+int
 uio_fstat(uio_Handle *handle, struct stat *statBuf) {
 	if (handle->root->handler->fstat == NULL) {
 		errno = ENOSYS;
@@ -448,6 +580,14 @@ uio_stat(uio_DirHandle *dir, const char *path, struct stat *statBuf) {
 	}
 
 	result = (pReadDir->pRoot->handler->stat)(pReadDir, name, statBuf);
+	if (result == -1) {
+		int savedErrno = errno;
+		uio_PDirHandle_unref(pReadDir);
+		uio_free(name);
+		errno = savedErrno;
+		return -1;
+	}
+
 	uio_PDirHandle_unref(pReadDir);
 	uio_free(name);
 	return result;

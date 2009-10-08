@@ -57,6 +57,9 @@ Bugs:
 - Network paths on Windows are not accepted.
 - No CRLF translation (and ^Z recognition) is done for files read from
   zip files, even though that may be expected on Windows.
+- The order in which "uio_unmountAllDirs() unmounts the directories, may lead
+  it to unmount a dir while there still is a file descriptor for another
+  dir open, causing a warning.
 
 Extra features (not necessary for UQM):
 - Make functions to use for uio_malloc, uio_free and uio_realloc

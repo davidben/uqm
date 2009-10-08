@@ -59,6 +59,7 @@ struct uio_FileSystemHandler {
 	struct uio_PRoot * (*mount)    (uio_Handle *, int);
 	int               (*umount)   (uio_PRoot *);
 
+	int               (*access)   (uio_PDirHandle *, const char *, int mode);
 	void              (*close)    (uio_Handle *);
 			// called when the last reference is closed, not
 			// necessarilly each time when uio_close() is called

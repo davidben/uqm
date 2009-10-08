@@ -98,6 +98,7 @@ uio_FileSystemHandler zip_fileSystemHandler = {
 	/* .mount  = */  zip_mount,
 	/* .umount = */  uio_GPRoot_umount,
 
+	/* .access = */  zip_access,
 	/* .close  = */  zip_close,
 	/* .fstat  = */  zip_fstat,
 	/* .stat   = */  zip_stat,
@@ -219,6 +220,55 @@ zip_fillStat(struct stat *statBuf, const zip_GPFileData *gPFileData) {
 }
 
 int
+zip_access(uio_PDirHandle *pDirHandle, const char *name, int mode) {
+	errno = ENOSYS;  // Not implemented.
+	(void) pDirHandle;
+	(void) name;
+	(void) mode;
+	return -1;
+
+#if 0
+	uio_GPDirEntry *entry;
+
+	if (name[0] == '.' && name[1] == '\0') {
+		entry = (uio_GPDirEntry *) pDirHandle->extra;
+	} else {
+		entry = uio_GPDir_getGPDirEntry(pDirHandle->extra, name);
+		if (entry == NULL) {
+			errno = ENOENT;
+			return -1;
+		}
+	}
+
+	if (mode & R_OK)
+	{
+		// Read permission is always granted. Nothing to check here.
+	}
+	
+	if (mode & W_OK) {
+		errno = EACCES;
+		return -1;
+	}
+
+	if (mode & X_OK) {
+		if (uio_GPDirEntry_isDir(entry)) {
+			// Search permission on directories is always granted.
+		} else {
+			// WORK
+#error
+		}
+	}
+
+	if (mode & F_OK) {
+		// WORK
+#error
+	}
+
+	return 0;
+#endif
+}
+
+int
 zip_fstat(uio_Handle *handle, struct stat *statBuf) {
 #if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
 	if (handle->native->file->extra->fileOffset == -1) {
@@ -229,7 +279,7 @@ zip_fstat(uio_Handle *handle, struct stat *statBuf) {
 			return -1;
 		}
 	}
-#endif
+#endif  /* zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS */
 	zip_fillStat(statBuf, handle->native->file->extra);
 	return 0;
 }
@@ -261,6 +311,7 @@ zip_stat(uio_PDirHandle *pDirHandle, const char *name, struct stat *statBuf) {
 	}
 
 #if zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS
+#ifndef zip_INCOMPLETE_STAT
 	if (((zip_GPFileData *) entry->extra)->fileOffset == -1) {
 		// The local header wasn't read in yet.
 		if (zip_updateFileDataFromLocalHeader(pDirHandle->pRoot->handle,
@@ -269,7 +320,8 @@ zip_stat(uio_PDirHandle *pDirHandle, const char *name, struct stat *statBuf) {
 			return -1;
 		}
 	}
-#endif
+#endif  /* !defined(zip_INCOMPLETE_STAT) */
+#endif  /* zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS */
 
 	zip_fillStat(statBuf, (zip_GPFileData *) entry->extra);
 	return 0;

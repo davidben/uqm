@@ -47,6 +47,14 @@ typedef struct uio_GPDirEntries_Iterator *uio_NativeEntriesContext;
 #define zip_USE_CENTRAL_HEADERS 1
 #define zip_USE_LOCAL_HEADERS 2
 
+#define zip_INCOMPLETE_STAT
+		// Ignored unless zip_USE_HEADERS == zip_USE_CENTRAL_HEADERS.
+		// If defined, extra meta-data for files in the .zip archive
+		// isn't retrieved from the local file header when zip_stat()
+		// is called. The uid, gid, file mode, and file times may be
+		// inaccurate. The advantage is that a possibly costly seek and
+		// read can be avoided.
+
 typedef struct zip_GPFileData {
 	off_t compressedSize;
 	off_t uncompressedSize;
@@ -86,6 +94,7 @@ int zip_umount(struct uio_PRoot *);
 uio_Handle *zip_open(uio_PDirHandle *pDirHandle, const char *file, int flags,
 		mode_t mode);
 void zip_close(uio_Handle *handle);
+int zip_access(uio_PDirHandle *pDirHandle, const char *name, int mode);
 int zip_fstat(uio_Handle *handle, struct stat *statBuf);
 int zip_stat(uio_PDirHandle *pDirHandle, const char *name,
 		struct stat *statBuf);

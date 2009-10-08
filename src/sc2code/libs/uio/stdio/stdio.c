@@ -70,6 +70,7 @@ uio_FileSystemHandler stdio_fileSystemHandler = {
 	/* .mount  = */  stdio_mount,
 	/* .umount = */  uio_GPRoot_umount,
 
+	/* .access = */  stdio_access,
 	/* .close  = */  stdio_close,
 	/* .fstat  = */  stdio_fstat,
 	/* .stat   = */  stdio_stat,
@@ -118,6 +119,29 @@ stdio_close(uio_Handle *handle) {
 			break;
 		}
 	}
+}
+
+int
+stdio_access(uio_PDirHandle *pDirHandle, const char *name, int mode) {
+	char *path;
+	int result;
+	
+	path = joinPaths(stdio_getPath(pDirHandle->extra), name);
+	if (path == NULL) {
+		// errno is set
+		return -1;
+	}
+
+	result = access(path, mode);
+	if (result == -1) {
+		int savedErrno = errno;
+		uio_free(path);
+		errno = savedErrno;
+		return -1;
+	}
+
+	uio_free(path);
+	return result;
 }
 
 int

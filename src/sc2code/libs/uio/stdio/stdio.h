@@ -83,6 +83,8 @@ uio_PDirHandle *stdio_mkdir(uio_PDirHandle *pDirHandle, const char *name,
 uio_Handle *stdio_open(uio_PDirHandle *pDirHandle, const char *file, int flags,
 		mode_t mode);
 void stdio_close(uio_Handle *handle);
+int zip_access(uio_PDirHandle *pDirHandle, const char *name, int mode);
+int stdio_access(uio_PDirHandle *pDirHandle, const char *name, int mode);
 int stdio_fstat(uio_Handle *handle, struct stat *statBuf);
 int stdio_stat(uio_PDirHandle *pDirHandle, const char *name,
 		struct stat *statBuf);
