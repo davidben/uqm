@@ -267,7 +267,7 @@ getHomeDir (void)
 // EP_SINGLESEP - Replace multiple consecutive path seperators (which POSIX
 //                considers equivalent to a single one) by a single one.
 // Additionally, there's EP_ALL, which indicates all of the above,
-// and EP_SYSTEM_ALL, which does the same as EP_ALL, with the exception
+// and EP_ALL_SYSTEM, which does the same as EP_ALL, with the exception
 // of EP_SLASHES, which will only be included if the operating system
 // accepts backslashes as path terminators.
 // Returns 0 on success.
@@ -547,7 +547,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 
 		pathStart = dest;
 #ifdef HAVE_DRIVE_LETTERS
-		if (isDriveLetter(pathStart[0]) && (pathStart[1] == ':'))
+		if (isDriveLetter (pathStart[0]) && (pathStart[1] == ':'))
 		{
 			pathStart += 2;
 		}
