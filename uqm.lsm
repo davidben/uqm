@@ -13,12 +13,12 @@ Maintained-by:  Serge van den Boom <svdb@stack.nl>
                 Alex Volkov <codepro@usa.net>
 Primary-site:   ftp.sourceforge.net /pub/sourceforge/s/sc/sc2/
                 1225567 uqm-0.6.0-win32-installer.exe
-		11580000 uqm-0.6.0-content.uqm
-		18980071 uqm-0.6.0-3domusic.uqm
-		114823409 uqm-0.6.0-voice.uqm
+                11580000 uqm-0.6.0-content.uqm
+                18980071 uqm-0.6.0-3domusic.uqm
+                114823409 uqm-0.6.0-voice.uqm
                 21917799 uqm-0.6.0-macosx.dmg
                 1567422 uqm-0.6.0-source.tgz
 Platforms:      Windows, Linux, FreeBSD, OpenBSD, MacOS X, BeOS
-Copying-policy: GPL for the C code, custom for the graphics and audio content
+Copying-policy: GPL for the C code, CC-by-nc-sa 2.5 or custom for the graphics and audio content, CC-by 2.0 for the documentation
 End
 
