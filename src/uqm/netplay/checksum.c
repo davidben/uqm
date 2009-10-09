@@ -28,7 +28,7 @@
 		// for DUMP_CRC_OPS
 #include "netconnection.h"
 #include "netmelee.h"
-#include "tactrans.h"
+#include "../tactrans.h"
 		// for new_ship
 #include "libs/log.h"
 #include "libs/mathlib.h"

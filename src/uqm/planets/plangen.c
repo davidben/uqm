@@ -16,12 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "nameref.h"
-#include "resinst.h"
-#include "setup.h"
+#include "planets.h"
+#include "scan.h"
+#include "../nameref.h"
+#include "../resinst.h"
+#include "../setup.h"
 #include "options.h"
-#include "planets/planets.h"
-#include "planets/scan.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 #include "libs/mathlib.h"

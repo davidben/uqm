@@ -31,10 +31,10 @@
 #include "port.h"
 #include "libs/uio.h"
 #include "libs/log.h"
-#include "controls.h"
 #include "libs/vidlib.h"
-		// XXX: Should not be included from here.
-#include "uqmdebug.h"
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/controls.h"
+#include "uqm/uqmdebug.h"
 #include SDL_INCLUDE(SDL_thread.h)
 
 SDL_Surface *SDL_Video;

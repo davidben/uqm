@@ -16,8 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ships/ship.h"
-#include "ships/probe/resinst.h"
+#include "../ship.h"
+#include "resinst.h"
 
 #define MAX_CREW 1
 #define MAX_ENERGY 1

@@ -31,8 +31,8 @@
 #include "libs/input/input_common.h"
 #include "libs/inplib.h"
 #include "libs/tasklib.h"
-#include "controls.h"
-#include "battle.h"
+#include "uqm/controls.h"
+#include "uqm/battle.h"
 		// For BATTLE_FRAME_RATE
 #include "libs/file.h"
 #include "port.h"
@@ -41,16 +41,16 @@
 #include "libs/log.h"
 #include "options.h"
 #include "uqmversion.h"
-#include "comm.h"
+#include "uqm/comm.h"
 #ifdef NETPLAY
 #	include "libs/callback.h"
 #	include "libs/alarm.h"
 #	include "libs/net.h"
-#	include "netplay/netoptions.h"
-#	include "netplay/netplay.h"
+#	include "uqm/netplay/netoptions.h"
+#	include "uqm/netplay/netplay.h"
 #endif
-#include "setup.h"
-#include "starcon.h"
+#include "uqm/setup.h"
+#include "uqm/starcon.h"
 
 
 #if defined (GFXMODULE_SDL)

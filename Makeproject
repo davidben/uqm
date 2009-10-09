@@ -16,7 +16,7 @@ case "$HOST_SYSTEM" in
 		uqm_NAME="$uqm_NAME.exe"
 		;;
 esac
-uqm_CFLAGS="$uqm_CFLAGS -Isrc -Isrc/uqm"
+uqm_CFLAGS="$uqm_CFLAGS -Isrc"
 if [ "$uqm_HAVE_REGEX" = 0 ]; then
 	uqm_CFLAGS="$uqm_CFLAGS -Isrc/regex"
 fi

@@ -19,17 +19,17 @@
 #include "resintrn.h"
 #include "libs/misc.h"
 #include "options.h"
-#include "nameref.h"
 #include "types.h"
 #include "libs/log.h"
 #include "libs/gfxlib.h"
 #include "libs/reslib.h"
 #include "libs/sndlib.h"
 #include "libs/vidlib.h"
-#include "coderes.h"
 #include "propfile.h"
 #include <ctype.h>
 #include <stdlib.h>
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/coderes.h"
 
 static RESOURCE_INDEX
 allocResourceIndex (void) {

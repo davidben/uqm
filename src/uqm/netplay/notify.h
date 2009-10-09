@@ -22,7 +22,7 @@
 #include "netplay.h"
 		// for NETPLAY_CHECKSUM
 #include "netconnection.h"
-#include "controls.h"
+#include "../controls.h"
 		// for BATTLE_INPUT_STATE
 #ifdef NETPLAY_CHECKSUM
 #	include "checksum.h"

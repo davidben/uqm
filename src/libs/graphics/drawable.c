@@ -19,9 +19,10 @@
 #include "gfxintrn.h"
 #include "libs/misc.h"
 #include "tfb_draw.h"
-#include "units.h"
 #include "libs/mathlib.h"
 #include "gfxother.h"
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/units.h"
 
 FRAME _CurFramePtr;
 

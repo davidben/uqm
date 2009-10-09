@@ -16,16 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "build.h"
-#include "encount.h"
-#include "globdata.h"
+#include "genall.h"
 #include "lander.h"
-#include "nameref.h"
-#include "resinst.h"
-#include "setup.h"
-#include "state.h"
-#include "sounds.h"
-#include "planets/genall.h"
+#include "../build.h"
+#include "../encount.h"
+#include "../setup.h"
+#include "../state.h"
+#include "../sounds.h"
 #include "libs/mathlib.h"
 
 

@@ -16,11 +16,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "build.h"
-#include "globdata.h"
-#include "state.h"
-#include "grpinfo.h"
-#include "planets/genall.h"
+#include "genall.h"
+#include "../build.h"
+#include "../state.h"
+#include "../grpinfo.h"
 
 
 static void

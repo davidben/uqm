@@ -16,11 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "comm/commall.h"
-#include "comm/shofixt/resinst.h"
-#include "comm/shofixt/strings.h"
+#include "../commall.h"
+#include "resinst.h"
+#include "strings.h"
 
-#include "gameev.h"
+#include "uqm/gameev.h"
 
 
 static LOCDATA shofixti_desc =

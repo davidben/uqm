@@ -16,13 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "colors.h"
-#include "controls.h"
-#include "gamestr.h"
-#include "shipcont.h"
-#include "setup.h"
-#include "sounds.h"
-#include "util.h"
+#include "../colors.h"
+#include "../controls.h"
+#include "../gamestr.h"
+#include "../shipcont.h"
+#include "../setup.h"
+#include "../sounds.h"
+#include "../util.h"
 
 
 void

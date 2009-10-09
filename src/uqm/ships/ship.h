@@ -21,15 +21,17 @@
 #ifndef _SHIP_H
 #define _SHIP_H
 
-#include "collide.h"
+#include "uqm/collide.h"
 
 // XXX: Do we really need this one?
 //#include "reslib.h"
-#include "intel.h"
-#include "races.h"
-#include "status.h"
-#include "sounds.h"
-#include "weapon.h"
+#include "uqm/intel.h"
+#include "uqm/races.h"
+#include "uqm/status.h"
+#include "uqm/sounds.h"
+#include "uqm/weapon.h"
+#include "uqm/ship.h"
+
 
 #endif  /* _SHIP_H */
 

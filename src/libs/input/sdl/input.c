@@ -25,11 +25,12 @@
 #include "libs/input/sdl/vcontrol.h"
 #include "libs/input/sdl/keynames.h"
 #include "libs/misc.h"
-#include "controls.h"
 #include "libs/file.h"
 #include "libs/log.h"
 #include "libs/reslib.h"
 #include "options.h"
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/controls.h"
 
 
 #define KBDBUFSIZE (1 << 8)

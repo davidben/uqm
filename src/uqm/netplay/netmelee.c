@@ -21,22 +21,22 @@
 #include "libs/callback.h"
 #include "libs/log.h"
 #include "libs/net.h"
-#include "netplay/netinput.h"
-#include "netplay/netmisc.h"
-#include "netplay/netsend.h"
-#include "netplay/notify.h"
-#include "netplay/packetq.h"
-#include "netplay/proto/npconfirm.h"
-#include "netplay/proto/ready.h"
-#include "netplay/proto/reset.h"
+#include "netinput.h"
+#include "netmisc.h"
+#include "netsend.h"
+#include "notify.h"
+#include "packetq.h"
+#include "proto/npconfirm.h"
+#include "proto/ready.h"
+#include "proto/reset.h"
 
-#include "battlecontrols.h"
+#include "../battlecontrols.h"
 		// for NetworkInputContext
-#include "controls.h"
+#include "../controls.h"
 		// for BATTLE_INPUT_STATE
-#include "init.h"
+#include "../init.h"
 		// for NUM_PLAYERS
-#include "globdata.h"
+#include "../globdata.h"
 		// for GLOBAL
 
 #include <errno.h>

@@ -19,7 +19,7 @@
 #ifndef _SUNDATA_H
 #define _SUNDATA_H
 
-#include "planets/plandata.h"
+#include "plandata.h"
 #include "libs/compiler.h"
 
 

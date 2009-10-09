@@ -16,13 +16,14 @@
 
 #include "vidplayer.h"
 
-#include "controls.h"
-#include "settings.h"
-#include "setup.h"
-#include "sounds.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/tfb_draw.h"
 #include "libs/log.h"
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/controls.h"
+#include "uqm/settings.h"
+#include "uqm/setup.h"
+#include "uqm/sounds.h"
 
 // video callbacks
 static void vp_BeginFrame (TFB_VideoDecoder*);

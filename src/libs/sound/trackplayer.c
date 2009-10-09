@@ -18,10 +18,13 @@
 #include "libs/sound/trackplayer.h"
 #include "libs/sound/trackint.h"
 #include "libs/log.h"
-#include "comm.h"
 #include "options.h"
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
+#include <memory.h>
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/comm.h"
 
 
 static int track_count;       //total number of subtitle tracks

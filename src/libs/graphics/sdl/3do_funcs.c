@@ -22,9 +22,10 @@
 #include "pure.h"
 #include "opengl.h"
 #include "primitives.h"
-#include "units.h"
 #include "libs/graphics/drawcmd.h"
 #include "libs/graphics/tfb_draw.h"
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/units.h"
 
 
 int batch_depth = 0;

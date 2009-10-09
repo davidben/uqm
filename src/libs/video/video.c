@@ -16,9 +16,10 @@
 
 #include "video.h"
 
-#include "setup.h"
 #include "vidplayer.h"
 #include "libs/inplib.h"
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/setup.h"
 
 
 #define NULL_VIDEO_REF	(0)

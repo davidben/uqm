@@ -24,7 +24,7 @@
 #include "netconnection.h"
 #include "packet.h"
 
-#include "controls.h"
+#include "../controls.h"
 		// for BATTLE_INPUT_STATE
 
 void sendInit(NetConnection *conn);

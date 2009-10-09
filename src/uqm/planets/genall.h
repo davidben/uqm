@@ -17,8 +17,11 @@
 #ifndef _GENALL_H
 #define _GENALL_H
 
-#include "planets/planets.h"
+#include "planets.h"
 #include "libs/compiler.h"
+#include "../globdata.h"
+#include "../nameref.h"
+#include "../resinst.h"
 
 
 #endif  /* _GENALL_H */

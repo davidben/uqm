@@ -16,13 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "comm/commall.h"
-#include "comm/comandr/resinst.h"
-#include "comm/starbas/strings.h"
+#include "../commall.h"
+#include "../comandr/resinst.h"
+#include "strings.h"
 
-#include "build.h"
-#include "setup.h"
-#include "shipcont.h"
+#include "uqm/build.h"
+#include "uqm/setup.h"
+#include "uqm/shipcont.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 #include "libs/mathlib.h"

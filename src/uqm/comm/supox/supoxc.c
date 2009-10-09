@@ -16,11 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "comm/commall.h"
-#include "comm/supox/resinst.h"
-#include "comm/supox/strings.h"
+#include "../commall.h"
+#include "resinst.h"
+#include "strings.h"
 
-#include "build.h"
+#include "uqm/build.h"
 
 
 static LOCDATA supox_desc =

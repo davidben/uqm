@@ -16,9 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "comm/commall.h"
-#include "comm/urquan/resinst.h"
-#include "comm/urquan/strings.h"
+#include "../commall.h"
+#include "resinst.h"
+#include "strings.h"
 
 static LOCDATA urquan_desc =
 {

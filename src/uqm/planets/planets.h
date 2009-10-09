@@ -19,8 +19,8 @@
 #ifndef _PLANETS_H
 #define _PLANETS_H
 
-#include "menustat.h"
-#include "units.h"
+#include "../menustat.h"
+#include "../units.h"
 
 #define END_INTERPLANETARY START_INTERPLANETARY
 

@@ -16,12 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "comm/commall.h"
-#include "comm/druuge/resinst.h"
-#include "comm/druuge/strings.h"
+#include "../commall.h"
+#include "resinst.h"
+#include "strings.h"
 
-#include "build.h"
-#include "setup.h"
+#include "uqm/build.h"
+#include "uqm/setup.h"
 
 
 static LOCDATA druuge_desc =

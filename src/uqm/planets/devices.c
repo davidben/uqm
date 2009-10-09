@@ -16,18 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "build.h"
-#include "encount.h"
-#include "gamestr.h"
-#include "controls.h"
-#include "settings.h"
-#include "shipcont.h"
-#include "load.h"
-#include "setup.h"
-#include "state.h"
-#include "grpinfo.h"
-#include "sounds.h"
-#include "util.h"
+#include "../build.h"
+#include "../encount.h"
+#include "../gamestr.h"
+#include "../controls.h"
+#include "../settings.h"
+#include "../shipcont.h"
+#include "../load.h"
+#include "../setup.h"
+#include "../state.h"
+#include "../grpinfo.h"
+#include "../sounds.h"
+#include "../util.h"
 #include "libs/strlib.h"
 
 

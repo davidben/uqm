@@ -16,12 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "comm/commall.h"
-#include "comm/syreen/resinst.h"
-#include "comm/syreen/strings.h"
-#include "libs/sound/sound.h"
+#include "../commall.h"
+#include "resinst.h"
+#include "strings.h"
 
-#include "build.h"
+#include "libs/sound/sound.h"
+#include "uqm/build.h"
 
 
 static LOCDATA syreen_desc =

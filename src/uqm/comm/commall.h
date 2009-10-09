@@ -17,10 +17,10 @@
 #ifndef _COMMALL_H
 #define _COMMALL_H
 
-#include "colors.h"
-#include "comm.h"
-#include "commglue.h"
-#include "encount.h"
+#include "uqm/colors.h"
+#include "uqm/comm.h"
+#include "uqm/commglue.h"
+#include "uqm/encount.h"
 #include "libs/reslib.h"
 
 #endif  /* _COMMALL_H */

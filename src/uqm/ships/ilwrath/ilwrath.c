@@ -16,12 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ships/ship.h"
-#include "ships/ilwrath/resinst.h"
-#include "ship.h"
+#include "../ship.h"
+#include "resinst.h"
 
-#include "colors.h"
-#include "globdata.h"
+#include "uqm/colors.h"
+#include "uqm/globdata.h"
 
 
 #define MAX_CREW 22

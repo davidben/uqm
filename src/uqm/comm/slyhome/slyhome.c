@@ -16,10 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "gameev.h"
-#include "comm/commall.h"
-#include "comm/slyhome/resinst.h"
-#include "comm/slyhome/strings.h"
+#include "../commall.h"
+#include "resinst.h"
+#include "strings.h"
+
+#include "uqm/gameev.h"
 
 
 static LOCDATA slylandro_desc =

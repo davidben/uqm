@@ -17,8 +17,9 @@
 #include "gfx_common.h"
 #include "tfb_draw.h"
 #include "drawcmd.h"
-#include "units.h"
 #include "libs/log.h"
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/units.h"
 
 static const HOT_SPOT NullHs = {0, 0};
 

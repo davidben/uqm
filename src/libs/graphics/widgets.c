@@ -16,10 +16,11 @@
 
 #include "gfx_common.h"
 #include "widgets.h"
-#include "colors.h"
 #include "libs/strlib.h"
-#include "setup.h"
-#include "units.h"
+// XXX: we should not include anything from uqm/ inside libs/
+#include "uqm/colors.h"
+#include "uqm/setup.h"
+#include "uqm/units.h"
 
 WIDGET *widget_focus = NULL;
 

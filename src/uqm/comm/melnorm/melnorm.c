@@ -16,13 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "comm/commall.h"
-#include "comm/melnorm/resinst.h"
-#include "comm/melnorm/strings.h"
+#include "../commall.h"
+#include "resinst.h"
+#include "strings.h"
 
-#include "gameev.h"
-#include "setup.h"
-#include "shipcont.h"
+#include "uqm/gameev.h"
+#include "uqm/setup.h"
+#include "uqm/shipcont.h"
 #include "libs/inplib.h"
 #include "libs/mathlib.h"
 

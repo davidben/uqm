@@ -16,15 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "element.h"
 #include "scan.h"
 #include "lander.h"
-#include "settings.h"
-#include "setup.h"
-#include "uqmdebug.h"
+#include "../element.h"
+#include "../settings.h"
+#include "../setup.h"
+#include "../uqmdebug.h"
+#include "../resinst.h"
+#include "../nameref.h"
 #include "libs/graphics/gfx_common.h"
-#include "resinst.h"
-#include "nameref.h"
 
 
 extern int rotate_planet_task (void *data);

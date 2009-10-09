@@ -16,12 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ships/ship.h"
-#include "ships/lastbat/resinst.h"
+#include "../ship.h"
+#include "resinst.h"
 
-#include "colors.h"
-#include "globdata.h"
-#include "battle.h"
+#include "uqm/colors.h"
+#include "uqm/globdata.h"
+#include "uqm/battle.h"
 		// For BATTLE_FRAME_RATE
 #include "libs/mathlib.h"
 #include "libs/timelib.h"
