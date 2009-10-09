@@ -3,10 +3,10 @@
 
 #ifdef _MSC_VER
 	/* In this case, build.sh is not run to generate a config file, so
-	 * we use a default file msvc++/config.h instead.
+	 * we use a default file config_vc6.h instead.
 	 * If you want anything else than the defaults, you'll have to edit
 	 * that file manually. */
-#	include "msvc++/config.h"
+#	include "config_vc6.h"
 #elif defined(__SYMBIAN32__)
 #	include "symbian/config.h"
 #elif defined (__MINGW32__) || defined (__CYGWIN__)

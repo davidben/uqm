@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Source tree reorg: libs/ moved out of sc2code/, msvc++/ moved to
+  build/msvc6/ - Coredev
 - Druuge no longer turn hostile after attempting a salvage (bug #1013) - Alex
 - Process subtitles correctly with no timestamp file (bug #1060) - Alex
 - Lander will no longer hang when killed on planets with a lot of

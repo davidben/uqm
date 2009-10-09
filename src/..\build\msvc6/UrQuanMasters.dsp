@@ -44,7 +44,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I ".." /I "..\sc2code" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /D "USE_PLATFORM_ACCEL" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\..\src" /I "..\..\src\sc2code" /I "..\..\src\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /D "USE_PLATFORM_ACCEL" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -74,7 +74,7 @@ PostBuild_Cmds=rebase -b 0x400000 -x . "../../uqm.exe"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /I "..\sc2code" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /D "USE_PLATFORM_ACCEL" /FR /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "..\..\src" /I "..\..\src\sc2code" /I "..\..\src\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /D "USE_PLATFORM_ACCEL" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -100,9 +100,9 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug_NoAccel"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MDd /W3 /GX /Zi /Od /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /D "USE_PLATFORM_ACCEL" /FR /FD /GZ /c
+# ADD BASE CPP /nologo /W3 /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /I "..\sc2code" /I "..\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /FR /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "..\..\src" /I "..\..\src\sc2code" /I "..\..\src\regex" /D "DEBUG" /D "_DEBUG" /D "DEBUG_TRACK_SEM" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -128,9 +128,9 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Release_NoAccel"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MD /W3 /GX /Zi /O2 /I "." /I ".." /I "..\sc2code" /I "..\sc2code\libs" /I "..\sc2code\ships" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "ZLIB_DLL" /D "USE_PLATFORM_ACCEL" /FD /c
+# ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I ".." /I "..\sc2code" /I "..\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /FR /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\..\src" /I "..\..\src\sc2code" /I "..\..\src\regex" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D _VW=320 /D _VH=240 /D "HAVE_OPENGL" /D "GFXMODULE_SDL" /D "THREADLIB_SDL" /D "HAVE_OPENAL" /D "HAVE_ZIP" /D "HAVE_JOYSTICK" /D "NETPLAY" /D "ZLIB_DLL" /D "USE_INTERNAL_MIKMOD" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -162,15 +162,15 @@ PostBuild_Cmds=rebase -b 0x400000 -x . "../../uqm.exe"
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\getopt\getopt.c
+SOURCE=..\..\src\getopt\getopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\getopt\getopt.h
+SOURCE=..\..\src\getopt\getopt.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\getopt\getopt1.c
+SOURCE=..\..\src\getopt\getopt1.c
 # End Source File
 # End Group
 # Begin Group "regex"
@@ -178,32 +178,29 @@ SOURCE=..\getopt\getopt1.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\regex\regcomp.ci
+SOURCE=..\..\src\regex\regcomp.ci
 # End Source File
 # Begin Source File
 
-SOURCE=..\regex\regex.c
+SOURCE=..\..\src\regex\regex.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\regex\regex.h
+SOURCE=..\..\src\regex\regex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\regex\regex_internal.ci
+SOURCE=..\..\src\regex\regex_internal.ci
 # End Source File
 # Begin Source File
 
-SOURCE=..\regex\regex_internal.h
+SOURCE=..\..\src\regex\regex_internal.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\regex\regexec.ci
+SOURCE=..\..\src\regex\regexec.ci
 # End Source File
 # End Group
-# Begin Group "sc2code"
-
-# PROP Default_Filter ""
 # Begin Group "libs"
 
 # PROP Default_Filter ""
@@ -212,19 +209,19 @@ SOURCE=..\regex\regexec.ci
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\callback\alarm.c
+SOURCE=..\..\src\libs\callback\alarm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\callback\alarm.h
+SOURCE=..\..\src\libs\callback\alarm.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\callback\callback.c
+SOURCE=..\..\src\libs\callback\callback.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\callback\callback.h
+SOURCE=..\..\src\libs\callback\callback.h
 # End Source File
 # End Group
 # Begin Group "decomp"
@@ -232,19 +229,19 @@ SOURCE=..\sc2code\libs\callback\callback.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\decomp\lzdecode.c
+SOURCE=..\..\src\libs\decomp\lzdecode.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\decomp\lzencode.c
+SOURCE=..\..\src\libs\decomp\lzencode.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\decomp\lzh.h
+SOURCE=..\..\src\libs\decomp\lzh.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\decomp\update.c
+SOURCE=..\..\src\libs\decomp\update.c
 # End Source File
 # End Group
 # Begin Group "file"
@@ -252,15 +249,15 @@ SOURCE=..\sc2code\libs\decomp\update.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\file\dirs.c
+SOURCE=..\..\src\libs\file\dirs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\file\files.c
+SOURCE=..\..\src\libs\file\files.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\file\filintrn.h
+SOURCE=..\..\src\libs\file\filintrn.h
 # End Source File
 # End Group
 # Begin Group "graphics"
@@ -271,264 +268,264 @@ SOURCE=..\sc2code\libs\file\filintrn.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\2xscalers.c
+SOURCE=..\..\src\libs\graphics\sdl\2xscalers.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\2xscalers.h
+SOURCE=..\..\src\libs\graphics\sdl\2xscalers.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\2xscalers_3dnow.c
+SOURCE=..\..\src\libs\graphics\sdl\2xscalers_3dnow.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\2xscalers_mmx.c
+SOURCE=..\..\src\libs\graphics\sdl\2xscalers_mmx.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\2xscalers_mmx.h
+SOURCE=..\..\src\libs\graphics\sdl\2xscalers_mmx.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\2xscalers_sse.c
+SOURCE=..\..\src\libs\graphics\sdl\2xscalers_sse.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\3do_blt.c
+SOURCE=..\..\src\libs\graphics\sdl\3do_blt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\3do_funcs.c
+SOURCE=..\..\src\libs\graphics\sdl\3do_funcs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\3do_getbody.c
+SOURCE=..\..\src\libs\graphics\sdl\3do_getbody.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\bbox.c
+SOURCE=..\..\src\libs\graphics\sdl\bbox.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\bbox.h
+SOURCE=..\..\src\libs\graphics\sdl\bbox.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\biadv2x.c
+SOURCE=..\..\src\libs\graphics\sdl\biadv2x.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\bilinear2x.c
+SOURCE=..\..\src\libs\graphics\sdl\bilinear2x.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\canvas.c
+SOURCE=..\..\src\libs\graphics\sdl\canvas.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\dcqueue.c
+SOURCE=..\..\src\libs\graphics\sdl\dcqueue.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\dcqueue.h
+SOURCE=..\..\src\libs\graphics\sdl\dcqueue.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\hq2x.c
+SOURCE=..\..\src\libs\graphics\sdl\hq2x.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\nearest2x.c
+SOURCE=..\..\src\libs\graphics\sdl\nearest2x.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\opengl.c
+SOURCE=..\..\src\libs\graphics\sdl\opengl.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\opengl.h
+SOURCE=..\..\src\libs\graphics\sdl\opengl.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\primitives.c
+SOURCE=..\..\src\libs\graphics\sdl\primitives.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\primitives.h
+SOURCE=..\..\src\libs\graphics\sdl\primitives.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\pure.c
+SOURCE=..\..\src\libs\graphics\sdl\pure.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\pure.h
+SOURCE=..\..\src\libs\graphics\sdl\pure.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\rndzoom.c
+SOURCE=..\..\src\libs\graphics\sdl\rndzoom.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.c
+SOURCE=..\..\src\libs\graphics\sdl\rotozoom.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\rotozoom.h
+SOURCE=..\..\src\libs\graphics\sdl\rotozoom.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\scaleint.h
+SOURCE=..\..\src\libs\graphics\sdl\scaleint.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\scalemmx.h
+SOURCE=..\..\src\libs\graphics\sdl\scalemmx.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\scalers.c
+SOURCE=..\..\src\libs\graphics\sdl\scalers.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\scalers.h
+SOURCE=..\..\src\libs\graphics\sdl\scalers.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.c
+SOURCE=..\..\src\libs\graphics\sdl\sdl_common.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\sdl_common.h
+SOURCE=..\..\src\libs\graphics\sdl\sdl_common.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\sdluio.c
+SOURCE=..\..\src\libs\graphics\sdl\sdluio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\sdluio.h
+SOURCE=..\..\src\libs\graphics\sdl\sdluio.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\sdl\triscan2x.c
+SOURCE=..\..\src\libs\graphics\sdl\triscan2x.c
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\boxint.c
+SOURCE=..\..\src\libs\graphics\boxint.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\clipline.c
+SOURCE=..\..\src\libs\graphics\clipline.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\cmap.c
+SOURCE=..\..\src\libs\graphics\cmap.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\cmap.h
+SOURCE=..\..\src\libs\graphics\cmap.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\context.c
+SOURCE=..\..\src\libs\graphics\context.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\context.h
+SOURCE=..\..\src\libs\graphics\context.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\display.h
+SOURCE=..\..\src\libs\graphics\display.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\drawable.c
+SOURCE=..\..\src\libs\graphics\drawable.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\drawable.h
+SOURCE=..\..\src\libs\graphics\drawable.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\drawcmd.h
+SOURCE=..\..\src\libs\graphics\drawcmd.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\filegfx.c
+SOURCE=..\..\src\libs\graphics\filegfx.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\font.c
+SOURCE=..\..\src\libs\graphics\font.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\font.h
+SOURCE=..\..\src\libs\graphics\font.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\frame.c
+SOURCE=..\..\src\libs\graphics\frame.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\gfx_common.c
+SOURCE=..\..\src\libs\graphics\gfx_common.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\gfx_common.h
+SOURCE=..\..\src\libs\graphics\gfx_common.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\gfxintrn.h
+SOURCE=..\..\src\libs\graphics\gfxintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\gfxother.h
+SOURCE=..\..\src\libs\graphics\gfxother.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\intersec.c
+SOURCE=..\..\src\libs\graphics\intersec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\loaddisp.c
+SOURCE=..\..\src\libs\graphics\loaddisp.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\pixmap.c
+SOURCE=..\..\src\libs\graphics\pixmap.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\prim.h
+SOURCE=..\..\src\libs\graphics\prim.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\resgfx.c
+SOURCE=..\..\src\libs\graphics\resgfx.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\tfb_draw.c
+SOURCE=..\..\src\libs\graphics\tfb_draw.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\tfb_draw.h
+SOURCE=..\..\src\libs\graphics\tfb_draw.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\tfb_prim.c
+SOURCE=..\..\src\libs\graphics\tfb_prim.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\tfb_prim.h
+SOURCE=..\..\src\libs\graphics\tfb_prim.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\widgets.c
+SOURCE=..\..\src\libs\graphics\widgets.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\graphics\widgets.h
+SOURCE=..\..\src\libs\graphics\widgets.h
 # End Source File
 # End Group
 # Begin Group "heap"
@@ -536,11 +533,11 @@ SOURCE=..\sc2code\libs\graphics\widgets.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\heap\heap.c
+SOURCE=..\..\src\libs\heap\heap.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\heap\heap.h
+SOURCE=..\..\src\libs\heap\heap.h
 # End Source File
 # End Group
 # Begin Group "input"
@@ -551,44 +548,44 @@ SOURCE=..\sc2code\libs\heap\heap.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\sdl\input.c
+SOURCE=..\..\src\libs\input\sdl\input.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\sdl\input.h
+SOURCE=..\..\src\libs\input\sdl\input.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\sdl\keynames.c
+SOURCE=..\..\src\libs\input\sdl\keynames.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\sdl\keynames.h
+SOURCE=..\..\src\libs\input\sdl\keynames.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\sdl\vcontrol.c
+SOURCE=..\..\src\libs\input\sdl\vcontrol.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\sdl\vcontrol.h
+SOURCE=..\..\src\libs\input\sdl\vcontrol.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\sdl\vcontrol_malloc.h
+SOURCE=..\..\src\libs\input\sdl\vcontrol_malloc.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\inpintrn.h
+SOURCE=..\..\src\libs\input\inpintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\input_common.c
+SOURCE=..\..\src\libs\input\input_common.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\input\input_common.h
+SOURCE=..\..\src\libs\input\input_common.h
 # End Source File
 # End Group
 # Begin Group "list"
@@ -596,11 +593,11 @@ SOURCE=..\sc2code\libs\input\input_common.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\list\list.c
+SOURCE=..\..\src\libs\list\list.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\list\list.h
+SOURCE=..\..\src\libs\list\list.h
 # End Source File
 # End Group
 # Begin Group "log"
@@ -608,11 +605,11 @@ SOURCE=..\sc2code\libs\list\list.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\log\uqmlog.c
+SOURCE=..\..\src\libs\log\uqmlog.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\log\uqmlog.h
+SOURCE=..\..\src\libs\log\uqmlog.h
 # End Source File
 # End Group
 # Begin Group "math"
@@ -620,23 +617,23 @@ SOURCE=..\sc2code\libs\log\uqmlog.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\math\mthintrn.h
+SOURCE=..\..\src\libs\math\mthintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\math\random.c
+SOURCE=..\..\src\libs\math\random.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\math\random.h
+SOURCE=..\..\src\libs\math\random.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\math\random2.c
+SOURCE=..\..\src\libs\math\random2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\math\sqrt.c
+SOURCE=..\..\src\libs\math\sqrt.c
 # End Source File
 # End Group
 # Begin Group "md5"
@@ -644,11 +641,11 @@ SOURCE=..\sc2code\libs\math\sqrt.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\md5\md5.c
+SOURCE=..\..\src\libs\md5\md5.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\md5\md5.h
+SOURCE=..\..\src\libs\md5\md5.h
 # End Source File
 # End Group
 # Begin Group "memory"
@@ -656,7 +653,7 @@ SOURCE=..\sc2code\libs\md5\md5.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\memory\w_memlib.c
+SOURCE=..\..\src\libs\memory\w_memlib.c
 # End Source File
 # End Group
 # Begin Group "resource"
@@ -664,47 +661,47 @@ SOURCE=..\sc2code\libs\memory\w_memlib.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\direct.c
+SOURCE=..\..\src\libs\resource\direct.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\filecntl.c
+SOURCE=..\..\src\libs\resource\filecntl.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\getres.c
+SOURCE=..\..\src\libs\resource\getres.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\index.h
+SOURCE=..\..\src\libs\resource\index.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\loadres.c
+SOURCE=..\..\src\libs\resource\loadres.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\propfile.c
+SOURCE=..\..\src\libs\resource\propfile.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\propfile.h
+SOURCE=..\..\src\libs\resource\propfile.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\resinit.c
+SOURCE=..\..\src\libs\resource\resinit.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\resintrn.h
+SOURCE=..\..\src\libs\resource\resintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\stringbank.c
+SOURCE=..\..\src\libs\resource\stringbank.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\resource\stringbank.h
+SOURCE=..\..\src\libs\resource\stringbank.h
 # End Source File
 # End Group
 # Begin Group "sound"
@@ -715,11 +712,11 @@ SOURCE=..\sc2code\libs\resource\stringbank.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\audiodrv_openal.c
+SOURCE=..\..\src\libs\sound\openal\audiodrv_openal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\openal\audiodrv_openal.h
+SOURCE=..\..\src\libs\sound\openal\audiodrv_openal.h
 # End Source File
 # End Group
 # Begin Group "decoders"
@@ -727,51 +724,51 @@ SOURCE=..\sc2code\libs\sound\openal\audiodrv_openal.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\aiffaud.c
+SOURCE=..\..\src\libs\sound\decoders\aiffaud.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\aiffaud.h
+SOURCE=..\..\src\libs\sound\decoders\aiffaud.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\decoder.c
+SOURCE=..\..\src\libs\sound\decoders\decoder.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\decoder.h
+SOURCE=..\..\src\libs\sound\decoders\decoder.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\dukaud.c
+SOURCE=..\..\src\libs\sound\decoders\dukaud.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\dukaud.h
+SOURCE=..\..\src\libs\sound\decoders\dukaud.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\modaud.c
+SOURCE=..\..\src\libs\sound\decoders\modaud.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\modaud.h
+SOURCE=..\..\src\libs\sound\decoders\modaud.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\oggaud.c
+SOURCE=..\..\src\libs\sound\decoders\oggaud.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\oggaud.h
+SOURCE=..\..\src\libs\sound\decoders\oggaud.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\wav.c
+SOURCE=..\..\src\libs\sound\decoders\wav.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\decoders\wav.h
+SOURCE=..\..\src\libs\sound\decoders\wav.h
 # End Source File
 # End Group
 # Begin Group "mixer"
@@ -782,11 +779,11 @@ SOURCE=..\sc2code\libs\sound\decoders\wav.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\mixer\sdl\audiodrv_sdl.c
+SOURCE=..\..\src\libs\sound\mixer\sdl\audiodrv_sdl.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\mixer\sdl\audiodrv_sdl.h
+SOURCE=..\..\src\libs\sound\mixer\sdl\audiodrv_sdl.h
 # End Source File
 # End Group
 # Begin Group "nosound"
@@ -794,81 +791,81 @@ SOURCE=..\sc2code\libs\sound\mixer\sdl\audiodrv_sdl.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\mixer\nosound\audiodrv_nosound.c
+SOURCE=..\..\src\libs\sound\mixer\nosound\audiodrv_nosound.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\mixer\nosound\audiodrv_nosound.h
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixer\mixer.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixer\mixer.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\sound\mixer\mixerint.h
+SOURCE=..\..\src\libs\sound\mixer\nosound\audiodrv_nosound.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\audiocore.c
+SOURCE=..\..\src\libs\sound\mixer\mixer.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\audiocore.h
+SOURCE=..\..\src\libs\sound\mixer\mixer.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\fileinst.c
+SOURCE=..\..\src\libs\sound\mixer\mixerint.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\..\src\libs\sound\audiocore.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\music.c
+SOURCE=..\..\src\libs\sound\audiocore.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\resinst.c
+SOURCE=..\..\src\libs\sound\fileinst.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\sfx.c
+SOURCE=..\..\src\libs\sound\music.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\sndintrn.h
+SOURCE=..\..\src\libs\sound\resinst.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\sound.c
+SOURCE=..\..\src\libs\sound\sfx.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\sound.h
+SOURCE=..\..\src\libs\sound\sndintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\stream.c
+SOURCE=..\..\src\libs\sound\sound.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\stream.h
+SOURCE=..\..\src\libs\sound\sound.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\trackint.h
+SOURCE=..\..\src\libs\sound\stream.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\trackplayer.c
+SOURCE=..\..\src\libs\sound\stream.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sound\trackplayer.h
+SOURCE=..\..\src\libs\sound\trackint.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\sound\trackplayer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\sound\trackplayer.h
 # End Source File
 # End Group
 # Begin Group "strings"
@@ -876,27 +873,27 @@ SOURCE=..\sc2code\libs\sound\trackplayer.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\strings\getstr.c
+SOURCE=..\..\src\libs\strings\getstr.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\strings\sfileins.c
+SOURCE=..\..\src\libs\strings\sfileins.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\strings\sresins.c
+SOURCE=..\..\src\libs\strings\sresins.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\strings\strings.c
+SOURCE=..\..\src\libs\strings\strings.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\strings\strintrn.h
+SOURCE=..\..\src\libs\strings\strintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\strings\unicode.c
+SOURCE=..\..\src\libs\strings\unicode.c
 # End Source File
 # End Group
 # Begin Group "video"
@@ -904,51 +901,51 @@ SOURCE=..\sc2code\libs\strings\unicode.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\dukvid.c
+SOURCE=..\..\src\libs\video\dukvid.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\dukvid.h
+SOURCE=..\..\src\libs\video\dukvid.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\legacyplayer.c
+SOURCE=..\..\src\libs\video\legacyplayer.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\vfileins.c
+SOURCE=..\..\src\libs\video\vfileins.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\video.c
+SOURCE=..\..\src\libs\video\video.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\video.h
+SOURCE=..\..\src\libs\video\video.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\videodec.c
+SOURCE=..\..\src\libs\video\videodec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\videodec.h
+SOURCE=..\..\src\libs\video\videodec.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\vidintrn.h
+SOURCE=..\..\src\libs\video\vidintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\vidplayer.c
+SOURCE=..\..\src\libs\video\vidplayer.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\vidplayer.h
+SOURCE=..\..\src\libs\video\vidplayer.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\video\vresins.c
+SOURCE=..\..\src\libs\video\vresins.c
 # End Source File
 # End Group
 # Begin Group "threads"
@@ -959,20 +956,20 @@ SOURCE=..\sc2code\libs\video\vresins.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\threads\sdl\sdlthreads.c
+SOURCE=..\..\src\libs\threads\sdl\sdlthreads.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\threads\sdl\sdlthreads.h
+SOURCE=..\..\src\libs\threads\sdl\sdlthreads.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\libs\threads\thrcommon.c
+SOURCE=..\..\src\libs\threads\thrcommon.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\threads\thrcommon.h
+SOURCE=..\..\src\libs\threads\thrcommon.h
 # End Source File
 # End Group
 # Begin Group "time"
@@ -983,20 +980,20 @@ SOURCE=..\sc2code\libs\threads\thrcommon.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\time\sdl\sdltime.c
+SOURCE=..\..\src\libs\time\sdl\sdltime.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\time\sdl\sdltime.h
+SOURCE=..\..\src\libs\time\sdl\sdltime.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\libs\time\timecommon.c
+SOURCE=..\..\src\libs\time\timecommon.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\time\timecommon.h
+SOURCE=..\..\src\libs\time\timecommon.h
 # End Source File
 # End Group
 # Begin Group "task"
@@ -1004,7 +1001,7 @@ SOURCE=..\sc2code\libs\time\timecommon.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\task\tasklib.c
+SOURCE=..\..\src\libs\task\tasklib.c
 # End Source File
 # End Group
 # Begin Group "uio"
@@ -1015,11 +1012,11 @@ SOURCE=..\sc2code\libs\task\tasklib.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\stdio\stdio.c
+SOURCE=..\..\src\libs\uio\stdio\stdio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\stdio\stdio.h
+SOURCE=..\..\src\libs\uio\stdio\stdio.h
 # End Source File
 # End Group
 # Begin Group "zip"
@@ -1027,24 +1024,24 @@ SOURCE=..\sc2code\libs\uio\stdio\stdio.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\zip\zip.c
+SOURCE=..\..\src\libs\uio\zip\zip.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\zip\zip.h
+SOURCE=..\..\src\libs\uio\zip\zip.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\charhashtable.c
+SOURCE=..\..\src\libs\uio\charhashtable.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\charhashtable.h
+SOURCE=..\..\src\libs\uio\charhashtable.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\debug.c
+SOURCE=..\..\src\libs\uio\debug.c
 
 !IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
 
@@ -1064,108 +1061,47 @@ SOURCE=..\sc2code\libs\uio\debug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\debug.h
+SOURCE=..\..\src\libs\uio\debug.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\defaultfs.c
+SOURCE=..\..\src\libs\uio\defaultfs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\defaultfs.h
+SOURCE=..\..\src\libs\uio\defaultfs.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\fileblock.c
+SOURCE=..\..\src\libs\uio\fileblock.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\fileblock.h
+SOURCE=..\..\src\libs\uio\fileblock.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\fstypes.c
+SOURCE=..\..\src\libs\uio\fstypes.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\fstypes.h
+SOURCE=..\..\src\libs\uio\fstypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\getint.h
+SOURCE=..\..\src\libs\uio\getint.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\gphys.c
+SOURCE=..\..\src\libs\uio\gphys.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\gphys.h
+SOURCE=..\..\src\libs\uio\gphys.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\hashtable.c
-
-!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
-
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug NoAccel"
-
-# PROP BASE Exclude_From_Build 1
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Release NoAccel"
-
-# PROP BASE Exclude_From_Build 1
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\hashtable.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\io.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\io.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\ioaux.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\ioaux.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\iointrn.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\match.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\match.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\mem.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\sc2code\libs\uio\memdebug.c
+SOURCE=..\..\src\libs\uio\hashtable.c
 
 !IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
 
@@ -1190,71 +1126,132 @@ SOURCE=..\sc2code\libs\uio\memdebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\memdebug.h
+SOURCE=..\..\src\libs\uio\hashtable.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\mount.c
+SOURCE=..\..\src\libs\uio\io.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\mount.h
+SOURCE=..\..\src\libs\uio\io.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\mounttree.c
+SOURCE=..\..\src\libs\uio\ioaux.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\mounttree.h
+SOURCE=..\..\src\libs\uio\ioaux.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\paths.c
+SOURCE=..\..\src\libs\uio\iointrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\paths.h
+SOURCE=..\..\src\libs\uio\match.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\physical.c
+SOURCE=..\..\src\libs\uio\match.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\physical.h
+SOURCE=..\..\src\libs\uio\mem.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\types.h
+SOURCE=..\..\src\libs\uio\memdebug.c
+
+!IF  "$(CFG)" == "UrQuanMasters - Win32 Release"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Debug NoAccel"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ELSEIF  "$(CFG)" == "UrQuanMasters - Win32 Release NoAccel"
+
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\uioport.h
+SOURCE=..\..\src\libs\uio\memdebug.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\uiostream.c
+SOURCE=..\..\src\libs\uio\mount.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\uiostream.h
+SOURCE=..\..\src\libs\uio\mount.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\uioutils.c
+SOURCE=..\..\src\libs\uio\mounttree.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\uioutils.h
+SOURCE=..\..\src\libs\uio\mounttree.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\utils.c
+SOURCE=..\..\src\libs\uio\paths.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio\utils.h
+SOURCE=..\..\src\libs\uio\paths.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\physical.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\physical.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\types.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\uioport.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\uiostream.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\uiostream.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\uioutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\uioutils.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\utils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\uio\utils.h
 # End Source File
 # End Group
 # Begin Group "mikmod"
@@ -1262,103 +1259,103 @@ SOURCE=..\sc2code\libs\uio\utils.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\drv_nos.c
+SOURCE=..\..\src\libs\mikmod\drv_nos.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\load_it.c
+SOURCE=..\..\src\libs\mikmod\load_it.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\load_mod.c
+SOURCE=..\..\src\libs\mikmod\load_mod.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\load_s3m.c
+SOURCE=..\..\src\libs\mikmod\load_s3m.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\load_stm.c
+SOURCE=..\..\src\libs\mikmod\load_stm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\load_xm.c
+SOURCE=..\..\src\libs\mikmod\load_xm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mdreg.c
+SOURCE=..\..\src\libs\mikmod\mdreg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mdriver.c
+SOURCE=..\..\src\libs\mikmod\mdriver.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mikmod.h
+SOURCE=..\..\src\libs\mikmod\mikmod.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mikmod_build.h
+SOURCE=..\..\src\libs\mikmod\mikmod_build.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mikmod_internals.h
+SOURCE=..\..\src\libs\mikmod\mikmod_internals.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mloader.c
+SOURCE=..\..\src\libs\mikmod\mloader.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mlreg.c
+SOURCE=..\..\src\libs\mikmod\mlreg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mlutil.c
+SOURCE=..\..\src\libs\mikmod\mlutil.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mmalloc.c
+SOURCE=..\..\src\libs\mikmod\mmalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mmerror.c
+SOURCE=..\..\src\libs\mikmod\mmerror.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mmio.c
+SOURCE=..\..\src\libs\mikmod\mmio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mplayer.c
+SOURCE=..\..\src\libs\mikmod\mplayer.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\munitrk.c
+SOURCE=..\..\src\libs\mikmod\munitrk.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\mwav.c
+SOURCE=..\..\src\libs\mikmod\mwav.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\npertab.c
+SOURCE=..\..\src\libs\mikmod\npertab.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\sloader.c
+SOURCE=..\..\src\libs\mikmod\sloader.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\virtch.c
+SOURCE=..\..\src\libs\mikmod\virtch.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\virtch2.c
+SOURCE=..\..\src\libs\mikmod\virtch2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mikmod\virtch_common.c
+SOURCE=..\..\src\libs\mikmod\virtch_common.c
 # End Source File
 # End Group
 # Begin Group "network"
@@ -1369,27 +1366,27 @@ SOURCE=..\sc2code\libs\mikmod\virtch_common.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\connect\connect.c
+SOURCE=..\..\src\libs\network\connect\connect.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\connect\connect.h
+SOURCE=..\..\src\libs\network\connect\connect.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\connect\listen.c
+SOURCE=..\..\src\libs\network\connect\listen.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\connect\listen.h
+SOURCE=..\..\src\libs\network\connect\listen.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\connect\resolve.c
+SOURCE=..\..\src\libs\network\connect\resolve.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\connect\resolve.h
+SOURCE=..\..\src\libs\network\connect\resolve.h
 # End Source File
 # End Group
 # Begin Group "netmanager"
@@ -1397,31 +1394,31 @@ SOURCE=..\sc2code\libs\network\connect\resolve.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netmanager\ndesc.c
+SOURCE=..\..\src\libs\network\netmanager\ndesc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netmanager\ndesc.h
+SOURCE=..\..\src\libs\network\netmanager\ndesc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netmanager\ndindex.ci
+SOURCE=..\..\src\libs\network\netmanager\ndindex.ci
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netmanager\netmanager.h
+SOURCE=..\..\src\libs\network\netmanager\netmanager.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netmanager\netmanager_common.ci
+SOURCE=..\..\src\libs\network\netmanager\netmanager_common.ci
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netmanager\netmanager_win.c
+SOURCE=..\..\src\libs\network\netmanager\netmanager_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netmanager\netmanager_win.h
+SOURCE=..\..\src\libs\network\netmanager\netmanager_win.h
 # End Source File
 # End Group
 # Begin Group "socket"
@@ -1429,143 +1426,146 @@ SOURCE=..\sc2code\libs\network\netmanager\netmanager_win.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\socket\socket.c
+SOURCE=..\..\src\libs\network\socket\socket.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\socket\socket.h
+SOURCE=..\..\src\libs\network\socket\socket.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\socket\socket_win.c
+SOURCE=..\..\src\libs\network\socket\socket_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\socket\socket_win.h
+SOURCE=..\..\src\libs\network\socket\socket_win.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\bytesex.h
+SOURCE=..\..\src\libs\network\bytesex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netport.c
+SOURCE=..\..\src\libs\network\netport.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\netport.h
+SOURCE=..\..\src\libs\network\netport.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\network.h
+SOURCE=..\..\src\libs\network\network.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\network_win.c
+SOURCE=..\..\src\libs\network\network_win.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\network\wspiapiwrap.h
+SOURCE=..\..\src\libs\network\wspiapiwrap.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\libs\alarm.h
+SOURCE=..\..\src\libs\alarm.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\callback.h
+SOURCE=..\..\src\libs\callback.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\compiler.h
+SOURCE=..\..\src\libs\compiler.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\declib.h
+SOURCE=..\..\src\libs\declib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\file.h
+SOURCE=..\..\src\libs\file.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\gfxlib.h
+SOURCE=..\..\src\libs\gfxlib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\heap.h
+SOURCE=..\..\src\libs\heap.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\inplib.h
+SOURCE=..\..\src\libs\inplib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\list.h
+SOURCE=..\..\src\libs\list.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\log.h
+SOURCE=..\..\src\libs\log.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\mathlib.h
+SOURCE=..\..\src\libs\mathlib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\md5.h
+SOURCE=..\..\src\libs\md5.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\memlib.h
+SOURCE=..\..\src\libs\memlib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\misc.h
+SOURCE=..\..\src\libs\misc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\net.h
+SOURCE=..\..\src\libs\net.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\platform.h
+SOURCE=..\..\src\libs\platform.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\reslib.h
+SOURCE=..\..\src\libs\reslib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\sndlib.h
+SOURCE=..\..\src\libs\sndlib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\strlib.h
+SOURCE=..\..\src\libs\strlib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\tasklib.h
+SOURCE=..\..\src\libs\tasklib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\threadlib.h
+SOURCE=..\..\src\libs\threadlib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\timelib.h
+SOURCE=..\..\src\libs\timelib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\uio.h
+SOURCE=..\..\src\libs\uio.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\libs\vidlib.h
+SOURCE=..\..\src\libs\vidlib.h
 # End Source File
 # End Group
+# Begin Group "sc2code"
+
+# PROP Default_Filter ""
 # Begin Group "comm"
 
 # PROP Default_Filter ""
@@ -1574,35 +1574,35 @@ SOURCE=..\sc2code\libs\vidlib.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\arilou\arilouc.c
+SOURCE=..\..\src\sc2code\comm\arilou\arilouc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\arilou\igfxres.h
+SOURCE=..\..\src\sc2code\comm\arilou\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\arilou\imusicre.h
+SOURCE=..\..\src\sc2code\comm\arilou\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\arilou\istrtab.h
+SOURCE=..\..\src\sc2code\comm\arilou\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\arilou\resinst.h
+SOURCE=..\..\src\sc2code\comm\arilou\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\arilou\respkg.h
+SOURCE=..\..\src\sc2code\comm\arilou\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\arilou\restypes.h
+SOURCE=..\..\src\sc2code\comm\arilou\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\arilou\strings.h
+SOURCE=..\..\src\sc2code\comm\arilou\strings.h
 # End Source File
 # End Group
 # Begin Group "blackur.comm"
@@ -1610,35 +1610,35 @@ SOURCE=..\sc2code\comm\arilou\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\blackur\blackurc.c
+SOURCE=..\..\src\sc2code\comm\blackur\blackurc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\blackur\igfxres.h
+SOURCE=..\..\src\sc2code\comm\blackur\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\blackur\imusicre.h
+SOURCE=..\..\src\sc2code\comm\blackur\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\blackur\istrtab.h
+SOURCE=..\..\src\sc2code\comm\blackur\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\blackur\resinst.h
+SOURCE=..\..\src\sc2code\comm\blackur\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\blackur\respkg.h
+SOURCE=..\..\src\sc2code\comm\blackur\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\blackur\restypes.h
+SOURCE=..\..\src\sc2code\comm\blackur\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\blackur\strings.h
+SOURCE=..\..\src\sc2code\comm\blackur\strings.h
 # End Source File
 # End Group
 # Begin Group "chmmr.comm"
@@ -1646,35 +1646,35 @@ SOURCE=..\sc2code\comm\blackur\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\chmmr\chmmrc.c
+SOURCE=..\..\src\sc2code\comm\chmmr\chmmrc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\chmmr\igfxres.h
+SOURCE=..\..\src\sc2code\comm\chmmr\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\chmmr\imusicre.h
+SOURCE=..\..\src\sc2code\comm\chmmr\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\chmmr\istrtab.h
+SOURCE=..\..\src\sc2code\comm\chmmr\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\chmmr\resinst.h
+SOURCE=..\..\src\sc2code\comm\chmmr\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\chmmr\respkg.h
+SOURCE=..\..\src\sc2code\comm\chmmr\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\chmmr\restypes.h
+SOURCE=..\..\src\sc2code\comm\chmmr\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\chmmr\strings.h
+SOURCE=..\..\src\sc2code\comm\chmmr\strings.h
 # End Source File
 # End Group
 # Begin Group "comandr.comm"
@@ -1682,35 +1682,35 @@ SOURCE=..\sc2code\comm\chmmr\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\comandr\comandr.c
+SOURCE=..\..\src\sc2code\comm\comandr\comandr.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\comandr\igfxres.h
+SOURCE=..\..\src\sc2code\comm\comandr\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\comandr\imusicre.h
+SOURCE=..\..\src\sc2code\comm\comandr\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\comandr\istrtab.h
+SOURCE=..\..\src\sc2code\comm\comandr\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\comandr\resinst.h
+SOURCE=..\..\src\sc2code\comm\comandr\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\comandr\respkg.h
+SOURCE=..\..\src\sc2code\comm\comandr\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\comandr\restypes.h
+SOURCE=..\..\src\sc2code\comm\comandr\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\comandr\strings.h
+SOURCE=..\..\src\sc2code\comm\comandr\strings.h
 # End Source File
 # End Group
 # Begin Group "druuge.comm"
@@ -1718,35 +1718,35 @@ SOURCE=..\sc2code\comm\comandr\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\druuge\druugec.c
+SOURCE=..\..\src\sc2code\comm\druuge\druugec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\druuge\igfxres.h
+SOURCE=..\..\src\sc2code\comm\druuge\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\druuge\imusicre.h
+SOURCE=..\..\src\sc2code\comm\druuge\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\druuge\istrtab.h
+SOURCE=..\..\src\sc2code\comm\druuge\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\druuge\resinst.h
+SOURCE=..\..\src\sc2code\comm\druuge\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\druuge\respkg.h
+SOURCE=..\..\src\sc2code\comm\druuge\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\druuge\restypes.h
+SOURCE=..\..\src\sc2code\comm\druuge\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\druuge\strings.h
+SOURCE=..\..\src\sc2code\comm\druuge\strings.h
 # End Source File
 # End Group
 # Begin Group "ilwrath.comm"
@@ -1754,35 +1754,35 @@ SOURCE=..\sc2code\comm\druuge\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\ilwrath\igfxres.h
+SOURCE=..\..\src\sc2code\comm\ilwrath\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\ilwrath\ilwrathc.c
+SOURCE=..\..\src\sc2code\comm\ilwrath\ilwrathc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\ilwrath\imusicre.h
+SOURCE=..\..\src\sc2code\comm\ilwrath\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\ilwrath\istrtab.h
+SOURCE=..\..\src\sc2code\comm\ilwrath\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\ilwrath\resinst.h
+SOURCE=..\..\src\sc2code\comm\ilwrath\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\ilwrath\respkg.h
+SOURCE=..\..\src\sc2code\comm\ilwrath\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\ilwrath\restypes.h
+SOURCE=..\..\src\sc2code\comm\ilwrath\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\ilwrath\strings.h
+SOURCE=..\..\src\sc2code\comm\ilwrath\strings.h
 # End Source File
 # End Group
 # Begin Group "melnorm.comm"
@@ -1790,35 +1790,35 @@ SOURCE=..\sc2code\comm\ilwrath\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\melnorm\igfxres.h
+SOURCE=..\..\src\sc2code\comm\melnorm\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\melnorm\imusicre.h
+SOURCE=..\..\src\sc2code\comm\melnorm\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\melnorm\istrtab.h
+SOURCE=..\..\src\sc2code\comm\melnorm\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\melnorm\melnorm.c
+SOURCE=..\..\src\sc2code\comm\melnorm\melnorm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\melnorm\resinst.h
+SOURCE=..\..\src\sc2code\comm\melnorm\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\melnorm\respkg.h
+SOURCE=..\..\src\sc2code\comm\melnorm\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\melnorm\restypes.h
+SOURCE=..\..\src\sc2code\comm\melnorm\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\melnorm\strings.h
+SOURCE=..\..\src\sc2code\comm\melnorm\strings.h
 # End Source File
 # End Group
 # Begin Group "mycon.comm"
@@ -1826,35 +1826,35 @@ SOURCE=..\sc2code\comm\melnorm\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\mycon\igfxres.h
+SOURCE=..\..\src\sc2code\comm\mycon\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\mycon\imusicre.h
+SOURCE=..\..\src\sc2code\comm\mycon\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\mycon\istrtab.h
+SOURCE=..\..\src\sc2code\comm\mycon\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\mycon\myconc.c
+SOURCE=..\..\src\sc2code\comm\mycon\myconc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\mycon\resinst.h
+SOURCE=..\..\src\sc2code\comm\mycon\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\mycon\respkg.h
+SOURCE=..\..\src\sc2code\comm\mycon\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\mycon\restypes.h
+SOURCE=..\..\src\sc2code\comm\mycon\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\mycon\strings.h
+SOURCE=..\..\src\sc2code\comm\mycon\strings.h
 # End Source File
 # End Group
 # Begin Group "orz.comm"
@@ -1862,35 +1862,35 @@ SOURCE=..\sc2code\comm\mycon\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\orz\igfxres.h
+SOURCE=..\..\src\sc2code\comm\orz\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\orz\imusicre.h
+SOURCE=..\..\src\sc2code\comm\orz\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\orz\istrtab.h
+SOURCE=..\..\src\sc2code\comm\orz\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\orz\orzc.c
+SOURCE=..\..\src\sc2code\comm\orz\orzc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\orz\resinst.h
+SOURCE=..\..\src\sc2code\comm\orz\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\orz\respkg.h
+SOURCE=..\..\src\sc2code\comm\orz\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\orz\restypes.h
+SOURCE=..\..\src\sc2code\comm\orz\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\orz\strings.h
+SOURCE=..\..\src\sc2code\comm\orz\strings.h
 # End Source File
 # End Group
 # Begin Group "pkunk.comm"
@@ -1898,35 +1898,35 @@ SOURCE=..\sc2code\comm\orz\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\pkunk\igfxres.h
+SOURCE=..\..\src\sc2code\comm\pkunk\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\pkunk\imusicre.h
+SOURCE=..\..\src\sc2code\comm\pkunk\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\pkunk\istrtab.h
+SOURCE=..\..\src\sc2code\comm\pkunk\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\pkunk\pkunkc.c
+SOURCE=..\..\src\sc2code\comm\pkunk\pkunkc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\pkunk\resinst.h
+SOURCE=..\..\src\sc2code\comm\pkunk\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\pkunk\respkg.h
+SOURCE=..\..\src\sc2code\comm\pkunk\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\pkunk\restypes.h
+SOURCE=..\..\src\sc2code\comm\pkunk\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\pkunk\strings.h
+SOURCE=..\..\src\sc2code\comm\pkunk\strings.h
 # End Source File
 # End Group
 # Begin Group "rebel.comm"
@@ -1934,11 +1934,11 @@ SOURCE=..\sc2code\comm\pkunk\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\rebel\rebel.c
+SOURCE=..\..\src\sc2code\comm\rebel\rebel.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\rebel\strings.h
+SOURCE=..\..\src\sc2code\comm\rebel\strings.h
 # End Source File
 # End Group
 # Begin Group "shofixt.comm"
@@ -1946,35 +1946,35 @@ SOURCE=..\sc2code\comm\rebel\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\shofixt\igfxres.h
+SOURCE=..\..\src\sc2code\comm\shofixt\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\shofixt\imusicre.h
+SOURCE=..\..\src\sc2code\comm\shofixt\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\shofixt\istrtab.h
+SOURCE=..\..\src\sc2code\comm\shofixt\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\shofixt\resinst.h
+SOURCE=..\..\src\sc2code\comm\shofixt\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\shofixt\respkg.h
+SOURCE=..\..\src\sc2code\comm\shofixt\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\shofixt\restypes.h
+SOURCE=..\..\src\sc2code\comm\shofixt\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\shofixt\shofixt.c
+SOURCE=..\..\src\sc2code\comm\shofixt\shofixt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\shofixt\strings.h
+SOURCE=..\..\src\sc2code\comm\shofixt\strings.h
 # End Source File
 # End Group
 # Begin Group "slyhome.comm"
@@ -1982,35 +1982,35 @@ SOURCE=..\sc2code\comm\shofixt\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyhome\igfxres.h
+SOURCE=..\..\src\sc2code\comm\slyhome\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyhome\imusicre.h
+SOURCE=..\..\src\sc2code\comm\slyhome\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyhome\istrtab.h
+SOURCE=..\..\src\sc2code\comm\slyhome\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyhome\resinst.h
+SOURCE=..\..\src\sc2code\comm\slyhome\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyhome\respkg.h
+SOURCE=..\..\src\sc2code\comm\slyhome\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyhome\restypes.h
+SOURCE=..\..\src\sc2code\comm\slyhome\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyhome\slyhome.c
+SOURCE=..\..\src\sc2code\comm\slyhome\slyhome.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyhome\strings.h
+SOURCE=..\..\src\sc2code\comm\slyhome\strings.h
 # End Source File
 # End Group
 # Begin Group "slyland.comm"
@@ -2018,35 +2018,35 @@ SOURCE=..\sc2code\comm\slyhome\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyland\igfxres.h
+SOURCE=..\..\src\sc2code\comm\slyland\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyland\imusicre.h
+SOURCE=..\..\src\sc2code\comm\slyland\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyland\istrtab.h
+SOURCE=..\..\src\sc2code\comm\slyland\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyland\resinst.h
+SOURCE=..\..\src\sc2code\comm\slyland\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyland\respkg.h
+SOURCE=..\..\src\sc2code\comm\slyland\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyland\restypes.h
+SOURCE=..\..\src\sc2code\comm\slyland\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyland\slyland.c
+SOURCE=..\..\src\sc2code\comm\slyland\slyland.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\slyland\strings.h
+SOURCE=..\..\src\sc2code\comm\slyland\strings.h
 # End Source File
 # End Group
 # Begin Group "spahome.comm"
@@ -2054,11 +2054,11 @@ SOURCE=..\sc2code\comm\slyland\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spahome\spahome.c
+SOURCE=..\..\src\sc2code\comm\spahome\spahome.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spahome\strings.h
+SOURCE=..\..\src\sc2code\comm\spahome\strings.h
 # End Source File
 # End Group
 # Begin Group "spathi.comm"
@@ -2066,35 +2066,35 @@ SOURCE=..\sc2code\comm\spahome\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spathi\igfxres.h
+SOURCE=..\..\src\sc2code\comm\spathi\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spathi\imusicre.h
+SOURCE=..\..\src\sc2code\comm\spathi\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spathi\istrtab.h
+SOURCE=..\..\src\sc2code\comm\spathi\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spathi\resinst.h
+SOURCE=..\..\src\sc2code\comm\spathi\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spathi\respkg.h
+SOURCE=..\..\src\sc2code\comm\spathi\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spathi\restypes.h
+SOURCE=..\..\src\sc2code\comm\spathi\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spathi\spathic.c
+SOURCE=..\..\src\sc2code\comm\spathi\spathic.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\spathi\strings.h
+SOURCE=..\..\src\sc2code\comm\spathi\strings.h
 # End Source File
 # End Group
 # Begin Group "starbas.comm"
@@ -2102,11 +2102,11 @@ SOURCE=..\sc2code\comm\spathi\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\starbas\starbas.c
+SOURCE=..\..\src\sc2code\comm\starbas\starbas.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\starbas\strings.h
+SOURCE=..\..\src\sc2code\comm\starbas\strings.h
 # End Source File
 # End Group
 # Begin Group "supox.comm"
@@ -2114,35 +2114,35 @@ SOURCE=..\sc2code\comm\starbas\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\supox\igfxres.h
+SOURCE=..\..\src\sc2code\comm\supox\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\supox\imusicre.h
+SOURCE=..\..\src\sc2code\comm\supox\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\supox\istrtab.h
+SOURCE=..\..\src\sc2code\comm\supox\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\supox\resinst.h
+SOURCE=..\..\src\sc2code\comm\supox\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\supox\respkg.h
+SOURCE=..\..\src\sc2code\comm\supox\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\supox\restypes.h
+SOURCE=..\..\src\sc2code\comm\supox\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\supox\strings.h
+SOURCE=..\..\src\sc2code\comm\supox\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\supox\supoxc.c
+SOURCE=..\..\src\sc2code\comm\supox\supoxc.c
 # End Source File
 # End Group
 # Begin Group "syreen.comm"
@@ -2150,35 +2150,35 @@ SOURCE=..\sc2code\comm\supox\supoxc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\syreen\igfxres.h
+SOURCE=..\..\src\sc2code\comm\syreen\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\syreen\imusicre.h
+SOURCE=..\..\src\sc2code\comm\syreen\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\syreen\istrtab.h
+SOURCE=..\..\src\sc2code\comm\syreen\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\syreen\resinst.h
+SOURCE=..\..\src\sc2code\comm\syreen\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\syreen\respkg.h
+SOURCE=..\..\src\sc2code\comm\syreen\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\syreen\restypes.h
+SOURCE=..\..\src\sc2code\comm\syreen\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\syreen\strings.h
+SOURCE=..\..\src\sc2code\comm\syreen\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\syreen\syreenc.c
+SOURCE=..\..\src\sc2code\comm\syreen\syreenc.c
 # End Source File
 # End Group
 # Begin Group "talkpet.comm"
@@ -2186,35 +2186,35 @@ SOURCE=..\sc2code\comm\syreen\syreenc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\talkpet\igfxres.h
+SOURCE=..\..\src\sc2code\comm\talkpet\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\talkpet\imusicre.h
+SOURCE=..\..\src\sc2code\comm\talkpet\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\talkpet\istrtab.h
+SOURCE=..\..\src\sc2code\comm\talkpet\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\talkpet\resinst.h
+SOURCE=..\..\src\sc2code\comm\talkpet\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\talkpet\respkg.h
+SOURCE=..\..\src\sc2code\comm\talkpet\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\talkpet\restypes.h
+SOURCE=..\..\src\sc2code\comm\talkpet\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\talkpet\strings.h
+SOURCE=..\..\src\sc2code\comm\talkpet\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\talkpet\talkpet.c
+SOURCE=..\..\src\sc2code\comm\talkpet\talkpet.c
 # End Source File
 # End Group
 # Begin Group "thradd.comm"
@@ -2222,35 +2222,35 @@ SOURCE=..\sc2code\comm\talkpet\talkpet.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\thradd\igfxres.h
+SOURCE=..\..\src\sc2code\comm\thradd\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\thradd\imusicre.h
+SOURCE=..\..\src\sc2code\comm\thradd\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\thradd\istrtab.h
+SOURCE=..\..\src\sc2code\comm\thradd\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\thradd\resinst.h
+SOURCE=..\..\src\sc2code\comm\thradd\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\thradd\respkg.h
+SOURCE=..\..\src\sc2code\comm\thradd\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\thradd\restypes.h
+SOURCE=..\..\src\sc2code\comm\thradd\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\thradd\strings.h
+SOURCE=..\..\src\sc2code\comm\thradd\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\thradd\thraddc.c
+SOURCE=..\..\src\sc2code\comm\thradd\thraddc.c
 # End Source File
 # End Group
 # Begin Group "umgah.comm"
@@ -2258,35 +2258,35 @@ SOURCE=..\sc2code\comm\thradd\thraddc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\umgah\igfxres.h
+SOURCE=..\..\src\sc2code\comm\umgah\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\umgah\imusicre.h
+SOURCE=..\..\src\sc2code\comm\umgah\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\umgah\istrtab.h
+SOURCE=..\..\src\sc2code\comm\umgah\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\umgah\resinst.h
+SOURCE=..\..\src\sc2code\comm\umgah\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\umgah\respkg.h
+SOURCE=..\..\src\sc2code\comm\umgah\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\umgah\restypes.h
+SOURCE=..\..\src\sc2code\comm\umgah\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\umgah\strings.h
+SOURCE=..\..\src\sc2code\comm\umgah\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\umgah\umgahc.c
+SOURCE=..\..\src\sc2code\comm\umgah\umgahc.c
 # End Source File
 # End Group
 # Begin Group "urquan.comm"
@@ -2294,39 +2294,39 @@ SOURCE=..\sc2code\comm\umgah\umgahc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\urquan\icode.h
+SOURCE=..\..\src\sc2code\comm\urquan\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\urquan\igfxres.h
+SOURCE=..\..\src\sc2code\comm\urquan\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\urquan\imusicre.h
+SOURCE=..\..\src\sc2code\comm\urquan\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\urquan\istrtab.h
+SOURCE=..\..\src\sc2code\comm\urquan\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\urquan\resinst.h
+SOURCE=..\..\src\sc2code\comm\urquan\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\urquan\respkg.h
+SOURCE=..\..\src\sc2code\comm\urquan\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\urquan\restypes.h
+SOURCE=..\..\src\sc2code\comm\urquan\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\urquan\strings.h
+SOURCE=..\..\src\sc2code\comm\urquan\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\urquan\urquanc.c
+SOURCE=..\..\src\sc2code\comm\urquan\urquanc.c
 # End Source File
 # End Group
 # Begin Group "utwig.comm"
@@ -2334,35 +2334,35 @@ SOURCE=..\sc2code\comm\urquan\urquanc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\utwig\igfxres.h
+SOURCE=..\..\src\sc2code\comm\utwig\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\utwig\imusicre.h
+SOURCE=..\..\src\sc2code\comm\utwig\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\utwig\istrtab.h
+SOURCE=..\..\src\sc2code\comm\utwig\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\utwig\resinst.h
+SOURCE=..\..\src\sc2code\comm\utwig\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\utwig\respkg.h
+SOURCE=..\..\src\sc2code\comm\utwig\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\utwig\restypes.h
+SOURCE=..\..\src\sc2code\comm\utwig\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\utwig\strings.h
+SOURCE=..\..\src\sc2code\comm\utwig\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\utwig\utwigc.c
+SOURCE=..\..\src\sc2code\comm\utwig\utwigc.c
 # End Source File
 # End Group
 # Begin Group "vux.comm"
@@ -2370,35 +2370,35 @@ SOURCE=..\sc2code\comm\utwig\utwigc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\vux\igfxres.h
+SOURCE=..\..\src\sc2code\comm\vux\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\vux\imusicre.h
+SOURCE=..\..\src\sc2code\comm\vux\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\vux\istrtab.h
+SOURCE=..\..\src\sc2code\comm\vux\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\vux\resinst.h
+SOURCE=..\..\src\sc2code\comm\vux\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\vux\respkg.h
+SOURCE=..\..\src\sc2code\comm\vux\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\vux\restypes.h
+SOURCE=..\..\src\sc2code\comm\vux\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\vux\strings.h
+SOURCE=..\..\src\sc2code\comm\vux\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\vux\vuxc.c
+SOURCE=..\..\src\sc2code\comm\vux\vuxc.c
 # End Source File
 # End Group
 # Begin Group "yehat.comm"
@@ -2406,35 +2406,35 @@ SOURCE=..\sc2code\comm\vux\vuxc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\yehat\igfxres.h
+SOURCE=..\..\src\sc2code\comm\yehat\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\yehat\imusicre.h
+SOURCE=..\..\src\sc2code\comm\yehat\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\yehat\istrtab.h
+SOURCE=..\..\src\sc2code\comm\yehat\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\yehat\resinst.h
+SOURCE=..\..\src\sc2code\comm\yehat\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\yehat\respkg.h
+SOURCE=..\..\src\sc2code\comm\yehat\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\yehat\restypes.h
+SOURCE=..\..\src\sc2code\comm\yehat\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\yehat\strings.h
+SOURCE=..\..\src\sc2code\comm\yehat\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\yehat\yehatc.c
+SOURCE=..\..\src\sc2code\comm\yehat\yehatc.c
 # End Source File
 # End Group
 # Begin Group "zoqfot.comm"
@@ -2442,40 +2442,40 @@ SOURCE=..\sc2code\comm\yehat\yehatc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\comm\zoqfot\igfxres.h
+SOURCE=..\..\src\sc2code\comm\zoqfot\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\zoqfot\imusicre.h
+SOURCE=..\..\src\sc2code\comm\zoqfot\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\zoqfot\istrtab.h
+SOURCE=..\..\src\sc2code\comm\zoqfot\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\zoqfot\resinst.h
+SOURCE=..\..\src\sc2code\comm\zoqfot\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\zoqfot\respkg.h
+SOURCE=..\..\src\sc2code\comm\zoqfot\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\zoqfot\restypes.h
+SOURCE=..\..\src\sc2code\comm\zoqfot\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\zoqfot\strings.h
+SOURCE=..\..\src\sc2code\comm\zoqfot\strings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm\zoqfot\zoqfotc.c
+SOURCE=..\..\src\sc2code\comm\zoqfot\zoqfotc.c
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\comm\commall.h
+SOURCE=..\..\src\sc2code\comm\commall.h
 # End Source File
 # End Group
 # Begin Group "netplay"
@@ -2486,164 +2486,164 @@ SOURCE=..\sc2code\comm\commall.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\proto\npconfirm.c
+SOURCE=..\..\src\sc2code\netplay\proto\npconfirm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\proto\npconfirm.h
+SOURCE=..\..\src\sc2code\netplay\proto\npconfirm.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\proto\ready.c
+SOURCE=..\..\src\sc2code\netplay\proto\ready.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\proto\ready.h
+SOURCE=..\..\src\sc2code\netplay\proto\ready.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\proto\reset.c
+SOURCE=..\..\src\sc2code\netplay\proto\reset.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\proto\reset.h
+SOURCE=..\..\src\sc2code\netplay\proto\reset.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\checkbuf.c
+SOURCE=..\..\src\sc2code\netplay\checkbuf.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\checkbuf.h
+SOURCE=..\..\src\sc2code\netplay\checkbuf.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\checksum.c
+SOURCE=..\..\src\sc2code\netplay\checksum.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\checksum.h
+SOURCE=..\..\src\sc2code\netplay\checksum.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\crc.c
+SOURCE=..\..\src\sc2code\netplay\crc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\crc.h
+SOURCE=..\..\src\sc2code\netplay\crc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\nc_connect.ci
+SOURCE=..\..\src\sc2code\netplay\nc_connect.ci
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netconnection.c
+SOURCE=..\..\src\sc2code\netplay\netconnection.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netconnection.h
+SOURCE=..\..\src\sc2code\netplay\netconnection.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netinput.c
+SOURCE=..\..\src\sc2code\netplay\netinput.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netinput.h
+SOURCE=..\..\src\sc2code\netplay\netinput.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netmelee.c
+SOURCE=..\..\src\sc2code\netplay\netmelee.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netmelee.h
+SOURCE=..\..\src\sc2code\netplay\netmelee.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netmisc.c
+SOURCE=..\..\src\sc2code\netplay\netmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netmisc.h
+SOURCE=..\..\src\sc2code\netplay\netmisc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netoptions.c
+SOURCE=..\..\src\sc2code\netplay\netoptions.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netoptions.h
+SOURCE=..\..\src\sc2code\netplay\netoptions.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netplay.h
+SOURCE=..\..\src\sc2code\netplay\netplay.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netrcv.c
+SOURCE=..\..\src\sc2code\netplay\netrcv.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netrcv.h
+SOURCE=..\..\src\sc2code\netplay\netrcv.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netsend.c
+SOURCE=..\..\src\sc2code\netplay\netsend.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netsend.h
+SOURCE=..\..\src\sc2code\netplay\netsend.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netstate.c
+SOURCE=..\..\src\sc2code\netplay\netstate.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\netstate.h
+SOURCE=..\..\src\sc2code\netplay\netstate.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\notify.c
+SOURCE=..\..\src\sc2code\netplay\notify.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\notify.h
+SOURCE=..\..\src\sc2code\netplay\notify.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\packet.c
+SOURCE=..\..\src\sc2code\netplay\packet.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\packet.h
+SOURCE=..\..\src\sc2code\netplay\packet.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\packethandlers.c
+SOURCE=..\..\src\sc2code\netplay\packethandlers.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\packethandlers.h
+SOURCE=..\..\src\sc2code\netplay\packethandlers.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\packetq.c
+SOURCE=..\..\src\sc2code\netplay\packetq.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\packetq.h
+SOURCE=..\..\src\sc2code\netplay\packetq.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\packetsenders.c
+SOURCE=..\..\src\sc2code\netplay\packetsenders.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\netplay\packetsenders.h
+SOURCE=..\..\src\sc2code\netplay\packetsenders.h
 # End Source File
 # End Group
 # Begin Group "planets"
@@ -2651,199 +2651,199 @@ SOURCE=..\sc2code\netplay\packetsenders.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\planets\calc.c
+SOURCE=..\..\src\sc2code\planets\calc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\cargo.c
+SOURCE=..\..\src\sc2code\planets\cargo.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\devices.c
+SOURCE=..\..\src\sc2code\planets\devices.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\elemdata.h
+SOURCE=..\..\src\sc2code\planets\elemdata.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genall.h
+SOURCE=..\..\src\sc2code\planets\genall.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genburv.c
+SOURCE=..\..\src\sc2code\planets\genburv.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genchmmr.c
+SOURCE=..\..\src\sc2code\planets\genchmmr.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\gencol.c
+SOURCE=..\..\src\sc2code\planets\gencol.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\gendru.c
+SOURCE=..\..\src\sc2code\planets\gendru.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genilw.c
+SOURCE=..\..\src\sc2code\planets\genilw.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genmel.c
+SOURCE=..\..\src\sc2code\planets\genmel.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genmyc.c
+SOURCE=..\..\src\sc2code\planets\genmyc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genorz.c
+SOURCE=..\..\src\sc2code\planets\genorz.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genpet.c
+SOURCE=..\..\src\sc2code\planets\genpet.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genpku.c
+SOURCE=..\..\src\sc2code\planets\genpku.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genrain.c
+SOURCE=..\..\src\sc2code\planets\genrain.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\gensam.c
+SOURCE=..\..\src\sc2code\planets\gensam.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genshof.c
+SOURCE=..\..\src\sc2code\planets\genshof.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\gensly.c
+SOURCE=..\..\src\sc2code\planets\gensly.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\gensol.c
+SOURCE=..\..\src\sc2code\planets\gensol.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genspa.c
+SOURCE=..\..\src\sc2code\planets\genspa.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\gensup.c
+SOURCE=..\..\src\sc2code\planets\gensup.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\gensyr.c
+SOURCE=..\..\src\sc2code\planets\gensyr.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genthrad.c
+SOURCE=..\..\src\sc2code\planets\genthrad.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\gentopo.c
+SOURCE=..\..\src\sc2code\planets\gentopo.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genutw.c
+SOURCE=..\..\src\sc2code\planets\genutw.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genvault.c
+SOURCE=..\..\src\sc2code\planets\genvault.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genvux.c
+SOURCE=..\..\src\sc2code\planets\genvux.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genwreck.c
+SOURCE=..\..\src\sc2code\planets\genwreck.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genyeh.c
+SOURCE=..\..\src\sc2code\planets\genyeh.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\genzoq.c
+SOURCE=..\..\src\sc2code\planets\genzoq.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\lander.c
+SOURCE=..\..\src\sc2code\planets\lander.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\lander.h
+SOURCE=..\..\src\sc2code\planets\lander.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\lifeform.h
+SOURCE=..\..\src\sc2code\planets\lifeform.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\orbits.c
+SOURCE=..\..\src\sc2code\planets\orbits.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\oval.c
+SOURCE=..\..\src\sc2code\planets\oval.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\pl_stuff.c
+SOURCE=..\..\src\sc2code\planets\pl_stuff.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\plandata.h
+SOURCE=..\..\src\sc2code\planets\plandata.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\planets.c
+SOURCE=..\..\src\sc2code\planets\planets.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\planets.h
+SOURCE=..\..\src\sc2code\planets\planets.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\plangen.c
+SOURCE=..\..\src\sc2code\planets\plangen.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\pstarmap.c
+SOURCE=..\..\src\sc2code\planets\pstarmap.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\report.c
+SOURCE=..\..\src\sc2code\planets\report.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\roster.c
+SOURCE=..\..\src\sc2code\planets\roster.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\scan.c
+SOURCE=..\..\src\sc2code\planets\scan.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\scan.h
+SOURCE=..\..\src\sc2code\planets\scan.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\solarsys.c
+SOURCE=..\..\src\sc2code\planets\solarsys.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\sundata.h
+SOURCE=..\..\src\sc2code\planets\sundata.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\planets\surface.c
+SOURCE=..\..\src\sc2code\planets\surface.c
 # End Source File
 # End Group
 # Begin Group "ships"
@@ -2854,35 +2854,35 @@ SOURCE=..\sc2code\planets\surface.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\androsyn\androsyn.c
+SOURCE=..\..\src\sc2code\ships\androsyn\androsyn.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\androsyn\icode.h
+SOURCE=..\..\src\sc2code\ships\androsyn\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\androsyn\igfxres.h
+SOURCE=..\..\src\sc2code\ships\androsyn\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\androsyn\imusicre.h
+SOURCE=..\..\src\sc2code\ships\androsyn\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\androsyn\istrtab.h
+SOURCE=..\..\src\sc2code\ships\androsyn\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\androsyn\resinst.h
+SOURCE=..\..\src\sc2code\ships\androsyn\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\androsyn\respkg.h
+SOURCE=..\..\src\sc2code\ships\androsyn\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\androsyn\restypes.h
+SOURCE=..\..\src\sc2code\ships\androsyn\restypes.h
 # End Source File
 # End Group
 # Begin Group "arilou"
@@ -2890,35 +2890,35 @@ SOURCE=..\sc2code\ships\androsyn\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\arilou\arilou.c
+SOURCE=..\..\src\sc2code\ships\arilou\arilou.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\arilou\icode.h
+SOURCE=..\..\src\sc2code\ships\arilou\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\arilou\igfxres.h
+SOURCE=..\..\src\sc2code\ships\arilou\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\arilou\imusicre.h
+SOURCE=..\..\src\sc2code\ships\arilou\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\arilou\istrtab.h
+SOURCE=..\..\src\sc2code\ships\arilou\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\arilou\resinst.h
+SOURCE=..\..\src\sc2code\ships\arilou\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\arilou\respkg.h
+SOURCE=..\..\src\sc2code\ships\arilou\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\arilou\restypes.h
+SOURCE=..\..\src\sc2code\ships\arilou\restypes.h
 # End Source File
 # End Group
 # Begin Group "blackurq"
@@ -2926,35 +2926,35 @@ SOURCE=..\sc2code\ships\arilou\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\blackurq\blackurq.c
+SOURCE=..\..\src\sc2code\ships\blackurq\blackurq.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\blackurq\icode.h
+SOURCE=..\..\src\sc2code\ships\blackurq\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\blackurq\igfxres.h
+SOURCE=..\..\src\sc2code\ships\blackurq\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\blackurq\imusicre.h
+SOURCE=..\..\src\sc2code\ships\blackurq\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\blackurq\istrtab.h
+SOURCE=..\..\src\sc2code\ships\blackurq\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\blackurq\resinst.h
+SOURCE=..\..\src\sc2code\ships\blackurq\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\blackurq\respkg.h
+SOURCE=..\..\src\sc2code\ships\blackurq\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\blackurq\restypes.h
+SOURCE=..\..\src\sc2code\ships\blackurq\restypes.h
 # End Source File
 # End Group
 # Begin Group "chenjesu"
@@ -2962,35 +2962,35 @@ SOURCE=..\sc2code\ships\blackurq\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chenjesu\chenjesu.c
+SOURCE=..\..\src\sc2code\ships\chenjesu\chenjesu.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chenjesu\icode.h
+SOURCE=..\..\src\sc2code\ships\chenjesu\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chenjesu\igfxres.h
+SOURCE=..\..\src\sc2code\ships\chenjesu\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chenjesu\imusicre.h
+SOURCE=..\..\src\sc2code\ships\chenjesu\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chenjesu\istrtab.h
+SOURCE=..\..\src\sc2code\ships\chenjesu\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chenjesu\resinst.h
+SOURCE=..\..\src\sc2code\ships\chenjesu\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chenjesu\respkg.h
+SOURCE=..\..\src\sc2code\ships\chenjesu\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chenjesu\restypes.h
+SOURCE=..\..\src\sc2code\ships\chenjesu\restypes.h
 # End Source File
 # End Group
 # Begin Group "chmmr"
@@ -2998,35 +2998,35 @@ SOURCE=..\sc2code\ships\chenjesu\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chmmr\chmmr.c
+SOURCE=..\..\src\sc2code\ships\chmmr\chmmr.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chmmr\icode.h
+SOURCE=..\..\src\sc2code\ships\chmmr\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chmmr\igfxres.h
+SOURCE=..\..\src\sc2code\ships\chmmr\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chmmr\imusicre.h
+SOURCE=..\..\src\sc2code\ships\chmmr\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chmmr\istrtab.h
+SOURCE=..\..\src\sc2code\ships\chmmr\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chmmr\resinst.h
+SOURCE=..\..\src\sc2code\ships\chmmr\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chmmr\respkg.h
+SOURCE=..\..\src\sc2code\ships\chmmr\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\chmmr\restypes.h
+SOURCE=..\..\src\sc2code\ships\chmmr\restypes.h
 # End Source File
 # End Group
 # Begin Group "druuge"
@@ -3034,35 +3034,35 @@ SOURCE=..\sc2code\ships\chmmr\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\druuge\druuge.c
+SOURCE=..\..\src\sc2code\ships\druuge\druuge.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\druuge\icode.h
+SOURCE=..\..\src\sc2code\ships\druuge\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\druuge\igfxres.h
+SOURCE=..\..\src\sc2code\ships\druuge\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\druuge\imusicre.h
+SOURCE=..\..\src\sc2code\ships\druuge\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\druuge\istrtab.h
+SOURCE=..\..\src\sc2code\ships\druuge\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\druuge\resinst.h
+SOURCE=..\..\src\sc2code\ships\druuge\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\druuge\respkg.h
+SOURCE=..\..\src\sc2code\ships\druuge\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\druuge\restypes.h
+SOURCE=..\..\src\sc2code\ships\druuge\restypes.h
 # End Source File
 # End Group
 # Begin Group "human"
@@ -3070,35 +3070,35 @@ SOURCE=..\sc2code\ships\druuge\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\human\human.c
+SOURCE=..\..\src\sc2code\ships\human\human.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\human\icode.h
+SOURCE=..\..\src\sc2code\ships\human\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\human\igfxres.h
+SOURCE=..\..\src\sc2code\ships\human\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\human\imusicre.h
+SOURCE=..\..\src\sc2code\ships\human\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\human\istrtab.h
+SOURCE=..\..\src\sc2code\ships\human\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\human\resinst.h
+SOURCE=..\..\src\sc2code\ships\human\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\human\respkg.h
+SOURCE=..\..\src\sc2code\ships\human\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\human\restypes.h
+SOURCE=..\..\src\sc2code\ships\human\restypes.h
 # End Source File
 # End Group
 # Begin Group "ilwrath"
@@ -3106,35 +3106,35 @@ SOURCE=..\sc2code\ships\human\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\ilwrath\icode.h
+SOURCE=..\..\src\sc2code\ships\ilwrath\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\ilwrath\igfxres.h
+SOURCE=..\..\src\sc2code\ships\ilwrath\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\ilwrath\ilwrath.c
+SOURCE=..\..\src\sc2code\ships\ilwrath\ilwrath.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\ilwrath\imusicre.h
+SOURCE=..\..\src\sc2code\ships\ilwrath\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\ilwrath\istrtab.h
+SOURCE=..\..\src\sc2code\ships\ilwrath\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\ilwrath\resinst.h
+SOURCE=..\..\src\sc2code\ships\ilwrath\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\ilwrath\respkg.h
+SOURCE=..\..\src\sc2code\ships\ilwrath\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\ilwrath\restypes.h
+SOURCE=..\..\src\sc2code\ships\ilwrath\restypes.h
 # End Source File
 # End Group
 # Begin Group "lastbat"
@@ -3142,35 +3142,35 @@ SOURCE=..\sc2code\ships\ilwrath\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\lastbat\icode.h
+SOURCE=..\..\src\sc2code\ships\lastbat\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\lastbat\igfxres.h
+SOURCE=..\..\src\sc2code\ships\lastbat\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\lastbat\imusicre.h
+SOURCE=..\..\src\sc2code\ships\lastbat\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\lastbat\istrtab.h
+SOURCE=..\..\src\sc2code\ships\lastbat\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\lastbat\lastbat.c
+SOURCE=..\..\src\sc2code\ships\lastbat\lastbat.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\lastbat\resinst.h
+SOURCE=..\..\src\sc2code\ships\lastbat\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\lastbat\respkg.h
+SOURCE=..\..\src\sc2code\ships\lastbat\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\lastbat\restypes.h
+SOURCE=..\..\src\sc2code\ships\lastbat\restypes.h
 # End Source File
 # End Group
 # Begin Group "melnorme"
@@ -3178,35 +3178,35 @@ SOURCE=..\sc2code\ships\lastbat\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\melnorme\icode.h
+SOURCE=..\..\src\sc2code\ships\melnorme\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\melnorme\igfxres.h
+SOURCE=..\..\src\sc2code\ships\melnorme\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\melnorme\imusicre.h
+SOURCE=..\..\src\sc2code\ships\melnorme\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\melnorme\istrtab.h
+SOURCE=..\..\src\sc2code\ships\melnorme\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\melnorme\melnorme.c
+SOURCE=..\..\src\sc2code\ships\melnorme\melnorme.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\melnorme\resinst.h
+SOURCE=..\..\src\sc2code\ships\melnorme\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\melnorme\respkg.h
+SOURCE=..\..\src\sc2code\ships\melnorme\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\melnorme\restypes.h
+SOURCE=..\..\src\sc2code\ships\melnorme\restypes.h
 # End Source File
 # End Group
 # Begin Group "mmrnmhrm"
@@ -3214,35 +3214,35 @@ SOURCE=..\sc2code\ships\melnorme\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mmrnmhrm\icode.h
+SOURCE=..\..\src\sc2code\ships\mmrnmhrm\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mmrnmhrm\igfxres.h
+SOURCE=..\..\src\sc2code\ships\mmrnmhrm\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mmrnmhrm\imusicre.h
+SOURCE=..\..\src\sc2code\ships\mmrnmhrm\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mmrnmhrm\istrtab.h
+SOURCE=..\..\src\sc2code\ships\mmrnmhrm\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mmrnmhrm\mmrnmhrm.c
+SOURCE=..\..\src\sc2code\ships\mmrnmhrm\mmrnmhrm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mmrnmhrm\resinst.h
+SOURCE=..\..\src\sc2code\ships\mmrnmhrm\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mmrnmhrm\respkg.h
+SOURCE=..\..\src\sc2code\ships\mmrnmhrm\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mmrnmhrm\restypes.h
+SOURCE=..\..\src\sc2code\ships\mmrnmhrm\restypes.h
 # End Source File
 # End Group
 # Begin Group "mycon"
@@ -3250,35 +3250,35 @@ SOURCE=..\sc2code\ships\mmrnmhrm\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mycon\icode.h
+SOURCE=..\..\src\sc2code\ships\mycon\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mycon\igfxres.h
+SOURCE=..\..\src\sc2code\ships\mycon\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mycon\imusicre.h
+SOURCE=..\..\src\sc2code\ships\mycon\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mycon\istrtab.h
+SOURCE=..\..\src\sc2code\ships\mycon\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mycon\mycon.c
+SOURCE=..\..\src\sc2code\ships\mycon\mycon.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mycon\resinst.h
+SOURCE=..\..\src\sc2code\ships\mycon\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mycon\respkg.h
+SOURCE=..\..\src\sc2code\ships\mycon\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\mycon\restypes.h
+SOURCE=..\..\src\sc2code\ships\mycon\restypes.h
 # End Source File
 # End Group
 # Begin Group "orz"
@@ -3286,35 +3286,35 @@ SOURCE=..\sc2code\ships\mycon\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\orz\icode.h
+SOURCE=..\..\src\sc2code\ships\orz\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\orz\igfxres.h
+SOURCE=..\..\src\sc2code\ships\orz\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\orz\imusicre.h
+SOURCE=..\..\src\sc2code\ships\orz\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\orz\istrtab.h
+SOURCE=..\..\src\sc2code\ships\orz\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\orz\orz.c
+SOURCE=..\..\src\sc2code\ships\orz\orz.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\orz\resinst.h
+SOURCE=..\..\src\sc2code\ships\orz\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\orz\respkg.h
+SOURCE=..\..\src\sc2code\ships\orz\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\orz\restypes.h
+SOURCE=..\..\src\sc2code\ships\orz\restypes.h
 # End Source File
 # End Group
 # Begin Group "pkunk"
@@ -3322,35 +3322,35 @@ SOURCE=..\sc2code\ships\orz\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\pkunk\icode.h
+SOURCE=..\..\src\sc2code\ships\pkunk\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\pkunk\igfxres.h
+SOURCE=..\..\src\sc2code\ships\pkunk\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\pkunk\imusicre.h
+SOURCE=..\..\src\sc2code\ships\pkunk\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\pkunk\istrtab.h
+SOURCE=..\..\src\sc2code\ships\pkunk\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\pkunk\pkunk.c
+SOURCE=..\..\src\sc2code\ships\pkunk\pkunk.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\pkunk\resinst.h
+SOURCE=..\..\src\sc2code\ships\pkunk\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\pkunk\respkg.h
+SOURCE=..\..\src\sc2code\ships\pkunk\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\pkunk\restypes.h
+SOURCE=..\..\src\sc2code\ships\pkunk\restypes.h
 # End Source File
 # End Group
 # Begin Group "probe"
@@ -3358,31 +3358,31 @@ SOURCE=..\sc2code\ships\pkunk\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\probe\icode.h
+SOURCE=..\..\src\sc2code\ships\probe\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\probe\igfxres.h
+SOURCE=..\..\src\sc2code\ships\probe\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\probe\istrtab.h
+SOURCE=..\..\src\sc2code\ships\probe\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\probe\probe.c
+SOURCE=..\..\src\sc2code\ships\probe\probe.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\probe\resinst.h
+SOURCE=..\..\src\sc2code\ships\probe\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\probe\respkg.h
+SOURCE=..\..\src\sc2code\ships\probe\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\probe\restypes.h
+SOURCE=..\..\src\sc2code\ships\probe\restypes.h
 # End Source File
 # End Group
 # Begin Group "shofixti"
@@ -3390,35 +3390,35 @@ SOURCE=..\sc2code\ships\probe\restypes.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\shofixti\icode.h
+SOURCE=..\..\src\sc2code\ships\shofixti\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\shofixti\igfxres.h
+SOURCE=..\..\src\sc2code\ships\shofixti\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\shofixti\imusicre.h
+SOURCE=..\..\src\sc2code\ships\shofixti\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\shofixti\istrtab.h
+SOURCE=..\..\src\sc2code\ships\shofixti\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\shofixti\resinst.h
+SOURCE=..\..\src\sc2code\ships\shofixti\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\shofixti\respkg.h
+SOURCE=..\..\src\sc2code\ships\shofixti\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\shofixti\restypes.h
+SOURCE=..\..\src\sc2code\ships\shofixti\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\shofixti\shofixti.c
+SOURCE=..\..\src\sc2code\ships\shofixti\shofixti.c
 # End Source File
 # End Group
 # Begin Group "sis_ship"
@@ -3426,35 +3426,35 @@ SOURCE=..\sc2code\ships\shofixti\shofixti.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\sis_ship\icode.h
+SOURCE=..\..\src\sc2code\ships\sis_ship\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\sis_ship\igfxres.h
+SOURCE=..\..\src\sc2code\ships\sis_ship\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\sis_ship\imusicre.h
+SOURCE=..\..\src\sc2code\ships\sis_ship\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\sis_ship\istrtab.h
+SOURCE=..\..\src\sc2code\ships\sis_ship\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\sis_ship\resinst.h
+SOURCE=..\..\src\sc2code\ships\sis_ship\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\sis_ship\respkg.h
+SOURCE=..\..\src\sc2code\ships\sis_ship\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\sis_ship\restypes.h
+SOURCE=..\..\src\sc2code\ships\sis_ship\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\sis_ship\sis_ship.c
+SOURCE=..\..\src\sc2code\ships\sis_ship\sis_ship.c
 # End Source File
 # End Group
 # Begin Group "slylandr"
@@ -3462,35 +3462,35 @@ SOURCE=..\sc2code\ships\sis_ship\sis_ship.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\slylandr\icode.h
+SOURCE=..\..\src\sc2code\ships\slylandr\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\slylandr\igfxres.h
+SOURCE=..\..\src\sc2code\ships\slylandr\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\slylandr\imusicre.h
+SOURCE=..\..\src\sc2code\ships\slylandr\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\slylandr\istrtab.h
+SOURCE=..\..\src\sc2code\ships\slylandr\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\slylandr\resinst.h
+SOURCE=..\..\src\sc2code\ships\slylandr\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\slylandr\respkg.h
+SOURCE=..\..\src\sc2code\ships\slylandr\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\slylandr\restypes.h
+SOURCE=..\..\src\sc2code\ships\slylandr\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\slylandr\slylandr.c
+SOURCE=..\..\src\sc2code\ships\slylandr\slylandr.c
 # End Source File
 # End Group
 # Begin Group "spathi"
@@ -3498,35 +3498,35 @@ SOURCE=..\sc2code\ships\slylandr\slylandr.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\spathi\icode.h
+SOURCE=..\..\src\sc2code\ships\spathi\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\spathi\igfxres.h
+SOURCE=..\..\src\sc2code\ships\spathi\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\spathi\imusicre.h
+SOURCE=..\..\src\sc2code\ships\spathi\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\spathi\istrtab.h
+SOURCE=..\..\src\sc2code\ships\spathi\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\spathi\resinst.h
+SOURCE=..\..\src\sc2code\ships\spathi\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\spathi\respkg.h
+SOURCE=..\..\src\sc2code\ships\spathi\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\spathi\restypes.h
+SOURCE=..\..\src\sc2code\ships\spathi\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\spathi\spathi.c
+SOURCE=..\..\src\sc2code\ships\spathi\spathi.c
 # End Source File
 # End Group
 # Begin Group "supox"
@@ -3534,35 +3534,35 @@ SOURCE=..\sc2code\ships\spathi\spathi.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\supox\icode.h
+SOURCE=..\..\src\sc2code\ships\supox\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\supox\igfxres.h
+SOURCE=..\..\src\sc2code\ships\supox\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\supox\imusicre.h
+SOURCE=..\..\src\sc2code\ships\supox\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\supox\istrtab.h
+SOURCE=..\..\src\sc2code\ships\supox\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\supox\resinst.h
+SOURCE=..\..\src\sc2code\ships\supox\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\supox\respkg.h
+SOURCE=..\..\src\sc2code\ships\supox\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\supox\restypes.h
+SOURCE=..\..\src\sc2code\ships\supox\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\supox\supox.c
+SOURCE=..\..\src\sc2code\ships\supox\supox.c
 # End Source File
 # End Group
 # Begin Group "syreen"
@@ -3570,35 +3570,35 @@ SOURCE=..\sc2code\ships\supox\supox.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\syreen\icode.h
+SOURCE=..\..\src\sc2code\ships\syreen\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\syreen\igfxres.h
+SOURCE=..\..\src\sc2code\ships\syreen\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\syreen\imusicre.h
+SOURCE=..\..\src\sc2code\ships\syreen\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\syreen\istrtab.h
+SOURCE=..\..\src\sc2code\ships\syreen\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\syreen\resinst.h
+SOURCE=..\..\src\sc2code\ships\syreen\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\syreen\respkg.h
+SOURCE=..\..\src\sc2code\ships\syreen\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\syreen\restypes.h
+SOURCE=..\..\src\sc2code\ships\syreen\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\syreen\syreen.c
+SOURCE=..\..\src\sc2code\ships\syreen\syreen.c
 # End Source File
 # End Group
 # Begin Group "thradd"
@@ -3606,35 +3606,35 @@ SOURCE=..\sc2code\ships\syreen\syreen.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\thradd\icode.h
+SOURCE=..\..\src\sc2code\ships\thradd\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\thradd\igfxres.h
+SOURCE=..\..\src\sc2code\ships\thradd\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\thradd\imusicre.h
+SOURCE=..\..\src\sc2code\ships\thradd\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\thradd\istrtab.h
+SOURCE=..\..\src\sc2code\ships\thradd\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\thradd\resinst.h
+SOURCE=..\..\src\sc2code\ships\thradd\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\thradd\respkg.h
+SOURCE=..\..\src\sc2code\ships\thradd\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\thradd\restypes.h
+SOURCE=..\..\src\sc2code\ships\thradd\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\thradd\thradd.c
+SOURCE=..\..\src\sc2code\ships\thradd\thradd.c
 # End Source File
 # End Group
 # Begin Group "umgah"
@@ -3642,35 +3642,35 @@ SOURCE=..\sc2code\ships\thradd\thradd.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\umgah\icode.h
+SOURCE=..\..\src\sc2code\ships\umgah\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\umgah\igfxres.h
+SOURCE=..\..\src\sc2code\ships\umgah\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\umgah\imusicre.h
+SOURCE=..\..\src\sc2code\ships\umgah\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\umgah\istrtab.h
+SOURCE=..\..\src\sc2code\ships\umgah\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\umgah\resinst.h
+SOURCE=..\..\src\sc2code\ships\umgah\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\umgah\respkg.h
+SOURCE=..\..\src\sc2code\ships\umgah\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\umgah\restypes.h
+SOURCE=..\..\src\sc2code\ships\umgah\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\umgah\umgah.c
+SOURCE=..\..\src\sc2code\ships\umgah\umgah.c
 # End Source File
 # End Group
 # Begin Group "urquan"
@@ -3678,35 +3678,35 @@ SOURCE=..\sc2code\ships\umgah\umgah.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\urquan\icode.h
+SOURCE=..\..\src\sc2code\ships\urquan\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\urquan\igfxres.h
+SOURCE=..\..\src\sc2code\ships\urquan\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\urquan\imusicre.h
+SOURCE=..\..\src\sc2code\ships\urquan\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\urquan\istrtab.h
+SOURCE=..\..\src\sc2code\ships\urquan\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\urquan\resinst.h
+SOURCE=..\..\src\sc2code\ships\urquan\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\urquan\respkg.h
+SOURCE=..\..\src\sc2code\ships\urquan\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\urquan\restypes.h
+SOURCE=..\..\src\sc2code\ships\urquan\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\urquan\urquan.c
+SOURCE=..\..\src\sc2code\ships\urquan\urquan.c
 # End Source File
 # End Group
 # Begin Group "utwig"
@@ -3714,35 +3714,35 @@ SOURCE=..\sc2code\ships\urquan\urquan.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\utwig\icode.h
+SOURCE=..\..\src\sc2code\ships\utwig\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\utwig\igfxres.h
+SOURCE=..\..\src\sc2code\ships\utwig\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\utwig\imusicre.h
+SOURCE=..\..\src\sc2code\ships\utwig\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\utwig\istrtab.h
+SOURCE=..\..\src\sc2code\ships\utwig\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\utwig\resinst.h
+SOURCE=..\..\src\sc2code\ships\utwig\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\utwig\respkg.h
+SOURCE=..\..\src\sc2code\ships\utwig\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\utwig\restypes.h
+SOURCE=..\..\src\sc2code\ships\utwig\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\utwig\utwig.c
+SOURCE=..\..\src\sc2code\ships\utwig\utwig.c
 # End Source File
 # End Group
 # Begin Group "vux"
@@ -3750,35 +3750,35 @@ SOURCE=..\sc2code\ships\utwig\utwig.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\vux\icode.h
+SOURCE=..\..\src\sc2code\ships\vux\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\vux\igfxres.h
+SOURCE=..\..\src\sc2code\ships\vux\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\vux\imusicre.h
+SOURCE=..\..\src\sc2code\ships\vux\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\vux\istrtab.h
+SOURCE=..\..\src\sc2code\ships\vux\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\vux\resinst.h
+SOURCE=..\..\src\sc2code\ships\vux\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\vux\respkg.h
+SOURCE=..\..\src\sc2code\ships\vux\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\vux\restypes.h
+SOURCE=..\..\src\sc2code\ships\vux\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\vux\vux.c
+SOURCE=..\..\src\sc2code\ships\vux\vux.c
 # End Source File
 # End Group
 # Begin Group "yehat"
@@ -3786,35 +3786,35 @@ SOURCE=..\sc2code\ships\vux\vux.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\yehat\icode.h
+SOURCE=..\..\src\sc2code\ships\yehat\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\yehat\igfxres.h
+SOURCE=..\..\src\sc2code\ships\yehat\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\yehat\imusicre.h
+SOURCE=..\..\src\sc2code\ships\yehat\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\yehat\istrtab.h
+SOURCE=..\..\src\sc2code\ships\yehat\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\yehat\resinst.h
+SOURCE=..\..\src\sc2code\ships\yehat\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\yehat\respkg.h
+SOURCE=..\..\src\sc2code\ships\yehat\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\yehat\restypes.h
+SOURCE=..\..\src\sc2code\ships\yehat\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\yehat\yehat.c
+SOURCE=..\..\src\sc2code\ships\yehat\yehat.c
 # End Source File
 # End Group
 # Begin Group "zoqfot"
@@ -3822,581 +3822,581 @@ SOURCE=..\sc2code\ships\yehat\yehat.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\sc2code\ships\zoqfot\icode.h
+SOURCE=..\..\src\sc2code\ships\zoqfot\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\zoqfot\igfxres.h
+SOURCE=..\..\src\sc2code\ships\zoqfot\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\zoqfot\imusicre.h
+SOURCE=..\..\src\sc2code\ships\zoqfot\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\zoqfot\istrtab.h
+SOURCE=..\..\src\sc2code\ships\zoqfot\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\zoqfot\resinst.h
+SOURCE=..\..\src\sc2code\ships\zoqfot\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\zoqfot\respkg.h
+SOURCE=..\..\src\sc2code\ships\zoqfot\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\zoqfot\restypes.h
+SOURCE=..\..\src\sc2code\ships\zoqfot\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ships\zoqfot\zoqfot.c
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=..\sc2code\ships\ship.h
+SOURCE=..\..\src\sc2code\ships\zoqfot\zoqfot.c
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\sc2code\battle.c
+SOURCE=..\..\src\sc2code\ships\ship.h
 # End Source File
+# End Group
 # Begin Source File
 
-SOURCE=..\sc2code\battle.h
+SOURCE=..\..\src\sc2code\battle.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\battlecontrols.c
+SOURCE=..\..\src\sc2code\battle.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\battlecontrols.h
+SOURCE=..\..\src\sc2code\battlecontrols.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\border.c
+SOURCE=..\..\src\sc2code\battlecontrols.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\build.c
+SOURCE=..\..\src\sc2code\border.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\build.h
+SOURCE=..\..\src\sc2code\build.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\cleanup.c
+SOURCE=..\..\src\sc2code\build.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\clock.c
+SOURCE=..\..\src\sc2code\cleanup.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\clock.h
+SOURCE=..\..\src\sc2code\clock.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\cnctdlg.c
+SOURCE=..\..\src\sc2code\clock.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\cnctdlg.h
+SOURCE=..\..\src\sc2code\cnctdlg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\coderes.h
+SOURCE=..\..\src\sc2code\cnctdlg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\collide.c
+SOURCE=..\..\src\sc2code\coderes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\collide.h
+SOURCE=..\..\src\sc2code\collide.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\colors.h
+SOURCE=..\..\src\sc2code\collide.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm.c
+SOURCE=..\..\src\sc2code\colors.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\comm.h
+SOURCE=..\..\src\sc2code\comm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\commanim.c
+SOURCE=..\..\src\sc2code\comm.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\commanim.h
+SOURCE=..\..\src\sc2code\commanim.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\commglue.c
+SOURCE=..\..\src\sc2code\commanim.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\commglue.h
+SOURCE=..\..\src\sc2code\commglue.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\confirm.c
+SOURCE=..\..\src\sc2code\commglue.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\cons_res.c
+SOURCE=..\..\src\sc2code\confirm.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\cons_res.h
+SOURCE=..\..\src\sc2code\cons_res.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\controls.h
+SOURCE=..\..\src\sc2code\cons_res.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\credits.c
+SOURCE=..\..\src\sc2code\controls.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\credits.h
+SOURCE=..\..\src\sc2code\credits.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\cyborg.c
+SOURCE=..\..\src\sc2code\credits.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\demo.h
+SOURCE=..\..\src\sc2code\cyborg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\displist.c
+SOURCE=..\..\src\sc2code\demo.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\displist.h
+SOURCE=..\..\src\sc2code\displist.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\dummy.c
+SOURCE=..\..\src\sc2code\displist.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\element.h
+SOURCE=..\..\src\sc2code\dummy.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\encount.c
+SOURCE=..\..\src\sc2code\element.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\encount.h
+SOURCE=..\..\src\sc2code\encount.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\flash.c
+SOURCE=..\..\src\sc2code\encount.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\flash.h
+SOURCE=..\..\src\sc2code\flash.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\fmv.c
+SOURCE=..\..\src\sc2code\flash.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\fmv.h
+SOURCE=..\..\src\sc2code\fmv.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\galaxy.c
+SOURCE=..\..\src\sc2code\fmv.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\gameev.c
+SOURCE=..\..\src\sc2code\galaxy.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\gameev.h
+SOURCE=..\..\src\sc2code\gameev.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\gameinp.c
+SOURCE=..\..\src\sc2code\gameev.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\gameopt.c
+SOURCE=..\..\src\sc2code\gameinp.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\gameopt.h
+SOURCE=..\..\src\sc2code\gameopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\gamestr.h
+SOURCE=..\..\src\sc2code\gameopt.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\gendef.c
+SOURCE=..\..\src\sc2code\gamestr.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\getchar.c
+SOURCE=..\..\src\sc2code\gendef.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\globdata.c
+SOURCE=..\..\src\sc2code\getchar.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\globdata.h
+SOURCE=..\..\src\sc2code\globdata.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\gravity.c
+SOURCE=..\..\src\sc2code\globdata.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\grpinfo.c
+SOURCE=..\..\src\sc2code\gravity.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\grpinfo.h
+SOURCE=..\..\src\sc2code\grpinfo.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\hyper.c
+SOURCE=..\..\src\sc2code\grpinfo.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\hyper.h
+SOURCE=..\..\src\sc2code\hyper.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ifontres.h
+SOURCE=..\..\src\sc2code\hyper.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\igfxres.h
+SOURCE=..\..\src\sc2code\ifontres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\imusicre.h
+SOURCE=..\..\src\sc2code\igfxres.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\init.c
+SOURCE=..\..\src\sc2code\imusicre.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\init.h
+SOURCE=..\..\src\sc2code\init.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\intel.c
+SOURCE=..\..\src\sc2code\init.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\intel.h
+SOURCE=..\..\src\sc2code\intel.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\intro.c
+SOURCE=..\..\src\sc2code\intel.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ipdisp.c
+SOURCE=..\..\src\sc2code\intro.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ipdisp.h
+SOURCE=..\..\src\sc2code\ipdisp.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ires_ind.h
+SOURCE=..\..\src\sc2code\ipdisp.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\istrtab.h
+SOURCE=..\..\src\sc2code\ires_ind.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\load.c
+SOURCE=..\..\src\sc2code\istrtab.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\load.h
+SOURCE=..\..\src\sc2code\load.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\loadmele.c
+SOURCE=..\..\src\sc2code\load.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\loadmele.h
+SOURCE=..\..\src\sc2code\loadmele.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\loadship.c
+SOURCE=..\..\src\sc2code\loadmele.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\master.c
+SOURCE=..\..\src\sc2code\loadship.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\master.h
+SOURCE=..\..\src\sc2code\master.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\melee.c
+SOURCE=..\..\src\sc2code\master.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\melee.h
+SOURCE=..\..\src\sc2code\melee.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\menu.c
+SOURCE=..\..\src\sc2code\melee.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\menustat.h
+SOURCE=..\..\src\sc2code\menu.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\misc.c
+SOURCE=..\..\src\sc2code\menustat.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\nameref.h
+SOURCE=..\..\src\sc2code\misc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\oscill.c
+SOURCE=..\..\src\sc2code\nameref.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\oscill.h
+SOURCE=..\..\src\sc2code\oscill.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\outfit.c
+SOURCE=..\..\src\sc2code\oscill.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\pickmele.c
+SOURCE=..\..\src\sc2code\outfit.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\pickmele.h
+SOURCE=..\..\src\sc2code\pickmele.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\pickship.c
+SOURCE=..\..\src\sc2code\pickmele.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\pickship.h
+SOURCE=..\..\src\sc2code\pickship.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\plandata.c
+SOURCE=..\..\src\sc2code\pickship.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\process.c
+SOURCE=..\..\src\sc2code\plandata.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\process.h
+SOURCE=..\..\src\sc2code\process.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\races.h
+SOURCE=..\..\src\sc2code\process.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\resinst.h
+SOURCE=..\..\src\sc2code\races.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\respkg.h
+SOURCE=..\..\src\sc2code\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\restart.c
+SOURCE=..\..\src\sc2code\respkg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\restart.h
+SOURCE=..\..\src\sc2code\restart.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\restypes.h
+SOURCE=..\..\src\sc2code\restart.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\save.c
+SOURCE=..\..\src\sc2code\restypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\save.h
+SOURCE=..\..\src\sc2code\save.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\settings.c
+SOURCE=..\..\src\sc2code\save.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\settings.h
+SOURCE=..\..\src\sc2code\settings.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\setup.c
+SOURCE=..\..\src\sc2code\settings.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\setup.h
+SOURCE=..\..\src\sc2code\setup.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\setupmenu.c
+SOURCE=..\..\src\sc2code\setup.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\setupmenu.h
+SOURCE=..\..\src\sc2code\setupmenu.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ship.c
+SOURCE=..\..\src\sc2code\setupmenu.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\ship.h
+SOURCE=..\..\src\sc2code\ship.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\shipcont.h
+SOURCE=..\..\src\sc2code\ship.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\shipstat.c
+SOURCE=..\..\src\sc2code\shipcont.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\shipyard.c
+SOURCE=..\..\src\sc2code\shipstat.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\sis.c
+SOURCE=..\..\src\sc2code\shipyard.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\sis.h
+SOURCE=..\..\src\sc2code\sis.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\sounds.c
+SOURCE=..\..\src\sc2code\sis.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\sounds.h
+SOURCE=..\..\src\sc2code\sounds.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\starbase.c
+SOURCE=..\..\src\sc2code\sounds.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\starbase.h
+SOURCE=..\..\src\sc2code\starbase.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\starcon.c
+SOURCE=..\..\src\sc2code\starbase.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\starcon.h
+SOURCE=..\..\src\sc2code\starcon.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\starmap.c
+SOURCE=..\..\src\sc2code\starcon.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\state.c
+SOURCE=..\..\src\sc2code\starmap.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\state.h
+SOURCE=..\..\src\sc2code\state.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\status.c
+SOURCE=..\..\src\sc2code\state.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\status.h
+SOURCE=..\..\src\sc2code\status.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\tactrans.c
+SOURCE=..\..\src\sc2code\status.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\tactrans.h
+SOURCE=..\..\src\sc2code\tactrans.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\trans.c
+SOURCE=..\..\src\sc2code\tactrans.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\units.h
+SOURCE=..\..\src\sc2code\trans.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\uqmdebug.c
+SOURCE=..\..\src\sc2code\units.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\uqmdebug.h
+SOURCE=..\..\src\sc2code\uqmdebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\util.c
+SOURCE=..\..\src\sc2code\uqmdebug.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\util.h
+SOURCE=..\..\src\sc2code\util.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\velocity.c
+SOURCE=..\..\src\sc2code\util.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\velocity.h
+SOURCE=..\..\src\sc2code\velocity.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\weapon.c
+SOURCE=..\..\src\sc2code\velocity.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\sc2code\weapon.h
+SOURCE=..\..\src\sc2code\weapon.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\sc2code\weapon.h
 # End Source File
 # End Group
 # Begin Source File
@@ -4405,35 +4405,35 @@ SOURCE=config.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\endian_uqm.h
+SOURCE=..\..\src\endian_uqm.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\options.c
+SOURCE=..\..\src\options.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\options.h
+SOURCE=..\..\src\options.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\port.c
+SOURCE=..\..\src\port.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\port.h
+SOURCE=..\..\src\port.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\starcon2.c
+SOURCE=..\..\src\starcon2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\types.h
+SOURCE=..\..\src\types.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\uqmversion.h
+SOURCE=..\..\src\uqmversion.h
 # End Source File
 # End Group
 # Begin Group "Doc"
@@ -4569,35 +4569,35 @@ SOURCE=..\..\TODO
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE="..\res\kohr-ah1.ico"
+SOURCE=..\..\src\res\kohr-ah1.ico
 # End Source File
 # Begin Source File
 
-SOURCE=..\res\sis1.ico
+SOURCE=..\..\src\res\sis1.ico
 # End Source File
 # Begin Source File
 
-SOURCE=..\res\starcon2.ico
+SOURCE=..\..\src\res\starcon2.ico
 # End Source File
 # Begin Source File
 
-SOURCE="..\res\ur-quan-icon-alpha.ico"
+SOURCE=..\..\src\res\ur-quan-icon-alpha.ico
 # End Source File
 # Begin Source File
 
-SOURCE="..\res\ur-quan-icon-std.ico"
+SOURCE=..\..\src\res\ur-quan-icon-std.ico
 # End Source File
 # Begin Source File
 
-SOURCE="..\res\ur-quan1.ico"
+SOURCE=..\..\src\res\ur-quan1.ico
 # End Source File
 # Begin Source File
 
-SOURCE="..\res\ur-quan2.ico"
+SOURCE=..\..\src\res\ur-quan2.ico
 # End Source File
 # Begin Source File
 
-SOURCE=..\res\UrQuanMasters.rc
+SOURCE=..\..\src\res\UrQuanMasters.rc
 # End Source File
 # End Group
 # End Target

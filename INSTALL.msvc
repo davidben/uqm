@@ -105,7 +105,7 @@ packages.
 5. Set up the The Ur-Quan Masters project in Visual C++
 
 5.1. Import the VC6 .dsp file:
-- Open C:\Build\sc2\src\msvc++\ and double-click on "UrQuanMasters.dsp".
+- Open C:\Build\sc2\build\msvc6\ and double-click on "UrQuanMasters.dsp".
   Visual C++ 2005 Express Edition will start. Confirm when it asks to
   convert the VC6 .dsp file.
 
