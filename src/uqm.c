@@ -635,7 +635,7 @@ preParseOptions (int argc, char *argv[], struct options_struct *options)
 				return EXIT_SUCCESS;
 		}
 	}
-	optind = 0;
+	optind = 1;
 	return 0;
 }
 
