@@ -547,7 +547,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 
 		pathStart = dest;
 #ifdef HAVE_DRIVE_LETTERS
-		if (isDriveLetter (pathStart[0]) && (pathStart[1] == ':'))
+		if (isDriveLetter(pathStart[0]) && (pathStart[1] == ':'))
 		{
 			pathStart += 2;
 		}
@@ -711,7 +711,7 @@ expandPathAbsolute (char *dest, size_t destLen, const char *src,
 		// in between the existance check and the call to _getdcwd()
 		// cannot be avoided, unless a drive still exists for Windows
 		// when the physical drive is removed.
-		if (!driveLetterExists(letter))
+		if (!driveLetterExists (letter))
 		{
 			errno = ENOENT;
 			return NULL;
