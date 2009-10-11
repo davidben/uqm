@@ -38,6 +38,7 @@
 #include "libs/gfxlib.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
+#include "libs/misc.h"
 
 #include "uqmversion.h"
 #include "options.h"

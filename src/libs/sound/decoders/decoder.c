@@ -21,7 +21,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "port.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include "libs/file.h"
 #include "libs/log.h"
 #include "decoder.h"

@@ -18,6 +18,8 @@
 
 #include "resintrn.h"
 #include "libs/declib.h"
+#include "libs/memlib.h"
+
 
 void *
 GetResourceData (uio_Stream *fp, DWORD length)

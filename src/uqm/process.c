@@ -31,6 +31,8 @@
 #include "libs/graphics/drawcmd.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/log.h"
+#include "libs/misc.h"
+
 
 //#define DEBUG_PROCESS
 

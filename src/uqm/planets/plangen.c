@@ -26,6 +26,7 @@
 #include "libs/graphics/drawable.h"
 #include "libs/mathlib.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 #include <math.h>
 #include <time.h>
 

@@ -30,7 +30,7 @@
 #include "sounds.h"
 #include "options.h"
 #include "libs/log.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 
 
 #define LOAD_TEAM_NAME_TEXT_COLOR \

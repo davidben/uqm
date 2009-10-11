@@ -32,6 +32,7 @@
 #include "port.h"
 #include "libs/uio.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 #include "libs/vidlib.h"
 #include SDL_INCLUDE(SDL_thread.h)
 

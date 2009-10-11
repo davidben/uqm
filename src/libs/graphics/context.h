@@ -20,6 +20,7 @@
 #define _CONTEXT_H
 
 #include "tfb_draw.h"
+#include "libs/memlib.h"
 
 typedef UWORD FBK_FLAGS;
 #define FBK_DIRTY (1 << 0)

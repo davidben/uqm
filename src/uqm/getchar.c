@@ -19,7 +19,7 @@
 #include "port.h"
 #include "controls.h"
 #include "libs/inplib.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include "libs/log.h"
 #include "globdata.h"
 #include "sounds.h"

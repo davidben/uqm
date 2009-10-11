@@ -27,6 +27,7 @@
 
 #include "libs/compiler.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 
 #include <stdlib.h>
 #include <ctype.h>

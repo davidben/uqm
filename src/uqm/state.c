@@ -19,7 +19,7 @@
 #include "state.h"
 
 #include "encount.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include "libs/log.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

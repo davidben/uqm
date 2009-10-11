@@ -19,6 +19,8 @@
 #ifndef _FONT_H
 #define _FONT_H
 
+#include "libs/memlib.h"
+
 #define MAX_DELTAS 100
 
 typedef struct FontPage

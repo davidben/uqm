@@ -26,7 +26,7 @@
 #include "config.h"
 #include "filintrn.h"
 #include "libs/compiler.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include "libs/log.h"
 
 #ifdef HAVE_DRIVE_LETTERS

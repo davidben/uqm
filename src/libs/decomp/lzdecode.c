@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "libs/decomp/lzh.h"
+#include "lzh.h"
 #include "libs/reslib.h"
 
 PLZHCODE_DESC _lpCurCodeDesc;

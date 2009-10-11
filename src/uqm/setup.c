@@ -36,6 +36,7 @@
 #include "libs/threadlib.h"
 #include "libs/vidlib.h"
 #include "libs/log.h"
+#include "libs/misc.h"
 
 #include <assert.h>
 #include <errno.h>

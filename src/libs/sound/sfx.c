@@ -19,6 +19,7 @@
 #include "libs/reslib.h"
 #include "libs/log.h"
 #include "libs/strings/strintrn.h"
+#include "libs/memlib.h"
 #include <math.h>
 
 

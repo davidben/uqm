@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include "libs/sndlib.h"
 #include "libs/reslib.h"
+#include "libs/memlib.h"
 
 extern void *_GetMusicData (uio_Stream *fp, DWORD length);
 extern BOOLEAN _ReleaseMusicData (void *handle);

@@ -21,6 +21,8 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/reslib.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
+
 
 #define MAX_STRINGS 2048
 #define POOL_SIZE 4096

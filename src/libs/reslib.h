@@ -22,7 +22,7 @@
 //#include <stdio.h>
 #include "libs/compiler.h"
 #include "port.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include "libs/uio.h"
 
 typedef struct resource_index_desc RESOURCE_INDEX_DESC;

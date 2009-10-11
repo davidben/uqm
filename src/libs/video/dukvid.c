@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "libs/uio.h"
+#include "libs/memlib.h"
 #include "endian_uqm.h"
 
 #define THIS_PTR    TFB_VideoDecoder* This

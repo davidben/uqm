@@ -22,7 +22,7 @@
 #include SDL_INCLUDE(SDL_error.h)
 #include SDL_INCLUDE(SDL_rwops.h)
 #include SDL_IMAGE_INCLUDE(SDL_image.h)
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include <errno.h>
 #include <string.h>
 

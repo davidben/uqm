@@ -19,6 +19,7 @@
 #include "videodec.h"
 #include "dukvid.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 
 #define MAX_REG_DECODERS 31
 

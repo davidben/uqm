@@ -32,7 +32,6 @@
 		// for new_ship
 #include "libs/log.h"
 #include "libs/mathlib.h"
-#include "libs/misc.h"
 
 ChecksumBuffer localChecksumBuffer;
 

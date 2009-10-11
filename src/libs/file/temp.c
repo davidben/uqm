@@ -29,7 +29,7 @@
 #include "port.h"
 #include "libs/compiler.h"
 #include "libs/log.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 
 static char *tempDirName;
 uio_DirHandle *tempDir;

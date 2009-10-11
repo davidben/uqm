@@ -27,11 +27,6 @@
 #include "port.h"
 
 
-extern void *HMalloc (int size);
-extern void HFree (void *p);
-extern void *HCalloc (int size);
-extern void *HRealloc (void *p, int size);
-
 extern int TFB_DEBUG_HALT;
 
 static inline void explode (void) _NORETURN;

@@ -26,7 +26,7 @@
 #include "config.h"
 #include "types.h"
 #include "filintrn.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include "libs/log.h"
 
 static int copyError(uio_Handle *srcHandle, uio_Handle *dstHandle,

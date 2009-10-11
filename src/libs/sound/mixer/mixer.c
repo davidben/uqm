@@ -25,6 +25,7 @@
 #include "libs/misc.h"
 #include "libs/threadlib.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 
 static uint32 mixer_initialized = 0;
 static uint32 mixer_format;

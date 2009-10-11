@@ -32,7 +32,6 @@
 #include "setup.h"
 #include "state.h"
 #include "libs/mathlib.h"
-#include "libs/misc.h"
 
 #include <stdio.h>
 #include <errno.h>

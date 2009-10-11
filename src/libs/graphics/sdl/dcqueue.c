@@ -25,6 +25,8 @@
 #include "libs/graphics/drawcmd.h"
 #include "libs/graphics/sdl/dcqueue.h"
 #include "libs/log.h"
+#include "libs/misc.h"
+		// for TFB_DEBUG_HALT
 
 
 static RecursiveMutex DCQ_Mutex;

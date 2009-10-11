@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include "port.h"
 #include "types.h"
 #include "endian_uqm.h"

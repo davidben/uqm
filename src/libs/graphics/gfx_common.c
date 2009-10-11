@@ -19,6 +19,8 @@
 #include "gfxintrn.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawcmd.h"
+#include "libs/misc.h"
+		// for TFB_DEBUG_HALT
 
 DISPLAY_INTERFACE *_pCurDisplay; //Not a function. Probably has to be initialized...
 

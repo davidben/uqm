@@ -17,7 +17,6 @@
 #ifndef _UQM_SOUND_H // try avoiding collisions on id
 #define _UQM_SOUND_H
 
-#include "libs/misc.h"
 #include "sndintrn.h"
 #include "audiocore.h"
 #include "decoders/decoder.h"

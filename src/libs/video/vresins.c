@@ -20,6 +20,8 @@
 #include <string.h>
 #include "vidintrn.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
+
 
 static BOOLEAN
 FreeLegacyVideoData (void *data)

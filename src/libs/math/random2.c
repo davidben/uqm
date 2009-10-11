@@ -24,7 +24,7 @@
 #define RANDOM2_INTERNAL
 #include "random.h"
 
-#include "libs/misc.h"
+#include "libs/memlib.h"
 
 
 #define A 16807 /* a relatively prime number -- also M div Q */

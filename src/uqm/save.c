@@ -36,6 +36,7 @@
 #include "util.h"
 #include "libs/inplib.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 
 
 // XXX: these should handle endian conversions later

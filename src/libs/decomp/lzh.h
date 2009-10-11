@@ -20,7 +20,7 @@
 #define _LZH_H
 
 #include "libs/declib.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 
 /* LZSS Parameters */
 

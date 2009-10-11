@@ -23,6 +23,7 @@
 #include "audiodrv_openal.h"
 #include "libs/tasklib.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 #include <stdlib.h>
 
 

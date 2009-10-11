@@ -20,6 +20,8 @@
 #include "libs/compiler.h"
 #include "libs/tasklib.h"
 #include "libs/inplib.h"
+#include "libs/memlib.h"
+
 
 static Task FadeTask;
 static SIZE TTotal;

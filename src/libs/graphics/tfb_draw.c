@@ -18,6 +18,8 @@
 #include "tfb_draw.h"
 #include "drawcmd.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
+
 
 static const HOT_SPOT NullHs = {0, 0};
 

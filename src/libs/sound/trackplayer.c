@@ -18,6 +18,7 @@
 #include "libs/sound/trackplayer.h"
 #include "libs/sound/trackint.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 #include "options.h"
 #include <ctype.h>
 #include <stdlib.h>

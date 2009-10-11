@@ -21,6 +21,7 @@
 #include "libs/graphics/sdl/primitives.h"
 #include "libs/graphics/tfb_draw.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 #include "rotozoom.h"
 #include "options.h"
 #include "types.h"

@@ -25,7 +25,7 @@
 #	include "list.h"
 #endif
 
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #define malloc HMalloc
 #define free HFree
 #define realloc HRealloc

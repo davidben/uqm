@@ -20,6 +20,7 @@
 #include "sound.h"
 #include "libs/reslib.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 
 
 static MUSIC_REF curMusicRef;

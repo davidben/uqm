@@ -18,8 +18,8 @@
 #include <stdlib.h>
 #include "libs/threadlib.h"
 #include "libs/timelib.h"
-#include "libs/misc.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 #include "thrcommon.h"
 
 #define LIFECYCLE_SIZE 8

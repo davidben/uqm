@@ -17,7 +17,7 @@
  */
 
 #include "strintrn.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 
 STRING_TABLE
 AllocStringTable (int num_entries, int flags)

@@ -34,6 +34,7 @@
 #include "libs/strlib.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
+#include "libs/memlib.h"
 
 
 static inline long

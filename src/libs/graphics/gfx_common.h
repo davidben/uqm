@@ -23,7 +23,6 @@
 #include <stdlib.h>
 
 #include "libs/gfxlib.h"
-#include "libs/misc.h"
 
 // driver for TFB_InitGraphics
 enum

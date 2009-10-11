@@ -34,6 +34,7 @@
 #include "libs/sound/sound.h"
 #include "libs/resource/stringbank.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 #include "resinst.h"
 #include "nameref.h"
 

@@ -30,6 +30,7 @@
 #include "libs/file.h"
 #include "libs/reslib.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 #include "../font.h"
 #include "primitives.h"
 

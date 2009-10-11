@@ -17,7 +17,7 @@
  */
 
 #include "gfxintrn.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include "tfb_draw.h"
 #include "gfxother.h"
 #include <math.h>

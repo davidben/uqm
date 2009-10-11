@@ -16,8 +16,10 @@
 
 #include "video.h"
 
+#include "options.h"
 #include "vidplayer.h"
 #include "libs/inplib.h"
+#include "libs/memlib.h"
 // XXX: we should not include anything from uqm/ inside libs/
 #include "uqm/setup.h"
 

@@ -19,7 +19,7 @@
 #include "options.h"
 #include "port.h"
 #include "resintrn.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 #include "libs/log.h"
 #include "libs/uio/charhashtable.h"
 

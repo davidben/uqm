@@ -22,7 +22,6 @@
 #include "netplay.h"
 #include "checkbuf.h"
 #include "libs/log.h"
-#include "libs/misc.h"
 
 #include "../battle.h"
 		// for battleFrameCount

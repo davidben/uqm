@@ -39,6 +39,7 @@
 #include "libs/log.h"
 #include "libs/mathlib.h"
 #include "libs/inplib.h"
+#include "libs/misc.h"
 
 
 static void DrawFadeText (const UNICODE *str1, const UNICODE *str2,

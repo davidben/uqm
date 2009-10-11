@@ -22,7 +22,7 @@
 #include <assert.h>
 #include "port.h"
 #include "libs/compiler.h"
-#include "libs/misc.h"
+#include "libs/memlib.h"
 
 // Note that we MUST use the QUEUE_TABLE variant at this time, because
 // certain gameplay elements depend on it. Namely, the maximum number
@@ -32,12 +32,7 @@
 // code works now.
 #define QUEUE_TABLE
 
-#ifdef QUEUE_TABLE
 typedef void* QUEUE_HANDLE;
-#else /* !QUEUE_TABLE */
-#include "libs/memlib.h"
-typedef MEM_HANDLE QUEUE_HANDLE;
-#endif /* QUEUE_TABLE */
 
 typedef UWORD OBJ_SIZE;
 typedef QUEUE_HANDLE HLINK;
@@ -65,6 +60,9 @@ typedef struct /* queue */
 } QUEUE;
 
 #ifdef QUEUE_TABLE
+
+extern HLINK AllocLink (QUEUE *pq);
+extern void FreeLink (QUEUE *pq, HLINK hLink);
 
 static inline LINK *
 LockLink (const QUEUE *pq, HLINK h)
@@ -96,10 +94,10 @@ UnlockLink (const QUEUE *pq, HLINK h)
 #define SizeQueueTab(pq) (COUNT)((pq)->num_objects)
 #define GetLinkAddr(pq,i) (HLINK)((pq)->pq_tab + ((pq)->object_size * ((i) - 1)))
 #else /* !QUEUE_TABLE */
-#define AllocLink(pq) (HLINK)mem_allocate ((pq)->object_size, DEFAULT_MEM_FLAGS)
-#define LockLink(pq, h) (LINK*)mem_lock (h)
-#define UnlockLink(pq, h) mem_unlock (h)
-#define FreeLink(pq,h) mem_release (h)
+#define AllocLink(pq)     (HLINK)HMalloc ((pq)->object_size)
+#define LockLink(pq, h)   ((LINK*)(h))
+#define UnlockLink(pq, h) ((void)(h))
+#define FreeLink(pq,h)    HFree (h)
 #endif /* QUEUE_TABLE */
 
 #define SetLinkSize(pq,s) ((pq)->object_size = (COUNT)(s))
@@ -121,10 +119,6 @@ extern void InsertQueue (QUEUE *pq, HLINK hLink, HLINK hRefLink);
 extern void RemoveQueue (QUEUE *pq, HLINK hLink);
 extern COUNT CountLinks (QUEUE *pq);
 void ForAllLinks(QUEUE *pq, void (*callback)(LINK *, void *), void *arg);
-#ifdef QUEUE_TABLE
-extern HLINK AllocLink (QUEUE *pq);
-extern void FreeLink (QUEUE *pq, HLINK hLink);
-#endif /* QUEUE_TABLE */
 
 #endif /* _DISPLIST_H */
 

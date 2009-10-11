@@ -19,6 +19,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/tfb_draw.h"
 #include "libs/log.h"
+#include "libs/memlib.h"
 // XXX: we should not include anything from uqm/ inside libs/
 #include "uqm/controls.h"
 #include "uqm/settings.h"
