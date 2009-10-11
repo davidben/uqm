@@ -25,11 +25,11 @@
 #include <string.h>
 #include <time.h>
 #include "filintrn.h"
-#include "timelib.h"
+#include "libs/timelib.h"
 #include "port.h"
 #include "libs/compiler.h"
 #include "libs/log.h"
-#include "misc.h"
+#include "libs/misc.h"
 
 static char *tempDirName;
 uio_DirHandle *tempDir;
