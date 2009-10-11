@@ -220,7 +220,7 @@ extern FRAME SetRelFrameIndex (FRAME Frame, SIZE FrameOffs);
 extern FRAME SetEquFrameIndex (FRAME DstFrame, FRAME SrcFrame);
 extern FRAME IncFrameIndex (FRAME Frame);
 extern FRAME DecFrameIndex (FRAME Frame);
-extern DRAWABLE RotateFrame (FRAME Frame, COUNT angle);
+extern DRAWABLE RotateFrame (FRAME Frame, int angle_deg);
 extern void SetFrameTransparentColor (FRAME Frame, COLOR c32k);
 
 extern FRAME CaptureDrawable (DRAWABLE Drawable);

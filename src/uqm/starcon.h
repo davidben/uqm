@@ -19,6 +19,7 @@
 
 extern volatile int MainExited;
 extern void SignalStopMainThread (void);
+extern void ProcessUtilityKeys (void);
 
 extern int Starcon2Main (void *threadArg);
 extern void FreeGameData (void);

@@ -19,10 +19,12 @@
 #include "gfxintrn.h"
 #include "libs/misc.h"
 #include "tfb_draw.h"
-#include "libs/mathlib.h"
 #include "gfxother.h"
-// XXX: we should not include anything from uqm/ inside libs/
-#include "uqm/units.h"
+#include <math.h>
+
+#ifndef M_PI
+#	define M_PI 3.14159265358979323846
+#endif
 
 FRAME _CurFramePtr;
 
@@ -197,13 +199,13 @@ GetFrameHot (FRAME FramePtr)
 }
 
 DRAWABLE
-RotateFrame (FRAME Frame, COUNT angle)
+RotateFrame (FRAME Frame, int angle_deg)
 {
 	DRAWABLE Drawable;
 	FRAME RotFramePtr;
-	SIZE dx, dy;
-	SIZE d;
-	COUNT organg;
+	double dx, dy;
+	double d;
+	double angle = angle_deg * M_PI / 180;
 
 	Drawable = _request_drawable (1, RAM_DRAWABLE, WANT_PIXMAP, 0, 0);
 	if (!Drawable)
@@ -216,22 +218,22 @@ RotateFrame (FRAME Frame, COUNT angle)
 	}
 
 	RotFramePtr->image = TFB_DrawImage_New_Rotated (
-			Frame->image, -ANGLE_TO_DEGREES (angle));
+			Frame->image, angle_deg);
 	SetFrameBounds (RotFramePtr, RotFramePtr->image->extent.width,
 			RotFramePtr->image->extent.height);
 
 	/* now we need to rotate the hot-spot, eww */
 	dx = Frame->HotSpot.x - (GetFrameWidth (Frame) / 2);
 	dy = Frame->HotSpot.y - (GetFrameHeight (Frame) / 2);
-	d = square_root ((long)dx*dx + (long)dy*dy);
-	if (d != 0)
+	d = sqrt ((double)dx*dx + (double)dy*dy);
+	if ((int)d != 0)
 	{
-		organg = ARCTAN (dx, dy);
-		dx = COSINE (organg + angle, d);
-		dy = SINE (organg + angle, d);
+		double organg = atan2 (-dy, dx);
+		dx = cos (organg + angle) * d;
+		dy = -sin (organg + angle) * d;
 	}
-	RotFramePtr->HotSpot.x = (GetFrameWidth (RotFramePtr) / 2) + dx;
-	RotFramePtr->HotSpot.y = (GetFrameHeight (RotFramePtr) / 2) + dy;
+	RotFramePtr->HotSpot.x = (GetFrameWidth (RotFramePtr) / 2) + (int)dx;
+	RotFramePtr->HotSpot.y = (GetFrameHeight (RotFramePtr) / 2) + (int)dy;
 
 	ReleaseDrawable (RotFramePtr);
 

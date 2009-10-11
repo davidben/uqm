@@ -495,6 +495,7 @@ main (int argc, char *argv[])
 		}
 
 		TFB_ProcessEvents ();
+		ProcessUtilityKeys ();
 		ProcessThreadLifecycles ();
 		TFB_FlushGraphics ();
 	}

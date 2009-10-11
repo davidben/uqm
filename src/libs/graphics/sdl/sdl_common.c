@@ -26,15 +26,13 @@
 #include "options.h"
 #include "uqmversion.h"
 #include "libs/graphics/drawcmd.h"
-#include "libs/input/sdl/vcontrol.h"
+#include "libs/input/sdl/input.h"
+		// for ProcessInputEvent()
 #include "bbox.h"
 #include "port.h"
 #include "libs/uio.h"
 #include "libs/log.h"
 #include "libs/vidlib.h"
-// XXX: we should not include anything from uqm/ inside libs/
-#include "uqm/controls.h"
-#include "uqm/uqmdebug.h"
 #include SDL_INCLUDE(SDL_thread.h)
 
 SDL_Surface *SDL_Video;
@@ -216,29 +214,6 @@ TFB_ProcessEvents ()
 				break;
 		}
 	}
-
-	if (ImmediateInputState.menu[KEY_ABORT])
-	{
-		log_showBox (false, false);
-		exit (EXIT_SUCCESS);
-	}
-	
-	if (ImmediateInputState.menu[KEY_FULLSCREEN])
-	{
-		int flags = GfxFlags ^ TFB_GFXFLAGS_FULLSCREEN;
-		FlushInput ();
-		TFB_ReInitGraphics (GraphicsDriver, flags, ScreenWidthActual,
-				ScreenHeightActual);
-		TFB_SwapBuffers (TFB_REDRAW_YES);
-	}
-
-#if defined(DEBUG) || defined(USE_DEBUG_KEY)
-	if (ImmediateInputState.menu[KEY_DEBUG])
-	{
-		FlushInput ();
-		debugKeyPressed ();
-	}
-#endif  /* DEBUG */
 }
 
 static BOOLEAN system_box_active = 0;
@@ -900,6 +875,7 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 						exit (EXIT_FAILURE);
 					}
 				}
+				TFB_SwapBuffers (TFB_REDRAW_YES);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_CALLBACK:

@@ -17,10 +17,6 @@
 #include "gfx_common.h"
 #include "widgets.h"
 #include "libs/strlib.h"
-// XXX: we should not include anything from uqm/ inside libs/
-#include "uqm/colors.h"
-#include "uqm/setup.h"
-#include "uqm/units.h"
 
 WIDGET *widget_focus = NULL;
 
@@ -37,6 +33,12 @@ WIDGET *widget_focus = NULL;
 		BUILD_COLOR (MAKE_RGB15 (0x14, 0x14, 0x14), 0x07)
 #define WIDGET_DIALOG_TEXT_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00)
+
+static COLOR win_bg_clr = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x00);
+static COLOR win_medium_clr = BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x18), 0x00);
+static COLOR win_dark_clr = BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x10), 0x00);
+
+static FONT cur_font;
 
 void
 DrawShadowedBox (RECT *r, COLOR bg, COLOR dark, COLOR medium)
@@ -78,14 +80,17 @@ DrawShadowedBox (RECT *r, COLOR bg, COLOR dark, COLOR medium)
 }
 
 void
-DrawLabelAsWindow(WIDGET_LABEL *label)
+DrawLabelAsWindow (WIDGET_LABEL *label)
 {
 	COLOR oldfg = SetContextForeGroundColor (WIDGET_DIALOG_TEXT_COLOR);
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	RECT r;
 	TEXT t;
 	int i, win_w, win_h;
+
+	if (cur_font)
+		oldfont = SetContextFont (cur_font);
 
 	/* Compute the dimensions of the label */
 	win_h = label->height ((WIDGET *)label) + 16;
@@ -101,12 +106,11 @@ DrawLabelAsWindow(WIDGET_LABEL *label)
 	win_w = (win_w * 6) + 16;
 
 	BatchGraphics ();
-	r.corner.x = (SCREEN_WIDTH - win_w) >> 1;
-	r.corner.y = (SCREEN_HEIGHT - win_h) >> 1;
+	r.corner.x = (ScreenWidth - win_w) >> 1;
+	r.corner.y = (ScreenHeight - win_h) >> 1;
 	r.extent.width = win_w;
 	r.extent.height = win_h;
-	DrawShadowedBox (&r, SHADOWBOX_BACKGROUND_COLOR, 
-			SHADOWBOX_DARK_COLOR, SHADOWBOX_MEDIUM_COLOR);
+	DrawShadowedBox (&r, win_bg_clr, win_dark_clr, win_medium_clr);
 
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
 	t.baseline.y = r.corner.y + 16;
@@ -122,24 +126,44 @@ DrawLabelAsWindow(WIDGET_LABEL *label)
 	UnbatchGraphics ();
 
 	SetContextFontEffect (oldFontEffect);
-	SetContextFont (oldfont);
+	if (oldfont)
+		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldfg);
+}
+
+void
+Widget_SetWindowColors (COLOR bg, COLOR dark, COLOR medium)
+{
+	win_bg_clr = bg;
+	win_dark_clr = dark;
+	win_medium_clr = medium;
+}
+
+FONT
+Widget_SetFont (FONT newFont)
+{
+	FONT oldFont = cur_font;
+	cur_font = newFont;
+	return oldFont;
 }
 
 static void
 Widget_DrawToolTips (int numlines, const char **tips)
 {
 	RECT r;
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	COLOR oldtext = SetContextForeGroundColor (WIDGET_INACTIVE_SELECTED_COLOR);
 	TEXT t;
 	int i;
 
+	if (cur_font)
+		oldfont = SetContextFont (cur_font);
+
 	r.corner.x = 2;
 	r.corner.y = 2;
-	r.extent.width = SCREEN_WIDTH - 4;
-	r.extent.height = SCREEN_HEIGHT - 4;
+	r.extent.width = ScreenWidth - 4;
+	r.extent.height = ScreenHeight - 4;
 
 	t.align = ALIGN_CENTER;
 	t.CharCount = ~0;
@@ -154,7 +178,8 @@ Widget_DrawToolTips (int numlines, const char **tips)
 	}
 
 	SetContextFontEffect (oldFontEffect);
-	SetContextFont (oldfont);
+	if (oldfont)
+		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 }
 
@@ -164,17 +189,20 @@ Widget_DrawMenuScreen (WIDGET *_self, int x, int y)
 	RECT r;
 	COLOR title, oldtext;
 	COLOR inactive, default_color, selected;
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	int widget_index, height, widget_y;
 
 	WIDGET_MENU_SCREEN *self = (WIDGET_MENU_SCREEN *)_self;
+
+	if (cur_font)
+		oldfont = SetContextFont (cur_font);
 	
 	r.corner.x = 2;
 	r.corner.y = 2;
-	r.extent.width = SCREEN_WIDTH - 4;
-	r.extent.height = SCREEN_HEIGHT - 4;
+	r.extent.width = ScreenWidth - 4;
+	r.extent.height = ScreenHeight - 4;
 	
 	title = WIDGET_INACTIVE_SELECTED_COLOR;
 	selected = WIDGET_ACTIVE_COLOR;
@@ -204,7 +232,7 @@ Widget_DrawMenuScreen (WIDGET *_self, int x, int y)
 
 	height -= 8;
 
-	widget_y = (SCREEN_HEIGHT - height) >> 1;
+	widget_y = (ScreenHeight - height) >> 1;
 	for (widget_index = 0; widget_index < self->num_children; widget_index++)
 	{
 		WIDGET *c = self->child[widget_index];
@@ -213,7 +241,8 @@ Widget_DrawMenuScreen (WIDGET *_self, int x, int y)
 	}
 	
 	SetContextFontEffect (oldFontEffect);
-	SetContextFont (oldfont);
+	if (oldfont)
+		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 
 	(void) x;
@@ -226,10 +255,13 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 	WIDGET_CHOICE *self = (WIDGET_CHOICE *)_self;
 	COLOR oldtext;
 	COLOR inactive, default_color, selected;
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	int i, home_x, home_y;
+
+	if (cur_font)
+		oldfont = SetContextFont (cur_font);
 	
 	default_color = WIDGET_INACTIVE_SELECTED_COLOR;
 	selected = WIDGET_ACTIVE_COLOR;
@@ -250,12 +282,12 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 	}
 	font_DrawText (&t);
 
-	home_x = t.baseline.x + 3 * (SCREEN_WIDTH / ((self->maxcolumns + 1) * 2));
+	home_x = t.baseline.x + 3 * (ScreenWidth / ((self->maxcolumns + 1) * 2));
 	home_y = t.baseline.y;
 	t.align = ALIGN_CENTER;
 	for (i = 0; i < self->numopts; i++)
 	{
-		t.baseline.x = home_x + ((i % 3) * (SCREEN_WIDTH / (self->maxcolumns + 1)));
+		t.baseline.x = home_x + ((i % 3) * (ScreenWidth / (self->maxcolumns + 1)));
 		t.baseline.y = home_y + (8 * (i / 3));
 		t.pStr = self->options[i].optname;
 		if ((widget_focus == _self) &&
@@ -275,7 +307,8 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 		font_DrawText (&t);
 	}
 	SetContextFontEffect (oldFontEffect);
-	SetContextFont (oldfont);
+	if (oldfont)
+		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 }
 
@@ -285,9 +318,12 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 	WIDGET_BUTTON *self = (WIDGET_BUTTON *)_self;
 	COLOR oldtext;
 	COLOR inactive, selected;
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
+
+	if (cur_font)
+		oldfont = SetContextFont (cur_font);
 	
 	selected = WIDGET_ACTIVE_COLOR;
 	inactive = WIDGET_INACTIVE_COLOR;
@@ -308,7 +344,8 @@ Widget_DrawButton (WIDGET *_self, int x, int y)
 	}
 	font_DrawText (&t);
 	SetContextFontEffect (oldFontEffect);
-	SetContextFont (oldfont);
+	if (oldfont)
+		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 	(void) x;
 }
@@ -318,10 +355,13 @@ Widget_DrawLabel (WIDGET *_self, int x, int y)
 {
 	WIDGET_LABEL *self = (WIDGET_LABEL *)_self;
 	COLOR oldtext = SetContextForeGroundColor (WIDGET_INACTIVE_SELECTED_COLOR);
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	int i;
+
+	if (cur_font)
+		oldfont = SetContextFont (cur_font);
 	
 	t.baseline.x = 160;
 	t.baseline.y = y;
@@ -335,7 +375,8 @@ Widget_DrawLabel (WIDGET *_self, int x, int y)
 		t.baseline.y += 8;
 	}
 	SetContextFontEffect (oldFontEffect);
-	SetContextFont (oldfont);
+	if (oldfont)
+		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 	(void) x;
 }
@@ -346,11 +387,14 @@ Widget_DrawSlider(WIDGET *_self, int x, int y)
 	WIDGET_SLIDER *self = (WIDGET_SLIDER *)_self;
 	COLOR oldtext;
 	COLOR inactive, default_color, selected;
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	RECT r;
-	int tick = (SCREEN_WIDTH - x) / 8;
+	int tick = (ScreenWidth - x) / 8;
+
+	if (cur_font)
+		oldfont = SetContextFont (cur_font);
 	
 	default_color = WIDGET_INACTIVE_SELECTED_COLOR;
 	selected = WIDGET_ACTIVE_COLOR;
@@ -388,7 +432,8 @@ Widget_DrawSlider(WIDGET *_self, int x, int y)
 	(*self->draw_value)(self, t.baseline.x + 7 * tick, t.baseline.y);
 
 	SetContextFontEffect (oldFontEffect);
-	SetContextFont (oldfont);
+	if (oldfont)
+		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 }
 
@@ -415,9 +460,12 @@ Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 	WIDGET_TEXTENTRY *self = (WIDGET_TEXTENTRY *)_self;
 	COLOR oldtext;
 	COLOR inactive, default_color, selected;
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
+
+	if (cur_font)
+		oldfont = SetContextFont (cur_font);
 	
 	default_color = WIDGET_INACTIVE_SELECTED_COLOR;
 	selected = WIDGET_ACTIVE_COLOR;
@@ -538,7 +586,8 @@ Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 	
 	UnbatchGraphics ();
 	SetContextFontEffect (oldFontEffect);
-	SetContextFont (oldfont);
+	if (oldfont)
+		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 }
 
@@ -548,10 +597,13 @@ Widget_DrawControlEntry (WIDGET *_self, int x, int y)
 	WIDGET_CONTROLENTRY *self = (WIDGET_CONTROLENTRY *)_self;
 	COLOR oldtext;
 	COLOR inactive, default_color, selected;
-	FONT  oldfont = SetContextFont (StarConFont);
+	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
 	int i, home_x, home_y;
+
+	if (cur_font)
+		oldfont = SetContextFont (cur_font);
 	
 	default_color = WIDGET_INACTIVE_SELECTED_COLOR;
 	selected = WIDGET_ACTIVE_COLOR;
@@ -572,13 +624,13 @@ Widget_DrawControlEntry (WIDGET *_self, int x, int y)
 	}
 	font_DrawText (&t);
 
-        // 3 * SCREEN_WIDTH / ((self->maxcolumns + 1) * 2)) as per CHOICE, but only two options.
-	home_x = t.baseline.x + (SCREEN_WIDTH / 2); 
+        // 3 * ScreenWidth / ((self->maxcolumns + 1) * 2)) as per CHOICE, but only two options.
+	home_x = t.baseline.x + (ScreenWidth / 2); 
 	home_y = t.baseline.y;
 	t.align = ALIGN_CENTER;
 	for (i = 0; i < 2; i++)
 	{
-		t.baseline.x = home_x + ((i % 3) * (SCREEN_WIDTH / 3));  // self->maxcolumns + 1 as per CHOICE.
+		t.baseline.x = home_x + ((i % 3) * (ScreenWidth / 3));  // self->maxcolumns + 1 as per CHOICE.
 		t.baseline.y = home_y + (8 * (i / 3));
 		t.pStr = self->controlname[i];
 		if (!t.pStr[0])
@@ -597,7 +649,8 @@ Widget_DrawControlEntry (WIDGET *_self, int x, int y)
 		font_DrawText (&t);
 	}
 	SetContextFontEffect (oldFontEffect);
-	SetContextFont (oldfont);
+	if (oldfont)
+		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldtext);
 }
 
@@ -611,7 +664,7 @@ int
 Widget_HeightFullScreen (WIDGET *_self)
 {
 	(void)_self;
-	return SCREEN_HEIGHT;
+	return ScreenHeight;
 }
 
 int
@@ -632,7 +685,7 @@ int
 Widget_WidthFullScreen (WIDGET *_self)
 {
 	(void)_self;
-	return SCREEN_WIDTH;
+	return ScreenWidth;
 }
 
 int

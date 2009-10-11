@@ -24,12 +24,9 @@
 #include SDL_INCLUDE(SDL_byteorder.h)
 #include SDL_IMAGE_INCLUDE(SDL_image.h)
 
-#include "libs/graphics/gfxintrn.h"
+#include "../gfxintrn.h"
 #include "libs/graphics/tfb_draw.h"
-#include "libs/input/inpintrn.h"
 #include "libs/graphics/gfx_common.h"
-#include "libs/input/sdl/input.h"
-#include "libs/threadlib.h"
 
 // The Graphics Backend vtable
 typedef struct _tfb_graphics_backend {

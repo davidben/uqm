@@ -24,9 +24,6 @@
 extern void FixContextFontEffect (void);
 static inline TFB_Char *getCharFrame (FONT_DESC *fontPtr, wchar_t ch);
 
-static BYTE char_delta_array[MAX_DELTAS];
-		// XXX: This does not seem to be used.
-
 
 FONT
 SetContextFont (FONT Font)
@@ -115,6 +112,7 @@ GetContextFontLeadingWidth (SIZE *pwidth)
 BOOLEAN
 TextRect (TEXT *lpText, RECT *pRect, BYTE *pdelta)
 {
+	BYTE char_delta_array[MAX_DELTAS];
 	FONT FontPtr;
 
 	FontPtr = _CurFontPtr;

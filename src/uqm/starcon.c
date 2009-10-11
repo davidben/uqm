@@ -35,6 +35,9 @@
 #include "uqmdebug.h"
 #include "libs/tasklib.h"
 #include "libs/log.h"
+#include "libs/gfxlib.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/inplib.h"
 
 #include "uqmversion.h"
 #include "options.h"
@@ -103,6 +106,34 @@ SignalStopMainThread (void)
 {
 	GamePaused = FALSE;
 	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+}
+
+void
+ProcessUtilityKeys (void)
+{
+	if (ImmediateInputState.menu[KEY_ABORT])
+	{
+		log_showBox (false, false);
+		exit (EXIT_SUCCESS);
+	}
+	
+	if (ImmediateInputState.menu[KEY_FULLSCREEN])
+	{
+		int flags = GfxFlags ^ TFB_GFXFLAGS_FULLSCREEN;
+		// clear ImmediateInputState so we don't repeat this next frame
+		FlushInput ();
+		TFB_DrawScreen_ReinitVideo (GraphicsDriver, flags, ScreenWidthActual,
+				ScreenHeightActual);
+	}
+
+#if defined(DEBUG) || defined(USE_DEBUG_KEY)
+	if (ImmediateInputState.menu[KEY_DEBUG])
+	{
+		// clear ImmediateInputState so we don't repeat this next frame
+		FlushInput ();
+		debugKeyPressed ();
+	}
+#endif  /* DEBUG */
 }
 
 /* TODO: Remove these declarations once threading is gone. */

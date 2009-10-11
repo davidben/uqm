@@ -634,7 +634,7 @@ DoPresentation (void *pIS)
 				{
 					DestroyDrawable (ReleaseDrawable (pPIS->RotatedFrame));
 					pPIS->RotatedFrame = CaptureDrawable (
-							RotateFrame (s.frame, DEGREES_TO_ANGLE (angle)));
+							RotateFrame (s.frame, -angle));
 					pPIS->LastAngle = angle;
 					pPIS->LastDrawKind = draw_what;
 				}

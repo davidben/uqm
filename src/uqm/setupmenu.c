@@ -22,6 +22,7 @@
 #include "options.h"
 #include "setup.h"
 #include "sounds.h"
+#include "colors.h"
 #include "libs/gfxlib.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/widgets.h"
@@ -434,6 +435,9 @@ DoSetupMenu (SETUP_MENU_STATE *pInputState)
 		SetDefaultMenuRepeatDelay ();
 		pInputState->NextTime = GetTimeCounter ();
 		SetDefaults ();
+		Widget_SetFont (StarConFont);
+		Widget_SetWindowColors (SHADOWBOX_BACKGROUND_COLOR,
+				SHADOWBOX_DARK_COLOR, SHADOWBOX_MEDIUM_COLOR);
 
 		current = NULL;
 		next = (WIDGET *)(&menus[0]);

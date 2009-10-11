@@ -18,8 +18,6 @@
 #include "tfb_draw.h"
 #include "drawcmd.h"
 #include "libs/log.h"
-// XXX: we should not include anything from uqm/ inside libs/
-#include "uqm/units.h"
 
 static const HOT_SPOT NullHs = {0, 0};
 
@@ -51,8 +49,8 @@ TFB_DrawScreen_Rect (RECT *rect, int r, int g, int b, SCREEN dest)
 	if (!rect)
 	{
 		locRect.corner.x = locRect.corner.y = 0;
-		locRect.extent.width = SCREEN_WIDTH;
-		locRect.extent.height = SCREEN_HEIGHT;
+		locRect.extent.width = ScreenWidth;
+		locRect.extent.height = ScreenHeight;
 		rect = &locRect;
 	}
 
@@ -143,8 +141,8 @@ TFB_DrawScreen_Copy (RECT *r, SCREEN src, SCREEN dest)
 	if (!r)
 	{
 		locRect.corner.x = locRect.corner.y = 0;
-		locRect.extent.width = SCREEN_WIDTH;
-		locRect.extent.height = SCREEN_HEIGHT;
+		locRect.extent.width = ScreenWidth;
+		locRect.extent.height = ScreenHeight;
 		r = &locRect;
 	}
 

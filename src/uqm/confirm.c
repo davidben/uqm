@@ -207,7 +207,7 @@ DoPopup (struct popup_state *self)
 }
 
 void
-DoPopupWindow(const char *msg)
+DoPopupWindow (const char *msg)
 {
 	stringbank *bank = StringBank_Create ();
 	const char *lines[30];
@@ -253,6 +253,9 @@ DoPopupWindow(const char *msg)
 	s.origin = r.corner;
 	s.frame = F;
 
+	Widget_SetFont (StarConFont);
+	Widget_SetWindowColors (SHADOWBOX_BACKGROUND_COLOR, SHADOWBOX_DARK_COLOR,
+			SHADOWBOX_MEDIUM_COLOR);
 	DrawLabelAsWindow (&label);
 
 	GetMenuSounds (&s0, &s1);
