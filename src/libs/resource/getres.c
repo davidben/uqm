@@ -28,7 +28,8 @@ const char *_cur_resfile_name;
 // At other times, it is NULL.
 
 ResourceDesc *
-lookupResourceDesc (RESOURCE_INDEX idx, RESOURCE res) {
+lookupResourceDesc (RESOURCE_INDEX idx, RESOURCE res)
+{
 	return (ResourceDesc *) CharHashTable_find (idx->map, res);
 }
 
@@ -249,7 +250,8 @@ res_DetachResource (RESOURCE res)
 }
 
 BOOLEAN
-FreeResourceData (void *data) {
+FreeResourceData (void *data)
+{
 	HFree (data);
 	return TRUE;
 }

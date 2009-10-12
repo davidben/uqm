@@ -24,6 +24,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+		// for abs()
 #include <errno.h>
 #ifndef _WIN32_WCE
 #	include <memory.h>
