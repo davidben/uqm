@@ -206,6 +206,14 @@ TFB_DrawCommandQueue_Clear ()
 	UnlockRecursiveMutex (DCQ_Mutex);
 }
 
+static inline int
+rects_equal (RECT *r1, RECT *r2)
+{
+	return r1->corner.x == r2->corner.x && r1->corner.y == r2->corner.y
+			&& r1->extent.width == r2->extent.width
+			&& r1->extent.height == r2->extent.height;
+}
+
 void
 TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 {
@@ -220,17 +228,17 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 		static RECT scissor_rect;
 
 		// Set the clipping region.
-		if (scissor_rect.corner.x != _pCurContext->ClipRect.corner.x
-				|| scissor_rect.corner.y != _pCurContext->ClipRect.corner.y
-				|| scissor_rect.extent.width !=
-				_pCurContext->ClipRect.extent.width
-				|| scissor_rect.extent.height !=
-				_pCurContext->ClipRect.extent.height)
+		// We allow drawing with no current context set, so the whole screen
+		if ((_pCurContext && !rects_equal (&scissor_rect, &_pCurContext->ClipRect))
+				|| (!_pCurContext && scissor_rect.extent.width != 0))
 		{
 			// Enqueue command to set the glScissor spec
 			TFB_DrawCommand DC;
 
-			scissor_rect = _pCurContext->ClipRect;
+			if (_pCurContext)
+				scissor_rect = _pCurContext->ClipRect;
+			else
+				scissor_rect.extent.width = 0;
 
 			if (scissor_rect.extent.width)
 			{

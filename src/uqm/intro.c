@@ -85,6 +85,16 @@ typedef struct {
 	int debounce;
 } SPINANIM_INPUT_STATE;
 
+typedef struct
+{
+	// standard state required by DoInput
+	BOOLEAN (*InputFunc) (void *pInputState);
+	COUNT MenuRepeatDelay;
+
+	LEGACY_VIDEO_REF CurVideo;
+
+} VIDEO_INPUT_STATE;
+
 static BOOLEAN DoPresentation (void *pIS);
 
 static BOOLEAN
@@ -795,13 +805,102 @@ ShowSlidePresentation (STRING PresStr)
 	DestroyDrawable (ReleaseDrawable (pis.Frame));
 	for (i = 0; i < MAX_FONTS; ++i)
 		DestroyFont (pis.Fonts[i]);
-	DestroyStringTable (ReleaseStringTable (pis.SlideShow));
 
 	LockMutex (GraphicsLock);
 	SetContextFont (OldFont);
 	SetContextClipRect (&OldRect);
 	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
+
+	return TRUE;
+}
+
+static BOOLEAN
+DoVideoInput (void *pIS)
+{
+	VIDEO_INPUT_STATE* pVIS = (VIDEO_INPUT_STATE*) pIS;
+
+	if (!PlayingLegacyVideo (pVIS->CurVideo))
+	{	// Video probably finished
+		// Have to call VidStop anyway to cleanup
+		VidStop ();
+		return FALSE;
+	}
+
+	if (PulsedInputState.menu[KEY_MENU_SELECT]
+			|| PulsedInputState.menu[KEY_MENU_CANCEL]
+			|| PulsedInputState.menu[KEY_MENU_SPECIAL]
+			|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
+	{	// abort movie
+		VidStop ();
+		return FALSE;
+	}
+	else if (PulsedInputState.menu[KEY_MENU_LEFT]
+			|| PulsedInputState.menu[KEY_MENU_RIGHT])
+	{
+		SDWORD newpos = VidGetPosition ();
+		if (PulsedInputState.menu[KEY_MENU_LEFT])
+			newpos -= 2000;
+		else if (PulsedInputState.menu[KEY_MENU_RIGHT])
+			newpos += 1000;
+		if (newpos < 0)
+			newpos = 0;
+
+		VidSeek (newpos);
+	}
+	else
+	{
+		SleepThread (ONE_SECOND / 30);
+	}
+
+	return TRUE;
+}
+
+static void
+FadeClearScreen (void)
+{
+	BYTE xform_buf[1];
+	RECT r = {{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}};
+
+	xform_buf[0] = FadeAllToBlack;
+	SleepThreadUntil (XFormColorMap (
+			(COLORMAPPTR) xform_buf, ONE_SECOND / 2));
+	
+	// paint black rect over screen	
+	LockMutex (GraphicsLock);
+	SetContext (ScreenContext);
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+	DrawFilledRectangle (&r);	
+	UnlockMutex (GraphicsLock);
+
+	// fade in black rect instantly
+	xform_buf[0] = FadeAllToColor;
+	XFormColorMap ((COLORMAPPTR) xform_buf, 0);
+}
+
+static BOOLEAN
+ShowLegacyVideo (LEGACY_VIDEO vid)
+{
+	VIDEO_INPUT_STATE vis;
+	LEGACY_VIDEO_REF ref;
+
+	FadeClearScreen ();
+
+	ref = PlayLegacyVideo (vid);
+	if (!ref)
+		return FALSE;
+
+	// XXX: FlushInput() won't be need once DoInput(reset-input) works right
+	FlushInput ();
+	vis.MenuRepeatDelay = 0;
+	vis.InputFunc = DoVideoInput;
+	vis.CurVideo = ref;
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+	DoInput (&vis, TRUE);
+
+	StopLegacyVideo (ref);
+	FadeClearScreen ();
 
 	return TRUE;
 }
@@ -816,13 +915,15 @@ ShowPresentation (RESOURCE res)
 	}
 	if (!strcmp (resType, "STRTAB"))
 	{
-		return ShowSlidePresentation (CaptureStringTable (
-			LoadStringTable (res)));
+		STRING pres = CaptureStringTable (LoadStringTable (res));
+		BOOLEAN result = ShowSlidePresentation (pres);
+		DestroyStringTable (ReleaseStringTable (pres));
+		return result;
 	}
 	else if (!strcmp (resType, "3DOVID"))
 	{
 		LEGACY_VIDEO vid = LoadLegacyVideoInstance (res);
-		BOOLEAN result = PlayLegacyVideo (vid);
+		BOOLEAN result = ShowLegacyVideo (vid);
 		DestroyLegacyVideo (vid);
 		return result;
 	}

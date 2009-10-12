@@ -32,6 +32,7 @@ typedef enum
 
 typedef struct tfb_videoclip *VIDEO_REF;
 typedef struct legacy_video_desc *LEGACY_VIDEO;
+typedef struct legacy_video_ref *LEGACY_VIDEO_REF;
 
 extern BOOLEAN InstallVideoResType (void);
 
@@ -39,17 +40,20 @@ extern BOOLEAN InitVideoPlayer (BOOLEAN UseCDROM);
 extern void UninitVideoPlayer (void);
 
 extern VIDEO_REF LoadVideoFile (const char *pStr);
-extern BOOLEAN DestroyVideo (VIDEO_REF VideoRef);
+extern BOOLEAN DestroyVideo (VIDEO_REF VidRef);
 extern VIDEO_TYPE VidPlay (VIDEO_REF VidRef);
 extern VIDEO_TYPE VidPlayEx (VIDEO_REF VidRef, MUSIC_REF AudRef,
 		MUSIC_REF SpeechRef, DWORD LoopFrame);
 #define VID_NO_LOOP (0U-1)
 extern void VidStop (void);
 extern VIDEO_REF VidPlaying (void);
-extern void VidDoInput (void);
+extern DWORD VidGetPosition (void);  // position in milliseconds
+extern BOOLEAN VidSeek (DWORD pos); // position in milliseconds
 
-LEGACY_VIDEO LoadLegacyVideoInstance (RESOURCE res);
-BOOLEAN PlayLegacyVideo (LEGACY_VIDEO vid);
-BOOLEAN DestroyLegacyVideo (LEGACY_VIDEO vid);
+extern LEGACY_VIDEO LoadLegacyVideoInstance (RESOURCE res);
+extern BOOLEAN DestroyLegacyVideo (LEGACY_VIDEO vid);
+extern LEGACY_VIDEO_REF PlayLegacyVideo (LEGACY_VIDEO vid);
+extern void StopLegacyVideo (LEGACY_VIDEO_REF ref);
+extern BOOLEAN PlayingLegacyVideo (LEGACY_VIDEO_REF ref);
 
 #endif /* _VIDLIB_H */

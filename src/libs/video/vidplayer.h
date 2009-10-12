@@ -19,13 +19,12 @@
 
 #include "video.h"
 
-bool TFB_InitVideoPlayer (void);
-void TFB_UninitVideoPlayer (void);
-void TFB_FadeClearScreen (void);
-bool TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y);
-void TFB_StopVideo (VIDEO_REF VidRef);
-bool TFB_VideoPlaying (VIDEO_REF VidRef);
-void TFB_VideoInput (VIDEO_REF VidRef);
-
+extern bool TFB_InitVideoPlayer (void);
+extern void TFB_UninitVideoPlayer (void);
+extern bool TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y);
+extern void TFB_StopVideo (VIDEO_REF VidRef);
+extern bool TFB_VideoPlaying (VIDEO_REF VidRef);
+extern uint32 TFB_GetVideoPosition (VIDEO_REF VidRef);
+extern bool TFB_SeekVideo (VIDEO_REF VidRef, uint32 pos);
 
 #endif // _VIDPLAYER_H

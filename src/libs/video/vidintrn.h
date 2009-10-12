@@ -19,11 +19,29 @@
 #ifndef VIDINTERN_H_
 #define VIDINTERN_H_
 
+#include "types.h"
 #include "libs/vidlib.h"
+#include "libs/threadlib.h"
 
-typedef struct legacy_video_desc {
+struct legacy_video_desc
+{
 	char *video, *audio, *speech;
-	DWORD loop;
-} LEGACY_VIDEO_DESC;
+	uint32 loop;
+};
+
+typedef struct legacy_video_desc LEGACY_VIDEO_DESC;
+
+struct legacy_video_ref
+{
+	VIDEO_REF vidref;
+	MUSIC_REF audref;
+	MUSIC_REF speechref;
+};
+
+// XXX: There has to be a better way to synchronize gfx calls with the rest
+//   of the game. The only thing we need to sync is the current context, and
+//   even there only the cliprect. Perhaps a DCQ command that takes an
+//   explicit cliprect would be better.
+extern Mutex GraphicsLock;
 
 #endif
