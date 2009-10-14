@@ -17,7 +17,4 @@
  */
 
 #include "port.h"
-#include "input_common.h"
 #include "inpintrn.h"
-
-volatile BOOLEAN ExitRequested, GamePaused;

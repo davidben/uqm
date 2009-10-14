@@ -20,8 +20,8 @@
 
 #include <assert.h>
 #include <errno.h>
+#include "../inpintrn.h"
 #include "libs/graphics/sdl/sdl_common.h"
-#include "libs/input/input_common.h"
 #include "libs/input/sdl/vcontrol.h"
 #include "libs/input/sdl/keynames.h"
 #include "libs/memlib.h"
@@ -29,8 +29,6 @@
 #include "libs/log.h"
 #include "libs/reslib.h"
 #include "options.h"
-// XXX: we should not include anything from uqm/ inside libs/
-#include "uqm/controls.h"
 
 
 #define KBDBUFSIZE (1 << 8)
@@ -40,6 +38,14 @@ static wchar_t lastchar;
 static int num_keys = 0;
 static int *kbdstate = NULL;
 		// Holds all SDL keys +1 for holding invalid values
+
+static volatile int *menu_vec;
+static int num_menu;
+// The last vector element is the character repeat "key"
+#define KEY_MENU_ANY  (num_menu - 1)
+static volatile int *flight_vec;
+static int num_templ;
+static int num_flight;
 
 static BOOLEAN InputInitialized = FALSE;
 
@@ -98,12 +104,15 @@ register_menu_controls (int index)
 		if (!res_HasKey (buf))
 			break;
 		VControl_ParseGesture (&g, res_GetString (buf));
-		VControl_AddGestureBinding (&g, (int *)&ImmediateInputState.menu[index]);
+		VControl_AddGestureBinding (&g, (int *)&menu_vec[index]);
 		i++;
 	}
 }
 
-static VCONTROL_GESTURE controls[NUM_TEMPLATES][NUM_KEYS][2];
+
+static VCONTROL_GESTURE *controls;
+#define CONTROL_PTR(i, j, k) \
+		(controls + ((i) * num_flight + (j)) * MAX_FLIGHT_ALTERNATES + (k))
 
 static void
 register_flight_controls (void)
@@ -113,7 +122,7 @@ register_flight_controls (void)
 
 	buf[39] = '\0';
 
-	for (i = 0; i < NUM_TEMPLATES; i++)
+	for (i = 0; i < num_templ; i++)
 	{
 		/* Copy in name */
 		snprintf (buf, 39, "keys.%d.name", i+1);
@@ -126,11 +135,11 @@ register_flight_controls (void)
 		{
 			input_templates[i].name[0] = '\0';
 		}
-		for (j = 0; j < NUM_KEYS; j++)
+		for (j = 0; j < num_flight; j++)
 		{
-			for (k = 0; k < 2; k++)
+			for (k = 0; k < MAX_FLIGHT_ALTERNATES; k++)
 			{
-				VCONTROL_GESTURE *g = &controls[i][j][k];
+				VCONTROL_GESTURE *g = CONTROL_PTR(i, j, k);
 				snprintf (buf, 39, "keys.%d.%s.%d", i+1, flight_res_names[j], k+1);
 				if (!res_HasKey (buf))
 				{
@@ -138,7 +147,7 @@ register_flight_controls (void)
 					continue;
 				}
 				VControl_ParseGesture (g, res_GetString (buf));
-				VControl_AddGestureBinding (g, (int *)&ImmediateInputState.key[i][j]);
+				VControl_AddGestureBinding (g, (int *)(flight_vec + i * num_flight + j));
 			}
 		}
 	}
@@ -149,10 +158,19 @@ initKeyConfig (void)
 {
 	int i;
 
+	if (!menu_vec || !flight_vec)
+	{
+		log_add (log_Fatal, "initKeyConfig(): invalid input vectors");
+		exit (EXIT_FAILURE);
+	}
+
+	controls = HCalloc (sizeof (*controls) * num_templ * num_flight
+			* MAX_FLIGHT_ALTERNATES);
+
 	/* First, load in the menu keys */
 	LoadResourceIndex (contentDir, "menu.key", "menu.");
 	LoadResourceIndex (configDir, "override.cfg", "menu.");
-	for (i = 0; i < NUM_MENU_KEYS; i++)
+	for (i = 0; i < num_menu; i++)
 	{
 		if (!menu_res_names[i])
 			break;
@@ -178,7 +196,23 @@ static void
 resetKeyboardState (void)
 {
 	memset (kbdstate, 0, sizeof (int) * num_keys);
-	ImmediateInputState.menu[KEY_MENU_ANY] = 0;
+	menu_vec[KEY_MENU_ANY] = 0;
+}
+
+void
+TFB_SetInputVectors (volatile int menu[], int num_menu_, volatile int flight[],
+		int num_templ_, int num_flight_)
+{
+	if (num_menu_ < 0 || num_templ_ < 0 || num_flight_ < 0)
+	{
+		log_add (log_Fatal, "TFB_SetInputVectors(): invalid vector size");
+		exit (EXIT_FAILURE);
+	}
+	menu_vec = menu;
+	num_menu = num_menu_;
+	flight_vec = flight;
+	num_templ = num_templ_;
+	num_flight = num_flight_;
 }
 
 int 
@@ -188,8 +222,6 @@ TFB_InitInput (int driver, int flags)
 	int nJoysticks;
 	(void)driver;
 	(void)flags;
-
-	GamePaused = ExitRequested = FALSE;
 
 	SDL_EnableUNICODE(1);
 	(void)SDL_GetKeyState (&num_keys);
@@ -237,6 +269,7 @@ void
 TFB_UninitInput (void)
 {
 	VControl_Uninit ();
+	HFree (controls);
 	HFree (kbdstate);
 }
 
@@ -342,7 +375,7 @@ ProcessInputEvent (const SDL_Event *Event)
 				kbdbuf[kbdtail] = map_key;
 				kbdtail = newtail;
 				lastchar = map_key;
-				ImmediateInputState.menu[KEY_MENU_ANY]++;
+				menu_vec[KEY_MENU_ANY]++;
 			}
 		}
 		else if (Event->type == SDL_KEYUP)
@@ -350,13 +383,13 @@ ProcessInputEvent (const SDL_Event *Event)
 			if (kbdstate[k] == 0)
 			{	// something is fishy -- better to reset the
 				// repeatable state to avoid big problems
-				ImmediateInputState.menu[KEY_MENU_ANY] = 0;
+				menu_vec[KEY_MENU_ANY] = 0;
 			}
 			else
 			{
 				kbdstate[k]--;
-				if (ImmediateInputState.menu[KEY_MENU_ANY] > 0)
-					ImmediateInputState.menu[KEY_MENU_ANY]--;
+				if (menu_vec[KEY_MENU_ANY] > 0)
+					menu_vec[KEY_MENU_ANY]--;
 			}
 		}
 	}
@@ -373,16 +406,17 @@ TFB_ResetControls (void)
 }
 
 void
-FlushInput (void)
-{
-	TFB_ResetControls ();
-	FlushInputState ();
-}
-
-void
 InterrogateInputState (int template, int control, int index, char *buffer, int maxlen)
 {
-	VCONTROL_GESTURE *g = &controls[template][control][index];
+	VCONTROL_GESTURE *g = CONTROL_PTR(template, control, index);
+
+	if (template >= num_templ || control >= num_flight
+			|| index >= MAX_FLIGHT_ALTERNATES)
+	{
+		log_add (log_Warning, "InterrogateInputState(): invalid control index");
+		buffer[0] = 0;
+		return;
+	}
 
 	switch (g->type)
 	{
@@ -411,11 +445,19 @@ InterrogateInputState (int template, int control, int index, char *buffer, int m
 void
 RemoveInputState (int template, int control, int index)
 {
-	VCONTROL_GESTURE *g = &controls[template][control][index];
+	VCONTROL_GESTURE *g = CONTROL_PTR(template, control, index);
 	char keybuf[40];
 	keybuf[39] = '\0';
 
-	VControl_RemoveGestureBinding (g, (int *)&ImmediateInputState.key[template][control]);
+	if (template >= num_templ || control >= num_flight
+			|| index >= MAX_FLIGHT_ALTERNATES)
+	{
+		log_add (log_Warning, "RemoveInputState(): invalid control index");
+		return;
+	}
+
+	VControl_RemoveGestureBinding (g,
+			(int *)(flight_vec + template * num_flight + control));
 	g->type = VCONTROL_NONE;
 
 	snprintf (keybuf, 39, "keys.%d.%s.%d", template+1, flight_res_names[control], index+1);
@@ -431,6 +473,13 @@ RebindInputState (int template, int control, int index)
 	char keybuf[40], valbuf[40];
 	keybuf[39] = valbuf[39] = '\0';
 
+	if (template >= num_templ || control >= num_flight
+			|| index >= MAX_FLIGHT_ALTERNATES)
+	{
+		log_add (log_Warning, "RebindInputState(): invalid control index");
+		return;
+	}
+
 	/* Remove the old binding on this spot */
 	RemoveInputState (template, control, index);
 
@@ -442,8 +491,9 @@ RebindInputState (int template, int control, int index)
 	}
 
 	/* And now, add the new binding. */
-	VControl_AddGestureBinding (&g, (int *)&ImmediateInputState.key[template][control]);
-	controls[template][control][index] = g;
+	VControl_AddGestureBinding (&g,
+			(int *)(flight_vec + template * num_flight + control));
+	*CONTROL_PTR(template, control, index) = g;
 	snprintf (keybuf, 39, "keys.%d.%s.%d", template+1, flight_res_names[control], index+1);
 	VControl_DumpGesture (valbuf, 39, &g);
 	res_PutString (keybuf, valbuf);

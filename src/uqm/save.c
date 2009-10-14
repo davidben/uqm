@@ -606,7 +606,8 @@ SaveProblem (void)
 	FlushGraphics ();
 	UnlockMutex (GraphicsLock);
 
-	while (AnyButtonPress (FALSE));
+	while (AnyButtonPress (FALSE))
+		;
 	do
 	{
 		TaskSwitch ();
@@ -622,8 +623,6 @@ SaveProblem (void)
 	SetContext (OldContext);
 	DestroyDrawable (ReleaseDrawable (s.frame));
 	UnlockMutex (GraphicsLock);
-	
-	return;
 }
 
 // This function first writes to a memory file, and then writes the whole

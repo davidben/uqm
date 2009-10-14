@@ -65,6 +65,9 @@ static MENU_SOUND_FLAGS sound_0, sound_1;
 
 volatile CONTROLLER_INPUT_STATE ImmediateInputState;
 
+volatile BOOLEAN ExitRequested;
+volatile BOOLEAN GamePaused;
+
 static void
 _clear_menu_state (void)
 {
@@ -291,8 +294,9 @@ SetDefaultMenuRepeatDelay ()
 }
 
 void
-FlushInputState (void)
+FlushInput (void)
 {
+	TFB_ResetControls ();
 	_clear_menu_state ();
 }
 
@@ -334,7 +338,7 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY,
 			ACCELERATION_INCREMENT, FALSE);
 	if (resetInput)
-		TFB_ResetControls ();
+		FlushInput ();
 
 	do
 	{
@@ -376,7 +380,7 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 	} while (((INPUT_STATE_DESC*)pInputState)->InputFunc (pInputState));
 
 	if (resetInput)
-		TFB_ResetControls ();
+		FlushInput ();
 }
 
 void

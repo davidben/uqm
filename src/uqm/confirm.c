@@ -25,7 +25,6 @@
 #include "sounds.h"
 #include "gamestr.h"
 #include "libs/graphics/widgets.h"
-#include "libs/inplib.h"
 #include "libs/sound/trackplayer.h"
 #include "libs/log.h"
 #include "libs/resource/stringbank.h"
@@ -266,7 +265,6 @@ DoPopupWindow (const char *msg)
 
 	DrawStamp (&s);
 	DestroyDrawable (ReleaseDrawable (s.frame));
-	FlushInput ();
 	SetContextClipRect (&oldRect);
 	SetContext (oldContext);
 	UnlockMutex (GraphicsLock);

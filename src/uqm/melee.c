@@ -48,7 +48,6 @@
 #include "util.h"
 #include "libs/graphics/drawable.h"
 #include "libs/gfxlib.h"
-#include "libs/inplib.h"
 #include "libs/mathlib.h"
 #include "libs/log.h"
 
@@ -1098,7 +1097,7 @@ DoEdit (MELEE_STATE *pMS)
 			pMS->Initialized = 0;
 		else
 			pMS->Initialized = -1;
-		TFB_ResetControls ();
+		FlushInput ();
 		DoPickShip (pMS);
 	}
 	else if (pMS->row < NUM_MELEE_ROWS &&

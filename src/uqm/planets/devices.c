@@ -651,7 +651,7 @@ Devices (MENU_STATE *pMS)
 		pMS->first_item.y = 0;
 
 		pMS->CurFrame = (FRAME)DeviceMap;
-		TFB_ResetControls ();
+		FlushInput ();
 		DoManipulateDevices (pMS); /* to make sure it's initialized */
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		DoInput (pMS, TRUE);

@@ -482,6 +482,11 @@ main (int argc, char *argv[])
 	   initAudio calls AssignTask, which currently blocks on
 	   ProcessThreadLifecycles... */
 	// initAudio (snddriver, soundflags);
+	// Make sure that the compiler treats multidim arrays the way we expect
+	assert (sizeof (int [NUM_TEMPLATES * NUM_KEYS]) ==
+			sizeof (int [NUM_TEMPLATES][NUM_KEYS]));
+	TFB_SetInputVectors (ImmediateInputState.menu, NUM_MENU_KEYS,
+			(volatile int *)ImmediateInputState.key, NUM_TEMPLATES, NUM_KEYS);
 	TFB_InitInput (TFB_INPUTDRIVER_SDL, 0);
 
 	StartThread (Starcon2Main, NULL, 1024, "Starcon2Main");

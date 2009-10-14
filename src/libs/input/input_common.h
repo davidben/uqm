@@ -28,7 +28,12 @@ enum
 // flags for TFB_InitInput
 //#define TFB_INPUTFLAGS_ETC (1<<0)
 
-int TFB_InitInput (int driver, int flags);
-void TFB_UninitInput (void);
+extern int TFB_InitInput (int driver, int flags);
+extern void TFB_UninitInput (void);
+
+#define MAX_FLIGHT_ALTERNATES  2
+
+extern void TFB_SetInputVectors (volatile int menu[], int num_menu,
+		volatile int flight[], int num_templ, int num_flight);
 
 #endif

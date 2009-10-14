@@ -317,7 +317,6 @@ RestartMenu (MENU_STATE *pMS)
 	if (TimeOut == ONE_SECOND / 8)
 		SleepThread (ONE_SECOND * 3);
 	DrawRestartMenuGraphic (pMS);
-	FlushInput ();
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
 	DoInput (pMS, TRUE);

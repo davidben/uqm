@@ -35,7 +35,6 @@
 #include "../uqmdebug.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
-#include "libs/inplib.h"
 #include "libs/log.h"
 
 

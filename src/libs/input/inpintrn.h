@@ -20,6 +20,6 @@
 #define _INPINTRN_H
 
 #include "libs/inplib.h"
-
+#include "libs/input/input_common.h"
 
 #endif /* _INPINTRN_H */

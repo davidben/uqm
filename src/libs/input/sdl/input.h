@@ -19,7 +19,6 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-void FlushInput (void);
-void ProcessInputEvent (const SDL_Event *Event);
+extern void ProcessInputEvent (const SDL_Event *Event);
 
 #endif

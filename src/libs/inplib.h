@@ -23,13 +23,10 @@
 #include "libs/compiler.h"
 #include "libs/uio.h"
 
-typedef DWORD INPUT_STATE;
 
-extern BOOLEAN InitInput (void);
-extern BOOLEAN UninitInput (void);
 extern BOOLEAN AnyButtonPress (BOOLEAN DetectSpecial);
 
-extern void FlushInput (void);
+extern void TFB_ResetControls (void);
 
 /*
  * Not used right now

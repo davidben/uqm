@@ -25,7 +25,6 @@
 #include "encount.h"
 #include "planets/lander.h"
 #include "gamestr.h"
-#include "libs/inplib.h"
 #include "load.h"
 #include "options.h"
 #include "save.h"

@@ -95,8 +95,7 @@ extern volatile CONTROLLER_INPUT_STATE ImmediateInputState;
 extern CONTROL_TEMPLATE PlayerControls[];
 
 void UpdateInputState (void);
-void FlushInputState (void);
-void TFB_ResetControls (void);
+extern void FlushInput (void);
 void SetMenuRepeatDelay (DWORD min, DWORD max, DWORD step, BOOLEAN gestalt);
 void SetDefaultMenuRepeatDelay (void);
 void ResetKeyRepeat (void);

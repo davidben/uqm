@@ -24,7 +24,6 @@
 #include "intel.h"
 #include "setup.h"
 #include "units.h"
-#include "libs/inplib.h"
 #include "libs/mathlib.h"
 #include "libs/log.h"
 
@@ -572,7 +571,7 @@ ThrustShip (ELEMENT *ShipPtr, COUNT angle)
 void
 Pursue (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr)
 {
-	INPUT_STATE maneuver_state;
+	BYTE maneuver_state;
 	COUNT desired_thrust_angle, desired_turn_angle;
 	SIZE delta_x, delta_y;
 	SIZE ship_delta_x, ship_delta_y;
@@ -703,7 +702,7 @@ Pursue (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr)
 void
 Entice (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr)
 {
-	INPUT_STATE maneuver_state;
+	BYTE maneuver_state;
 	COUNT desired_thrust_angle, desired_turn_angle;
 	COUNT cone_of_fire, travel_angle;
 	SIZE delta_x, delta_y;

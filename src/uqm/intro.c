@@ -28,7 +28,6 @@
 #include "libs/graphics/drawable.h"
 #include "libs/sound/sound.h"
 #include "libs/vidlib.h"
-#include "libs/inplib.h"
 #include "libs/log.h"
 
 #include <ctype.h>
@@ -785,7 +784,6 @@ ShowSlidePresentation (STRING PresStr)
 	OldFont = SetContextFont (NULL);
 	UnlockMutex (GraphicsLock);
 
-	FlushInput ();
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	pis.MenuRepeatDelay = 0;
 	pis.InputFunc = DoPresentation;
@@ -891,8 +889,6 @@ ShowLegacyVideo (LEGACY_VIDEO vid)
 	if (!ref)
 		return FALSE;
 
-	// XXX: FlushInput() won't be need once DoInput(reset-input) works right
-	FlushInput ();
 	vis.MenuRepeatDelay = 0;
 	vis.InputFunc = DoVideoInput;
 	vis.CurVideo = ref;
