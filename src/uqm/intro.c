@@ -287,8 +287,10 @@ Present_DrawMovieFrame (PRESENTATION_INPUT_STATE* pPIS)
 BOOLEAN
 ShowPresentationFile (const char *name)
 {
-	return ShowSlidePresentation (CaptureStringTable (
-			LoadStringTableFile (contentDir, name)));
+	STRING pres = CaptureStringTable (LoadStringTableFile (contentDir, name));
+	BOOLEAN result = ShowSlidePresentation (pres);
+	DestroyStringTable (ReleaseStringTable (pres));
+	return result;
 }
 
 static BOOLEAN
