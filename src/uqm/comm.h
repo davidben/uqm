@@ -21,16 +21,6 @@
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
 
-
-typedef enum
-{
-	DONE_SUBTITLE,
-	NEXT_SUBTITLE,
-	READ_SUBTITLE,
-	SPACE_SUBTITLE,
-	WAIT_SUBTITLE,
-} SUBTITLE_STATE;
-
 #ifdef COMM_INTERNAL
 
 #define SLIDER_Y 107
@@ -38,8 +28,7 @@ typedef enum
 
 #include "commanim.h"
 
-void DrawAlienFrame (FRAME aframe, SEQUENCE *pSeq);
-BOOLEAN SetClearSubtitle (BOOLEAN flag, SUBTITLE_STATE *sub_state);
+extern void DrawAlienFrame (FRAME aframe, SEQUENCE *pSeq);
 
 extern LOCDATA CommData;
 extern volatile BOOLEAN ClearSummary;
@@ -48,11 +37,11 @@ extern volatile BOOLEAN ClearSummary;
 
 extern void init_communication (void);
 extern void uninit_communication (void);
-extern SUBTITLE_STATE do_subtitles (UNICODE *pStr);
 extern void AlienTalkSegue (COUNT wait_track);
 BOOLEAN getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
 		SIZE maxWidth, COUNT maxChars);
-void RedrawSubtitles (void);
+extern void RedrawSubtitles (void);
+extern BOOLEAN HaveSubtitlesChanged (void);
 
 extern RECT CommWndRect; /* comm window rect */
 

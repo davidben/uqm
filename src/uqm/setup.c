@@ -33,6 +33,7 @@
 #include "libs/uio.h"
 #include "libs/file.h"
 #include "libs/graphics/gfx_common.h"
+#include "libs/sound/sound.h"
 #include "libs/threadlib.h"
 #include "libs/vidlib.h"
 #include "libs/log.h"
@@ -120,7 +121,9 @@ LoadKernel (int argc, char *argv[])
 		loadAddon ("3domusic");
 	}
 
-	loadAddon ("3dovoice"); /* Always try to use voice data */
+	/* Always try to use voice data */
+	if (!loadAddon ("3dovoice"))
+		speechVolumeScale = 0.0f; // XXX: need better no-speech indicator
 
 	if (optPrecursorsMusic)
 	{

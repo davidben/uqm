@@ -17,28 +17,23 @@
 #ifndef TRACKINT_H
 #define TRACKINT_H
 
-typedef struct tfb_soundchain
+struct tfb_soundchunk
 {
-	TFB_SoundDecoder *decoder; // points at the decoder to read from
-	float start_time;
-	int tag_me;
-	uint32 track_num;
-	UNICODE *text;
-	TFB_TrackCB callback;
-	struct tfb_soundchain *next;
-} TFB_SoundChain;
+	TFB_SoundDecoder *decoder;  // decoder for this chunk
+	float start_time;           // relative time from track start
+	int tag_me;                 // set for chunks with subtitles
+	uint32 track_num;           // logical track #, comm code needs this
+	UNICODE *text;              // subtitle text
+	TFB_TrackCB callback;       // comm callback, executed on chunk start
+	struct tfb_soundchunk *next;
+};
 
-typedef struct tfb_soundchaindata
-{
-	TFB_SoundChain *read_chain_ptr; // points to chain read poistion
-	TFB_SoundChain *play_chain_ptr; // points to chain playing position
+typedef struct tfb_soundchunk TFB_SoundChunk;
 
-} TFB_SoundChainData;
+TFB_SoundChunk *create_SoundChunk (TFB_SoundDecoder *decoder, float start_time);
+void destroy_SoundChunk_list (TFB_SoundChunk *chain);
+TFB_SoundChunk *find_next_page (TFB_SoundChunk *cur);
+TFB_SoundChunk *find_prev_page (TFB_SoundChunk *cur);
 
-extern TFB_SoundChain *chain_head;
-
-TFB_SoundChain *create_soundchain (TFB_SoundDecoder *decoder, float startTime);
-void destroy_soundchain (TFB_SoundChain *chain);
-TFB_SoundChain *get_chain_previous (TFB_SoundChain *head, TFB_SoundChain *current);
 
 #endif // TRACKINT_H

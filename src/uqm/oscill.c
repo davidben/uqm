@@ -156,7 +156,7 @@ Slider (void)
 	if (sliderDisabled)
 		return;
 	
-	offs = GetSoundInfo (sliderSpace);
+	offs = GetTrackPosition (sliderSpace);
 	if (offs != last_offs || sliderChanged)
 	{
 		sliderChanged = FALSE;

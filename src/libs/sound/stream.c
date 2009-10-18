@@ -102,7 +102,10 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope,
 	soundSource[source].sbuf_size = pos + PAD_SCOPE_BYTES;
 	soundSource[source].sbuf_start = pos;
 	soundSource[source].sbuf_lasttime = GetTimeCounter ();
-	soundSource[source].start_time = (sint32)GetTimeCounter () - offset;
+	// Adjust the start time so it looks like the stream has been playing
+	// from the very beginning
+	soundSource[source].start_time = GetTimeCounter () - offset;
+	soundSource[source].pause_time = 0;
 	soundSource[source].stream_should_be_playing = TRUE;
 	audio_SourcePlay (soundSource[source].handle);
 }
@@ -110,6 +113,8 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope,
 void
 StopStream (uint32 source)
 {
+	StopSource (source);
+
 	soundSource[source].stream_should_be_playing = FALSE;
 	soundSource[source].sample = NULL;
 
@@ -122,20 +127,28 @@ StopStream (uint32 source)
 	soundSource[source].sbuf_start = 0;
 	soundSource[source].sbuf_size = 0;
 	soundSource[source].sbuf_offset = 0;
-
-	StopSource (source);
+	soundSource[source].pause_time = 0;
 }
 
 void
 PauseStream (uint32 source)
 {
 	soundSource[source].stream_should_be_playing = FALSE;
+	if (!soundSource[source].pause_time)
+		soundSource[source].pause_time = GetTimeCounter ();
 	audio_SourcePause (soundSource[source].handle);
 }
 
 void
 ResumeStream (uint32 source)
 {
+	if (soundSource[source].pause_time)
+	{	// Adjust the start time so it looks like the stream has
+		// been playing all this time non-stop
+		soundSource[source].start_time += GetTimeCounter ()
+				- soundSource[source].pause_time;
+	}
+	soundSource[source].pause_time = 0;
 	soundSource[source].stream_should_be_playing = TRUE;
 	audio_SourcePlay (soundSource[source].handle);
 }
@@ -504,29 +517,35 @@ GraphForegroundStream (uint8 *data, sint32 width, sint32 height)
 	long energy;
 
 
-	if (speechVolumeScale != 0.0f)
-	{	// Use speech waveform when speech is enabled
-		source_num = SPEECH_SOURCE;
+	// Prefer speech to music
+	source_num = SPEECH_SOURCE;
+	source = &soundSource[source_num];
+	LockMutex (source->stream_mutex);
+	if (speechVolumeScale != 0.0f && (!source->sample ||
+			!source->sample->decoder || !source->sample->decoder->is_null))
+	{	// Use speech waveform, since it's available
 		// Step is picked experimentally. Using step of 1 sample at 11025Hz,
 		// because human speech is mostly in the low frequencies, and it looks
 		// better this way.
 		step = 1;
-
 	}
 	else if (musicVolumeScale != 0.0f)
-	{	// Use music waveform when speech is disabled
+	{	// We do not have speech -- use music waveform
+		UnlockMutex (source->stream_mutex);
 		source_num = MUSIC_SOURCE;
+		source = &soundSource[source_num];
+		LockMutex (source->stream_mutex);
+		
 		// Step is picked experimentally. Using step of 4 samples at 11025Hz.
 		// It looks better this way.
 		step = 4;
 	}
 	else
-	{
+	{	// We do not have anything usable
+		UnlockMutex (source->stream_mutex);
 		return 0;
 	}
 
-	source = &soundSource[source_num];
-	LockMutex (source->stream_mutex);
 	if (!PlayingStream (source_num) || !source->sample
 			|| !source->sample->decoder || !source->sbuffer
 			|| source->sbuf_size == 0)

@@ -18,7 +18,6 @@
 
 #include "controls.h"
 #include "commglue.h"
-#include "comm.h"
 #include "colors.h"
 #include "settings.h"
 #include "setup.h"
@@ -180,11 +179,7 @@ DoConfirmExit (void)
 			!(LastActivity & CHECK_RESTART))
 		ResumeGameClock ();
 	if (CommData.ConversationPhrases && PlayingTrack ())
-	{
 		ResumeTrack ();
-		if (CommData.AlienTransitionDesc.AnimFlags & TALK_DONE)
-			do_subtitles ((void *)~0);
-	}
 
 	return (result);
 }

@@ -16,7 +16,7 @@
 
 #include "sound.h"
 #include "libs/sound/trackplayer.h"
-#include "libs/sound/trackint.h"
+#include "trackint.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
 #include "options.h"
@@ -24,42 +24,65 @@
 #include <stdlib.h>
 #include <string.h>
 #include <memory.h>
-// XXX: we should not include anything from uqm/ inside libs/
-#include "uqm/comm.h"
 
 
-static int track_count;       //total number of subtitle tracks
-static int cur_track;         //currently playing subtitle track
-static UNICODE *cur_page = 0; //current page of subtitle track 
-static int no_page_break = 0;
-static int track_pos_changed = 0; // set whenever  ff, frev is enabled
+static int track_count;       // total number of tracks
+static int no_page_break;     // set when combining several tracks into one
 
-static TFB_SoundSample *sound_sample = NULL;
-TFB_SoundChain *chain_head = NULL; //first decoder in linked list
-static TFB_SoundChain *chain_tail = NULL;  //last decoder in linked list
-static TFB_SoundChain *last_sub = NULL; //last element in the chain with a subtitle
+// The one and only sample we play. Track switching is done by modifying
+// this sample while it is playing. StreamDecoderTaskFunc() picks up the
+// changes *mostly* seamlessly (keyword: mostly).
+// This is technically a hack, but a decent one ;)
+static TFB_SoundSample *sound_sample;
 
-static Mutex track_mutex; //protects cur_track and track_count
-void recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *head,
-			sint32 offset);
-static bool is_sample_playing(TFB_SoundSample* samp);
+static volatile uint32 tracks_length; // total length of tracks in game units
 
-void destroy_sound_sample (TFB_SoundSample *sample);
+static TFB_SoundChunk *chunks_head;   // first decoder in linked list
+static TFB_SoundChunk *chunks_tail;   // last decoder in linked list
+static TFB_SoundChunk *last_sub;      // last chunk in the list with a subtitle
+
+static TFB_SoundChunk *cur_chunk;     // currently playing chunk
+static TFB_SoundChunk *cur_sub_chunk; // currently displayed subtitle chunk
+
+// Accesses to cur_chunk and cur_sub_chunk are guarded by stream_mutex,
+// because these should only be accesses by the DoInput and the
+// stream player threads. Any other accesses would go unguarded.
+// Other data structures are unguarded and should only be accessed from
+// the DoInput thread at certain times, i.e. nothing can be modified
+// between StartTrack() and JumpTrack()/StopTrack() calls.
+// Use caution when changing code, as you may need to guard other data
+// structures the same way.
+
+static void seek_track (sint32 offset);
+static void destroy_SoundSample (TFB_SoundSample *sample);
 
 // stream callbacks
-static bool OnTrackStart (TFB_SoundSample* sample);
+static bool OnStreamStart (TFB_SoundSample* sample);
 static bool OnChunkEnd (TFB_SoundSample* sample, audio_Object buffer);
-static void OnTrackEnd (TFB_SoundSample* sample);
-static void OnTrackTag (TFB_SoundSample* sample, TFB_SoundTag* tag);
+static void OnStreamEnd (TFB_SoundSample* sample);
+static void OnBufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag);
 
 static TFB_SoundCallbacks trackCBs =
 {
-	OnTrackStart,
+	OnStreamStart,
 	OnChunkEnd,
-	OnTrackEnd,
-	OnTrackTag,
+	OnStreamEnd,
+	OnBufferTag,
 	NULL
 };
+
+static inline sint32
+chunk_end_time (TFB_SoundChunk *chunk)
+{
+	return (sint32) ((chunk->start_time + chunk->decoder->length)
+			* ONE_SECOND);
+}
+
+static inline sint32
+tracks_end_time (void)
+{
+	return chunk_end_time (chunks_tail);
+}
 
 //JumpTrack currently aborts the current track. However, it doesn't clear the
 //data-structures as StopTrack does.  this allows for rewind even after the
@@ -68,123 +91,83 @@ static TFB_SoundCallbacks trackCBs =
 void
 JumpTrack (void)
 {
-	TFB_SoundChainData* scd;
-	uint32 cur_time;
-	sint32 total_length = (sint32)((chain_tail->start_time + 
-			chain_tail->decoder->length) * (float)ONE_SECOND);
-
 	if (!sound_sample)
-		return;
-
-	scd = (TFB_SoundChainData*) sound_sample->data;
+		return; // nothing to skip
 
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-	PauseStream (SPEECH_SOURCE);
-	cur_time = GetTimeCounter();
-	soundSource[SPEECH_SOURCE].start_time = 
-			(sint32)cur_time - total_length;
-	track_pos_changed = 1;
-	scd->play_chain_ptr = chain_tail;
-	recompute_track_pos (sound_sample, chain_head, total_length + 1);
+	seek_track (tracks_length + 1);
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+
 	PlayingTrack();
 }
 
-//advance to the next track and start playing
-// we no longer support advancing tracks this way.  Instead this should just start playing
-// a stream.
+// This should just start playing a stream
 void
 PlayTrack (void)
 {
-	TFB_SoundChainData* scd;
-
 	if (!sound_sample)
-		return;
+		return; // nothing to play
 
-	scd = (TFB_SoundChainData*) sound_sample->data;
-
-	if (scd->read_chain_ptr || sound_sample->decoder)
-	{
-		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		PlayStream (sound_sample,
-				SPEECH_SOURCE, false,
-				speechVolumeScale != 0.0f, !track_pos_changed);
-		track_pos_changed = 0;
- 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-	}
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	tracks_length = tracks_end_time ();
+	// decoder will be set in OnStreamStart()
+	cur_chunk = chunks_head;
+	// Always scope the speech data, we may need it
+	PlayStream (sound_sample, SPEECH_SOURCE, false, true, true);
+ 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 }
 
-// ResumeTrack should resume a paused track, or start a stopped track, and do nothing
-// for a playing track
+void
+PauseTrack (void)
+{
+	if (!sound_sample)
+		return; // nothing to pause
+
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	PauseStream (SPEECH_SOURCE);
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+}
+
+// ResumeTrack should resume a paused track, and do nothing for a playing track
 void
 ResumeTrack (void)
 {
-	TFB_SoundChainData* scd;
+	audio_IntVal state;
 
 	if (!sound_sample)
+		return; // nothing to resume
+
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+
+	if (!cur_chunk)
+	{	// not playing anything, so no resuming
+		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		return;
-
-	scd = (TFB_SoundChainData*) sound_sample->data;
-
-	if (scd->read_chain_ptr || sound_sample->decoder)
-	{
-		// Only try to start the track if there is something to play
-		audio_IntVal state;
-		BOOLEAN playing;
-
-		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		audio_GetSourcei (soundSource[SPEECH_SOURCE].handle, audio_SOURCE_STATE, &state);
-		playing = PlayingStream (SPEECH_SOURCE);
-		if (!track_pos_changed && !playing && state == audio_PAUSED)
-		{
-			/*adjust start time so the slider doesn't go crazy*/
-			soundSource[SPEECH_SOURCE].start_time += GetTimeCounter () - soundSource[SPEECH_SOURCE].pause_time;
-			ResumeStream (SPEECH_SOURCE);
-			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		}
-		else if (! playing)
-		{
-			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			PlayTrack ();
-		}
-		else
-		{
-			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		}
 	}
+
+	audio_GetSourcei (soundSource[SPEECH_SOURCE].handle, audio_SOURCE_STATE, &state);
+	if (state == audio_PAUSED)
+		ResumeStream (SPEECH_SOURCE);
+
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 }
 
 COUNT
 PlayingTrack (void)
 {
-	// this is not a great way to detect whether the track is playing,
-	// but as it should work during fast-forward/rewind, 'PlayingStream' can't be used
-//	if (track_count == 0)
-//		return ((COUNT)~0);
-	if (sound_sample && is_sample_playing (sound_sample))
-	{
-		int last_track;
-		UNICODE *last_page;
-		LockMutex (track_mutex);
-		last_track = cur_track;
-		last_page = cur_page;
-		UnlockMutex (track_mutex);
-		if (do_subtitles (last_page))
-		{
-			return cur_track + 1;
-		}
-		else
-		{
-			COUNT result;
+	// This ignores the paused state and simply returns what track
+	// *should* be playing
+	COUNT result = 0;  // default is none
 
-			LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			result = (PlayingStream (SPEECH_SOURCE) ? (COUNT)(last_track + 1) : 0);
-			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			return result;
-		}
-	}
+	if (!sound_sample)
+		return 0; // not playing anything
 
-	return (0);
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	if (cur_chunk)
+		result = cur_chunk->track_num + 1;
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+
+	return result;
 }
 
 void
@@ -192,115 +175,117 @@ StopTrack (void)
 {
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	StopStream (SPEECH_SOURCE);
+	track_count = 0;
+	tracks_length = 0;
+	cur_chunk = NULL;
+	cur_sub_chunk = NULL;
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 
-	if (chain_head)
+	if (chunks_head)
 	{
-		destroy_soundchain (chain_head);
-		chain_head = NULL;
-		chain_tail = NULL;
+		chunks_tail = NULL;
+		destroy_SoundChunk_list (chunks_head);
+		chunks_head = NULL;
 		last_sub = NULL;
 	}
 	if (sound_sample)
 	{
-		DestroyMutex (track_mutex);
-		destroy_sound_sample (sound_sample);
+		destroy_SoundSample (sound_sample);
 		sound_sample = NULL;
 	}
-	track_count = 0;
-	cur_track = 0;
-	cur_page = 0;
-	do_subtitles ((void *)~0);
-}
-
-static bool
-is_sample_playing (TFB_SoundSample* sample)
-{
-	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
-
-	return (scd->read_chain_ptr && scd->play_chain_ptr)
-			|| (!scd->read_chain_ptr && sample->decoder);
 }
 
 static void
-DoTrackTag (TFB_SoundChain *chain)
+DoTrackTag (TFB_SoundChunk *chunk)
 {
-	LockMutex (track_mutex);
-	if (chain->callback)
-		chain->callback ();
-	cur_track = chain->track_num;
-	cur_page = chain->text;
-	UnlockMutex (track_mutex);
+	if (chunk->callback)
+		chunk->callback ();
+	cur_sub_chunk = chunk;
 }
 
+// This func is called by PlayStream() when stream is about
+// to start. We have a chance to tweak the stream here.
+// This is called on the DoInput thread.
 static bool
-OnTrackStart (TFB_SoundSample* sample)
+OnStreamStart (TFB_SoundSample* sample)
 {
-	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
+	if (sample != sound_sample)
+		return false; // Huh? Why did we get called on this?
 
-	if (!scd->read_chain_ptr && !sample->decoder)
-		return false;
+	if (!cur_chunk)
+		return false; // Stream shouldn't be playing at all
 
-	if (scd->read_chain_ptr)
-	{
-		sample->decoder = scd->read_chain_ptr->decoder;
-		sample->offset = (sint32) (scd->read_chain_ptr->start_time * (float)ONE_SECOND);
-	}
-	else
-		sample->offset = 0;
+	// Adjust the sample to play what we want
+	sample->decoder = cur_chunk->decoder;
+	sample->offset = (sint32) (cur_chunk->start_time * ONE_SECOND);
 
-	scd->play_chain_ptr = scd->read_chain_ptr;
-
-	if (scd->read_chain_ptr && scd->read_chain_ptr->tag_me)
-		DoTrackTag(scd->read_chain_ptr);
+	if (cur_chunk->tag_me)
+		DoTrackTag (cur_chunk);
 
 	return true;
 }
 
+// This func is called by StreamDecoderTaskFunc() when the last buffer
+// of the current chunk has been decoded (not when it has been *played*).
+// This is called on the stream task thread.
 static bool
 OnChunkEnd (TFB_SoundSample* sample, audio_Object buffer)
 {
-	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
+	if (sample != sound_sample)
+		return false; // Huh? Why did we get called on this?
 
-	if (!scd->read_chain_ptr || !scd->read_chain_ptr->next)
+	if (!cur_chunk || !cur_chunk->next)
+	{	// all chunks and tracks are done
 		return false;
+	}
 
-	scd->read_chain_ptr = scd->read_chain_ptr->next;
-	sample->decoder = scd->read_chain_ptr->decoder;
+	// Move on to the next chunk
+	cur_chunk = cur_chunk->next;
+	// Adjust the sample to play what we want
+	sample->decoder = cur_chunk->decoder;
 	SoundDecoder_Rewind (sample->decoder);
+
 	log_add (log_Info, "Switching to stream %s at pos %d",
 			sample->decoder->filename, sample->decoder->start_sample);
 	
-	if (sample->buffer_tag && scd->read_chain_ptr->tag_me)
-	{
-		TFB_TagBuffer (sample, buffer, scd->read_chain_ptr);
+	if (cur_chunk->tag_me)
+	{	// Tag the last buffer of the chunk with the next chunk
+		TFB_TagBuffer (sample, buffer, cur_chunk);
 	}
 
 	return true;
 }
 
+// This func is called by StreamDecoderTaskFunc() when stream has ended
+// This is called on the stream task thread.
 static void
-OnTrackEnd (TFB_SoundSample* sample)
+OnStreamEnd (TFB_SoundSample* sample)
 {
-	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
+	if (sample != sound_sample)
+		return; // Huh? Why did we get called on this?
 
-	sample->decoder = NULL;
-	scd->read_chain_ptr = NULL;
+	cur_chunk = NULL;
+	cur_sub_chunk = NULL;
 }
 
+// This func is called by StreamDecoderTaskFunc() when a tagged buffer
+// has finished playing.
+// This is called on the stream task thread.
 static void
-OnTrackTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
+OnBufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
 {
-	TFB_SoundChainData* scd = (TFB_SoundChainData*) sample->data;
-	TFB_SoundChain* chain = (TFB_SoundChain*) tag->data;
+	TFB_SoundChunk* chunk = (TFB_SoundChunk*) tag->data;
+
+	if (sample != sound_sample)
+		return; // Huh? Why did we get called on this?
 
 	TFB_ClearBufferTag (tag);
-	DoTrackTag (chain);
-
-	scd->play_chain_ptr = scd->read_chain_ptr;
+	DoTrackTag (chunk);
 }
 
-int
+// Parse the timestamps string into an int array.
+// Rerturns number of timestamps parsed.
+static int
 GetTimeStamps (UNICODE *TimeStamps, sint32 *time_stamps)
 {
 	int pos;
@@ -384,7 +369,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 		return;
 	}
 
-	if (!sound_sample || !chain_tail)
+	if (!sound_sample || !chunks_tail)
 	{
 		log_add (log_Warning, "SpliceMultiTrack(): Cannot be called before SpliceTrack()");
 		return;
@@ -404,8 +389,8 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 					track_decs[tracks]->format);
 			SoundDecoder_DecodeAll (track_decs[tracks]);
 
-			chain_tail->next = create_soundchain (track_decs[tracks], sound_sample->length);
-			chain_tail = chain_tail->next;
+			chunks_tail->next = create_SoundChunk (track_decs[tracks], sound_sample->length);
+			chunks_tail = chunks_tail->next;
 			sound_sample->length += track_decs[tracks]->length;
 		}
 		else
@@ -436,7 +421,7 @@ void
 SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_TrackCB cb)
 {
 	static UNICODE last_track_name[128] = "";
-	static unsigned long startTime = 0;
+	static unsigned long dec_offset = 0;
 #define MAX_PAGES 50
 	UNICODE *pages[MAX_PAGES];
 	sint32 time_stamps[MAX_PAGES];
@@ -484,30 +469,31 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 		// Add the rest of the pages
 		for (page = 1; page < num_pages; ++page)
 		{
-			if (last_sub->next)
+			TFB_SoundChunk *next_sub = find_next_page (last_sub);
+			if (next_sub)
 			{	// nodes prepared by previous call, just fill in the subs
-				last_sub = last_sub->next;
-				last_sub->text = pages[page];
+				next_sub->text = pages[page];
+				last_sub = next_sub;
 			}
 			else
 			{	// probably no timestamps were provided, so need more work
 				TFB_SoundDecoder *decoder = SoundDecoder_Load (contentDir,
-						last_track_name, 4096, startTime, time_stamps[page]);
+						last_track_name, 4096, dec_offset, time_stamps[page]);
 				if (!decoder)
 				{
 					log_add (log_Warning, "SpliceTrack(): couldn't load %s", TrackName);
 					break;
 				}
-				startTime += (unsigned long)(decoder->length * 1000);
-				chain_tail->next = create_soundchain (decoder, sound_sample->length);
-				chain_tail = chain_tail->next;
-				chain_tail->tag_me = 1;
-				chain_tail->track_num = track_count - 1;
-				chain_tail->text = pages[page];
-				chain_tail->callback = cb;
-				// We have to tag only one page with a callback
-				cb = NULL;
-				last_sub = chain_tail;
+				dec_offset += (unsigned long)(decoder->length * 1000);
+				chunks_tail->next = create_SoundChunk (decoder, sound_sample->length);
+				chunks_tail = chunks_tail->next;
+				chunks_tail->tag_me = 1;
+				chunks_tail->track_num = track_count - 1;
+				chunks_tail->text = pages[page];
+				chunks_tail->callback = cb;
+				// TODO: We may have to tag only one page with a callback
+				//cb = NULL;
+				last_sub = chunks_tail;
 				sound_sample->length += decoder->length;
 			}
 		}
@@ -562,12 +548,12 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 			num_timestamps = num_pages;
 		}
 		
-		startTime = 0;
+		// Reset the offset for the new track
+		dec_offset = 0;
 		for (page = 0; page < num_timestamps; ++page)
 		{
-			static float old_volume = 0.0f;
 			TFB_SoundDecoder *decoder = SoundDecoder_Load (contentDir,
-					TrackName, 4096, startTime, time_stamps[page]);
+					TrackName, 4096, dec_offset, time_stamps[page]);
 			if (!decoder)
 			{
 				log_add (log_Warning, "SpliceTrack(): couldn't load %s", TrackName);
@@ -576,275 +562,246 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 
 			if (!sound_sample)
 			{
-				TFB_SoundChainData* scd = HCalloc (sizeof (TFB_SoundChainData));
-				track_mutex = CreateMutex ("trackplayer mutex", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_AUDIO);
-				sound_sample = (TFB_SoundSample *) HMalloc (sizeof (TFB_SoundSample));
-				sound_sample->data = scd;
+				sound_sample = HCalloc (sizeof (*sound_sample));
 				sound_sample->callbacks = trackCBs;
 				sound_sample->num_buffers = 8;
 				sound_sample->buffer_tag = HCalloc (sizeof (TFB_SoundTag) * sound_sample->num_buffers);
-				sound_sample->buffer = HMalloc (sizeof (audio_Object) * sound_sample->num_buffers);
-				sound_sample->decoder = decoder;
+				sound_sample->buffer = HCalloc (sizeof (audio_Object) * sound_sample->num_buffers);
 				sound_sample->length = 0;
 				audio_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
-				chain_head = create_soundchain (decoder, 0.0);
-				chain_tail = chain_head;
-				scd->read_chain_ptr = chain_head;
-				scd->play_chain_ptr = NULL;
+				chunks_head = create_SoundChunk (decoder, 0.0);
+				chunks_tail = chunks_head;
 			}
 			else
 			{
-				chain_tail->next = create_soundchain (decoder, sound_sample->length);
-				chain_tail = chain_tail->next;
+				chunks_tail->next = create_SoundChunk (decoder, sound_sample->length);
+				chunks_tail = chunks_tail->next;
 			}
-			startTime += (unsigned long)(decoder->length * 1000);
+			dec_offset += (unsigned long)(decoder->length * 1000);
 #if 0
 			log_add (log_Debug, "page (%d of %d): %d ts: %d",
 					page, num_pages,
-					startTime, time_stamps[page]);
+					dec_offset, time_stamps[page]);
 #endif
-			if (decoder->is_null)
-			{
-				if (speechVolumeScale != 0.0f)
-				{
-					/* No voice ogg available so zeroing speech volume to
-					ensure proper operation of oscilloscope and music fading */
-					old_volume = speechVolumeScale;
-					speechVolumeScale = 0.0f;
-					log_add (log_Warning, "SpliceTrack(): no voice ogg"
-							" available so setting speech volume to zero");
-				}
-			}
-			else if (old_volume != 0.0f && speechVolumeScale != old_volume)
-			{
-				/* This time voice ogg is there */
-				log_add (log_Warning, "SpliceTrack(): restoring speech volume");
-				speechVolumeScale = old_volume;
-				old_volume = 0.0f;
-			}
-
 			sound_sample->length += decoder->length;
 			if (!no_page_break)
 			{
-				chain_tail->tag_me = 1;
-				// chain_tail->tag.value = (void *)(((track_count - 1) << 8) | page);
-				chain_tail->track_num = track_count - 1;
+				chunks_tail->tag_me = 1;
+				chunks_tail->track_num = track_count - 1;
 				if (page < num_pages)
 				{
-					chain_tail->text = pages[page];
-					last_sub = chain_tail;
+					chunks_tail->text = pages[page];
+					last_sub = chunks_tail;
 				}
-				chain_tail->callback = cb;
-				// We have to tag only one page with a callback
-				cb = NULL;
+				chunks_tail->callback = cb;
+				// TODO: We may have to tag only one page with a callback
+				//cb = NULL;
 			}
 			no_page_break = 0;
 		}
 	}
 }
 
-void
-PauseTrack (void)
+// This function figures out the chunk that should be playing based on
+// 'offset' into the total playing time of all tracks. It then sets
+// the speech source's sample to the necessary decoder and seeks the
+// decoder to the proper point.
+// XXX: This means that whatever speech has already been queued on the
+//   source will continue playing, so we may need some small timing
+//   adjustments. It may be simpler to just call PlayStream().
+static void
+seek_track (sint32 offset)
 {
-	if (sound_sample && sound_sample->decoder)
+	TFB_SoundChunk *cur;
+	TFB_SoundChunk *last_tag = NULL;
+
+	if (!sound_sample)
+		return; // nothing to recompute
+
+	if (offset < 0)
+		offset = 0;
+	else if ((uint32)offset > tracks_length)
+		offset = tracks_length + 1;
+
+	// Adjusting the stream start time is the only way we can arbitrarily
+	// seek the stream right now
+	soundSource[SPEECH_SOURCE].start_time = GetTimeCounter () - offset;
+	
+	// Find the chunk that should be playing at this time offset
+	for (cur = chunks_head; cur && offset >= chunk_end_time (cur);
+			cur = cur->next)
 	{
-		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		PauseStream (SPEECH_SOURCE);
-		soundSource[SPEECH_SOURCE].pause_time = GetTimeCounter ();
-		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		// .. looking for the last callback as we go along
+		// XXX: this effectively set the last point where Fot is looking at.
+		// TODO: this should be somehow changed if we implement more
+		//   callbacks, like Melnorme trading, offloading at Starbase, etc.
+		if (cur->tag_me)
+			last_tag = cur;
+	}
+
+	if (cur)
+	{
+		cur_chunk = cur;
+		SoundDecoder_Seek (cur->decoder, (uint32) (((float)offset / ONE_SECOND
+				- cur->start_time) * 1000));
+		sound_sample->decoder = cur->decoder;
+		
+		if (cur->tag_me)
+			last_tag = cur;
+		if (last_tag)
+			DoTrackTag (last_tag);
+	}
+	else
+	{	// The offset is beyond the length of all tracks
+		StopStream (SPEECH_SOURCE);
+		cur_chunk = NULL;
+		cur_sub_chunk = NULL;
 	}
 }
 
-void
-recompute_track_pos (TFB_SoundSample *sample, TFB_SoundChain *head, sint32 offset)
+static sint32
+get_current_track_pos (void)
 {
-	TFB_SoundChainData* scd;
-	TFB_SoundChain *cur = head;
-
-	if (! sample)
-		return;
-
-	scd = (TFB_SoundChainData*) sample->data;
-
-	while (cur->next &&
-			(sint32)(cur->next->start_time * (float)ONE_SECOND) < offset)
-	{
-		if (cur->tag_me)
-			DoTrackTag (cur);
-		cur = cur->next;
-	}
-	if (cur->tag_me)
-		DoTrackTag (cur);
-	if ((sint32)((cur->start_time + cur->decoder->length) * (float)ONE_SECOND) < offset)
-	{
-		scd->read_chain_ptr = NULL;
-		sample->decoder = NULL;
-	}
-	else
-	{
-		scd->read_chain_ptr = cur;
-		SoundDecoder_Seek(scd->read_chain_ptr->decoder,
-				(uint32)(1000 * (offset / (float)ONE_SECOND - cur->start_time)));
-	}
+	sint32 start_time = soundSource[SPEECH_SOURCE].start_time;
+	sint32 pos = GetTimeCounter () - start_time;
+	if (pos < 0)
+		pos = 0;
+	else if ((uint32)pos > tracks_length)
+		pos = tracks_length;
+	return pos;
 }
 
 void
 FastReverse_Smooth (void)
 {
-	if (sound_sample)
-	{
-		sint32 offset;
-		uint32 cur_time;
-		sint32 total_length = (sint32)((chain_tail->start_time + 
-				chain_tail->decoder->length) * (float)ONE_SECOND);
-		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		PauseStream (SPEECH_SOURCE);
-		cur_time = GetTimeCounter();
-		track_pos_changed = 1;
-		if ((sint32)cur_time - soundSource[SPEECH_SOURCE].start_time > total_length)
-			soundSource[SPEECH_SOURCE].start_time = 
-				(sint32)cur_time - total_length;
+	sint32 offset;
 
-		soundSource[SPEECH_SOURCE].start_time += ACCEL_SCROLL_SPEED;
-		if (soundSource[SPEECH_SOURCE].start_time > (sint32)cur_time)
-		{
-			soundSource[SPEECH_SOURCE].start_time = cur_time;
-			offset = 0;
-		}
-		else
-			offset = cur_time - soundSource[SPEECH_SOURCE].start_time;
-		recompute_track_pos (sound_sample, chain_head, offset);
-		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		PlayingTrack();
+	if (!sound_sample)
+		return; // nothing is playing, so.. bye!
 
-	}
-}
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	
+	offset = get_current_track_pos ();
+	offset -= ACCEL_SCROLL_SPEED;
+	seek_track (offset);
 
-void
-FastReverse_Page (void)
-{
-	if (sound_sample)
-	{
-		TFB_SoundChainData* scd = (TFB_SoundChainData*) sound_sample->data;
-		TFB_SoundChain *prev;
-
-		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		prev = get_chain_previous (chain_head, scd->play_chain_ptr);
-		if (prev)
-		{
-			scd->read_chain_ptr = prev;
-			PlayStream (sound_sample,
-					SPEECH_SOURCE, false,
-					speechVolumeScale != 0.0f, true);
-		}
-		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-	}
+	// Restart the stream in case it ended previously
+	if (!PlayingStream (SPEECH_SOURCE))
+		PlayStream (sound_sample, SPEECH_SOURCE, false, true, false);
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 }
 
 void
 FastForward_Smooth (void)
 {
-	if (sound_sample)
-	{
-		sint32 offset;
-		uint32 cur_time;
-		sint32 total_length = (sint32)((chain_tail->start_time + 
-				chain_tail->decoder->length) * (float)ONE_SECOND);
-		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		PauseStream (SPEECH_SOURCE);
-		cur_time = GetTimeCounter();
-		soundSource[SPEECH_SOURCE].start_time -= ACCEL_SCROLL_SPEED;
-		if ((sint32)cur_time - soundSource[SPEECH_SOURCE].start_time > total_length)
-			soundSource[SPEECH_SOURCE].start_time = 
-				(sint32)cur_time - total_length - 1;
-		offset = cur_time - soundSource[SPEECH_SOURCE].start_time;
-		track_pos_changed = 1;
-		recompute_track_pos (sound_sample, chain_head, offset);
-		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		PlayingTrack ();
-	}
-}
+	sint32 offset;
 
-int
-FastForward_Page (void)
-{
-	if (sound_sample)
-	{
-		TFB_SoundChainData* scd = (TFB_SoundChainData*) sound_sample->data;
-		TFB_SoundChain *cur = scd->play_chain_ptr;
+	if (!sound_sample)
+		return; // nothing is playing, so.. bye!
 
-		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		while (cur->next && !cur->next->tag_me)
-			cur = cur->next;
-		if (cur->next)
-		{
-			scd->read_chain_ptr = cur->next;
-			PlayStream (sound_sample,
-					SPEECH_SOURCE, false,
-					speechVolumeScale != 0.0f, true);
-			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			return TRUE;
-		}
-		else //means there are no more pages left
-		{
-			UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
-// tells current position of streaming speech
-int
-GetSoundInfo (int max_len)
-{	
-	uint32 length, offset;
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-	if (soundSource[SPEECH_SOURCE].sample)
-	{
-		length = (uint32) (soundSource[SPEECH_SOURCE].sample->length * (float)ONE_SECOND);
-		offset = (uint32) (GetTimeCounter () - soundSource[SPEECH_SOURCE].start_time);
-	}
-	else
-	{
-		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-		return (0);
+
+	offset = get_current_track_pos ();
+	offset += ACCEL_SCROLL_SPEED;
+	seek_track (offset);
+
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+}
+
+void
+FastReverse_Page (void)
+{
+	TFB_SoundChunk *prev;
+
+	if (!sound_sample)
+		return; // nothing is playing, so.. bye!
+
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	prev = find_prev_page (cur_sub_chunk);
+	if (prev)
+	{	// Set the chunk to be played
+		cur_chunk = prev;
+		cur_sub_chunk = prev;
+		// Decoder will be set in OnStreamStart()
+		PlayStream (sound_sample, SPEECH_SOURCE, false, true, true);
 	}
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-	if (offset > length)
-		return max_len;
-	return (int)(max_len * offset / length);
-}
-
-TFB_SoundChain *
-create_soundchain (TFB_SoundDecoder *decoder, float startTime)
-{
-	TFB_SoundChain *chain;
-	chain = HMalloc (sizeof (TFB_SoundChain));
-	chain->decoder = decoder;
-	chain->next = NULL;
-	chain->start_time = startTime;
-	chain->tag_me = 0;
-	chain->text = 0;
-	return chain;
 }
 
 void
-destroy_soundchain (TFB_SoundChain *chain)
+FastForward_Page (void)
 {
-	TFB_SoundChain *next = NULL;
-	for ( ; chain; chain = next)
+	TFB_SoundChunk *next;
+
+	if (!sound_sample)
+		return; // nothing is playing, so.. bye!
+
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	next = find_next_page (cur_sub_chunk);
+	if (next)
+	{	// Set the chunk to be played
+		cur_chunk = next;
+		cur_sub_chunk = next;
+		// Decoder will be set in OnStreamStart()
+		PlayStream (sound_sample, SPEECH_SOURCE, false, true, true);
+	}
+	else
+	{	// End of the tracks (pun intended)
+		seek_track (tracks_length + 1);
+	}
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+}
+
+// Tells current position of streaming speech in the units
+// specified by the caller.
+// This is normally called on the ambient_anim_task thread.
+int
+GetTrackPosition (int in_units)
+{	
+	uint32 offset;
+	uint32 length = tracks_length;
+			// detach from the static one, otherwise, we can race for
+			// it and thus divide by 0
+
+	if (!sound_sample || length == 0)
+		return 0; // nothing is playing
+
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	offset = get_current_track_pos ();
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	
+	return in_units * offset / length;
+}
+
+TFB_SoundChunk *
+create_SoundChunk (TFB_SoundDecoder *decoder, float start_time)
+{
+	TFB_SoundChunk *chunk;
+	chunk = HMalloc (sizeof (TFB_SoundChunk));
+	chunk->decoder = decoder;
+	chunk->next = NULL;
+	chunk->start_time = start_time;
+	chunk->tag_me = 0;
+	chunk->text = 0;
+	return chunk;
+}
+
+void
+destroy_SoundChunk_list (TFB_SoundChunk *chunk)
+{
+	TFB_SoundChunk *next = NULL;
+	for ( ; chunk; chunk = next)
 	{
-		next = chain->next;
-		if (chain->decoder)
-			SoundDecoder_Free (chain->decoder);
-		HFree (chain->text);
-		HFree (chain);
+		next = chunk->next;
+		if (chunk->decoder)
+			SoundDecoder_Free (chunk->decoder);
+		HFree (chunk->text);
+		HFree (chunk);
 	}
 }
 
-void
-destroy_sound_sample (TFB_SoundSample *sample)
+static void
+destroy_SoundSample (TFB_SoundSample *sample)
 {
 	if (sample->buffer)
 	{
@@ -856,20 +813,78 @@ destroy_sound_sample (TFB_SoundSample *sample)
 	HFree (sample);
 }
 
-TFB_SoundChain *
-get_chain_previous (TFB_SoundChain *head, TFB_SoundChain *current)
+// Returns the next chunk with a subtitle
+TFB_SoundChunk *
+find_next_page (TFB_SoundChunk *cur)
 {
-	TFB_SoundChain *prev, *last_valid = NULL;
-	prev = head;
-	if (prev == current)
-		return prev;
-	while (prev->next)
+	if (!cur)
+		return NULL;
+	for (cur = cur->next; cur && !cur->tag_me; cur = cur->next)
+		;
+	return cur;
+}
+
+// Returns the previous chunk with a subtitle.
+// cur == 0 is treated as end of the list.
+TFB_SoundChunk *
+find_prev_page (TFB_SoundChunk *cur)
+{
+	TFB_SoundChunk *prev;
+	TFB_SoundChunk *last_valid = chunks_head;
+	
+	if (cur == chunks_head)
+		return cur; // cannot go below the first track
+
+	for (prev = chunks_head; prev && prev != cur; prev = prev->next)
 	{
 		if (prev->tag_me)
 			last_valid = prev;
-		if (prev->next == current)
-			return last_valid;
-		prev = prev->next;
 	}
-	return head;
+	return last_valid;
+}
+
+
+// External access to the chunks list
+SUBTITLE_REF
+GetFirstTrackSubtitle (void)
+{
+	return chunks_head;
+}
+
+// External access to the chunks list
+SUBTITLE_REF
+GetNextTrackSubtitle (SUBTITLE_REF LastRef)
+{
+	if (!LastRef)
+		return NULL; // enumeration already ended
+
+	return find_next_page (LastRef);
+}
+
+// External access to the chunk subtitles
+const UNICODE *
+GetTrackSubtitleText (SUBTITLE_REF SubRef)
+{
+	if (!SubRef)
+		return NULL;
+
+	return SubRef->text;
+}
+
+// External access to currently active subtitle text
+// Returns NULL is none is active
+const UNICODE *
+GetTrackSubtitle (void)
+{
+	const UNICODE *cur_sub = NULL;
+
+	if (!sound_sample)
+		return NULL; // not playing anything
+
+	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+	if (cur_sub_chunk)
+		cur_sub = cur_sub_chunk->text;
+	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+
+	return cur_sub;
 }

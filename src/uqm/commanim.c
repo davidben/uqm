@@ -454,15 +454,15 @@ ambient_anim_task (void *data)
 		{
 			CONTEXT OldContext;
 			BOOLEAN CheckSub = FALSE;
-			BOOLEAN ClearSub;
-			SUBTITLE_STATE sub_state;
+			BOOLEAN SubtitleChange;
 
-			ClearSub = SetClearSubtitle (FALSE, &sub_state);
+			// Clearing any active subtitles counts as 'change'
+			SubtitleChange = HaveSubtitlesChanged ();
 
 			OldContext = SetContext (TaskContext);
 
 			if (ColorChange || ClearSummary)
-			{
+			{	// Redraw the whole comm screen
 				FRAME F;
 				F = CommData.AlienFrame;
 				CommData.AlienFrame = CommFrame;
@@ -470,16 +470,16 @@ ambient_anim_task (void *data)
 						&Sequencer[CommData.NumAnimations - 1]);
 				CommData.AlienFrame = F;
 				CheckSub = TRUE;
-				ClearSub = ClearSummary;
+				SubtitleChange = ClearSummary;
 				ColorChange = FALSE;
 				ClearSummary = FALSE;
 			}
-			if (Change || ClearSub)
+			if (Change || SubtitleChange)
 			{
 				STAMP s;
 				s.origin.x = -SAFE_X;
 				s.origin.y = 0;
-				if (ClearSub)
+				if (SubtitleChange)
 				{
 					s.frame = CommFrame;
 					DrawStamp (&s);
@@ -487,14 +487,14 @@ ambient_anim_task (void *data)
 				i = CommData.NumAnimations;
 				while (i--)
 				{
-					if (ClearSub || FrameChanged[i])
+					if (SubtitleChange || FrameChanged[i])
 					{
 						s.frame = AnimFrame[i];
 						DrawStamp (&s);
 						FrameChanged[i] = 0;
 					}
 				}
-				if (ClearSub && TransitionFrame)
+				if (SubtitleChange && TransitionFrame)
 				{
 					s.frame = TransitionFrame;
 					DrawStamp (&s);
@@ -515,7 +515,7 @@ ambient_anim_task (void *data)
 				CheckSub = TRUE;
 			}
 
-			if (CheckSub && sub_state >= SPACE_SUBTITLE)
+			if (CheckSub)
 				RedrawSubtitles ();
 
 			SetContext (OldContext);
@@ -534,7 +534,7 @@ ambient_anim_task (void *data)
 }
 
 Task
-StartCommAnimTask(void)
+StartCommAnimTask (void)
 {
 	return AssignTask (ambient_anim_task, 3072, "ambient animations");
 }

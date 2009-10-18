@@ -38,7 +38,7 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 #include "libs/sound/sound.h"
-#include "libs/sound/trackint.h"
+#include "libs/sound/trackplayer.h"
 #include "libs/log.h"
 
 #include <ctype.h>
@@ -76,20 +76,28 @@ typedef struct encounter_state
 } ENCOUNTER_STATE;
 
 static ENCOUNTER_STATE *pCurInputState;
-static SUBTITLE_STATE subtitle_state = DONE_SUBTITLE;
-static Mutex subtitle_mutex;
 
-TEXT SubtitleText;
+// Mutex guards accesses to SubtitleText, last_subtitle and clear_subtitles.
+static Mutex subtitle_mutex;
+// These vars are indirectly accessed by the ambient_anim_task
+static volatile BOOLEAN clear_subtitles;
+static TEXT SubtitleText;
 static const UNICODE * volatile last_subtitle;
 
-CONTEXT TextCacheContext;
-FRAME TextCacheFrame;
+static CONTEXT TextCacheContext;
+static FRAME TextCacheFrame;
+
+volatile BOOLEAN ClearSummary;
 
 RECT CommWndRect = {
 	// default values; actually inited by HailAlien()
 	{SIS_ORG_X, SIS_ORG_Y},
 	{0, 0}
 };
+
+static void ClearSubtitles (void);
+static void CheckSubtitles (void);
+
 
 /* _count_lines - sees how many lines a given input string would take to
  * display given the line wrapping information
@@ -432,9 +440,6 @@ uninit_communication (void)
 	DestroyMutex (subtitle_mutex);
 }
 
-volatile BOOLEAN ClearSummary;
-static volatile BOOLEAN ClearSubtitle;
-
 static void
 RefreshResponses (ENCOUNTER_STATE *pES)
 {
@@ -488,8 +493,6 @@ RefreshResponses (ENCOUNTER_STATE *pES)
 static void
 FeedbackPlayerPhrase (UNICODE *pStr)
 {
-	last_subtitle = NULL;
-
 	SetContext (SpaceContext);
 	
 	BatchGraphics ();
@@ -551,52 +554,54 @@ SpewPhrases (COUNT wait_track)
 	DWORD TimeIn;
 	COUNT which_track;
 	FRAME F;
-	BOOLEAN passed = TRUE;
+	BOOLEAN rewind = FALSE;
 
 	TimeIn = GetTimeCounter ();
 
 	ContinuityBreak = FALSE;
 	F = CommData.AlienFrame;
 	if (wait_track == 0)
-	{
+	{	// Restarting with a rewind
 		wait_track = (COUNT)~0;
 		which_track = (COUNT)~0;
-		goto Rewind;
+		rewind = TRUE;
 	}
 
 	which_track = PlayingTrack ();
-	if (which_track == 0)
+	if (which_track == 0 && !rewind)
 	{
 		// initial start of player
 		if (wait_track == 1 || wait_track == (COUNT)~0)
 		{
-			ResumeTrack ();
 			UnlockMutex (GraphicsLock);
+			PlayTrack ();
 			do
 			{
 				TaskSwitch ();
-				LockMutex (GraphicsLock);
 				which_track = PlayingTrack ();
-				UnlockMutex (GraphicsLock);
 			} while (!which_track);
 			LockMutex (GraphicsLock);
 		}
 	}
 	else if (which_track <= wait_track)
+	{	// XXX: I don't know why this is here, but it is not harmful.
+		//   We never actually pause in comm.
 		ResumeTrack ();
+	}
 
 	do
 	{
+		BOOLEAN left = FALSE;
+		BOOLEAN right = FALSE;
+
 		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		{
+			which_track = 0; // abort
 			break;
+		}
 		
 		UnlockMutex (GraphicsLock);
-		/* FIXME: is this a remnant of 128-tick clock?
-		 * with 120-tick clock this will sleep for 1 tick --
-		 * for 1/120th of a second; if ONE_SECOND is upgraded
-		 * it will probably sleep for 2/120th of a second.
-		 * Might need to be fixed.
-		 */
+		// XXX: Executing this loop 64 times a second is a bit extreme
 		SleepThreadUntil (TimeIn + (ONE_SECOND / 64));
 		TimeIn = GetTimeCounter ();
 #if DEMO_MODE || CREATE_JOURNAL
@@ -608,79 +613,74 @@ SpewPhrases (COUNT wait_track)
 		LockMutex (GraphicsLock);
 		if (PulsedInputState.menu[KEY_MENU_CANCEL])
 		{
-			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
 			JumpTrack ();
-			CommData.AlienFrame = F;
-			do_subtitles ((void *)~0);
-			return (FALSE);
+			which_track = 0; // player stopped
+			break;
 		}
 
-		if (which_track)
+		CheckSubtitles ();
+
+		if (optSmoothScroll == OPT_PC)
 		{
-			BOOLEAN left = FALSE;
-			BOOLEAN right = FALSE;
-			if (optSmoothScroll == OPT_PC)
-			{
-				left = PulsedInputState.menu[KEY_MENU_LEFT];
-				right = PulsedInputState.menu[KEY_MENU_RIGHT];
-			}
-			else if (optSmoothScroll == OPT_3DO)
-			{
-				left = ImmediateInputState.menu[KEY_MENU_LEFT];
-				right = ImmediateInputState.menu[KEY_MENU_RIGHT];
-			}
-			if (right)
-			{
-				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 3));
-				if (optSmoothScroll == OPT_PC && !FastForward_Page ())
-				{
-					SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
-					JumpTrack ();
-					CommData.AlienFrame = F;
-					do_subtitles ((void *)~0);
-					return (FALSE);
-				}
-				else if (optSmoothScroll == OPT_3DO)
-					FastForward_Smooth ();
-				ContinuityBreak = TRUE;
-				CommData.AlienFrame = 0;
-			}
-			else if (left)
-			{
-Rewind:
-				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 4));
-				if (optSmoothScroll == OPT_PC)
-					FastReverse_Page ();
-				else if (optSmoothScroll == OPT_3DO)
-					FastReverse_Smooth ();
-				ContinuityBreak = TRUE;
-				CommData.AlienFrame = 0;
-			}
-			else if (ContinuityBreak)
-			{
-				SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
-				which_track = PlayingTrack ();
-				if (which_track && which_track <= wait_track)
-				{
-					if (optSmoothScroll == OPT_3DO)
-						ResumeTrack ();
-				}
-				else
-				{
-					ContinuityBreak = FALSE;
-					passed = (which_track != 0);
-					break;
-				}
-				ContinuityBreak = FALSE;
-			}
-			else if (which_track == wait_track || wait_track == (COUNT)~0)
-				CommData.AlienFrame = F;
+			left = PulsedInputState.menu[KEY_MENU_LEFT];
+			right = PulsedInputState.menu[KEY_MENU_RIGHT];
 		}
-	} while (ContinuityBreak
-			|| ((which_track = PlayingTrack ()) && which_track <= wait_track));
+		else if (optSmoothScroll == OPT_3DO)
+		{
+			left = ImmediateInputState.menu[KEY_MENU_LEFT];
+			right = ImmediateInputState.menu[KEY_MENU_RIGHT];
+		}
+		
+		if (right)
+		{
+			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 3));
+			if (optSmoothScroll == OPT_PC)
+				FastForward_Page ();
+			else if (optSmoothScroll == OPT_3DO)
+				FastForward_Smooth ();
+			ContinuityBreak = TRUE;
+			// XXX: Ugly hack: This causes all animations (talking and ambient)
+			// in ambient_anim_task to stop progressing. I see no reason why
+			// the animations cannot continue while seeking. This hack has
+			// spawned a multitude of workarounds in the comm code, and IMHO
+			// should be removed.
+			CommData.AlienFrame = 0;
+		}
+		else if (left || rewind)
+		{
+			rewind = FALSE;
+			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 4));
+			if (optSmoothScroll == OPT_PC)
+				FastReverse_Page ();
+			else if (optSmoothScroll == OPT_3DO)
+				FastReverse_Smooth ();
+			ContinuityBreak = TRUE;
+			// XXX: See ugly hack discussion above
+			CommData.AlienFrame = 0;
+		}
+		else if (ContinuityBreak)
+		{
+			// This is only done once the seeking is over (in the smooth
+			// scroll case, once the user releases the seek button)
+			ContinuityBreak = FALSE;
+			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
+		}
+		else
+		{	// XXX: See ugly hack discussion above
+			// Additionally, this used to have a buggy guard condition, which
+			// would cause the animations to remain paused in a couple cases
+			// after seeking back to the beginning.
+			// Broken cases were: Syreen "several hours later" and Starbase
+			// VUX Beast analysis by the scientist.
+			CommData.AlienFrame = F;
+		}
+		
+		which_track = PlayingTrack ();
+
+	} while (ContinuityBreak || (which_track && which_track <= wait_track));
 
 	CommData.AlienFrame = F;
-	do_subtitles ((void *)~0);
+	ClearSubtitles ();
 
 	if (!which_track || wait_track == (COUNT)~0)
 	{	// reached the end
@@ -688,7 +688,9 @@ Rewind:
 		return (FALSE);
 	}
 	
-	return (passed);
+	// We can only get here when we got to the requested track
+	// without ending or aborting
+	return TRUE;
 }
 
 static BOOLEAN
@@ -848,7 +850,7 @@ typedef struct summary_state
 	// extended state
 	BOOLEAN Initialized;
 	BOOLEAN PrintNext;
-	const TFB_SoundChain *NextSub;
+	SUBTITLE_REF NextSub;
 	const UNICODE *LeftOver;
 
 } SUMMARY_STATE;
@@ -863,7 +865,7 @@ DoConvSummary (SUMMARY_STATE *pSS)
 	if (!pSS->Initialized)
 	{
 		pSS->PrintNext = TRUE;
-		pSS->NextSub = chain_head;
+		pSS->NextSub = GetFirstTrackSubtitle ();
 		pSS->LeftOver = NULL;
 		pSS->MenuRepeatDelay = 0;
 		pSS->InputFunc = DoConvSummary;
@@ -912,7 +914,7 @@ DoConvSummary (SUMMARY_STATE *pSS)
 		oldFont = SetContextFont (TinyFont);
 
 		for (row = 0; row < MAX_SUMM_ROWS && pSS->NextSub;
-				++row, pSS->NextSub = pSS->NextSub->next)
+				++row, pSS->NextSub = GetNextTrackSubtitle (pSS->NextSub))
 		{
 			const unsigned char *next;
 
@@ -923,7 +925,7 @@ DoConvSummary (SUMMARY_STATE *pSS)
 			}
 			else
 			{
-				t.pStr = pSS->NextSub->text;
+				t.pStr = GetTrackSubtitleText (pSS->NextSub);
 				if (!t.pStr)
 					continue;
 			}
@@ -995,6 +997,7 @@ SelectResponse (ENCOUNTER_STATE *pES)
 	LockMutex (GraphicsLock);
 	FeedbackPlayerPhrase (pES->phrase_buf);
 	StopTrack ();
+	ClearSubtitles ();
 	SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
 	UnlockMutex (GraphicsLock);
 
@@ -1181,7 +1184,7 @@ DoCommunication (ENCOUNTER_STATE *pES)
 	UnlockMutex (GraphicsLock);
 
 	FlushColorXForms ();
-	ClearSubtitle = FALSE;
+	ClearSubtitles ();
 
 	StopMusic ();
 	StopSound ();
@@ -1378,8 +1381,6 @@ InitCommunication (CONVERSATION which_comm)
 		return 0;
 #endif
 	
-	last_subtitle = NULL;
-
 	LockMutex (GraphicsLock);
 
 	if (LastActivity & CHECK_LOAD)
@@ -1654,62 +1655,6 @@ RaceCommunication (void)
 	}
 }
 
-SUBTITLE_STATE
-do_subtitles (UNICODE *pStr)
-{
-	static UNICODE *last_page = NULL;
-	LockMutex (subtitle_mutex);
-	if (pStr == 0)
-	{
-		subtitle_state = DONE_SUBTITLE;
-		UnlockMutex (subtitle_mutex);
-		return (subtitle_state);
-	}
-	else if (pStr == (void *)~0)
-	{
-		subtitle_state = WAIT_SUBTITLE;
-	}
-	else
-	{
-		if (last_page == pStr)
-		{
-			UnlockMutex (subtitle_mutex);
-			return (subtitle_state);
-		}
-		subtitle_state = READ_SUBTITLE;
-		ClearSubtitle = TRUE;
-	}
-	last_page = pStr;
-
-	switch (subtitle_state)
-	{
-		case READ_SUBTITLE:
-		{
-			/* Baseline may be updated by the ZFP */
-			SubtitleText.baseline = CommData.AlienTextBaseline;
-			SubtitleText.align = CommData.AlienTextAlign;
-			SubtitleText.pStr = pStr;
-			SubtitleText.CharCount = (COUNT)~0;
-			subtitle_state = WAIT_SUBTITLE;
-			break;
-		}
-		case WAIT_SUBTITLE:
-		{
-			subtitle_state = DONE_SUBTITLE;
-			ClearSubtitle = TRUE;
-		}
-		case DONE_SUBTITLE:
-			break;
-		default:
-			// Should not happen
-			assert(false);
-			break;
-	}
-	UnlockMutex (subtitle_mutex);
-
-	return (subtitle_state);
-}
-
 void
 RedrawSubtitles (void)
 {
@@ -1718,23 +1663,60 @@ RedrawSubtitles (void)
 	if (!optSubtitles)
 		return;
 
-	t = SubtitleText;
-	add_text (1, &t);
+	LockMutex (subtitle_mutex);
+	if (SubtitleText.pStr)
+	{
+		t = SubtitleText;
+		add_text (1, &t);
+	}
+	UnlockMutex (subtitle_mutex);
 }
 
-// Sets ClearSubtitle, returning the old value. The current subtitle state
-// is also returned, through sub_state
+// Returns clear_subtitles and resets it
 BOOLEAN
-SetClearSubtitle (BOOLEAN flag, SUBTITLE_STATE *sub_state)
+HaveSubtitlesChanged (void)
 {
-	BOOLEAN oldClearSubtitle;
+	BOOLEAN ret;
 
 	LockMutex (subtitle_mutex);
-	oldClearSubtitle = ClearSubtitle;
-	*sub_state = subtitle_state;
-	ClearSubtitle = flag;
+	ret = clear_subtitles;
+	clear_subtitles = FALSE;
 	UnlockMutex (subtitle_mutex);
 
-	return oldClearSubtitle;
+	return ret;
 }
 
+static void
+ClearSubtitles (void)
+{
+	LockMutex (subtitle_mutex);
+	clear_subtitles = TRUE;
+	last_subtitle = NULL;
+	SubtitleText.pStr = NULL;
+	SubtitleText.CharCount = 0;
+	UnlockMutex (subtitle_mutex);
+}
+
+static void
+CheckSubtitles (void)
+{
+	const UNICODE *pStr;
+
+	pStr = GetTrackSubtitle ();
+
+	LockMutex (subtitle_mutex);
+	if (pStr != SubtitleText.pStr)
+	{	// Subtitles changed
+		clear_subtitles = TRUE;
+		// Baseline may be updated by the ZFP
+		SubtitleText.baseline = CommData.AlienTextBaseline;
+		SubtitleText.align = CommData.AlienTextAlign;
+		SubtitleText.pStr = pStr;
+		// may have been cleared too
+		if (pStr)
+			SubtitleText.CharCount = (COUNT)~0;
+		else
+			SubtitleText.CharCount = 0;
+	}
+	UnlockMutex (subtitle_mutex);
+}

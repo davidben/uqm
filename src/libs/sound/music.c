@@ -34,8 +34,8 @@ PLRPlaySong (MUSIC_REF MusicRef, BOOLEAN Continuous, BYTE Priority)
 	if (pmus)
 	{
 		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
-		PlayStream ((*pmus), MUSIC_SOURCE, Continuous, 
-			speechVolumeScale == 0.0f, true);
+		// Always scope the music data, we may need it
+		PlayStream ((*pmus), MUSIC_SOURCE, Continuous, true, true);
 		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 		
 		curMusicRef = MusicRef;
@@ -104,6 +104,7 @@ snd_PlaySpeech (MUSIC_REF SpeechRef)
 	if (pmus)
 	{
 		LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
+		// Do not need to scope the music-as-speech as of now
 		PlayStream (*pmus, SPEECH_SOURCE, false, false, true);
 		UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 		

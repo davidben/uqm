@@ -21,22 +21,33 @@
 
 #include "libs/compiler.h"
 
-
 typedef void (*TFB_TrackCB) (void);
 
 #define ACCEL_SCROLL_SPEED 300
 
-void ResumeTrack(void);
-void PauseTrack(void);
-COUNT PlayingTrack(void);
-void JumpTrack(void);
-void FastForward_Smooth(void);
-int FastForward_Page(void);
-void FastReverse_Smooth(void);
-void FastReverse_Page(void);
-void StopTrack(void);
-void SpliceTrack(UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, TFB_TrackCB cb);
-void SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText);
-int GetSoundInfo (int max_len);
+extern void PlayTrack (void);
+extern void StopTrack (void);
+extern void JumpTrack (void);
+extern void PauseTrack (void);
+extern void ResumeTrack (void);
+extern COUNT PlayingTrack (void);
+
+extern void FastReverse_Smooth (void);
+extern void FastForward_Smooth (void);
+extern void FastReverse_Page (void);
+extern void FastForward_Page (void);
+
+extern void SpliceTrack (UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, TFB_TrackCB cb);
+extern void SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText);
+
+extern int GetTrackPosition (int in_units);
+
+typedef struct tfb_soundchunk *SUBTITLE_REF;
+
+extern SUBTITLE_REF GetFirstTrackSubtitle (void);
+extern SUBTITLE_REF GetNextTrackSubtitle (SUBTITLE_REF LastRef);
+extern const UNICODE *GetTrackSubtitleText (SUBTITLE_REF SubRef);
+
+extern const UNICODE *GetTrackSubtitle (void);
 
 #endif
