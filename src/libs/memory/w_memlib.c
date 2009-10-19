@@ -47,7 +47,8 @@ HMalloc (int size)
 
 	if (size < 0) 
 	{
-		log_add (log_Fatal, "Fatal Error: Request for negative amount of memory %d!", size);
+		log_add (log_Fatal, "HMalloc() FATAL: "
+				"request for negative amount of memory %d!", size);
 		fflush (stderr);
 		explode ();
 	}
@@ -55,7 +56,7 @@ HMalloc (int size)
 	p = malloc (size);
 	if (p == NULL) 
 	{
-		log_add (log_Fatal, "Fatal Error: HMalloc(): out of memory.");
+		log_add (log_Fatal, "HMalloc() FATAL: out of memory.");
 		fflush (stderr);
 		explode ();
 	}
@@ -85,7 +86,22 @@ HCalloc (int size)
 void *
 HRealloc (void *p, int size)
 {
-	// XXX: We assume throughout that HRealloc returns a valid pointer.
-	//   Checks similar to HMalloc are needed here.
-	return realloc (p, size);
+	if (size < 0) 
+	{
+		log_add (log_Fatal, "HRealloc() FATAL: "
+				"request for negative amount of memory %d!", size);
+		fflush (stderr);
+		explode ();
+	}
+
+	fprintf (stderr, "HRealloc(): reallocing %p to %d\n", p, size);
+
+	p = realloc (p, size);
+	if (!p && size > 0) 
+	{
+		log_add (log_Fatal, "HRealloc() FATAL: out of memory.");
+		fflush (stderr);
+		explode ();
+	}
+	return p;
 }
