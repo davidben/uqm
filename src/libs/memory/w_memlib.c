@@ -94,8 +94,6 @@ HRealloc (void *p, int size)
 		explode ();
 	}
 
-	fprintf (stderr, "HRealloc(): reallocing %p to %d\n", p, size);
-
 	p = realloc (p, size);
 	if (!p && size > 0) 
 	{
