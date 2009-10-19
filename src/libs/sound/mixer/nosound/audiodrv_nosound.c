@@ -1,5 +1,3 @@
-//Copyright Paul Reiche, Fred Ford. 1992-2002
-
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +18,7 @@
  */
 
 #include "audiodrv_nosound.h"
+#include "../../sndintrn.h"
 #include "libs/tasklib.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
@@ -136,13 +135,7 @@ noSound_Init (audio_Driver *driver, sint32 flags)
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
 	{
 		audio_GenSources (1, &soundSource[i].handle);		
-		soundSource[i].sample = NULL;
-		soundSource[i].stream_should_be_playing = FALSE;
 		soundSource[i].stream_mutex = CreateMutex ("Nosound stream mutex", SYNC_CLASS_AUDIO);
-		soundSource[i].sbuffer = NULL;
-		soundSource[i].sbuf_start = 0;
-		soundSource[i].sbuf_size = 0;
-		soundSource[i].sbuf_offset = 0;
 	}
 
 	atexit (unInitAudio);

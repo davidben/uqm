@@ -26,10 +26,6 @@ void SeekStream (uint32 source, uint32 pos);
 BOOLEAN PlayingStream (uint32 source);
 int StreamDecoderTaskFunc (void *data);
 
-TFB_SoundTag* FindTaggedBuffer (TFB_SoundSample* sample, audio_Object buffer);
-void TFB_ClearBufferTag (TFB_SoundTag* ptag);
-void TFB_TagBuffer (TFB_SoundSample* sample, audio_Object buffer, void* data);
-
 int GraphForegroundStream (uint8 *data, sint32 width, sint32 height);
 
 #endif

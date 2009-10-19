@@ -17,10 +17,11 @@
 #ifndef _UQM_SOUND_H // try avoiding collisions on id
 #define _UQM_SOUND_H
 
-#include "sndintrn.h"
+#include "types.h"
 #include "audiocore.h"
 #include "decoders/decoder.h"
 #include "libs/threadlib.h"
+#include "libs/sndlib.h"
 
 
 #define FIRST_SFX_SOURCE 0
@@ -28,13 +29,12 @@
 #define MUSIC_SOURCE (LAST_SFX_SOURCE + 1)
 #define SPEECH_SOURCE (MUSIC_SOURCE + 1)
 #define NUM_SOUNDSOURCES (SPEECH_SOURCE + 1)
-#define PAD_SCOPE_BYTES 8096
 
 typedef struct
 {
 	int in_use;
 	audio_Object buf_name;
-	void *data; // user-defined data
+	intptr_t data; // user-defined data
 } TFB_SoundTag;
 
 typedef struct tfb_soundcallbacks
@@ -51,41 +51,6 @@ typedef struct tfb_soundcallbacks
 	void (* OnQueueBuffer) (TFB_SoundSample*, audio_Object);
 } TFB_SoundCallbacks;
 
-// audio data
-struct tfb_soundsample
-{
-	TFB_SoundDecoder *decoder; // decoder to read from
-	float length; // total length of decoder chain in seconds
-	audio_Object *buffer;
-	uint32 num_buffers;
-	TFB_SoundTag *buffer_tag;
-	sint32 offset; // initial offset
-	void* data; // user-defined data
-	TFB_SoundCallbacks callbacks; // user-defined callbacks
-};
-
-// equivalent to channel in legacy sound code
-typedef struct tfb_soundsource
-{
-	TFB_SoundSample *sample;
-	audio_Object handle;
-	bool stream_should_be_playing;
-	Mutex stream_mutex;
-	sint32 start_time;
-	void *positional_object;
-
-	// Cyclic waveform buffer for oscilloscope
-	void *sbuffer; 
-	uint32 sbuf_start;        // cyclic buffer tail (confusing, eh?)
-	uint32 sbuf_size;
-	uint32 sbuf_offset;       // cyclic buffer head
-	uint32 sbuf_lasttime;
-	// keep track for paused tracks
-	uint32 pause_time;
-} TFB_SoundSource;
-
-
-extern TFB_SoundSource soundSource[];
 
 extern int musicVolume;
 extern float musicVolumeScale;
@@ -97,6 +62,19 @@ void CleanSource (int iSource);
 
 void SetSFXVolume (float volume);
 void SetSpeechVolume (float volume);
+
+TFB_SoundSample *TFB_CreateSoundSample (TFB_SoundDecoder*, uint32 num_buffers,
+		const TFB_SoundCallbacks* /* can be NULL */);
+void TFB_DestroySoundSample (TFB_SoundSample*);
+void TFB_SetSoundSampleData (TFB_SoundSample*, intptr_t data);
+intptr_t TFB_GetSoundSampleData (TFB_SoundSample*);
+void TFB_SetSoundSampleCallbacks (TFB_SoundSample*,
+		const TFB_SoundCallbacks* /* can be NULL */);
+TFB_SoundDecoder* TFB_GetSoundSampleDecoder (TFB_SoundSample*);
+
+TFB_SoundTag* TFB_FindTaggedBuffer (TFB_SoundSample*, audio_Object buffer);
+void TFB_ClearBufferTag (TFB_SoundTag*);
+bool TFB_TagBuffer (TFB_SoundSample*, audio_Object buffer, intptr_t data);
 
 #include "stream.h"
 

@@ -17,6 +17,7 @@
  */
 
 #include "sound.h"
+#include "sndintrn.h"
 #include "libs/compiler.h"
 #include "libs/tasklib.h"
 #include "libs/inplib.h"

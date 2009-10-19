@@ -31,7 +31,7 @@ static uint32 vp_GetTicks (TFB_VideoDecoder*);
 static bool vp_SetTimer (TFB_VideoDecoder*, uint32 msecs);
 
 
-TFB_VideoCallbacks vp_DecoderCBs =
+static const TFB_VideoCallbacks vp_DecoderCBs =
 {
 	vp_BeginFrame,
 	vp_EndFrame,
@@ -46,7 +46,7 @@ static void vp_AudioEnd (TFB_SoundSample* sample);
 static void vp_BufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag);
 static void vp_QueueBuffer (TFB_SoundSample* sample, audio_Object buffer);
 
-static TFB_SoundCallbacks vp_AudioCBs =
+static const TFB_SoundCallbacks vp_AudioCBs =
 {
 	vp_AudioStart,
 	NULL,
@@ -307,8 +307,6 @@ TFB_PlayVideo (VIDEO_REF vid, uint32 x, uint32 y)
 
 	if (vid->decoder->audio_synced)
 	{
-		TFB_SoundSample **pmus;
-
 		if (!vid->hAudio)
 		{
 			log_add (log_Warning, "TFB_PlayVideo: "
@@ -316,12 +314,8 @@ TFB_PlayVideo (VIDEO_REF vid, uint32 x, uint32 y)
 			return false;
 		}
 
-		// nasty hack for now
-		pmus = vid->hAudio;
-		(*pmus)->buffer_tag = HCalloc (
-				sizeof (TFB_SoundTag) * (*pmus)->num_buffers);
-		(*pmus)->callbacks = vp_AudioCBs;
-		(*pmus)->data = vid;	// hijack data ;)
+		TFB_SetSoundSampleCallbacks (*vid->hAudio, &vp_AudioCBs);
+		TFB_SetSoundSampleData (*vid->hAudio, (intptr_t)vid);
 	}
 
 	SetSemaphore (vp_interthread_lock);
@@ -406,9 +400,7 @@ TFB_SeekVideo (VIDEO_REF vid, uint32 pos)
 
 	if (vid->decoder->audio_synced)
 	{
-		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
-		SeekStream (MUSIC_SOURCE, pos);
-		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
+		PLRSeek (vid->hAudio, pos);
 		TaskSwitch ();
 		return true;
 	}
@@ -475,10 +467,16 @@ vp_SetTimer (TFB_VideoDecoder* decoder, uint32 msecs)
 static bool
 vp_AudioStart (TFB_SoundSample* sample)
 {
-	TFB_VideoClip* vid = sample->data;
+	TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+	TFB_SoundDecoder *decoder;
+
+	assert (sizeof (intptr_t) >= sizeof (vid));
+	assert (vid != NULL);
+
+	decoder = TFB_GetSoundSampleDecoder (sample);
 
 	LockMutex (vid->guard);
-	vid->want_frame = SoundDecoder_GetFrame (sample->decoder);
+	vid->want_frame = SoundDecoder_GetFrame (decoder);
 	UnlockMutex (vid->guard);
 
 	return true;
@@ -487,7 +485,9 @@ vp_AudioStart (TFB_SoundSample* sample)
 static void
 vp_AudioEnd (TFB_SoundSample* sample)
 {
-	TFB_VideoClip* vid = sample->data;
+	TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+
+	assert (vid != NULL);
 
 	LockMutex (vid->guard);
 	vid->want_frame = vid->decoder->frame_count; // end it
@@ -497,9 +497,12 @@ vp_AudioEnd (TFB_SoundSample* sample)
 static void
 vp_BufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
 {
-	TFB_VideoClip* vid = sample->data;
-	uint32 frame = (uint32) (intptr_t) tag->data;
-	
+	TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+	uint32 frame = (uint32) tag->data;
+
+	assert (sizeof (tag->data) >= sizeof (frame));
+	assert (vid != NULL);
+
 	LockMutex (vid->guard);
 	vid->want_frame = frame; // let it go!
 	UnlockMutex (vid->guard);
@@ -508,9 +511,10 @@ vp_BufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
 static void
 vp_QueueBuffer (TFB_SoundSample* sample, audio_Object buffer)
 {
-	//TFB_VideoClip* vid = sample->data;
+	//TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+	TFB_SoundDecoder *decoder = TFB_GetSoundSampleDecoder (sample);
 
 	TFB_TagBuffer (sample, buffer,
-			(void *) (intptr_t) SoundDecoder_GetFrame (sample->decoder));
+			(intptr_t) SoundDecoder_GetFrame (decoder));
 }
 

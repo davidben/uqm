@@ -16,6 +16,7 @@
 
 #include "options.h"
 #include "sound.h"
+#include "sndintrn.h"
 #include "libs/reslib.h"
 #include "libs/log.h"
 #include "libs/strings/strintrn.h"
@@ -27,24 +28,30 @@ static void CheckFinishedChannels (void);
 
 
 void
-PlayChannel (COUNT channel, void *sample, SoundPosition pos,
+PlayChannel (COUNT channel, SOUND snd, SoundPosition pos,
 		void *positional_object, unsigned char priority)
 {
-	TFB_SoundSample *tfb_sample = *(TFB_SoundSample**) sample;
+	void *snd_ptr = GetSoundAddress (snd);
+	TFB_SoundSample *sample;
 
 	StopSource (channel);
 	// all finished (stopped) channels can be cleaned up at this point
 	// since this is the only func that can initiate an sfx sound
 	CheckFinishedChannels ();
 	
-	soundSource[channel].sample = tfb_sample;
+	if (!snd_ptr)
+		return; // nothing to play
+
+	sample = *(TFB_SoundSample**) snd_ptr;
+
+	soundSource[channel].sample = sample;
 	soundSource[channel].positional_object = positional_object;
 	
 	if (optStereoSFX)
 		UpdateSoundPosition (channel, pos);
 
 	audio_Sourcei (soundSource[channel].handle, audio_BUFFER,
-			tfb_sample->buffer[0]);
+			sample->buffer[0]);
 	audio_SourcePlay (soundSource[channel].handle);
 	(void) priority;
 }
@@ -145,39 +152,6 @@ SetChannelVolume (COUNT channel, COUNT volume, BYTE priority)
 	(void)priority; // ignored
 }
 
-// Status: Ignored
-BYTE*
-GetSampleAddress (SOUND sound)
-		// I might be prototyping this wrong, type-wise.
-{
-	return ((BYTE*)GetSoundAddress (sound));
-}
-
-// Status: Ignored
-COUNT
-GetSampleLength (SOUND sound)
-{
-	(void)sound;
-	return 0;
-}
-
-// Status: Ignored
-void
-SetChannelRate (COUNT channel, DWORD rate_hz, unsigned char priority)
-{
-	(void) channel;
-	(void) rate_hz;
-	(void) priority;
-}
-
-// Status: Ignored
-COUNT
-GetSampleRate (SOUND sound)
-{
-	(void) sound;
-	return 0;
-}
-
 void *
 _GetSoundBankData (uio_Stream *fp, DWORD length)
 {
@@ -187,6 +161,8 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 #define MAX_FX 256
 	TFB_SoundSample *sndfx[MAX_FX];
 	STRING_TABLE Snd;
+	STRING str;
+	int i;
 
 	(void) length;  // ignored
 	opos = uio_ftell (fp);
@@ -211,82 +187,65 @@ _GetSoundBankData (uio_Stream *fp, DWORD length)
 	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) &&
 			snd_ct < MAX_FX)
 	{
-		if (sscanf(CurrentLine, "%s", &filename[n]) == 1)
+		TFB_SoundSample* sample;
+		TFB_SoundDecoder* decoder;
+		uint32 decoded_bytes;
+
+		if (sscanf (CurrentLine, "%s", &filename[n]) != 1)
 		{
-			log_add (log_Info, "_GetSoundBankData(): loading %s", filename);
-
-			sndfx[snd_ct] = (TFB_SoundSample *) HCalloc (sizeof (TFB_SoundSample));
-
-			sndfx[snd_ct]->decoder = SoundDecoder_Load (contentDir,
-					filename, 4096, 0, 0);
-			if (!sndfx[snd_ct]->decoder)
-			{
-				log_add (log_Warning, "_GetSoundBankData(): couldn't load %s", filename);
-				HFree (sndfx[snd_ct]);
-			}
-			else
-			{
-				uint32 decoded_bytes;
-
-				decoded_bytes = SoundDecoder_DecodeAll (sndfx[snd_ct]->decoder);
-				log_add (log_Info, "_GetSoundBankData(): decoded_bytes %d", decoded_bytes);
-				
-				sndfx[snd_ct]->num_buffers = 1;
-				sndfx[snd_ct]->buffer = (audio_Object *) HMalloc (
-						sizeof (audio_Object) * sndfx[snd_ct]->num_buffers);
-				audio_GenBuffers (sndfx[snd_ct]->num_buffers, sndfx[snd_ct]->buffer);
-				audio_BufferData (sndfx[snd_ct]->buffer[0], sndfx[snd_ct]->decoder->format,
-					sndfx[snd_ct]->decoder->buffer, decoded_bytes,
-					sndfx[snd_ct]->decoder->frequency);
-
-				SoundDecoder_Free (sndfx[snd_ct]->decoder);
-				sndfx[snd_ct]->decoder = NULL;
-				
-				++snd_ct;
-			}
-		}
-		else
-		{
-			log_add (log_Warning, "_GetSoundBankData: Bad file!");
+			log_add (log_Warning, "_GetSoundBankData: bad line: '%s'",
+					CurrentLine);
+			continue;
 		}
 
-		// pkunk insult fix 2002/11/12 (ftell shouldn't be needed for loop to terminate)
-		/*if (uio_ftell (fp) - opos >= length)
-			break;*/
+		log_add (log_Info, "_GetSoundBankData(): loading %s", filename);
+
+		decoder = SoundDecoder_Load (contentDir, filename, 4096, 0, 0);
+		if (!decoder)
+		{
+			log_add (log_Warning, "_GetSoundBankData(): couldn't load %s",
+					filename);
+			continue;
+		}
+
+		// SFX samples don't have decoders, everything is pre-decoded below
+		sample = TFB_CreateSoundSample (NULL, 1, NULL);
+
+		// Decode everything and stash it in 1 buffer
+		decoded_bytes = SoundDecoder_DecodeAll (decoder);
+		log_add (log_Info, "_GetSoundBankData(): decoded bytes %d",
+				decoded_bytes);
+		
+		audio_BufferData (sample->buffer[0], decoder->format,
+			decoder->buffer, decoded_bytes, decoder->frequency);
+		// just for informational purposes
+		sample->length = decoder->length;
+
+		SoundDecoder_Free (decoder);
+
+		sndfx[snd_ct] = sample;
+		++snd_ct;
 	}
 
-	Snd = NULL;
-	if (snd_ct && (Snd = AllocStringTable (snd_ct, 0)))
+	if (!snd_ct)
+		return NULL; // no sounds decoded
+
+	Snd = AllocStringTable (snd_ct, 0);
+	if (!Snd)
+	{	// Oops, have to delete everything now
+		while (snd_ct--)
+			TFB_DestroySoundSample (sndfx[snd_ct]);
+		
+		return NULL;
+	}
+
+	// Populate the STRING_TABLE with ptrs to sample
+	for (i = 0, str = Snd->strings; i < snd_ct; ++i, ++str)
 	{
-		STRING_TABLE fxTab = Snd;
-
-		if (fxTab == 0)
-		{
-			while (snd_ct--)
-			{
-				if (sndfx[snd_ct]->decoder)
-					SoundDecoder_Free (sndfx[snd_ct]->decoder);
-				HFree (sndfx[snd_ct]);
-			}
-
-			FreeStringTable (Snd);
-			Snd = 0;
-		}
-		else
-		{
-			STRING str;
-			int i;
-
-			str = fxTab->strings;
-			for (i = 0; i < snd_ct; i++)
-			{
-				TFB_SoundSample **target = HMalloc (sizeof (sndfx[0]));
-				*target = sndfx[i];
-				str->data = (STRINGPTR)target;
-				str->length = sizeof (sndfx[0]);
-				str++;
-			}
-		}
+		TFB_SoundSample **target = HMalloc (sizeof (sndfx[0]));
+		*target = sndfx[i];
+		str->data = (STRINGPTR)target;
+		str->length = sizeof (sndfx[0]);
 	}
 
 	return Snd;
@@ -296,45 +255,37 @@ BOOLEAN
 _ReleaseSoundBankData (void *Snd)
 {
 	STRING_TABLE fxTab = Snd;
+	int index;
+	
+	if (!fxTab)
+		return FALSE;
 
-	if (fxTab)
+	for (index = 0; index < fxTab->size; ++index)
 	{
-		int snd_ct, index;
-		TFB_SoundSample **sptr;
+		int i;
+		void **sptr = (void**)fxTab->strings[index].data;
+		TFB_SoundSample *sample = (TFB_SoundSample*)*sptr;
 
-		snd_ct = fxTab->size;
-		index = 0;
-		while (snd_ct--)
+		// Check all sources and see if we are currently playing this sample
+		for (i = 0; i < NUM_SOUNDSOURCES; ++i)
 		{
-			int i;
-			
-			sptr = (TFB_SoundSample **)(fxTab->strings[index].data);
-
-			for (i = 0; i < NUM_SOUNDSOURCES; ++i)
-			{
-				if (soundSource[i].sample == (*sptr))
-				{
-					StopSource (i);
-					soundSource[i].sample = NULL;
-				}
+			if (soundSource[i].sample == sample)
+			{	// Playing this sample. Have to stop it.
+				StopSource (i);
+				soundSource[i].sample = NULL;
 			}
-
-            if ((*sptr)->decoder)
-			    SoundDecoder_Free ((*sptr)->decoder);
-			audio_DeleteBuffers ((*sptr)->num_buffers, (*sptr)->buffer);
-			HFree ((*sptr)->buffer);
-			if ((*sptr)->buffer_tag)
-				HFree ((*sptr)->buffer_tag);
-			HFree (*sptr);
-			*sptr = 0;
-			index++;
 		}
-		FreeStringTable (Snd);
 
-		return (TRUE);
+        if (sample->decoder)
+			SoundDecoder_Free (sample->decoder);
+		sample->decoder = NULL;
+		TFB_DestroySoundSample (sample);
+		// sptr will be deleted by FreeStringTable() below
 	}
+	
+	FreeStringTable (fxTab);
 
-	return (FALSE);
+	return TRUE;
 }
 
 BOOLEAN

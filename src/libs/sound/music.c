@@ -18,6 +18,7 @@
 #include "libs/file.h"
 #include "options.h"
 #include "sound.h"
+#include "sndintrn.h"
 #include "libs/reslib.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
@@ -72,6 +73,17 @@ PLRPlaying (MUSIC_REF MusicRef)
 	}
 
 	return FALSE;
+}
+
+void
+PLRSeek (MUSIC_REF MusicRef, DWORD pos)
+{
+	if (MusicRef == curMusicRef || MusicRef == (MUSIC_REF)~0)
+	{
+		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
+		SeekStream (MUSIC_SOURCE, pos);
+		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
+	}
 }
 
 void
@@ -152,45 +164,38 @@ void *
 _GetMusicData (uio_Stream *fp, DWORD length)
 {
 	MUSIC_REF h;
+	TFB_SoundSample *sample;
+	TFB_SoundDecoder *decoder;
+	char filename[256];
 
-	if (_cur_resfile_name && (h = AllocMusicData (sizeof (void *))))
+	if (!_cur_resfile_name)
+		return NULL;
+
+	strncpy (filename, _cur_resfile_name, sizeof(filename) - 1);
+	filename[sizeof(filename) - 1] = '\0';
+	CheckMusicResName (filename);
+
+	log_add (log_Info, "_GetMusicData(): loading %s", filename);
+	decoder = SoundDecoder_Load (contentDir, filename, 4096, 0, 0);
+	if (!decoder)
 	{
-		TFB_SoundSample **pmus = h;
-
-		if (!pmus)
-		{
-			return NULL;
-		}		
-		else
-		{
-            char filename[256];
-
-			*pmus = (TFB_SoundSample *) HCalloc (sizeof (TFB_SoundSample));
-			strncpy (filename, _cur_resfile_name, sizeof(filename) - 1);
-			filename[sizeof(filename) - 1] = '\0';
-			CheckMusicResName (filename);
-
-			log_add (log_Info, "_GetMusicData(): loading %s", filename);
-			if (((*pmus)->decoder = SoundDecoder_Load (contentDir, filename,
-							4096, 0, 0)) == 0)
-			{
-				log_add (log_Warning, "_GetMusicData(): couldn't load %s", filename);
-
-				HFree (h);
-				return NULL;
-			}
-			else
-			{
-				log_add (log_Info, "    decoder: %s, rate %d format %x",
-					SoundDecoder_GetName ((*pmus)->decoder),
-					(*pmus)->decoder->frequency, (*pmus)->decoder->format);
-
-				(*pmus)->num_buffers = 64;
-				(*pmus)->buffer = (audio_Object *) HMalloc (sizeof (audio_Object) * (*pmus)->num_buffers);
-				audio_GenBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
-			}
-		}
+		log_add (log_Warning, "_GetMusicData(): couldn't load %s", filename);
+		return NULL;
 	}
+
+	h = AllocMusicData (sizeof (void *));
+	if (!h)
+	{
+		SoundDecoder_Free (decoder);
+		return NULL;
+	}
+
+	sample = TFB_CreateSoundSample (decoder, 64, NULL);
+	*h = sample;
+
+	log_add (log_Info, "    decoder: %s, rate %d format %x",
+		SoundDecoder_GetName (sample->decoder),
+		sample->decoder->frequency, sample->decoder->format);
 
 	(void) fp;  /* satisfy compiler (unused parameter) */
 	(void) length;  /* satisfy compiler (unused parameter) */
@@ -201,28 +206,27 @@ BOOLEAN
 _ReleaseMusicData (void *data)
 {
 	TFB_SoundSample **pmus = data;
+	TFB_SoundSample *sample;
 
 	if (pmus == NULL)
 		return (FALSE);
 
-	if ((*pmus)->decoder)
+	sample = *pmus;
+	assert (sample != 0);
+	if (sample->decoder)
 	{
-		TFB_SoundDecoder *decoder = (*pmus)->decoder;
+		TFB_SoundDecoder *decoder = sample->decoder;
 		LockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
-		if (soundSource[MUSIC_SOURCE].sample == (*pmus))
-		{
+		if (soundSource[MUSIC_SOURCE].sample == sample)
+		{	// Currently playing this sample! Not good.
 			StopStream (MUSIC_SOURCE);
 		}
 		UnlockMutex (soundSource[MUSIC_SOURCE].stream_mutex);
 
-		(*pmus)->decoder = NULL;
+		sample->decoder = NULL;
 		SoundDecoder_Free (decoder);
-		audio_DeleteBuffers ((*pmus)->num_buffers, (*pmus)->buffer);
-		HFree ((*pmus)->buffer);
-		if ((*pmus)->buffer_tag)
-			HFree ((*pmus)->buffer_tag);
 	}
-	HFree (*pmus);
+	TFB_DestroySoundSample (sample);
 	HFree (pmus);
 
 	return (TRUE);

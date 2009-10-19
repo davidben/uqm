@@ -90,8 +90,8 @@ PlaySoundEffect (SOUND S, COUNT Channel, SoundPosition Pos,
 	if (!(GLOBAL (glob_flags) & SOUND_DISABLED))
 	{
 		SetChannelVolume (Channel, MAX_VOLUME >> 1, Priority);
-		SetChannelRate (Channel, GetSampleRate (S), Priority);
-		PlayChannel (Channel, GetSampleAddress (S), Pos, PositionalObject, Priority);
+		//SetChannelRate (Channel, GetSampleRate (S), Priority);
+		PlayChannel (Channel, S, Pos, PositionalObject, Priority);
 	}
 }
 

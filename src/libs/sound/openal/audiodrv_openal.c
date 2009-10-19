@@ -21,6 +21,7 @@
 
 
 #include "audiodrv_openal.h"
+#include "../sndintrn.h"
 #include "libs/tasklib.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
@@ -182,13 +183,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 		alSourcefv (soundSource[i].handle, AL_VELOCITY, zero);
 		alSourcefv (soundSource[i].handle, AL_DIRECTION, zero);
 		
-		soundSource[i].sample = NULL;
-		soundSource[i].stream_should_be_playing = FALSE;
 		soundSource[i].stream_mutex = CreateMutex ("OpenAL stream mutex", SYNC_CLASS_AUDIO);
-		soundSource[i].sbuffer = NULL;
-		soundSource[i].sbuf_start = 0;
-		soundSource[i].sbuf_size = 0;
-		soundSource[i].sbuf_offset = 0;
 	}
 	
 	SetSFXVolume (sfxVolumeScale);

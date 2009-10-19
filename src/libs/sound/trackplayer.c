@@ -15,6 +15,7 @@
  */
 
 #include "sound.h"
+#include "sndintrn.h"
 #include "libs/sound/trackplayer.h"
 #include "trackint.h"
 #include "libs/log.h"
@@ -54,7 +55,6 @@ static TFB_SoundChunk *cur_sub_chunk; // currently displayed subtitle chunk
 // structures the same way.
 
 static void seek_track (sint32 offset);
-static void destroy_SoundSample (TFB_SoundSample *sample);
 
 // stream callbacks
 static bool OnStreamStart (TFB_SoundSample* sample);
@@ -190,7 +190,9 @@ StopTrack (void)
 	}
 	if (sound_sample)
 	{
-		destroy_SoundSample (sound_sample);
+		// We delete the decoders ourselves
+		sound_sample->decoder = NULL;
+		TFB_DestroySoundSample (sound_sample);
 		sound_sample = NULL;
 	}
 }
@@ -250,7 +252,7 @@ OnChunkEnd (TFB_SoundSample* sample, audio_Object buffer)
 	
 	if (cur_chunk->tag_me)
 	{	// Tag the last buffer of the chunk with the next chunk
-		TFB_TagBuffer (sample, buffer, cur_chunk);
+		TFB_TagBuffer (sample, buffer, (intptr_t)cur_chunk);
 	}
 
 	return true;
@@ -275,6 +277,8 @@ static void
 OnBufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
 {
 	TFB_SoundChunk* chunk = (TFB_SoundChunk*) tag->data;
+
+	assert (sizeof (tag->data) >= sizeof (chunk));
 
 	if (sample != sound_sample)
 		return; // Huh? Why did we get called on this?
@@ -562,13 +566,7 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 
 			if (!sound_sample)
 			{
-				sound_sample = HCalloc (sizeof (*sound_sample));
-				sound_sample->callbacks = trackCBs;
-				sound_sample->num_buffers = 8;
-				sound_sample->buffer_tag = HCalloc (sizeof (TFB_SoundTag) * sound_sample->num_buffers);
-				sound_sample->buffer = HCalloc (sizeof (audio_Object) * sound_sample->num_buffers);
-				sound_sample->length = 0;
-				audio_GenBuffers (sound_sample->num_buffers, sound_sample->buffer);
+				sound_sample = TFB_CreateSoundSample (NULL, 8, &trackCBs);
 				chunks_head = create_SoundChunk (decoder, 0.0);
 				chunks_tail = chunks_head;
 			}
@@ -798,19 +796,6 @@ destroy_SoundChunk_list (TFB_SoundChunk *chunk)
 		HFree (chunk->text);
 		HFree (chunk);
 	}
-}
-
-static void
-destroy_SoundSample (TFB_SoundSample *sample)
-{
-	if (sample->buffer)
-	{
-		audio_DeleteBuffers (sample->num_buffers, sample->buffer);
-		HFree (sample->buffer);
-	}
-	HFree (sample->buffer_tag);
-	HFree (sample->data);
-	HFree (sample);
 }
 
 // Returns the next chunk with a subtitle
