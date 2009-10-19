@@ -215,31 +215,31 @@ main (int argc, char *argv[])
 	// Fill in the options struct based on uqm.cfg
 	LoadResourceIndex (configDir, "uqm.cfg", "config.");
 	
-	if (res_HasKey ("config.reswidth"))
+	if (res_IsInteger ("config.reswidth"))
 	{
 		options.width = res_GetInteger ("config.reswidth");
 	}
-	if (res_HasKey ("config.resheight"))
+	if (res_IsInteger ("config.resheight"))
 	{
 		options.height = res_GetInteger ("config.resheight");
 	}
-	if (res_HasKey("config.keepaspectratio"))
+	if (res_IsBoolean("config.keepaspectratio"))
 	{
 		options.keepAspectRatio = res_GetBoolean ("config.keepaspectratio");
 	}
-	if (res_HasKey ("config.alwaysgl"))
+	if (res_IsBoolean ("config.alwaysgl"))
 	{
 		if (res_GetBoolean ("config.alwaysgl"))
 		{
 			options.gfxDriver = TFB_GFXDRIVER_SDL_OPENGL;
 		}
 	}
-	if (res_HasKey ("config.usegl"))
+	if (res_IsBoolean ("config.usegl"))
 	{
 		options.gfxDriver = res_GetBoolean ("config.usegl") ?
 				TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE;
 	}
-	if (res_HasKey ("config.scaler"))
+	if (res_IsString ("config.scaler"))
 	{
 		const char *arg = res_GetString ("config.scaler");
 
@@ -254,67 +254,67 @@ main (int argc, char *argv[])
 		else if (!strcmp (arg, "hq"))
 			options.gfxFlags |= TFB_GFXFLAGS_SCALE_HQXX;	
 	}
-	if (res_HasKey ("config.scanlines") &&
+	if (res_IsBoolean ("config.scanlines") &&
 			res_GetBoolean ("config.scanlines"))
 	{
 		options.gfxFlags |= TFB_GFXFLAGS_SCANLINES;
 	}
-	if (res_HasKey ("config.fullscreen") &&
+	if (res_IsBoolean ("config.fullscreen") &&
 			res_GetBoolean ("config.fullscreen"))
 	{
 		options.gfxFlags |= TFB_GFXFLAGS_FULLSCREEN;
 	}
-	if (res_HasKey ("config.subtitles"))
+	if (res_IsBoolean ("config.subtitles"))
 	{
 		options.subTitles = res_GetBoolean ("config.subtitles");
 	}
-	if (res_HasKey ("config.textmenu"))
+	if (res_IsBoolean ("config.textmenu"))
 	{
 		options.whichMenu = res_GetBoolean ("config.textmenu") ?
 				OPT_PC : OPT_3DO;
 	}
-	if (res_HasKey ("config.textgradients"))
+	if (res_IsBoolean ("config.textgradients"))
 	{
 		options.whichFonts = res_GetBoolean ("config.textgradients") ?
 				OPT_PC : OPT_3DO;
 	}
-	if (res_HasKey ("config.iconicscan"))
+	if (res_IsBoolean ("config.iconicscan"))
 	{
 		options.whichCoarseScan = res_GetBoolean ("config.iconicscan") ?
 				OPT_3DO : OPT_PC;
 	}
-	if (res_HasKey ("config.smoothscroll"))		
+	if (res_IsBoolean ("config.smoothscroll"))		
 	{
 		options.smoothScroll = res_GetBoolean ("config.smoothscroll") ?
 				OPT_3DO : OPT_PC;
 	}
-	if (res_HasKey ("config.3domusic"))
+	if (res_IsBoolean ("config.3domusic"))
 	{
 		options.use3doMusic = res_GetBoolean ("config.3domusic");
 	}
-	if (res_HasKey ("config.remixmusic"))
+	if (res_IsBoolean ("config.remixmusic"))
 	{
 		options.usePrecursorsMusic = res_GetBoolean ("config.remixmusic");
 	}
-	if (res_HasKey ("config.3domovies"))
+	if (res_IsBoolean ("config.3domovies"))
 	{
 		options.whichIntro = res_GetBoolean ("config.3domovies") ?
 				OPT_3DO : OPT_PC;
 	}
-	if (res_HasKey ("config.showfps") && res_GetBoolean ("config.showfps"))
+	if (res_IsBoolean ("config.showfps") && res_GetBoolean ("config.showfps"))
 	{
 		options.gfxFlags |= TFB_GFXFLAGS_SHOWFPS;
 	}
-	if (res_HasKey ("config.smoothmelee"))
+	if (res_IsBoolean ("config.smoothmelee"))
 	{
 		options.meleeScale = res_GetBoolean ("config.smoothmelee") ?
 				TFB_SCALE_TRILINEAR : TFB_SCALE_STEP;
 	}
-	if (res_HasKey ("config.positionalsfx"))
+	if (res_IsBoolean ("config.positionalsfx"))
 	{
 		options.stereoSFX = res_GetBoolean ("config.positionalsfx");
 	}
-	if (res_HasKey ("config.audiodriver"))
+	if (res_IsString ("config.audiodriver"))
 	{
 		const char *driverstr = res_GetString ("config.audiodriver");
 		if (!strcmp (driverstr, "openal"))
@@ -335,7 +335,7 @@ main (int argc, char *argv[])
 			/* Can't figure it out, leave as initial default */
 		}
 	}
-	if (res_HasKey ("config.audioquality"))
+	if (res_IsString ("config.audioquality"))
 	{
 		const char *qstr = res_GetString ("config.audioquality");
 		if (!strcmp (qstr, "low"))
@@ -361,12 +361,12 @@ main (int argc, char *argv[])
 			/* Can't figure it out, leave as initial default */
 		}
 	}
-	if (res_HasKey ("config.pulseshield"))
+	if (res_IsBoolean ("config.pulseshield"))
 	{
 		options.whichShield =
 				res_GetBoolean ("config.pulseshield") ? OPT_3DO : OPT_PC;
 	}
-	if (res_HasKey ("config.player1control"))
+	if (res_IsInteger ("config.player1control"))
 	{
 		PlayerControls[0] = res_GetInteger ("config.player1control");
 		/* This is an unsigned, so no < 0 check is necessary */
@@ -377,7 +377,7 @@ main (int argc, char *argv[])
 			PlayerControls[0] = CONTROL_TEMPLATE_KB_1;
 		}
 	}
-	if (res_HasKey ("config.player2control"))
+	if (res_IsInteger ("config.player2control"))
 	{
 		/* This is an unsigned, so no < 0 check is necessary */
 		PlayerControls[1] = res_GetInteger ("config.player2control");
@@ -388,17 +388,17 @@ main (int argc, char *argv[])
 			PlayerControls[1] = CONTROL_TEMPLATE_JOY_1;
 		}
 	}
-	if (res_HasKey ("config.musicvol"))
+	if (res_IsInteger ("config.musicvol"))
 	{
 		parseIntVolume (res_GetInteger ("config.musicvol"), 
 				&options.musicVolumeScale);
 	}		
-	if (res_HasKey ("config.sfxvol"))
+	if (res_IsInteger ("config.sfxvol"))
 	{
 		parseIntVolume (res_GetInteger ("config.sfxvol"), 
 				&options.sfxVolumeScale);
 	}		
-	if (res_HasKey ("config.speechvol"))
+	if (res_IsInteger ("config.speechvol"))
 	{
 		parseIntVolume (res_GetInteger ("config.speechvol"), 
 				&options.speechVolumeScale);

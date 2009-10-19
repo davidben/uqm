@@ -101,7 +101,7 @@ register_menu_controls (int index)
 	{
 		VCONTROL_GESTURE g;
 		snprintf (buf, 39, "menu.%s.%d", menu_res_names[index], i);
-		if (!res_HasKey (buf))
+		if (!res_IsString (buf))
 			break;
 		VControl_ParseGesture (&g, res_GetString (buf));
 		VControl_AddGestureBinding (&g, (int *)&menu_vec[index]);
@@ -126,7 +126,7 @@ register_flight_controls (void)
 	{
 		/* Copy in name */
 		snprintf (buf, 39, "keys.%d.name", i+1);
-		if (res_HasKey (buf))
+		if (res_IsString (buf))
 		{
 			strncpy (input_templates[i].name, res_GetString (buf), 29);
 			input_templates[i].name[29] = '\0';
@@ -141,7 +141,7 @@ register_flight_controls (void)
 			{
 				VCONTROL_GESTURE *g = CONTROL_PTR(i, j, k);
 				snprintf (buf, 39, "keys.%d.%s.%d", i+1, flight_res_names[j], k+1);
-				if (!res_HasKey (buf))
+				if (!res_IsString (buf))
 				{
 					g->type = VCONTROL_NONE;
 					continue;

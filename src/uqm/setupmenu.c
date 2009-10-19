@@ -1183,7 +1183,7 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		break;
 	}
 
-	if (res_HasKey ("config.alwaysgl"))
+	if (res_IsBoolean ("config.alwaysgl"))
 	{
 		if (res_GetBoolean ("config.alwaysgl"))
 		{

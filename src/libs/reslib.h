@@ -102,6 +102,7 @@ extern DIRENTRY_REF LoadDirEntryTable (uio_DirHandle *dirHandle,
 
 BOOLEAN res_HasKey (const char *key);
 
+BOOLEAN res_IsString (const char *key);
 const char *res_GetString (const char *key);
 void res_PutString (const char *key, const char *value);
 
