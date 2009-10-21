@@ -125,7 +125,7 @@ LoadKernel (int argc, char *argv[])
 	if (!loadAddon ("3dovoice"))
 		speechVolumeScale = 0.0f; // XXX: need better no-speech indicator
 
-	if (optPrecursorsMusic)
+	if (optRemixMusic)
 	{
 		loadAddon ("remix");
 	}

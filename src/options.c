@@ -53,7 +53,7 @@ int optMeleeScale;
 const char **optAddons;
 
 BOOLEAN opt3doMusic;
-BOOLEAN optPrecursorsMusic;
+BOOLEAN optRemixMusic;
 BOOLEAN optSubtitles;
 BOOLEAN optStereoSFX;
 BOOLEAN optKeepAspectRatio;
