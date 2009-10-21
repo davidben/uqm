@@ -487,12 +487,12 @@ PacketHandler_InputDelay(NetConnection *conn,
 
 	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
 	delay = ntoh32(packet->delay);
-	if (delay > 60 * BATTLE_FRAME_RATE) {
+	if (delay > BATTLE_FRAME_RATE) {
 		log_add(log_Error, "NETPLAY: [%d]     Received absurdly large "
 				"input delay value (%d).", conn->player, delay);
 		return -1;
 	}
-	conn->stateFlags.inputDelay = ntoh32(packet->delay);
+	conn->stateFlags.inputDelay = delay;
 	
 	return 0;
 }

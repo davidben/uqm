@@ -916,7 +916,7 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				}
 				netplayOptions.inputDelay = temp;
 
-				if (netplayOptions.inputDelay > 60 * BATTLE_FRAME_RATE)
+				if (netplayOptions.inputDelay > BATTLE_FRAME_RATE)
 				{
 					log_add (log_Fatal, "Network input delay is absurdly "
 							"large.");
