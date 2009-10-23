@@ -586,7 +586,7 @@ rebind_control (WIDGET_CONTROLENTRY *widget)
 	int index = widget->highlighted;
 
 	FlushInput ();
-	DrawLabelAsWindow (&labels[3]);
+	DrawLabelAsWindow (&labels[3], NULL);
 	RebindInputState (template, control, index);
 	populate_editkeys (template);
 	FlushInput ();

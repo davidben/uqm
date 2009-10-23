@@ -221,7 +221,7 @@ static BOOLEAN system_box_active = 0;
 static SDL_Rect system_box;
 
 void
-SetSystemRect (RECT *r)
+SetSystemRect (const RECT *r)
 {
 	system_box_active = TRUE;
 	system_box.x = r->corner.x;

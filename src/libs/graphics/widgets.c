@@ -79,8 +79,10 @@ DrawShadowedBox (RECT *r, COLOR bg, COLOR dark, COLOR medium)
 	UnbatchGraphics ();
 }
 
+// windowRect, if not NULL, will be filled with the dimensions of the
+// window drawn.
 void
-DrawLabelAsWindow (WIDGET_LABEL *label)
+DrawLabelAsWindow (WIDGET_LABEL *label, RECT *windowRect)
 {
 	COLOR oldfg = SetContextForeGroundColor (WIDGET_DIALOG_TEXT_COLOR);
 	FONT  oldfont = 0;
@@ -129,6 +131,16 @@ DrawLabelAsWindow (WIDGET_LABEL *label)
 	if (oldfont)
 		SetContextFont (oldfont);
 	SetContextForeGroundColor (oldfg);
+
+	if (windowRect != NULL) {
+		// Add the outer border added by DrawShadowedBox.
+		// XXX: It may be nicer to add a border size parameter to
+		// DrawShadowedBox, instead of assuming 2 here.
+		windowRect->corner.x = r.corner.x - 2;
+		windowRect->corner.y = r.corner.y - 2;
+		windowRect->extent.width = r.extent.width + 4;
+		windowRect->extent.height = r.extent.height + 4;
+	}
 }
 
 void

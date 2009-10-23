@@ -176,7 +176,7 @@ typedef struct _widget_controlentry {
 } WIDGET_CONTROLENTRY;
 
 void DrawShadowedBox (RECT *r, COLOR bg, COLOR dark, COLOR medium);
-void DrawLabelAsWindow (WIDGET_LABEL *label);
+void DrawLabelAsWindow (WIDGET_LABEL *label, RECT *windowRect);
 void Widget_SetWindowColors (COLOR bg, COLOR dark, COLOR medium);
 FONT Widget_SetFont (FONT newFont);
 
