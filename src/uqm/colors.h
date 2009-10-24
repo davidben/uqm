@@ -155,5 +155,37 @@
 #define SHADOWBOX_DARK_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F)
 
+
+// === PC Menus ===
+
+// Background color of the PC-style menus.
+#define PCMENU_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x00)
+
+// Color of the top and left segments of the border around PC-style menus.
+#define PCMENU_TOP_LEFT_BORDER_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x0F, 0x0F, 0x0F), 0x00)
+		
+// Color of the bottom and right segments of the border around PC-style menus.
+#define PCMENU_BOTTOM_RIGHT_BORDER_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x00)
+
+// Text color of an unselected menu item.
+#define PCMENU_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x00)
+
+// Text color of an selected menu item.
+#define PCMENU_SELECTION_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B)
+
+// Background color of a selected menu item.
+#define PCMENU_SELECTION_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
+
+// === 3DO menus ===
+#define THREEDOMENU_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x00)
+
+
 #endif  /* _COLORS_H */
 

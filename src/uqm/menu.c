@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "colors.h"
 #include "commglue.h"
 #include "controls.h"
 #include "options.h"
@@ -37,24 +38,32 @@ static BOOLEAN GetAlternateMenu (BYTE *BaseState, BYTE *CurState);
 static BYTE ConvertAlternateMenu (BYTE BaseState, BYTE NewState);
 
 
-/* Draw the blue background for PC Menu Text */
+/* Draw the blue background for PC Menu Text, with a border around it.
+ * The specified rectangle includes the border. */
 static void
 DrawPCMenuFrame (RECT *r)
 {
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x0F, 0x0F), 0x00));
+	// Draw the top and left of the outer border.
+	// This actually draws a rectangle, but the bottom and right parts
+	// are drawn over in the next step.
+	SetContextForeGroundColor (PCMENU_TOP_LEFT_BORDER_COLOR);
 	DrawRectangle (r);
+
+	// Draw the right and bottom of the outer border.
+	// This actually draws a rectangle, with the top and left segments just
+	// within the total area, but these segments are drawn over in the next
+	// step.
 	r->corner.x++;
 	r->corner.y++;
 	r->extent.height--;
 	r->extent.width--;
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x00));
+	SetContextForeGroundColor (PCMENU_BOTTOM_RIGHT_BORDER_COLOR);
 	DrawRectangle (r);
+
+	// Draw the background.
 	r->extent.height--;
 	r->extent.width--;
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x00));
+	SetContextForeGroundColor (PCMENU_BACKGROUND_COLOR);
 	DrawFilledRectangle (r);
 }
 
@@ -95,31 +104,35 @@ DrawPCMenu (BYTE beg_index, BYTE end_index, BYTE NewState, BYTE hilite, RECT *r)
 	t.CharCount = (COUNT)~0;
 	r->corner.x++;
 	r->extent.width -= 2;
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x00));
 	for (i = beg_index; i <= end_index; i++)
 	{
-		utf8StringCopy (buf, sizeof (buf),
+		utf8StringCopy (buf, sizeof buf,
 						(i == PM_FUEL) ? pm_fuel_str :
 						(i == PM_CREW) ? pm_crew_str :
 						GAME_STRING (MAINMENU_STRING_BASE + i));
 		if (hilite && pos == i)
 		{
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x00));
+			// Currently selected menu option.
+			
+			// Draw the background of the selection.
+			SetContextForeGroundColor (PCMENU_SELECTION_BACKGROUND_COLOR);
 			r->corner.y = t.baseline.y - PC_MENU_HEIGHT + 2;
 			r->extent.height = PC_MENU_HEIGHT - 1;
 			DrawFilledRectangle (r);
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x00));
+
+			// Draw the text of the selected item.
+			SetContextForeGroundColor (PCMENU_SELECTION_TEXT_COLOR);
 			font_DrawText (&t);
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x15), 0x00));
 		}
 		else
+		{
+			// Draw the text of an unselected item.
+			SetContextForeGroundColor (PCMENU_TEXT_COLOR);
 			font_DrawText (&t);
+		}
 		t.baseline.y += PC_MENU_HEIGHT;
 	}
+	SetContextFont (OldFont);
 }
 
 /* Determine the last text item to display */
@@ -178,19 +191,20 @@ FixMenuState (BYTE BadState)
 	{
 		case PM_SOUND_ON:
 			if (GLOBAL (glob_flags) & SOUND_DISABLED)
-				return (PM_SOUND_OFF);
+				return PM_SOUND_OFF;
 			else
-				return (PM_SOUND_ON);
+				return PM_SOUND_ON;
 		case PM_MUSIC_ON:
 			if (GLOBAL (glob_flags) & MUSIC_DISABLED)
-				return (PM_MUSIC_OFF);
+				return PM_MUSIC_OFF;
 			else
-				return (PM_MUSIC_ON);
+				return PM_MUSIC_ON;
 		case PM_CYBORG_OFF:
-			return (PM_CYBORG_OFF + 
-				((BYTE)(GLOBAL (glob_flags) & COMBAT_SPEED_MASK) >> COMBAT_SPEED_SHIFT));
+			return (PM_CYBORG_OFF +
+				((BYTE)(GLOBAL (glob_flags) & COMBAT_SPEED_MASK) >>
+				COMBAT_SPEED_SHIFT));
 	}
-	return (BadState);
+	return BadState;
 }
 
 /* Choose the next menu to hilight in the 'forward' direction */ 
@@ -282,15 +296,15 @@ GetAlternateMenu (BYTE *BaseState, BYTE *CurState)
 			case ALT_MANIFEST:
 				*BaseState = PM_ALT_SCAN + adj;
 				*CurState = PM_ALT_MANIFEST - PM_ALT_SCAN - adj;
-				return (TRUE);
+				return TRUE;
 			case ALT_EXIT_MENU0:
 				*BaseState = PM_ALT_CARGO;
 				*CurState = PM_ALT_EXITMENU0 - PM_ALT_CARGO;
-				return (TRUE);
+				return TRUE;
 		}
 		log_add (log_Error, "Unknown state combination: %d, %d",
 				*BaseState, *CurState);
-		return (FALSE);
+		return FALSE;
 	}
 	else
 	{
@@ -299,57 +313,57 @@ GetAlternateMenu (BYTE *BaseState, BYTE *CurState)
 			case PM_SCAN:
 				*BaseState = PM_ALT_SCAN;
 				*CurState = PM_ALT_SCAN - PM_ALT_SCAN;
-				return (TRUE);
+				return TRUE;
 			case PM_STARMAP:
 				*BaseState = PM_ALT_SCAN + adj;
 				*CurState = PM_ALT_STARMAP - PM_ALT_SCAN - adj;
-				return (TRUE);
+				return TRUE;
 			case PM_DEVICES:
 				*BaseState = PM_ALT_CARGO;
 				*CurState = PM_ALT_DEVICES - PM_ALT_CARGO;
-				return (TRUE);
+				return TRUE;
 			case PM_CARGO:
 				*BaseState = PM_ALT_CARGO;
 				*CurState = PM_ALT_CARGO - PM_ALT_CARGO;
-				return (TRUE);
+				return TRUE;
 			case PM_ROSTER:
 				*BaseState = PM_ALT_CARGO;
 				*CurState = PM_ALT_ROSTER - PM_ALT_CARGO;
-				return (TRUE);
+				return TRUE;
 			case PM_SAVE_LOAD0:
 				*BaseState = PM_ALT_SCAN + adj;
 				*CurState = PM_ALT_SAVE0 - PM_ALT_SCAN - adj;
-				return (TRUE);
+				return TRUE;
 			case PM_NAVIGATE:
 				*BaseState = PM_ALT_SCAN + adj;
 				*CurState = PM_ALT_NAVIGATE - PM_ALT_SCAN - adj;
-				return (TRUE);
+				return TRUE;
 			case PM_MIN_SCAN:
 				*BaseState = PM_ALT_MSCAN;
 				*CurState = PM_ALT_MSCAN - PM_ALT_MSCAN;
-				return (TRUE);
+				return TRUE;
 			case PM_ENE_SCAN:
 				*BaseState = PM_ALT_MSCAN;
 				*CurState = PM_ALT_ESCAN - PM_ALT_MSCAN;
-				return (TRUE);
+				return TRUE;
 			case PM_BIO_SCAN:
 				*BaseState = PM_ALT_MSCAN;
 				*CurState = PM_ALT_BSCAN - PM_ALT_MSCAN;
-				return (TRUE);
+				return TRUE;
 			case PM_EXIT_MENU0:
 				*BaseState = PM_ALT_MSCAN;
 				*CurState = PM_ALT_EXITMENU1 - PM_ALT_MSCAN;
-				return (TRUE);
+				return TRUE;
 			case PM_AUTO_SCAN:
 				*BaseState = PM_ALT_MSCAN;
 				*CurState = PM_ALT_ASCAN - PM_ALT_MSCAN;
-				return (TRUE);
+				return TRUE;
 			case PM_LAUNCH_LANDER:
 				*BaseState = PM_ALT_MSCAN;
 				*CurState = PM_ALT_DISPATCH - PM_ALT_MSCAN;
-				return (TRUE);
+				return TRUE;
 		}
-		return (FALSE);
+		return FALSE;
 	}
 }
 
@@ -396,56 +410,61 @@ ConvertAlternateMenu (BYTE BaseState, BYTE NewState)
 BOOLEAN
 DoMenuChooser (MENU_STATE *pMS, BYTE BaseState)
 {
+	BYTE NewState = pMS->CurState;
+	BYTE OrigBase = BaseState;
+	BOOLEAN useAltMenu = FALSE;
+	if (optWhichMenu == OPT_PC)
+		useAltMenu = GetAlternateMenu (&BaseState, &NewState);
+	if (PulsedInputState.menu[KEY_MENU_LEFT] ||
+			PulsedInputState.menu[KEY_MENU_UP])
+		NewState = PreviousMenuState (BaseState, NewState);
+	else if (PulsedInputState.menu[KEY_MENU_RIGHT] ||
+			PulsedInputState.menu[KEY_MENU_DOWN])
+		NewState = NextMenuState (BaseState, NewState);
+	else if (useAltMenu && PulsedInputState.menu[KEY_MENU_SELECT])
 	{
-
-		BYTE NewState = pMS->CurState;
-		BYTE OrigBase = BaseState;
-		BOOLEAN useAltMenu = FALSE;
-		if (optWhichMenu == OPT_PC)
-			useAltMenu = GetAlternateMenu (&BaseState, &NewState);
-		if (PulsedInputState.menu[KEY_MENU_LEFT] || PulsedInputState.menu[KEY_MENU_UP])
-			NewState = PreviousMenuState (BaseState, NewState);
-		else if (PulsedInputState.menu[KEY_MENU_RIGHT] || PulsedInputState.menu[KEY_MENU_DOWN])
-			NewState = NextMenuState (BaseState, NewState);
-		else if (useAltMenu && PulsedInputState.menu[KEY_MENU_SELECT])
+		NewState = ConvertAlternateMenu (BaseState, NewState);
+		if (NewState == ALT_MANIFEST)
 		{
-			NewState = ConvertAlternateMenu (BaseState, NewState);
-			if (NewState == ALT_MANIFEST)
-			{
-				DrawMenuStateStrings (PM_ALT_CARGO, 0);
-				pMS->CurState = PM_CARGO - PM_SCAN;
-				return (TRUE);
-			}
-			if (NewState == ALT_EXIT_MENU0)
-			{
-				if (OrigBase == PM_SCAN)
-					DrawMenuStateStrings (PM_ALT_SCAN, PM_ALT_MANIFEST - PM_ALT_SCAN);
-				else
-					DrawMenuStateStrings (PM_ALT_STARMAP, PM_ALT_MANIFEST - PM_ALT_STARMAP);
-				pMS->CurState = ALT_MANIFEST;
-				return (TRUE);
-			}
-			return (FALSE);
+			DrawMenuStateStrings (PM_ALT_CARGO, 0);
+			pMS->CurState = PM_CARGO - PM_SCAN;
+			return TRUE;
 		}
-		else if ((optWhichMenu == OPT_PC) && PulsedInputState.menu[KEY_MENU_CANCEL] && 
-				(BaseState == PM_ALT_CARGO))
+		if (NewState == ALT_EXIT_MENU0)
 		{
 			if (OrigBase == PM_SCAN)
-				DrawMenuStateStrings (PM_ALT_SCAN, PM_ALT_MANIFEST - PM_ALT_SCAN);
+				DrawMenuStateStrings (PM_ALT_SCAN,
+						PM_ALT_MANIFEST - PM_ALT_SCAN);
 			else
-				DrawMenuStateStrings (PM_ALT_STARMAP, PM_ALT_MANIFEST - PM_ALT_STARMAP);
+				DrawMenuStateStrings (PM_ALT_STARMAP,
+						PM_ALT_MANIFEST - PM_ALT_STARMAP);
 			pMS->CurState = ALT_MANIFEST;
-			return (TRUE);
+			return TRUE;
 		}
-		else
-			return (FALSE);
-		DrawMenuStateStrings (BaseState, NewState);
-		if (useAltMenu)
-			NewState = ConvertAlternateMenu (BaseState, NewState);
-		pMS->CurState = NewState;
-		SleepThread (ONE_SECOND / 20);
-		return (TRUE);
+		return FALSE;
 	}
+	else if ((optWhichMenu == OPT_PC) &&
+			PulsedInputState.menu[KEY_MENU_CANCEL] && 
+			(BaseState == PM_ALT_CARGO))
+	{
+		if (OrigBase == PM_SCAN)
+			DrawMenuStateStrings (PM_ALT_SCAN,
+					PM_ALT_MANIFEST - PM_ALT_SCAN);
+		else
+			DrawMenuStateStrings (PM_ALT_STARMAP,
+					PM_ALT_MANIFEST - PM_ALT_STARMAP);
+		pMS->CurState = ALT_MANIFEST;
+		return TRUE;
+	}
+	else
+		return FALSE;
+
+	DrawMenuStateStrings (BaseState, NewState);
+	if (useAltMenu)
+		NewState = ConvertAlternateMenu (BaseState, NewState);
+	pMS->CurState = NewState;
+	SleepThread (ONE_SECOND / 20);
+	return TRUE;
 }
 
 void
@@ -460,7 +479,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 
 	if (NewState < 0)
 	{
-		NewState = - NewState;
+		NewState = -NewState;
 		hilite = 0;
 	}
 
@@ -489,15 +508,15 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	r.extent.width = RADAR_WIDTH + 2;
 	BatchGraphics ();
 	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x1D));
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 	if (s.frame && optWhichMenu == OPT_PC)
 	{
 		if (beg_index == PM_CREW)
-			sprintf (pm_crew_str, "%s(%d)",
+			snprintf (pm_crew_str, sizeof pm_crew_str, "%s(%d)",
 					 GAME_STRING (MAINMENU_STRING_BASE + PM_CREW),
 					 GLOBAL (CrewCost));
 		if (beg_index == PM_FUEL)
-			sprintf (pm_fuel_str, "%s(%d)",
+			snprintf (pm_fuel_str, sizeof pm_fuel_str, "%s(%d)",
 					 GAME_STRING (MAINMENU_STRING_BASE + PM_FUEL),
 					 GLOBAL (FuelCost));
 		if (beg_index == PM_SOUND_ON)
@@ -536,7 +555,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	}
 	else
 	{
-		if(optWhichMenu == OPT_PC)
+		if (optWhichMenu == OPT_PC)
 		{
 			r.corner.x -= 1;
 			r.extent.width += 1;
@@ -560,10 +579,9 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 				t.align = ALIGN_RIGHT;
 				t.CharCount = (COUNT)~0;
 				t.pStr = buf;
-				sprintf (buf, "%u", GLOBAL (CrewCost));
+				snprintf (buf, sizeof buf, "%u", GLOBAL (CrewCost));
 				SetContextFont (TinyFont);
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x00));
+				SetContextForeGroundColor (THREEDOMENU_TEXT_COLOR);
 				font_DrawText (&t);
 				break;
 			case PM_FUEL:
@@ -572,10 +590,9 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 				t.align = ALIGN_RIGHT;
 				t.CharCount = (COUNT)~0;
 				t.pStr = buf;
-				sprintf (buf, "%u", GLOBAL (FuelCost));
+				snprintf (buf, sizeof buf, "%u", GLOBAL (FuelCost));
 				SetContextFont (TinyFont);
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x00));
+				SetContextForeGroundColor (THREEDOMENU_TEXT_COLOR);
 				font_DrawText (&t);
 				break;
 		}
