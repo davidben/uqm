@@ -75,6 +75,17 @@ $RESULT
 EOF
 }
 
+# Description: Set the value of a variable with a specific name,
+#              and expand it.
+#              Use this instead of 'eval', so that you won't have to
+#              worry about escaping.
+#              NB. this function only works on global variables.
+# Arguments:   $1 - the name of the variable
+#              $2 - the value to assign to it (will not be expanded)
+setVar() {
+	eval $1=\$2
+}
+
 # Description: delete the files passed as arguments, unless
 #              $KEEPTEMPFILES is set.
 deleteTempFiles() {
@@ -301,29 +312,43 @@ detect_dependencies_library() {
 	done
 }
 
-# Description: check if a program is present in the path
+# Description: check if a program is present in the path or as a built-in
+#              command.
+# Arguments:   $1 - The name of the program as it is executed
+# Returns:     0 - if the command is found
+#              1 - if the command is not found
+have_command() {
+	type "$1" > /dev/null 2>&1 || false
+			# The '|| false' is because if 'type' does not recognise the
+			# command, it might return a different value than 1, on some
+			# shells.
+}
+
+# Description: check if a program is present in the path or as a built-in
+#              command.
 # Arguments:   $1 - The name of the program as used in config_proginfo after
 #                   "BIN_"
 have_program() {
 	local PROG TEMP_NAME TEMP_FILE TEMP_VERSION TEMP_PRESENT TEMP_DETECT
 	local TEMP_DEPEND_DETECT_BIN TEMP_DEPEND_DETECT_LIB
 
-	PROG="$1"
-	TEMP_NAME=`evalVar PROG_${PROG}_NAME`
+	PROG=$1
+	TEMP_NAME=`evalVar "PROG_${PROG}_NAME"`
 	if [ -z "$TEMP_NAME" ]; then
 		echo "Fatal: Program '$PROG' is not defined!" >&2
 		exit 1
 	fi
 	
-	eval TEMP_PRESENT="\$PROG_${PROG}_PRESENT"
+	TEMP_PRESENT=`getVar "PROG_${PROG}_PRESENT"`
 	if [ -n "$TEMP_PRESENT" ]; then
 		return "$TEMP_PRESENT"
 	fi
 
-	TEMP_DETECT=`evalVar PROG_${PROG}_DETECT`	
+	# If a detection method is specified, try that one first.
+	TEMP_DETECT=`evalVar "PROG_${PROG}_DETECT"`	
 	if [ -n "$TEMP_DETECT" ]; then
-		TEMP_DEPEND_DETECT_BIN=`evalVar PROG_${PROG}_DEPEND_DETECT_BIN`
-		TEMP_DEPEND_DETECT_LIB=`evalVar PROG_${PROG}_DEPEND_DETECT_LIB`
+		TEMP_DEPEND_DETECT_BIN=`evalVar "PROG_${PROG}_DEPEND_DETECT_BIN"`
+		TEMP_DEPEND_DETECT_LIB=`evalVar "PROG_${PROG}_DEPEND_DETECT_LIB"`
 		detect_dependencies_program "$TEMP_DEPEND_DETECT_BIN"
 		detect_dependencies_library "$TEMP_DEPEND_DETECT_LIB"
 		$TEMP_DETECT
@@ -331,57 +356,64 @@ have_program() {
                 # PROG_${PROG}_FILE are set.
 		case $? in
 			0)  # Program found
-				eval "PROG_${PROG}_PRESENT"=0
+				setVar "PROG_${PROG}_PRESENT" 0
 				;;
 			1)  # Lib not found
-				eval "PROG_${PROG}_PRESENT"=1
+				setVar "PROG_${PROG}_PRESENT" 1
 				;;
 			2)  # Use default detection
 				;;
 		esac
 	fi
 
-	eval TEMP_PRESENT="\$PROG_${PROG}_PRESENT"
+	# If detection via a specified detection method was inconclusive,
+	# or no detection method was specified, try default detection
+	# based on whether the command name exists.
+	TEMP_PRESENT=`getVar "$PROG_${PROG}_PRESENT"`
 	if [ -z "$TEMP_PRESENT" ]; then
-		TEMP_FILE=`evalVar PROG_${PROG}_FILE`
-		type "${TEMP_FILE%% *}" > /dev/null 2>&1
+		TEMP_FILE=`evalVar "PROG_${PROG}_FILE"`
+		have_command "${TEMP_FILE%% *}"
 		if [ $? -eq 0 ]; then
 			# Program found
-			eval "PROG_${PROG}_PRESENT"=0
+			setVar "PROG_${PROG}_PRESENT" 0
 		fi
 	fi
 	
-	eval TEMP_PRESENT="\$PROG_${PROG}_PRESENT"
+	# If detection has yielded no results so far, we're calling it
+	# "not found".
+	TEMP_PRESENT=`getVar "PROG_${PROG}_PRESENT"`
 	if [ -z "$TEMP_PRESENT" ]; then
-		eval "PROG_${PROG}_PRESENT"=1
+		setVar "PROG_${PROG}_PRESENT" 1
 	fi
 
-	eval TEMP_PRESENT="\$PROG_${PROG}_PRESENT"
+	TEMP_PRESENT=`getVar "PROG_${PROG}_PRESENT"`
 	if [ "$TEMP_PRESENT" -eq 1 ]; then
 		build_message "$TEMP_NAME not found."
 		return 1
 	fi
 
+	# We have found the program.
+	# Test whether the version is sufficient.
 	if [ $# -gt 1 ]; then
 		# Minimum version supplied
-		TEMP_VERSION=`evalVar PROG_${PROG}_VERSION`
+		TEMP_VERSION=`evalVar "PROG_${PROG}_VERSION"`
 		if [ -z "$TEMP_VERSION" ]; then
-			eval "PROG_${PROG}_PRESENT"=1
+			setVar "PROG_${PROG}_PRESENT" 1
 			echo "Fatal: Could not determine the version of $TEMP_NAME" >&2
 			exit 1
 		fi
 		if not version_match "$2" "$TEMP_VERSION"; then
-			eval "PROG_${PROG}_PRESENT"=1
+			setVar "PROG_${PROG}_PRESENT" 1
 			build_message "Found version $TEMP_VERSION of $TEMP_NAME, \
 but version $2 is required!"
 			return 1
 		fi
-		eval "PROG_${PROG}_PRESENT"=0
+		setVar "PROG_${PROG}_PRESENT" 0
 		build_message "$TEMP_NAME version $TEMP_VERSION found."
 		return 0
 	fi
 
-	eval "PROG_${PROG}_PRESENT"=0
+	setVar "PROG_${PROG}_PRESENT" 0
 	build_message "$TEMP_NAME found."
 	return 0
 }
@@ -396,34 +428,33 @@ have_build_tool() {
 
 	TOOL=$1
 
-	TEMP_NAME=`evalVar BUILDTOOL_${TOOL}_NAME`
+	TEMP_NAME=`evalVar "BUILDTOOL_${TOOL}_NAME"`
 	if [ -z "$TEMP_NAME" ]; then
 		echo "Fatal: Build tool '$TOOL' is not defined!" >&2
 		exit 1
 	fi
 
-	eval TEMP_PRESENT="\$BUILDTOOL_${TOOL}_PRESENT"
+	TEMP_PRESENT=`getVar "BUILDTOOL_${TOOL}_PRESENT"`
 	if [ -n "$TEMP_PRESENT" ]; then
 		return "$TEMP_PRESENT"
 	fi
 
 	SUCCESS=0
-	eval DEPENDS="\$BUILDTOOL_${TOOL}_DEPEND"
+	DEPENDS=`getVar "BUILDTOOL_${TOOL}_DEPEND"`
 	for DEPEND in $DEPENDS; do
 		if not have_program "$DEPEND"; then
 			SUCCESS=1
 		fi
 	done
 
-	eval "BUILDTOOL_${TOOL}_PRESENT"="\$SUCCESS"
+	setVar "BUILDTOOL_${TOOL}_PRESENT" "$SUCCESS"
 
-	eval COMMAND="\$BUILDTOOL_${TOOL}_COMMAND"
-	# Expand environment variables in $COMMAND:
-	eval COMMAND=\"$COMMAND\"
+	COMMAND=`evalVar "BUILDTOOL_${TOOL}_COMMAND"`
+			# Environment variables in $BUILDTOOL_xxx_COMMAND are expanded.
 	
 	if [ $SUCCESS -eq 0 ]; then
 		build_message "We have a $TEMP_NAME."
-		eval "${TOOL}"="\$COMMAND"
+		setVar "$TOOL" "$COMMAND"
 	else
 		build_message "No $TEMP_NAME found."
 	fi
@@ -458,22 +489,23 @@ have_library() {
 			TEMP_VERSION TEMP_DETECT
 	local TEMP_DEPEND_DETECT_BIN TEMP_DEPEND_DETECT_LIB
 
-	LIB="$1"
-	TEMP_NAME=`evalVar LIB_${LIB}_NAME`
+	LIB=$1
+	TEMP_NAME=`evalVar "LIB_${LIB}_NAME"`
 	if [ -z "$TEMP_NAME" ]; then
 		echo "Fatal: Library '$LIB' is not defined!" >&2
 		exit 1
 	fi
 
-	eval TEMP_PRESENT="\$LIB_${LIB}_PRESENT"
+	TEMP_PRESENT=`getVar "LIB_${LIB}_PRESENT"`
 	if [ -n "$TEMP_PRESENT" ]; then
 		return "$TEMP_PRESENT"
 	fi
 	
-	TEMP_DETECT=`evalVar LIB_${LIB}_DETECT`
+	# If a detection method is specified, try that one first.
+	TEMP_DETECT=`evalVar "LIB_${LIB}_DETECT"`
 	if [ -n "$TEMP_DETECT" ]; then
-		TEMP_DEPEND_DETECT_BIN=`evalVar LIB_${LIB}_DEPEND_DETECT_BIN`
-		TEMP_DEPEND_DETECT_LIB=`evalVar LIB_${LIB}_DEPEND_DETECT_LIB`
+		TEMP_DEPEND_DETECT_BIN=`evalVar "LIB_${LIB}_DEPEND_DETECT_BIN"`
+		TEMP_DEPEND_DETECT_LIB=`evalVar "LIB_${LIB}_DEPEND_DETECT_LIB"`
 		detect_dependencies_program "$TEMP_DEPEND_DETECT_BIN"
 		detect_dependencies_library "$TEMP_DEPEND_DETECT_LIB"
 		$TEMP_DETECT
@@ -481,20 +513,23 @@ have_library() {
 		# return value of $TEMP_DETECT is used below.
 		case $? in
 			0)  # Lib found
-				eval "LIB_${LIB}_PRESENT"=0
+				setVar "LIB_${LIB}_PRESENT" 0
 				;;
 			1)  # Lib not found
-				eval "LIB_${LIB}_PRESENT"=1
+				setVar "LIB_${LIB}_PRESENT" 1
 				;;
 			2)  # Use default detection
 				;;
 		esac
 	fi
 
-	eval TEMP_PRESENT="\$LIB_${LIB}_PRESENT"
+	# If detection via a specified detection method was inconclusive,
+	# or no detection method was specified, try default detection
+	# based on whether we can compile against the library.
+	TEMP_PRESENT=`getVar "LIB_${LIB}_PRESENT"`
 	if [ -z "$TEMP_PRESENT" ]; then
-		TEMP_CFLAGS=`evalVar LIB_${LIB}_CFLAGS`
-		TEMP_LDFLAGS=`evalVar LIB_${LIB}_LDFLAGS`
+		TEMP_CFLAGS=`evalVar "LIB_${LIB}_CFLAGS"`
+		TEMP_LDFLAGS=`evalVar "LIB_${LIB}_LDFLAGS"`
 
 		try_compile_c "$CFLAGS $TEMP_CFLAGS" "$LDFLAGS $TEMP_LDFLAGS" << EOF
 int main(void) {
@@ -503,41 +538,45 @@ int main(void) {
 EOF
 		if [ $? -eq 0 ]; then
 			# Build successful
-			eval "LIB_${LIB}_PRESENT"=0
+			setVar "LIB_${LIB}_PRESENT" 0
 		fi
 	fi
 	
-	eval TEMP_PRESENT="\$LIB_${LIB}_PRESENT"
+	# If detection has yielded no results so far, we're calling it
+	# "not found".
+	TEMP_PRESENT=`getVar "LIB_${LIB}_PRESENT"`
 	if [ -z "$TEMP_PRESENT" ]; then
-		eval "LIB_${LIB}_PRESENT"=1
+		setVar "LIB_${LIB}_PRESENT" 1
 	fi
 
-	eval TEMP_PRESENT="\$LIB_${LIB}_PRESENT"
+	TEMP_PRESENT=`getVar "LIB_${LIB}_PRESENT"`
 	if [ "$TEMP_PRESENT" -eq 1 ]; then
 		build_message "$TEMP_NAME not found."
 		return 1
 	fi
 
+	# We have found the library.
+	# Test whether the version is sufficient.
 	if [ $# -gt 1 ]; then
 		# Minimum version supplied
-		TEMP_VERSION=`evalVar LIB_${LIB}_VERSION`
+		TEMP_VERSION=`evalVar "LIB_${LIB}_VERSION"`
 		if [ -z "$TEMP_VERSION" ]; then
-			eval "LIB_${LIB}_PRESENT"=1
+			setVar "LIB_${LIB}_PRESENT" 1
 			echo "Fatal: Could not determine the version of $TEMP_NAME" >&2
 			exit 1
 		fi
 		if not version_match "$2" "$TEMP_VERSION"; then
-			eval "LIB_${LIB}_PRESENT"=1
+			setVar "LIB_${LIB}_PRESENT" 1
 			build_message "Found version $TEMP_VERSION of $TEMP_NAME, \
 but version $2 is required!"
 			return 1
 		fi
-		eval "LIB_${LIB}_PRESENT"=0
+		setVar "LIB_${LIB}_PRESENT" 0
 		build_message "$TEMP_NAME version $TEMP_VERSION found."
 		return 0
 	fi
 
-	eval "LIB_${LIB}_PRESENT"=0
+	setVar "LIB_${LIB}_PRESENT" 0
 	build_message "$TEMP_NAME found."
 	return 0
 }
@@ -556,8 +595,8 @@ use_library() {
 	have_library "$@"
 	[ $? -eq 0 ] || exit 1
 
-	TEMP_CFLAGS=`evalVar LIB_${1}_CFLAGS`
-	TEMP_LDFLAGS=`evalVar LIB_${1}_LDFLAGS`
+	TEMP_CFLAGS=`evalVar "LIB_${1}_CFLAGS"`
+	TEMP_LDFLAGS=`evalVar "LIB_${1}_LDFLAGS"`
 	CFLAGS="$CFLAGS $TEMP_CFLAGS"
 	LDFLAGS="$LDFLAGS $TEMP_LDFLAGS"
 	return 0
@@ -569,14 +608,14 @@ use_library() {
 have_symbol_generic() {
 	local CODE DETECT EXTRA
 
-	DETECT=`evalVar SYMBOL_${1}_DETECT`
+	DETECT=`evalVar "SYMBOL_${1}_DETECT"`
 	if [ -n "$DETECT" ]; then
 		$DETECT
 		return $?
 	fi
 
-	EXTRA=`evalVar SYMBOL_${1}_EXTRA`
-	CODE=`evalVar SYMBOL_${1}_CODE`
+	EXTRA=`evalVar "SYMBOL_${1}_EXTRA"`
+	CODE=`evalVar "SYMBOL_${1}_CODE"`
 	if [ -z "$CODE" ]; then
 		CODE=$2
 	fi
@@ -593,9 +632,9 @@ EOF
 # Arguments:   $1 - the name of the symbol
 have_symbol() {
 	local SYMBOL TEMP_PRESENT CODE
-	SYMBOL="$1"
+	SYMBOL=$1
 
-	TEMP_PRESENT=`getVar SYMBOL_${SYMBOL}_PRESENT`
+	TEMP_PRESENT=`getVar "SYMBOL_${SYMBOL}_PRESENT"`
 	if [ -n "$TEMP_PRESENT" ]; then
 		return "$TEMP_PRESENT"
 	fi
@@ -611,11 +650,11 @@ EOF
 	have_symbol_generic "$SYMBOL" "$CODE"
 	if [ $? -gt 0 ]; then
 		build_message "Symbol '$SYMBOL' not found."
-		eval "SYMBOL_${SYMBOL}_PRESENT"=1
+		setVar "SYMBOL_${SYMBOL}_PRESENT" 1
 		return 1
 	fi
 	build_message "Symbol '$SYMBOL' found."
-	eval "SYMBOL_${SYMBOL}_PRESENT"=0
+	setVar "SYMBOL_${SYMBOL}_PRESENT" 0
 	return 0
 }
 
@@ -623,9 +662,9 @@ EOF
 # Arguments:   $1 - the name of the symbol
 have_type() {
 	local TYPE TEMP_PRESENT CODE
-	TYPE="$1"
+	TYPE=$1
 	
-	TEMP_PRESENT=`getVar TYPE_${TYPE}_PRESENT`
+	TEMP_PRESENT=`getVar "TYPE_${TYPE}_PRESENT"`
 	if [ -n "$TEMP_PRESENT" ]; then
 		return "$TEMP_PRESENT"
 	fi
@@ -642,11 +681,11 @@ EOF
 	have_symbol_generic "$TYPE" "$CODE"
 	if [ $? -gt 0 ]; then
 		build_message "Type '$TYPE' not found."
-		eval "TYPE_${TYPE}_PRESENT"=1
+		setVar "TYPE_${TYPE}_PRESENT" 1
 		return 1
 	fi
 	build_message "Type '$TYPE' found."
-	eval "TYPE_${TYPE}_PRESENT"=0
+	setVar "TYPE_${TYPE}_PRESENT" 0
 	return 0
 }
 
@@ -657,7 +696,7 @@ EOF
 define_have_symbol() {
 	local NAME VALUE DEFNAME
 
-	DEFNAME=`getVar SYMBOL_${1}_DEFNAME`
+	DEFNAME=`getVar "SYMBOL_${1}_DEFNAME"`
 	if [ -z "$DEFNAME" ]; then
 		# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
 		# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
@@ -685,7 +724,7 @@ EOF
 define_have_type() {
 	local NAME VALUE DEFNAME
 
-	DEFNAME=`getVar TYPE_${1}_DEFNAME`
+	DEFNAME=`getVar "TYPE_${1}_DEFNAME"`
 	if [ -z "$DEFNAME" ]; then
 		# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
 		# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
@@ -710,10 +749,10 @@ EOF
 # Arguments:   $1 - the name of the header file
 have_header() {
 	local HEADER NAME EXTRA
-	HEADER="$1"
+	HEADER=$1
 
 	NAME=${HEADER%.h}
-	EXTRA=`evalVar HEADER_${NAME}_EXTRA`
+	EXTRA=`evalVar "HEADER_${NAME}_EXTRA"`
 
 	try_compile_c "$CFLAGS $TEMP_CFLAGS" "$LDFLAGS $TEMP_LDFLAGS" << EOF > /dev/null 2>&1
 $EXTRA
@@ -737,7 +776,7 @@ EOF
 define_have_header() {
 	local NAME VALUE DEFNAME
 	
-	DEFNAME=`getVar HEADER_${1%.h}_DEFNAME`
+	DEFNAME=`getVar "HEADER_${1%.h}_DEFNAME"`
 	if [ -z "$DEFNAME" ]; then
 		# Why not "tr [:lower:] [:upper:]"? Because the capital "i" is not
 		# "I" in Turkish... An alternative would be setting LC_CTYPE to POSIX.
@@ -762,9 +801,9 @@ EOF
 # Arguments:   $1 - the name of the macro
 have_macro() {
 	local MACRO EXTRA
-	MACRO="$1"
+	MACRO=$1
 
-	EXTRA=`evalVar MACRO_${NAME}_EXTRA`
+	EXTRA=`evalVar "MACRO_${NAME}_EXTRA"`
 
 	try_compile_c "$CFLAGS $TEMP_CFLAGS" "$LDFLAGS $TEMP_LDFLAGS" << EOF > /dev/null 2>&1
 $EXTRA
@@ -882,7 +921,7 @@ try_pkgconfig_prog() {
 	PROG=$1
 	PKG_NAME=$2
 
-	TEMP_NAME=`evalVar PROG_${PROG}_NAME`
+	TEMP_NAME=`evalVar "PROG_${PROG}_NAME"`
 	if [ -z "$TEMP_NAME" ]; then
 		echo "Fatal: Program '$PROG' is not defined!" >&2
 		exit 1
@@ -891,7 +930,7 @@ try_pkgconfig_prog() {
 	if $PROG_pkgconfig_FILE --exists "$PKG_NAME"; then
 		local TEMP_VERSION
 		TEMP_VERSION=$($PROG_pkgconfig_FILE --modversion "$PKG_NAME")
-		eval PROG_${PROG}_VERSION=\$TEMP_VERSION
+		setVar "PROG_${PROG}_VERSION" "$TEMP_VERSION"
 		return 0
 	else
 		return 2
@@ -914,7 +953,7 @@ try_pkgconfig_lib() {
 	LIB=$1
 	PKG_NAME=$2
 
-	TEMP_NAME=`evalVar LIB_${LIB}_NAME`
+	TEMP_NAME=`evalVar "LIB_${LIB}_NAME"`
 	if [ -z "$TEMP_NAME" ]; then
 		echo "Fatal: Library '$LIB' is not defined!" >&2
 		exit 1
@@ -925,9 +964,9 @@ try_pkgconfig_lib() {
 		TEMP_VERSION=$($PROG_pkgconfig_FILE --modversion "$PKG_NAME")
 		TEMP_CFLAGS=$($PROG_pkgconfig_FILE --cflags "$PKG_NAME")
 		TEMP_LDFLAGS=$($PROG_pkgconfig_FILE --libs "$PKG_NAME")
-		eval LIB_${LIB}_VERSION=\$TEMP_VERSION
-		eval LIB_${LIB}_CFLAGS=\$TEMP_CFLAGS
-		eval LIB_${LIB}_LDFLAGS=\$TEMP_LDFLAGS
+		setVar "LIB_${LIB}_VERSION" "$TEMP_VERSION"
+		setVar "LIB_${LIB}_CFLAGS" "$TEMP_CFLAGS"
+		setVar "LIB_${LIB}_LDFLAGS" "$TEMP_LDFLAGS"
 		return 2  # Force testing using the new CFLAGS and LDFLAGS
 		#return 0
 	else
