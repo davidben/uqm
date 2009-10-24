@@ -273,7 +273,7 @@ EOF
 #              This only makes sure the PROG_xxx_PRESENT flag is set.
 #              It does not bail out if a dependency is not found.
 #              This function is called for programs in
-#              PROG_xxx_DEPEND_DETECT_BIN or LIB_xxx_DEPEND_PROG.
+#              PROG_xxx_DEPEND_DETECT_BIN or LIB_xxx_DEPEND_BIN.
 #              Using have_program in the respective depend functions would
 #              not save the PRESENT flag, as it is executed in a subshell.
 # Arguments:   $1 - the list of programs
@@ -322,9 +322,9 @@ have_program() {
 
 	TEMP_DETECT=`evalVar PROG_${PROG}_DETECT`	
 	if [ -n "$TEMP_DETECT" ]; then
-		TEMP_DEPEND_PROG=`evalVar PROG_${PROG}_DEPEND_DETECT_BIN`
+		TEMP_DEPEND_BIN=`evalVar PROG_${PROG}_DEPEND_DETECT_BIN`
 		TEMP_DEPEND_LIB=`evalVar PROG_${PROG}_DEPEND_DETECT_LIB`
-		detect_dependencies_program "$TEMP_DEPEND_PROG"
+		detect_dependencies_program "$TEMP_DEPEND_BIN"
 		detect_dependencies_library "$TEMP_DEPEND_LIB"
 		$TEMP_DETECT
 		# NB. TEMP_DETECT should make sure PROG_${PROG}_VERSION and
@@ -472,9 +472,9 @@ have_library() {
 	
 	TEMP_DETECT=`evalVar LIB_${LIB}_DETECT`
 	if [ -n "$TEMP_DETECT" ]; then
-		TEMP_DEPEND_PROG=`evalVar LIB_${LIB}_DEPEND_DETECT_BIN`
+		TEMP_DEPEND_BIN=`evalVar LIB_${LIB}_DEPEND_DETECT_BIN`
 		TEMP_DEPEND_LIB=`evalVar LIB_${LIB}_DEPEND_DETECT_LIB`
-		detect_dependencies_program "$TEMP_DEPEND_PROG"
+		detect_dependencies_program "$TEMP_DEPEND_BIN"
 		detect_dependencies_library "$TEMP_DEPEND_LIB"
 		$TEMP_DETECT
 		# NB. TEMP_DETECT should make sure PROG_$LIB_VERSION is set.
