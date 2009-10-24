@@ -129,8 +129,15 @@ case "$HOST_SYSTEM" in
 		;;
 esac
 LIB_openal_VERSION=""
-LIB_openal_DETECT="try_pkgconfig_lib openal openal"
-LIB_openal_DEPEND_DETECT_BIN="pkgconfig"
+case "$HOST_SYSTEM" in
+	Darwin)
+		## Apple does not ship pkg-config on Mac OSX
+		;;
+	*)
+		LIB_openal_DETECT="try_pkgconfig_lib openal openal"
+		LIB_openal_DEPEND_DETECT_BIN="pkgconfig"
+		;;
+esac
 
 
 ### OpenGL ###
@@ -200,6 +207,9 @@ case "$HOST_SYSTEM" in
 	ARMV5|WINSCW|GCCE)
 		LIB_vorbisfile_DETECT="false"
 		;;
+	Darwin)
+		## Apple does not ship pkg-config on Mac OSX
+		;;
 	*)
 		LIB_vorbisfile_DETECT="try_pkgconfig_lib vorbisfile vorbisfile"
 		LIB_vorbisfile_DEPEND_DETECT_BIN="pkgconfig"
@@ -263,6 +273,9 @@ LIB_zlib_VERSION=""
 case "$HOST_SYSTEM" in
 	ARMV5|WINSCW|GCCE)
 		LIB_zlib_DETECT="true"
+		;;
+	Darwin)
+		## Apple does not ship pkg-config on Mac OSX
 		;;
 	*)
 		LIB_zlib_DETECT="try_pkgconfig_lib zlib zlib"
