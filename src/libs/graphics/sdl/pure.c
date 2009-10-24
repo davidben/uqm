@@ -73,11 +73,63 @@ ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
 	return *screen == 0 ? -1 : 0;
 }
 
+// We cannot rely on SDL_DisplayFormatAlpha() anymore. It can return
+// formats that we do not expect (SDL v1.2.14 on Mac OSX). Mac likes
+// ARGB surfaces, but SDL_DisplayFormatAlpha thinks that only RGBA are fast.
+// This is a generic replacement that gives what we want.
+static void
+CalcAlphaFormat (const SDL_PixelFormat* video, SDL_PixelFormat* ours)
+{
+	int valid = 0;
+
+	// We use 32-bit surfaces internally
+	ours->BitsPerPixel = 32;
+
+	// Try to get as close to the video format as possible
+	if (video->BitsPerPixel == 15 || video->BitsPerPixel == 16)
+	{	// At least match the channel order
+		ours->Rshift = video->Rshift / 5 * 8;
+		ours->Gshift = video->Gshift / 5 * 8;
+		ours->Bshift = video->Bshift / 5 * 8;
+		valid = 1;
+	}
+	else if (video->BitsPerPixel == 24 || video->BitsPerPixel == 32)
+	{
+		// We can only use channels aligned on byte boundary
+		if (video->Rshift % 8 == 0 && video->Gshift % 8 == 0
+				&& video->Bshift % 8 == 0)
+		{	// Match RGB in video
+			ours->Rshift = video->Rshift;
+			ours->Gshift = video->Gshift;
+			ours->Bshift = video->Bshift;
+			valid = 1;
+		}
+	}
+
+	if (valid)
+	{	// For alpha, use the unoccupied byte
+		ours->Ashift = 48 - (ours->Rshift + ours->Gshift + ours->Bshift);
+		// Set channels according to byte positions
+		ours->Rmask = 0xff << ours->Rshift;
+		ours->Gmask = 0xff << ours->Gshift;
+		ours->Bmask = 0xff << ours->Bshift;
+		ours->Amask = 0xff << ours->Ashift;
+		return;
+	}
+
+	// Fallback case. It does not matter what we set, but SDL likes
+	// Alpha to be the highest.
+	ours->Rmask = 0x000000ff;
+	ours->Gmask = 0x0000ff00;
+	ours->Bmask = 0x00ff0000;
+	ours->Amask = 0xff000000;
+}
+
 int
 TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int togglefullscreen)
 {
 	int i, videomode_flags;
-	SDL_Surface *temp_surf;
+	SDL_PixelFormat conv_fmt;
 	
 	GraphicsDriver = driver;
 
@@ -120,13 +172,28 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 	}
 	else
 	{
+		const SDL_Surface *video = SDL_GetVideoSurface ();
+		const SDL_PixelFormat* fmt = video->format;
+
+		ScreenColorDepth = fmt->BitsPerPixel;
 		log_add (log_Info, "Set the resolution to: %ix%ix%i",
-			SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h,
-			SDL_GetVideoSurface()->format->BitsPerPixel);
-		ScreenColorDepth = SDL_GetVideoSurface()->format->BitsPerPixel;
+				video->w, video->h, ScreenColorDepth);
+		log_add (log_Info, "  Video: R %08x, G %08x, B %08x, A %08x",
+				fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask);
 		
 		if (togglefullscreen)
+		{
+			// NOTE: We cannot change the format_conv_surf now because we
+			//   have already loaded lots of graphics and changing it now
+			//   will only lead to chaos.
+			// Just check if channel order has changed significantly
+			CalcAlphaFormat (fmt, &conv_fmt);
+			fmt = format_conv_surf->format;
+			if (conv_fmt.Rmask != fmt->Rmask || conv_fmt.Bmask != fmt->Bmask)
+				log_add (log_Warning, "Warning: pixel format has changed "
+						"significantly. Rendering will be slow.");
 			return 0;
+		}
 	}
 
 	// Create a 32bpp surface in a compatible format which will supply
@@ -136,26 +203,22 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 		SDL_FreeSurface (format_conv_surf);
 		format_conv_surf = NULL;
 	}
-	temp_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0, 32,
-			0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);
-	if (temp_surf)
-	{	// acquire a fast compatible format from SDL
-		format_conv_surf = SDL_DisplayFormatAlpha (temp_surf);
-		if (!format_conv_surf ||
-				format_conv_surf->format->BitsPerPixel != 32)
-		{	// absolute fallback case
-			format_conv_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0, 32,
-					0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-		}
-		SDL_FreeSurface (temp_surf);
-	}
+	CalcAlphaFormat (SDL_Video->format, &conv_fmt);
+	format_conv_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0,
+			conv_fmt.BitsPerPixel, conv_fmt.Rmask, conv_fmt.Gmask,
+			conv_fmt.Bmask, conv_fmt.Amask);
 	if (!format_conv_surf)
 	{
 		log_add (log_Error, "Couldn't create format_conv_surf: %s",
 				SDL_GetError());
 		return -1;
 	}
-	
+	else
+	{
+		const SDL_PixelFormat* fmt = format_conv_surf->format;
+		log_add (log_Info, "  Internal: R %08x, G %08x, B %08x, A %08x",
+				fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask);
+	}
 	
 	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
 	{
@@ -278,8 +341,9 @@ TFB_Pure_Scaled_Preprocess (int force_full_redraw, int transition_amount, int fa
 		backbuffer = fade_temp;
 
 	// we can scale directly onto SDL_Video if video is compatible
-	if (SDL_Video->format->BitsPerPixel ==
-			SDL_Screen->format->BitsPerPixel)
+	if (SDL_Video->format->BitsPerPixel == SDL_Screen->format->BitsPerPixel
+			&& SDL_Video->format->Rmask == SDL_Screen->format->Rmask
+			&& SDL_Video->format->Bmask == SDL_Screen->format->Bmask)
 		scalebuffer = SDL_Video;
 	else
 		scalebuffer = scaled_display;

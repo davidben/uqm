@@ -185,6 +185,7 @@ void
 TFB_UninitGraphics (void)
 {
 	Uninit_DrawCommandQueue ();
+	// TODO: Uninit whatever the drivers have set up for us
 	SDL_Quit ();
 }
 

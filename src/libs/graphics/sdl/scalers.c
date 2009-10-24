@@ -250,18 +250,18 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 	
 	if (Scale_Platform == SCALEPLAT_NULL)
 	{	// Plain C versions
-		if (fmt->Rmask == 0xff000000)
+		if (fmt->Rmask == 0xff000000 && fmt->Bmask == 0x0000ff00)
 			Scale_Platform = SCALEPLAT_C_RGBA;
-		else if (fmt->Rmask == 0x00ff0000)
+		else if (fmt->Rmask == 0x00ff0000 && fmt->Bmask == 0x000000ff)
 			Scale_Platform = SCALEPLAT_C_ARGB;
-		else if (fmt->Rmask == 0x0000ff00)
+		else if (fmt->Rmask == 0x0000ff00 && fmt->Bmask == 0xff000000)
 			Scale_Platform = SCALEPLAT_C_BGRA;
-		else if (fmt->Rmask == 0x000000ff)
+		else if (fmt->Rmask == 0x000000ff && fmt->Bmask == 0x00ff0000)
 			Scale_Platform = SCALEPLAT_C_ABGR;
 		else
 		{	// use slowest default
-			log_add (log_Warning, "Scale_PrepPlatform(): "
-					"unknown Red mask (0x%08x)", fmt->Rmask);
+			log_add (log_Warning, "Scale_PrepPlatform(): unknown masks "
+					"(Red %08x, Blue %08x)", fmt->Rmask, fmt->Bmask);
 			Scale_Platform = SCALEPLAT_C;
 		}
 
