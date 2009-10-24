@@ -50,11 +50,14 @@ enum
 	QUIT_GAME
 };
 
+// Draw the full restart menu. Nothing is done with selections.
 static void
 DrawRestartMenuGraphic (MENU_STATE *pMS)
 {
 	RECT r;
 	STAMP s;
+	TEXT t;
+	UNICODE buf[64];
 
 	s.frame = CaptureDrawable (LoadGraphic (RESTART_PMAP_ANIM));
 	pMS->CurFrame = s.frame;
@@ -68,6 +71,19 @@ DrawRestartMenuGraphic (MENU_STATE *pMS)
 	FlushColorXForms ();
 	LockMutex (GraphicsLock);
 	DrawStamp (&s);
+
+	// Put the version number in the bottom right corner.
+	SetContextFont (TinyFont);
+	t.pStr = buf;
+	t.baseline.x = SCREEN_WIDTH - 3;
+	t.baseline.y = SCREEN_HEIGHT - 2;
+	t.align = ALIGN_RIGHT;
+	t.CharCount = (COUNT)~0;
+	sprintf (buf, "v%d.%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
+			UQM_PATCH_VERSION, UQM_EXTRA_VERSION);
+	SetContextForeGroundColor (WHITE_COLOR);
+	font_DrawText (&t);
+
 	UnlockMutex (GraphicsLock);
 	UnbatchGraphics ();
 }
@@ -76,8 +92,6 @@ static void
 DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 {
 	RECT r;
-	TEXT t;
-	UNICODE buf[64];
 
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
@@ -93,18 +107,6 @@ DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
 	r.extent.width = SCREEN_WIDTH;
 	r.extent.height = SCREEN_HEIGHT;
 	SetFlashRect (&r, SetAbsFrameIndex (f, NewState + 1));
-
-	// Put version number in the corner
-	SetContextFont (TinyFont);
-	t.pStr = buf;
-	t.baseline.x = SCREEN_WIDTH - 3;
-	t.baseline.y = SCREEN_HEIGHT - 2;
-	t.align = ALIGN_RIGHT;
-	t.CharCount = (COUNT)~0;
-	sprintf (buf, "v%d.%d.%d%s", UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
-			UQM_PATCH_VERSION, UQM_EXTRA_VERSION);
-	SetContextForeGroundColor (WHITE_COLOR);
-	font_DrawText (&t);
 
 	UnlockMutex (GraphicsLock);
 	(void) OldState;  /* Satisfying compiler (unused parameter) */
