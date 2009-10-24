@@ -64,7 +64,7 @@ PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, bool scope,
 		// realloc it a zillion times
 		soundSource[source].sbuf_size = sample->num_buffers *
 				decoder->buffer_size + PAD_SCOPE_BYTES;
-		soundSource[source].sbuffer = HMalloc (soundSource[source].sbuf_size);
+		soundSource[source].sbuffer = HCalloc (soundSource[source].sbuf_size);
 	}
 
 	for (i = 0; i < sample->num_buffers; ++i)
@@ -616,7 +616,13 @@ GraphForegroundStream (uint8 *data, sint32 width, sint32 height)
 	}
 	decoder = source->sample->decoder;
 
-	assert (audio_GetFormatInfo (decoder->format, &channels, &sample_size));
+	if (!audio_GetFormatInfo (decoder->format, &channels, &sample_size))
+	{
+		UnlockMutex (source->stream_mutex);
+		log_add (log_Debug, "GraphForegroundStream(): uknown format %u",
+				(unsigned)decoder->format);
+		return 0;
+	}
 	full_sample = channels * sample_size;
 
 	// See how far into the buffer we should be now
