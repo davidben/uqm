@@ -15,7 +15,7 @@
  */
 
 // NOTE: A lot of this code is untested. Only highlite and overlay flash
-//       areas drawing directly to the screen, using a cache are
+//       areas, drawing directly to the screen, using a cache, are
 //       currently in use.
 
 // TODO:
