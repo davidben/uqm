@@ -489,16 +489,10 @@ SCALE_(Blend_bilinear) (const Uint32* row0, const Uint32* row1,
 #	define A_REG   "rax"
 #	define D_REG   "rdx"
 #	define CLR_UPPER32(r)      "xor "  "%%" r "," "%%" r
-#	define OFFSETABLE_PTR(p)   "r" (p)
-#	define MOVD_WMO(base, ofs, mult, dst) \
-                               "movd " "(" #base "," ofs "," #mult ")," #dst
 #else
 #	define A_REG   "eax"
 #	define D_REG   "edx"
 #	define CLR_UPPER32(r)
-#	define OFFSETABLE_PTR(p)   "o" (*(p))
-#	define MOVD_WMO(base, ofs, mult, dst) \
-                               "movd " #base "(," ofs "," #mult ")," #dst
 #endif
 
 static inline void
@@ -553,7 +547,7 @@ SCALE_(GetRGBDelta) (Uint32 pix1, Uint32 pix2)
 		// store result
 		"movd       %%mm1, %0    \n\t"
 	
-	: /*0*/"=r" (res)
+	: /*0*/"=rm" (res)
 	: /*1*/"rm" (pix1), /*2*/"rm" (pix2)
 	);
 	
@@ -603,7 +597,7 @@ SCALE_(RGBtoYUV) (Uint32 pix)
 		"por        %%mm2, %%mm1 \n\t"  //   ditto
 		"movd       %%mm1, %0    \n\t"
 
-	: /*0*/"=r" (i)
+	: /*0*/"=rm" (i)
 	: /*1*/"rm" (pix), /*2*/"m" (mmx_888to555_mult)
 	);
 	return RGB15_to_YUV[i];
@@ -641,11 +635,9 @@ SCALE_(CmpYUV) (Uint32 pix1, Uint32 pix2, int toler)
 		// lookup the YUV vector
 		"movd       %%mm1, %%eax \n\t"
 		"movd       %%mm3, %%edx \n\t"
-		//movd      (%3, %%eax, 4), %%mm1
-		MOVD_WMO    (%3, "%%" A_REG, 4, %%mm1) "\n\t"
+		"movd       (%3, %%" A_REG ", 4), %%mm1  \n\t"
 		"movq       %%mm1, %%mm4 \n\t"
-		//movd      (%3, %%edx, 4), %%mm2
-		MOVD_WMO    (%3, "%%" D_REG, 4, %%mm2) "\n\t"
+		"movd       (%3, %%" D_REG ", 4), %%mm2  \n\t"
 
 		// get abs difference between YUV components
 #ifdef USE_PSADBW
@@ -670,11 +662,11 @@ SCALE_(CmpYUV) (Uint32 pix1, Uint32 pix2, int toler)
 		"movd       %%mm1, %0    \n\t"
 		"andl       $0xff, %0    \n\t"
 #endif /* USE_PSADBW */
-	: /*0*/"=r" (delta)
+	: /*0*/"=rm" (delta)
 	: /*1*/"rm" (pix1), /*2*/"rm" (pix2),
-		/*3*/OFFSETABLE_PTR(RGB15_to_YUV),
+		/*3*/ "r" (RGB15_to_YUV),
 		/*4*/"m" (mmx_888to555_mult)
-	: "%" A_REG, "%" D_REG
+	: "%" A_REG, "%" D_REG, "cc"
 	);
 	
 	return (delta << 1) <= toler;
@@ -713,7 +705,7 @@ SCALE_(DiffYUV) (Uint32 yuv1, Uint32 yuv2)
 	: /*0*/"=a" (ret)
 	: /*1*/"rm" (yuv1), /*2*/"rm" (yuv2),
 		/*3*/"m" (mmx_YUV_threshold)
-	: "%" D_REG
+	: "%" D_REG, "cc"
 	);
 	return ret;
 }
@@ -791,7 +783,6 @@ SCALE_(Blend_bilinear) (const Uint32* row0, const Uint32* row1,
 #undef A_REG
 #undef D_REG
 #undef CLR_UPPER32
-#undef OFFSETABLE_PTR
 
 #endif // GCC_ASM
 
