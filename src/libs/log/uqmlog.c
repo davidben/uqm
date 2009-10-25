@@ -15,6 +15,8 @@
  */
 
 #include "uqmlog.h"
+#include "loginternal.h"
+#include "msgbox.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -48,14 +50,13 @@ static volatile bool noThreadReady = false;
 static bool showBox = true;
 static bool errorBox = true;
 
-static FILE *streamOut;
+FILE *streamOut;
 
 static volatile int qlock = 0;
 static Mutex qmutex;
 
 static void exitCallback (void);
 static void displayLog (bool isError);
-static void displayBox (const char *title, bool isError, const char *msg);
 
 static void
 lockQueue (void)
@@ -324,45 +325,6 @@ displayLog (bool isError)
 	
 	*p = '\0';
 
-	displayBox ("The Ur-Quan Masters", isError, msgBuf);
+	log_displayBox ("The Ur-Quan Masters", isError, msgBuf);
 }
 
-
-#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
-
-extern int __stdcall MessageBoxA (void *hWnd, const char* lpText,
-		const char* lpCaption, uint32 uType);
-
-#define MB_ICONEXCLAMATION          0x00000030L
-#define MB_ICONASTERISK             0x00000040L
-
-static void
-displayBox (const char *title, bool isError, const char *msg)
-{
-	MessageBoxA (0, msg, title,
-			isError ? MB_ICONEXCLAMATION : MB_ICONASTERISK);
-}
-
-#elif defined(__APPLE__)
-
-static void
-displayBox (const char *title, bool isError, const char *msg)
-{
-	(void) title;
-	(void) isError;
-	(void) msg;
-	// do something here
-}
-
-#else
-
-static void
-displayBox (const char *title, bool isError, const char *msg)
-{
-	(void) title;
-	(void) isError;
-	(void) msg;
-	// do nothing here
-}
-
-#endif /* OS disjunction */

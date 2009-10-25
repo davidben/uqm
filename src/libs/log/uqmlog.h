@@ -14,8 +14,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _UQMLOG_H
-#define _UQMLOG_H
+#ifndef UQMLOG_H_INCL__
+#define UQMLOG_H_INCL__
 
 #include "port.h"
 #include "types.h"
@@ -56,5 +56,4 @@ extern void log_add_nothreadV (log_Level, const char *fmt, va_list)
 		VPRINTF_FUNCTION(2);
 
 
-#endif /* _UQMLOG_H */
-
+#endif /* UQMLOG_H_INCL__ */

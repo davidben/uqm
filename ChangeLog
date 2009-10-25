@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Added a native error box for MacOSX (like we have for Windows) - Alex
 - Fix for weird colors problem on MacOSX w/ SDL 1.2.14; also improves
   overall compatibility on all platforms - Alex
 - Unix build system cleanups, fix detection of SDL, libmikmod, pthread - SvdB
