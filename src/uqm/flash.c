@@ -14,20 +14,28 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// NOTE: A lot of this code is untested. Only highlite flash areas drawing
-//       directly to the screen, using a cache are currently in use.
+// NOTE: A lot of this code is untested. Only highlite and overlay flash
+//       areas drawing directly to the screen, using a cache are
+//       currently in use.
 
 // TODO:
 // - Add Flash_setHighlight() to change the brightness as in
 //   Flash_createHighlight(), for an already created flash area.
-// - Add Flash_setOverlay() to change the overlay frame as in
-//   Flash_createOverlay(), for an already created flash area.
-
+// - Be able to set a minimum and maximum merge factor for overlay and
+//   transition areas, as the numer/denom with highlights.
+// - During a few frames during the sequence, the frame to be displayed
+//   is equal to a frame which was supplied as a parameter to the flash
+//   sequence (instead of generated during the sequence). It is not
+//   necessary to make a copy in this case. Instead, the original can be
+//   used. I had code to do this, but this doesn't work anymore with the
+//   addition of startNumer, endNumer, and denom. This code is still
+//   present, but disabled with BEGIN_AND_END_FRAME_EXCEPTIONS.
 
 #define FLASH_INTERNAL
 #include "flash.h"
 
 #include "setup.h"
+		// For GraphicsLock.
 #include "libs/log.h"
 #include "libs/memlib.h"
 #include "libs/threadlib.h"
@@ -66,6 +74,10 @@ Flash_create (CONTEXT gfxContext, FRAME parent)
 
 	context->original       = 0;
 
+	context->startNumer     = 0;
+	context->endNumer       = 1;
+	context->denom          = 1;
+
 	context->fadeInTime     = Flash_DEFAULT_FADE_IN_TIME;
 	context->onTime         = Flash_DEFAULT_ON_TIME;
 	context->fadeOutTime    = Flash_DEFAULT_FADE_OUT_TIME;
@@ -88,19 +100,18 @@ Flash_create (CONTEXT gfxContext, FRAME parent)
 	return context;
 }
 
-// 'startNumer / denom' is the brightness in the start state of the flash.
-// 'endNumer / denom' is the brightness in the end state of the flash.
+// 'startNumer / denom' is the brightness in the start state of the sequence.
+// 'endNumer / denom' is the brightness in the end state of the sequence.
 // These numbers are relative to the brighness of the original image.
 FlashContext *
-Flash_createHighlight (CONTEXT gfxContext, FRAME parent, const RECT *rect,
-		int startNumer, int endNumer, int denom)
+Flash_createHighlight (CONTEXT gfxContext, FRAME parent, const RECT *rect)
 {
 	FlashContext *context = Flash_create (gfxContext, parent);
 
 	if (rect == NULL)
 	{
-		// No rectangle specified. Should be later with Flash_setRect()
-		// before calling Flash_start().
+		// No rectangle specified. It should be specified later with
+		// Flash_setRect(), before calling Flash_start().
 		context->rect.corner.x = 0;
 		context->rect.corner.y = 0;
 		context->rect.extent.width = 0;
@@ -109,10 +120,6 @@ Flash_createHighlight (CONTEXT gfxContext, FRAME parent, const RECT *rect,
 	else
 		context->rect = *rect;
 	context->type = FlashType_highlight;
-
-	context->u.highlight.startNumer = startNumer;
-	context->u.highlight.endNumer = endNumer;
-	context->u.highlight.denom = denom;
 
 	return context;
 }
@@ -138,18 +145,28 @@ Flash_createOverlay (CONTEXT gfxContext, FRAME parent,
 		const POINT *origin, FRAME overlay)
 {
 	FlashContext *context = Flash_create (gfxContext, parent);
-	
+
 	context->type = FlashType_overlay;
 
-	context->u.overlay.frame = overlay;
-	GetFrameRect (overlay, &context->rect);
-	context->rect.corner = *origin;
+	if (origin == NULL || overlay == NULL) {
+		// No overlay specified. It should be specified later with
+		// Flash_setOverlay(), before calling Flash_start().
+		context->u.overlay.frame = NULL;
+		context->rect.corner.x = 0;
+		context->rect.corner.y = 0;
+		context->rect.extent.width = 0;
+		context->rect.extent.height = 0;
+	} else
+		Flash_setOverlay (context, origin, overlay);
 	
 	return context;
 }
 
+// Set the current state. 'timeSpentInState' determines how much time should
+// be considered to be already spent in this state.
 void
-Flash_setState (FlashContext *context, FlashState state)
+Flash_setState (FlashContext *context, FlashState state,
+		TimeCount timeSpentInState)
 {
 	TimeCount now;
 	
@@ -157,10 +174,12 @@ Flash_setState (FlashContext *context, FlashState state)
 
 	context->state = state;
 	Flash_fixState (context);
-	Flash_drawCurrentFrame (context);
 	
-	context->lastStateTime = now;
+	context->lastStateTime = now - timeSpentInState;
 	context->lastFrameTime = now;
+
+	if (context->started)
+		Flash_drawCurrentFrame (context);
 }
 
 void
@@ -303,6 +322,43 @@ Flash_setSpeed (FlashContext *context, TimeCount fadeInTime,
 	context->offTime = offTime;
 }
 
+// Determines how the brightness of the flashing changes.
+// For highlights:
+//   'startNumer / denom' is the brightness, at the start state of the flash.
+//   'endNumer / denom' is the brightness, at the end state of the flash.
+// For overlays:
+//   'startNumer / denom' is the brightness of the image to overlay, at
+//       the start state of the flash.
+//   'endNumer / denom' is the brightness of the image to overlay, at
+//       the end state of the flash.
+// For transitions:
+//   'startNumer / denom' is the brightness of the second image, at
+//       the start state of the flash; '1 - startNumer / denom' is the
+//       brightness of the first image at the start state of the flash.
+//   'endNumer / denom' is the brightness of the second image, at
+//       the end state of the flash; '1 - endNumer / denom' is the
+//       brightness of the first image at the end state of the flash.
+// These numbers are relative to the brighness of each original image.
+void
+Flash_setMergeFactors(FlashContext *context, int startNumer, int endNumer,
+		int denom) {
+	if (context->started)
+	{
+		Flash_drawFrame (context, context->original);
+		Flash_clearCache (context);
+	}
+
+	context->startNumer = startNumer;
+	context->endNumer = endNumer;
+	context->denom = denom;
+
+	if (context->started)
+	{
+		Flash_grabOriginal (context);
+		Flash_drawCurrentFrame (context);
+	}
+}
+
 // Set the time between updates of the flash area.
 void
 Flash_setFrameTime (FlashContext *context, TimeCount frameTime) {
@@ -339,6 +395,7 @@ Flash_clearCache (FlashContext *context)
 {
 	COUNT i;
 
+#ifdef BEGIN_AND_END_FRAME_EXCEPTIONS
 	if (context->type == FlashType_transition ||
 			context->type == FlashType_overlay)
 	{
@@ -352,6 +409,7 @@ Flash_clearCache (FlashContext *context)
 		// we shouldn't free it.
 		context->cache[context->cacheSize - 1] = (FRAME) 0;
 	}
+#endif  /* BEGIN_AND_END_FRMAE_EXCEPTIONS */
 	
 	for (i = 0; i < context->cacheSize; i++)
 	{
@@ -366,6 +424,8 @@ Flash_clearCache (FlashContext *context)
 void
 Flash_setRect (FlashContext *context, const RECT *rect)
 {
+	assert(context->type == FlashType_highlight);
+
 	if (context->started)
 	{
 		Flash_drawFrame (context, context->original);
@@ -390,20 +450,49 @@ Flash_getRect (FlashContext *context, RECT *rect)
 	*rect = context->rect;
 }
 
+void
+Flash_setOverlay (FlashContext *context, const POINT *origin,
+		FRAME overlay) {
+	assert(context->type = FlashType_overlay);
+
+	if (context->started)
+	{
+		Flash_drawFrame (context, context->original);
+		Flash_clearCache (context);
+	}
+	
+	context->u.overlay.frame = overlay;
+	GetFrameRect (overlay, &context->rect);
+	context->rect.corner.x += origin->x;
+	context->rect.corner.y += origin->y;
+
+	if (context->started)
+	{
+		Flash_grabOriginal (context);
+		Flash_drawCurrentFrame (context);
+	}
+}
+
 // Call before you update the graphics in the currently flashing area.
 void
 Flash_preUpdate (FlashContext *context)
 {
-	Flash_drawFrame (context, context->original);
-	Flash_clearCache (context);
+	if (context->started)
+	{
+		Flash_drawFrame (context, context->original);
+		Flash_clearCache (context);
+	}
 }
 
 // Call after you update the graphics in the currently flashing area.
 void
 Flash_postUpdate (FlashContext *context)
 {
-	Flash_grabOriginal (context);
-	Flash_drawCurrentFrame (context);
+	if (context->started)
+	{
+		Flash_grabOriginal (context);
+		Flash_drawCurrentFrame (context);
+	}
 }
 
 // Pre: context->original has been initialised.
@@ -482,16 +571,14 @@ Flash_blendFraction (FlashContext *context, int numer, int denom,
 	// F1 = context->u.highlight.endNumer / context->u.highlight.denom
 	// P = *numer / *denom
 	// R = P * F1 + (1 - P) * F0
-	//   = numer * context->u.highlight.endNumer /
-	//     (denom * context->u.highlight.denom) +
-	//     (denom - numer) * u.highlight.startNumer /
-	//     denom * context->u.highlight.denom
+	//   = numer * context->endNumer / (denom * context->denom) +
+	//     (denom - numer) * startNumer / denom * context->denom
 	
 	assert (numer >= 0 && numer <= denom);
 
-	*resNumer = numer * context->u.highlight.endNumer +
-			(denom - numer) * context->u.highlight.startNumer;
-	*resDenom = denom * context->u.highlight.denom;
+	*resNumer = numer * context->endNumer +
+			(denom - numer) * context->startNumer;
+	*resDenom = denom * context->denom;
 }
 
 static void
@@ -499,18 +586,18 @@ Flash_makeFrame (FlashContext *context, FRAME dest, RECT *destRect,
 		int numer, int denom)
 {
 	RECT orgRect;
+	int blendedNumer;
+	int blendedDenom;
+
 	orgRect.corner.x = 0;
 	orgRect.corner.y = 0;
 	orgRect.extent = context->rect.extent;
 
+	Flash_blendFraction (context, numer, denom, &blendedNumer, &blendedDenom);
+
 	switch (context->type) {
 		case FlashType_highlight:
 		{
-			int blendedNumer;
-			int blendedDenom;
-
-			Flash_blendFraction (context, numer, denom, &blendedNumer,
-					&blendedDenom);
 			arith_frame_blit (context->original, &orgRect, dest, destRect,
 					blendedNumer, blendedDenom);
 			break;
@@ -528,20 +615,42 @@ Flash_makeFrame (FlashContext *context, FRAME dest, RECT *destRect,
 				final = context->original;
 
 			arith_frame_blit (first, &orgRect, dest, destRect,
-					denom - numer, denom);
+					blendedDenom - blendedNumer, blendedDenom);
 			arith_frame_blit (final, &orgRect, dest, destRect,
-					numer, -denom);
+					blendedNumer, -blendedDenom);
 			break;
 		}
 		case FlashType_overlay:
-			arith_frame_blit (context->original, &orgRect, dest, destRect,
-					denom, denom);
+		{
+			int addOrSubtractNumer;
+			int addOrSubtractDenom;
+			if (blendedNumer < 0)
+			{
+				// Subtractive blit.
+				blendedNumer = -blendedNumer;
+				addOrSubtractNumer = -1;
+				addOrSubtractDenom = 1;
+			}
+			else
+			{
+				// Additive blit.
+				addOrSubtractNumer = 1;
+				addOrSubtractDenom = -1;
+			}
+
+			// Draw the overlay at partial strength:
 			arith_frame_blit (context->u.overlay.frame, &orgRect,
-					dest, destRect, numer, -denom);
+					dest, destRect, blendedNumer, blendedDenom);
+
+			// Merge the original in at full strength:
+			// For additive blit:         dest = context->original + dest
+			// For subtractive blit blit: dest = context->original - dest
+			arith_frame_blit (context->original, &orgRect, dest, destRect,
+					addOrSubtractNumer, addOrSubtractDenom);
 			break;
+		}
 	}
 }
-
 
 // Prepare an entry in the cache.
 static inline void
@@ -550,6 +659,7 @@ Flash_prepareCacheFrame (FlashContext *context, COUNT index)
 	if (context->cache[index] != (FRAME) 0)
 		return;
 
+#ifdef BEGIN_AND_END_FRAME_EXCEPTIONS
 	if (index == 0 && context->type == FlashType_overlay)
 		context->cache[index] = context->original;
 	else if (index == 0 && context->type == FlashType_transition)
@@ -560,6 +670,7 @@ Flash_prepareCacheFrame (FlashContext *context, COUNT index)
 		context->cache[index] = context->u.transition.final != (FRAME) 0 ?
 				context->u.transition.final : context->original;
 	else
+#endif  /* BEGIN_AND_END_FRMAE_EXCEPTIONS */
 	{
 		context->cache[index] = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
 				context->rect.extent.width, context->rect.extent.height, 1));
@@ -606,6 +717,7 @@ Flash_drawCacheFrame (FlashContext *context, COUNT index)
 static inline void
 Flash_drawUncachedFrame (FlashContext *context, int numer, int denom)
 {
+#ifdef BEGIN_AND_END_FRAME_EXCEPTIONS
 	// 'lastFrameIndex' is 0 for the first image, 1 for the final
 	// image, and 2 otherwise.
 
@@ -638,6 +750,7 @@ Flash_drawUncachedFrame (FlashContext *context, int numer, int denom)
 	}
 
 	context->lastFrameIndex = 2;
+#endif  /* BEGIN_AND_END_FRMAE_EXCEPTIONS */
 
 	if (context->parent == NULL)
 	{

@@ -20,8 +20,7 @@
 /*
  * This code can draw three kinds of flashing areas.
  * - a rectangular highlight area. The brightness of the area oscilates.
- * - an overlay; an image is overlayed over an area, with oscilating
- *   brightness.
+ * - an overlay; an image is laid over an area, with oscilating brightness.
  * - a transition/cross-fade between two images.
  *
  * NB. The graphics lock should not be held when any of the Flash functions
@@ -32,8 +31,11 @@
  *
  * // We create the flash context; it is used to manipulate the flash
  * // rectangle while it exists.
- * FlashContext *fc = Flash_createHighlight (context, (FRAME) 0, rect,
- *         2, 3, 2);
+ * FlashContext *fc = Flash_createHighlight (context, (FRAME) 0, rect);
+ * 
+ * // Specify how bright the flash is at the beginning and ending of the
+ * // sequence.
+ * Flash_setMergeFactors(context, 2, 3, 2);
  *
  * // We change the flashing speed from the defaults.
  * Flash_setSpeed (ONE_SECOND, ONE_SECOND, ONE_SECOND, ONE_SECOND);
@@ -116,12 +118,6 @@ struct FlashContext {
 
 	union {
 		struct {
-			int startNumer;
-					// Numerator for the brightness for the on state.
-			int endNumer;
-					// Numerator for the brightness for the off state.
-			int denom;
-					// Denominator for the brightness.
 		} highlight;
 		struct {
 			FRAME first;
@@ -136,6 +132,13 @@ struct FlashContext {
 		} overlay;
 	} u;
 
+	int startNumer;
+			// Numerator for the merge factor for the on state.
+	int endNumer;
+			// Numerator for the merge factor for the off state.
+	int denom;
+			// Denominator for the merge factor.
+	
 	TimeCount fadeInTime;
 	TimeCount onTime;
 	TimeCount fadeOutTime;
@@ -173,13 +176,14 @@ struct FlashContext {
 
 
 FlashContext *Flash_createHighlight (CONTEXT gfxContext, FRAME parent,
-		const RECT *rect, int startNumer, int endNumer, int denom);
+		const RECT *rect);
 FlashContext *Flash_createTransition (CONTEXT gfxContext, FRAME parent,
 		const POINT *origin, FRAME first, FRAME final);
 FlashContext *Flash_createOverlay (CONTEXT gfxContext, FRAME parent,
 		const POINT *origin, FRAME overlay);
 
-void Flash_setState (FlashContext *context, FlashState state);
+void Flash_setState (FlashContext *context, FlashState state,
+		TimeCount timeSpentInState);
 void Flash_start (FlashContext *context);
 void Flash_terminate (FlashContext *context);
 void Flash_pause (FlashContext *context);
@@ -187,10 +191,14 @@ void Flash_continue (FlashContext *context);
 void Flash_process (FlashContext *context);
 void Flash_setSpeed (FlashContext *context, TimeCount fadeInTime,
 		TimeCount onTime, TimeCount fadeOutTime, TimeCount offTime);
+void Flash_setMergeFactors(FlashContext *context, int startNumer,
+		int endNumer, int denom);
 void Flash_setFrameTime (FlashContext *context, TimeCount frameTime);
 TimeCount Flash_nextTime (FlashContext *context);
 void Flash_setRect (FlashContext *context, const RECT *rect);
 void Flash_getRect (FlashContext *context, RECT *rect);
+void Flash_setOverlay(FlashContext *context, const POINT *origin,
+		FRAME overlay);
 void Flash_preUpdate (FlashContext *context);
 void Flash_postUpdate (FlashContext *context);
 void Flash_setCacheSize (FlashContext *context, COUNT size);
