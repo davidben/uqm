@@ -89,29 +89,14 @@ DrawRestartMenuGraphic (MENU_STATE *pMS)
 }
 
 static void
-DrawRestartMenu (BYTE OldState, BYTE NewState, FRAME f)
+DrawRestartMenu (MENU_STATE *pMS, BYTE NewState, FRAME f)
 {
-	RECT r;
-
-	LockMutex (GraphicsLock);
-	SetContext (ScreenContext);
-
-	r.corner.x = 0;
-	r.corner.y = 0;
-	r.extent.width = 0;
-	r.extent.height = 0;
-	SetContextClipRect (&r);
-
-	r.corner.x = 0;
-	r.corner.y = 0;
-	r.extent.width = SCREEN_WIDTH;
-	r.extent.height = SCREEN_HEIGHT;
-	SetFlashRect (&r, SetAbsFrameIndex (f, NewState + 1));
-
-	UnlockMutex (GraphicsLock);
-	(void) OldState;  /* Satisfying compiler (unused parameter) */
+	POINT origin;
+	origin.x = 0;
+	origin.y = 0;
+	Flash_setOverlay(pMS->flashContext,
+			&origin, SetAbsFrameIndex (f, NewState + 1));
 }
-
 
 static BOOLEAN
 DoRestart (MENU_STATE *pMS)
@@ -123,6 +108,9 @@ DoRestart (MENU_STATE *pMS)
 	/* Cancel any presses of the Pause key. */
 	GamePaused = FALSE;
 
+	if (pMS->Initialized)
+		Flash_process(pMS->flashContext);
+
 	if (!pMS->Initialized)
 	{
 		if (pMS->hMusic)
@@ -133,9 +121,17 @@ DoRestart (MENU_STATE *pMS)
 		}
 		pMS->hMusic = LoadMusic (MAINMENU_MUSIC);
 		InactTimeOut = (pMS->hMusic ? 120 : 20) * ONE_SECOND;
-		
+		pMS->flashContext = Flash_createOverlay (ScreenContext,
+				NULL, NULL, NULL);
+		Flash_setMergeFactors (pMS->flashContext, -3, 3, 16);
+		Flash_setSpeed (pMS->flashContext, (6 * ONE_SECOND) / 16, 0,
+				(6 * ONE_SECOND) / 16, 0);
+		Flash_setFrameTime (pMS->flashContext, ONE_SECOND / 16);
+		Flash_setState(pMS->flashContext, FlashState_fadeIn,
+				(3 * ONE_SECOND) / 16);
+		DrawRestartMenu (pMS, pMS->CurState, pMS->CurFrame);
+		Flash_start (pMS->flashContext);
 		PlayMusic (pMS->hMusic, TRUE, 1);
-		DrawRestartMenu ((BYTE)~0, pMS->CurState, pMS->CurFrame);
 		pMS->Initialized = TRUE;
 
 		{
@@ -189,9 +185,9 @@ DoRestart (MENU_STATE *pMS)
 				GLOBAL (CurrentActivity) = SUPER_MELEE;
 				break;
 			case SETUP_GAME:
-				LockMutex (GraphicsLock);
-				SetFlashRect (NULL, (FRAME)0);
-				UnlockMutex (GraphicsLock);
+				Flash_pause(pMS->flashContext);
+				Flash_setState(pMS->flashContext, FlashState_fadeIn,
+						(3 * ONE_SECOND) / 16);
 				SetupMenu ();
 				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
 						MENU_SOUND_SELECT);
@@ -199,8 +195,9 @@ DoRestart (MENU_STATE *pMS)
 				SetTransitionSource (NULL);
 				BatchGraphics ();
 				DrawRestartMenuGraphic (pMS);
-				DrawRestartMenu ((BYTE)~0, pMS->CurState, pMS->CurFrame);
 				ScreenTransition (3, NULL);
+				DrawRestartMenu (pMS, pMS->CurState, pMS->CurFrame);
+				Flash_continue(pMS->flashContext);
 				UnbatchGraphics ();
 				return TRUE;
 			case QUIT_GAME:
@@ -212,11 +209,9 @@ DoRestart (MENU_STATE *pMS)
 				break;
 		}
 
-		LockMutex (GraphicsLock);
-		SetFlashRect (NULL, (FRAME)0);
-		UnlockMutex (GraphicsLock);
+		Flash_pause(pMS->flashContext);
 
-		return (FALSE);
+		return FALSE;
 	}
 	else
 	{
@@ -236,7 +231,7 @@ DoRestart (MENU_STATE *pMS)
 		if (NewState != pMS->CurState)
 		{
 			BatchGraphics ();
-			DrawRestartMenu (pMS->CurState, NewState, pMS->CurFrame);
+			DrawRestartMenu (pMS, NewState, pMS->CurFrame);
 			UnbatchGraphics ();
 			pMS->CurState = NewState;
 		}
@@ -244,18 +239,17 @@ DoRestart (MENU_STATE *pMS)
 
 	if (MouseButtonDown)
 	{
-		LockMutex (GraphicsLock);
-		SetFlashRect (NULL, (FRAME)0);
-		UnlockMutex (GraphicsLock);
+		Flash_pause(pMS->flashContext);
 		DoPopupWindow (GAME_STRING (MAINMENU_STRING_BASE + 54));
 				// Mouse not supported message
 		SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);	
 		SetTransitionSource (NULL);
 		BatchGraphics ();
 		DrawRestartMenuGraphic (pMS);
-		DrawRestartMenu ((BYTE)~0, pMS->CurState, pMS->CurFrame);
+		DrawRestartMenu (pMS, pMS->CurState, pMS->CurFrame);
 		ScreenTransition (3, NULL);
 		UnbatchGraphics ();
+		Flash_continue(pMS->flashContext);
 	}
 
 	LastInputTime = GetTimeCounter ();
@@ -330,9 +324,7 @@ RestartMenu (MENU_STATE *pMS)
 		pMS->hMusic = 0;
 	}
 
-	LockMutex (GraphicsLock);
-	SetFlashRect (NULL, (FRAME)0);
-	UnlockMutex (GraphicsLock);
+	Flash_terminate (pMS->flashContext);
 	DestroyDrawable (ReleaseDrawable (pMS->CurFrame));
 
 	if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)

@@ -1341,11 +1341,12 @@ flash_rect_func (void *data)
 			//  Wait for the  flash_screen_frame to get initialized
 			FlushGraphics ();
 			GetFrameRect (flash_screen_frame, &screen_rect);
-			cached_screen_frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP, 
-					screen_rect.extent.width, screen_rect.extent.height, 1));
+			cached_screen_frame = CaptureDrawable (CreateDrawable (
+					WANT_PIXMAP, screen_rect.extent.width,
+					screen_rect.extent.height, 1));
 			screen_rect.corner.x = 0;
 			screen_rect.corner.y = 0;
-			arith_frame_blit (flash_screen_frame, &screen_rect, 
+			arith_frame_blit (flash_screen_frame, &screen_rect,
 					cached_screen_frame, NULL, 0, 0);
 			UnlockMutex (flash_mutex);
 			if (cached_frame)
@@ -1370,7 +1371,8 @@ flash_rect_func (void *data)
 #define MAX_F_STRENGTH 3
 				int num = 0, denom = 0;
 
-				if ((fstrength += incr) > MAX_F_STRENGTH)
+				fstrength += incr;
+				if (fstrength > MAX_F_STRENGTH)
 				{
 					fstrength = MAX_F_STRENGTH - 1;
 					incr = -1;
@@ -1387,8 +1389,9 @@ flash_rect_func (void *data)
 					RECT tmp_rect = framesize_rect;
 					pStamp = &cached_stamp[fstrength - MIN_F_STRENGTH];
 					cached[fstrength - MIN_F_STRENGTH] = 1;
-					pStamp->frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP, 
-							framesize_rect.extent.width, framesize_rect.extent.height, 1));
+					pStamp->frame = CaptureDrawable (CreateDrawable (
+							WANT_PIXMAP, framesize_rect.extent.width,
+							framesize_rect.extent.height, 1));
 					pStamp->origin.x = framesize_rect.corner.x;
 					pStamp->origin.y = framesize_rect.corner.y;
 					tmp_rect.corner.x = 0;
@@ -1396,7 +1399,8 @@ flash_rect_func (void *data)
 
 					if (fstrength != NORMAL_F_STRENGTH)
 					{
-						arith_frame_blit (cached_frame, &tmp_rect, pStamp->frame, NULL,
+						arith_frame_blit (cached_frame, &tmp_rect,
+								pStamp->frame, NULL,
 								fstrength > 0 ? fstrength : -fstrength, 16);
 
 						if (fstrength < 0)
@@ -1413,15 +1417,16 @@ flash_rect_func (void *data)
 						}
 					}
 
-					arith_frame_blit (cached_screen_frame, &framesize_rect, pStamp->frame, 
-							&tmp_rect, num, denom);
+					arith_frame_blit (cached_screen_frame, &framesize_rect,
+							pStamp->frame, &tmp_rect, num, denom);
 				}
 			}
 			else
 			{
 #define MIN_STRENGTH 4
 #define MAX_STRENGTH 6
-				if ((strength += 2) > MAX_STRENGTH)
+				strength += 2;
+				if (strength > MAX_STRENGTH)
 					strength = MIN_STRENGTH;
 				if (cached[strength - MIN_STRENGTH])
 					pStamp = &cached_stamp[strength - MIN_STRENGTH];
