@@ -860,16 +860,18 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_REINITVIDEO:
 			{
 				int oldDriver = GraphicsDriver;
+				int oldFlags = GfxFlags;
+				int oldWidth = ScreenWidthActual;
+				int oldHeight = ScreenHeightActual;
 				if (TFB_ReInitGraphics (DC.data.reinitvideo.driver,
 						DC.data.reinitvideo.flags,
 						DC.data.reinitvideo.width, DC.data.reinitvideo.height))
 				{
 					log_add (log_Error, "Could not provide requested mode: "
 							"reverting to last known driver.");
-					if (TFB_ReInitGraphics (oldDriver,
-							DC.data.reinitvideo.flags,
-							DC.data.reinitvideo.width,
-							DC.data.reinitvideo.height))
+					// We don't know what exactly failed, so roll it all back
+					if (TFB_ReInitGraphics (oldDriver, oldFlags,
+							oldWidth, oldHeight))
 					{
 						log_add (log_Fatal,
 								"Couldn't reinit at that point either. "

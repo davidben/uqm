@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Revert gfx settings entirely when a mode switch fails (bug #1056) - Alex
 - Fixed the Syreen lights-out scene timing (bug #1011) - Alex
 - Added a native error box for MacOSX (like we have for Windows) - Alex
 - Fix for weird colors problem on MacOSX w/ SDL 1.2.14; also improves
