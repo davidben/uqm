@@ -569,19 +569,16 @@ SpewPhrases (COUNT wait_track)
 
 	which_track = PlayingTrack ();
 	if (which_track == 0 && !rewind)
-	{
-		// initial start of player
-		if (wait_track == 1 || wait_track == (COUNT)~0)
+	{	// initial start of player
+		UnlockMutex (GraphicsLock);
+		PlayTrack ();
+		// wait for the trackplayer to start playing
+		do
 		{
-			UnlockMutex (GraphicsLock);
-			PlayTrack ();
-			do
-			{
-				TaskSwitch ();
-				which_track = PlayingTrack ();
-			} while (!which_track);
-			LockMutex (GraphicsLock);
-		}
+			TaskSwitch ();
+			which_track = PlayingTrack ();
+		} while (!which_track);
+		LockMutex (GraphicsLock);
 	}
 	else if (which_track <= wait_track)
 	{	// XXX: I don't know why this is here, but it is not harmful.

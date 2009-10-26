@@ -218,7 +218,6 @@ FriendlyExit (RESPONSE_REF R)
 		NPCPhrase (LATER);
 		NPCPhrase (SEX_GOODBYE);
 
-		AlienTalkSegue (1);
 		AlienTalkSegue (2);
 		XFormColorMap (GetColorMapAddress (
 				SetAbsColorMapIndex (CommData.AlienColorMap, 0)

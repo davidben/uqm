@@ -1288,11 +1288,13 @@ DiscussDevices (BOOLEAN TalkAbout)
 
 		if (VuxBeastIndex)
 		{
-			for (i = 1; i < VuxBeastIndex; ++i)
-				AlienTalkSegue (i);
+			// Run all tracks upto the Vux Beast scientist's report
+			AlienTalkSegue (VuxBeastIndex - 1);
+			// Disable Commander's speech animation and run the report
 			i = CommData.AlienTalkDesc.NumFrames;
 			CommData.AlienTalkDesc.NumFrames = 0;
 			AlienTalkSegue (VuxBeastIndex);
+			// Enable Commander's speech animation and run the rest
 			CommData.AlienTalkDesc.NumFrames = i;
 			AlienTalkSegue ((COUNT)~0);
 		}
