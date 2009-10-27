@@ -605,6 +605,18 @@ SOURCE=..\..\src\libs\list\list.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\src\libs\log\loginternal.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\log\msgbox.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\log\msgbox_win.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\libs\log\uqmlog.c
 # End Source File
 # Begin Source File
