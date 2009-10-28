@@ -45,6 +45,14 @@ extern void SetVelocityComponents (VELOCITY_DESC *velocityptr, SIZE dx,
 extern void DeltaVelocityComponents (VELOCITY_DESC *velocityptr, SIZE dx,
 		SIZE dy);
 
+static inline BOOLEAN
+IsVelocityZero (VELOCITY_DESC *vptr)
+{
+	return vptr->vector.width == 0 && vptr->vector.height == 0 &&
+			vptr->incr.width == 0 && vptr->incr.height == 0 &&
+			vptr->fract.width == 0 && vptr->fract.height == 0;
+}
+
 static inline DWORD
 VelocitySquared (SIZE dx, SIZE dy)
 {

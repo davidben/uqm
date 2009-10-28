@@ -1124,13 +1124,14 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 						ed.facing = ARCTAN (-dx, -dy);
 						if (UltraManeuverable)
 							ed.MoveState = AVOID;
-						else
+						else // Try a gravity whip
 							ed.MoveState = ENTICE;
 
 						ObjectsOfConcern[GRAVITY_MASS_INDEX] = ed;
 					}
-					else if (!UltraManeuverable)
-					{
+					else if (!UltraManeuverable &&
+							!IsVelocityZero (&Ship.velocity))
+					{	// Try an orbital insertion, don't thrust
 						++Ship.thrust_wait;
 						if (Ship.turn_wait)
 							ShipMoved = TRUE;

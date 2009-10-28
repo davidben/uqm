@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Fixed AI ship not moving on warp in (bug #648) - Alex
 - Revert gfx settings entirely when a mode switch fails (bug #1056) - Alex
 - Fixed the Syreen lights-out scene timing (bug #1011) - Alex
 - Added a native error box for MacOSX (like we have for Windows) - Alex
