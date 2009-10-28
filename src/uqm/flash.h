@@ -117,8 +117,8 @@ struct FlashContext {
 			// The type of flash animation.
 
 	union {
-		struct {
-		} highlight;
+		/*struct {
+		} highlight;*/
 		struct {
 			FRAME first;
 					// The first image from the transition (cross-fade).
