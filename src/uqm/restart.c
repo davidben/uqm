@@ -101,9 +101,9 @@ DrawRestartMenu (MENU_STATE *pMS, BYTE NewState, FRAME f)
 static BOOLEAN
 DoRestart (MENU_STATE *pMS)
 {
-	static DWORD LastInputTime;
-	static DWORD InactTimeOut;
-	DWORD TimeIn = GetTimeCounter ();
+	static TimeCount LastInputTime;
+	static TimeCount InactTimeOut;
+	TimeCount TimeIn = GetTimeCounter ();
 
 	/* Cancel any presses of the Pause key. */
 	GamePaused = FALSE;
@@ -132,40 +132,18 @@ DoRestart (MENU_STATE *pMS)
 		DrawRestartMenu (pMS, pMS->CurState, pMS->CurFrame);
 		Flash_start (pMS->flashContext);
 		PlayMusic (pMS->hMusic, TRUE, 1);
+		LastInputTime = GetTimeCounter ();
 		pMS->Initialized = TRUE;
 
 		{
 			BYTE clut_buf[] = {FadeAllToColor};
-			DWORD TimeOut = XFormColorMap (
-					(COLORMAPPTR)clut_buf, ONE_SECOND / 2);
-			while ((GetTimeCounter () <= TimeOut) &&
-			       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
-			{
-				UpdateInputState ();
-				TaskSwitch ();
-			}
+			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf,
+					ONE_SECOND / 2));
 		}
 	}
 	else if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
-		return (FALSE);
-	}
-	else if (!(PulsedInputState.menu[KEY_MENU_UP] ||
-			PulsedInputState.menu[KEY_MENU_DOWN] ||
-			PulsedInputState.menu[KEY_MENU_LEFT] ||
-			PulsedInputState.menu[KEY_MENU_RIGHT] ||
-			PulsedInputState.menu[KEY_MENU_SELECT] || MouseButtonDown))
-
-	{
-		if (GetTimeCounter () - LastInputTime > InactTimeOut)
-		{
-			SleepThreadUntil (FadeMusic (0, ONE_SECOND));
-			StopMusic ();
-			FadeMusic (NORMAL_VOLUME, 0);
-
-			GLOBAL (CurrentActivity) = (ACTIVITY)~0;
-			return (FALSE);
-		}
+		return FALSE;
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
@@ -213,20 +191,25 @@ DoRestart (MENU_STATE *pMS)
 
 		return FALSE;
 	}
-	else
+	else if (PulsedInputState.menu[KEY_MENU_UP] ||
+			PulsedInputState.menu[KEY_MENU_DOWN])
 	{
 		BYTE NewState;
 
 		NewState = pMS->CurState;
 		if (PulsedInputState.menu[KEY_MENU_UP])
 		{
-			if (NewState-- == START_NEW_GAME)
+			if (NewState == START_NEW_GAME)
 				NewState = QUIT_GAME;
+			else
+				--NewState;
 		}
 		else if (PulsedInputState.menu[KEY_MENU_DOWN])
 		{
-			if (NewState++ == QUIT_GAME)
+			if (NewState == QUIT_GAME)
 				NewState = START_NEW_GAME;
+			else
+				++NewState;
 		}
 		if (NewState != pMS->CurState)
 		{
@@ -235,9 +218,15 @@ DoRestart (MENU_STATE *pMS)
 			UnbatchGraphics ();
 			pMS->CurState = NewState;
 		}
-	}
 
-	if (MouseButtonDown)
+		LastInputTime = GetTimeCounter ();
+	}
+	else if (PulsedInputState.menu[KEY_MENU_LEFT] ||
+			PulsedInputState.menu[KEY_MENU_RIGHT])
+	{	// Does nothing, but counts as input for timeout purposes
+		LastInputTime = GetTimeCounter ();
+	}
+	else if (MouseButtonDown)
 	{
 		Flash_pause(pMS->flashContext);
 		DoPopupWindow (GAME_STRING (MAINMENU_STRING_BASE + 54));
@@ -250,18 +239,31 @@ DoRestart (MENU_STATE *pMS)
 		ScreenTransition (3, NULL);
 		UnbatchGraphics ();
 		Flash_continue(pMS->flashContext);
+
+		LastInputTime = GetTimeCounter ();
+	}
+	else
+	{	// No input received, check if timed out
+		if (GetTimeCounter () - LastInputTime > InactTimeOut)
+		{
+			SleepThreadUntil (FadeMusic (0, ONE_SECOND));
+			StopMusic ();
+			FadeMusic (NORMAL_VOLUME, 0);
+
+			GLOBAL (CurrentActivity) = (ACTIVITY)~0;
+			return FALSE;
+		}
 	}
 
-	LastInputTime = GetTimeCounter ();
 	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
 
-	return (TRUE);
+	return TRUE;
 }
 
 static BOOLEAN
 RestartMenu (MENU_STATE *pMS)
 {
-	DWORD TimeOut;
+	TimeCount TimeOut;
 	BYTE black_buf[1];
 
 	ReinitQueue (&race_q[0]);
@@ -301,7 +303,6 @@ RestartMenu (MENU_STATE *pMS)
 
 			FreeGameData ();
 			
-			TimeOut = ONE_SECOND / 2;
 			GLOBAL (CurrentActivity) = CHECK_ABORT;
 		}
 	}
