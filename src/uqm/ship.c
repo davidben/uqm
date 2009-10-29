@@ -503,7 +503,6 @@ GetNextStarShip (STARSHIP *LastStarShipPtr, COUNT which_side)
 	HSTARSHIP hBattleShip;
 
 	cur_player = which_side;
-	CyborgDescPtr = 0;
 
 
 	hBattleShip = GetEncounterStarShip (LastStarShipPtr, which_side);

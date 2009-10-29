@@ -288,8 +288,6 @@ PlotIntercept (ELEMENT *ElementPtr0, ELEMENT *ElementPtr1,
 	return (0);
 }
 
-STARSHIP *CyborgDescPtr;
-
 static void
 InitCyborg (STARSHIP *StarShipPtr)
 {
