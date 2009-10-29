@@ -24,6 +24,7 @@
 #include "libs/gfxlib.h"
 #include "libs/mathlib.h"
 #include "libs/sndlib.h"
+#include "libs/timelib.h"
 #include "libs/reslib.h"
 #include "netplay/packet.h"
 		// for NetplayAbortReason and NetplayResetReason.
@@ -115,6 +116,7 @@ struct melee_state
 	RandomContext *randomContext;
 			/* RNG state for all local random decisions, i.e. those
 			 * decisions that are not shared among network parties. */
+	TimeCount LastInputTime;
 
 	MUSIC_REF hMusic;
 };

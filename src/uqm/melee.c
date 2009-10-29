@@ -188,7 +188,6 @@ FRAME MeleeFrame;
 		// Loaded from melee/melebkgd.ani
 static FRAME BuildPickFrame;
 		// Constructed.
-DWORD LastInputTime;
 MELEE_STATE *pMeleeState;
 
 BOOLEAN DoMelee (MELEE_STATE *pMS);
@@ -1086,7 +1085,7 @@ DoEdit (MELEE_STATE *pMS)
 		pMS->MeleeOption = START_MELEE;
 		pMS->InputFunc = DoMelee;
 		UnlockMutex (GraphicsLock);
-		LastInputTime = GetTimeCounter ();
+		pMS->LastInputTime = GetTimeCounter ();
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
 			&& (PulsedInputState.menu[KEY_MENU_SELECT] ||
@@ -1936,6 +1935,7 @@ DoConnectingDialog (MELEE_STATE *pMS)
 		}
 		RedrawMeleeFrame ();
 		pMS->InputFunc = DoMelee;
+		pMS->LastInputTime = GetTimeCounter ();
 		if (!pMS->flash_task)
 		{
 			pMS->flash_task = AssignTask (flash_selection_func, 2048,
@@ -1962,6 +1962,7 @@ DoConnectingDialog (MELEE_STATE *pMS)
 
 			UpdateMeleeStatusMessage (which_side);
 			pMS->InputFunc = DoMelee;
+			pMS->LastInputTime = GetTimeCounter ();
 			Deselect (pMS->MeleeOption);
 			pMS->MeleeOption = START_MELEE;
 			if (!pMS->flash_task)
@@ -2073,7 +2074,6 @@ MeleeOptionSelect (MELEE_STATE *pMS)
 			pMS->Initialized = FALSE;
 			pMS->side = pMS->MeleeOption == LOAD_TOP ? 0 : 1;
 			DoLoadTeam (pMS);
-			LastInputTime = GetTimeCounter ();
 			break;
 		case SAVE_TOP:
 		case SAVE_BOT:
@@ -2102,6 +2102,7 @@ MeleeOptionSelect (MELEE_STATE *pMS)
 			which_side = pMS->MeleeOption == NET_TOP ? 1 : 0;
 			confirmed = MeleeConnectDialog (which_side);
 			RedrawMeleeFrame ();
+			pMS->LastInputTime = GetTimeCounter ();
 			if (confirmed)
 			{
 				pMS->Initialized = FALSE;
@@ -2163,7 +2164,7 @@ DoMelee (MELEE_STATE *pMS)
 				
 			XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
 		}
-		LastInputTime = GetTimeCounter ();
+		pMS->LastInputTime = GetTimeCounter ();
 		return TRUE;
 	}
 
@@ -2176,7 +2177,7 @@ DoMelee (MELEE_STATE *pMS)
 	{
 		// Start editing the teams.
 		LockMutex (GraphicsLock);
-		LastInputTime = GetTimeCounter ();
+		pMS->LastInputTime = GetTimeCounter ();
 		Deselect (pMS->MeleeOption);
 		UnlockMutex (GraphicsLock);
 		pMS->MeleeOption = EDIT_MELEE;
@@ -2202,17 +2203,17 @@ DoMelee (MELEE_STATE *pMS)
 		NewMeleeOption = pMS->MeleeOption;
 		if (PulsedInputState.menu[KEY_MENU_UP])
 		{
-			LastInputTime = GetTimeCounter ();
+			pMS->LastInputTime = GetTimeCounter ();
 			NewMeleeOption = MeleeOptionUp (pMS->MeleeOption);
 		}
 		else if (PulsedInputState.menu[KEY_MENU_DOWN])
 		{
-			LastInputTime = GetTimeCounter ();
+			pMS->LastInputTime = GetTimeCounter ();
 			NewMeleeOption = MeleeOptionDown (pMS->MeleeOption);
 		}
 
 		if ((PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
-				&& GetTimeCounter () - LastInputTime > ONE_SECOND * 10)
+				&& GetTimeCounter () - pMS->LastInputTime > ONE_SECOND * 10)
 		{
 			force_select = TRUE;
 			NewMeleeOption = START_MELEE;
