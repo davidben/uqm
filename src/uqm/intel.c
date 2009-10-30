@@ -27,8 +27,6 @@
 #include <stdio.h>
 
 
-SIZE cur_player;
-
 BATTLE_INPUT_STATE
 computer_intelligence (ComputerInputContext *context, STARSHIP *StarShipPtr)
 {
@@ -40,7 +38,7 @@ computer_intelligence (ComputerInputContext *context, STARSHIP *StarShipPtr)
 	if (StarShipPtr)
 	{
 		// Selecting the next action for in battle.
-		if (PlayerControl[context->playerNr] & CYBORG_CONTROL)
+		if (StarShipPtr->control & CYBORG_CONTROL)
 		{
 			InputState = tactical_intelligence (context, StarShipPtr);
 

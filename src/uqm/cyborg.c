@@ -435,11 +435,11 @@ ship_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 			ShipFired = FALSE;
 	}
 
-	if (PlayerControl[cur_player] & AWESOME_RATING)
+	if (StarShipPtr->control & AWESOME_RATING)
 		margin_of_error = 0;
-	else if (PlayerControl[cur_player] & GOOD_RATING)
+	else if (StarShipPtr->control & GOOD_RATING)
 		margin_of_error = DISPLAY_TO_WORLD (20);
-	else /* if (PlayerControl[cur_player] & STANDARD_RATING) */
+	else /* if (StarShipPtr->control & STANDARD_RATING) */
 		margin_of_error = DISPLAY_TO_WORLD (40);
 
 	ObjectsOfConcern += ConcernCounter;
@@ -464,7 +464,7 @@ ship_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 					|| (ConcernCounter == ENEMY_WEAPON_INDEX
 					&& ObjectsOfConcern->MoveState != AVOID
 #ifdef NEVER
-					&& !(PlayerControl[cur_player] & STANDARD_RATING)
+					&& !(StarShipPtr->control & STANDARD_RATING)
 #endif /* NEVER */
 					)))
 			{
@@ -1035,7 +1035,7 @@ tactical_intelligence (ComputerInputContext *context, STARSHIP *StarShipPtr)
 
 	ShipMoved = TRUE;
 	/* Disable ship's special completely for the Standard AI */
-	if (PlayerControl[context->playerNr] & STANDARD_RATING)
+	if (StarShipPtr->control & STANDARD_RATING)
 		++StarShipPtr->special_counter;
 
 #ifdef DEBUG_CYBORG
@@ -1259,7 +1259,7 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 							ed.which_turn = 0;
 					}
 				}
-				else if (!(PlayerControl[context->playerNr] & AWESOME_RATING))
+				else if (!(StarShipPtr->control & AWESOME_RATING))
 					ed.which_turn = 0;
 				else
 				{

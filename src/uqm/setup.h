@@ -55,7 +55,6 @@ extern QUEUE race_q[];
 extern ACTIVITY LastActivity;
 
 extern BYTE PlayerControl[];
-extern SIZE cur_player;
 
 BOOLEAN InitContexts (void);
 void UninitPlayerInput (void);

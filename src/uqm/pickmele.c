@@ -47,8 +47,6 @@ static void reportShipSelected (GETMELEE_STATE *gms, COUNT index);
 #endif
 
 // Returns the <index>th ship in the queue, or 0 if it is not available.
-// For all the ships in the queue, the ShipFacing field contains the
-// index in the queue.
 static HSTARSHIP
 MeleeShipByQueueIndex (const QUEUE *queue, COUNT index)
 {

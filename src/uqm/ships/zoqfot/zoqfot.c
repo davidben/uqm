@@ -316,7 +316,7 @@ zoqfotpik_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 						|| (ConcernCounter == ENEMY_WEAPON_INDEX
 						&& ObjectsOfConcern->MoveState != AVOID
 #ifdef NEVER
-						&& !(PlayerControl[cur_player] & STANDARD_RATING)
+						&& !(StarShipPtr->control & STANDARD_RATING)
 #endif /* NEVER */
 						))
 						&& ship_weapons (ShipPtr,

@@ -273,6 +273,11 @@ struct STARSHIP
 
 	HELEMENT hShip;
 	COUNT ShipFacing;
+
+	COUNT playerNr;
+			// 0: bottom player; In full-game: the human player
+	BYTE control;
+			// HUMAN, COMPUTER or NETWORK control flags, see intel.h
 };
 
 static inline STARSHIP *

@@ -156,8 +156,7 @@ ProcessInput (void)
 	for (sideI = 0; sideI < NUM_SIDES; sideI++)
 	{
 		HSTARSHIP hBattleShip, hNextShip;
-
-		cur_player = battleInputOrder[sideI];
+		size_t cur_player = battleInputOrder[sideI];
 
 		for (hBattleShip = GetHeadLink (&race_q[cur_player]);
 				hBattleShip != 0; hBattleShip = hNextShip)
@@ -170,6 +169,10 @@ ProcessInput (void)
 
 			if (StarShipPtr->hShip)
 			{
+				// TODO: review and see if we have to do this every frame, or
+				//   if we can do this once somewhere
+				StarShipPtr->control = PlayerControl[cur_player];
+				
 				InputState = PlayerInput[cur_player]->handlers->frameInput (
 						PlayerInput[cur_player], StarShipPtr);
 

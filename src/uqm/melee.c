@@ -1688,6 +1688,7 @@ BuildAndDrawShipList (MELEE_STATE *pMS)
 				BuiltShipPtr->index = index;
 				BuiltShipPtr->ship_cost = ship_cost;
 				BuiltShipPtr->which_side = 1 << side;
+				BuiltShipPtr->playerNr = side;
 				BuiltShipPtr->captains_name_index = captains_name_index;
 				// The next ones are not used in Melee
 				BuiltShipPtr->crew_level = 0;

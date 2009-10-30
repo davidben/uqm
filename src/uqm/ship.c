@@ -502,9 +502,6 @@ GetNextStarShip (STARSHIP *LastStarShipPtr, COUNT which_side)
 {
 	HSTARSHIP hBattleShip;
 
-	cur_player = which_side;
-
-
 	hBattleShip = GetEncounterStarShip (LastStarShipPtr, which_side);
 	if (hBattleShip)
 	{
@@ -564,10 +561,11 @@ GetInitialStarShips (void)
 	}
 	else
 	{
-		COUNT num_ships = NUM_PLAYERS;
-		while (num_ships--)
+		int i;
+		
+		for (i = NUM_PLAYERS; i > 0; --i)
 		{
-			if (!GetNextStarShip (NULL, num_ships == 1))
+			if (!GetNextStarShip (NULL, i - 1))
 				return FALSE;
 		}
 		return TRUE;
