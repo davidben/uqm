@@ -20,6 +20,8 @@
 #include "resinst.h"
 
 #include "libs/mathlib.h"
+#include "uqm/init.h"
+		// for NUM_PLAYERS
 
 
 #define MAX_CREW 10
@@ -37,7 +39,7 @@
 
 #define SHIP_MASS 1
 
-static FRAME LastShipFrame[2];
+static FRAME LastShipFrame[NUM_PLAYERS];
 
 static RACE_DESC umgah_desc =
 {
@@ -254,6 +256,7 @@ umgah_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 	if (!(StarShipPtr->ship_input_state & SPECIAL))
 		StarShipPtr->RaceDescPtr->characteristics.special_wait = 0xFF;
 }
+
 static COUNT
 initialize_cone (ELEMENT *ShipPtr, HELEMENT ConeArray[])
 {
@@ -281,9 +284,11 @@ initialize_cone (ELEMENT *ShipPtr, HELEMENT ConeArray[])
 	MissileBlock.preprocess_func = cone_preprocess;
 	MissileBlock.blast_offs = MISSILE_OFFSET;
 
-	if (ShipPtr->next.image.frame != LastShipFrame[WHICH_SIDE(ShipPtr->state_flags)])
+	// This func is called every frame while the player is holding down WEAPON
+	// Don't reset the cone FRAME to the first image every time
+	if (ShipPtr->next.image.frame != LastShipFrame[StarShipPtr->playerNr])
 	{
-		LastShipFrame[WHICH_SIDE(ShipPtr->state_flags)] = ShipPtr->next.image.frame;
+		LastShipFrame[StarShipPtr->playerNr] = ShipPtr->next.image.frame;
 
 		StarShipPtr->RaceDescPtr->ship_data.special[0] =
 				SetAbsFrameIndex (
@@ -330,13 +335,18 @@ umgah_postprocess (ELEMENT *ElementPtr)
 static void
 umgah_preprocess (ELEMENT *ElementPtr)
 {
+	STARSHIP *StarShipPtr;
+
+	GetElementStarShip (ElementPtr, &StarShipPtr);
+	
 	if (ElementPtr->state_flags & APPEARING)
-		LastShipFrame[WHICH_SIDE(ElementPtr->state_flags)] = 0;
+	{
+		// Reset prevously set value, if any. It could only have been
+		// set by another ship of the same player, though.
+		LastShipFrame[StarShipPtr->playerNr] = 0;
+	}
 	else
 	{
-		STARSHIP *StarShipPtr;
-
-		GetElementStarShip (ElementPtr, &StarShipPtr);
 		if (ElementPtr->thrust_wait == 0
 				&& (StarShipPtr->cur_status_flags & SPECIAL)
 				&& DeltaEnergy (ElementPtr, -SPECIAL_ENERGY_COST))

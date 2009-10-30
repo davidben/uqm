@@ -279,8 +279,8 @@ ModifySilhouette (ELEMENT *ElementPtr, STAMP *modify_stamp,
 	}
 
 	ObjectIntersect.IntersectStamp.origin.y +=
-			(WHICH_SIDE (ElementPtr->state_flags)
-			? BAD_GUY_YOFFS : GOOD_GUY_YOFFS);
+			(ElementPtr->state_flags & GOOD_GUY) ?
+			GOOD_GUY_YOFFS : BAD_GUY_YOFFS;
 
 	if (modify_flags & MODIFY_SWAP)
 	{

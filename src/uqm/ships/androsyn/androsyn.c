@@ -20,6 +20,8 @@
 #include "resinst.h"
 
 #include "libs/mathlib.h"
+#include "uqm/init.h"
+		// for NUM_PLAYERS
 
 
 #define MAX_CREW 20
@@ -322,7 +324,7 @@ androsynth_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 	}
 }
 
-static CollisionFunc *ship_collision_func[2];
+static CollisionFunc *ship_collision_func[NUM_PLAYERS];
 
 #define BLAZER_TURN_WAIT 1
 
@@ -355,7 +357,7 @@ androsynth_postprocess (ELEMENT *ElementPtr)
 				ElementPtr->mass_points = BLAZER_MASS;
 				StarShipPtr->RaceDescPtr->characteristics.turn_wait
 						= BLAZER_TURN_WAIT;
-				ship_collision_func[WHICH_SIDE(ElementPtr->state_flags)]
+				ship_collision_func[StarShipPtr->playerNr]
 						= ElementPtr->collision_func;
 				ElementPtr->collision_func = blazer_collision;
 			}
@@ -424,7 +426,7 @@ androsynth_preprocess (ELEMENT *ElementPtr)
 					StarShipPtr->RaceDescPtr->characteristics.special_wait;
 			StarShipPtr->RaceDescPtr->characteristics.energy_regeneration = ENERGY_REGENERATION;
 			ElementPtr->mass_points = SHIP_MASS;
-			ElementPtr->collision_func = ship_collision_func[WHICH_SIDE(ElementPtr->state_flags)];
+			ElementPtr->collision_func = ship_collision_func[StarShipPtr->playerNr];
 			ElementPtr->next.image.farray =
 					StarShipPtr->RaceDescPtr->ship_data.ship;
 			ElementPtr->next.image.frame =

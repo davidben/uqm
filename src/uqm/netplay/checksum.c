@@ -28,8 +28,6 @@
 		// for DUMP_CRC_OPS
 #include "netconnection.h"
 #include "netmelee.h"
-#include "../tactrans.h"
-		// for new_ship
 #include "libs/log.h"
 #include "libs/mathlib.h"
 
@@ -121,19 +119,7 @@ crc_processELEMENT(crc_State *state, const ELEMENT *val) {
 		crc_processCOUNT(state, val->life_span);
 		crc_processCOUNT(state, val->crew_level);
 		crc_processBYTE(state, val->mass_points);
-
-		// HACK: when a ship is being destroyed, turn_wait is abused to store
-		// the side this ship is on. This must be excluded from the checksum
-		// as this does not have to be the same for both sides.
-		{
-			BYTE turn_wait = val->turn_wait;
-			
-			if (val->preprocess_func == new_ship)
-				turn_wait = 0;
-
-			crc_processBYTE(state, turn_wait);
-		}
-
+		crc_processBYTE(state, val->turn_wait);
 		crc_processBYTE(state, val->thrust_wait);
 		crc_processVELOCITY_DESC(state, &val->velocity);
 		crc_processSTATE(state, &val->current);

@@ -316,7 +316,7 @@ UninitShips (void)
 			/* Record crew left after battle */
 			StarShipPtr->crew_level =
 					StarShipPtr->RaceDescPtr->ship_info.crew_level;
-			SPtr[WHICH_SIDE (ElementPtr->state_flags)] = StarShipPtr;
+			SPtr[StarShipPtr->playerNr] = StarShipPtr;
 			free_ship (StarShipPtr->RaceDescPtr, TRUE, TRUE);
 			StarShipPtr->RaceDescPtr = 0;
 		}

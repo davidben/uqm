@@ -166,13 +166,6 @@ extern PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 #define GRAVITY_MASS(m) ((m) > MAX_SHIP_MASS * 10)
 #define GRAVITY_THRESHOLD (COUNT)255
 
-static inline BYTE
-ElementFlagsSide (ELEMENT_FLAGS flags)
-{
-	return (BYTE) ((flags & BAD_GUY) >> 1);
-}
-#define WHICH_SIDE(flags) ElementFlagsSide (flags)
-
 #define OBJECT_CLOAKED(eptr) \
 		(GetPrimType (&GLOBAL (DisplayArray[(eptr)->PrimIndex])) >= NUM_PRIMS \
 		|| (GetPrimType (&GLOBAL (DisplayArray[(eptr)->PrimIndex])) == STAMPFILL_PRIM \

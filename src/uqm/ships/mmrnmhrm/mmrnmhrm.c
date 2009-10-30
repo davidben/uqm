@@ -20,6 +20,7 @@
 #include "resinst.h"
 
 #include "uqm/init.h"
+		// for NUM_PLAYERS
 
 
 #define MAX_CREW 20
@@ -50,7 +51,7 @@
 #define MMRNMHRM_OFFSET 16
 #define LASER_RANGE DISPLAY_TO_WORLD (125 + MMRNMHRM_OFFSET)
 
-static CHARACTERISTIC_STUFF otherwing_desc[NUM_SIDES];
+static CHARACTERISTIC_STUFF otherwing_desc[NUM_PLAYERS];
 
 static RACE_DESC mmrnmhrm_desc =
 {
@@ -372,8 +373,8 @@ mmrnmhrm_postprocess (ELEMENT *ElementPtr)
 
 		StarShipPtr->weapon_counter = 0;
 
-		t = otherwing_desc[WHICH_SIDE(ElementPtr->state_flags)];
-		otherwing_desc[WHICH_SIDE(ElementPtr->state_flags)] = StarShipPtr->RaceDescPtr->characteristics;
+		t = otherwing_desc[StarShipPtr->playerNr];
+		otherwing_desc[StarShipPtr->playerNr] = StarShipPtr->RaceDescPtr->characteristics;
 		StarShipPtr->RaceDescPtr->characteristics = t;
 		StarShipPtr->RaceDescPtr->cyborg_control.ManeuverabilityIndex = 0;
 
@@ -407,11 +408,14 @@ mmrnmhrm_postprocess (ELEMENT *ElementPtr)
 static void
 mmrnmhrm_preprocess (ELEMENT *ElementPtr)
 {
+	STARSHIP *StarShipPtr;
+
+	GetElementStarShip (ElementPtr, &StarShipPtr);
+
 	if (ElementPtr->state_flags & APPEARING)
 	{
-		COUNT i;
-
-		i = WHICH_SIDE (ElementPtr->state_flags);
+		// Set here because playerNr is unknown during init()
+		COUNT i = StarShipPtr->playerNr;
 		otherwing_desc[i].max_thrust = YWING_MAX_THRUST;
 		otherwing_desc[i].thrust_increment = YWING_THRUST_INCREMENT;
 		otherwing_desc[i].energy_regeneration = YWING_ENERGY_REGENERATION;
@@ -426,9 +430,6 @@ mmrnmhrm_preprocess (ELEMENT *ElementPtr)
 	}
 	else
 	{
-		STARSHIP *StarShipPtr;
-
-		GetElementStarShip (ElementPtr, &StarShipPtr);
 		if ((StarShipPtr->cur_status_flags & SPECIAL)
 				&& StarShipPtr->special_counter == 0)
 		{
