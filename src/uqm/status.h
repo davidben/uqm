@@ -43,14 +43,19 @@
 #define BATTLE_CREW_X 10
 #define BATTLE_CREW_Y (64 - SAFE_Y)
 
+extern COORD status_y_offsets[];
+
+extern void InitStatusOffsets (void);
+
 extern void DrawCrewFuelString (COORD y, SIZE state);
 extern void ClearShipStatus (COORD y);
 extern void OutlineShipStatus (COORD y);
-extern void InitShipStatus (SHIP_INFO *ShipInfoPtr, BYTE captains_name_index,
+extern void InitShipStatus (SHIP_INFO *ShipInfoPtr, STARSHIP *StarShipPtr,
 		RECT *pClipRect);
-extern void DeltaStatistics (SHIP_INFO *ShipInfoPtr, SIZE crew_delta,
-		SIZE energy_delta);
-extern void DrawBattleCrewAmount (SHIP_INFO *ShipInfoPtr);
+			// StarShipPtr or pClipRect can be NULL
+extern void DeltaStatistics (SHIP_INFO *ShipInfoPtr, COORD y_offs,
+		SIZE crew_delta, SIZE energy_delta);
+extern void DrawBattleCrewAmount (SHIP_INFO *ShipInfoPtr, COORD y_offs);
 
 extern void DrawCaptainsWindow (STARSHIP *StarShipPtr);
 extern BOOLEAN DeltaEnergy (ELEMENT *ElementPtr, SIZE energy_delta);

@@ -133,18 +133,17 @@ OutlineShipStatus (COORD y)
 }
 
 void
-InitShipStatus (SHIP_INFO *SIPtr, BYTE captains_name_index, RECT *pClipRect)
+InitShipStatus (SHIP_INFO *SIPtr, STARSHIP *StarShipPtr, RECT *pClipRect)
 {
 	RECT r;
-	COORD y, y_stat;
+	COORD y = 0; // default, for Melee menu
 	STAMP Stamp;
 	CONTEXT OldContext;
 
-	y_stat = (SIPtr->ship_flags & GOOD_GUY) ?
-			GOOD_GUY_YOFFS : BAD_GUY_YOFFS;
+	if (StarShipPtr) // set during battle
+		y = status_y_offsets[StarShipPtr->playerNr];
 
 	OldContext = SetContext (StatusContext);
-	y = y_stat;
 	if (pClipRect)
 	{
 		GetContextClipRect (&r);
@@ -225,8 +224,9 @@ InitShipStatus (SHIP_INFO *SIPtr, BYTE captains_name_index, RECT *pClipRect)
 		DrawFilledRectangle (&r);
 	}
 
-	if (captains_name_index)
-	{
+	if (!StarShipPtr || StarShipPtr->captains_name_index)
+	{	// Any regular ship. SIS and Sa-Matra are separate.
+		// This includes Melee menu.
 		STRING locString;
 
 		DrawCrewFuelString (y, 0);
@@ -234,7 +234,7 @@ InitShipStatus (SHIP_INFO *SIPtr, BYTE captains_name_index, RECT *pClipRect)
 		locString = SetAbsStringTableIndex (SIPtr->race_strings, 1);
 		DrawShipNameString (
 				(UNICODE *)GetStringAddress (locString),
-				GetStringLength (locString),y);
+				GetStringLength (locString), y);
 
 		{
 			UNICODE buf[30];
@@ -243,8 +243,8 @@ InitShipStatus (SHIP_INFO *SIPtr, BYTE captains_name_index, RECT *pClipRect)
 
 			OldFont = SetContextFont (TinyFont);
 
-			if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
-			{
+			if (!StarShipPtr)
+			{	// In Melee menu
 				sprintf (buf, "%d", SIPtr->ship_cost);
 				Text.pStr = buf;
 				Text.CharCount = (COUNT)~0;
@@ -252,7 +252,7 @@ InitShipStatus (SHIP_INFO *SIPtr, BYTE captains_name_index, RECT *pClipRect)
 			else
 			{
 				locString = SetAbsStringTableIndex (SIPtr->race_strings,
-						captains_name_index);
+						StarShipPtr->captains_name_index);
 				Text.pStr = (UNICODE *)GetStringAddress (locString);
 				Text.CharCount = GetStringLength (locString);
 			}
@@ -267,13 +267,10 @@ InitShipStatus (SHIP_INFO *SIPtr, BYTE captains_name_index, RECT *pClipRect)
 			SetContextFont (OldFont);
 		}
 	}
-	else /* if (captains_name_index == 0) */
-	{	/* Only SIS or Sa-Matra */
-		if (SIPtr->ship_flags & GOOD_GUY)
-		{
-			DrawCrewFuelString (y, 0);
-			DrawShipNameString (GLOBAL_SIS (ShipName), (COUNT)~0, y);
-		}
+	else if (StarShipPtr->playerNr == 0)
+	{	// This is SIS
+		DrawCrewFuelString (y, 0);
+		DrawShipNameString (GLOBAL_SIS (ShipName), (COUNT)~0, y);
 	}
 
 	{
@@ -281,8 +278,10 @@ InitShipStatus (SHIP_INFO *SIPtr, BYTE captains_name_index, RECT *pClipRect)
 
 		crew_delta = SIPtr->crew_level;
 		energy_delta = SIPtr->energy_level;
-		SIPtr->crew_level = SIPtr->energy_level = 0;
-		DeltaStatistics (SIPtr, crew_delta, energy_delta);
+		// DeltaStatistics() below will add specified values to these
+		SIPtr->crew_level = 0;
+		SIPtr->energy_level = 0;
+		DeltaStatistics (SIPtr, y, crew_delta, energy_delta);
 	}
 
 	UnbatchGraphics ();
@@ -303,7 +302,8 @@ InitShipStatus (SHIP_INFO *SIPtr, BYTE captains_name_index, RECT *pClipRect)
 // Pre: -crew_delta <= ShipInfoPtr->crew_level
 //      crew_delta <= ShipInfoPtr->max_crew - ShipInfoPtr->crew_level
 void
-DeltaStatistics (SHIP_INFO *ShipInfoPtr, SIZE crew_delta, SIZE energy_delta)
+DeltaStatistics (SHIP_INFO *ShipInfoPtr, COORD y_offs,
+		SIZE crew_delta, SIZE energy_delta)
 {
 	COORD x, y;
 	RECT r;
@@ -312,8 +312,7 @@ DeltaStatistics (SHIP_INFO *ShipInfoPtr, SIZE crew_delta, SIZE energy_delta)
 		return;
 
 	x = 0;
-	y = GAUGE_YOFFS + ((ShipInfoPtr->ship_flags & GOOD_GUY) ?
-			GOOD_GUY_YOFFS : BAD_GUY_YOFFS);
+	y = GAUGE_YOFFS + y_offs;
 
 	r.extent.width = UNIT_WIDTH;
 	r.extent.height = UNIT_HEIGHT;
@@ -388,7 +387,7 @@ DeltaStatistics (SHIP_INFO *ShipInfoPtr, SIZE crew_delta, SIZE energy_delta)
 		{
 			// All crew doesn't fit in the graphics; print a number.
 			// Always print a number for the SIS in the full game.
-			DrawBattleCrewAmount (ShipInfoPtr);
+			DrawBattleCrewAmount (ShipInfoPtr, y_offs);
 		}
 	}
 

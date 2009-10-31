@@ -160,10 +160,12 @@ ship_preprocess (ELEMENT *ElementPtr)
 			StarShipPtr->cur_status_flags
 			& ~(LEFT | RIGHT | THRUST | WEAPON | SPECIAL);
 	if (!(ElementPtr->state_flags & APPEARING))
+	{
 		cur_status_flags |= StarShipPtr->ship_input_state
 				& (LEFT | RIGHT | THRUST | WEAPON | SPECIAL);
+	}
 	else
-	{
+	{	// Preprocessing for the first time
 		ElementPtr->crew_level = RDPtr->ship_info.crew_level;
 
 		if ((ElementPtr->state_flags & BAD_GUY)
@@ -184,8 +186,7 @@ ship_preprocess (ELEMENT *ElementPtr)
 		{
 			CONTEXT OldContext;
 
-			InitShipStatus (&RDPtr->ship_info,
-					StarShipPtr->captains_name_index, NULL);
+			InitShipStatus (&RDPtr->ship_info, StarShipPtr, NULL);
 			OldContext = SetContext (StatusContext);
 			DrawCaptainsWindow (StarShipPtr);
 			SetContext (OldContext);

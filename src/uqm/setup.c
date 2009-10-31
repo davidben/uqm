@@ -27,6 +27,7 @@
 #endif
 #include "init.h"
 #include "intel.h"
+#include "status.h"
 #include "resinst.h"
 #include "sounds.h"
 #include "libs/compiler.h"
@@ -219,6 +220,7 @@ InitKernel (void)
 	if (MenuSounds == 0)
 		return FALSE;
 
+	InitStatusOffsets ();
 	InitSpace ();
 
 	return TRUE;

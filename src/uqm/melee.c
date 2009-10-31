@@ -894,7 +894,7 @@ DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
 		RECT r;
 		TEXT t;
 
-		ClearShipStatus (BAD_GUY_YOFFS);
+		ClearShipStatus (0);
 		SetContextFont (StarConFont);
 		r.corner.x = 3;
 		r.corner.y = 4;
@@ -931,7 +931,7 @@ DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
 		hMasterShip = GetStarShipFromIndex (&master_q, NewStarShip);
 		MasterPtr = LockMasterShip (&master_q, hMasterShip);
 
-		InitShipStatus (&MasterPtr->ShipInfo, ~0, NULL);
+		InitShipStatus (&MasterPtr->ShipInfo, NULL, NULL);
 
 		UnlockMasterShip (&master_q, hMasterShip);
 	}
