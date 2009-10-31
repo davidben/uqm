@@ -188,9 +188,15 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 	if (pStr == (UNICODE *)~0L)
 	{
 		if (GLOBAL_SIS (FuelOnBoard) == 0)
+		{
 			pStr = GAME_STRING (NAVIGATION_STRING_BASE + 2);
+					// "OUT OF FUEL"
+		}
 		else
+		{
 			pStr = GAME_STRING (NAVIGATION_STRING_BASE + 3);
+					// "AUTO-PILOT"
+		}
 	}
 	else
 	{
@@ -200,21 +206,27 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 			{
 				default:
 				case IN_ENCOUNTER:
-					buf[0] = '\0';
+					pStr = "";
 					break;
 				case IN_LAST_BATTLE:
 				case IN_INTERPLANETARY:
 					GetClusterName (CurStarDescPtr, buf);
+					pStr = buf;
 					break;
 				case IN_HYPERSPACE:
-					utf8StringCopy (buf, sizeof (buf),
-							GAME_STRING (NAVIGATION_STRING_BASE
-								+ (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1
-									? 0 : 1)));
+					if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+					{
+						pStr = GAME_STRING (NAVIGATION_STRING_BASE);
+								// "HyperSpace"
+					}
+					else
+					{
+						pStr = GAME_STRING (NAVIGATION_STRING_BASE + 1);
+								// "QuasiSpace"
+					}
 					break;
 			}
 
-			pStr = buf;
 		}
 
 		SetContextForeGroundColor (
@@ -223,7 +235,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 
 	t.baseline.y = SIS_MESSAGE_HEIGHT - 2;
 	t.pStr = pStr;
-	t.CharCount = utf8StringCount(pStr);
+	t.CharCount = (COUNT)~0;
 	SetContextFont (TinyFont);
 
 	if (flags & DSME_CLEARFR)
@@ -1305,7 +1317,7 @@ flash_rect_func (void *data)
 #define CACHE_SIZE 10
 	DWORD TimeIn, WaitTime;
 	SIZE strength, fstrength, incr;
-	RECT cached_rect, framesize_rect;
+	RECT cached_rect;
 	FRAME cached_screen_frame = 0;
 	Task task = (Task)data;
 	int cached[CACHE_SIZE];
