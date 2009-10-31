@@ -227,9 +227,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 	SetContextFont (TinyFont);
 
 	if (flags & DSME_CLEARFR)
-	{
-		SetFlashRect (NULL, (FRAME)0);
-	}
+		SetFlashRect (NULL);
 
 	if (CurPos < 0 && ExPos < 0)
 	{	// normal state
@@ -321,8 +319,9 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 
 	if (flags & DSME_SETFR)
 	{
-		r.corner.x = r.corner.y = 0;
-		SetFlashRect (&r, (FRAME)0);
+		r.corner.x = 0;
+		r.corner.y = 0;
+		SetFlashRect (&r);
 	}
 
 	UnbatchGraphics ();
@@ -1290,7 +1289,6 @@ CountSISPieces (BYTE piece_type)
 
 Task flash_task = 0;
 RECT flash_rect;
-static FRAME flash_frame;
 static FRAME flash_screen_frame = 0;
 static int flash_changed;
 Mutex flash_mutex = 0;
@@ -1308,7 +1306,6 @@ flash_rect_func (void *data)
 	DWORD TimeIn, WaitTime;
 	SIZE strength, fstrength, incr;
 	RECT cached_rect, framesize_rect;
-	FRAME cached_frame = 0;
 	FRAME cached_screen_frame = 0;
 	Task task = (Task)data;
 	int cached[CACHE_SIZE];
@@ -1334,7 +1331,6 @@ flash_rect_func (void *data)
 		{
 			RECT screen_rect;
 			cached_rect = flash_rect;
-			cached_frame = flash_frame;
 			if (cached_screen_frame)
 				DestroyDrawable (ReleaseDrawable (cached_screen_frame));
 			flash_changed = 0;
@@ -1349,8 +1345,6 @@ flash_rect_func (void *data)
 			arith_frame_blit (flash_screen_frame, &screen_rect,
 					cached_screen_frame, NULL, 0, 0);
 			UnlockMutex (flash_mutex);
-			if (cached_frame)
-				GetFrameRect (cached_frame, &framesize_rect);
 			for (i = 0; i < CACHE_SIZE; i++)
 			{
 				cached[i] = 0;
@@ -1365,89 +1359,31 @@ flash_rect_func (void *data)
 		if (cached_rect.extent.width)
 		{
 			STAMP *pStamp;
-			if (cached_frame)
-			{
-#define MIN_F_STRENGTH -3
-#define MAX_F_STRENGTH 3
-				int num = 0, denom = 0;
-
-				fstrength += incr;
-				if (fstrength > MAX_F_STRENGTH)
-				{
-					fstrength = MAX_F_STRENGTH - 1;
-					incr = -1;
-				}
-				else if (fstrength < MIN_F_STRENGTH)
-				{
-					fstrength = MIN_F_STRENGTH + 1;
-					incr = 1;
-				}
-				if (cached[fstrength - MIN_F_STRENGTH])
-					pStamp = &cached_stamp[fstrength - MIN_F_STRENGTH];
-				else
-				{
-					RECT tmp_rect = framesize_rect;
-					pStamp = &cached_stamp[fstrength - MIN_F_STRENGTH];
-					cached[fstrength - MIN_F_STRENGTH] = 1;
-					pStamp->frame = CaptureDrawable (CreateDrawable (
-							WANT_PIXMAP, framesize_rect.extent.width,
-							framesize_rect.extent.height, 1));
-					pStamp->origin.x = framesize_rect.corner.x;
-					pStamp->origin.y = framesize_rect.corner.y;
-					tmp_rect.corner.x = 0;
-					tmp_rect.corner.y = 0;
-
-					if (fstrength != NORMAL_F_STRENGTH)
-					{
-						arith_frame_blit (cached_frame, &tmp_rect,
-								pStamp->frame, NULL,
-								fstrength > 0 ? fstrength : -fstrength, 16);
-
-						if (fstrength < 0)
-						{
-							// Subtractive blit.
-							num = -8;
-							denom = 8;
-						}
-						else
-						{
-							// Additive blit.
-							num = 8;
-							denom = -8;
-						}
-					}
-
-					arith_frame_blit (cached_screen_frame, &framesize_rect,
-							pStamp->frame, &tmp_rect, num, denom);
-				}
-			}
-			else
-			{
 #define MIN_STRENGTH 4
 #define MAX_STRENGTH 6
-				strength += 2;
-				if (strength > MAX_STRENGTH)
-					strength = MIN_STRENGTH;
-				if (cached[strength - MIN_STRENGTH])
-					pStamp = &cached_stamp[strength - MIN_STRENGTH];
-				else
-				{
-					RECT tmp_rect = cached_rect;
-					pStamp = &cached_stamp[strength - MIN_STRENGTH];
-					cached[strength - MIN_STRENGTH] = 1;
-					pStamp->frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP, 
-							cached_rect.extent.width, cached_rect.extent.height, 1));
-					pStamp->origin.x = 0;
-					pStamp->origin.y = 0;
-					tmp_rect.corner.x = 0;
-					tmp_rect.corner.y = 0;
+			strength += 2;
+			if (strength > MAX_STRENGTH)
+				strength = MIN_STRENGTH;
+			if (cached[strength - MIN_STRENGTH])
+				pStamp = &cached_stamp[strength - MIN_STRENGTH];
+			else
+			{
+				RECT tmp_rect = cached_rect;
+				pStamp = &cached_stamp[strength - MIN_STRENGTH];
+				cached[strength - MIN_STRENGTH] = 1;
+				pStamp->frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
+						cached_rect.extent.width, cached_rect.extent.height,
+						1));
+				pStamp->origin.x = 0;
+				pStamp->origin.y = 0;
+				tmp_rect.corner.x = 0;
+				tmp_rect.corner.y = 0;
 
-					arith_frame_blit (cached_screen_frame, &tmp_rect, pStamp->frame, 
-							&tmp_rect, 4, 4);
-					if (strength != 4)
-						arith_frame_blit (cached_screen_frame, &tmp_rect, pStamp->frame, 
-								&tmp_rect, strength, 4);
-				}
+				arith_frame_blit (cached_screen_frame, &tmp_rect,
+						pStamp->frame, &tmp_rect, 4, 4);
+				if (strength != 4)
+					arith_frame_blit (cached_screen_frame, &tmp_rect,
+							pStamp->frame, &tmp_rect, strength, 4);
 			}
 			LockMutex (GraphicsLock);
 			OldContext = SetContext (ScreenContext);
@@ -1482,18 +1418,17 @@ flash_rect_func (void *data)
 }
 
 void
-SetFlashRect (RECT *pRect, FRAME f)
+SetFlashRect (RECT *pRect)
 {
 	RECT clip_r, temp_r, flash_rect1, old_r;
 	CONTEXT OldContext;
-	FRAME old_f;
 	int create_flash = 0;
 
 	if (! flash_mutex)
-		flash_mutex = CreateMutex ("FlashRect Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+		flash_mutex = CreateMutex ("FlashRect Lock",
+				SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
 	old_r = flash_rect;
-	old_f = flash_frame;
 	flash_rect1 = flash_rect;
 		
 	if (pRect != SFR_MENU_3DO && pRect != SFR_MENU_ANY)
@@ -1541,15 +1476,13 @@ SetFlashRect (RECT *pRect, FRAME f)
 	}
 	
 	LockMutex (flash_mutex);
-	flash_frame = f;
 	flash_rect = flash_rect1;
 
 	if (old_r.extent.width
 			&& (old_r.extent.width != flash_rect.extent.width
 			|| old_r.extent.height != flash_rect.extent.height
 			|| old_r.corner.x != flash_rect.corner.x
-			|| old_r.corner.y != flash_rect.corner.y
-			|| old_f != flash_frame))
+			|| old_r.corner.y != flash_rect.corner.y))
 	{
 		if (flash_screen_frame)
 		{
@@ -1659,5 +1592,4 @@ SaveFlagshipState (void)
 		}
 	}
 }
-
 

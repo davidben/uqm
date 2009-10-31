@@ -1281,7 +1281,7 @@ IP_frame (void)
 			pSolarSysState->MenuState.CurState = STARMAP + 1;
 			IP_input_state = 0;
 		}
-		SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+		SetFlashRect (SFR_MENU_3DO);
 		FlushInput ();
 		UnlockMutex (GraphicsLock);
 	}
@@ -1418,7 +1418,6 @@ StartGroups:
 				GLOBAL (ShipStamp.origin.x) = SIS_SCREEN_WIDTH >> 1;
 				GLOBAL (ShipStamp.origin.y) = SIS_SCREEN_HEIGHT >> 1;
 			}
-  
 		}
 
 		GetPlanetInfo ();
@@ -1446,7 +1445,7 @@ StartGroups:
 			DrawMenuStateStrings (PM_SCAN, SCAN);
 			LockMutex (GraphicsLock);
 			pSolarSysState->MenuState.CurState = SCAN + 1;
-			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO);
 			FlushInput ();
 			UnlockMutex (GraphicsLock);
 		}

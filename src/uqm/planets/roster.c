@@ -137,7 +137,7 @@ DeltaSupportCrew (SIZE crew_delta)
 			r.extent.width = STATUS_MESSAGE_WIDTH;
 			r.extent.height = STATUS_MESSAGE_HEIGHT;
 			SetContext (StatusContext);
-			SetFlashRect (&r, (FRAME)0);
+			SetFlashRect (&r);
 		}
 		ret = TRUE;
 	}
@@ -232,7 +232,7 @@ DoModifyRoster (MENU_STATE *pMS)
 	else if (cancel && !(pMS->CurState & SHIP_TOGGLE))
 	{
 		LockMutex (GraphicsLock);
-		SetFlashRect (NULL, (FRAME)0);
+		SetFlashRect (NULL);
 		RosterCleanup (pMS);
 		pMS->CurFrame = 0;
 		DrawStatusMessage (NULL);
@@ -245,7 +245,7 @@ DoModifyRoster (MENU_STATE *pMS)
 		LockMutex (GraphicsLock);
 		pMS->CurState ^= SHIP_TOGGLE;
 		if (!(pMS->CurState & SHIP_TOGGLE))
-			SetFlashRect (NULL, (FRAME)0);
+			SetFlashRect (NULL);
 		else
 		{
 			RosterCleanup (pMS);
@@ -255,7 +255,7 @@ DoModifyRoster (MENU_STATE *pMS)
 			r.extent.width = STATUS_MESSAGE_WIDTH;
 			r.extent.height = STATUS_MESSAGE_HEIGHT;
 			SetContext (StatusContext);
-			SetFlashRect (&r, (FRAME)0);
+			SetFlashRect (&r);
 		}
 		UnlockMutex (GraphicsLock);
 	}

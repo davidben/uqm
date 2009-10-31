@@ -257,7 +257,7 @@ DrawRaceStrings (BYTE NewRaceItem)
 	SetContext (OldContext);
 
 	// Flash the ship purchase menu even when optMenu == OPT_PC
-	SetFlashRect (SFR_MENU_ANY, (FRAME)0);
+	SetFlashRect (SFR_MENU_ANY);
 	UnlockMutex (GraphicsLock);
 }
 
@@ -693,7 +693,7 @@ DoModifyShips (MENU_STATE *pMS)
 						UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 					}
 					
-					SetFlashRect (NULL, (FRAME)0);
+					SetFlashRect (NULL);
 					// Do not call EndHangarAnim() with GraphicsLock held!
 					UnlockMutex (GraphicsLock);
 					EndHangarAnim (pMS);
@@ -719,7 +719,7 @@ DoModifyShips (MENU_STATE *pMS)
 					flash_r.corner.y = RADAR_Y - flash_r.corner.y;
 					flash_r.extent.width = RADAR_WIDTH;
 					flash_r.extent.height = RADAR_HEIGHT;
-					SetFlashRect (&flash_r, (FRAME)0);
+					SetFlashRect (&flash_r);
 				}
 			}
 			else
@@ -736,7 +736,7 @@ DoModifyShips (MENU_STATE *pMS)
 				{
 					COUNT Index;
 
-// SetFlashRect (NULL, (FRAME)0);
+// SetFlashRect (NULL);
 					UnlockMutex (GraphicsLock);
 					if (!(pMS->delta_item & MODIFY_CREW_FLAG))
 					{
@@ -748,7 +748,7 @@ DoModifyShips (MENU_STATE *pMS)
 					{
 						pMS->delta_item ^= MODIFY_CREW_FLAG;
 						LockMutex (GraphicsLock);
-						SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+						SetFlashRect (SFR_MENU_3DO);
 						UnlockMutex (GraphicsLock);
 						DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 						SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
@@ -767,7 +767,7 @@ DoModifyShips (MENU_STATE *pMS)
 									(SHIP_FRAGMENT*)0);
 							//Reset flash rectangle
 							LockMutex (GraphicsLock);
-							SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+							SetFlashRect (SFR_MENU_3DO);
 							UnlockMutex (GraphicsLock);
 							DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 
@@ -780,7 +780,7 @@ DoModifyShips (MENU_STATE *pMS)
 							r.extent.width = SHIP_WIN_WIDTH;
 							r.extent.height = 5;
 							SetContext (SpaceContext);
-							SetFlashRect (&r, (FRAME)0);
+							SetFlashRect (&r);
 							UnlockMutex (GraphicsLock);
 						}
 						else
@@ -827,7 +827,7 @@ DoModifyShips (MENU_STATE *pMS)
 								hStarShip);
 						if (StarShipPtr->crew_level == 0)
 						{
-							SetFlashRect (NULL, (FRAME)0);
+							SetFlashRect (NULL);
 							UnlockMutex (GraphicsLock);
 							ShowCombatShip ((COUNT)pMS->CurState,
 									StarShipPtr);
@@ -845,7 +845,7 @@ DoModifyShips (MENU_STATE *pMS)
 							r.extent.width = SHIP_WIN_WIDTH;
 							r.extent.height = SHIP_WIN_HEIGHT;
 							SetContext (SpaceContext);
-							SetFlashRect (&r, (FRAME)0);
+							SetFlashRect (&r);
 						}
 						else
 						{
@@ -862,7 +862,7 @@ DoModifyShips (MENU_STATE *pMS)
 					{
 						SetContext (StatusContext);
 						GetGaugeRect (&r, TRUE);
-						SetFlashRect (&r, (FRAME)0);
+						SetFlashRect (&r);
 						SetContext (SpaceContext);
 						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
 								MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
@@ -875,7 +875,7 @@ DoModifyShips (MENU_STATE *pMS)
 						r.extent.width = SHIP_WIN_WIDTH;
 						r.extent.height = 5;
 						SetContext (SpaceContext);
-						SetFlashRect (&r, (FRAME)0);
+						SetFlashRect (&r);
 						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
 								MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 					}
@@ -907,7 +907,7 @@ DoModifyShips (MENU_STATE *pMS)
 
 								SetContext (StatusContext);
 								GetGaugeRect (&r, TRUE);
-								SetFlashRect (&r, (FRAME)0);
+								SetFlashRect (&r);
 								SetContext (SpaceContext);
 							}
 							else
@@ -946,7 +946,7 @@ DoModifyShips (MENU_STATE *pMS)
 								r.extent.width = SHIP_WIN_WIDTH;
 								r.extent.height = 5;
 								SetContext (SpaceContext);
-								SetFlashRect (&r, (FRAME)0);
+								SetFlashRect (&r);
 							}
 							else
 							{	// at capacity or not enough RUs
@@ -976,7 +976,7 @@ DoModifyShips (MENU_STATE *pMS)
 
 								SetContext (StatusContext);
 								GetGaugeRect (&r, TRUE);
-								SetFlashRect (&r, (FRAME)0);
+								SetFlashRect (&r);
 								SetContext (SpaceContext);
 							}
 							else
@@ -1009,7 +1009,7 @@ DoModifyShips (MENU_STATE *pMS)
 							r.extent.width = SHIP_WIN_WIDTH;
 							r.extent.height = 5;
 							SetContext (SpaceContext);
-							SetFlashRect (&r, (FRAME)0);
+							SetFlashRect (&r);
 						}
 					}
 
@@ -1032,7 +1032,7 @@ DoModifyShips (MENU_STATE *pMS)
 				pMS->CurState = SHIPYARD_CREW;
 				DrawMenuStateStrings (PM_CREW, pMS->CurState);
 				LockMutex (GraphicsLock);
-				SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+				SetFlashRect (SFR_MENU_3DO);
 				UnlockMutex (GraphicsLock);
 
 				return TRUE;
@@ -1058,7 +1058,7 @@ ChangeFlashRect:
 					pMS->flash_rect0.extent.width = SHIP_WIN_WIDTH;
 					pMS->flash_rect0.extent.height = SHIP_WIN_HEIGHT;
 				}
-				SetFlashRect (&pMS->flash_rect0, (FRAME)0);
+				SetFlashRect (&pMS->flash_rect0);
 			}
 			UnlockMutex (GraphicsLock);
 		}
@@ -1298,7 +1298,7 @@ DoShipyard (MENU_STATE *pMS)
 
 			ShowCombatShip ((COUNT)~0, (SHIP_FRAGMENT*)0);
 			LockMutex (GraphicsLock);
-			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO);
 			UnlockMutex (GraphicsLock);
 		}
 
@@ -1332,7 +1332,7 @@ ExitShipyard:
 				goto ExitShipyard;
 			DrawMenuStateStrings (PM_CREW, pMS->CurState);
 			LockMutex (GraphicsLock);
-			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO);
 			BeginHangarAnim (pMS);
 			UnlockMutex (GraphicsLock);
 		}

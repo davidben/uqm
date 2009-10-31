@@ -236,8 +236,8 @@ ChangeSelection:
 				font_DrawText (&t);
 			}
 
-			SetFlashRect (NULL, (FRAME)0);
-			SetFlashRect (&pMS->flash_rect0, (FRAME)0);
+			SetFlashRect (NULL);
+			SetFlashRect (&pMS->flash_rect0);
 			UnlockMutex (GraphicsLock);
 		}
 	}
@@ -284,7 +284,7 @@ OldContext = SetContext (SpaceContext);
 		pMenuState = 0;
 		LockMutex (GraphicsLock);
 
-		SetFlashRect (NULL, (FRAME)0);
+		SetFlashRect (NULL);
 
 		hBattleShip = (HSTARSHIP)MenuState.CurFrame;
 	}

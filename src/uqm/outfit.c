@@ -237,7 +237,7 @@ DoInstallModule (MENU_STATE *pMS)
 
 		SetContext (SpaceContext);
 		ClearSISRect (CLEAR_SIS_RADAR);
-		SetFlashRect (NULL, (FRAME)0);
+		SetFlashRect (NULL);
 		goto InitFlash;
 	}
 	else if (select || cancel)
@@ -298,7 +298,7 @@ DoInstallModule (MENU_STATE *pMS)
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 
-		SetFlashRect (NULL, (FRAME)0);
+		SetFlashRect (NULL);
 
 		if (select)
 		{
@@ -382,7 +382,7 @@ DoInstallModule (MENU_STATE *pMS)
 			UnlockMutex (GraphicsLock);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState = OUTFIT_MODULES);
 			LockMutex (GraphicsLock);
-			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO);
 
 			pMS->InputFunc = DoOutfit;
 			ClearSISRect (DRAW_SIS_DISPLAY);
@@ -444,7 +444,7 @@ DoInstallModule (MENU_STATE *pMS)
 				pMS->CurState = NewItem;
 				DrawModuleStrings (pMS, NewItem);
 				// flash with PC menus too
-				SetFlashRect (SFR_MENU_ANY, (FRAME)0);
+				SetFlashRect (SFR_MENU_ANY);
 			}
 		}
 		else if (NewItem != pMS->delta_item || NewState != pMS->CurState)
@@ -532,9 +532,9 @@ InitFlash:
 			DrawModuleStrings (pMS, new_slot_piece);
 			if (pMS->CurState < EMPTY_SLOT)
 				// flash with PC menus too
-				SetFlashRect (SFR_MENU_ANY, (FRAME)0);
+				SetFlashRect (SFR_MENU_ANY);
 			else
-				SetFlashRect (&pMS->flash_rect0, (FRAME)0);
+				SetFlashRect (&pMS->flash_rect0);
 		}
 		UnlockMutex (GraphicsLock);
 	}
@@ -571,7 +571,7 @@ ChangeFuelQuantity (void)
 			DeltaSISGauges (0, FUEL_TANK_SCALE, -GLOBAL (FuelCost));
 			SetContext (StatusContext);
 			GetGaugeRect (&r, FALSE);
-			SetFlashRect (&r, (FRAME)0);
+			SetFlashRect (&r);
 		}
 		else
 		{	// no more room for fuel or not enough RUs
@@ -603,7 +603,7 @@ ChangeFuelQuantity (void)
 		}
 		SetContext (StatusContext);
 		GetGaugeRect (&r, FALSE);
-		SetFlashRect (&r, (FRAME)0);
+		SetFlashRect (&r);
 		UnlockMutex (GraphicsLock);
 	}
 }
@@ -713,7 +713,7 @@ DoOutfit (MENU_STATE *pMS)
 			UnbatchGraphics ();
 			
 			LockMutex (GraphicsLock);
-			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO);
 			UnlockMutex (GraphicsLock);
 
 			GLOBAL_SIS (FuelOnBoard) =
@@ -732,7 +732,7 @@ DoOutfit (MENU_STATE *pMS)
 		{
 			pMS->CurState = OUTFIT_FUEL;
 			LockMutex (GraphicsLock);
-			SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+			SetFlashRect (SFR_MENU_3DO);
 			UnlockMutex (GraphicsLock);
 		}
 		else
@@ -758,14 +758,14 @@ ExitOutfit:
 				LockMutex (GraphicsLock);
 				SetContext (StatusContext);
 				GetGaugeRect (&r, FALSE);
-				SetFlashRect (&r, (FRAME)0);
+				SetFlashRect (&r);
 				UnlockMutex (GraphicsLock);
 				break;
 			}
 			case OUTFIT_DOFUEL:
 				pMS->CurState = OUTFIT_FUEL;
 				LockMutex (GraphicsLock);
-				SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+				SetFlashRect (SFR_MENU_3DO);
 				UnlockMutex (GraphicsLock);
 				break;
 			case OUTFIT_MODULES:
@@ -783,7 +783,7 @@ ExitOutfit:
 					goto ExitOutfit;
 				DrawMenuStateStrings (PM_FUEL, pMS->CurState);
 				LockMutex (GraphicsLock);
-				SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+				SetFlashRect (SFR_MENU_3DO);
 				UnlockMutex (GraphicsLock);
 				break;
 		}

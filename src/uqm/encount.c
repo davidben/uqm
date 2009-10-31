@@ -75,7 +75,7 @@ DoSelectAction (MENU_STATE *pMS)
 				{
 					DrawMenuStateStrings (PM_CONVERSE, pMS->CurState);
 					LockMutex (GraphicsLock);
-					SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+					SetFlashRect (SFR_MENU_3DO);
 					UnlockMutex (GraphicsLock);
 				}
 				return ((BOOLEAN)pMS->Initialized);
@@ -331,13 +331,13 @@ InitEncounter (void)
 
 		DrawMenuStateStrings (PM_CONVERSE, MenuState.CurState = HAIL);
 		LockMutex (GraphicsLock);
-		SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+		SetFlashRect (SFR_MENU_3DO);
 		UnlockMutex (GraphicsLock);
 
 		DoInput (&MenuState, TRUE);
 
 		LockMutex (GraphicsLock);
-		SetFlashRect (NULL, (FRAME)0);
+		SetFlashRect (NULL);
 		UnlockMutex (GraphicsLock);
 
 		return (MenuState.CurState);

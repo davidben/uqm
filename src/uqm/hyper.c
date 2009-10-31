@@ -1596,14 +1596,14 @@ UnbatchGraphics ();
 
 	DrawMenuStateStrings (PM_STARMAP, STARMAP);
 	LockMutex (GraphicsLock);
-	SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+	SetFlashRect (SFR_MENU_3DO);
 	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput (&MenuState, TRUE);
 
 	LockMutex (GraphicsLock);
-	SetFlashRect (NULL, (FRAME)0);
+	SetFlashRect (NULL);
 
 	SetContext (SpaceContext);
 

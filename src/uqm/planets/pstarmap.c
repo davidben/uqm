@@ -1724,7 +1724,7 @@ DoFlagshipCommands (MENU_STATE *pMS)
 					if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
 					{
 						LockMutex (GraphicsLock);
-						SetFlashRect (NULL, (FRAME)0);
+						SetFlashRect (NULL);
 						UnlockMutex (GraphicsLock);
 					}
 
@@ -1793,7 +1793,7 @@ DoFlagshipCommands (MENU_STATE *pMS)
 								--pMS->Initialized;
 								pSolarSysState->PauseRotate = 0;
 								LockMutex (GraphicsLock);
-								SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+								SetFlashRect (SFR_MENU_3DO);
 								UnlockMutex (GraphicsLock);
 								break;
 							}
@@ -1829,7 +1829,7 @@ DoFlagshipCommands (MENU_STATE *pMS)
 					else if (pMS->CurState)
 					{
 						LockMutex (GraphicsLock);
-						SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+						SetFlashRect (SFR_MENU_3DO);
 						UnlockMutex (GraphicsLock);
 						if (select)
 						{
@@ -1842,7 +1842,7 @@ DoFlagshipCommands (MENU_STATE *pMS)
 					else
 					{
 						LockMutex (GraphicsLock);
-						SetFlashRect (NULL, (FRAME)0);
+						SetFlashRect (NULL);
 						UnlockMutex (GraphicsLock);
 						DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
 					}

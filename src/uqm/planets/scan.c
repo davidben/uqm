@@ -623,7 +623,7 @@ PickPlanetSide (MENU_STATE *pMS)
 			r.extent.height = FLASH_HEIGHT;
 			LoadDisplayPixmap (&r, pMenuState->flash_frame0);
 
-			SetFlashRect (NULL, (FRAME)0);
+			SetFlashRect (NULL);
 			UnlockMutex (GraphicsLock);
 
 			InitLander (0);
@@ -720,7 +720,7 @@ PickPlanetSide (MENU_STATE *pMS)
 
 		DrawMenuStateStrings (PM_MIN_SCAN, DISPATCH_SHUTTLE);
 		LockMutex (GraphicsLock);
-		SetFlashRect (SFR_MENU_3DO, (FRAME)0);
+		SetFlashRect (SFR_MENU_3DO);
 		UnlockMutex (GraphicsLock);
 
 ExitPlanetSide:
@@ -732,15 +732,20 @@ ExitPlanetSide:
 	}
 	else
 	{
-		SIZE dx = 0, dy = 0;
+		SIZE dx = 0;
+		SIZE dy = 0;
 		POINT new_pt;
 
 		new_pt = pSolarSysState->MenuState.first_item;
 
-		if (PulsedInputState.menu[KEY_MENU_LEFT]) dx = -1;
-		if (PulsedInputState.menu[KEY_MENU_RIGHT]) dx = 1;
-		if (PulsedInputState.menu[KEY_MENU_UP]) dy = -1;
-		if (PulsedInputState.menu[KEY_MENU_DOWN]) dy = 1;
+		if (PulsedInputState.menu[KEY_MENU_LEFT])
+			dx = -1;
+		if (PulsedInputState.menu[KEY_MENU_RIGHT])
+			dx = 1;
+		if (PulsedInputState.menu[KEY_MENU_UP])
+			dy = -1;
+		if (PulsedInputState.menu[KEY_MENU_DOWN])
+			dy = 1;
 
 		dx = dx << MAG_SHIFT;
 		if (dx)
