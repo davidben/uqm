@@ -37,7 +37,7 @@ void
 InitStatusOffsets (void)
 {
 	// XXX: We have to jump through these hoops because GOOD_GUY_YOFFS is
-	//   not a constant, contrary to what its' name suggests.
+	//   not a constant, contrary to what its name suggests.
 	status_y_offsets[0] = GOOD_GUY_YOFFS; // bottom player
 	status_y_offsets[1] = BAD_GUY_YOFFS;  // top player
 }

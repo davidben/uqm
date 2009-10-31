@@ -64,6 +64,26 @@ static SIZE old_radius;
 BYTE draw_sys_flags = DRAW_STARS | DRAW_PLANETS | DRAW_ORBITS
 		| DRAW_HYPER_COORDS | GRAB_BKGND;
 
+
+bool
+currentWorldIsPlanet (void) {
+	return pSolarSysState->pOrbitalDesc->pPrevDesc == pSolarSysState->SunDesc;
+}
+
+bool
+currentPlanetIndex (void) {
+	return (currentWorldIsPlanet ()) ?
+			(pSolarSysState->pOrbitalDesc - pSolarSysState->PlanetDesc) :
+			pSolarSysState->pOrbitalDesc->pPrevDesc -
+			pSolarSysState->PlanetDesc;
+}
+
+bool
+currentMoonIndex (void) {
+	assert (!currentWorldIsPlanet ());
+	return (pSolarSysState->pOrbitalDesc - pSolarSysState->MoonDesc);
+}
+
 // NB. This function modifies the RNG state.
 static void
 GeneratePlanets (SOLARSYS_STATE *system)
@@ -207,6 +227,78 @@ LoadIPData (void)
 		SpaceMusic = LoadMusic (IP_MUSIC);
 	}
 }
+	
+
+static void
+sortPlanetPositions (void)
+{
+	COUNT i;
+	SIZE sort_array[MAX_PLANETS + 1];
+
+	// When this part is done, sort_array will contain the indices to
+	// all planets, sorted on their y position.
+	// The sun itself, which has its data located at
+	// pSolarSysState->PlanetDesc[-1], is included in this array.
+	// Very ugly stuff, but it's correct.
+
+	// Initialise sort_array.
+	for (i = 0; i <= pSolarSysState->SunDesc[0].NumPlanets; ++i)
+		sort_array[i] = i - 1;
+
+	// Sort sort_array, based on the positions of the planets/sun.
+	for (i = 0; i <= pSolarSysState->SunDesc[0].NumPlanets; ++i)
+	{
+		COUNT j;
+
+		for (j = pSolarSysState->SunDesc[0].NumPlanets; j > i; --j)
+		{
+			SIZE real_i, real_j;
+
+			real_i = sort_array[i];
+			real_j = sort_array[j];
+			if (pSolarSysState->PlanetDesc[real_i].image.origin.y >
+					pSolarSysState->PlanetDesc[real_j].image.origin.y)
+			{
+				SIZE temp;
+
+				temp = sort_array[i];
+				sort_array[i] = sort_array[j];
+				sort_array[j] = temp;
+			}
+		}
+	}
+
+	// Put the results of the sorting in the solar system structure.
+	pSolarSysState->FirstPlanetIndex = sort_array[0];
+	pSolarSysState->LastPlanetIndex =
+			sort_array[pSolarSysState->SunDesc[0].NumPlanets];
+	for (i = 0; i <= pSolarSysState->SunDesc[0].NumPlanets; ++i) {
+		PLANET_DESC *planet = &pSolarSysState->PlanetDesc[sort_array[i]];
+		planet->NextIndex = sort_array[i + 1];
+	}
+}
+
+static void
+initSolarSysSISCharacteristics (void)
+{
+	BYTE i, num_thrusters;
+
+	num_thrusters = 0;
+	for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
+	{
+		if (GLOBAL_SIS (DriveSlots[i]) == FUSION_THRUSTER)
+			++num_thrusters;
+	}
+	pSolarSysState->max_ship_speed = (BYTE)(
+			(num_thrusters + 5) * IP_SHIP_THRUST_INCREMENT);
+
+	pSolarSysState->turn_wait = IP_SHIP_TURN_WAIT;
+	for (i = 0; i < NUM_JET_SLOTS; ++i)
+	{
+		if (GLOBAL_SIS (JetSlots[i]) == TURNING_JETS)
+			pSolarSysState->turn_wait -= IP_SHIP_TURN_DECREMENT;
+	}
+}
 
 void
 LoadSolarSys (void)
@@ -279,53 +371,14 @@ LoadSolarSys (void)
 		}
 	}
 
-	{
-		SIZE sort_array[MAX_PLANETS + 1];
-
-		// When this part is done, sort_array will contain the indices to
-		// all planets, sorted on their y position.
-		// The sun itself, which has its data located at
-		// pSolarSysState->PlanetDesc[-1], is included in this array. 
-		// Very ugly stuff, but it's correct.
-
-		for (i = 0; i <= pSolarSysState->SunDesc[0].NumPlanets; ++i)
-			sort_array[i] = i - 1;
-
-		for (i = 0; i <= pSolarSysState->SunDesc[0].NumPlanets; ++i)
-		{
-			COUNT j;
-
-			for (j = pSolarSysState->SunDesc[0].NumPlanets; j > i; --j)
-			{
-				SIZE real_i, real_j;
-
-				real_i = sort_array[i];
-				real_j = sort_array[j];
-				if (pSolarSysState->PlanetDesc[real_i].image.origin.y >
-						pSolarSysState->PlanetDesc[real_j].image.origin.y)
-				{
-					SIZE temp;
-
-					temp = sort_array[i];
-					sort_array[i] = sort_array[j];
-					sort_array[j] = temp;
-				}
-			}
-		}
-
-		pSolarSysState->FirstPlanetIndex = sort_array[0];
-		pSolarSysState->LastPlanetIndex = sort_array[
-				pSolarSysState->SunDesc[0].NumPlanets
-				];
-		for (i = 0; i <= pSolarSysState->SunDesc[0].NumPlanets; ++i)
-			pSolarSysState->PlanetDesc[sort_array[i]].NextIndex =
-					sort_array[i + 1];
-	}
+	sortPlanetPositions ();
 
 	i = GLOBAL (ip_planet);
 	if (i == 0)
-		pSolarSysState->pBaseDesc =
-				pSolarSysState->pOrbitalDesc = pSolarSysState->PlanetDesc;
+	{
+		pSolarSysState->pBaseDesc = pSolarSysState->PlanetDesc;
+		pSolarSysState->pOrbitalDesc = pSolarSysState->PlanetDesc;
+	}
 	else
 	{
 		pSolarSysState->pOrbitalDesc = 0;
@@ -336,25 +389,7 @@ LoadSolarSys (void)
 		SET_GAME_STATE (PLANETARY_LANDING, 0);
 	}
 
-	{
-		BYTE i, num_thrusters;
-
-		num_thrusters = 0;
-		for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
-		{
-			if (GLOBAL_SIS (DriveSlots[i]) == FUSION_THRUSTER)
-				++num_thrusters;
-		}
-		pSolarSysState->max_ship_speed = (BYTE)(
-				(num_thrusters + 5) * IP_SHIP_THRUST_INCREMENT);
-
-		pSolarSysState->turn_wait = IP_SHIP_TURN_WAIT;
-		for (i = 0; i < NUM_JET_SLOTS; ++i)
-		{
-			if (GLOBAL_SIS (JetSlots[i]) == TURNING_JETS)
-				pSolarSysState->turn_wait -= IP_SHIP_TURN_DECREMENT;
-		}
-	}
+	initSolarSysSISCharacteristics ();
 
 	i = pSolarSysState->MenuState.Initialized;
 	if (i)
@@ -378,6 +413,7 @@ LoadSolarSys (void)
 		GLOBAL (ShipStamp.frame) = SetAbsFrameIndex (SISIPFrame, i - 1);
 	}
 
+	// Restore RNG state:
 	TFB_SeedRandom (old_seed);
 }
 
@@ -515,8 +551,7 @@ ShowPlanet:
 				return;
 			else if (pSolarSysState->WaitIntersect == NewWaitPlanet)
 				continue;
-			else if (pSolarSysState->pBaseDesc ==
-					pSolarSysState->MoonDesc)
+			else if (pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc)
 				goto ShowPlanet;
 			else if (!just_checking) /* pBaseDesc == PlanetDesc */
 			{
@@ -710,12 +745,13 @@ FindRadius (void)
 				pSolarSysState->SunDesc[0].radius);
 
 		XFormIPLoc (&GLOBAL (ip_location), &GLOBAL (ShipStamp.origin), TRUE);
-
+	
+		delta_x = GLOBAL (ShipStamp.origin.x) -
+				pSolarSysState->MenuState.flash_rect0.corner.x;
+		delta_y = GLOBAL (ShipStamp.origin.y) -
+				pSolarSysState->MenuState.flash_rect0.corner.y;
 	} while (radius
-			&& (delta_x = GLOBAL (ShipStamp.origin.x)
-			- pSolarSysState->MenuState.flash_rect0.corner.x) >= 0
-			&& (delta_y = GLOBAL (ShipStamp.origin.y)
-			- pSolarSysState->MenuState.flash_rect0.corner.y) >= 0
+			&& delta_x >= 0 && delta_y >= 0
 			&& delta_x < pSolarSysState->MenuState.flash_rect0.extent.width
 			&& delta_y < pSolarSysState->MenuState.flash_rect0.extent.height);
 }
@@ -879,10 +915,12 @@ UndrawShip (void)
 			|| GLOBAL (ShipStamp.origin.y) < 0
 			|| GLOBAL (ShipStamp.origin.y) >= SIS_SCREEN_HEIGHT)
 	{
+		// The ship leaves the screen.
 		if (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
 		{
 			if (radius == MAX_ZOOM_RADIUS)
 			{
+				// The ship leaves IP.
 				GLOBAL (CurrentActivity) |= END_INTERPLANETARY;
 				return;
 			}
@@ -904,42 +942,41 @@ UndrawShip (void)
 		radius = MAX_ZOOM_RADIUS << 1;
 	}
 
+	delta_x = GLOBAL (ShipStamp.origin.x) -
+			pSolarSysState->MenuState.flash_rect0.corner.x;
+	delta_y = GLOBAL (ShipStamp.origin.y) -
+			pSolarSysState->MenuState.flash_rect0.corner.y;
 	if (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc
 			&& (radius > MAX_ZOOM_RADIUS
-			|| ((delta_x = GLOBAL (ShipStamp.origin.x)
-			- pSolarSysState->MenuState.flash_rect0.corner.x) >= 0
-			&& (delta_y = GLOBAL (ShipStamp.origin.y)
-			- pSolarSysState->MenuState.flash_rect0.corner.y) >= 0
+			|| (delta_x >= 0 && delta_y >= 0
 			&& delta_x < pSolarSysState->MenuState.flash_rect0.extent.width
 			&& delta_y < pSolarSysState->MenuState.flash_rect0.extent.height)))
 	{
 		old_radius = pSolarSysState->SunDesc[0].radius;
 		pSolarSysState->SunDesc[0].radius = radius;
 		FindRadius ();
-		if (old_radius == (MAX_ZOOM_RADIUS << 1)
-				|| old_radius == pSolarSysState->SunDesc[0].radius
-				|| LeavingInnerSystem)
+		if (old_radius != (MAX_ZOOM_RADIUS << 1)
+				&& old_radius != pSolarSysState->SunDesc[0].radius
+				&& !LeavingInnerSystem)
+			return;
+		
+		old_radius = 0;
+		if (LeavingInnerSystem)
+			SetGraphicGrabOther (1);
+		DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
+		if (LeavingInnerSystem)
 		{
-			old_radius = 0;
-			if (LeavingInnerSystem)
-				SetGraphicGrabOther (1);
-			DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
-			if (LeavingInnerSystem)
-			{
-				COUNT OldWI;
+			COUNT OldWI;
 
-				SetGraphicGrabOther (0);
-				OldWI = pSolarSysState->WaitIntersect;
-				CheckIntersect (TRUE);
-				if (pSolarSysState->WaitIntersect != OldWI)
-				{
-					pSolarSysState->WaitIntersect = (COUNT)~0;
-					return;
-				}
+			SetGraphicGrabOther (0);
+			OldWI = pSolarSysState->WaitIntersect;
+			CheckIntersect (TRUE);
+			if (pSolarSysState->WaitIntersect != OldWI)
+			{
+				pSolarSysState->WaitIntersect = (COUNT)~0;
+				return;
 			}
 		}
-		else
-			return;
 	}
 
 	if (GLOBAL (autopilot.x) == ~0 && GLOBAL (autopilot.y) == ~0)
@@ -991,7 +1028,8 @@ ScaleSystem (void)
 
 	do
 	{
-		if ((err -= d) <= 0)
+		err -= d;
+		if (err <= 0)
 		{
 			pSolarSysState->SunDesc[0].radius += step;
 
@@ -1518,7 +1556,26 @@ InitSolarSys (void)
 	}
 }
 
-void
+static void
+endInterPlanetary (void)
+{
+	GLOBAL (CurrentActivity) &= ~END_INTERPLANETARY;
+	
+	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
+	{
+		// These are game state changing ops and so cannot be
+		// called once another game has been loaded!
+		(*pSolarSysState->GenFunc) (UNINIT_NPCS);
+		SET_GAME_STATE (USED_BROADCASTER, 0);
+	}
+}
+
+static PLANET_DESC *
+closestPlanetInterPlanetary (void) {
+	
+}
+
+static void
 UninitSolarSys (void)
 {
 	FreeSolarSys ();
@@ -1528,19 +1585,15 @@ UninitSolarSys (void)
 
 	if (GLOBAL (CurrentActivity) & END_INTERPLANETARY)
 	{
-		GLOBAL (CurrentActivity) &= ~END_INTERPLANETARY;
-		
-		if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
-		{	// These are game state changing ops and so cannot be
-			// called once another game has been loaded!
-			(*pSolarSysState->GenFunc) (UNINIT_NPCS);
-			SET_GAME_STATE (USED_BROADCASTER, 0);
-		}
+		endInterPlanetary ();
+		return;
 	}
-	else if ((GLOBAL (CurrentActivity) & START_ENCOUNTER) && EncounterGroup)
+
+	if ((GLOBAL (CurrentActivity) & START_ENCOUNTER) && EncounterGroup)
 	{
 		GetGroupInfo (GLOBAL (BattleGroupRef), EncounterGroup);
 		// Generate the encounter location name based on the closest planet
+
 		if (GLOBAL (ip_planet) == 0)
 		{
 			BYTE i;
@@ -1570,12 +1623,40 @@ UninitSolarSys (void)
 	}
 }
 
-void
-GenerateRandomIP (BYTE control)
-{
+static void
+GenerateOrbital (void) {
 	COUNT i;
 	DWORD rand_val;
 
+#ifdef DEBUG_SOLARSYS
+	if (currentWorldIsPlanet ())
+	{
+		log_add (log_Debug, "Planet index = %d", currentPlanetIndex ());
+	}
+	else
+	{
+		log_add (log_Debug, "Planet index = %d, Moon index = %d",
+				currentPlanetIndex (), currentMoonIndex ());
+	}
+#endif /* DEBUG_SOLARSYS */
+	rand_val = DoPlanetaryAnalysis (&pSolarSysState->SysInfo,
+			pSolarSysState->pOrbitalDesc);
+
+	pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
+	i = (COUNT)~0;
+	rand_val = GenerateLifeForms (&pSolarSysState->SysInfo, &i);
+
+	pSolarSysState->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
+	i = (COUNT)~0;
+	GenerateMineralDeposits (&pSolarSysState->SysInfo, &i);
+
+	pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] = rand_val;
+	LoadPlanet (NULL);
+}
+
+void
+GenerateRandomIP (BYTE control)
+{
 	switch (control)
 	{
 		case INIT_NPCS:
@@ -1606,40 +1687,12 @@ GenerateRandomIP (BYTE control)
 			break;
 		case GENERATE_ORBITAL:
 		{
-#ifdef DEBUG_SOLARSYS
-			if (pSolarSysState->pOrbitalDesc->pPrevDesc ==
-					pSolarSysState->SunDesc)
-				log_add (log_Debug, "Planet index = %d",
-						pSolarSysState->pOrbitalDesc -
-						pSolarSysState->PlanetDesc);
-			else
-				log_add (log_Debug, "Planet index = %d, Moon index = %d",
-						pSolarSysState->pOrbitalDesc->pPrevDesc -
-						pSolarSysState->PlanetDesc,
-						pSolarSysState->pOrbitalDesc -
-						pSolarSysState->MoonDesc);
-#endif /* DEBUG_SOLARSYS */
-			rand_val = DoPlanetaryAnalysis (&pSolarSysState->SysInfo,
-					pSolarSysState->pOrbitalDesc);
-
-			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] =
-					rand_val;
-			i = (COUNT)~0;
-			rand_val = GenerateLifeForms (&pSolarSysState->SysInfo, &i);
-
-			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] =
-					rand_val;
-			i = (COUNT)~0;
-			GenerateMineralDeposits (&pSolarSysState->SysInfo, &i);
-
-			pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] =
-					rand_val;
-			LoadPlanet (NULL);
+			GenerateOrbital ();
 			break;
 		}
 		case GENERATE_NAME:
 		{
-			i = pSolarSysState->pBaseDesc - pSolarSysState->PlanetDesc;
+			COUNT i = pSolarSysState->pBaseDesc - pSolarSysState->PlanetDesc;
 			utf8StringCopy (GLOBAL_SIS (PlanetName),
 					sizeof (GLOBAL_SIS (PlanetName)),
 					GAME_STRING (PLANET_NUMBER_BASE + (9 + 7) + i));
@@ -2044,3 +2097,4 @@ GetPlanetOrMoonName (UNICODE *buf, COUNT bufsize)
 		buf[bufsize - 1] = '\0';
 	}
 }
+

@@ -1634,8 +1634,7 @@ SaveFlagshipState (void)
 			{
 				GLOBAL (ip_planet) = pSolarSysState->pBaseDesc->pPrevDesc
 						- pSolarSysState->PlanetDesc + 1;
-				GLOBAL (ip_location) =
-						pSolarSysState->SunDesc[0].location;
+				GLOBAL (ip_location) = pSolarSysState->SunDesc[0].location;
 			}
 		}
 		else

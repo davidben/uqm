@@ -220,6 +220,10 @@ typedef struct solarsys_state
 extern SOLARSYS_STATE *pSolarSysState;
 extern MUSIC_REF SpaceMusic;
 
+bool currentWorldIsPlanet (void);
+bool currentPlanetIndex (void);
+bool currentMoonIndex (void);
+
 extern void LoadPlanet (FRAME SurfDefFrame);
 extern void DrawPlanet (int x, int y, int dy, unsigned int rgb);
 extern void FreePlanet (void);
