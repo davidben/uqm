@@ -339,7 +339,7 @@ typedef struct
 
 	SPECIES_ID SpeciesID;
 
-	UWORD ship_flags; /* 0, GOOD_GUY, or BAD_GUY */
+	UWORD allied_state; /* 0, GOOD_GUY, or BAD_GUY */
 	BYTE days_left;   /* Days left before the fleet reachers 'dest_loc'. */
 	BYTE growth_fract;
 	COUNT crew_level;

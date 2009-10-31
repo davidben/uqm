@@ -210,7 +210,7 @@ LoadRaceQueue (DECODE_REF fh, QUEUE *pQueue)
 		FleetPtr = LockFleetInfo (pQueue, hStarShip);
 
 		// Read FLEET_INFO elements
-		cread_16 (fh, &FleetPtr->ship_flags);
+		cread_16 (fh, &FleetPtr->allied_state);
 		cread_8  (fh, &FleetPtr->days_left);
 		cread_8  (fh, &FleetPtr->growth_fract);
 		cread_8  (fh, &tmpb);

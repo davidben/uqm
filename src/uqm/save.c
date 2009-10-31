@@ -190,7 +190,7 @@ SaveRaceQueue (DECODE_REF fh, QUEUE *pQueue)
 		cwrite_16 (fh, Index);
 
 		// Write FLEET_INFO elements
-		cwrite_16 (fh, FleetPtr->ship_flags);
+		cwrite_16 (fh, FleetPtr->allied_state);
 		cwrite_8  (fh, FleetPtr->days_left);
 		cwrite_8  (fh, FleetPtr->growth_fract);
 		cwrite_8  (fh, FleetPtr->crew_level);
