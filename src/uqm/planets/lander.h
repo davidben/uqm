@@ -61,6 +61,12 @@ extern void FreeLanderData (void);
 
 extern void object_animation (ELEMENT *ElementPtr);
 
+// ELEMENT.playerNr constants
+enum
+{
+	PS_HUMAN_PLAYER,
+	PS_NON_PLAYER,
+};
 
 #endif /* _LANDER_H */
 

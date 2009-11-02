@@ -107,6 +107,10 @@ struct element
 	CollisionFunc *collision_func;
 	void (*death_func) (struct element *ElementPtr);
 
+	// Player this element belongs to
+	// 0: Bottom player in Melee; The Player in full-game
+	COUNT playerNr;
+
 	ELEMENT_FLAGS state_flags;
 	union
 	{

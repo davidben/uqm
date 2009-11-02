@@ -1232,7 +1232,7 @@ GeneratePlanetSide (void)
 			(*pSolarSysState->GenFunc) ((BYTE)(scan + GENERATE_MINERAL));
 
 			NodeElementPtr->scan_node = MAKE_WORD (scan, num_nodes + 1);
-			NodeElementPtr->state_flags = BAD_GUY;
+			NodeElementPtr->playerNr = PS_NON_PLAYER;
 			NodeElementPtr->current.location.x =
 					pSolarSysState->SysInfo.PlanetInfo.CurPt.x;
 			NodeElementPtr->current.location.y =

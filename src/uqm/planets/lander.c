@@ -596,7 +596,7 @@ CheckObjectCollision (COUNT index)
 			}
 			
 			if (&DisplayArray[ElementPtr->PrimIndex] != pPrim
-					|| !(ElementPtr->state_flags & BAD_GUY))
+					|| ElementPtr->playerNr != PS_NON_PLAYER)
 			{
 				UnlockElement (hElement);
 				continue;
@@ -950,7 +950,8 @@ AddLightning (void)
 
 		LockElement (hLightningElement, &LightningElementPtr);
 
-		LightningElementPtr->state_flags = FINITE_LIFE | BAD_GUY;
+		LightningElementPtr->playerNr = PS_NON_PLAYER;
+		LightningElementPtr->state_flags = FINITE_LIFE;
 		LightningElementPtr->preprocess_func = lightning_process;
 		if ((BYTE)TFB_Random () >= (256 >> 2))
 			LightningElementPtr->mass_points = 0; /* harmless */
@@ -1002,7 +1003,8 @@ AddGroundDisaster (COUNT which_disaster)
 
 		pPrim = &DisplayArray[GroundDisasterElementPtr->PrimIndex];
 		GroundDisasterElementPtr->mass_points = which_disaster;
-		GroundDisasterElementPtr->state_flags = FINITE_LIFE | BAD_GUY;
+		GroundDisasterElementPtr->playerNr = PS_NON_PLAYER;
+		GroundDisasterElementPtr->state_flags = FINITE_LIFE;
 		GroundDisasterElementPtr->preprocess_func = object_animation;
 
 		rand_val = TFB_Random ();
@@ -1115,7 +1117,7 @@ BuildObjectList (void)
 			ElementPtr->next.location.x += dx;
 			ElementPtr->next.location.y += dy;
 				/* if not lander's shot */
-			if (ElementPtr->state_flags != (FINITE_LIFE | GOOD_GUY))
+			if (ElementPtr->playerNr != PS_HUMAN_PLAYER)
 			{
 				if (ElementPtr->next.location.y < 0)
 					ElementPtr->next.location.y = 0;
@@ -1673,8 +1675,9 @@ SetVelocityComponents (
 
 					LockElement (hExplosionElement, &ExplosionElementPtr);
 
+					ExplosionElementPtr->playerNr = PS_HUMAN_PLAYER;
 					ExplosionElementPtr->mass_points = DEATH_EXPLOSION;
-					ExplosionElementPtr->state_flags = FINITE_LIFE | GOOD_GUY;
+					ExplosionElementPtr->state_flags = FINITE_LIFE;
 					ExplosionElementPtr->next.location =
 							pSolarSysState->MenuState.first_item;
 					ExplosionElementPtr->preprocess_func = object_animation;
@@ -1781,9 +1784,10 @@ SetVelocityComponents (
 
 					LockElement (hWeaponElement, &WeaponElementPtr);
 
+					WeaponElementPtr->playerNr = PS_HUMAN_PLAYER;
 					WeaponElementPtr->mass_points = 1;
 					WeaponElementPtr->life_span = 12;
-					WeaponElementPtr->state_flags = FINITE_LIFE | GOOD_GUY;
+					WeaponElementPtr->state_flags = FINITE_LIFE;
 					WeaponElementPtr->next.location =
 							pSolarSysState->MenuState.first_item;
 					WeaponElementPtr->current.location.x =
