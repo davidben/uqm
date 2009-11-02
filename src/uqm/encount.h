@@ -178,6 +178,9 @@ extern void GenerateSupox (BYTE control);
 extern void GenerateRainbow (BYTE control);
 extern void GenerateIlwrath (BYTE control);
 
+// Last race the player battled with, or -1 if no battle took place.
+// Set to -1 by some funcs to inhibit IP groups from intercepting
+// the flagship.
 extern SIZE EncounterRace;
 extern BYTE EncounterGroup;
 

@@ -151,6 +151,8 @@ GenerateSamatra (BYTE control)
 					}
 					else if (GroupPtr->task & REFORM_GROUP)
 					{
+						// REFORM_GROUP was set in ipdisp.c:ip_group_collision
+						// during a collision with the flagship.
 						GroupPtr->task &= ~REFORM_GROUP;
 						GroupPtr->group_counter = 0;
 

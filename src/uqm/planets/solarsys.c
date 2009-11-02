@@ -27,6 +27,7 @@
 #include "../resinst.h"
 #include "../settings.h"
 #include "../ipdisp.h"
+#include "../grpinfo.h"
 #include "../process.h"
 #include "../load.h"
 #include "../setup.h"
@@ -1653,6 +1654,42 @@ GenerateOrbital (void) {
 	LoadPlanet (NULL);
 }
 
+static void
+check_yehat_rebellion (void)
+{
+	HIPGROUP hGroup, hNextGroup;
+
+	// XXX: Is there a better way to do this? I could not find one.
+	//   When you talk to a Yehat ship (YEHAT_SHIP) and start the rebellion,
+	//   there is no battle following the comm. There is *never* a battle in
+	//   an encounter with Rebels, but the group race_id (YEHAT_REBEL_SHIP)
+	//   is different from Royalists (YEHAT_SHIP). There is *always* a battle
+	//   in an encounter with Royalists.
+	// TRANSLATION: "If the civil war has not started yet, or the player
+	//   battled a ship -- bail."
+	if (!GET_GAME_STATE (YEHAT_CIVIL_WAR) || EncounterRace >= 0)
+		return; // not this time
+
+	// Send Yehat groups to flee the system, but only if the player
+	// has actually talked to a ship.
+	for (hGroup = GetHeadLink (&GLOBAL (ip_group_q)); hGroup;
+			hGroup = hNextGroup)
+	{
+		IP_GROUP *GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
+		hNextGroup = _GetSuccLink (GroupPtr);
+		// IGNORE_FLAGSHIP was set in ipdisp.c:ip_group_collision()
+		// during a collision with the flagship.
+		if (GroupPtr->race_id == YEHAT_SHIP
+				&& (GroupPtr->task & IGNORE_FLAGSHIP))
+		{
+			GroupPtr->task &= REFORM_GROUP;
+			GroupPtr->task |= FLEE | IGNORE_FLAGSHIP;
+			GroupPtr->dest_loc = 0;
+		}
+		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
+	}
+}
+
 void
 GenerateRandomIP (BYTE control)
 {
@@ -1667,6 +1704,11 @@ GenerateRandomIP (BYTE control)
 			break;
 		case REINIT_NPCS:
 			GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
+			// This is not a great place to do the Yehat rebellion check, but
+			// since you can start the rebellion in any star system (not just
+			// the Homeworld), I could not find a better place for it.
+			// At least it is better than where it was originally.
+			check_yehat_rebellion ();
 			break;
 		case UNINIT_NPCS:
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);

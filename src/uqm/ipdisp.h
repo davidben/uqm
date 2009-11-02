@@ -20,6 +20,10 @@
 #include "libs/compiler.h"
 
 extern void NotifyOthers (COUNT which_race, BYTE target_loc);
+// Special target locations for NotifyOthers()
+#define IPNL_INTERCEPT_PLAYER   0
+#define IPNL_ALL_CLEAR          ((BYTE)-1)
+
 extern void DoMissions (void);
 
 #endif  /* UQM_IPDISP_H_INCL_ */

@@ -131,7 +131,7 @@ GenerateMycon (BYTE control)
 					if (CurStarDescPtr->Index == MYCON_DEFINED
 							|| !GET_GAME_STATE (SUN_DEVICE_UNGUARDED))
 					{
-						NotifyOthers (MYCON_SHIP, (BYTE)~0);
+						NotifyOthers (MYCON_SHIP, IPNL_ALL_CLEAR);
 						PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 						ReinitQueue (&GLOBAL (ip_group_q));
 						assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);

@@ -26,21 +26,26 @@ static void
 check_old_shofixti (void)
 {
 	HIPGROUP hGroup;
+	IP_GROUP *GroupPtr;
 
-	if (GLOBAL (BattleGroupRef)
-			&& (hGroup = GetHeadLink (&GLOBAL (ip_group_q)))
+	if (!GLOBAL (BattleGroupRef))
+		return; // nothing to check
+
+	hGroup = GetHeadLink (&GLOBAL (ip_group_q));
+	if (!hGroup)
+		return; // still nothing to check
+
+	GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
+	// REFORM_GROUP was set in ipdisp.c:ip_group_collision()
+	// during a collision with the flagship.
+	if (GroupPtr->race_id == SHOFIXTI_SHIP
+			&& (GroupPtr->task & REFORM_GROUP)
 			&& GET_GAME_STATE (SHOFIXTI_RECRUITED))
 	{
-		IP_GROUP *GroupPtr;
-
-		GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
-
-		GroupPtr->task &= REFORM_GROUP;
-		GroupPtr->task |= FLEE | IGNORE_FLAGSHIP;
+		GroupPtr->task = FLEE | IGNORE_FLAGSHIP | REFORM_GROUP;
 		GroupPtr->dest_loc = 0;
-
-		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 	}
+	UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 }
 
 void

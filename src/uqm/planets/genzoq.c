@@ -28,22 +28,25 @@ static void
 check_scout (void)
 {
 	HIPGROUP hGroup;
+	IP_GROUP *GroupPtr;
 
-	if (GLOBAL (BattleGroupRef)
-			&& (hGroup = GetHeadLink (&GLOBAL (ip_group_q))))
+	if (!GLOBAL (BattleGroupRef))
+		return; // nothing to check
+
+	hGroup = GetHeadLink (&GLOBAL (ip_group_q));
+	if (!hGroup)
+		return; // still nothing to check
+
+	GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
+	// REFORM_GROUP was set in ipdisp.c:ip_group_collision()
+	// during a collision with the flagship.
+	if (GroupPtr->race_id == ZOQFOTPIK_SHIP
+			&& (GroupPtr->task & REFORM_GROUP))
 	{
-		IP_GROUP *GroupPtr;
-
-		GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
-
-		if (GroupPtr->task & REFORM_GROUP)
-		{
-			GroupPtr->task = FLEE | IGNORE_FLAGSHIP | REFORM_GROUP;
-			GroupPtr->dest_loc = 0;
-		}
-
-		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
+		GroupPtr->task = FLEE | IGNORE_FLAGSHIP | REFORM_GROUP;
+		GroupPtr->dest_loc = 0;
 	}
+	UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 }
 
 static void

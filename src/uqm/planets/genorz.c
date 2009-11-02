@@ -288,7 +288,7 @@ GenerateOrz (BYTE control)
 						|| !GET_GAME_STATE (TAALO_UNPROTECTED))
 						&& ActivateStarShip (ORZ_SHIP, SPHERE_TRACKING))
 				{
-					NotifyOthers (ORZ_SHIP, (BYTE)~0);
+					NotifyOthers (ORZ_SHIP, IPNL_ALL_CLEAR);
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 					ReinitQueue (&GLOBAL (ip_group_q));
 					assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);

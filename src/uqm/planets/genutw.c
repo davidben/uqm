@@ -146,7 +146,7 @@ GenerateUtwig (BYTE control)
 						|| !GET_GAME_STATE (UTWIG_HAVE_ULTRON))
 						&& ActivateStarShip (UTWIG_SHIP, SPHERE_TRACKING))
 				{
-					NotifyOthers (UTWIG_SHIP, (BYTE)~0);
+					NotifyOthers (UTWIG_SHIP, IPNL_ALL_CLEAR);
 					PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 					ReinitQueue (&GLOBAL (ip_group_q));
 					assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);

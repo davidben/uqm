@@ -156,7 +156,7 @@ GenerateVUX (BYTE control)
 					&& !GET_GAME_STATE (ZEX_IS_DEAD))))
 					&& ActivateStarShip (VUX_SHIP, SPHERE_TRACKING))
 			{
-				NotifyOthers (VUX_SHIP, (BYTE)~0);
+				NotifyOthers (VUX_SHIP, IPNL_ALL_CLEAR);
 				PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 				ReinitQueue (&GLOBAL (ip_group_q));
 				assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
