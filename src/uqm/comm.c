@@ -1575,14 +1575,14 @@ RaceCommunication (void)
 			COUNT NumShips;
 			ENCOUNTER *EncounterPtr;
 
+			// The encounter globe that the flagship collided with is moved
+			// to the head of the queue in hyper.c:cleanup_hyperspace()
 			hEncounter = GetHeadEncounter ();
 			LockEncounter (hEncounter, &EncounterPtr);
 
 			NumShips = LONIBBLE (EncounterPtr->SD.Index);
 			for (i = 0; i < NumShips; ++i)
 			{
-				// XXX: Bug 996 lives here: crew is set to default (0)
-				//   None of ship info is actually used!
 				CloneShipFragment (EncounterPtr->SD.Type,
 						&GLOBAL (npc_built_ship_q),
 						EncounterPtr->ShipList[i].crew_level);
