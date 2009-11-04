@@ -254,8 +254,8 @@ initialize_horn (ELEMENT *ShipPtr, HELEMENT HornArray[])
 	MissileBlock.cy = ShipPtr->next.location.y;
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = MissileBlock.index = StarShipPtr->ShipFacing;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = THRADDASH_OFFSET;
 	MissileBlock.speed = MISSILE_SPEED;
 	MissileBlock.hit_points = MISSILE_HITS;
@@ -328,8 +328,8 @@ thraddash_preprocess (ELEMENT *ElementPtr)
 			MissileBlock.index = GetFrameCount (
 					StarShipPtr->RaceDescPtr->ship_data.special[0]
 					) - 1;
-			MissileBlock.sender = (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
-					| IGNORE_SIMILAR;
+			MissileBlock.sender = ElementPtr->playerNr;
+			MissileBlock.flags = IGNORE_SIMILAR;
 			MissileBlock.pixoffs = 0;
 			MissileBlock.speed = 0;
 			MissileBlock.hit_points = NAPALM_HITS;

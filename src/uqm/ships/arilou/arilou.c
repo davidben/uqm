@@ -127,8 +127,8 @@ initialize_autoaim_laser (ELEMENT *ShipPtr, HELEMENT LaserArray[])
 	LaserBlock.cy = ShipPtr->next.location.y;
 	LaserBlock.ex = COSINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
 	LaserBlock.ey = SINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
-	LaserBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	LaserBlock.sender = ShipPtr->playerNr;
+	LaserBlock.flags = IGNORE_SIMILAR;
 	LaserBlock.pixoffs = ARILOU_OFFSET;
 	LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E);
 	LaserArray[0] = initialize_laser (&LaserBlock);

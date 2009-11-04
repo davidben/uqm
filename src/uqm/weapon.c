@@ -44,10 +44,11 @@ initialize_laser (LASER_BLOCK *pLaserBlock)
 		ELEMENT *LaserElementPtr;
 
 		LockElement (hLaserElement, &LaserElementPtr);
+		LaserElementPtr->playerNr = pLaserBlock->sender;
 		LaserElementPtr->hit_points = 1;
 		LaserElementPtr->mass_points = 1;
-		LaserElementPtr->state_flags =
-				APPEARING | FINITE_LIFE | pLaserBlock->sender;
+		LaserElementPtr->state_flags = APPEARING | FINITE_LIFE
+				| pLaserBlock->flags;
 		LaserElementPtr->life_span = LASER_LIFE;
 		LaserElementPtr->collision_func = (CollisionFunc*)weapon_collision;
 		LaserElementPtr->blast_offset = 1;
@@ -89,8 +90,9 @@ initialize_missile (MISSILE_BLOCK *pMissileBlock)
 		LockElement (hMissileElement, &MissileElementPtr);
 		MissileElementPtr->hit_points = (BYTE)pMissileBlock->hit_points;
 		MissileElementPtr->mass_points = (BYTE)pMissileBlock->damage;
-		MissileElementPtr->state_flags =
-				APPEARING | FINITE_LIFE | pMissileBlock->sender;
+		MissileElementPtr->playerNr = pMissileBlock->sender;
+		MissileElementPtr->state_flags = APPEARING | FINITE_LIFE
+				| pMissileBlock->flags;
 		MissileElementPtr->life_span = pMissileBlock->life;
 		SetPrimType (&DisplayArray[MissileElementPtr->PrimIndex], STAMP_PRIM);
 		MissileElementPtr->current.image.farray = pMissileBlock->farray;
@@ -139,8 +141,7 @@ weapon_collision (ELEMENT *WeaponElementPtr, POINT *pWPt,
 			/* lasers from the same ship can't hit each other */
 			(GetPrimType (&DisplayArray[HitElementPtr->PrimIndex]) != LINE_PRIM
 			|| GetPrimType (&DisplayArray[WeaponElementPtr->PrimIndex]) != LINE_PRIM
-			|| (HitElementPtr->state_flags & (GOOD_GUY | BAD_GUY)) !=
-			(WeaponElementPtr->state_flags & (GOOD_GUY | BAD_GUY))))
+			|| !elementsOfSamePlayer (HitElementPtr, WeaponElementPtr)))
 #endif /* NEVER */
 	{
 		do_damage (HitElementPtr, damage);
@@ -181,8 +182,8 @@ weapon_collision (ELEMENT *WeaponElementPtr, POINT *pWPt,
 
 			PutElement (hBlastElement);
 			LockElement (hBlastElement, &BlastElementPtr);
-			BlastElementPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID
-					| (WeaponElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+			BlastElementPtr->playerNr = WeaponElementPtr->playerNr;
+			BlastElementPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
 			SetPrimType (&DisplayArray[BlastElementPtr->PrimIndex], STAMP_PRIM);
 
 			BlastElementPtr->current.location.x = DISPLAY_TO_WORLD (pWPt->x);
@@ -279,8 +280,7 @@ ModifySilhouette (ELEMENT *ElementPtr, STAMP *modify_stamp,
 	}
 
 	ObjectIntersect.IntersectStamp.origin.y +=
-			(ElementPtr->state_flags & GOOD_GUY) ?
-			GOOD_GUY_YOFFS : BAD_GUY_YOFFS;
+			status_y_offsets[ElementPtr->playerNr];
 
 	if (modify_flags & MODIFY_SWAP)
 	{
@@ -330,8 +330,7 @@ TrackShip (ELEMENT *Tracker, COUNT *pfacing)
 		LockElement (hShip, &Trackee);
 		hNextShip = GetSuccElement (Trackee);
 		if ((Trackee->state_flags & PLAYER_SHIP)
-				&& (Trackee->state_flags & (GOOD_GUY | BAD_GUY)) !=
-				(Tracker->state_flags & (GOOD_GUY | BAD_GUY))
+				&& !elementsOfSamePlayer (Trackee, Tracker)
 				&& (!OBJECT_CLOAKED (Trackee)
 				|| ((Tracker->state_flags & PLAYER_SHIP)
 				&& (Tracker->state_flags & APPEARING))

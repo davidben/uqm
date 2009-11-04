@@ -203,8 +203,8 @@ spawn_limpets (ELEMENT *ElementPtr)
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.special;
 	MissileBlock.face = StarShipPtr->ShipFacing + HALF_CIRCLE;
 	MissileBlock.index = 0;
-	MissileBlock.sender = (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ElementPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = LIMPET_OFFSET;
 	MissileBlock.speed = LIMPET_SPEED;
 	MissileBlock.hit_points = LIMPET_HITS;
@@ -241,8 +241,8 @@ initialize_horrific_laser (ELEMENT *ShipPtr, HELEMENT LaserArray[])
 	LaserBlock.cy = ShipPtr->next.location.y;
 	LaserBlock.ex = COSINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
 	LaserBlock.ey = SINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
-	LaserBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	LaserBlock.sender = ShipPtr->playerNr;
+	LaserBlock.flags = IGNORE_SIMILAR;
 	LaserBlock.pixoffs = VUX_OFFSET;
 	LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x0A), 0x0A);
 	LaserArray[0] = initialize_laser (&LaserBlock);

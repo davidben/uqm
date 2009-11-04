@@ -1436,7 +1436,7 @@ InitCommunication (CONVERSATION which_comm)
 				|| (which_comm != CHMMR_CONVERSATION
 				&& which_comm != SYREEN_CONVERSATION
 				))//&& (ActivateStarShip (status, CHECK_ALLIANCE) & BAD_GUY)))
-			BuildBattle (1);
+			BuildBattle (NPC_PLAYER_NUM);
 	}
 
 	LocDataPtr = init_race (
@@ -1495,7 +1495,7 @@ InitCommunication (CONVERSATION which_comm)
 		if (status)
 		{
 			// Start combat
-			BuildBattle (0);
+			BuildBattle (RPG_PLAYER_NUM);
 			EncounterBattle ();
 		}
 		else

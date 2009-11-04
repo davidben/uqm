@@ -116,8 +116,7 @@ static void
 howitzer_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 		ELEMENT *ElementPtr1, POINT *pPt1)
 {
-	if ((ElementPtr0->state_flags & (GOOD_GUY | BAD_GUY))
-			!= (ElementPtr1->state_flags & (GOOD_GUY | BAD_GUY)))
+	if (!elementsOfSamePlayer (ElementPtr0, ElementPtr1))
 		weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
 }
 
@@ -156,8 +155,8 @@ initialize_turret_missile (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 			+ TurretPtr->thrust_wait);
 	UnlockElement (GetSuccElement (ShipPtr));
 
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = TURRET_OFFSET;
 	MissileBlock.speed = MISSILE_SPEED;
 	MissileBlock.hit_points = MISSILE_HITS;
@@ -387,8 +386,7 @@ intruder_preprocess (ELEMENT *ElementPtr)
 	{
 		LockElement (hElement, &ShipPtr);
 		if ((ShipPtr->state_flags & PLAYER_SHIP)
-				&& (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-				!= (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY)))
+				&& !elementsOfSamePlayer (ShipPtr, ElementPtr))
 		{
 			STAMP s;
 
@@ -542,8 +540,7 @@ marine_preprocess (ELEMENT *ElementPtr)
 					&& ObjectPtr->crew_level
 					&& !OBJECT_CLOAKED (ObjectPtr))
 			{
-				if ((ObjectPtr->state_flags & (GOOD_GUY | BAD_GUY)) !=
-						(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY)))
+				if (!elementsOfSamePlayer (ObjectPtr, ElementPtr))
 				{
 					if (ElementPtr->state_flags & IGNORE_SIMILAR)
 						hTarget = hObject;
@@ -588,8 +585,7 @@ marine_preprocess (ELEMENT *ElementPtr)
 				COUNT num_frames;
 				VELOCITY_DESC ShipVelocity;
 
-				if ((ObjectPtr->state_flags & (GOOD_GUY | BAD_GUY)) ==
-						(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
+				if (elementsOfSamePlayer (ObjectPtr, ElementPtr)
 						&& (ElementPtr->state_flags & IGNORE_SIMILAR))
 				{
 					ElementPtr->next.image.frame = SetAbsFrameIndex (
@@ -684,6 +680,7 @@ marine_preprocess (ELEMENT *ElementPtr)
 
 					InsertElement (hIonElement, GetHeadElement ());
 					LockElement (hIonElement, &IonElementPtr);
+					IonElementPtr->playerNr = NEUTRAL_PLAYER_NUM;
 					IonElementPtr->state_flags =
 							APPEARING | FINITE_LIFE | NONSOLID;
 					IonElementPtr->life_span =
@@ -731,8 +728,7 @@ marine_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 			&& !(ElementPtr0->state_flags & (NONSOLID | COLLISION))
 			&& !(ElementPtr1->state_flags & FINITE_LIFE))
 	{
-		if ((ElementPtr0->state_flags & (GOOD_GUY | BAD_GUY))
-				!= (ElementPtr1->state_flags & (GOOD_GUY | BAD_GUY)))
+		if (!elementsOfSamePlayer (ElementPtr0, ElementPtr1))
 		{
 			ElementPtr0->turn_wait =
 					MAKE_BYTE (5, HINIBBLE (ElementPtr0->turn_wait));
@@ -847,10 +843,10 @@ turret_postprocess (ELEMENT *ElementPtr)
 				ELEMENT *TurretPtr;
 
 				LockElement (hTurret, &TurretPtr);
-				TurretPtr->state_flags =
-						FINITE_LIFE | NONSOLID | IGNORE_SIMILAR
-						| CHANGING | PRE_PROCESS | POST_PROCESS
-						| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+				TurretPtr->playerNr = ElementPtr->playerNr;
+				TurretPtr->state_flags = FINITE_LIFE | NONSOLID
+						| IGNORE_SIMILAR | CHANGING | PRE_PROCESS
+						| POST_PROCESS;
 				TurretPtr->life_span = 1;
 				TurretPtr->current.image = ElementPtr->current.image;
 				TurretPtr->current.location = ShipPtr->next.location;
@@ -886,9 +882,7 @@ turret_postprocess (ELEMENT *ElementPtr)
 
 					LockElement (GetTailElement (), &TurretEffectPtr);
 					if (TurretEffectPtr != ElementPtr
-							&& (TurretEffectPtr->state_flags &
-							(GOOD_GUY | BAD_GUY)) ==
-							(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
+							&& elementsOfSamePlayer (TurretEffectPtr, ElementPtr)
 							&& (TurretEffectPtr->state_flags & APPEARING)
 							&& GetPrimType (&(GLOBAL (DisplayArray))[
 									TurretEffectPtr->PrimIndex
@@ -901,10 +895,9 @@ turret_postprocess (ELEMENT *ElementPtr)
 								SINE (facing, DISPLAY_TO_WORLD (2));
 
 						LockElement (hTurretEffect, &TurretEffectPtr);
+						TurretEffectPtr->playerNr = ElementPtr->playerNr;
 						TurretEffectPtr->state_flags = FINITE_LIFE
-								| NONSOLID | IGNORE_SIMILAR | APPEARING
-								| (ElementPtr->state_flags &
-								(GOOD_GUY | BAD_GUY));
+								| NONSOLID | IGNORE_SIMILAR | APPEARING;
 						TurretEffectPtr->life_span = 4;
 
 						TurretEffectPtr->current.location.x =
@@ -964,9 +957,9 @@ turret_postprocess (ELEMENT *ElementPtr)
 				ELEMENT *SpaceMarinePtr;
 
 				LockElement (hSpaceMarine, &SpaceMarinePtr);
-				SpaceMarinePtr->state_flags =
-						IGNORE_SIMILAR | APPEARING | CREW_OBJECT
-						| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+				SpaceMarinePtr->playerNr = ElementPtr->playerNr;
+				SpaceMarinePtr->state_flags = IGNORE_SIMILAR | APPEARING
+						| CREW_OBJECT;
 				SpaceMarinePtr->life_span = NORMAL_LIFE;
 				SpaceMarinePtr->hit_points = 3;
 				SpaceMarinePtr->mass_points = 1;
@@ -1044,9 +1037,8 @@ orz_preprocess (ELEMENT *ElementPtr)
 			ELEMENT *TurretPtr;
 
 			LockElement (hTurret, &TurretPtr);
-			TurretPtr->state_flags =
-					FINITE_LIFE | NONSOLID | IGNORE_SIMILAR
-					| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+			TurretPtr->playerNr = ElementPtr->playerNr;
+			TurretPtr->state_flags = FINITE_LIFE | NONSOLID | IGNORE_SIMILAR;
 			TurretPtr->life_span = 1;
 			TurretPtr->current.image.farray = StarShipPtr->RaceDescPtr->ship_data.special;
 			TurretPtr->current.image.frame =

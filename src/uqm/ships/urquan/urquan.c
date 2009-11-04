@@ -126,8 +126,8 @@ initialize_fusion (ELEMENT *ShipPtr, HELEMENT FusionArray[])
 	MissileBlock.cy = ShipPtr->next.location.y;
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = MissileBlock.index = StarShipPtr->ShipFacing;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = URQUAN_OFFSET;
 	MissileBlock.speed = MISSILE_SPEED;
 	MissileBlock.hit_points = MISSILE_HITS;
@@ -162,8 +162,8 @@ fighter_postprocess (ELEMENT *ElementPtr)
 	LaserBlock.face = ElementPtr->thrust_wait;
 	LaserBlock.ex = COSINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
 	LaserBlock.ey = SINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
-	LaserBlock.sender = (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	LaserBlock.sender = ElementPtr->playerNr;
+	LaserBlock.flags = IGNORE_SIMILAR;
 	LaserBlock.pixoffs = FIGHTER_OFFSET;
 	LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E);
 	Laser = initialize_laser (&LaserBlock);
@@ -415,9 +415,9 @@ spawn_fighters (ELEMENT *ElementPtr)
 		FighterElementPtr->hit_points = 1;
 		FighterElementPtr->mass_points = 0;
 		FighterElementPtr->thrust_wait = TRACK_THRESHOLD + 1;
-		FighterElementPtr->state_flags = APPEARING
-				| FINITE_LIFE | CREW_OBJECT | IGNORE_SIMILAR
-				| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+		FighterElementPtr->playerNr = ElementPtr->playerNr;
+		FighterElementPtr->state_flags = APPEARING | FINITE_LIFE
+				| CREW_OBJECT | IGNORE_SIMILAR;
 		FighterElementPtr->life_span = FIGHTER_LIFE;
 		SetPrimType (&(GLOBAL (DisplayArray))[FighterElementPtr->PrimIndex],
 				STAMP_PRIM);

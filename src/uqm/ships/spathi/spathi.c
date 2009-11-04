@@ -154,7 +154,8 @@ spawn_butt_missile (ELEMENT *ShipPtr)
 	ButtMissileBlock.face = ButtMissileBlock.index =
 			NORMALIZE_FACING (StarShipPtr->ShipFacing
 			+ ANGLE_TO_FACING (HALF_CIRCLE));
-	ButtMissileBlock.sender = ShipPtr->state_flags & (GOOD_GUY | BAD_GUY);
+	ButtMissileBlock.sender = ShipPtr->playerNr;
+	ButtMissileBlock.flags = 0;
 	ButtMissileBlock.pixoffs = SPATHI_REAR_OFFSET;
 	ButtMissileBlock.speed = DISCRIMINATOR_SPEED;
 	ButtMissileBlock.hit_points = DISCRIMINATOR_HITS;
@@ -248,8 +249,8 @@ initialize_standard_missile (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 	MissileBlock.cy = ShipPtr->next.location.y;
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = MissileBlock.index = StarShipPtr->ShipFacing;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = SPATHI_FORWARD_OFFSET;
 	MissileBlock.speed = MISSILE_SPEED;
 	MissileBlock.hit_points = MISSILE_HITS;

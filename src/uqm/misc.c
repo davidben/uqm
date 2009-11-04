@@ -39,6 +39,7 @@ spawn_planet (void)
 		extern FRAME planet[];
 
 		LockElement (hPlanetElement, &PlanetElementPtr);
+		PlanetElementPtr->playerNr = NEUTRAL_PLAYER_NUM;
 		PlanetElementPtr->hit_points = 200;
 		PlanetElementPtr->state_flags = APPEARING;
 		PlanetElementPtr->life_span = NORMAL_LIFE + 1;
@@ -79,6 +80,7 @@ spawn_rubble (ELEMENT *AsteroidElementPtr)
 
 		PutElement (hRubbleElement);
 		LockElement (hRubbleElement, &RubbleElementPtr);
+		RubbleElementPtr->playerNr = AsteroidElementPtr->playerNr;
 		RubbleElementPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
 		RubbleElementPtr->life_span = 5;
 		RubbleElementPtr->turn_wait = RubbleElementPtr->next_turn = 0;
@@ -136,6 +138,7 @@ spawn_asteroid (ELEMENT *ElementPtr)
 		COUNT val;
 
 		LockElement (hAsteroidElement, &AsteroidElementPtr);
+		AsteroidElementPtr->playerNr = NEUTRAL_PLAYER_NUM;
 		AsteroidElementPtr->hit_points = 1;
 		AsteroidElementPtr->mass_points = 3;
 		AsteroidElementPtr->state_flags = APPEARING;
@@ -327,9 +330,9 @@ AbandonShip (ELEMENT *ShipPtr, ELEMENT *TargetPtr,
 
 		PutElement (hCrew);
 		LockElement (hCrew, &CrewPtr);
+		CrewPtr->playerNr = NEUTRAL_PLAYER_NUM;
 		CrewPtr->hit_points = 1;
-		CrewPtr->state_flags =
-				APPEARING | FINITE_LIFE | CREW_OBJECT;
+		CrewPtr->state_flags = APPEARING | FINITE_LIFE | CREW_OBJECT;
 		CrewPtr->life_span = CREW_LIFE;
 		SetPrimType (&DisplayArray[CrewPtr->PrimIndex], POINT_PRIM);
 		SetPrimColor (&DisplayArray[CrewPtr->PrimIndex],

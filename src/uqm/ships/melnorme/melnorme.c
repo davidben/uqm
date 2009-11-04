@@ -312,8 +312,8 @@ initialize_pump_up (ELEMENT *ShipPtr, HELEMENT PumpUpArray[])
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = StarShipPtr->ShipFacing;
 	MissileBlock.index = 0;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = MELNORME_OFFSET;
 	MissileBlock.speed = DISPLAY_TO_WORLD (MELNORME_OFFSET);
 	MissileBlock.hit_points = PUMPUP_DAMAGE;
@@ -380,9 +380,8 @@ confuse_preprocess (ELEMENT *ElementPtr)
 			if (hEffect)
 			{
 				LockElement (hEffect, &eptr);
-
-				eptr->state_flags = FINITE_LIFE | NONSOLID | CHANGING
-						| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+				eptr->playerNr = ElementPtr->playerNr;
+				eptr->state_flags = FINITE_LIFE | NONSOLID | CHANGING;
 				eptr->life_span = 1;
 				eptr->current = eptr->next = ElementPtr->next;
 				eptr->preprocess_func = confuse_preprocess;
@@ -417,8 +416,7 @@ confusion_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 				hConfusionElement; hConfusionElement = hNextElement)
 		{
 			LockElement (hConfusionElement, &ConfusionPtr);
-			if ((ConfusionPtr->state_flags & (GOOD_GUY | BAD_GUY)) ==
-					(ElementPtr0->state_flags & (GOOD_GUY | BAD_GUY))
+			if (elementsOfSamePlayer (ConfusionPtr, ElementPtr0)
 					&& ConfusionPtr->current.image.farray ==
 					StarShipPtr->RaceDescPtr->ship_data.special
 					&& (ConfusionPtr->state_flags & NONSOLID))
@@ -443,8 +441,8 @@ confusion_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 						ConfusionPtr->current.image.frame, 8
 						);
 				ConfusionPtr->next = ConfusionPtr->current;
-				ConfusionPtr->state_flags = FINITE_LIFE | NONSOLID | CHANGING
-						| (ElementPtr0->state_flags & (GOOD_GUY | BAD_GUY));
+				ConfusionPtr->playerNr = ElementPtr0->playerNr;
+				ConfusionPtr->state_flags = FINITE_LIFE | NONSOLID | CHANGING;
 				ConfusionPtr->preprocess_func = confuse_preprocess;
 				SetPrimType (
 						&(GLOBAL (DisplayArray))[ConfusionPtr->PrimIndex],
@@ -488,8 +486,8 @@ initialize_confusion (ELEMENT *ShipPtr, HELEMENT ConfusionArray[])
 	ConfusionBlock.farray = StarShipPtr->RaceDescPtr->ship_data.special;
 	ConfusionBlock.index = 0;
 	ConfusionBlock.face = StarShipPtr->ShipFacing;
-	ConfusionBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	ConfusionBlock.sender = ShipPtr->playerNr;
+	ConfusionBlock.flags = IGNORE_SIMILAR;
 	ConfusionBlock.pixoffs = MELNORME_OFFSET;
 	ConfusionBlock.speed = CMISSILE_SPEED;
 	ConfusionBlock.hit_points = CMISSILE_HITS;
@@ -524,8 +522,8 @@ initialize_test_pump_up (ELEMENT *ShipPtr, HELEMENT PumpUpArray[])
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = StarShipPtr->ShipFacing;
 	MissileBlock.index = 0;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = MELNORME_OFFSET;
 	MissileBlock.speed = PUMPUP_SPEED;
 	MissileBlock.hit_points = PUMPUP_DAMAGE;

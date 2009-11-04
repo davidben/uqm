@@ -162,8 +162,8 @@ const char *densityString (BYTE density);
 const char *depositQualityString (BYTE quality);
 
 
-// Find a player ship. Setting which to BAD_GUY is only meaningful in battle.
-STARSHIP* findPlayerShip(ELEMENT_FLAGS which);
+// Find a player ship. Setting playerNr to non-0 is only meaningful in battle.
+STARSHIP* findPlayerShip (SIZE playerNr);
 
 // Resets the crew of the first player (the bottom one) to its maximum.
 void resetCrewBattle(void);

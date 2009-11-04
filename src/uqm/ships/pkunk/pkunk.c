@@ -141,8 +141,8 @@ initialize_bug_missile (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 	MissileBlock.cy = ShipPtr->next.location.y;
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.index = 0;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = PKUNK_OFFSET;
 	MissileBlock.speed = MISSILE_SPEED;
 	MissileBlock.hit_points = MISSILE_HITS;
@@ -224,9 +224,7 @@ new_pkunk (ELEMENT *ElementPtr)
 	}
 	else
 	{
-		ElementPtr->state_flags = APPEARING | PLAYER_SHIP | IGNORE_SIMILAR
-				| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
-
+		ElementPtr->state_flags = APPEARING | PLAYER_SHIP | IGNORE_SIMILAR;
 		ElementPtr->mass_points = SHIP_MASS;
 		ElementPtr->preprocess_func = StarShipPtr->RaceDescPtr->preprocess_func;
 		ElementPtr->postprocess_func = StarShipPtr->RaceDescPtr->postprocess_func;
@@ -387,6 +385,7 @@ phoenix_transition (ELEMENT *ElementPtr)
 		PutElement (hShipImage);
 
 		LockElement (hShipImage, &ShipImagePtr);
+		ShipImagePtr->playerNr = NEUTRAL_PLAYER_NUM;
 		ShipImagePtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
 		ShipImagePtr->life_span = TRANSITION_LIFE;
 		SetPrimType (&(GLOBAL (DisplayArray))[ShipImagePtr->PrimIndex],
@@ -450,9 +449,8 @@ pkunk_preprocess (ELEMENT *ElementPtr)
 		{
 
 			LockElement (hPhoenix, &PhoenixPtr);
-			PhoenixPtr->state_flags =
-					FINITE_LIFE | NONSOLID | IGNORE_SIMILAR
-					| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+			PhoenixPtr->playerNr = ElementPtr->playerNr;
+			PhoenixPtr->state_flags = FINITE_LIFE | NONSOLID | IGNORE_SIMILAR;
 			PhoenixPtr->life_span = 1;
 
 			PhoenixPtr->death_func = intercept_pkunk_death;

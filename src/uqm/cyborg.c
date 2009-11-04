@@ -603,8 +603,7 @@ Pursue (ELEMENT *ShipPtr, EVALUATE_DESC *EvalDescPtr)
 		maneuver_state |= LEFT | RIGHT;
 	if (ShipPtr->thrust_wait == 0
 			&& ((OtherObjPtr->state_flags & PLAYER_SHIP)
-			|| ((OtherObjPtr->state_flags & (GOOD_GUY | BAD_GUY)) ==
-			(ShipPtr->state_flags & (GOOD_GUY | BAD_GUY)))
+			|| elementsOfSamePlayer (OtherObjPtr, ShipPtr)
 			|| OtherObjPtr->preprocess_func == crew_preprocess))
 		maneuver_state |= THRUST;
 
@@ -1213,8 +1212,7 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 					}
 				}
 			}
-			else if ((ed.ObjectPtr->state_flags & (GOOD_GUY | BAD_GUY)) !=
-					(Ship.state_flags & (GOOD_GUY | BAD_GUY))
+			else if (!elementsOfSamePlayer (ed.ObjectPtr, &Ship)
 					&& ed.ObjectPtr->preprocess_func != crew_preprocess
 					&& ObjectsOfConcern[ENEMY_WEAPON_INDEX].which_turn > 1
 					&& ed.ObjectPtr->life_span > 0)
@@ -1286,8 +1284,7 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 			}
 			else if ((ed.ObjectPtr->state_flags & CREW_OBJECT)
 					&& ((!(ed.ObjectPtr->state_flags & IGNORE_SIMILAR)
-					&& (ed.ObjectPtr->state_flags & (GOOD_GUY | BAD_GUY)) ==
-					(Ship.state_flags & (GOOD_GUY | BAD_GUY)))
+					&& elementsOfSamePlayer (ed.ObjectPtr, &Ship))
 					|| ed.ObjectPtr->preprocess_func == crew_preprocess)
 					&& ObjectsOfConcern[CREW_OBJECT_INDEX].which_turn > 1)
 			{

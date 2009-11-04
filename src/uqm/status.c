@@ -188,6 +188,7 @@ DrawCaptainsWindow (STARSHIP *StarShipPtr)
 
 	BatchGraphics ();
 	
+	assert (StarShipPtr->playerNr >= 0);
 	y_offs = status_y_offsets[StarShipPtr->playerNr];
 
 	r.corner.x = CAPTAIN_XOFFS - 2;
@@ -261,7 +262,8 @@ DrawCaptainsWindow (STARSHIP *StarShipPtr)
 	s.origin.y = y;
 	DrawStamp (&s);
 
-	if (StarShipPtr->captains_name_index == 0 && StarShipPtr->playerNr == 0)
+	if (StarShipPtr->captains_name_index == 0
+			&& StarShipPtr->playerNr == RPG_PLAYER_NUM)
 	{	// This is SIS
 		TEXT t;
 
@@ -335,7 +337,7 @@ DeltaCrew (ELEMENT *ElementPtr, SIZE crew_delta)
 	SHIP_INFO *ShipInfoPtr;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE
-			&& (ElementPtr->state_flags & BAD_GUY))
+			&& ElementPtr->playerNr == NPC_PLAYER_NUM)
 		return (TRUE); /* Samatra can't be crew-modified */
 
 	retval = TRUE;
@@ -374,7 +376,8 @@ PreProcessStatus (ELEMENT *ShipPtr)
 	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
-	if (StarShipPtr->captains_name_index || StarShipPtr->playerNr == 0)
+	if (StarShipPtr->captains_name_index
+			|| StarShipPtr->playerNr == RPG_PLAYER_NUM)
 	{	// All except Sa-Matra, no captain's window there
 		STATUS_FLAGS old_status_flags, cur_status_flags;
 		CAPTAIN_STUFF *CSPtr;
@@ -387,6 +390,7 @@ PreProcessStatus (ELEMENT *ShipPtr)
 		old_status_flags &= (LEFT | RIGHT | THRUST | WEAPON | SPECIAL);
 		if (old_status_flags)
 		{
+			assert (StarShipPtr->playerNr >= 0);
 			CaptainsWindow (CSPtr, status_y_offsets[StarShipPtr->playerNr],
 					old_status_flags, cur_status_flags, 1);
 		}
@@ -399,13 +403,15 @@ PostProcessStatus (ELEMENT *ShipPtr)
 	STARSHIP *StarShipPtr;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
-	if (StarShipPtr->captains_name_index || StarShipPtr->playerNr == 0)
+	if (StarShipPtr->captains_name_index
+			|| StarShipPtr->playerNr == RPG_PLAYER_NUM)
 	{	// All except Sa-Matra, no captain's window there
 		COORD y;
 		STATUS_FLAGS cur_status_flags, old_status_flags;
 
 		cur_status_flags = StarShipPtr->cur_status_flags;
 
+		assert (StarShipPtr->playerNr >= 0);
 		y = status_y_offsets[StarShipPtr->playerNr];
 
 		if (ShipPtr->crew_level == 0)

@@ -141,7 +141,10 @@ InitShipStatus (SHIP_INFO *SIPtr, STARSHIP *StarShipPtr, RECT *pClipRect)
 	CONTEXT OldContext;
 
 	if (StarShipPtr) // set during battle
+	{
+		assert (StarShipPtr->playerNr >= 0);
 		y = status_y_offsets[StarShipPtr->playerNr];
+	}
 
 	OldContext = SetContext (StatusContext);
 	if (pClipRect)
@@ -267,7 +270,7 @@ InitShipStatus (SHIP_INFO *SIPtr, STARSHIP *StarShipPtr, RECT *pClipRect)
 			SetContextFont (OldFont);
 		}
 	}
-	else if (StarShipPtr->playerNr == 0)
+	else if (StarShipPtr->playerNr == RPG_PLAYER_NUM)
 	{	// This is SIS
 		DrawCrewFuelString (y, 0);
 		DrawShipNameString (GLOBAL_SIS (ShipName), (COUNT)~0, y);

@@ -751,6 +751,7 @@ AllocHyperElement (STAR_DESC *SDPtr)
 		ELEMENT *HyperSpaceElementPtr;
 
 		LockElement (hHyperSpaceElement, &HyperSpaceElementPtr);
+		HyperSpaceElementPtr->playerNr = NEUTRAL_PLAYER_NUM;
 		HyperSpaceElementPtr->state_flags = CHANGING | FINITE_LIFE;
 		HyperSpaceElementPtr->life_span = 1;
 		HyperSpaceElementPtr->mass_points = 1;
@@ -792,6 +793,7 @@ AddAmbientElement (void)
 		ELEMENT *HyperSpaceElementPtr;
 
 		LockElement (hHyperSpaceElement, &HyperSpaceElementPtr);
+		HyperSpaceElementPtr->playerNr = NEUTRAL_PLAYER_NUM;
 		HyperSpaceElementPtr->state_flags =
 				APPEARING | FINITE_LIFE | NONSOLID;
 		SetPrimType (&DisplayArray[HyperSpaceElementPtr->PrimIndex], STAMP_PRIM);

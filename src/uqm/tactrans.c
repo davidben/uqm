@@ -474,6 +474,7 @@ explosion_preprocess (ELEMENT *ShipPtr)
 
 			PutElement (hElement);
 			LockElement (hElement, &ElementPtr);
+			ElementPtr->playerNr = NEUTRAL_PLAYER_NUM;
 			ElementPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
 			ElementPtr->life_span = 9;
 			SetPrimType (&DisplayArray[ElementPtr->PrimIndex], STAMP_PRIM);
@@ -516,6 +517,7 @@ ship_death (ELEMENT *ShipPtr)
 	{	// Not running away and not reincarnating (Pkunk)
 		// When a ship tries to run away, it is (dis)counted in DoRunAway(),
 		// so when it dies while running away, we will not count it again
+		assert (StarShipPtr->playerNr >= 0);
 		battle_counter[StarShipPtr->playerNr]--;
 	}
 
@@ -600,6 +602,7 @@ spawn_ion_trail (ELEMENT *ElementPtr)
 
 			InsertElement (hIonElement, GetHeadElement ());
 			LockElement (hIonElement, &IonElementPtr);
+			IonElementPtr->playerNr = NEUTRAL_PLAYER_NUM;
 			IonElementPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
 			IonElementPtr->life_span = IonElementPtr->thrust_wait = ION_LIFE;
 			SetPrimType (&DisplayArray[IonElementPtr->PrimIndex], POINT_PRIM);
@@ -738,6 +741,7 @@ ship_transition (ELEMENT *ElementPtr)
 			angle = FACING_TO_ANGLE (StarShipPtr->ShipFacing);
 
 			LockElement (hShipImage, &ShipImagePtr);
+			ShipImagePtr->playerNr = NEUTRAL_PLAYER_NUM;
 			ShipImagePtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
 			ShipImagePtr->life_span = ShipImagePtr->thrust_wait =
 					TRANSITION_LIFE;

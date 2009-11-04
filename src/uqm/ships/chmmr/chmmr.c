@@ -157,9 +157,9 @@ laser_death (ELEMENT *ElementPtr)
 			ELEMENT *IonSpotsPtr;
 
 			LockElement (hIonSpots, &IonSpotsPtr);
-			IonSpotsPtr->state_flags =
-					FINITE_LIFE | NONSOLID | IGNORE_SIMILAR | APPEARING
-					| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+			IonSpotsPtr->playerNr = ElementPtr->playerNr;
+			IonSpotsPtr->state_flags = FINITE_LIFE | NONSOLID
+					| IGNORE_SIMILAR | APPEARING;
 			IonSpotsPtr->turn_wait = IonSpotsPtr->next_turn = 0;
 			IonSpotsPtr->life_span = 9;
 
@@ -223,8 +223,8 @@ initialize_megawatt_laser (ELEMENT *ShipPtr, HELEMENT LaserArray[])
 			+ DISPLAY_TO_WORLD (r.corner.y);
 	LaserBlock.ex = COSINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
 	LaserBlock.ey = SINE (FACING_TO_ANGLE (LaserBlock.face), LASER_RANGE);
-	LaserBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	LaserBlock.sender = ShipPtr->playerNr;
+	LaserBlock.flags = IGNORE_SIMILAR;
 	LaserBlock.pixoffs = 0;
 	LaserBlock.color = cycle_array[StarShipPtr->special_counter];
 	LaserArray[0] = initialize_laser (&LaserBlock);
@@ -284,8 +284,7 @@ chmmr_postprocess (ELEMENT *ElementPtr)
 
 		LockElement (GetTailElement (), &MuzzleFlashPtr);
 		if (MuzzleFlashPtr != ElementPtr
-				&& (MuzzleFlashPtr->state_flags & (GOOD_GUY | BAD_GUY)) ==
-				(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
+				&& elementsOfSamePlayer (MuzzleFlashPtr, ElementPtr)
 				&& (MuzzleFlashPtr->state_flags & APPEARING)
 				&& GetPrimType (&(GLOBAL (DisplayArray))[
 						MuzzleFlashPtr->PrimIndex
@@ -294,9 +293,9 @@ chmmr_postprocess (ELEMENT *ElementPtr)
 				&& (hMuzzleFlash = AllocElement ()))
 		{
 			LockElement (hMuzzleFlash, &MuzzleFlashPtr);
-			MuzzleFlashPtr->state_flags =
-					FINITE_LIFE | NONSOLID | IGNORE_SIMILAR | APPEARING
-					| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+			MuzzleFlashPtr->playerNr = ElementPtr->playerNr;
+			MuzzleFlashPtr->state_flags = FINITE_LIFE | NONSOLID
+					| IGNORE_SIMILAR | APPEARING;
 			MuzzleFlashPtr->life_span = 1;
 
 			MuzzleFlashPtr->current = ElementPtr->next;
@@ -407,10 +406,9 @@ chmmr_postprocess (ELEMENT *ElementPtr)
 						ELEMENT *ShadowElementPtr;
 
 						LockElement (hShadow, &ShadowElementPtr);
-
-						ShadowElementPtr->state_flags =
-								FINITE_LIFE | NONSOLID | IGNORE_SIMILAR | POST_PROCESS
-								| (ShipElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+						ShadowElementPtr->playerNr = ShipElementPtr->playerNr;
+						ShadowElementPtr->state_flags = FINITE_LIFE | NONSOLID
+								| IGNORE_SIMILAR | POST_PROCESS;
 						ShadowElementPtr->life_span = 1;
 
 						ShadowElementPtr->current = ShipElementPtr->next;
@@ -522,8 +520,8 @@ spawn_point_defense (ELEMENT *ElementPtr)
 	{
 		LockElement (hObject, &ObjectPtr);
 		hNextObject = GetPredElement (ObjectPtr);
-		if (((ObjectPtr->state_flags | ShipPtr->state_flags)
-				& (GOOD_GUY | BAD_GUY)) == (GOOD_GUY | BAD_GUY)
+		if (!elementsOfSamePlayer (ObjectPtr, ShipPtr)
+				&& ObjectPtr->playerNr != NEUTRAL_PLAYER_NUM
 				&& CollisionPossible (ObjectPtr, ShipPtr)
 				&& !OBJECT_CLOAKED (ObjectPtr))
 		{
@@ -572,9 +570,8 @@ spawn_point_defense (ELEMENT *ElementPtr)
 				- SattPtr->next.location.x;
 		LaserBlock.ey = ObjectPtr->next.location.y
 				- SattPtr->next.location.y;
-		LaserBlock.sender =
-				(SattPtr->state_flags & (GOOD_GUY | BAD_GUY))
-				| IGNORE_SIMILAR;
+		LaserBlock.sender = SattPtr->playerNr;
+		LaserBlock.flags = IGNORE_SIMILAR;
 		LaserBlock.pixoffs = 0;
 		LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x00, 0x01, 0x1F), 0x4D);
 		hPointDefense = initialize_laser (&LaserBlock);
@@ -618,8 +615,8 @@ satellite_postprocess (ELEMENT *ElementPtr)
 			PutElement (hDefense);
 
 			LockElement (hDefense, &DefensePtr);
-			DefensePtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE
-					| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+			DefensePtr->playerNr = ElementPtr->playerNr;
+			DefensePtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE;
 
 			{
 				ELEMENT *SuccPtr;
@@ -693,9 +690,9 @@ spawn_satellites (ELEMENT *ElementPtr)
 				ELEMENT *SattPtr;
 
 				LockElement (hSatellite, &SattPtr);
-				SattPtr->state_flags =
-						IGNORE_SIMILAR | APPEARING | FINITE_LIFE
-						| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+				SattPtr->playerNr = ElementPtr->playerNr;
+				SattPtr->state_flags = IGNORE_SIMILAR | APPEARING
+						| FINITE_LIFE;
 				SattPtr->life_span = NORMAL_LIFE + 1;
 				SattPtr->hit_points = 10;
 				SattPtr->mass_points = 10;
@@ -747,9 +744,9 @@ chmmr_preprocess (ELEMENT *ElementPtr)
 		STARSHIP *StarShipPtr;
 
 		LockElement (hSatellite, &SattPtr);
-		SattPtr->state_flags =
-				FINITE_LIFE | NONSOLID | IGNORE_SIMILAR | APPEARING
-				| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+		SattPtr->playerNr = ElementPtr->playerNr;
+		SattPtr->state_flags = FINITE_LIFE | NONSOLID | IGNORE_SIMILAR
+				| APPEARING;
 		SattPtr->life_span = HYPERJUMP_LIFE + 1;
 
 		SattPtr->death_func = spawn_satellites;

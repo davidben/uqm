@@ -684,7 +684,7 @@ PreProcessQueue (SIZE *pscroll_x, SIZE *pscroll_y)
 			dy = DISPLAY_ALIGN (ElementPtr->next.location.y) - Origin.y;
 			dy = WRAP_DELTA_Y (dy);
 
-			if (sides_active <= 2 || !(ElementPtr->state_flags & BAD_GUY))
+			if (sides_active <= 2 || ElementPtr->playerNr == 0)
 			{
 				Origin.x = DISPLAY_ALIGN (Origin.x + (dx >> 1));
 				Origin.y = DISPLAY_ALIGN (Origin.y + (dy >> 1));

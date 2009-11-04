@@ -322,8 +322,8 @@ initialize_buzzsaw (ELEMENT *ShipPtr, HELEMENT SawArray[])
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = StarShipPtr->ShipFacing;
 	MissileBlock.index = 0;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = KOHR_AH_OFFSET;
 	MissileBlock.speed = MISSILE_SPEED;
 	MissileBlock.hit_points = MISSILE_HITS;
@@ -392,8 +392,7 @@ black_urquan_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 			if (!(BuzzSawPtr->state_flags & NONSOLID)
 					&& BuzzSawPtr->next.image.farray == StarShipPtr->RaceDescPtr->ship_data.weapon
 					&& BuzzSawPtr->life_span > MISSILE_LIFE * 3 / 4
-					&& (BuzzSawPtr->state_flags & (GOOD_GUY | BAD_GUY)) ==
-					(ShipPtr->state_flags & (GOOD_GUY | BAD_GUY)))
+					&& elementsOfSamePlayer (BuzzSawPtr, ShipPtr))
 			{
 				{
 					//COUNT which_turn;
@@ -479,9 +478,8 @@ spawn_gas_cloud (ELEMENT *ElementPtr)
 	MissileBlock.cy = ElementPtr->next.location.y;
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.special;
 	MissileBlock.index = 0;
-	MissileBlock.sender =
-			(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ElementPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = 20;
 	MissileBlock.speed = GAS_SPEED;
 	MissileBlock.hit_points = GAS_HITS;

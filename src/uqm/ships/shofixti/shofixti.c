@@ -125,8 +125,8 @@ initialize_standard_missile (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 	MissileBlock.cy = ShipPtr->next.location.y;
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = MissileBlock.index = StarShipPtr->ShipFacing;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = SHOFIXTI_OFFSET;
 	MissileBlock.speed = MISSILE_SPEED;
 	MissileBlock.hit_points = MISSILE_HITS;
@@ -187,6 +187,7 @@ destruct_preprocess (ELEMENT *ElementPtr)
 			LockElement (hDestruct, &DestructPtr);
 			SetElementStarShip (DestructPtr, StarShipPtr);
 			DestructPtr->hit_points = DestructPtr->mass_points = 0;
+			DestructPtr->playerNr = NEUTRAL_PLAYER_NUM;
 			DestructPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
 			DestructPtr->life_span = (NUM_EXPLOSION_FRAMES - 3) - 1;
 			SetPrimType (
@@ -234,8 +235,8 @@ self_destruct (ELEMENT *ElementPtr)
 			ELEMENT *DestructPtr;
 
 			LockElement (hDestruct, &DestructPtr);
-			DestructPtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE |
-					(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+			DestructPtr->playerNr = ElementPtr->playerNr;
+			DestructPtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE;
 			DestructPtr->next.location = ElementPtr->next.location;
 			DestructPtr->life_span = 0;
 			DestructPtr->pParent = ElementPtr->pParent;

@@ -25,7 +25,8 @@
 typedef struct
 {
 	COORD cx, cy, ex, ey;
-	ELEMENT_FLAGS sender;
+	ELEMENT_FLAGS flags;
+	SIZE sender; // player number
 	SIZE pixoffs;
 	COUNT face;
 	COLOR color;
@@ -34,7 +35,8 @@ typedef struct
 typedef struct
 {
 	COORD cx, cy;
-	ELEMENT_FLAGS sender;
+	ELEMENT_FLAGS flags;
+	SIZE sender; // player number
 	SIZE pixoffs, speed, hit_points, damage;
 	COUNT face, index, life;
 	FRAME *farray;

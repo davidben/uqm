@@ -157,7 +157,7 @@ static void
 comet_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 		ELEMENT *ElementPtr1, POINT *pPt1)
 {
-	if (ElementPtr1->state_flags & GOOD_GUY)
+	if (ElementPtr1->playerNr == RPG_PLAYER_NUM)
 	{
 		BYTE old_hits;
 		COUNT old_life;
@@ -211,7 +211,8 @@ spawn_comet (ELEMENT *ElementPtr)
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = 0;
 	MissileBlock.index = 24;
-	MissileBlock.sender = BAD_GUY | IGNORE_SIMILAR;
+	MissileBlock.sender = ElementPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = 0;
 	MissileBlock.speed = 0;
 	MissileBlock.hit_points = COMET_HITS;
@@ -293,7 +294,7 @@ static void
 gate_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 		ELEMENT *ElementPtr1, POINT *pPt1)
 {
-	if (ElementPtr1->state_flags & GOOD_GUY)
+	if (ElementPtr1->playerNr == RPG_PLAYER_NUM)
 	{
 		STARSHIP *StarShipPtr;
 
@@ -591,7 +592,7 @@ sentinel_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 	COUNT angle;
 	STARSHIP *StarShipPtr;
 
-	if (ElementPtr1->state_flags & BAD_GUY)
+	if (ElementPtr1->playerNr == NPC_PLAYER_NUM)
 	{
 		if (ElementPtr0->preprocess_func == ElementPtr1->preprocess_func
 				&& !(ElementPtr0->state_flags & DEFY_PHYSICS)
@@ -718,7 +719,8 @@ samatra_postprocess (ELEMENT *ElementPtr)
 			MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 			MissileBlock.face = 0;
 			MissileBlock.index = 0;
-			MissileBlock.sender = BAD_GUY;
+			MissileBlock.sender = ElementPtr->playerNr;
+			MissileBlock.flags = 0;
 			MissileBlock.pixoffs = 0;
 			MissileBlock.speed = MISSILE_SPEED;
 			MissileBlock.hit_points = MISSILE_HITS;
@@ -789,8 +791,8 @@ samatra_preprocess (ELEMENT *ElementPtr)
 				GeneratorPtr->hit_points = GENERATOR_HITS;
 				GeneratorPtr->mass_points = MAX_SHIP_MASS * 10;
 				GeneratorPtr->life_span = NORMAL_LIFE;
-				GeneratorPtr->state_flags =
-						APPEARING | BAD_GUY | IGNORE_SIMILAR;
+				GeneratorPtr->playerNr = ElementPtr->playerNr;
+				GeneratorPtr->state_flags = APPEARING | IGNORE_SIMILAR;
 				SetPrimType (
 						&GLOBAL (DisplayArray[GeneratorPtr->PrimIndex]),
 						STAMP_PRIM
@@ -833,8 +835,8 @@ samatra_preprocess (ELEMENT *ElementPtr)
 				LockElement (hTurret, &TurretPtr);
 				TurretPtr->hit_points = 1;
 				TurretPtr->life_span = NORMAL_LIFE;
-				TurretPtr->state_flags =
-						APPEARING | BAD_GUY | IGNORE_SIMILAR | NONSOLID;
+				TurretPtr->playerNr = ElementPtr->playerNr;
+				TurretPtr->state_flags = APPEARING | IGNORE_SIMILAR | NONSOLID;
 				SetPrimType (
 						&GLOBAL (DisplayArray[TurretPtr->PrimIndex]),
 						STAMP_PRIM
@@ -869,8 +871,9 @@ samatra_preprocess (ELEMENT *ElementPtr)
 				GatePtr->hit_points = GATE_HITS;
 				GatePtr->mass_points = GATE_DAMAGE;
 				GatePtr->life_span = 2;
-				GatePtr->state_flags =
-						APPEARING | FINITE_LIFE | BAD_GUY | IGNORE_SIMILAR;
+				GatePtr->playerNr = ElementPtr->playerNr;
+				GatePtr->state_flags = APPEARING | FINITE_LIFE
+						| IGNORE_SIMILAR;
 				SetPrimType (
 						&GLOBAL (DisplayArray[GatePtr->PrimIndex]),
 						STAMP_PRIM

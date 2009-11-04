@@ -152,8 +152,8 @@ initialize_lightning (ELEMENT *ElementPtr, HELEMENT LaserArray[])
 	LaserBlock.ex = 0;
 	LaserBlock.ey = 0;
 
-	LaserBlock.sender = (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	LaserBlock.sender = ElementPtr->playerNr;
+	LaserBlock.flags = IGNORE_SIMILAR;
 	LaserBlock.face = 0;
 	LaserBlock.pixoffs = 0;
 	LaserArray[0] = initialize_laser (&LaserBlock);
@@ -306,9 +306,8 @@ harvest_space_junk (ELEMENT *ElementPtr)
 		LockElement (hElement, &ObjPtr);
 		hNextElement = GetSuccElement (ObjPtr);
 
-		if (!(ObjPtr->state_flags
-				& (APPEARING | GOOD_GUY | BAD_GUY
-				| PLAYER_SHIP | FINITE_LIFE))
+		if (!(ObjPtr->state_flags & (APPEARING | PLAYER_SHIP | FINITE_LIFE))
+				&& ObjPtr->playerNr == NEUTRAL_PLAYER_NUM
 				&& !GRAVITY_MASS (ObjPtr->mass_points)
 				&& CollisionPossible (ObjPtr, ElementPtr))
 		{

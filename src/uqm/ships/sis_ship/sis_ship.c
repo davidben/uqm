@@ -314,11 +314,10 @@ spawn_point_defense (ELEMENT *ElementPtr)
 			ELEMENT *DefensePtr;
 
 			LockElement (hDefense, &DefensePtr);
-			DefensePtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE |
-					(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
-			{
-				DefensePtr->death_func = spawn_point_defense;
-			}
+			DefensePtr->playerNr = ElementPtr->playerNr;
+			DefensePtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE;
+			DefensePtr->death_func = spawn_point_defense;
+			
 			GetElementStarShip (ElementPtr, &StarShipPtr);
 			SetElementStarShip (DefensePtr, StarShipPtr);
 			UnlockElement (hDefense);
@@ -403,8 +402,8 @@ spawn_point_defense (ELEMENT *ElementPtr)
 							- ShipPtr->next.location.x;
 					LaserBlock.ey = ObjectPtr->next.location.y
 							- ShipPtr->next.location.y;
-					LaserBlock.sender = (ShipPtr->state_flags &
-							(GOOD_GUY | BAD_GUY)) | IGNORE_SIMILAR;
+					LaserBlock.sender = ShipPtr->playerNr;
+					LaserBlock.flags = IGNORE_SIMILAR;
 					LaserBlock.pixoffs = 0;
 					LaserBlock.color = LaserColor;
 					hPointDefense = initialize_laser (&LaserBlock);
@@ -571,8 +570,8 @@ initialize_blasters (ELEMENT *ShipPtr, HELEMENT BlasterArray[])
 			lpMB->cx = ShipPtr->next.location.x;
 			lpMB->cy = ShipPtr->next.location.y;
 			lpMB->farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
-			lpMB->sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-					| IGNORE_SIMILAR;
+			lpMB->sender = ShipPtr->playerNr;
+			lpMB->flags = IGNORE_SIMILAR;
 			lpMB->blast_offs = BLASTER_OFFSET;
 			lpMB->speed = BLASTER_SPEED;
 			lpMB->preprocess_func = blaster_preprocess;

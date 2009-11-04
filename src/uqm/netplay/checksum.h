@@ -36,9 +36,7 @@ typedef uint32 Checksum;
 
 static inline void
 crc_processELEMENT_FLAGS(crc_State *state, ELEMENT_FLAGS val) {
-	crc_processUint16(state, (uint16) (val & ~(GOOD_GUY | BAD_GUY)));
-			// Excluding the element side, as this does not have to
-			// be the same for both players over a network.
+	crc_processUint16(state, (uint16) val);
 }
 
 static inline void

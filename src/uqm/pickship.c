@@ -403,7 +403,6 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 						 * fight, all Syreen ships there would be crewed to
 						 * the maximum, instead of the normal level */
 						SPtr->crew_level = FragPtr->max_crew;
-						SPtr->which_side = 1 << which_player;
 						SPtr->playerNr = which_player;
 						SPtr->captains_name_index = PickCaptainName ();
 

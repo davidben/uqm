@@ -36,10 +36,7 @@ typedef HLINK HSTARSHIP;
 #define MAX_SHIPS_PER_SIDE 14
 
 /* SHIP_INFO.ship_flags - ship specific flags */
-/*
-#define GOOD_GUY  (1 << 0)
-#define BAD_GUY   (1 << 1)
-*/
+/* bits 0 and 1 are now available */
 #define SEEKING_WEAPON    (1 << 2)
 #define SEEKING_SPECIAL   (1 << 3)
 #define POINT_DEFENSE     (1 << 4)
@@ -245,8 +242,6 @@ struct STARSHIP
 	RACE_DESC *RaceDescPtr;
 
 	// Ship information
-	UWORD which_side;
-			// In race_q: side the ship is on
 	COUNT crew_level;
 			// In full-game battles: crew left
 			// In SuperMelee: irrelevant
@@ -274,11 +269,16 @@ struct STARSHIP
 	HELEMENT hShip;
 	COUNT ShipFacing;
 
-	COUNT playerNr;
-			// 0: bottom player; In full-game: the human player
+	SIZE playerNr;
+			//  0: bottom player; In full-game: the human player (RPG)
+			//  1: top player; In full-game: the NPC opponent
+			// -1: neutral; this should currently never happen (asserts)
 	BYTE control;
 			// HUMAN, COMPUTER or NETWORK control flags, see intel.h
 };
+
+#define RPG_PLAYER_NUM  0
+#define NPC_PLAYER_NUM  1
 
 static inline STARSHIP *
 LockStarShip (const QUEUE *pq, HSTARSHIP h)

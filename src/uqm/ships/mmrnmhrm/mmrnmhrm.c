@@ -248,8 +248,7 @@ twin_laser_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 		ELEMENT *ElementPtr1, POINT *pPt1)
 {
 	if (!(ElementPtr1->state_flags & PLAYER_SHIP)
-			|| !(ElementPtr0->state_flags & ElementPtr1->state_flags
-			& (GOOD_GUY | BAD_GUY)))
+			|| !elementsOfSamePlayer (ElementPtr0, ElementPtr1))
 		weapon_collision (ElementPtr0, pPt0, ElementPtr1, pPt1);
 }
 
@@ -275,7 +274,8 @@ initialize_dual_weapons (ELEMENT *ShipPtr, HELEMENT WeaponArray[])
 		LASER_BLOCK LaserBlock;
 		ELEMENT *LaserPtr;
 
-		LaserBlock.sender = ShipPtr->state_flags & (GOOD_GUY | BAD_GUY);
+		LaserBlock.sender = ShipPtr->playerNr;
+		LaserBlock.flags = 0;
 		LaserBlock.pixoffs = 0;
 		LaserBlock.color = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x0C);
 		LaserBlock.face = facing;
@@ -318,8 +318,8 @@ initialize_dual_weapons (ELEMENT *ShipPtr, HELEMENT WeaponArray[])
 		ELEMENT *TorpPtr;
 
 		TorpBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
-		TorpBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-				| IGNORE_SIMILAR;
+		TorpBlock.sender = ShipPtr->playerNr;
+		TorpBlock.flags = IGNORE_SIMILAR;
 		TorpBlock.pixoffs = 0;
 		TorpBlock.speed = MISSILE_SPEED;
 		TorpBlock.hit_points = MISSILE_HITS;

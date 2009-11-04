@@ -108,8 +108,10 @@ struct element
 	void (*death_func) (struct element *ElementPtr);
 
 	// Player this element belongs to
-	// 0: Bottom player in Melee; The Player in full-game
-	COUNT playerNr;
+	// -1: neutral (planets, asteroids, crew, etc.)
+	//  0: Melee: bottom player; Full-game: the human player
+	//  1: Melee: top player;    Full-game: the NPC opponent
+	SIZE playerNr;
 
 	ELEMENT_FLAGS state_flags;
 	union
@@ -146,6 +148,14 @@ struct element
 			// The ship this element belongs to.
 	HELEMENT hTarget;
 };
+
+#define NEUTRAL_PLAYER_NUM  -1
+
+static inline BOOLEAN
+elementsOfSamePlayer (ELEMENT *ElementPtr0, ELEMENT *ElementPtr1)
+{
+	return ElementPtr0->playerNr == ElementPtr1->playerNr;
+}
 
 extern QUEUE disp_q;
 // The maximum number of elements is chosen to provide a slight margin.

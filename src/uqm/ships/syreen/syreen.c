@@ -125,8 +125,8 @@ initialize_dagger (ELEMENT *ShipPtr, HELEMENT DaggerArray[])
 	MissileBlock.cy = ShipPtr->next.location.y;
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = MissileBlock.index = StarShipPtr->ShipFacing;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = SYREEN_OFFSET;
 	MissileBlock.speed = MISSILE_SPEED;
 	MissileBlock.hit_points = MISSILE_HITS;
@@ -153,8 +153,8 @@ spawn_crew (ELEMENT *ElementPtr)
 
 			LockElement (hCrew, &CrewPtr);
 			CrewPtr->next.location = ElementPtr->next.location;
-			CrewPtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE
-					| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+			CrewPtr->playerNr = ElementPtr->playerNr;
+			CrewPtr->state_flags = APPEARING | NONSOLID | FINITE_LIFE;
 			CrewPtr->life_span = 0;
 			CrewPtr->death_func = spawn_crew;
 			CrewPtr->pParent = ElementPtr->pParent;
@@ -177,8 +177,7 @@ spawn_crew (ELEMENT *ElementPtr)
 			hNextElement = GetSuccElement (ObjPtr);
 
 			if ((ObjPtr->state_flags & PLAYER_SHIP)
-					&& (ObjPtr->state_flags & (GOOD_GUY | BAD_GUY)) !=
-					(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
+					&& !elementsOfSamePlayer (ObjPtr, ElementPtr)
 					&& ObjPtr->crew_level > 1)
 			{
 				SIZE dx, dy;

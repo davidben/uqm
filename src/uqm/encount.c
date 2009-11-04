@@ -104,7 +104,7 @@ BuildBattle (COUNT which_player)
 		return;
 	}
 
-	if (which_player == 0)
+	if (which_player == RPG_PLAYER_NUM)
 		pQueue = &GLOBAL (built_ship_q);
 	else
 	{
@@ -141,7 +141,6 @@ BuildBattle (COUNT which_player)
 		{
 			BuiltShipPtr = LockStarShip (&race_q[which_player], hBuiltShip);
 			BuiltShipPtr->captains_name_index = FragPtr->captains_name_index;
-			BuiltShipPtr->which_side = 1 << which_player;
 			BuiltShipPtr->playerNr = which_player;
 			if (FragPtr->crew_level != INFINITE_FLEET)
 				BuiltShipPtr->crew_level = FragPtr->crew_level;
@@ -160,13 +159,12 @@ BuildBattle (COUNT which_player)
 		UnlockShipFrag (pQueue, hStarShip);
 	}
 
-	if (which_player == 0
+	if (which_player == RPG_PLAYER_NUM
 			&& (hBuiltShip = Build (&race_q[0], SIS_SHIP_ID)))
 	{
 		BuiltShipPtr = LockStarShip (&race_q[0], hBuiltShip);
 		BuiltShipPtr->captains_name_index = 0;
-		BuiltShipPtr->which_side = GOOD_GUY;
-		BuiltShipPtr->playerNr = 0;
+		BuiltShipPtr->playerNr = RPG_PLAYER_NUM;
 		BuiltShipPtr->crew_level = 0;
 		BuiltShipPtr->max_crew = 0;
 				// Crew will be copied directly from

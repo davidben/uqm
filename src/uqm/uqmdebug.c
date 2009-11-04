@@ -1469,9 +1469,9 @@ depositQualityString (BYTE quality)
 
 ////////////////////////////////////////////////////////////////////////////
 
-// Which should be GOOD_GUY or BAD_GUY
+// playerNr should be 0 or 1
 STARSHIP*
-findPlayerShip(ELEMENT_FLAGS which) {
+findPlayerShip (SIZE playerNr) {
 	HELEMENT hElement, hNextElement;
 
 	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
@@ -1482,7 +1482,7 @@ findPlayerShip(ELEMENT_FLAGS which) {
 		hNextElement = GetSuccElement (ElementPtr);
 					
 		if ((ElementPtr->state_flags & PLAYER_SHIP)	&&
-				(ElementPtr->state_flags & (GOOD_GUY | BAD_GUY)) == which)
+				ElementPtr->playerNr == playerNr)
 		{
 			STARSHIP *StarShipPtr;
 			GetElementStarShip (ElementPtr, &StarShipPtr);
@@ -1507,7 +1507,7 @@ resetCrewBattle(void) {
 			(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE))
 		return;
 	
-	StarShipPtr = findPlayerShip (GOOD_GUY);
+	StarShipPtr = findPlayerShip (RPG_PLAYER_NUM);
 	if (StarShipPtr == NULL || StarShipPtr->RaceDescPtr == NULL)
 		return;
 
@@ -1529,7 +1529,7 @@ resetEnergyBattle(void) {
 			(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE))
 		return;
 	
-	StarShipPtr = findPlayerShip (GOOD_GUY);
+	StarShipPtr = findPlayerShip (RPG_PLAYER_NUM);
 	if (StarShipPtr == NULL || StarShipPtr->RaceDescPtr == NULL)
 		return;
 

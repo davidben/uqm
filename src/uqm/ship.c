@@ -168,9 +168,9 @@ ship_preprocess (ELEMENT *ElementPtr)
 	{	// Preprocessing for the first time
 		ElementPtr->crew_level = RDPtr->ship_info.crew_level;
 
-		if ((ElementPtr->state_flags & BAD_GUY)
+		if (ElementPtr->playerNr == NPC_PLAYER_NUM
 				&& LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
-		{
+		{	// Sa-Matra
 			STAMP s;
 			CONTEXT OldContext;
 
@@ -388,7 +388,6 @@ spawn_ship (STARSHIP *StarShipPtr)
 	if (!RDPtr)
 		return FALSE;
 
-	RDPtr->ship_info.ship_flags |= StarShipPtr->which_side;
 	StarShipPtr->RaceDescPtr = RDPtr;
 
 	StarShipPtr->ship_input_state = 0;
@@ -430,10 +429,10 @@ spawn_ship (STARSHIP *StarShipPtr)
 
 		LockElement (hShip, &ShipElementPtr);
 
+		ShipElementPtr->playerNr = StarShipPtr->playerNr;
 		ShipElementPtr->crew_level = 0;
 		ShipElementPtr->mass_points = RDPtr->characteristics.ship_mass;
-		ShipElementPtr->state_flags = APPEARING | PLAYER_SHIP | IGNORE_SIMILAR
-				| (RDPtr->ship_info.ship_flags & (GOOD_GUY | BAD_GUY));
+		ShipElementPtr->state_flags = APPEARING | PLAYER_SHIP | IGNORE_SIMILAR;
 		ShipElementPtr->turn_wait = 0;
 		ShipElementPtr->thrust_wait = 0;
 		ShipElementPtr->life_span = NORMAL_LIFE;
@@ -441,7 +440,7 @@ spawn_ship (STARSHIP *StarShipPtr)
 		SetPrimType (&DisplayArray[ShipElementPtr->PrimIndex], STAMP_PRIM);
 		ShipElementPtr->current.image.farray = RDPtr->ship_data.ship;
 
-		if ((ShipElementPtr->state_flags & BAD_GUY)
+		if (ShipElementPtr->playerNr == NPC_PLAYER_NUM
 				&& LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 		{
 			// This is the Sa-Matra

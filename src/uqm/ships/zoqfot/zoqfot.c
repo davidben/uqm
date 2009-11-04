@@ -154,8 +154,8 @@ initialize_spit (ELEMENT *ShipPtr, HELEMENT SpitArray[])
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = StarShipPtr->ShipFacing;
 	MissileBlock.index = 0;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = ZOQFOTPIK_OFFSET;
 	MissileBlock.speed = DISPLAY_TO_WORLD (
 			GetFrameCount (StarShipPtr->RaceDescPtr->ship_data.weapon[0])) << 1;
@@ -210,8 +210,8 @@ spawn_tongue (ELEMENT *ElementPtr)
 	TongueBlock.cy = ElementPtr->next.location.y;
 	TongueBlock.farray = StarShipPtr->RaceDescPtr->ship_data.special;
 	TongueBlock.face = TongueBlock.index = StarShipPtr->ShipFacing;
-	TongueBlock.sender = (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	TongueBlock.sender = ElementPtr->playerNr;
+	TongueBlock.flags = IGNORE_SIMILAR;
 	TongueBlock.pixoffs = 0;
 	TongueBlock.speed = TONGUE_SPEED;
 	TongueBlock.hit_points = TONGUE_HITS;

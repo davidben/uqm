@@ -124,8 +124,8 @@ initialize_standard_missiles (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
 	MissileBlock.face = MissileBlock.index = StarShipPtr->ShipFacing;
-	MissileBlock.sender = (ShipPtr->state_flags & (GOOD_GUY | BAD_GUY))
-			| IGNORE_SIMILAR;
+	MissileBlock.sender = ShipPtr->playerNr;
+	MissileBlock.flags = IGNORE_SIMILAR;
 	MissileBlock.pixoffs = YEHAT_OFFSET;
 	MissileBlock.speed = MISSILE_SPEED;
 	MissileBlock.hit_points = MISSILE_HITS;
@@ -265,12 +265,11 @@ yehat_postprocess (ELEMENT *ElementPtr)
 
 				InsertElement (hShipElement, GetSuccElement (ElementPtr));
 				LockElement (hShipElement, &ShipElementPtr);
-
+				ShipElementPtr->playerNr = ElementPtr->playerNr;
 				ShipElementPtr->state_flags =
 							/* in place of APPEARING */
 						(CHANGING | PRE_PROCESS | POST_PROCESS)
-						| FINITE_LIFE | NONSOLID
-						| (ElementPtr->state_flags & (GOOD_GUY | BAD_GUY));
+						| FINITE_LIFE | NONSOLID;
 				SetPrimType (
 						&(GLOBAL (DisplayArray))[ShipElementPtr->PrimIndex],
 						STAMP_PRIM

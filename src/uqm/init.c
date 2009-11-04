@@ -165,8 +165,7 @@ BuildSIS (void)
 	if (!hStarShip)
 		return 0;
 	StarShipPtr = LockStarShip (&race_q[0], hStarShip);
-	StarShipPtr->which_side = GOOD_GUY;
-	StarShipPtr->playerNr = 0;
+	StarShipPtr->playerNr = RPG_PLAYER_NUM;
 	StarShipPtr->captains_name_index = 0;
 	UnlockStarShip (&race_q[0], hStarShip);
 
