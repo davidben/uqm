@@ -109,6 +109,7 @@ static RACE_DESC human_desc =
 	(POSTPROCESS_FUNC *) NULL,
 	(INIT_WEAPON_FUNC *) NULL,
 	0,
+	0, /* CodeRef */
 };
 
 #define MISSILE_SPEED (MAX_THRUST >= MIN_MISSILE_SPEED ? \

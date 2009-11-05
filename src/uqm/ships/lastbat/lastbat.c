@@ -114,6 +114,7 @@ static RACE_DESC samatra_desc =
 	(POSTPROCESS_FUNC *) NULL,
 	(INIT_WEAPON_FUNC *) NULL,
 	0,
+	0, /* CodeRef */
 };
 
 static HELEMENT spawn_comet (ELEMENT *ElementPtr);

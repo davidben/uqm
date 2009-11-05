@@ -114,6 +114,7 @@ static RACE_DESC sis_desc =
 	(POSTPROCESS_FUNC *) NULL,
 	(INIT_WEAPON_FUNC *) NULL,
 	0,
+	0, /* CodeRef */
 };
 
 // Private per-instance SIS data

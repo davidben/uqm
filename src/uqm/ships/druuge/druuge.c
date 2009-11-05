@@ -105,6 +105,7 @@ static RACE_DESC druuge_desc =
 	(POSTPROCESS_FUNC *) NULL,
 	(INIT_WEAPON_FUNC *) NULL,
 	0,
+	0, /* CodeRef */
 };
 
 #define RECOIL_VELOCITY WORLD_TO_VELOCITY (DISPLAY_TO_WORLD (6))

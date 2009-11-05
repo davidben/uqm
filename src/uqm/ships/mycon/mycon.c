@@ -108,6 +108,7 @@ static RACE_DESC mycon_desc =
 	(POSTPROCESS_FUNC *) NULL,
 	(INIT_WEAPON_FUNC *) NULL,
 	0,
+	0, /* CodeRef */
 };
 
 #define MISSILE_DAMAGE 10

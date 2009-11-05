@@ -102,6 +102,7 @@ static RACE_DESC probe_desc =
 	(POSTPROCESS_FUNC *) NULL,
 	(INIT_WEAPON_FUNC *) NULL,
 	0,
+	0, /* CodeRef */
 };
 
 RACE_DESC*

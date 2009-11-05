@@ -108,6 +108,7 @@ static RACE_DESC zoqfotpik_desc =
 	(POSTPROCESS_FUNC *) NULL,
 	(INIT_WEAPON_FUNC *) NULL,
 	0,
+	0, /* CodeRef */
 };
 
 #define ZOQFOTPIK_OFFSET 13

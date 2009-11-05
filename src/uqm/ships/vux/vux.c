@@ -110,6 +110,7 @@ static RACE_DESC vux_desc =
 	(POSTPROCESS_FUNC *) NULL,
 	(INIT_WEAPON_FUNC *) NULL,
 	0,
+	0, /* CodeRef */
 };
 
 #define LIMPET_SPEED 25

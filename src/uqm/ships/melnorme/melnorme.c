@@ -108,6 +108,7 @@ static RACE_DESC melnorme_desc =
 	(POSTPROCESS_FUNC *) NULL,
 	(INIT_WEAPON_FUNC *) NULL,
 	0,
+	0, /* CodeRef */
 };
 
 #define NUM_PUMP_ANIMS 5
