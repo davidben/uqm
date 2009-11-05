@@ -140,8 +140,7 @@ snd_StopSpeech (void)
 BOOLEAN
 DestroyMusic (MUSIC_REF MusicRef)
 {
-	FreeMusicData (MusicRef);
-	return (TRUE);
+	return _ReleaseMusicData (MusicRef);
 }
 
 void
@@ -227,7 +226,7 @@ _ReleaseMusicData (void *data)
 		SoundDecoder_Free (decoder);
 	}
 	TFB_DestroySoundSample (sample);
-	HFree (pmus);
+	FreeMusicData (data);
 
 	return (TRUE);
 }
