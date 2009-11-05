@@ -19,6 +19,7 @@
 #ifndef _RACES_H
 #define _RACES_H
 
+#include "types.h"
 #include "libs/compiler.h"
 #include "units.h"
 #include "displist.h"
@@ -275,6 +276,8 @@ struct STARSHIP
 			// -1: neutral; this should currently never happen (asserts)
 	BYTE control;
 			// HUMAN, COMPUTER or NETWORK control flags, see intel.h
+
+	intptr_t data;  // private ship data, ship code owns this
 };
 
 #define RPG_PLAYER_NUM  0

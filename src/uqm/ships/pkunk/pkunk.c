@@ -179,20 +179,20 @@ initialize_bug_missile (ELEMENT *ShipPtr, HELEMENT MissileArray[])
 	return (3);
 }
 
-static HELEMENT hPhoenix = 0;
-
 static void
 pkunk_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 		COUNT ConcernCounter)
 {
 	STARSHIP *StarShipPtr;
+	HELEMENT hPhoenix;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
-	if (hPhoenix && StarShipPtr->special_counter)
+	hPhoenix = (HELEMENT) StarShipPtr->data;
+	if (hPhoenix && (StarShipPtr->control & STANDARD_RATING))
 	{
 		RemoveElement (hPhoenix);
 		FreeElement (hPhoenix);
-		hPhoenix = 0;
+		StarShipPtr->data = 0;
 	}
 
 	if (StarShipPtr->RaceDescPtr->ship_info.energy_level <
@@ -442,11 +442,14 @@ pkunk_preprocess (ELEMENT *ElementPtr)
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 	if (ElementPtr->state_flags & APPEARING)
 	{
-		ELEMENT *PhoenixPtr;
+		HELEMENT hPhoenix = 0;
 
-		if (((BYTE)TFB_Random () & 1)
-				&& (hPhoenix = AllocElement ()))
+		if ((BYTE)TFB_Random () & 1)
+			hPhoenix = AllocElement ();
+
+		if (hPhoenix)
 		{
+			ELEMENT *PhoenixPtr;
 
 			LockElement (hPhoenix, &PhoenixPtr);
 			PhoenixPtr->playerNr = ElementPtr->playerNr;
@@ -460,6 +463,7 @@ pkunk_preprocess (ELEMENT *ElementPtr)
 			UnlockElement (hPhoenix);
 			InsertElement (hPhoenix, GetHeadElement ());
 		}
+		StarShipPtr->data = (intptr_t) hPhoenix;
 
 		if (ElementPtr->hTarget == 0)
 			StarShipPtr->RaceDescPtr->preprocess_func = 0;
