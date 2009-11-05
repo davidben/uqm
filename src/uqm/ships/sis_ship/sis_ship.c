@@ -116,6 +116,17 @@ static RACE_DESC sis_desc =
 	0,
 };
 
+// Private per-instance SIS data
+typedef struct
+{
+	COUNT num_trackers;
+	COUNT num_blasters;
+	MISSILE_BLOCK MissileBlock[6];
+
+} SIS_DATA;
+
+static void InitWeaponSlots (RACE_DESC *RaceDescPtr,
+		const BYTE *ModuleSlots);
 static void InitModuleSlots (RACE_DESC *RaceDescPtr,
 		const BYTE *ModuleSlots);
 static void InitDriveSlots (RACE_DESC *RaceDescPtr,
@@ -124,7 +135,6 @@ static void InitJetSlots (RACE_DESC *RaceDescPtr,
 		const BYTE *JetSlots);
 void uninit_sis (RACE_DESC *pRaceDesc);
 
-static BYTE num_trackers = 0;
 
 static void
 sis_hyper_preprocess (ELEMENT *ElementPtr)
@@ -546,91 +556,29 @@ initialize_blasters (ELEMENT *ShipPtr, HELEMENT BlasterArray[])
 #define SIS_HORZ_OFFSET 20
 #define BLASTER_HITS 2
 #define BLASTER_OFFSET 8
-	COUNT num_blasters;
-
 	BYTE nt;
 	COUNT i;
 	STARSHIP *StarShipPtr;
-	MISSILE_BLOCK MissileBlock[6];
-	MISSILE_BLOCK *lpMB;
+	SIS_DATA *SisData;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
+	SisData = (SIS_DATA *) StarShipPtr->RaceDescPtr->data;
 
-	num_blasters = 0;
-	for (i = 0, lpMB = &MissileBlock[0]; i < NUM_MODULE_SLOTS; ++i)
+	nt = (BYTE)((4 - SisData->num_trackers) & 3);
+
+	for (i = 0; i < SisData->num_blasters; ++i)
 	{
-		BYTE which_gun;
+		MISSILE_BLOCK MissileBlock = SisData->MissileBlock[i];
 
-		if (i == 3)
-			i = NUM_MODULE_SLOTS - 1;
-		which_gun = GLOBAL_SIS (ModuleSlots[(NUM_MODULE_SLOTS - 1) - i]);
-		if (which_gun >= GUN_WEAPON && which_gun <= CANNON_WEAPON)
-		{
-			which_gun -= GUN_WEAPON - 1;
-			lpMB->cx = ShipPtr->next.location.x;
-			lpMB->cy = ShipPtr->next.location.y;
-			lpMB->farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
-			lpMB->sender = ShipPtr->playerNr;
-			lpMB->flags = IGNORE_SIMILAR;
-			lpMB->blast_offs = BLASTER_OFFSET;
-			lpMB->speed = BLASTER_SPEED;
-			lpMB->preprocess_func = blaster_preprocess;
-			lpMB->hit_points = BLASTER_HITS * which_gun;
-			lpMB->damage = BLASTER_DAMAGE * which_gun;
-			lpMB->life = BLASTER_LIFE
-					+ ((BLASTER_LIFE >> 2) * (which_gun - 1));
+		MissileBlock.cx = ShipPtr->next.location.x;
+		MissileBlock.cy = ShipPtr->next.location.y;
+		MissileBlock.farray = StarShipPtr->RaceDescPtr->ship_data.weapon;
+		MissileBlock.sender = ShipPtr->playerNr;
+		MissileBlock.face = NORMALIZE_FACING (StarShipPtr->ShipFacing
+				+ MissileBlock.face);
 
-			if (which_gun == 1)
-				lpMB->index = 0;
-			else if (which_gun == 2)
-				lpMB->index = 9;
-			else
-				lpMB->index = 16;
-
-			switch (i)
-			{
-				case 0: /* NOSE WEAPON */
-					lpMB->pixoffs = SIS_VERT_OFFSET;
-					lpMB->face = StarShipPtr->ShipFacing;
-					break;
-				case 1: /* SPREAD WEAPON */
-					lpMB->pixoffs = SIS_VERT_OFFSET;
-					lpMB->face = NORMALIZE_FACING (
-							StarShipPtr->ShipFacing + 1);
-					lpMB[1] = lpMB[0];
-					++lpMB;
-					lpMB->face = NORMALIZE_FACING (
-							StarShipPtr->ShipFacing - 1);
-					break;
-				case 2: /* SIDE WEAPON */
-					lpMB->pixoffs = SIS_HORZ_OFFSET;
-					lpMB->face = NORMALIZE_FACING (
-							StarShipPtr->ShipFacing
-							+ ANGLE_TO_FACING (QUADRANT));
-					lpMB[1] = lpMB[0];
-					++lpMB;
-					lpMB->face = NORMALIZE_FACING (
-							StarShipPtr->ShipFacing
-							- ANGLE_TO_FACING (QUADRANT));
-					break;
-				case NUM_MODULE_SLOTS - 1: /* TAIL WEAPON */
-					lpMB->pixoffs = SIS_VERT_OFFSET;
-					lpMB->face = NORMALIZE_FACING (
-							StarShipPtr->ShipFacing
-							+ ANGLE_TO_FACING (HALF_CIRCLE));
-					break;
-			}
-
-			++lpMB;
-		}
-	}
-
-
-	nt = (BYTE)((4 - num_trackers) & 3);
-	num_blasters = lpMB - &MissileBlock[0];
-	for (i = 0, lpMB = &MissileBlock[0]; i < num_blasters; ++i, ++lpMB)
-	{
-		if ((BlasterArray[i] = initialize_missile (lpMB)))
+		BlasterArray[i] = initialize_missile (&MissileBlock);
+		if (BlasterArray[i])
 		{
 			ELEMENT *BlasterPtr;
 
@@ -639,9 +587,10 @@ initialize_blasters (ELEMENT *ShipPtr, HELEMENT BlasterArray[])
 			BlasterPtr->turn_wait = MAKE_BYTE (nt, nt);
 			UnlockElement (BlasterArray[i]);
 		}
+	
 	}
 
-	return (num_blasters);
+	return SisData->num_blasters;
 }
 
 static void
@@ -650,8 +599,10 @@ sis_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 {
 	EVALUATE_DESC *lpEvalDesc;
 	STARSHIP *StarShipPtr;
+	SIS_DATA *SisData;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
+	SisData = (SIS_DATA *) StarShipPtr->RaceDescPtr->data;
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
 	if (lpEvalDesc->ObjectPtr)
@@ -683,7 +634,7 @@ sis_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 	ship_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter);
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
-	if (num_trackers
+	if (SisData->num_trackers
 			&& StarShipPtr->weapon_counter == 0
 			&& !(StarShipPtr->ship_input_state & WEAPON)
 			&& lpEvalDesc->ObjectPtr
@@ -718,9 +669,94 @@ sis_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 }
 
 static void
+InitWeaponSlots (RACE_DESC *RaceDescPtr, const BYTE *ModuleSlots)
+{
+#define SIS_VERT_OFFSET 28
+#define SIS_HORZ_OFFSET 20
+#define BLASTER_HITS 2
+#define BLASTER_OFFSET 8
+	COUNT i;
+	SIS_DATA *SisData = (SIS_DATA *) RaceDescPtr->data;
+	MISSILE_BLOCK *lpMB = SisData->MissileBlock;
+
+	SisData->num_blasters = 0;
+	for (i = 0; i < NUM_MODULE_SLOTS; ++i)
+	{
+		COUNT which_gun;
+
+		if (i == 3)
+			i = NUM_MODULE_SLOTS - 1;
+		
+		which_gun = ModuleSlots[(NUM_MODULE_SLOTS - 1) - i];
+		
+		if (which_gun < GUN_WEAPON || which_gun > CANNON_WEAPON)
+			continue; /* not a gun */
+
+		which_gun -= GUN_WEAPON - 1;
+		RaceDescPtr->characteristics.weapon_energy_cost +=
+				which_gun * 2;
+		
+		lpMB->flags = IGNORE_SIMILAR;
+		lpMB->blast_offs = BLASTER_OFFSET;
+		lpMB->speed = BLASTER_SPEED;
+		lpMB->preprocess_func = blaster_preprocess;
+		lpMB->hit_points = BLASTER_HITS * which_gun;
+		lpMB->damage = BLASTER_DAMAGE * which_gun;
+		lpMB->life = BLASTER_LIFE + ((BLASTER_LIFE >> 2) * (which_gun - 1));
+
+		if (which_gun == 1)
+			lpMB->index = 0;
+		else if (which_gun == 2)
+			lpMB->index = 9;
+		else
+			lpMB->index = 16;
+
+		switch (i)
+		{
+			case 0: /* NOSE WEAPON */
+				RaceDescPtr->ship_info.ship_flags |= FIRES_FORE;
+				lpMB->pixoffs = SIS_VERT_OFFSET;
+				lpMB->face = 0;
+				break;
+			case 1: /* SPREAD WEAPON */
+				RaceDescPtr->ship_info.ship_flags |= FIRES_FORE;
+				lpMB->pixoffs = SIS_VERT_OFFSET;
+				lpMB->face = +1;
+				/* copy it because there are two */
+				lpMB[1] = lpMB[0];
+				++lpMB;
+				++SisData->num_blasters;
+				lpMB->face = NORMALIZE_FACING (-1);
+				break;
+			case 2: /* SIDE WEAPON */
+				RaceDescPtr->ship_info.ship_flags |=
+						FIRES_LEFT | FIRES_RIGHT;
+				lpMB->pixoffs = SIS_HORZ_OFFSET;
+				lpMB->face = ANGLE_TO_FACING (QUADRANT);
+				/* copy it because there are two */
+				lpMB[1] = lpMB[0];
+				++lpMB;
+				++SisData->num_blasters;
+				lpMB->face = NORMALIZE_FACING (-ANGLE_TO_FACING (QUADRANT));
+				break;
+			case NUM_MODULE_SLOTS - 1: /* TAIL WEAPON */
+				RaceDescPtr->ship_info.ship_flags |= FIRES_AFT;
+				lpMB->pixoffs = SIS_VERT_OFFSET;
+				lpMB->face = ANGLE_TO_FACING (HALF_CIRCLE);
+				break;
+		}
+
+		++lpMB;
+		++SisData->num_blasters;
+	}
+}
+
+static void
 InitModuleSlots (RACE_DESC *RaceDescPtr, const BYTE *ModuleSlots)
 {
 	COUNT i;
+	COUNT num_trackers;
+	SIS_DATA *SisData = (SIS_DATA *) RaceDescPtr->data;
 
 	RaceDescPtr->ship_info.max_crew = 0;
 	num_trackers = 0;
@@ -733,19 +769,6 @@ InitModuleSlots (RACE_DESC *RaceDescPtr, const BYTE *ModuleSlots)
 		{
 			case CREW_POD:
 				RaceDescPtr->ship_info.max_crew += CREW_POD_CAPACITY;
-				break;
-			case GUN_WEAPON:
-			case BLASTER_WEAPON:
-			case CANNON_WEAPON:
-				RaceDescPtr->characteristics.weapon_energy_cost +=
-						(which_mod - GUN_WEAPON + 1) * 2;
-				if (i <= 1)
-					RaceDescPtr->ship_info.ship_flags |= FIRES_FORE;
-				else if (i == 2)
-					RaceDescPtr->ship_info.ship_flags |=
-							FIRES_LEFT | FIRES_RIGHT;
-				else
-					RaceDescPtr->ship_info.ship_flags |= FIRES_AFT;
 				break;
 			case TRACKING_SYSTEM:
 				++num_trackers;
@@ -767,6 +790,7 @@ InitModuleSlots (RACE_DESC *RaceDescPtr, const BYTE *ModuleSlots)
 	if (num_trackers > MAX_TRACKING)
 		num_trackers = MAX_TRACKING;
 	RaceDescPtr->characteristics.weapon_energy_cost += num_trackers * 3;
+	SisData->num_trackers = num_trackers;
 	if (RaceDescPtr->characteristics.special_energy_cost)
 	{
 		RaceDescPtr->ship_info.ship_flags |= POINT_DEFENSE;
@@ -860,9 +884,11 @@ init_sis (void)
 			SET_GAME_STATE (BOMB_CARRIER, 1);
 	}
 
-	InitModuleSlots(&new_sis_desc, GLOBAL_SIS (ModuleSlots));
-	InitDriveSlots(&new_sis_desc, GLOBAL_SIS (DriveSlots));
-	InitJetSlots(&new_sis_desc, GLOBAL_SIS (JetSlots));
+	new_sis_desc.data = (intptr_t) HCalloc (sizeof (SIS_DATA));
+	InitModuleSlots (&new_sis_desc, GLOBAL_SIS (ModuleSlots));
+	InitWeaponSlots (&new_sis_desc, GLOBAL_SIS (ModuleSlots));
+	InitDriveSlots (&new_sis_desc, GLOBAL_SIS (DriveSlots));
+	InitJetSlots (&new_sis_desc, GLOBAL_SIS (JetSlots));
 	
 	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 	{
@@ -892,6 +918,9 @@ uninit_sis (RACE_DESC *pRaceDesc)
 		if (pRaceDesc->ship_info.ship_flags & PLAYER_CAPTAIN)
 			GLOBAL_SIS (CrewEnlisted)--;
 	}
+
+	HFree ((void *)pRaceDesc->data);
+	pRaceDesc->data = 0;
 }
 
 
