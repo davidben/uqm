@@ -106,6 +106,7 @@ SignalStopMainThread (void)
 {
 	GamePaused = FALSE;
 	GLOBAL (CurrentActivity) |= CHECK_ABORT;
+	TaskSwitch ();
 }
 
 void

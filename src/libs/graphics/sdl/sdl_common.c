@@ -56,6 +56,7 @@ TFB_GRAPHICS_BACKEND *graphics_backend = NULL;
 int RenderedFrames = 0;
 
 volatile int QuitPosted = 0;
+volatile int GameActive = 1; // Track the SDL_ACTIVEEVENT state SDL_APPACTIVE
 
 void
 TFB_PreInit (void)
@@ -198,10 +199,19 @@ TFB_ProcessEvents ()
 	{
 		/* Run through the InputEvent filter. */
 		ProcessInputEvent (&Event);
-		/* Handle Graphics events. */
+		/* Handle graphics and exposure events. */
 		switch (Event.type) {
-			case SDL_ACTIVEEVENT:    /* Lose/gain visibility */
-				// TODO
+			case SDL_ACTIVEEVENT:    /* Lose/gain visibility or focus */
+				/* Up to three different state changes can occur in one event. */
+				/* Here, disregard least significant change (mouse focus). */
+#if 0 /* Currently disabled in mainline */
+				// This controls the automatic sleep/pause when minimized.
+				// On small displays (e.g. mobile devices), APPINPUTFOCUS would 
+				//  be an appropriate substitution for APPACTIVE:
+				// if (Event.active.state & SDL_APPINPUTFOCUS)
+				if (Event.active.state & SDL_APPACTIVE)
+					GameActive = Event.active.gain;
+#endif
 				break;
 			case SDL_QUIT:
 				QuitPosted = 1;

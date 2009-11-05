@@ -37,6 +37,7 @@ extern BYTE LocateMouse (SWORD *px, SWORD *py);
 
 extern volatile int MouseButtonDown;
 extern volatile int QuitPosted;
+extern volatile int GameActive;
 
 /* Functions for dealing with Character Mode */
 

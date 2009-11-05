@@ -100,6 +100,7 @@ void SetMenuRepeatDelay (DWORD min, DWORD max, DWORD step, BOOLEAN gestalt);
 void SetDefaultMenuRepeatDelay (void);
 void ResetKeyRepeat (void);
 BOOLEAN PauseGame (void);
+void SleepGame (void);
 BOOLEAN DoConfirmExit (void);
 BOOLEAN WaitAnyButtonOrQuit (BOOLEAN CheckSpecial);
 void WaitForNoInput (SIZE Duration);

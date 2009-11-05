@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Thread down-throttling and game sleep when inactive (currently disabled),
+  (bug #1070), from Flandry
 - Internal changes: GOOD_GUY/BAD_GUY ship flags retired - Alex
 - Fixed Melee menu timeout when both sides are Cyborgs (bug #1067) - Alex
 - Fixed AI ship not moving on warp in (bug #648) - Alex

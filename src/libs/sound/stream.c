@@ -495,11 +495,12 @@ int
 StreamDecoderTaskFunc (void *data)
 {
 	Task task = (Task)data;
+	int active_streams;
 	int i;
 	
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
-		TaskSwitch ();
+		active_streams = 0;
 
 		for (i = MUSIC_SOURCE; i < NUM_SOUNDSOURCES; ++i)
 		{
@@ -517,9 +518,17 @@ StreamDecoderTaskFunc (void *data)
 			}
 
 			process_stream (source);
+			active_streams++;
 
 			UnlockMutex (source->stream_mutex);
 		}
+
+		if (active_streams == 0) 
+		{	// Throttle down the thread when there are no active streams
+			SleepThread (ONE_SECOND / 10);
+		}
+		else
+			TaskSwitch ();
 	}
 
 	FinishTask (task);

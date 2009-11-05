@@ -20,9 +20,11 @@
 #include "controls.h"
 #include "util.h"
 #include "setup.h"
+#include "settings.h"
 #include "libs/inplib.h"
 #include "libs/sound/trackplayer.h"
 #include "libs/mathlib.h"
+#include "libs/log.h"
 
 
 void
@@ -250,3 +252,43 @@ WaitAnyButtonOrQuit (BOOLEAN CheckSpecial)
 	return (GLOBAL (CurrentActivity) & CHECK_ABORT) != 0;
 }
 
+// Stops game clock and music thread and minimizes interrupts/cycles
+//  based on value of global GameActive variable
+// See similar sleep state for main thread in uqm.c:main()
+void
+SleepGame (void)
+{
+	if (QuitPosted)
+		return; // Do not sleep the game when already asked to quit
+
+	log_add (log_Debug, "Game is going to sleep");
+
+	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE &&
+			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
+		SuspendGameClock ();
+	if (CommData.ConversationPhrases && PlayingTrack ())
+		PauseTrack ();
+	PauseMusic ();
+
+	LockMutex (GraphicsLock);
+
+	while (!GameActive && !QuitPosted)
+		SleepThread (ONE_SECOND / 2);
+
+	log_add (log_Debug, "Game is waking up");
+
+	WaitForNoInput (ONE_SECOND / 10);
+	FlushInput ();
+
+	ResumeMusic ();
+
+	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE &&
+			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
+		ResumeGameClock ();
+	if (CommData.ConversationPhrases && PlayingTrack ())
+		ResumeTrack ();
+
+	UnlockMutex (GraphicsLock);
+
+	TaskSwitch ();
+}

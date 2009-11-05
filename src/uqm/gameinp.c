@@ -228,6 +228,11 @@ UpdateInputState (void)
 	 * UpdateInputState routinely, so we handle pause and exit
 	 * state updates here. */
 
+	// Automatically pause and enter low-activity state while inactive,
+	// for example, window minimized.
+	if (!GameActive)
+		SleepGame ();
+
 	if (GamePaused)
 		PauseGame ();
 
