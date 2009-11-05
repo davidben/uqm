@@ -20,8 +20,6 @@
 #include "resinst.h"
 
 #include "libs/mathlib.h"
-#include "uqm/init.h"
-		// for NUM_PLAYERS
 
 
 #define MAX_CREW 10
@@ -39,7 +37,6 @@
 
 #define SHIP_MASS 1
 
-static FRAME LastShipFrame[NUM_PLAYERS];
 
 static RACE_DESC umgah_desc =
 {
@@ -286,9 +283,9 @@ initialize_cone (ELEMENT *ShipPtr, HELEMENT ConeArray[])
 
 	// This func is called every frame while the player is holding down WEAPON
 	// Don't reset the cone FRAME to the first image every time
-	if (ShipPtr->next.image.frame != LastShipFrame[StarShipPtr->playerNr])
+	if (ShipPtr->next.image.frame != (FRAME) StarShipPtr->RaceDescPtr->data)
 	{
-		LastShipFrame[StarShipPtr->playerNr] = ShipPtr->next.image.frame;
+		StarShipPtr->RaceDescPtr->data = (intptr_t) ShipPtr->next.image.frame;
 
 		StarShipPtr->RaceDescPtr->ship_data.special[0] =
 				SetAbsFrameIndex (
@@ -341,9 +338,8 @@ umgah_preprocess (ELEMENT *ElementPtr)
 	
 	if (ElementPtr->state_flags & APPEARING)
 	{
-		// Reset prevously set value, if any. It could only have been
-		// set by another ship of the same player, though.
-		LastShipFrame[StarShipPtr->playerNr] = 0;
+		// Reset the value just in case
+		StarShipPtr->RaceDescPtr->data = 0;
 	}
 	else
 	{

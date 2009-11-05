@@ -187,12 +187,12 @@ pkunk_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 	HELEMENT hPhoenix;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
-	hPhoenix = (HELEMENT) StarShipPtr->data;
+	hPhoenix = (HELEMENT) StarShipPtr->RaceDescPtr->data;
 	if (hPhoenix && (StarShipPtr->control & STANDARD_RATING))
 	{
 		RemoveElement (hPhoenix);
 		FreeElement (hPhoenix);
-		StarShipPtr->data = 0;
+		StarShipPtr->RaceDescPtr->data = 0;
 	}
 
 	if (StarShipPtr->RaceDescPtr->ship_info.energy_level <
@@ -463,7 +463,7 @@ pkunk_preprocess (ELEMENT *ElementPtr)
 			UnlockElement (hPhoenix);
 			InsertElement (hPhoenix, GetHeadElement ());
 		}
-		StarShipPtr->data = (intptr_t) hPhoenix;
+		StarShipPtr->RaceDescPtr->data = (intptr_t) hPhoenix;
 
 		if (ElementPtr->hTarget == 0)
 			StarShipPtr->RaceDescPtr->preprocess_func = 0;

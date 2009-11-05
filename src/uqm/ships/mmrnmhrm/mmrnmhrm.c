@@ -19,9 +19,6 @@
 #include "../ship.h"
 #include "resinst.h"
 
-#include "uqm/init.h"
-		// for NUM_PLAYERS
-
 
 #define MAX_CREW 20
 #define MAX_ENERGY 10
@@ -51,7 +48,6 @@
 #define MMRNMHRM_OFFSET 16
 #define LASER_RANGE DISPLAY_TO_WORLD (125 + MMRNMHRM_OFFSET)
 
-static CHARACTERISTIC_STUFF otherwing_desc[NUM_PLAYERS];
 
 static RACE_DESC mmrnmhrm_desc =
 {
@@ -366,6 +362,7 @@ mmrnmhrm_postprocess (ELEMENT *ElementPtr)
 	if (ElementPtr->next.image.farray != ElementPtr->current.image.farray)
 	{
 		CHARACTERISTIC_STUFF t;
+		CHARACTERISTIC_STUFF *otherwing_desc;
 
 		ProcessSound (SetAbsSoundIndex (
 						/* TRANSFORM */
@@ -373,8 +370,11 @@ mmrnmhrm_postprocess (ELEMENT *ElementPtr)
 
 		StarShipPtr->weapon_counter = 0;
 
-		t = otherwing_desc[StarShipPtr->playerNr];
-		otherwing_desc[StarShipPtr->playerNr] = StarShipPtr->RaceDescPtr->characteristics;
+		/* Swap characteristics descriptors around */
+		otherwing_desc = (CHARACTERISTIC_STUFF *)
+				StarShipPtr->RaceDescPtr->data;
+		t = *otherwing_desc;
+		*otherwing_desc = StarShipPtr->RaceDescPtr->characteristics;
 		StarShipPtr->RaceDescPtr->characteristics = t;
 		StarShipPtr->RaceDescPtr->cyborg_control.ManeuverabilityIndex = 0;
 
@@ -412,23 +412,7 @@ mmrnmhrm_preprocess (ELEMENT *ElementPtr)
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
 
-	if (ElementPtr->state_flags & APPEARING)
-	{
-		// Set here because playerNr is unknown during init()
-		COUNT i = StarShipPtr->playerNr;
-		otherwing_desc[i].max_thrust = YWING_MAX_THRUST;
-		otherwing_desc[i].thrust_increment = YWING_THRUST_INCREMENT;
-		otherwing_desc[i].energy_regeneration = YWING_ENERGY_REGENERATION;
-		otherwing_desc[i].weapon_energy_cost = YWING_WEAPON_ENERGY_COST;
-		otherwing_desc[i].special_energy_cost = YWING_SPECIAL_ENERGY_COST;
-		otherwing_desc[i].energy_wait = YWING_ENERGY_WAIT;
-		otherwing_desc[i].turn_wait = YWING_TURN_WAIT;
-		otherwing_desc[i].thrust_wait = YWING_THRUST_WAIT;
-		otherwing_desc[i].weapon_wait = YWING_WEAPON_WAIT;
-		otherwing_desc[i].special_wait = YWING_SPECIAL_WAIT;
-		otherwing_desc[i].ship_mass = SHIP_MASS;
-	}
-	else
+	if (!(ElementPtr->state_flags & APPEARING))
 	{
 		if ((StarShipPtr->cur_status_flags & SPECIAL)
 				&& StarShipPtr->special_counter == 0)
@@ -455,17 +439,45 @@ mmrnmhrm_preprocess (ELEMENT *ElementPtr)
 	}
 }
 
+static void
+uninit_mmrnmhrm (RACE_DESC *pRaceDesc)
+{
+	HFree ((void *)pRaceDesc->data);
+	pRaceDesc->data = 0;
+}
+
 RACE_DESC*
 init_mmrnmhrm (void)
 {
 	RACE_DESC *RaceDescPtr;
 
+	static RACE_DESC new_mmrnmhrm_desc;
+	CHARACTERISTIC_STUFF *otherwing_desc;
+
+	mmrnmhrm_desc.uninit_func = uninit_mmrnmhrm;
 	mmrnmhrm_desc.preprocess_func = mmrnmhrm_preprocess;
 	mmrnmhrm_desc.postprocess_func = mmrnmhrm_postprocess;
 	mmrnmhrm_desc.init_weapon_func = initialize_dual_weapons;
 	mmrnmhrm_desc.cyborg_control.intelligence_func = mmrnmhrm_intelligence;
 
-	RaceDescPtr = &mmrnmhrm_desc;
+	new_mmrnmhrm_desc = mmrnmhrm_desc;
+
+	otherwing_desc = HMalloc (sizeof (*otherwing_desc));
+	otherwing_desc->max_thrust = YWING_MAX_THRUST;
+	otherwing_desc->thrust_increment = YWING_THRUST_INCREMENT;
+	otherwing_desc->energy_regeneration = YWING_ENERGY_REGENERATION;
+	otherwing_desc->weapon_energy_cost = YWING_WEAPON_ENERGY_COST;
+	otherwing_desc->special_energy_cost = YWING_SPECIAL_ENERGY_COST;
+	otherwing_desc->energy_wait = YWING_ENERGY_WAIT;
+	otherwing_desc->turn_wait = YWING_TURN_WAIT;
+	otherwing_desc->thrust_wait = YWING_THRUST_WAIT;
+	otherwing_desc->weapon_wait = YWING_WEAPON_WAIT;
+	otherwing_desc->special_wait = YWING_SPECIAL_WAIT;
+	otherwing_desc->ship_mass = SHIP_MASS;
+
+	new_mmrnmhrm_desc.data = (intptr_t) otherwing_desc;
+
+	RaceDescPtr = &new_mmrnmhrm_desc;
 
 	return (RaceDescPtr);
 }

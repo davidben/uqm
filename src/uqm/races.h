@@ -217,6 +217,8 @@ struct race_desc
 	POSTPROCESS_FUNC *postprocess_func;
 	INIT_WEAPON_FUNC *init_weapon_func;
 
+	intptr_t data;  // private ship data, ship code owns this
+
 	void *CodeRef;
 };
 
@@ -276,8 +278,6 @@ struct STARSHIP
 			// -1: neutral; this should currently never happen (asserts)
 	BYTE control;
 			// HUMAN, COMPUTER or NETWORK control flags, see intel.h
-
-	intptr_t data;  // private ship data, ship code owns this
 };
 
 #define RPG_PLAYER_NUM  0
