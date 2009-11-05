@@ -1088,16 +1088,24 @@ DoEdit (MELEE_STATE *pMS)
 		pMS->LastInputTime = GetTimeCounter ();
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
-			&& (PulsedInputState.menu[KEY_MENU_SELECT] ||
-			PulsedInputState.menu[KEY_MENU_SPECIAL]))
+			&& PulsedInputState.menu[KEY_MENU_SELECT])
 	{
 		// Show a popup to add a new ship to the current team.
-		if (PulsedInputState.menu[KEY_MENU_SELECT])
-			pMS->Initialized = 0;
-		else
-			pMS->Initialized = -1;
+		pMS->Initialized = 0;
 		FlushInput ();
 		DoPickShip (pMS);
+	}
+	else if (pMS->row < NUM_MELEE_ROWS
+			&& PulsedInputState.menu[KEY_MENU_SPECIAL])
+	{
+		// TODO: this is a stub; Should we display a ship spin?
+		LockMutex (GraphicsLock);
+		Deselect (EDIT_MELEE);
+		if (pMS->CurIndex != (BYTE)~0)
+		{
+			// Do something with pMS->CurIndex here
+		}
+		UnlockMutex (GraphicsLock);
 	}
 	else if (pMS->row < NUM_MELEE_ROWS &&
 			PulsedInputState.menu[KEY_MENU_DELETE])
@@ -1231,35 +1239,17 @@ DoPickShip (MELEE_STATE *pMS)
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
-	if (pMS->Initialized <= 0)
+	if (!pMS->Initialized)
 	{
-		if (pMS->CurIndex == (BYTE)~0 && pMS->Initialized == 0)
+		if (pMS->CurIndex == (BYTE)~0)
 			pMS->CurIndex = 0;
-		else if (pMS->CurIndex != (BYTE)~0)
-			DeleteCurrentShip (pMS);
 
-		if (pMS->Initialized == 0)
-		{
-			LockMutex (GraphicsLock);
-			Deselect (EDIT_MELEE);
-			pMS->InputFunc = DoPickShip;
-			DrawPickFrame (pMS);
-			pMS->Initialized = TRUE;
-			UnlockMutex (GraphicsLock);
-		}
-		else
-		{
-			FleetShipIndex fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
-			LockMutex (GraphicsLock);
-			Deselect (EDIT_MELEE);
-			pMS->Initialized = TRUE;
-			AdvanceCursor (pMS);
-			pMS->CurIndex = pMS->SideState[pMS->side].TeamImage.ShipList[
-					fleetShipIndex];
-			UnlockMutex (GraphicsLock);
-
-			DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
-		}
+		LockMutex (GraphicsLock);
+		Deselect (EDIT_MELEE);
+		pMS->InputFunc = DoPickShip;
+		DrawPickFrame (pMS);
+		pMS->Initialized = TRUE;
+		UnlockMutex (GraphicsLock);
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT] ||
 			PulsedInputState.menu[KEY_MENU_CANCEL])
