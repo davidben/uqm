@@ -170,7 +170,7 @@ LoadShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		FragPtr = LockShipFrag (pQueue, hStarShip);
 
 		// Read SHIP_FRAGMENT elements
-		cread_16 (fh, &FragPtr->which_side);
+		cread_16 (fh, NULL); /* unused: was which_side */
 		cread_8  (fh, &FragPtr->captains_name_index);
 		cread_8  (fh, NULL); /* padding */
 		cread_16 (fh, NULL); /* unused: was ship_flags */

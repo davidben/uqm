@@ -19,7 +19,6 @@
 #include <stdio.h>
 
 #include "cons_res.h"
-#include "element.h"
 #include "resinst.h"
 #include "nameref.h"
 #include "setup.h"

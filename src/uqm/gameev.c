@@ -112,7 +112,7 @@ EventHandler (BYTE selector)
 						ZOQFOTPIK_SHIP);
 				ZoqFotPtr = LockFleetInfo (&GLOBAL (avail_race_q), hZoqFot);
 				ZoqFotPtr->actual_strength = 0;
-				ZoqFotPtr->allied_state &= ~(GOOD_GUY | BAD_GUY);
+				ZoqFotPtr->allied_state = DEAD_GUY;
 				UnlockFleetInfo (&GLOBAL (avail_race_q), hZoqFot);
 
 				SET_GAME_STATE (ZOQFOT_DISTRESS, 2);
@@ -283,7 +283,7 @@ check_race_growth (void)
 			if (delta_strength <= 0)
 			{
 				delta_strength = 0;
-				FleetPtr->allied_state &= ~(GOOD_GUY | BAD_GUY);
+				FleetPtr->allied_state = DEAD_GUY;
 			}
 			else if (delta_strength > MAX_FLEET_STRENGTH)
 				delta_strength = MAX_FLEET_STRENGTH;
@@ -342,7 +342,7 @@ black_urquan_genocide (void)
 			if (dx == 0 && dy == 0)
 			{
 				// Arrived at the victim's home world. Cleanse it.
-				FleetPtr->allied_state &= ~(GOOD_GUY | BAD_GUY);
+				FleetPtr->allied_state = DEAD_GUY;
 				FleetPtr->actual_strength = 0;
 			}
 			else if (FleetPtr->actual_strength)
@@ -437,7 +437,7 @@ pkunk_mission (void)
 		if (PkunkPtr->actual_strength == 0)
 		{
 			SET_GAME_STATE (YEHAT_ABSORBED_PKUNK, 1);
-			PkunkPtr->allied_state &= ~(GOOD_GUY | BAD_GUY);
+			PkunkPtr->allied_state = DEAD_GUY;
 			ActivateStarShip (YEHAT_SHIP, SPHERE_TRACKING);
 		}
 		else
@@ -540,8 +540,8 @@ ilwrath_mission (void)
 	{
 		IlwrathPtr->actual_strength = 0;
 		ThraddPtr->actual_strength = 0;
-		IlwrathPtr->allied_state &= ~(GOOD_GUY | BAD_GUY);
-		ThraddPtr->allied_state &= ~(GOOD_GUY | BAD_GUY);
+		IlwrathPtr->allied_state = DEAD_GUY;
+		ThraddPtr->allied_state = DEAD_GUY;
 	}
 	else if (IlwrathPtr->actual_strength)
 	{
@@ -575,7 +575,7 @@ ilwrath_mission (void)
 						(BYTE)(((strength_loss % MADD_LENGTH) << 8) / MADD_LENGTH);
 
 				SET_GAME_STATE (THRADD_VISITS, 0);
-				if (ThraddPtr->allied_state & GOOD_GUY)
+				if (ThraddPtr->allied_state == GOOD_GUY)
 					ActivateStarShip (THRADDASH_SHIP, SET_NOT_ALLIED);
 			}
 

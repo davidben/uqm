@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Internal changes: GOOD_GUY/BAD_GUY ship flags retired - Alex
 - Fixed Melee menu timeout when both sides are Cyborgs (bug #1067) - Alex
 - Fixed AI ship not moving on warp in (bug #648) - Alex
 - Revert gfx settings entirely when a mode switch fails (bug #1056) - Alex

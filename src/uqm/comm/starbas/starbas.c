@@ -692,7 +692,7 @@ AnalyzeCondition (void)
 		for (i = 0; i < NUM_AVAILABLE_RACES; ++i)
 		{
 			if (i != HUMAN_SHIP
-					&& (ActivateStarShip (i, CHECK_ALLIANCE) & GOOD_GUY))
+					&& ActivateStarShip (i, CHECK_ALLIANCE) == GOOD_GUY)
 				++num_aliens;
 		}
 
@@ -1361,35 +1361,35 @@ CheckBulletins (BOOLEAN Repeat)
 			{
 				case 0:
 					if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE)
-							& GOOD_GUY)
+							== GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_1;
 					}
 					break;
 				case 1:
 					if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE)
-							& GOOD_GUY)
+							== GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_2;
 					}
 					break;
 				case 2:
 					if (ActivateStarShip (SUPOX_SHIP, CHECK_ALLIANCE)
-							& GOOD_GUY)
+							== GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_3;
 					}
 					break;
 				case 3:
 					if (ActivateStarShip (UTWIG_SHIP, CHECK_ALLIANCE)
-							& GOOD_GUY)
+							== GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_4;
 					}
 					break;
 				case 4:
 					if (ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE)
-							& GOOD_GUY)
+							== GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_5;
 					}
@@ -1455,14 +1455,14 @@ CheckBulletins (BOOLEAN Repeat)
 					break;
 				case 12:
 					if (ActivateStarShip (CHMMR_SHIP, CHECK_ALLIANCE)
-							& GOOD_GUY)
+							== GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_13;
 					}
 					break;
 				case 13:
 					if (ActivateStarShip (SHOFIXTI_SHIP, CHECK_ALLIANCE)
-							& GOOD_GUY)
+							== GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_14;
 					}

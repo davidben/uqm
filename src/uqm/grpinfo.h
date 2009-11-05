@@ -32,8 +32,6 @@ typedef struct
 	HIPGROUP pred;
 	HIPGROUP succ;
 
-	/* unused: COUNT which_side; */
-
 	UWORD group_counter;
 	BYTE race_id;
 	BYTE sys_loc;

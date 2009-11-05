@@ -552,7 +552,7 @@ Intro (void)
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 	}
-	else if (ActivateStarShip (SUPOX_SHIP, CHECK_ALLIANCE) & GOOD_GUY)
+	else if (ActivateStarShip (SUPOX_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{

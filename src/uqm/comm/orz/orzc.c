@@ -322,8 +322,8 @@ TaaloWorld (RESPONSE_REF R)
 
 	if (PHRASE_ENABLED (may_we_land))
 	{
-		if (Manner == 3 && (ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE)
-				& GOOD_GUY))
+		if (Manner == 3 &&
+				ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
 			Response (may_we_land, ExitConversation);
 		else
 			Response (may_we_land, TaaloWorld);
@@ -705,8 +705,8 @@ Intro (void)
 
 		TaaloWorld ((RESPONSE_REF)0);
 	}
-	else if (Manner == 3 && (ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE)
-			& GOOD_GUY))
+	else if (Manner == 3 &&
+			ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{

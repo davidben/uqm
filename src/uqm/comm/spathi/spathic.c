@@ -750,7 +750,7 @@ Intro (void)
 		Response (we_fight_again_space, ExitConversation);
 		Response (bye_angry_space, ExitConversation);
 	}
-	else if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE) & GOOD_GUY)
+	else if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
 	{
 		SpathiAllies ((RESPONSE_REF)0);
 	}

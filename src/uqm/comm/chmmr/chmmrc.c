@@ -261,7 +261,7 @@ NotReady (RESPONSE_REF R)
 		DISABLE_PHRASE (where_distraction);
 	}
 
-	if (!(ActivateStarShip (CHMMR_SHIP, CHECK_ALLIANCE) & GOOD_GUY))
+	if (ActivateStarShip (CHMMR_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
 		Response (tech_help, NotReady);
 	else if (PHRASE_ENABLED (further_assistance))
 		Response (further_assistance, NotReady);
@@ -308,7 +308,7 @@ ImproveBomb (RESPONSE_REF R)
 		Response (wont_hurt_my_ship, ImproveBomb);
 	else if (PHRASE_ENABLED (bummer_about_my_ship))
 		Response (bummer_about_my_ship, ImproveBomb);
-	if (!(ActivateStarShip (CHMMR_SHIP, CHECK_ALLIANCE) & GOOD_GUY))
+	if (ActivateStarShip (CHMMR_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
 		Response (other_assistance, ImproveBomb);
 	Response (proceed, ExitConversation);
 }

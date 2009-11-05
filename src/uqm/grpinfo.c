@@ -99,7 +99,7 @@ ReadShipFragment (void *fp, SHIP_FRAGMENT *FragPtr)
 {
 	BYTE tmpb;
 
-	sread_16 (fp, &FragPtr->which_side);
+	sread_16 (fp, NULL); /* unused: was which_side */
 	sread_8  (fp, &FragPtr->captains_name_index);
 	sread_8  (fp, NULL); /* padding; for savegame compat */
 	sread_16 (fp, NULL); /* unused: was ship_flags */
@@ -119,7 +119,7 @@ ReadShipFragment (void *fp, SHIP_FRAGMENT *FragPtr)
 static void
 WriteShipFragment (void *fp, const SHIP_FRAGMENT *FragPtr)
 {
-	swrite_16 (fp, FragPtr->which_side);
+	swrite_16 (fp, 0); /* unused: was which_side */
 	swrite_8  (fp, FragPtr->captains_name_index);
 	swrite_8  (fp, 0); /* padding; for savegame compat */
 	swrite_16 (fp, 0); /* unused: was ship_flags */
@@ -626,8 +626,6 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 
 			hGroup = BuildGroup (&GLOBAL (ip_group_q), RaceType);
 			GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
-			// XXX: which_side is unused, other than this assign
-			//GroupPtr->which_side = BAD_GUY;
 			GroupPtr->group_id = which_group;
 			GroupPtr->in_system = 1;
 

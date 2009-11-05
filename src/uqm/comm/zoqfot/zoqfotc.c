@@ -734,7 +734,7 @@ ZoqFotHome (RESPONSE_REF R)
 		Response (whats_up_homeworld, ZoqFotHome);
 	if (PHRASE_ENABLED (any_war_news))
 		Response (any_war_news, ZoqFotHome);
-	if (!(ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) & GOOD_GUY))
+	if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
 		Response (i_want_alliance, ZoqFotHome);
 	else if (PHRASE_ENABLED (want_specific_info))
 	{
@@ -861,7 +861,7 @@ Intro (void)
 		else
 		{
 			NumVisits = GET_GAME_STATE (ZOQFOT_HOME_VISITS);
-			if (!(ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) & GOOD_GUY))
+			if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
 			{
 				switch (NumVisits++)
 				{
@@ -946,7 +946,7 @@ init_zoqfot_comm (void)
 
 	zoqfot_desc.AlienTextWidth = (SIS_TEXT_WIDTH >> 1) - TEXT_X_OFFS;
 
-	if ((ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) & GOOD_GUY)
+	if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) == GOOD_GUY
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
 		SET_GAME_STATE (BATTLE_SEGUE, 0);

@@ -146,7 +146,7 @@ SaveShipQueue (DECODE_REF fh, QUEUE *pQueue)
 		cwrite_16 (fh, Index);
 
 		// Write SHIP_FRAGMENT elements
-		cwrite_16 (fh, FragPtr->which_side);
+		cwrite_16 (fh, 0); /* unused; was which_side */
 		cwrite_8  (fh, FragPtr->captains_name_index);
 		cwrite_8  (fh, 0); /* padding */
 		cwrite_16 (fh, 0); /* unused: was ship_flags */

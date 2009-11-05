@@ -30,8 +30,7 @@
 typedef HLINK HELEMENT;
 
 // Bits for ELEMENT_FLAGS:
-#define GOOD_GUY (1 << 0)
-#define BAD_GUY (1 << 1)
+// bits 0 and 1 are now available
 #define PLAYER_SHIP (1 << 2)
 		// The ELEMENT is a player controlable ship, and not some bullet,
 		// crew, asteroid, fighter, etc. This does not mean that the ship

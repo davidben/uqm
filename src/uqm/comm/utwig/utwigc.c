@@ -807,7 +807,7 @@ Intro (void)
 			Response (hey_wait_got_ultron, ExitConversation);
 		}
 	}
-	else if (ActivateStarShip (UTWIG_SHIP, CHECK_ALLIANCE) & GOOD_GUY)
+	else if (ActivateStarShip (UTWIG_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{

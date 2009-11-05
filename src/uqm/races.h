@@ -297,8 +297,6 @@ typedef struct
 {
 	SHIP_BASE_COMMON;
 
-	COUNT which_side;
-
 	BYTE race_id;
 	BYTE index;
 	COUNT crew_level;
@@ -339,7 +337,7 @@ typedef struct
 
 	SPECIES_ID SpeciesID;
 
-	UWORD allied_state; /* 0, GOOD_GUY, or BAD_GUY */
+	UWORD allied_state; /* GOOD_GUY, BAD_GUY or DEAD_GUY */
 	BYTE days_left;   /* Days left before the fleet reachers 'dest_loc'. */
 	BYTE growth_fract;
 	COUNT crew_level;
@@ -375,6 +373,14 @@ typedef struct
 			/* Location to which the fleet (center) is moving. */
 
 } FLEET_INFO;
+
+// Values for FLEET_INFO.allied_state
+enum
+{
+	DEAD_GUY = 0,
+	GOOD_GUY,
+	BAD_GUY,
+};
 
 static inline FLEET_INFO *
 LockFleetInfo (const QUEUE *pq, HFLEETINFO h)

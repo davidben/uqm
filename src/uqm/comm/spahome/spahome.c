@@ -915,7 +915,7 @@ Intro (void)
 	{
 		SpathiAngry ((RESPONSE_REF)0);
 	}
-	else if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE) & GOOD_GUY)
+	else if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
 	{
 		CommData.AlienColorMap =
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1);

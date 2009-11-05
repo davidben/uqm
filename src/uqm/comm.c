@@ -1435,7 +1435,7 @@ InitCommunication (CONVERSATION which_comm)
 				|| LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE))
 				|| (which_comm != CHMMR_CONVERSATION
 				&& which_comm != SYREEN_CONVERSATION
-				))//&& (ActivateStarShip (status, CHECK_ALLIANCE) & BAD_GUY)))
+				))//&& ActivateStarShip (status, CHECK_ALLIANCE) == BAD_GUY))
 			BuildBattle (NPC_PLAYER_NUM);
 	}
 

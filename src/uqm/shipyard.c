@@ -156,7 +156,7 @@ GetAvailableRaceCount (void)
 		FLEET_INFO *FleetPtr;
 
 		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
-		if (FleetPtr->allied_state & GOOD_GUY)
+		if (FleetPtr->allied_state == GOOD_GUY)
 			++Index;
 
 		hNextShip = _GetSuccLink (FleetPtr);
@@ -177,7 +177,7 @@ GetAvailableRaceFromIndex (BYTE Index)
 		FLEET_INFO *FleetPtr;
 
 		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
-		if ((FleetPtr->allied_state & GOOD_GUY) && Index-- == 0)
+		if (FleetPtr->allied_state == GOOD_GUY && Index-- == 0)
 		{
 			UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 			return hStarShip;
@@ -534,7 +534,7 @@ CrewTransaction (SIZE crew_delta)
 				LockMutex (GraphicsLock);
 			}
 		}
-		if (!(ActivateStarShip (SHOFIXTI_SHIP, CHECK_ALLIANCE) & GOOD_GUY))
+		if (ActivateStarShip (SHOFIXTI_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
 		{
 			SET_GAME_STATE (CREW_PURCHASED0, LOBYTE (crew_bought));
 			SET_GAME_STATE (CREW_PURCHASED1, HIBYTE (crew_bought));
