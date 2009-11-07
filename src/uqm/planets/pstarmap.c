@@ -92,32 +92,25 @@ dispyToUniverse (COORD dy)
 
 static BOOLEAN transition_pending;
 
-static int
-flash_cursor_func (void *data)
+static void
+flashCurrentLocation (POINT *where)
 {
-	BYTE c, val;
-	POINT universe;
-	STAMP s;
-	Task task = (Task) data;
+	static BYTE c = 0;
+	static int val = -2;
+	static POINT universe;
+	static TimeCount NextTime = 0;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
-		universe = CurStarDescPtr->star_pt;
-	else
-	{
-		universe.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
-		universe.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
-	}
-	s.frame = IncFrameIndex (pMenuState->CurFrame);
+	if (where)
+		universe = *where;
 
-	c = 0x00;
-	val = -0x02;
-	while (!Task_ReadState(task, TASK_EXIT))
+	if (GetTimeCounter () >= NextTime)
 	{
-		DWORD TimeIn;
 		COLOR OldColor;
 		CONTEXT OldContext;
+		STAMP s;
 
-		TimeIn = GetTimeCounter ();
+		NextTime = GetTimeCounter () + (ONE_SECOND / 16);
+		
 		LockMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
 
@@ -127,15 +120,13 @@ flash_cursor_func (void *data)
 		OldColor = SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (c, c, c), c));
 		s.origin.x = UNIVERSE_TO_DISPX (universe.x);
 		s.origin.y = UNIVERSE_TO_DISPY (universe.y);
+		s.frame = IncFrameIndex (pMenuState->CurFrame);
 		DrawFilledStamp (&s);
 		SetContextForeGroundColor (OldColor);
 
 		SetContext (OldContext);
 		UnlockMutex (GraphicsLock);
-		SleepThreadUntil (TimeIn + (ONE_SECOND >> 4));
 	}
-	FinishTask (task);
-	return (0);
 }
 
 static void
@@ -609,7 +600,7 @@ ZoomStarMap (SIZE dir)
 			pMenuState->flash_rect1.corner = pMenuState->first_item;
 
 			DrawStarMap (0, NULL);
-			SleepThread (ONE_SECOND >> 3);
+			SleepThread (ONE_SECOND / 8);
 		}
 	}
 	else if (dir < 0)
@@ -626,7 +617,7 @@ ZoomStarMap (SIZE dir)
 			--pMenuState->delta_item;
 
 			DrawStarMap (0, NULL);
-			SleepThread (ONE_SECOND >> 3);
+			SleepThread (ONE_SECOND / 8);
 		}
 	}
 }
@@ -1176,6 +1167,8 @@ OnStarNameFrame (TEXTENTRY_STATE *pTES)
 		UpdateFuelRequirement (pMS);
 	}
 
+	flashCurrentLocation (NULL);
+
 	SleepThread (ONE_SECOND / 30);
 	
 	return TRUE;
@@ -1234,18 +1227,25 @@ DoMoveCursor (MENU_STATE *pMS)
 	static UNICODE last_buf[CURSOR_INFO_BUFSIZE];
 	DWORD TimeIn = GetTimeCounter ();
 
-	pMS->MenuRepeatDelay = (COUNT)pMS->CurState;
 	if (!pMS->Initialized)
 	{
+		POINT universe;
+
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoMoveCursor;
 
 		SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 		SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY, TRUE);
 
-		pMS->flash_task = AssignTask (flash_cursor_func, 2048,
-				"flash location on star map");
-		
+		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+			universe = CurStarDescPtr->star_pt;
+		else
+		{
+			universe.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
+			universe.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
+		}
+		flashCurrentLocation (&universe);
+
 		last_buf[0] = '\0';
 		UpdateCursorInfo (pMS, last_buf);
 		UpdateFuelRequirement (pMS);
@@ -1254,13 +1254,7 @@ DoMoveCursor (MENU_STATE *pMS)
 	}
 	else if (PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
-		if (pMS->flash_task)
-		{
-			ConcludeTask (pMS->flash_task);
-			pMS->flash_task = 0;
-		}
-
-		return (FALSE);
+		return FALSE;
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
@@ -1269,11 +1263,6 @@ DoMoveCursor (MENU_STATE *pMS)
 		if (instantMove)
 		{
 			PlayMenuSound (MENU_SOUND_INVOKED);
-			if (pMS->flash_task)
-			{
-				ConcludeTask (pMS->flash_task);
-				pMS->flash_task = 0;
-			}
 
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 			{
@@ -1289,7 +1278,7 @@ DoMoveCursor (MENU_STATE *pMS)
 				debugHook = doInstantMove;
 			}
 
-			return (FALSE);
+			return FALSE;
 		}
 #endif
 		DrawStarMap (0, NULL);
@@ -1347,18 +1336,9 @@ DoMoveCursor (MENU_STATE *pMS)
 		SleepThreadUntil (TimeIn + MIN_ACCEL_DELAY);
 	}
 
-	{
-		BOOLEAN result = !(GLOBAL (CurrentActivity & CHECK_ABORT));
-		if (!result)
-		{
-			if (pMS->flash_task)
-			{
-				ConcludeTask (pMS->flash_task);
-				pMS->flash_task = 0;
-			}
-		}
-		return result;
-	}
+	flashCurrentLocation (NULL);
+
+	return !(GLOBAL (CurrentActivity) & CHECK_ABORT);
 }
 
 static void
@@ -1807,7 +1787,7 @@ DoFlagshipCommands (MENU_STATE *pMS)
 								pMS->Initialized = 1;
 							}
 							else if (pMS->flash_task)
-							{
+							{	// In planet orbit
 								FreePlanet ();
 								LockMutex (GraphicsLock);
 								LoadSolarSys ();
