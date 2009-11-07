@@ -26,11 +26,16 @@ typedef DWORD BattleFrameCounter;
 #include "init.h"
 		// For NUM_SIDES
 
+// The callback function is called on every battle frame
+// with GraphicsLock *not* held
+typedef void (BattleFrameCallback) (void);
+
 typedef struct battlestate_struct {
 	BOOLEAN (*InputFunc) (struct battlestate_struct *pInputState);
 	COUNT MenuRepeatDelay;
 	BOOLEAN first_time;
 	DWORD NextTime;
+	BattleFrameCallback *frame_cb;
 } BATTLE_STATE;
 
 extern BYTE battle_counter[NUM_SIDES];
@@ -45,7 +50,7 @@ COUNT GetPlayerOrder (COUNT i);
 #	define GetPlayerOrder(i) (i)
 #endif
 
-BOOLEAN Battle (void);
+BOOLEAN Battle (BattleFrameCallback *);
 
 #define BATTLE_FRAME_RATE (ONE_SECOND / 24)
 

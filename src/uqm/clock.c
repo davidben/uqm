@@ -61,32 +61,13 @@ DaysInMonth (COUNT month, COUNT year)
 static int
 clock_task_func(void* data)
 {
-	BOOLEAN LastPilot;
-	DWORD LastTime;
-	DWORD cycle_index, delay_count;
-	static const COLOR cycle_tab[] =
-	{
-		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x14, 0x18), 0x5B),
-		BUILD_COLOR (MAKE_RGB15 (0x06, 0x10, 0x16), 0x5C),
-		BUILD_COLOR (MAKE_RGB15 (0x03, 0x0E, 0x14), 0x5D),
-		BUILD_COLOR (MAKE_RGB15 (0x02, 0x0C, 0x11), 0x5E),
-		BUILD_COLOR (MAKE_RGB15 (0x01, 0x0B, 0x0F), 0x5F),
-		BUILD_COLOR (MAKE_RGB15 (0x01, 0x09, 0x0D), 0x60),
-		BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x0B), 0x61),
-	};
-#define NUM_CYCLES (sizeof (cycle_tab) / sizeof (cycle_tab[0]))
-#define NUM_DELAYS (ONE_SECOND * 3 / 40) // 9 @ 120 ticks/second
 	Task task = (Task) data;
 
-	LastPilot = FALSE;
-	LastTime = 0;
-	cycle_index = delay_count = 0;
 	while (GLOBAL (GameClock).day_in_ticks == 0 && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
 
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
-		BOOLEAN OnAutoPilot;
 		DWORD TimeIn;
 
 				/* use semaphore so that time passage
@@ -140,53 +121,6 @@ clock_task_func(void* data)
 			UnlockMutex (GraphicsLock);
 		}
 
-		OnAutoPilot = (BOOLEAN)(
-				(GLOBAL (autopilot.x) != ~0
-				&& GLOBAL (autopilot.y) != ~0)
-				|| GLOBAL_SIS (FuelOnBoard) == 0
-				);
-		if (OnAutoPilot || OnAutoPilot != LastPilot)
-		{
-			DWORD num_ticks;
-
-			LockMutex (GraphicsLock);
-			num_ticks = GetTimeCounter () - LastTime;
-			if (!OnAutoPilot)
-			{
-				DrawSISMessage (NULL);
-				cycle_index = delay_count = 0;
-			}
-			else if (delay_count > num_ticks)
-			{
-				delay_count -= num_ticks;
-			}
-			else
-			{
-				if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT))
-						&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
-				{
-					// 2002/11/30 this additional 'if' fixes autopilot indicator blinking on combat/starmap
-					// TODO: is there a better (more exact) way of determining if player is in starmap menu or not?
-					if (LOBYTE (GLOBAL (CurrentActivity)) != IN_ENCOUNTER &&
-						(!pMenuState || (pMenuState && pMenuState->InputFunc == DoFlagshipCommands)))
-					{
-						CONTEXT OldContext;
-
-						OldContext = SetContext (OffScreenContext);
-						SetContextForeGroundColor (cycle_tab[cycle_index]);
-						DrawSISMessage ((UNICODE *)~0L);
-						SetContext (OldContext);
-					}
-				}
-
-				cycle_index = (cycle_index + 1) % NUM_CYCLES;
-				delay_count = NUM_DELAYS;
-			}
-			UnlockMutex (GraphicsLock);
-
-			LastPilot = OnAutoPilot;
-			LastTime += num_ticks;
-		}
 		
 		ClearSemaphore (GLOBAL (GameClock.clock_sem));
 		SleepThreadUntil (TimeIn + ONE_SECOND / 120);

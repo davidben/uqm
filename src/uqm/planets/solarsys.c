@@ -1089,6 +1089,8 @@ static DWORD IP_next_time;
 void
 IP_reset (void)
 {
+	DrawAutoPilotMessage (TRUE);
+
 	if (LastActivity != CHECK_LOAD)
 	{
 		IP_input_state = 0;
@@ -1222,6 +1224,8 @@ IP_frame (void)
 		UnbatchGraphics ();
 	}
 	
+	DrawAutoPilotMessage (FALSE);
+
 	UnbatchGraphics ();
 	
 	if (draw_sys_flags & UNBATCH_SYS)

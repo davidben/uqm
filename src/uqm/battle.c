@@ -331,6 +331,10 @@ DoBattle (BATTLE_STATE *bs)
 		return FALSE;
 	}
 
+	// Call the callback function, if set
+	if (bs->frame_cb)
+		bs->frame_cb ();
+
 	battle_speed = HIBYTE (nth_frame);
 	if (battle_speed == (BYTE)~0)
 	{	// maximum speed, nothing rendered at all
@@ -393,7 +397,7 @@ selectAllShips (SIZE num_ships)
 }
 
 BOOLEAN
-Battle (void)
+Battle (BattleFrameCallback *callback)
 {
 	SIZE num_ships;
 
@@ -463,6 +467,7 @@ Battle (void)
 		}
 #endif  /* NETPLAY */
 		bs.InputFunc = DoBattle;
+		bs.frame_cb = callback;
 		bs.first_time = (BOOLEAN)(LOBYTE (GLOBAL (CurrentActivity)) ==
 				IN_HYPERSPACE);
 

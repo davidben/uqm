@@ -272,6 +272,7 @@ extern BOOLEAN DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos,
 #define DSME_SETFR    (1 << 0)
 #define DSME_CLEARFR  (1 << 1)
 #define DSME_BLOCKCUR (1 << 2)
+#define DSME_MYCOLOR  (1 << 3)
 extern void DrawSISMessage (const UNICODE *pStr);
 extern void DrawGameDate (void);
 extern void DateToString (unsigned char *buf, size_t bufLen,
@@ -282,6 +283,7 @@ extern void DrawStorageBays (BOOLEAN Refresh);
 extern void GetGaugeRect (RECT *pRect, BOOLEAN IsCrewRect);
 extern void DrawFlagshipStats (void);
 extern void SaveFlagshipState (void);
+void DrawAutoPilotMessage (BOOLEAN Reset);
 
 extern void DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int
 		resunit_delta);

@@ -87,6 +87,14 @@ arilou_gate_task(void *data)
 }
 
 static void
+on_battle_frame (void)
+{
+	LockMutex (GraphicsLock);
+	DrawAutoPilotMessage (FALSE);
+	UnlockMutex (GraphicsLock);
+}
+
+static void
 BackgroundInitKernel (DWORD TimeOut)
 {
 	LoadMasterShipList (TaskSwitch);
@@ -269,7 +277,8 @@ while (--ac > 0)
 
 				TaskSwitch ();
 
-				Battle ();
+				DrawAutoPilotMessage (TRUE);
+				Battle (&on_battle_frame);
 				if (ArilouTask)
 					Task_SetState (ArilouTask, TASK_EXIT);
 			}

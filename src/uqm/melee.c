@@ -1730,7 +1730,7 @@ StartMelee (MELEE_STATE *pMS)
 
 		load_gravity_well ((BYTE)((COUNT)TFB_Random () %
 					NUMBER_OF_PLANET_TYPES));
-		Battle ();
+		Battle (NULL);
 		free_gravity_well ();
 		ClearPlayerInputAll ();
 

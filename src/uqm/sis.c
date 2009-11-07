@@ -185,53 +185,38 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 	SetContextBackGroundColor (
 			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
 
-	if (pStr == (UNICODE *)~0L)
+	if (pStr == 0)
 	{
-		if (GLOBAL_SIS (FuelOnBoard) == 0)
+		switch (LOBYTE (GLOBAL (CurrentActivity)))
 		{
-			pStr = GAME_STRING (NAVIGATION_STRING_BASE + 2);
-					// "OUT OF FUEL"
+			default:
+			case IN_ENCOUNTER:
+				pStr = "";
+				break;
+			case IN_LAST_BATTLE:
+			case IN_INTERPLANETARY:
+				GetClusterName (CurStarDescPtr, buf);
+				pStr = buf;
+				break;
+			case IN_HYPERSPACE:
+				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+				{
+					pStr = GAME_STRING (NAVIGATION_STRING_BASE);
+							// "HyperSpace"
+				}
+				else
+				{
+					pStr = GAME_STRING (NAVIGATION_STRING_BASE + 1);
+							// "QuasiSpace"
+				}
+				break;
 		}
-		else
-		{
-			pStr = GAME_STRING (NAVIGATION_STRING_BASE + 3);
-					// "AUTO-PILOT"
-		}
+
 	}
-	else
-	{
-		if (pStr == 0)
-		{
-			switch (LOBYTE (GLOBAL (CurrentActivity)))
-			{
-				default:
-				case IN_ENCOUNTER:
-					pStr = "";
-					break;
-				case IN_LAST_BATTLE:
-				case IN_INTERPLANETARY:
-					GetClusterName (CurStarDescPtr, buf);
-					pStr = buf;
-					break;
-				case IN_HYPERSPACE:
-					if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
-					{
-						pStr = GAME_STRING (NAVIGATION_STRING_BASE);
-								// "HyperSpace"
-					}
-					else
-					{
-						pStr = GAME_STRING (NAVIGATION_STRING_BASE + 1);
-								// "QuasiSpace"
-					}
-					break;
-			}
 
-		}
-
+	if (!(flags & DSME_MYCOLOR))
 		SetContextForeGroundColor (
 				BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
-	}
 
 	t.baseline.y = SIS_MESSAGE_HEIGHT - 2;
 	t.pStr = pStr;
@@ -1298,6 +1283,75 @@ CountSISPieces (BYTE piece_type)
 
 	return (num_pieces);
 }
+
+void
+DrawAutoPilotMessage (BOOLEAN Reset)
+{
+	static BOOLEAN LastPilot = FALSE;
+	static TimeCount NextTime = 0;
+	static DWORD cycle_index = 0;
+	BOOLEAN OnAutoPilot;
+	
+	static const COLOR cycle_tab[] =
+	{
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x14, 0x18), 0x5B),
+		BUILD_COLOR (MAKE_RGB15 (0x06, 0x10, 0x16), 0x5C),
+		BUILD_COLOR (MAKE_RGB15 (0x03, 0x0E, 0x14), 0x5D),
+		BUILD_COLOR (MAKE_RGB15 (0x02, 0x0C, 0x11), 0x5E),
+		BUILD_COLOR (MAKE_RGB15 (0x01, 0x0B, 0x0F), 0x5F),
+		BUILD_COLOR (MAKE_RGB15 (0x01, 0x09, 0x0D), 0x60),
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x0B), 0x61),
+	};
+#define NUM_CYCLES (sizeof (cycle_tab) / sizeof (cycle_tab[0]))
+#define BLINK_RATE (ONE_SECOND * 3 / 40) // 9 @ 120 ticks/second
+
+
+	if (Reset)
+	{	// Just a reset, not drawing
+		LastPilot = FALSE;
+		return;
+	}
+
+	OnAutoPilot = (GLOBAL (autopilot.x) != ~0 && GLOBAL (autopilot.y) != ~0)
+			|| GLOBAL_SIS (FuelOnBoard) == 0;
+
+	if (OnAutoPilot || LastPilot)
+	{
+		if (!OnAutoPilot)
+		{	// AutiPilot aborted -- clear the AUTO-PILOT message
+			DrawSISMessage (NULL);
+			cycle_index = 0;
+		}
+		else if (GetTimeCounter () >= NextTime)
+		{
+			if (!(GLOBAL (CurrentActivity) & CHECK_ABORT)
+					&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
+			{
+				CONTEXT OldContext;
+
+				OldContext = SetContext (OffScreenContext);
+				SetContextForeGroundColor (cycle_tab[cycle_index]);
+				if (GLOBAL_SIS (FuelOnBoard) == 0)
+				{
+					DrawSISMessageEx (GAME_STRING (NAVIGATION_STRING_BASE + 2),
+							-1, -1, DSME_MYCOLOR);   // "OUT OF FUEL"
+				}
+				else
+				{
+					DrawSISMessageEx (GAME_STRING (NAVIGATION_STRING_BASE + 3),
+							-1, -1, DSME_MYCOLOR);   // "AUTO-PILOT"
+				}
+				SetContext (OldContext);
+			}
+
+			cycle_index = (cycle_index + 1) % NUM_CYCLES;
+			NextTime = GetTimeCounter () + BLINK_RATE;
+		}
+
+		LastPilot = OnAutoPilot;
+	}
+}
+
 
 Task flash_task = 0;
 RECT flash_rect;
