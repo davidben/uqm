@@ -45,44 +45,24 @@
 volatile int MainExited = FALSE;
 
 // Open or close the periodically occuring QuasiSpace portal.
-// A seperate thread is always inside this function when the player
-// is in hyperspace. This thread awakens every BATTLE_FRAME_RATE seconds.
-// It then changes the appearant portal size when necessary.
-static int
-arilou_gate_task(void *data)
+// It changes the appearant portal size when necessary.
+static void
+checkArilouGate (void)
 {
 	BYTE counter;
-	DWORD TimeIn;
-	Task task = (Task) data;
-
-	TimeIn = GetTimeCounter ();
 
 	counter = GET_GAME_STATE (ARILOU_SPACE_COUNTER);
-	while (!Task_ReadState (task, TASK_EXIT))
-	{
-		LockGameClock ();
-		if (GET_GAME_STATE (ARILOU_SPACE) == OPENING)
-		{
-			if (++counter == 10)
-				counter = 9;
-		}
-		else
-		{
-			if (counter-- == 0)
-				counter = 0;
-		}
-		UnlockGameClock ();
-
-		LockMutex (GraphicsLock);
-		SET_GAME_STATE (ARILOU_SPACE_COUNTER, counter);
-		UnlockMutex (GraphicsLock);
-
-		SleepThreadUntil (TimeIn + BATTLE_FRAME_RATE);
-		TimeIn = GetTimeCounter ();
+	if (GET_GAME_STATE (ARILOU_SPACE) == OPENING)
+	{	// The portal is opening or fully open
+		if (counter < 9)
+			++counter;
 	}
-	FinishTask (task);
-
-	return 0;
+	else
+	{	// The portal is closing or fully closed
+		if (counter > 0)
+			--counter;
+	}
+	SET_GAME_STATE (ARILOU_SPACE_COUNTER, counter);
 }
 
 // Battle frame callback function.
@@ -91,6 +71,7 @@ static void
 on_battle_frame (void)
 {
 	GameClockTick ();
+	checkArilouGate ();
 
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 		SeedUniverse ();
@@ -270,20 +251,11 @@ while (--ac > 0)
 			else
 			{
 				// Entering HyperSpace or QuasiSpace.
-				Task ArilouTask;
-				
 				GLOBAL (CurrentActivity) = MAKE_WORD (IN_HYPERSPACE, 0);
-
-				ArilouTask = AssignTask (arilou_gate_task, 128,
-						"quasispace portal manager");
-
-				TaskSwitch ();
 
 				DrawAutoPilotMessage (TRUE);
 				SetGameClockRate (HYPERSPACE_CLOCK_RATE);
 				Battle (&on_battle_frame);
-				if (ArilouTask)
-					Task_SetState (ArilouTask, TASK_EXIT);
 			}
 
 			LockMutex (GraphicsLock);
