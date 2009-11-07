@@ -443,20 +443,13 @@ static void
 DoTimePassage (void)
 {
 #define LOST_DAYS 14
-	COUNT i;
 	BYTE clut_buf[1];
 
 	clut_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 2));
-	for (i = 0; i < LOST_DAYS; ++i)
-	{
-		while (ClockTick () > 0)
-			;
-
-		ResumeGameClock ();
-		SleepThread (ONE_SECOND / 60);
-		SuspendGameClock ();
-	}
+	LockMutex (GraphicsLock);
+	MoveGameClockDays (LOST_DAYS);
+	UnlockMutex (GraphicsLock);
 }
 
 void

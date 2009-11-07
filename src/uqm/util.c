@@ -161,9 +161,6 @@ PauseGame (void)
 		
 	GLOBAL (CurrentActivity) |= CHECK_PAUSE;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE &&
-			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
-		SuspendGameClock ();
 	if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 
@@ -221,9 +218,6 @@ PauseGame (void)
 	WaitForNoInput (ONE_SECOND / 4);
 	FlushInput ();
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE &&
-			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
-		ResumeGameClock ();
 	if (CommData.ConversationPhrases && PlayingTrack ())
 		ResumeTrack ();
 
@@ -263,9 +257,6 @@ SleepGame (void)
 
 	log_add (log_Debug, "Game is going to sleep");
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE &&
-			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
-		SuspendGameClock ();
 	if (CommData.ConversationPhrases && PlayingTrack ())
 		PauseTrack ();
 	PauseMusic ();
@@ -282,9 +273,6 @@ SleepGame (void)
 
 	ResumeMusic ();
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE &&
-			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
-		ResumeGameClock ();
 	if (CommData.ConversationPhrases && PlayingTrack ())
 		ResumeTrack ();
 

@@ -854,8 +854,6 @@ ProcessShipControls (void)
 	COUNT index;
 	SIZE delta_x, delta_y;
 
-	ClockTick ();
-
 	if (CurrentInputState.key[PlayerControls[0]][KEY_UP])
 		delta_y = -1;
 	else
@@ -1165,7 +1163,10 @@ IP_frame (void)
 		}
 		
 		if (!(draw_sys_flags & DRAW_REFRESH))
+		{
+			GameClockTick ();
 			ProcessShipControls ();
+		}
 		UndrawShip ();
 		if (pSolarSysState->MenuState.Initialized != 1)
 		{
@@ -1270,8 +1271,6 @@ IP_frame (void)
 	}
 	else
 	{
-		SuspendGameClock ();
-		
 		LockMutex (GraphicsLock);
 		DrawStatusMessage (NULL);
 		if (LastActivity == CHECK_LOAD)
@@ -1403,7 +1402,6 @@ StartGroups:
 				}
 			}
 
-			ResumeGameClock ();
 			SetGameClockRate (INTERPLANETARY_CLOCK_RATE);
 		}
 	}
@@ -1411,7 +1409,6 @@ StartGroups:
 	{
 		if (pSolarSysState->MenuState.flash_task)
 		{
-			SuspendGameClock ();
 			FreeSolarSys ();
 
 			if (pSolarSysState->pOrbitalDesc->pPrevDesc !=

@@ -341,7 +341,7 @@ SaveClockState (const CLOCK_STATE *ClockPtr, DECODE_REF fh)
 	cwrite_16  (fh, ClockPtr->day_in_ticks);
 	cwrite_ptr (fh); /* useless ptr; Semaphore clock_sem */
 	cwrite_ptr (fh); /* useless ptr; Task clock_task */
-	cwrite_32  (fh, ClockPtr->TimeCounter); /* theoretically useless */
+	cwrite_32  (fh, 0); /* useless value; DWORD TimeCounter */
 
 	DummySaveQueue (&ClockPtr->event_q, fh);
 }

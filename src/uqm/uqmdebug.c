@@ -138,7 +138,10 @@ forwardToNextEvent (BOOLEAN skipHEE)
 	if (!GameClockRunning ())
 		return;
 
-	SuspendGameClock ();
+	// Must hold GraphicsLock for MoveGameClockDays()
+	// Must acquire GraphicsLock *before* the game clock lock
+	LockMutex (GraphicsLock);
+	LockGameClock ();
 
 	done = !skipHEE;
 	do {
@@ -161,16 +164,12 @@ forwardToNextEvent (BOOLEAN skipHEE)
 					GLOBAL (GameClock.day_index) >= day))))
 				break;
 
-			while (ClockTick () > 0)
-				;
-
-			ResumeGameClock ();
-			SleepThread (ONE_SECOND / 60);
-			SuspendGameClock ();
+			MoveGameClockDays (1);
 		}
 	} while (!done);
 
-	ResumeGameClock ();
+	UnlockGameClock ();
+	UnlockMutex (GraphicsLock);
 }
 
 const char *
@@ -239,15 +238,9 @@ dumpEvent (FILE *out, const EVENT *eventPtr)
 void
 dumpEvents (FILE *out)
 {
-	BOOLEAN restartClock = FALSE;
-
-	if (GameClockRunning ()) {
-		SuspendGameClock ();
-		restartClock = TRUE;
-	}
+	LockGameClock ();
 	ForAllEvents (dumpEventCallback, out);
-	if (restartClock)
-		ResumeGameClock ();
+	UnlockGameClock ();
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -592,7 +585,6 @@ forAllMoons (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 void
 UniverseRecurse (UniverseRecurseArg *universeRecurseArg)
 {
-	BOOLEAN clockRunning;
 	ACTIVITY savedActivity;
 	
 	if (universeRecurseArg->systemFuncPre == NULL
@@ -602,9 +594,7 @@ UniverseRecurse (UniverseRecurseArg *universeRecurseArg)
 			&& universeRecurseArg->moonFunc == NULL)
 		return;
 	
-	clockRunning = GameClockRunning ();
-	if (clockRunning)
-		SuspendGameClock ();
+	LockGameClock ();
 	//TFB_DEBUG_HALT = 1;
 	savedActivity = GLOBAL (CurrentActivity);
 	disableInteractivity = TRUE;
@@ -613,8 +603,7 @@ UniverseRecurse (UniverseRecurseArg *universeRecurseArg)
 	
 	disableInteractivity = FALSE;
 	GLOBAL (CurrentActivity) = savedActivity;
-	if (clockRunning)
-		ResumeGameClock ();
+	UnlockGameClock ();
 }
 
 static void

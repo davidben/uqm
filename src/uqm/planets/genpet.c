@@ -67,19 +67,12 @@ ZapToUrquanEncounter (void)
 
 		{
 #define LOST_DAYS 15
-			COUNT i;
 			BYTE black_buf[] = {FadeAllToBlack};
 
 			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)black_buf, ONE_SECOND * 2));
-			for (i = 0; i < LOST_DAYS; ++i)
-			{
-				while (ClockTick () > 0)
-					;
-
-				ResumeGameClock ();
-				SleepThread (ONE_SECOND / 60);
-				SuspendGameClock ();
-			}
+			LockMutex (GraphicsLock);
+			MoveGameClockDays (LOST_DAYS);
+			UnlockMutex (GraphicsLock);
 		}
 
 		GLOBAL (CurrentActivity) = MAKE_WORD (IN_HYPERSPACE, 0) | START_ENCOUNTER;

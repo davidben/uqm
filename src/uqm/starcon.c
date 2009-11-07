@@ -60,8 +60,7 @@ arilou_gate_task(void *data)
 	counter = GET_GAME_STATE (ARILOU_SPACE_COUNTER);
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
-		SetSemaphore (GLOBAL (GameClock.clock_sem));
-
+		LockGameClock ();
 		if (GET_GAME_STATE (ARILOU_SPACE) == OPENING)
 		{
 			if (++counter == 10)
@@ -72,12 +71,12 @@ arilou_gate_task(void *data)
 			if (counter-- == 0)
 				counter = 0;
 		}
+		UnlockGameClock ();
 
 		LockMutex (GraphicsLock);
 		SET_GAME_STATE (ARILOU_SPACE_COUNTER, counter);
 		UnlockMutex (GraphicsLock);
 
-		ClearSemaphore (GLOBAL (GameClock.clock_sem));
 		SleepThreadUntil (TimeIn + BATTLE_FRAME_RATE);
 		TimeIn = GetTimeCounter ();
 	}
@@ -86,12 +85,17 @@ arilou_gate_task(void *data)
 	return 0;
 }
 
+// Battle frame callback function.
+// Called with GraphicsLock held
 static void
 on_battle_frame (void)
 {
-	LockMutex (GraphicsLock);
+	GameClockTick ();
+
+	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
+		SeedUniverse ();
+
 	DrawAutoPilotMessage (FALSE);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -212,8 +216,6 @@ while (--ac > 0)
 
 		do
 		{
-			SuspendGameClock ();
-
 #ifdef DEBUG
 			if (debugHook != NULL)
 			{
@@ -278,6 +280,7 @@ while (--ac > 0)
 				TaskSwitch ();
 
 				DrawAutoPilotMessage (TRUE);
+				SetGameClockRate (HYPERSPACE_CLOCK_RATE);
 				Battle (&on_battle_frame);
 				if (ArilouTask)
 					Task_SetState (ArilouTask, TASK_EXIT);

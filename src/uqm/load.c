@@ -371,7 +371,7 @@ LoadClockState (CLOCK_STATE *ClockPtr, DECODE_REF fh)
 	cread_16  (fh, &ClockPtr->day_in_ticks);
 	cread_ptr (fh); /* not loading ptr; Semaphore clock_sem */
 	cread_ptr (fh); /* not loading ptr; Task clock_task */
-	cread_32  (fh, &ClockPtr->TimeCounter); /* theoretically useless */
+	cread_32  (fh, NULL); /* not loading; DWORD TimeCounter */
 
 	DummyLoadQueue (&ClockPtr->event_q, fh);
 }
@@ -565,14 +565,6 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 	LoadGameState (&GlobData.Game_state, fh);
 	NextActivity = GLOBAL (CurrentActivity);
 	GLOBAL (CurrentActivity) = Activity;
-
-	// It shouldn't be possible to ever save with TimeCounter != 0
-	// But if it does happen, it needs to be reset to 0, since on load
-	// the clock semaphore is gauranteed to be 0
-	if (GLOBAL (GameClock.TimeCounter) != 0)
-		log_add (log_Warning, "Warning: Game clock wasn't stopped during "
-				"save, Savegame may be corrupt!\n");
-	GLOBAL (GameClock.TimeCounter) = 0;
 
 	LoadRaceQueue (fh, &GLOBAL (avail_race_q));
 	// START_INTERPLANETARY is only set when saving from Homeworld

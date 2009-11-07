@@ -34,9 +34,6 @@ typedef struct
 	BYTE day_index, month_index;
 	COUNT year_index;
 	SIZE tick_count, day_in_ticks;
-	Semaphore clock_sem;
-	Task clock_task;
-	DWORD TimeCounter;
 
 	QUEUE event_q;
 			/* Queue element is EVENT */
@@ -74,22 +71,34 @@ typedef enum
 #define ForAllEvents(callback, arg) ForAllLinks(&GLOBAL (GameClock.event_q), \
 		(void (*)(LINK *, void *)) (callback), (arg))
 
-				/* rates are in seconds per game day */
+// Rates are in seconds per game day
 #define HYPERSPACE_CLOCK_RATE 5
+// XXX: the IP rate is based on 24 ticks/second (see SetGameClockRate),
+//   however, IP runs at 30 fps right now. So in reality, the IP clock
+//   rate is closer to 23 seconds per game day. The clock is faster, but
+//   the flagship also moves faster.
 #define INTERPLANETARY_CLOCK_RATE 30
 
 extern BOOLEAN InitGameClock (void);
 extern BOOLEAN UninitGameClock (void);
-extern void SuspendGameClock (void);
-extern void ResumeGameClock (void);
-extern BOOLEAN GameClockRunning (void);
+
 extern void SetGameClockRate (COUNT seconds_per_day);
 extern BOOLEAN ValidateEvent (EVENT_TYPE type, COUNT *pmonth_index,
 		COUNT *pday_index, COUNT *pyear_index);
 extern HEVENT AddEvent (EVENT_TYPE type, COUNT month_index, COUNT
 		day_index, COUNT year_index, BYTE func_index);
 extern void EventHandler (BYTE selector);
-extern SIZE ClockTick (void);
+extern void GameClockTick (void);
+extern void MoveGameClockDays (COUNT days);
+
+// The lock/unlock/running functions are for debugging use only
+// Locking will block the GameClockTick() function and thus
+// the thread moving the clock.
+extern void LockGameClock (void);
+extern void UnlockGameClock (void);
+// A weak indicator of the clock moving. Suitable for debugging,
+// but not much else
+extern BOOLEAN GameClockRunning (void);
 
 #endif /* _CLOCK_H */
 

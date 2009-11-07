@@ -313,9 +313,11 @@ DoBattle (BATTLE_STATE *bs)
 		SetTransitionSource (&r);
 	}
 	BatchGraphics ();
-	if ((LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE) &&
-			!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
-		SeedUniverse ();
+
+	// Call the callback function, if set
+	if (bs->frame_cb)
+		bs->frame_cb ();
+
 	RedrawQueue (TRUE);
 
 	if (bs->first_time)
@@ -330,10 +332,6 @@ DoBattle (BATTLE_STATE *bs)
 	{
 		return FALSE;
 	}
-
-	// Call the callback function, if set
-	if (bs->frame_cb)
-		bs->frame_cb ();
 
 	battle_speed = HIBYTE (nth_frame);
 	if (battle_speed == (BYTE)~0)

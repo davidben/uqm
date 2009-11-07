@@ -357,10 +357,6 @@ LoadHyperspace (void)
 BOOLEAN
 FreeHyperspace (void)
 {
-	UnlockMutex (GraphicsLock);
-	SuspendGameClock ();
-	LockMutex (GraphicsLock);
-
 	{
 		FRAME F;
 		
@@ -1337,8 +1333,6 @@ SeedUniverse (void)
 	HELEMENT hHyperSpaceElement;
 	ELEMENT *HyperSpaceElementPtr;
 
-	ClockTick ();
-
 	universe.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
 	universe.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
 
@@ -1613,7 +1607,6 @@ UnbatchGraphics ();
 	OldColor = SetContextBackGroundColor (BLACK_COLOR);
 
 	UnlockMutex (GraphicsLock);
-	SuspendGameClock ();
 
 	memset (&MenuState, 0, sizeof (MenuState));
 	MenuState.InputFunc = DoFlagshipCommands;
@@ -1638,7 +1631,6 @@ UnbatchGraphics ();
 		ClearSISRect (CLEAR_SIS_RADAR);
 		UnlockMutex (GraphicsLock);
 		WaitForNoInput (ONE_SECOND / 2);
-		ResumeGameClock ();
 		LockMutex (GraphicsLock);
 	}
 

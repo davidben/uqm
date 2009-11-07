@@ -1805,7 +1805,6 @@ DoFlagshipCommands (MENU_STATE *pMS)
 							if (pMS->Initialized <= 1)
 							{
 								pMS->Initialized = 1;
-								ResumeGameClock ();
 							}
 							else if (pMS->flash_task)
 							{

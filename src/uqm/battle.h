@@ -27,7 +27,8 @@ typedef DWORD BattleFrameCounter;
 		// For NUM_SIDES
 
 // The callback function is called on every battle frame
-// with GraphicsLock *not* held
+// with GraphicsLock held, just before the display queue
+// is drawn
 typedef void (BattleFrameCallback) (void);
 
 typedef struct battlestate_struct {

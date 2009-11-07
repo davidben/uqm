@@ -32,8 +32,11 @@
 // and is hard-coded to the original 24 fps
 #define CLOCK_BASE_FRAMERATE 24
 
-static int clock_task_func(void* data);
-
+// WARNING: Most of clock functions are only meant to be called by the
+//   Starcon2Main thread! If you need access from other threads, examine
+//   the locking system!
+// XXX: This mutex is only necessary because debugging functions
+//   may access the clock and event data from a different thread
 static Mutex clock_mutex;
 
 static BOOLEAN
@@ -58,75 +61,51 @@ DaysInMonth (COUNT month, COUNT year)
 	return days_in_month[month - 1];
 }
 
-static int
-clock_task_func(void* data)
+static void
+nextClockDay (void)
 {
-	Task task = (Task) data;
-
-	while (GLOBAL (GameClock).day_in_ticks == 0 && !Task_ReadState (task, TASK_EXIT))
-		TaskSwitch ();
-
-	while (!Task_ReadState (task, TASK_EXIT))
+	++GLOBAL (GameClock.day_index);
+	if (GLOBAL (GameClock.day_index) > DaysInMonth (
+			GLOBAL (GameClock.month_index),
+			GLOBAL (GameClock.year_index)))
 	{
-		DWORD TimeIn;
-
-				/* use semaphore so that time passage
-				 * can be halted. (e.g. during battle
-				 * or communications)
-				 */
-		SetSemaphore (GLOBAL (GameClock.clock_sem));
-		TimeIn = GetTimeCounter ();
-
-		if (GLOBAL (GameClock).tick_count <= 0
-				&& (GLOBAL (GameClock).tick_count = GLOBAL (GameClock).day_in_ticks) > 0)
-		{			
-			/* next day -- move the calendar */
-			if (++GLOBAL (GameClock).day_index > DaysInMonth (
-						GLOBAL (GameClock).month_index,
-						GLOBAL (GameClock).year_index))
-			{
-				GLOBAL (GameClock).day_index = 1;
-				if (++GLOBAL (GameClock).month_index > 12)
-				{
-					GLOBAL (GameClock).month_index = 1;
-					++GLOBAL (GameClock).year_index;
-				}
-			}
-
-			LockMutex (GraphicsLock);
-			DrawStatusMessage (NULL);
-			{
-				HEVENT hEvent;
-
-				while ((hEvent = GetHeadEvent ()))
-				{
-					EVENT *EventPtr;
-
-					LockEvent (hEvent, &EventPtr);
-
-					if (GLOBAL (GameClock).day_index != EventPtr->day_index
-							|| GLOBAL (GameClock).month_index != EventPtr->month_index
-							|| GLOBAL (GameClock).year_index != EventPtr->year_index)
-					{
-						UnlockEvent (hEvent);
-						break;
-					}
-					RemoveEvent (hEvent);
-					EventHandler (EventPtr->func_index);
-
-					UnlockEvent (hEvent);
-					FreeEvent (hEvent);
-				}
-			}
-			UnlockMutex (GraphicsLock);
+		GLOBAL (GameClock.day_index) = 1;
+		++GLOBAL (GameClock.month_index);
+		if (GLOBAL (GameClock.month_index) > 12)
+		{
+			GLOBAL (GameClock.month_index) = 1;
+			++GLOBAL (GameClock.year_index);
 		}
-
-		
-		ClearSemaphore (GLOBAL (GameClock.clock_sem));
-		SleepThreadUntil (TimeIn + ONE_SECOND / 120);
 	}
-	FinishTask (task);
-	return(0);
+
+	// update the date on screen
+	DrawStatusMessage (NULL);
+}
+
+static void
+processClockDayEvents (void)
+{
+	HEVENT hEvent;
+
+	while ((hEvent = GetHeadEvent ()))
+	{
+		EVENT *EventPtr;
+
+		LockEvent (hEvent, &EventPtr);
+
+		if (GLOBAL (GameClock.day_index) != EventPtr->day_index
+				|| GLOBAL (GameClock.month_index) != EventPtr->month_index
+				|| GLOBAL (GameClock.year_index) != EventPtr->year_index)
+		{
+			UnlockEvent (hEvent);
+			break;
+		}
+		RemoveEvent (hEvent);
+		EventHandler (EventPtr->func_index);
+
+		UnlockEvent (hEvent);
+		FreeEvent (hEvent);
+	}
 }
 
 BOOLEAN
@@ -138,12 +117,8 @@ InitGameClock (void)
 	GLOBAL (GameClock.month_index) = 2;
 	GLOBAL (GameClock.day_index) = 17;
 	GLOBAL (GameClock.year_index) = START_YEAR; /* Feb 17, START_YEAR */
-	GLOBAL (GameClock).tick_count = GLOBAL (GameClock).day_in_ticks = 0;
-	SuspendGameClock ();
-	if ((GLOBAL (GameClock.clock_task) =
-			AssignTask (clock_task_func, 2048,
-			"game clock")) == 0)
-		return (FALSE);
+	GLOBAL (GameClock.tick_count) = 0;
+	GLOBAL (GameClock.day_in_ticks) = 0;
 
 	return (TRUE);
 }
@@ -151,14 +126,6 @@ InitGameClock (void)
 BOOLEAN
 UninitGameClock (void)
 {
-	if (GLOBAL (GameClock.clock_task))
-	{
-		ResumeGameClock ();
-
-		ConcludeTask (GLOBAL (GameClock.clock_task));
-		
-		GLOBAL (GameClock.clock_task) = 0;
-	}
 	DestroyMutex (clock_mutex);
 	clock_mutex = NULL;
 
@@ -167,52 +134,43 @@ UninitGameClock (void)
 	return (TRUE);
 }
 
+// For debugging use only
 void
-SuspendGameClock (void)
+LockGameClock (void)
 {
-	if (!clock_mutex)
-	{
-		log_add (log_Fatal, "BUG: "
-				"Attempted to suspend non-existent game clock");
-#ifdef DEBUG
-		explode ();
-#endif
-		return;
-	}
-	LockMutex (clock_mutex);
-	if (GameClockRunning ())
-	{
-		SetSemaphore (GLOBAL (GameClock.clock_sem));
-		GLOBAL (GameClock.TimeCounter) = 0;
-	}
-	UnlockMutex (clock_mutex);
+	// Block the GameClockTick() for executing
+	if (clock_mutex)
+		LockMutex (clock_mutex);
 }
 
+// For debugging use only
 void
-ResumeGameClock (void)
+UnlockGameClock (void)
 {
-	if (!clock_mutex)
-	{
-		log_add (log_Fatal, "BUG: "
-				"Attempted to resume non-existent game clock\n");
-#ifdef DEBUG
-		explode ();
-#endif
-		return;
-	}
-	LockMutex (clock_mutex);
-	if (!GameClockRunning ())
-	{
-		GLOBAL (GameClock.TimeCounter) = GetTimeCounter ();
-		ClearSemaphore (GLOBAL (GameClock.clock_sem));
-	}
-	UnlockMutex (clock_mutex);
+	if (clock_mutex)
+		UnlockMutex (clock_mutex);
 }
 
+// For debugging use only
 BOOLEAN
 GameClockRunning (void)
 {
-	return ((BOOLEAN)(GLOBAL (GameClock.TimeCounter) != 0));
+	SIZE prev_tick, cur_tick;
+
+	if (!clock_mutex)
+		return FALSE;
+
+	LockMutex (clock_mutex);
+	prev_tick = GLOBAL (GameClock.tick_count);
+	UnlockMutex (clock_mutex);
+	
+	SleepThread (ONE_SECOND / 5);
+	
+	LockMutex (clock_mutex);
+	cur_tick = GLOBAL (GameClock.tick_count);
+	UnlockMutex (clock_mutex);
+
+	return cur_tick != prev_tick;
 }
 
 void
@@ -220,7 +178,6 @@ SetGameClockRate (COUNT seconds_per_day)
 {
 	SIZE new_day_in_ticks, new_tick_count;
 
-	SetSemaphore (GLOBAL (GameClock.clock_sem));
 	new_day_in_ticks = (SIZE)(seconds_per_day * CLOCK_BASE_FRAMERATE);
 	if (GLOBAL (GameClock.day_in_ticks) == 0)
 		new_tick_count = new_day_in_ticks;
@@ -231,7 +188,6 @@ SetGameClockRate (COUNT seconds_per_day)
 		new_tick_count = 1;
 	GLOBAL (GameClock.day_in_ticks) = new_day_in_ticks;
 	GLOBAL (GameClock.tick_count) = new_tick_count;
-	ClearSemaphore (GLOBAL (GameClock.clock_sem));
 }
 
 BOOLEAN
@@ -324,9 +280,41 @@ AddEvent (EVENT_TYPE type, COUNT month_index, COUNT day_index, COUNT
 	return (0);
 }
 
-SIZE
-ClockTick (void)
+// This function must be called with GraphicsLock held.
+void
+GameClockTick (void)
 {
-	return (--GLOBAL (GameClock.tick_count));
+	// XXX: This mutex is only necessary because debugging functions
+	//   may access the clock and event data from a different thread
+	LockMutex (clock_mutex);
+
+	--GLOBAL (GameClock.tick_count);
+	if (GLOBAL (GameClock.tick_count) <= 0)
+	{	// next day -- move the calendar
+		GLOBAL (GameClock.tick_count) = GLOBAL (GameClock.day_in_ticks);
+		// Do not do anything until the clock is inited
+		if (GLOBAL (GameClock.day_in_ticks) > 0)
+		{	
+			nextClockDay ();
+			processClockDayEvents ();
+		}
+	}
+
+	UnlockMutex (clock_mutex);
 }
 
+// This function must be called with GraphicsLock held.
+void
+MoveGameClockDays (COUNT days)
+{
+	// XXX: This should theoretically hold the clock_mutex, but if
+	//   someone manages to hit the debug button while this function
+	//   runs, it's their own fault :-P
+	
+	for ( ; days > 0; --days)
+	{
+		nextClockDay ();
+		processClockDayEvents ();
+	}
+	GLOBAL (GameClock.tick_count) = GLOBAL (GameClock.day_in_ticks);
+}
