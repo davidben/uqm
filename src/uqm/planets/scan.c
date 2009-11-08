@@ -524,7 +524,7 @@ savePlanetLocationImage (MENU_STATE *pMS)
 	r.corner.x += pMS->flash_rect1.corner.x - hs.x;
 	r.corner.y += pMS->flash_rect1.corner.y - hs.y;
 	r.extent = pMS->flash_rect0.extent;
-	LoadDisplayPixmap (&r, pMenuState->flash_frame1);
+	LoadDisplayPixmap (&r, pMS->flash_frame1);
 }
 
 static void
@@ -551,18 +551,18 @@ drawPlanetCursor (MENU_STATE *pMS, BOOLEAN filled)
 }
 
 static void
-SetPlanetLoc (POINT new_pt)
+SetPlanetLoc (MENU_STATE *pMS, POINT new_pt)
 {
 	pSolarSysState->MenuState.first_item = new_pt;
 
 	// Set the new flash location
 	new_pt.x >>= MAG_SHIFT;
 	new_pt.y >>= MAG_SHIFT;
-	pMenuState->flash_rect0.corner = new_pt;
+	pMS->flash_rect0.corner = new_pt;
 
 	SetContext (ScanContext);
-	restorePlanetLocationImage (pMenuState);
-	savePlanetLocationImage (pMenuState);
+	restorePlanetLocationImage (pMS);
+	savePlanetLocationImage (pMS);
 }
 
 static void
@@ -634,11 +634,11 @@ PickPlanetSide (MENU_STATE *pMS)
 			LockMutex (GraphicsLock);
 			SetContext (ScanContext);
 			// Set the current flash location
-			pMenuState->flash_rect0.corner.x =
+			pMS->flash_rect0.corner.x =
 					pSolarSysState->MenuState.first_item.x >> MAG_SHIFT;
-			pMenuState->flash_rect0.corner.y =
+			pMS->flash_rect0.corner.y =
 					pSolarSysState->MenuState.first_item.y >> MAG_SHIFT;
-			savePlanetLocationImage (pMenuState);
+			savePlanetLocationImage (pMS);
 
 			SetFlashRect (NULL);
 			UnlockMutex (GraphicsLock);
@@ -659,7 +659,7 @@ PickPlanetSide (MENU_STATE *pMS)
 		if (!select)
 		{	// Bailing out
 			LockMutex (GraphicsLock);
-			SetPlanetLoc (pSolarSysState->MenuState.first_item);
+			SetPlanetLoc (pMS, pSolarSysState->MenuState.first_item);
 			UnlockMutex (GraphicsLock);
 		}
 		else
@@ -677,7 +677,7 @@ PickPlanetSide (MENU_STATE *pMS)
 			LockMutex (GraphicsLock);
 			DeltaSISGauges (0, -(SIZE)fuel_required, 0);
 			SetContext (ScanContext);
-			drawPlanetCursor (pMenuState, FALSE);
+			drawPlanetCursor (pMS, FALSE);
 			UnlockMutex (GraphicsLock);
 
 			PlanetSide (pMS);
@@ -773,10 +773,10 @@ ExitPlanetSide:
 		if (new_pt.x != pSolarSysState->MenuState.first_item.x
 				|| new_pt.y != pSolarSysState->MenuState.first_item.y)
 		{
-			SetPlanetLoc (new_pt);
+			SetPlanetLoc (pMS, new_pt);
 		}
 
-		flashPlanetLocation (pMenuState);
+		flashPlanetLocation (pMS);
 
 		UnbatchGraphics ();
 		UnlockMutex (GraphicsLock);
