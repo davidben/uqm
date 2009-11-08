@@ -254,35 +254,36 @@ DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT which_slot,
 	}
 }
 
-static int
-rotate_starbase(void *data)
+static void
+rotateStarbase (MENU_STATE *pMS, FRAME AniFrame)
 {
-	DWORD TimeIn;
-	STAMP s;
-	Task task = (Task) data;
-	
-	//s.origin.x = s.origin.y = 0;
-	s.origin.x = SAFE_X;
-	s.origin.y = SAFE_Y + 4;
-	s.frame = IncFrameIndex (pMenuState->CurFrame);
-	TimeIn = GetTimeCounter ();
-	while (!Task_ReadState (task, TASK_EXIT))
-	{
-		//CONTEXT OldContext;
-		
-		LockMutex (GraphicsLock);
-		DrawStamp (&s);
-		s.frame = IncFrameIndex (s.frame);
-		if (s.frame == pMenuState->CurFrame)
-			s.frame = IncFrameIndex (s.frame);
-		UnlockMutex (GraphicsLock);
-		
-		SleepThreadUntil (TimeIn + (ONE_SECOND / 20));
-		TimeIn = GetTimeCounter ();
-	}
+	static TimeCount NextTime = 0;
+	TimeCount Now = GetTimeCounter ();
 
-	FinishTask (task);
-	return(0);
+	if (AniFrame)
+	{	// Setup the animation
+		pMS->flash_frame0 = AniFrame;
+		pMS->flash_rect0.corner.x = SAFE_X;
+		pMS->flash_rect0.corner.y = SAFE_Y + 4;
+	}
+	
+	if (Now >= NextTime || AniFrame)
+	{
+		STAMP s;
+
+		NextTime = Now + (ONE_SECOND / 20);
+
+		s.origin = pMS->flash_rect0.corner;
+		s.frame = pMS->flash_frame0;
+		DrawStamp (&s);
+
+		s.frame = IncFrameIndex (s.frame);
+		if (GetFrameIndex (s.frame) == 0)
+		{	// Do not redraw the base frame, animation loops to frame 1
+			s.frame = IncFrameIndex (s.frame);
+		}
+		pMS->flash_frame0 = s.frame;
+	}
 }
 
 BOOLEAN
@@ -297,8 +298,6 @@ DoStarBase (MENU_STATE *pMS)
 
 	if (!pMS->Initialized)
 	{
-		STAMP s;
-
 		LastActivity &= ~CHECK_LOAD;
 		pMS->InputFunc = DoStarBase;
 
@@ -319,23 +318,18 @@ DoStarBase (MENU_STATE *pMS)
 		}
 
 		pMS->Initialized = TRUE;
-		SetContext (ScreenContext);
-
 		UnlockMutex (GraphicsLock);
 
-		//s.origin.x = s.origin.y = 0;
-		s.origin.x = SAFE_X;
-		s.origin.y = SAFE_Y + 4;
-		s.frame = CaptureDrawable (LoadGraphic (STARBASE_ANIM));
-		pMS->CurFrame = s.frame;
+		pMS->CurFrame = CaptureDrawable (LoadGraphic (STARBASE_ANIM));
 		pMS->hMusic = LoadMusic (STARBASE_MUSIC);
 
 		LockMutex (GraphicsLock);
+		SetContext (ScreenContext);
 		SetTransitionSource (NULL);
 		BatchGraphics ();
 		SetContextBackGroundColor (BLACK_COLOR);
 		ClearDrawable ();
-		DrawStamp (&s);
+		rotateStarbase (pMS, pMS->CurFrame);
 		DrawBaseStateStrings ((STARBASE_STATE)~0, pMS->CurState);
 		{
 			RECT r;
@@ -348,8 +342,6 @@ DoStarBase (MENU_STATE *pMS)
 		}
 		PlayMusic (pMS->hMusic, TRUE, 1);
 		UnbatchGraphics ();
-		pMS->flash_task = AssignTask (rotate_starbase, 4096,
-				"rotate starbase");
 		UnlockMutex (GraphicsLock);
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT]
@@ -357,11 +349,6 @@ DoStarBase (MENU_STATE *pMS)
 			|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 	{
 ExitStarBase:
-		if (pMS->flash_task)
-		{
-			ConcludeTask (pMS->flash_task);
-			pMS->flash_task = 0;
-		}
 		DestroyDrawable (ReleaseDrawable (pMS->CurFrame));
 		pMS->CurFrame = 0;
 		StopMusic ();
@@ -425,13 +412,20 @@ ExitStarBase:
 				NewState = TALK_COMMANDER;
 		}
 
+		LockMutex (GraphicsLock);
+		BatchGraphics ();
+		SetContext (ScreenContext);
+
 		if (NewState != pMS->CurState)
 		{
-			LockMutex (GraphicsLock);
 			DrawBaseStateStrings (pMS->CurState, NewState);
-			UnlockMutex (GraphicsLock);
 			pMS->CurState = NewState;
 		}
+
+		rotateStarbase (pMS, NULL);
+
+		UnbatchGraphics ();
+		UnlockMutex (GraphicsLock);
 
 		SleepThread (ONE_SECOND / 30);
 	}
