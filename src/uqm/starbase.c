@@ -76,7 +76,7 @@ DrawBaseStateStrings (STARBASE_STATE OldState, STARBASE_STATE NewState)
 }
 
 void
-DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT which_slot,
+DrawShipPiece (FRAME ModuleFrame, COUNT which_piece, COUNT which_slot,
 		BOOLEAN DrawBluePrint)
 {
 	COLOR OldColor = 0;  // Initialisation is to keep the compiler silent.
@@ -138,7 +138,7 @@ DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT which_slot,
 	Side.origin.x += which_slot * SHIP_PIECE_OFFSET;
 	if (RepairSlot < 0)
 	{
-		Side.frame = SetAbsFrameIndex (pMS->ModuleFrame,
+		Side.frame = SetAbsFrameIndex (ModuleFrame,
 				((NUM_MODULES - 1) + (6 - 2)) + (NUM_MODULES + 6)
 				- (RepairSlot + 1));
 		DrawStamp (&Side);
@@ -176,7 +176,7 @@ DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT which_slot,
 	{
 		if (RepairSlot)
 			SetContextForeGroundColor (OldColor);
-		Side.frame = SetAbsFrameIndex (pMS->ModuleFrame, which_piece - 1);
+		Side.frame = SetAbsFrameIndex (ModuleFrame, which_piece - 1);
 		DrawFilledStamp (&Side);
 	}
 	else
@@ -216,7 +216,7 @@ DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT which_slot,
 			}
 		}
 
-		Top.frame = SetAbsFrameIndex (pMS->ModuleFrame, which_piece);
+		Top.frame = SetAbsFrameIndex (ModuleFrame, which_piece);
 		DrawStamp (&Top);
 
 		Side.frame = SetRelFrameIndex (Top.frame, (NUM_MODULES - 1) + 6);
@@ -228,7 +228,7 @@ DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT which_slot,
 
 			s.origin = Top.origin;
 			s.origin.x -= SHIP_PIECE_OFFSET;
-			s.frame = SetAbsFrameIndex (pMS->ModuleFrame, NUM_MODULES + 5);
+			s.frame = SetAbsFrameIndex (ModuleFrame, NUM_MODULES + 5);
 			DrawStamp (&s);
 			s.origin = Side.origin;
 			s.origin.x -= SHIP_PIECE_OFFSET;
@@ -245,7 +245,7 @@ DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT which_slot,
 					&& which_slot >= NUM_MODULE_SLOTS - 3)
 				++which_piece;
 
-			Top.frame = SetAbsFrameIndex (pMS->ModuleFrame, which_piece);
+			Top.frame = SetAbsFrameIndex (ModuleFrame, which_piece);
 			DrawStamp (&Top);
 
 			Side.frame = SetRelFrameIndex (Top.frame, (NUM_MODULES - 1) + 6);

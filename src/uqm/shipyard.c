@@ -37,8 +37,6 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 
-static void BeginHangarAnim (MENU_STATE *pMS);
-static void EndHangarAnim (MENU_STATE *pMS);
 
 #ifdef USE_3DO_HANGAR
 // 3DO 4x3 hangar layout
@@ -61,8 +59,6 @@ static const COORD hangar_x_coords[HANGAR_SHIPS_ROW] =
 {
 	0, 38, 76,  131, 169, 207
 };
-
-#	define WANT_HANGAR_ANIMATION
 #endif // USE_3DO_HANGAR
 
 #define HANGAR_SHIPS      12
@@ -76,50 +72,31 @@ enum
 	SHIPYARD_EXIT
 };
 
-static int
-hangar_anim_func (void *data)
+static void
+animatePowerLines (MENU_STATE *pMS)
 {
-	DWORD TimeIn;
-	STAMP s;
-	Task task = (Task) data;
-	COLORMAP ColorMap;
-	RECT ClipRect;
-	
-	if (!pMenuState->CurString)
-	{
-		FinishTask (task);
-		return -1;
+	static STAMP s; 
+	static COLORMAP ColorMap;
+	static TimeCount NextTime = 0;
+	TimeCount Now = GetTimeCounter ();
+
+	if (pMS)
+	{	// Init animation
+		s.origin.x = 0;
+		s.origin.y = 0;
+		s.frame = SetAbsFrameIndex (pMS->ModuleFrame, 24);
+		ColorMap = SetAbsColorMapIndex (pMS->CurString, 0);
 	}
-	s.origin.x = s.origin.y = 0;
-	s.frame = SetAbsFrameIndex (pMenuState->CurFrame, 24);
-	ClipRect = pMenuState->flash_rect1;
-	ColorMap = SetAbsColorMapIndex (pMenuState->CurString, 0);
-	
-	TimeIn = GetTimeCounter ();
-	while (!Task_ReadState (task, TASK_EXIT))
+
+	if (Now >= NextTime || pMS)
 	{
-		CONTEXT OldContext;
-		RECT OldClipRect;
+		NextTime = Now + (ONE_SECOND / HANGAR_ANIM_RATE);
 
-		LockMutex (GraphicsLock);
-		OldContext = SetContext (ScreenContext);
-		GetContextClipRect (&OldClipRect);
-		SetContextClipRect (&ClipRect);
-
-		ColorMap = SetRelColorMapIndex (ColorMap, 1);
 		SetColorMap (GetColorMapAddress (ColorMap));
 		DrawStamp (&s);
-		
-		SetContextClipRect (&OldClipRect);
-		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
-		
-		SleepThreadUntil (TimeIn + ONE_SECOND / HANGAR_ANIM_RATE);
-		TimeIn = GetTimeCounter ();
+		// Advance colomap cycle
+		ColorMap = SetRelColorMapIndex (ColorMap, 1);
 	}
-
-	FinishTask (task);
-	return 0;
 }
 
 #ifdef WANT_SHIP_SPINS
@@ -329,8 +306,8 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 
 		pship_win_info->lfdoor_s.origin.x = -(SHIP_WIN_WIDTH >> 1);
 		pship_win_info->rtdoor_s.origin.x = (SHIP_WIN_WIDTH >> 1);
-		pship_win_info->lfdoor_s.origin.y =
-				pship_win_info->rtdoor_s.origin.y = 0;
+		pship_win_info->lfdoor_s.origin.y = 0;
+		pship_win_info->rtdoor_s.origin.y = 0;
 		pship_win_info->lfdoor_s.frame =
 				IncFrameIndex (pMenuState->ModuleFrame);
 		pship_win_info->rtdoor_s.frame =
@@ -390,8 +367,8 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 
 			pship_win_info->lfdoor_s.origin.x = -1;
 			pship_win_info->rtdoor_s.origin.x = 1;
-			pship_win_info->lfdoor_s.origin.y =
-					pship_win_info->rtdoor_s.origin.y = 0;
+			pship_win_info->lfdoor_s.origin.y = 0;
+			pship_win_info->rtdoor_s.origin.y = 0;
 			pship_win_info->lfdoor_s.frame =
 					IncFrameIndex (pMenuState->ModuleFrame);
 			pship_win_info->rtdoor_s.frame =
@@ -419,8 +396,8 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 		DWORD TimeIn;
 		RECT r;
 		CONTEXT OldContext;
+		RECT OldClipRect;
 		int j;
-
 
 		AllDoorsFinished = FALSE;
 		r.corner.x = r.corner.y = 0;
@@ -436,22 +413,22 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 			if (AnyButtonPress (FALSE))
 			{
 				if (YankedStarShipPtr != 0)
-				{
+				{	// Fully close the doors
 					ship_win_info[0].lfdoor_s.origin.x = 0;
 					ship_win_info[0].rtdoor_s.origin.x = 0;
 				}
 				AllDoorsFinished = TRUE;
 			}
+
 			LockMutex (GraphicsLock);
-			OldContext = SetContext (OffScreenContext);
-			SetContextFGFrame (Screen);
+			OldContext = SetContext (SpaceContext);
+			GetContextClipRect (&OldClipRect);
 			SetContextBackGroundColor (BLACK_COLOR);
 
 			BatchGraphics ();
 			pship_win_info = &ship_win_info[0];
 			for (i = 0; i < num_ships; ++i)
 			{
-
 				{
 					RECT ClipRect;
 
@@ -471,12 +448,12 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 						DrawStamp (&pship_win_info->lfdoor_s);
 						DrawStamp (&pship_win_info->rtdoor_s);
 						if (YankedStarShipPtr)
-						{
+						{	// Close the doors
 							++pship_win_info->lfdoor_s.origin.x;
 							--pship_win_info->rtdoor_s.origin.x;
 						}
 						else
-						{
+						{	// Open the doors
 							--pship_win_info->lfdoor_s.origin.x;
 							++pship_win_info->rtdoor_s.origin.x;
 						}
@@ -485,8 +462,11 @@ ShowCombatShip (COUNT which_window, SHIP_FRAGMENT *YankedStarShipPtr)
 				++pship_win_info;
 			}
 
+			SetContextClipRect (&OldClipRect);
+#ifndef USE_3DO_HANGAR
+			animatePowerLines (NULL);
+#endif
 			UnbatchGraphics ();
-			SetContextClipRect (NULL);
 			SetContext (OldContext);
 			UnlockMutex (GraphicsLock);
 		}
@@ -553,9 +533,6 @@ static BOOLEAN
 DoModifyShips (MENU_STATE *pMS)
 {
 #define MODIFY_CREW_FLAG (1 << 8)
-	RECT r;
-	HSHIPFRAG hStarShip, hNextShip;
-	SHIP_FRAGMENT *StarShipPtr;
 	BOOLEAN select, cancel;
 #ifdef WANT_SHIP_SPINS
 	BOOLEAN special;
@@ -638,6 +615,10 @@ DoModifyShips (MENU_STATE *pMS)
 				|| NewState != pMS->CurState
 				|| ((pMS->delta_item & MODIFY_CREW_FLAG) && (dx || dy)))
 		{
+			HSHIPFRAG hStarShip, hNextShip;
+			SHIP_FRAGMENT *StarShipPtr;
+			RECT r;
+
 			for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
 					hStarShip; hStarShip = hNextShip)
 			{
@@ -682,7 +663,6 @@ DoModifyShips (MENU_STATE *pMS)
 				{
 					CONTEXT OldContext;
 					RECT OldClipRect;
-					RECT flash_r;
 
 					if (!hSpinShip)
 					{	/* Get fleet info from selected escort */
@@ -694,10 +674,6 @@ DoModifyShips (MENU_STATE *pMS)
 					}
 					
 					SetFlashRect (NULL);
-					// Do not call EndHangarAnim() with GraphicsLock held!
-					UnlockMutex (GraphicsLock);
-					EndHangarAnim (pMS);
-					LockMutex (GraphicsLock);
 
 					OldContext = SetContext (ScreenContext);
 					GetContextClipRect (&OldClipRect);
@@ -707,19 +683,10 @@ DoModifyShips (MENU_STATE *pMS)
 					SetContextClipRect (&OldClipRect);
 					SetContext (OldContext);
 
-					BeginHangarAnim (pMS);
-					SetContext (SpaceContext);
-
 					if (hStarShip)
 						goto ChangeFlashRect;
 
-					GetContextClipRect (&flash_r);
-					GetContextClipRect (&flash_r);
-					flash_r.corner.x = RADAR_X - flash_r.corner.x;
-					flash_r.corner.y = RADAR_Y - flash_r.corner.y;
-					flash_r.extent.width = RADAR_WIDTH;
-					flash_r.extent.height = RADAR_HEIGHT;
-					SetFlashRect (&flash_r);
+					SetFlashRect (SFR_MENU_3DO);
 				}
 			}
 			else
@@ -763,8 +730,7 @@ DoModifyShips (MENU_STATE *pMS)
 								&& CloneShipFragment (Index,
 								&GLOBAL (built_ship_q), 1))
 						{
-							ShowCombatShip ((COUNT)pMS->CurState,
-									(SHIP_FRAGMENT*)0);
+							ShowCombatShip (pMS->CurState, NULL);
 							//Reset flash rectangle
 							LockMutex (GraphicsLock);
 							SetFlashRect (SFR_MENU_3DO);
@@ -829,8 +795,7 @@ DoModifyShips (MENU_STATE *pMS)
 						{
 							SetFlashRect (NULL);
 							UnlockMutex (GraphicsLock);
-							ShowCombatShip ((COUNT)pMS->CurState,
-									StarShipPtr);
+							ShowCombatShip (pMS->CurState, StarShipPtr);
 							LockMutex (GraphicsLock);
 							UnlockShipFrag (&GLOBAL (built_ship_q),
 									hStarShip);
@@ -1062,6 +1027,13 @@ ChangeFlashRect:
 			}
 			UnlockMutex (GraphicsLock);
 		}
+
+#ifndef USE_3DO_HANGAR
+		LockMutex (GraphicsLock);
+		SetContext (SpaceContext);
+		animatePowerLines (NULL);
+		UnlockMutex (GraphicsLock);
+#endif
 	}
 
 	SleepThread (ONE_SECOND / 30);
@@ -1074,30 +1046,25 @@ DrawBluePrint (MENU_STATE *pMS)
 {
 	COUNT num_frames;
 	STAMP s;
+	FRAME ModuleFrame;
 
-	LockMutex (GraphicsLock);
-	SetContext (SpaceContext);
+	ModuleFrame = CaptureDrawable (LoadGraphic (SISBLU_MASK_ANIM));
 
-	pMS->ModuleFrame = CaptureDrawable (
-			LoadGraphic (SISBLU_MASK_ANIM)
-			);
-
-	BatchGraphics ();
-
-	s.origin.x = s.origin.y = 0;
-	s.frame = DecFrameIndex (pMS->ModuleFrame);
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = DecFrameIndex (ModuleFrame);
 	SetContextForeGroundColor (
 			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x16), 0x01));
 	DrawFilledStamp (&s);
 
 	for (num_frames = 0; num_frames < NUM_DRIVE_SLOTS; ++num_frames)
 	{
-		DrawShipPiece (pMS, GLOBAL_SIS (DriveSlots[num_frames]),
+		DrawShipPiece (ModuleFrame, GLOBAL_SIS (DriveSlots[num_frames]),
 				num_frames, TRUE);
 	}
 	for (num_frames = 0; num_frames < NUM_JET_SLOTS; ++num_frames)
 	{
-		DrawShipPiece (pMS, GLOBAL_SIS (JetSlots[num_frames]),
+		DrawShipPiece (ModuleFrame, GLOBAL_SIS (JetSlots[num_frames]),
 				num_frames, TRUE);
 	}
 	for (num_frames = 0; num_frames < NUM_MODULE_SLOTS; ++num_frames)
@@ -1107,7 +1074,7 @@ DrawBluePrint (MENU_STATE *pMS)
 		which_piece = GLOBAL_SIS (ModuleSlots[num_frames]);
 
 		if (!(pMS->CurState == SHIPYARD && which_piece == CREW_POD))
-			DrawShipPiece (pMS, which_piece, num_frames, TRUE);
+			DrawShipPiece (ModuleFrame, which_piece, num_frames, TRUE);
 	}
 
 	SetContextForeGroundColor (
@@ -1118,7 +1085,7 @@ DrawBluePrint (MENU_STATE *pMS)
 
 		which_piece = GLOBAL_SIS (ModuleSlots[num_frames]);
 		if (pMS->CurState == SHIPYARD && which_piece == CREW_POD)
-			DrawShipPiece (pMS, which_piece, num_frames, TRUE);
+			DrawShipPiece (ModuleFrame, which_piece, num_frames, TRUE);
 	}
 
 	{
@@ -1184,44 +1151,7 @@ DrawBluePrint (MENU_STATE *pMS)
 		}
 	}
 
-	UnbatchGraphics ();
-
-	DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
-	pMS->ModuleFrame = 0;
-
-	UnlockMutex (GraphicsLock);
-}
-
-static void
-BeginHangarAnim (MENU_STATE *pMS)
-{
-#ifdef WANT_HANGAR_ANIMATION
-	CONTEXT OldContext;
-	RECT ClipRect;
-
-	OldContext = SetContext (SpaceContext);
-	GetContextClipRect (&ClipRect);
-
-	// start hangar power-lines animation
-	GetContextClipRect (&ClipRect);
-	pMS->flash_rect1 = ClipRect;
-	pMS->CurFrame = pMS->ModuleFrame;
-	pMS->flash_task = AssignTask (hangar_anim_func, 4096,
-			"hangar pal-rot animation");
-
-	SetContext (OldContext);
-#endif
-}
-
-// Pre: GraphicsLock is NOT held (or risk a deadlock)
-static void
-EndHangarAnim (MENU_STATE *pMS)
-{
-	if (pMS->flash_task)
-	{
-		ConcludeTask (pMS->flash_task);
-		pMS->flash_task = 0;
-	}
+	DestroyDrawable (ReleaseDrawable (ModuleFrame));
 }
 
 BOOLEAN
@@ -1243,7 +1173,8 @@ DoShipyard (MENU_STATE *pMS)
 			STAMP s;
 			RECT r, old_r;
 
-			s.frame = CaptureDrawable (LoadGraphic (SHIPYARD_PMAP_ANIM));
+			pMS->ModuleFrame = CaptureDrawable (
+					LoadGraphic (SHIPYARD_PMAP_ANIM));
 
 			pMS->CurString = CaptureColorMap (
 					LoadColorMap (HANGAR_COLOR_TAB));
@@ -1256,15 +1187,18 @@ DoShipyard (MENU_STATE *pMS)
 			DrawSISFrame ();
 			DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 3));
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
-			UnlockMutex (GraphicsLock);
+			SetContext (SpaceContext);
 			DrawBluePrint (pMS);
-			pMS->ModuleFrame = s.frame;
+			UnlockMutex (GraphicsLock);
 
-			DrawMenuStateStrings (PM_CREW, pMS->CurState = SHIPYARD_CREW);
+			pMS->CurState = SHIPYARD_CREW;
+			DrawMenuStateStrings (PM_CREW, pMS->CurState);
 
 			LockMutex (GraphicsLock);
 			SetContext (SpaceContext);
-			s.origin.x = s.origin.y = 0;
+			s.origin.x = 0;
+			s.origin.y = 0;
+			s.frame = SetAbsFrameIndex (pMS->ModuleFrame, 0);
 #ifdef USE_3DO_HANGAR
 			DrawStamp (&s);
 #else // PC hangar
@@ -1278,6 +1212,7 @@ DoShipyard (MENU_STATE *pMS)
 			SetContextClipRect (&r);
 			DrawStamp (&s);
 			SetContextClipRect (&old_r);
+			animatePowerLines (pMS);
 #endif // USE_3DO_HANGAR
 			
 			SetContextFont (TinyFont);
@@ -1291,12 +1226,12 @@ DoShipyard (MENU_STATE *pMS)
 				r.extent.height = SCREEN_HEIGHT;
 				ScreenTransition (3, &r);
 			}
-			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
-			BeginHangarAnim (pMS);
 			UnlockMutex (GraphicsLock);
 
-			ShowCombatShip ((COUNT)~0, (SHIP_FRAGMENT*)0);
+			PlayMusic (pMS->hMusic, TRUE, 1);
+
+			ShowCombatShip ((COUNT)~0, NULL);
 			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
 			UnlockMutex (GraphicsLock);
@@ -1307,11 +1242,9 @@ DoShipyard (MENU_STATE *pMS)
 	else if (cancel || (select && pMS->CurState == SHIPYARD_EXIT))
 	{
 ExitShipyard:
-		EndHangarAnim (pMS);
 		LockMutex (GraphicsLock);
 		DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
 		pMS->ModuleFrame = 0;
-		pMS->CurFrame = 0;
 		DestroyColorMap (ReleaseColorMap (pMS->CurString));
 		pMS->CurString = 0;
 		UnlockMutex (GraphicsLock);
@@ -1327,18 +1260,23 @@ ExitShipyard:
 		}
 		else
 		{
-			EndHangarAnim (pMS);
 			if (GameOptions () == 0)
 				goto ExitShipyard;
 			DrawMenuStateStrings (PM_CREW, pMS->CurState);
 			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
-			BeginHangarAnim (pMS);
 			UnlockMutex (GraphicsLock);
 		}
 	}
 	else
+	{
+		LockMutex (GraphicsLock);
+		SetContext (SpaceContext);
+		animatePowerLines (NULL);
+		UnlockMutex (GraphicsLock);
+
 		DoMenuChooser (pMS, PM_CREW);
+	}
 
 	return TRUE;
 }

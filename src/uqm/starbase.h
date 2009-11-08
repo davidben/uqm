@@ -36,7 +36,8 @@ extern void VisitStarBase (void);
 extern BOOLEAN DoStarBase (MENU_STATE *pMS);
 extern BOOLEAN DoOutfit (MENU_STATE *pMS);
 extern BOOLEAN DoShipyard (MENU_STATE *pMS);
-extern void DrawShipPiece (MENU_STATE *pMS, COUNT which_piece, COUNT
+
+extern void DrawShipPiece (FRAME ModuleFrame, COUNT which_piece, COUNT
 		which_slot, BOOLEAN DrawBluePrint);
 
 extern COUNT WrapText (const UNICODE *pStr, COUNT len, TEXT *tarray, SIZE
