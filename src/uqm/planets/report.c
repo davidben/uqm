@@ -244,22 +244,12 @@ InitPageCell:
 void
 DoDiscoveryReport (SOUND ReadOutSounds)
 {
-	POINT old_curs;
 	CONTEXT OldContext;
 
 #ifdef DEBUG
 	if (disableInteractivity)
 		return;
 #endif
-
-	if (pMenuState)
-	{
-		old_curs = pMenuState->flash_rect0.corner;
-		
-		/* Disable cursor: */
-		pMenuState->flash_rect0.corner.x = -1000;
-		pMenuState->flash_rect0.corner.y = -1000;
-	}
 
 	OldContext = SetContext (ScanContext);
 	{
@@ -296,9 +286,6 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 	while (AnyButtonPress (TRUE))
 		TaskSwitch ();
 	LockMutex (GraphicsLock);
-
-	if (pMenuState)
-		pMenuState->flash_rect0.corner = old_curs;
 }
 
 

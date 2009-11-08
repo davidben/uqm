@@ -1206,14 +1206,7 @@ RepairScan (void)
 	DrawPlanet (0, 0, 0, 0);
 #endif
 	DrawScannedObjects (TRUE);
-	{
-#define FLASH_INDEX 105
-		STAMP s;
-		
-		s.origin = pMenuState->flash_rect0.corner;
-		s.frame = SetAbsFrameIndex (MiscDataFrame, FLASH_INDEX);
-		DrawStamp (&s);
-	}
+	drawPlanetCursor (pMenuState, FALSE);
 	UnbatchGraphics ();
 
 	SetContext (OldContext);
@@ -1378,8 +1371,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 		}
 	}
 
-	pMenuState->flash_rect0.corner.x = new_pt.x >> MAG_SHIFT;
-	pMenuState->flash_rect0.corner.y = new_pt.y >> MAG_SHIFT;
+	setPlanetCursorLoc (pMenuState, new_pt);
 	RepairScan ();
 
 	if (lander_flags & KILL_CREW)
@@ -1552,19 +1544,8 @@ InitPlanetSide (void)
 	else if (pt.y >= (MAP_HEIGHT << MAG_SHIFT))
 		pt.y = (MAP_HEIGHT << MAG_SHIFT) - 1;
 
-	// Put this back in as our original menu choice.
+	// Set the planet location
 	pSolarSysState->MenuState.first_item = pt;
-
-#ifdef NEVER
-	SetContext (ScanContext);
-	s.origin = pMenuState->flash_rect0.corner;
-	s.origin.x -= (FLASH_WIDTH >> 1);
-	s.origin.y -= (FLASH_HEIGHT >> 1);
-	s.frame = pMenuState->flash_frame0;
-	DrawStamp (&s);
-#endif /* NEVER */
-
-	pMenuState->flash_rect0.corner = pt;
 	SetContext (SpaceContext);
 	SetContextFont (TinyFont);
 

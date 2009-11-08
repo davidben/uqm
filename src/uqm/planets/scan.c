@@ -537,7 +537,7 @@ restorePlanetLocationImage (MENU_STATE *pMS)
 	DrawStamp (&s);
 }
 
-static void
+void
 drawPlanetCursor (MENU_STATE *pMS, BOOLEAN filled)
 {
 	STAMP s;
@@ -550,15 +550,21 @@ drawPlanetCursor (MENU_STATE *pMS, BOOLEAN filled)
 		DrawStamp (&s);
 }
 
+void
+setPlanetCursorLoc (MENU_STATE *pMS, POINT new_pt)
+{
+	new_pt.x >>= MAG_SHIFT;
+	new_pt.y >>= MAG_SHIFT;
+	pMS->flash_rect0.corner = new_pt;
+}
+
 static void
 SetPlanetLoc (MENU_STATE *pMS, POINT new_pt)
 {
 	pSolarSysState->MenuState.first_item = new_pt;
 
 	// Set the new flash location
-	new_pt.x >>= MAG_SHIFT;
-	new_pt.y >>= MAG_SHIFT;
-	pMS->flash_rect0.corner = new_pt;
+	setPlanetCursorLoc (pMS, new_pt);
 
 	SetContext (ScanContext);
 	restorePlanetLocationImage (pMS);
@@ -634,10 +640,7 @@ PickPlanetSide (MENU_STATE *pMS)
 			LockMutex (GraphicsLock);
 			SetContext (ScanContext);
 			// Set the current flash location
-			pMS->flash_rect0.corner.x =
-					pSolarSysState->MenuState.first_item.x >> MAG_SHIFT;
-			pMS->flash_rect0.corner.y =
-					pSolarSysState->MenuState.first_item.y >> MAG_SHIFT;
+			setPlanetCursorLoc (pMS, pSolarSysState->MenuState.first_item);
 			savePlanetLocationImage (pMS);
 
 			SetFlashRect (NULL);
