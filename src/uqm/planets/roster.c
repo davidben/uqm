@@ -23,8 +23,21 @@
 #include "../shipcont.h"
 #include "../setup.h"
 #include "../sounds.h"
+#include "port.h"
 #include "libs/gfxlib.h"
 #include "libs/tasklib.h"
+
+
+// Ship icon positions in status display around the flagship
+static const POINT ship_pos[MAX_COMBAT_SHIPS] =
+{
+	SUPPORT_SHIP_PTS
+};
+
+// Ship icon positions split into (lower half) left and right (upper)
+// and sorted in the Y coord. These are used for navigation around the
+// escort positions.
+static POINT sorted_ship_pos[MAX_COMBAT_SHIPS];
 
 
 static int
@@ -70,11 +83,11 @@ flash_ship_task (void *data)
 static HSHIPFRAG
 MatchSupportShip (MENU_STATE *pMS)
 {
-	POINT *pship_pos;
+	const POINT *pship_pos;
 	HSHIPFRAG hStarShip, hNextShip;
 
 	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)),
-			pship_pos = (POINT*)pMS->flash_frame0;
+			pship_pos = ship_pos;
 			hStarShip; hStarShip = hNextShip, ++pship_pos)
 	{
 		SHIP_FRAGMENT *StarShipPtr;
@@ -186,7 +199,6 @@ static BOOLEAN
 DoModifyRoster (MENU_STATE *pMS)
 {
 	BYTE NewState;
-	SBYTE sx, sy;
 	RECT r;
 	STAMP s;
 	SHIP_FRAGMENT *StarShipPtr;
@@ -206,6 +218,7 @@ DoModifyRoster (MENU_STATE *pMS)
 	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
 	up = PulsedInputState.menu[KEY_MENU_UP];
 	down = PulsedInputState.menu[KEY_MENU_DOWN];
+	// Left or right produces the same effect because there are 2 columns
 	horiz = PulsedInputState.menu[KEY_MENU_LEFT] ||
 			PulsedInputState.menu[KEY_MENU_RIGHT];
 
@@ -266,7 +279,6 @@ DoModifyRoster (MENU_STATE *pMS)
 
 		if (up)
 		{
-			sy = -1;
 			if (GLOBAL_SIS (CrewEnlisted))
 				delta = 1;
 			else
@@ -274,7 +286,6 @@ DoModifyRoster (MENU_STATE *pMS)
 		}
 		else if (down)
 		{
-			sy = 1;
 			if (GLOBAL_SIS (CrewEnlisted) < GetCPodCapacity (NULL))
 				delta = -1;
 			else
@@ -295,43 +306,44 @@ DoModifyRoster (MENU_STATE *pMS)
 	else
 	{
 		POINT *pship_pos;
+		BYTE num_escorts = (BYTE) pMS->delta_item;
+		BYTE top_right = (num_escorts + 1) >> 1;
 
 		NewState = pMS->CurState;
-		sx = (SBYTE)((pMS->delta_item + 1) >> 1);
+		
 		if (horiz)
 		{
-			pship_pos = (POINT*)pMS->flash_frame1;
-			if (NewState == (BYTE)(sx - 1))
-				NewState = (BYTE)(pMS->delta_item - 1);
-			else if (NewState >= (BYTE)sx)
+			pship_pos = sorted_ship_pos;
+			if (NewState == top_right - 1)
+				NewState = num_escorts - 1;
+			else if (NewState >= top_right)
 			{
-				NewState -= sx;
+				NewState -= top_right;
 				if (pship_pos[NewState].y < pship_pos[pMS->CurState].y)
 					++NewState;
 			}
 			else
 			{
-				NewState += sx;
-				if (NewState != (BYTE)sx
+				NewState += top_right;
+				if (NewState != top_right
 						&& pship_pos[NewState].y > pship_pos[pMS->CurState].y)
 					--NewState;
 			}
 		}
 		else if (down)
 		{
-			sy = 1;
-			if (++NewState == (BYTE)pMS->delta_item)
-				NewState = (BYTE)(sx - 1);
-			else if (NewState == (BYTE)sx)
+			++NewState;
+			if (NewState == num_escorts)
+				NewState = top_right;
+			else if (NewState == top_right)
 				NewState = 0;
 		}
 		else if (up)
 		{
-			sy = -1;
 			if (NewState == 0)
-				NewState += sx - 1;
-			else if (NewState == (BYTE)sx)
-				NewState = (BYTE)(pMS->delta_item - 1);
+				NewState = top_right - 1;
+			else if (NewState == top_right)
+				NewState = num_escorts - 1;
 			else
 				--NewState;
 		}
@@ -347,7 +359,7 @@ DoModifyRoster (MENU_STATE *pMS)
 			UnlockShipFrag (&GLOBAL (built_ship_q), (HSHIPFRAG)pMS->CurFrame);
 			DrawStamp (&s);
 SelectSupport:
-			pship_pos = (POINT*)pMS->flash_frame1;
+			pship_pos = sorted_ship_pos;
 			pMS->first_item = pship_pos[NewState];
 			pMS->CurFrame = (FRAME)MatchSupportShip (pMS);
 
@@ -367,75 +379,53 @@ SelectSupport:
 	return TRUE;
 }
 
+static int
+compShipPos (const void *ptr1, const void *ptr2)
+{
+	POINT *pt1 = (POINT *) ptr1;
+	POINT *pt2 = (POINT *) ptr2;
+
+	// Ships on the left in the lower half
+	if (pt1->x < pt2->x)
+		return -1;
+	else if (pt1->x > pt2->x)
+		return 1;
+
+	// and ordered on Y
+	if (pt1->y < pt2->y)
+		return -1;
+	else if (pt1->y > pt2->y)
+		return 1;
+	else
+		return 0;
+}
+
 BOOLEAN
 Roster (void)
 {
-	COUNT num_support_ships;
+	SIZE num_support_ships;
 
 	num_support_ships = CountLinks (&GLOBAL (built_ship_q));
 	if (num_support_ships)
 	{
-		SIZE i, j, k, l;
-		POINT modified_ship_pos[MAX_COMBAT_SHIPS];
-		POINT ship_pos[MAX_COMBAT_SHIPS] =
-		{
-			SUPPORT_SHIP_PTS
-		};
 		MENU_STATE MenuState;
 		MENU_STATE *pOldMenuState;
 
 		pOldMenuState = pMenuState;
 		pMenuState = &MenuState;
 
-		j = 0;
-		k = (num_support_ships + 1) >> 1;
-		for (i = 0; (int)i < (int)num_support_ships; i += 2)
-		{
-			modified_ship_pos[j++] = ship_pos[i];
-			modified_ship_pos[k++] = ship_pos[i + 1];
-		}
-
-		k = (num_support_ships + 1) >> 1;
-		for (i = 0; i < k; ++i)
-		{
-			for (j = k - 1; j > i; --j)
-			{
-				if (modified_ship_pos[i].y > modified_ship_pos[j].y)
-				{
-					POINT temp;
-
-					temp = modified_ship_pos[i];
-					modified_ship_pos[i] = modified_ship_pos[j];
-					modified_ship_pos[j] = temp;
-				}
-			}
-		}
-
-		l = k;
-		k = num_support_ships >> 1;
-		for (i = 0; i < k; ++i)
-		{
-			for (j = k - 1; j > i; --j)
-			{
-				if (modified_ship_pos[i + l].y > modified_ship_pos[j + l].y)
-				{
-					POINT temp;
-
-					temp = modified_ship_pos[i + l];
-					modified_ship_pos[i + l] = modified_ship_pos[j + l];
-					modified_ship_pos[j + l] = temp;
-				}
-			}
-		}
+		// Get the ship positions we will use and sort on X then Y
+		assert (sizeof (sorted_ship_pos) == sizeof (ship_pos));
+		memcpy (sorted_ship_pos, ship_pos, sizeof (ship_pos));
+		qsort (sorted_ship_pos, num_support_ships,
+				sizeof (sorted_ship_pos[0]), compShipPos);
 
 		MenuState.InputFunc = DoModifyRoster;
 		MenuState.Initialized = FALSE;
 		MenuState.CurState = 0;
 		MenuState.flash_task = 0;
-		MenuState.delta_item = (SIZE)num_support_ships;
+		MenuState.delta_item = num_support_ships;
 		
-		MenuState.flash_frame0 = (FRAME)ship_pos;
-		MenuState.flash_frame1 = (FRAME)modified_ship_pos;
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		DoInput (&MenuState, TRUE);
 
