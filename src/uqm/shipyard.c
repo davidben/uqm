@@ -1270,11 +1270,12 @@ ExitShipyard:
 	}
 	else
 	{
+#ifndef USE_3DO_HANGAR
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		animatePowerLines (NULL);
 		UnlockMutex (GraphicsLock);
-
+#endif
 		DoMenuChooser (pMS, PM_CREW);
 	}
 
