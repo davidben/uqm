@@ -47,6 +47,7 @@ extern VIDEO_TYPE VidPlayEx (VIDEO_REF VidRef, MUSIC_REF AudRef,
 #define VID_NO_LOOP (0U-1)
 extern void VidStop (void);
 extern VIDEO_REF VidPlaying (void);
+extern BOOLEAN VidProcessFrame (void);
 extern DWORD VidGetPosition (void);  // position in milliseconds
 extern BOOLEAN VidSeek (DWORD pos); // position in milliseconds
 

@@ -74,6 +74,14 @@ VidPlaying (void)
 	return NULL_VIDEO_REF;
 }
 
+BOOLEAN
+VidProcessFrame (void)
+{
+	if (!_cur_video)
+		return FALSE;
+	return TFB_ProcessVideoFrame (_cur_video);
+}
+
 // return current video position in milliseconds
 DWORD
 VidGetPosition (void)
@@ -172,6 +180,9 @@ DestroyVideo (VIDEO_REF vid)
 {
 	if (!vid)
 		return FALSE;
+
+	// just some armouring; should already be stopped
+	TFB_StopVideo (vid);
 
 	VideoDecoder_Free (vid->decoder);
 	DestroyMutex (vid->guard);

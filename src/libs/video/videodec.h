@@ -74,7 +74,7 @@ struct tfb_videodecoder
 	uint32 w, h;
 	float length; // total length in seconds
 	uint32 frame_count;
-	uint32 max_frame_wait; // maximum interframe delay in msecs
+	uint32 interframe_wait; // nominal interframe delay in msecs
 	bool audio_synced;
 	// decoder callbacks
 	TFB_VideoCallbacks callbacks;

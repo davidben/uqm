@@ -24,6 +24,7 @@ extern void TFB_UninitVideoPlayer (void);
 extern bool TFB_PlayVideo (VIDEO_REF VidRef, uint32 x, uint32 y);
 extern void TFB_StopVideo (VIDEO_REF VidRef);
 extern bool TFB_VideoPlaying (VIDEO_REF VidRef);
+extern bool TFB_ProcessVideoFrame (VIDEO_REF vid);
 extern uint32 TFB_GetVideoPosition (VIDEO_REF VidRef);
 extern bool TFB_SeekVideo (VIDEO_REF VidRef, uint32 pos);
 

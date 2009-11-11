@@ -822,8 +822,6 @@ DoVideoInput (void *pIS)
 
 	if (!PlayingLegacyVideo (pVIS->CurVideo))
 	{	// Video probably finished
-		// Have to call VidStop anyway to cleanup
-		VidStop ();
 		return FALSE;
 	}
 
@@ -832,7 +830,6 @@ DoVideoInput (void *pIS)
 			|| PulsedInputState.menu[KEY_MENU_SPECIAL]
 			|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{	// abort movie
-		VidStop ();
 		return FALSE;
 	}
 	else if (PulsedInputState.menu[KEY_MENU_LEFT]
@@ -850,7 +847,10 @@ DoVideoInput (void *pIS)
 	}
 	else
 	{
-		SleepThread (ONE_SECOND / 30);
+		if (!VidProcessFrame ())
+			return FALSE;
+
+		SleepThread (ONE_SECOND / 40);
 	}
 
 	return TRUE;

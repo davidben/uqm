@@ -23,7 +23,6 @@
 #include "types.h"
 #include "videodec.h"
 #include "libs/sound/sound.h"
-#include "libs/tasklib.h"
 
 
 typedef struct tfb_videoclip
@@ -36,11 +35,9 @@ typedef struct tfb_videoclip
 	RECT dst_rect;     // destination screen rect
 	RECT src_rect;     // source rect
 	MUSIC_REF hAudio;
-	Task play_task;
 	uint32 frame_time; // time when next frame should be rendered
 	TFB_Image* frame;  // frame preped and optimized for rendering
 	uint32 cur_frame;  // index of frame currently displayed
-	uint32 max_frame_wait;
 	bool playing;
 	bool own_audio;
 	uint32 loop_frame; // frame index to loop from
@@ -48,6 +45,7 @@ typedef struct tfb_videoclip
 
 	Mutex guard;
 	uint32 want_frame; // audio-signaled desired frame index
+	int lag_cnt;       // N of frames video is behind or ahead of audio
 
 	void* data; // user-defined data
 

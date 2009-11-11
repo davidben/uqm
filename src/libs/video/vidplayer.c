@@ -55,163 +55,130 @@ static const TFB_SoundCallbacks vp_AudioCBs =
 	vp_QueueBuffer
 };
 
-// inter-thread param guarded by mutex
-static Semaphore vp_interthread_lock = 0;
-static void* vp_interthread_clip = NULL;
 
 bool
 TFB_InitVideoPlayer (void)
 {
-	// creation probably needs better handling
-	vp_interthread_lock = CreateSemaphore (1, "inter-thread param lock",
-			SYNC_CLASS_VIDEO);
-	return vp_interthread_lock != 0;
+	// now just a stub
+	return true;
 }
 
 void
 TFB_UninitVideoPlayer (void)
 {
-	DestroySemaphore (vp_interthread_lock);
+	// now just a stub
 }
 
-// audio-synced video playback task
-// the frame rate and timing is dictated by the audio
-static int
-as_video_play_task (void *data)
+static inline sint32
+msecToTimeCount (sint32 msec)
 {
-	Task task = (Task) data;
-	volatile TFB_VideoClip* vid;
+	return msec * ONE_SECOND / 1000;
+}
+
+// audio-synced video playback frame function
+// the frame rate and timing is dictated by the audio
+static bool
+processAudioSyncedFrame (VIDEO_REF vid)
+{
+#define MAX_FRAME_LAG  8
+#define LAG_FRACTION   6
+#define SYNC_BIAS      1 / 3
 	int ret;
 	uint32 want_frame;
-	TimeCount TimeOut;
-	int bTerm;
-	uint32 clagged;
+	uint32 prev_want_frame;
+	sint32 wait_msec;
+	CONTEXT oldContext;
+	TimeCount Now = GetTimeCounter ();
 
-	// snatch the clip pointer and release
-	vid = vp_interthread_clip;
-	vp_interthread_clip = NULL;
-	ClearSemaphore (vp_interthread_lock);
+	if (!vid->playing)
+		return false;
+
+	if (Now < vid->frame_time)
+		return true; // not time yet
 
 	LockMutex (vid->guard);
 	want_frame = vid->want_frame;
-	if (vid->hAudio)
-		PLRPlaySong (vid->hAudio, FALSE, 1);
 	UnlockMutex (vid->guard);
 
-	clagged = 0;
+	if (want_frame >= vid->decoder->frame_count)
+	{
+		vid->playing = false;
+		return false;
+	}
 
 	// this works like so (audio-synced):
 	//  1. you call VideoDecoder_Seek() [when necessary] and
 	//     VideoDecoder_Decode()
-	//  2. wait till the audio signals it's time for this frame
-	//     or the maximum inter-frame timeout elapses; the timeout
-	//     is necessary because the audio signaling is not precise
-	//	   (see vp_AudioStart, vp_AudioEnd, vp_BufferTag)
-	//  3. output the frame; if the timeout elapsed, increment the
-	//     the lag counter
-	//  4. set the next frame timeout; lag counter increases the
-	//     timeout to allow audio to catch up
+	//  2. wait till it's time for this frame to be drawn
+	//     the timeout is necessary because the audio signaling is not
+	//     precise (see vp_AudioStart, vp_AudioEnd, vp_BufferTag)
+	//  3. output the frame; if the audio is behind, the lag counter
+	//     goes up; if the video is behind, the lag counter goes down
+	//  4. set the next frame timeout; lag counter increases or
+	//     decreases the timeout to allow audio or video to catch up
 	//  5. on a seek operation, the audio stream is moved to the
 	//     correct position and then the audio signals the frame
 	//     that should be rendered
 	//  The system of timeouts and lag counts should make the video
 	//  *relatively* smooth
 	//
-	ret = VideoDecoder_Decode (vid->decoder);
-	TimeOut = GetTimeCounter () + vid->decoder->max_frame_wait *
-			ONE_SECOND / 1000;
-
-	while (!(bTerm = Task_ReadState (task, TASK_EXIT)) && ret > 0)
+	prev_want_frame = vid->cur_frame - vid->lag_cnt;
+	if (want_frame > prev_want_frame - MAX_FRAME_LAG
+			&& want_frame <= prev_want_frame + MAX_FRAME_LAG)
 	{
-		// wait till its time to render next frame
-		while (!(bTerm = Task_ReadState (task, TASK_EXIT))
-				&& want_frame == vid->cur_frame - clagged
-				&& TimeOut > GetTimeCounter ())
-		{
-			TaskSwitch ();
-			LockMutex (vid->guard);
-			want_frame = vid->want_frame;
-			UnlockMutex (vid->guard);
-		}
-
-		if (bTerm)
-			break;
-		
-		if (want_frame == vid->cur_frame - clagged)
-		{	// timed out - draw the next frame
-			++clagged;
-		}
-		else if (want_frame > vid->cur_frame - clagged
-				&& want_frame <= vid->cur_frame)
-		{
-			// catching up
-			clagged = vid->cur_frame - want_frame;
-			// try again
-			continue;
-		}
-		else if (want_frame != vid->cur_frame + 1)
-		{	// out of sequence frame, let's get it
-			vid->cur_frame = VideoDecoder_SeekFrame (
-					vid->decoder, want_frame);
-			ret = VideoDecoder_Decode (vid->decoder);
-			clagged = 0;
-		}
-		else
-		{
-			clagged = 0;
-		}
-		vid->cur_frame = vid->decoder->cur_frame;
-
-		// draw the frame
-		if (ret > 0)
-		{
-			CONTEXT oldContext;
-			
-			LockMutex (GraphicsLock);
-			// We have the cliprect precalculated and don't need the rest
-			oldContext = SetContext (NULL);
-			TFB_DrawScreen_Image (vid->frame,
-					vid->dst_rect.corner.x, vid->dst_rect.corner.y,
-					GSCALE_IDENTITY, NULL, TFB_SCREEN_MAIN);
-			SetContext (oldContext);
-			UnlockMutex (GraphicsLock);
-			FlushGraphics (); // needed to prevent half-frame updates
-		}
-
-		// increase timeout with lag-count to allow audio to catch up
-		TimeOut = GetTimeCounter () + vid->decoder->max_frame_wait *
-				ONE_SECOND / 1000 + clagged * ONE_SECOND / 100;
-
-		ret = VideoDecoder_Decode (vid->decoder);
+		// we will draw the next frame right now, thus +1
+		vid->lag_cnt = vid->cur_frame + 1 - want_frame;
 	}
-	if (vid->hAudio)
-		PLRStop (vid->hAudio);
-	vid->playing = false;
+	else
+	{	// out of sequence frame, let's get it
+		vid->lag_cnt = 0;
+		vid->cur_frame = VideoDecoder_SeekFrame (vid->decoder, want_frame);
+		ret = VideoDecoder_Decode (vid->decoder);
+		if (ret < 0)
+		{	// decoder returned a failure
+			vid->playing = false;
+			return false;
+		}
+	}
+	vid->cur_frame = vid->decoder->cur_frame;
 
-	FinishTask (task);
+	// draw the frame
+	LockMutex (GraphicsLock);
+	// We have the cliprect precalculated and don't need the rest
+	oldContext = SetContext (NULL);
+	TFB_DrawScreen_Image (vid->frame,
+			vid->dst_rect.corner.x, vid->dst_rect.corner.y,
+			GSCALE_IDENTITY, NULL, TFB_SCREEN_MAIN);
+	SetContext (oldContext);
+	UnlockMutex (GraphicsLock);
+	FlushGraphics (); // needed to prevent half-frame updates
 
-	return 0;
+	// increase interframe with positive lag-count to allow audio to catch up
+	// decrease interframe with negative lag-count to allow video to catch up
+	wait_msec = vid->decoder->interframe_wait
+			- (int)vid->decoder->interframe_wait * SYNC_BIAS
+			+ (int)vid->decoder->interframe_wait * vid->lag_cnt / LAG_FRACTION;
+	vid->frame_time = Now + msecToTimeCount (wait_msec);
+
+	ret = VideoDecoder_Decode (vid->decoder);
+	if (ret < 0)
+	{
+		// TODO: decide what to do on error
+	}
+
+	return vid->playing;
 }
 
-// audio-independent video playback task
+// audio-independent video playback frame function
 // the frame rate and timing is dictated by the video decoder
-static int
-video_play_task (void *data)
+static bool
+processMuteFrame (VIDEO_REF vid)
 {
-	Task task = (Task) data;
-	TFB_VideoClip* vid;
 	int ret;
+	TimeCount Now = GetTimeCounter ();
 
-	// snatch the clip pointer and release
-	vid = vp_interthread_clip;
-	vp_interthread_clip = NULL;
-	ClearSemaphore (vp_interthread_lock);
-
-	LockMutex (vid->guard);
-	if (vid->hAudio)
-		PLRPlaySong (vid->hAudio, (vid->loop_frame != VID_NO_LOOP), 1);
-
-	UnlockMutex (vid->guard);
+	if (!vid->playing)
+		return false;
 
 	// this works like so:
 	//  1. you call VideoDecoder_Seek() [when necessary] and
@@ -222,14 +189,10 @@ video_play_task (void *data)
 	//  On a seek operation, the decoder should reset its internal
 	//  clock and call vp_GetTicks() again
 	//
-	ret = VideoDecoder_Decode (vid->decoder);
-
-	while (!Task_ReadState (task, TASK_EXIT) && ret > 0)
+	if (Now >= vid->frame_time)
 	{
 		CONTEXT oldContext;
 		
-		// wait till its time to render next frame
-		SleepThreadUntil (vid->frame_time);
 		vid->cur_frame = vid->decoder->cur_frame;
 
 		LockMutex (GraphicsLock);
@@ -246,14 +209,11 @@ video_play_task (void *data)
 			VideoDecoder_SeekFrame (vid->decoder, vid->loop_to);
 
 		ret = VideoDecoder_Decode (vid->decoder);
+		if (ret <= 0)
+			vid->playing = false;
 	}
-	vid->playing = false;
-	if (vid->hAudio)
-		PLRStop (vid->hAudio);
 
-	FinishTask (task);
-
-	return 0;
+	return vid->playing;
 }
 
 bool
@@ -264,6 +224,8 @@ TFB_PlayVideo (VIDEO_REF vid, uint32 x, uint32 y)
 	RECT vid_r = {{0, 0}, {ScreenWidth, ScreenHeight}};
 	RECT dr = {{x, y}, {vid->w, vid->h}};
 	RECT sr;
+	bool loop_music = false;
+	int ret;
 
 	if (!vid)
 		return false;
@@ -318,24 +280,21 @@ TFB_PlayVideo (VIDEO_REF vid, uint32 x, uint32 y)
 		TFB_SetSoundSampleData (*vid->hAudio, (intptr_t)vid);
 	}
 
-	SetSemaphore (vp_interthread_lock);
-	vp_interthread_clip = vid;
+	// get the first frame
+	ret = VideoDecoder_Decode (vid->decoder);
+	if (ret < 0)
+		return false;
 
 	vid->playing = true;
+	
+	loop_music = !vid->decoder->audio_synced && vid->loop_frame != VID_NO_LOOP;
+	if (vid->hAudio)
+		PLRPlaySong (vid->hAudio, loop_music, 1);
+
 	if (vid->decoder->audio_synced)
-		vid->play_task = AssignTask (
-				as_video_play_task, 4096, "a/s video player");
-	else
-		vid->play_task = AssignTask (
-				video_play_task, 4096, "video player");
-
-	if (!vid->play_task)
 	{
-		vid->playing = false;
-		ClearSemaphore (vp_interthread_lock);
-		TFB_StopVideo (vid);
-
-		return false;
+		// draw the first frame now
+		vid->frame_time = GetTimeCounter ();
 	}
 
 	return true;
@@ -348,8 +307,6 @@ TFB_StopVideo (VIDEO_REF vid)
 		return;
 
 	vid->playing = false;
-	if (vid->play_task)
-		ConcludeTask (vid->play_task);
 	
 	if (vid->hAudio)
 	{
@@ -375,6 +332,18 @@ TFB_VideoPlaying (VIDEO_REF vid)
 		return false;
 
 	return vid->playing;
+}
+
+bool
+TFB_ProcessVideoFrame (VIDEO_REF vid)
+{
+	if (!vid)
+		return false;
+
+	if (vid->decoder->audio_synced)
+		return processAudioSyncedFrame (vid);
+	else
+		return processMuteFrame (vid);
 }
 
 uint32

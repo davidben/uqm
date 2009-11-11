@@ -61,8 +61,7 @@ StopLegacyVideo (LEGACY_VIDEO_REF ref)
 {
 	if (!ref)
 		return;
-	if (TFB_VideoPlaying (ref->vidref))
-		VidStop ();
+	VidStop ();
 
 	DestroyVideo (ref->vidref);
 	if (ref->speechref)
