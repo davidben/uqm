@@ -20,7 +20,6 @@
 #define _MELEE_H
 
 #include "init.h"
-#include "libs/tasklib.h"
 #include "libs/gfxlib.h"
 #include "libs/mathlib.h"
 #include "libs/sndlib.h"
@@ -112,7 +111,6 @@ struct melee_state
 	struct melee_side_state SideState[NUM_SIDES];
 	struct melee_load_state load;
 	COUNT CurIndex;
-	Task flash_task;
 	RandomContext *randomContext;
 			/* RNG state for all local random decisions, i.e. those
 			 * decisions that are not shared among network parties. */

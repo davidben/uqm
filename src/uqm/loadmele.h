@@ -53,7 +53,6 @@ BOOLEAN DoLoadTeam (MELEE_STATE *pMS);
 BOOLEAN DoSaveTeam (MELEE_STATE *pMS);
 bool ReadTeamImage (TEAM_IMAGE *pTI, uio_Stream *load_fp);
 int WriteTeamImage (TEAM_IMAGE *pTI, uio_Stream *save_fp);
-void SelectFileString (MELEE_STATE *pMS, bool hilite);
 void LoadTeamList (MELEE_STATE *pMS);
 
 #endif /* _LOADMELE_H */
