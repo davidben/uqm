@@ -62,8 +62,6 @@ static void DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip);
 static void StartMelee (MELEE_STATE *pMS);
 static ssize_t numPlayersReady (void);
 
-static int flash_selection_func (void *data);
-
 enum
 {
 #ifdef NETPLAY
