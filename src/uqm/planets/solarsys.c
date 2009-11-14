@@ -1571,9 +1571,35 @@ endInterPlanetary (void)
 	}
 }
 
+// Find the closest planet to a point, in interplanetary.
 static PLANET_DESC *
-closestPlanetInterPlanetary (void) {
-	
+closestPlanetInterPlanetary (const POINT *point) {
+	BYTE i;
+	BYTE numPlanets;
+	DWORD bestDistSquared;
+	PLANET_DESC *bestPlanet = NULL;
+
+	assert(pSolarSysState != NULL);
+
+	numPlanets = pSolarSysState->SunDesc[0].NumPlanets;
+
+	bestDistSquared = (DWORD) -1;  // Maximum value of DWORD.
+	for (i = 0; i < numPlanets; i++)
+	{
+		PLANET_DESC *planet = &pSolarSysState->PlanetDesc[i];
+
+		SIZE dx = point->x - planet->image.origin.x;
+		SIZE dy = point->y - planet->image.origin.y;
+
+		DWORD distSquared = (DWORD) ((long) dx * dx + (long) dy * dy);
+		if (distSquared < bestDistSquared)
+		{
+			bestDistSquared = distSquared;
+			bestPlanet = planet;
+		}
+	}
+
+	return bestPlanet;
 }
 
 static void
@@ -1597,27 +1623,8 @@ UninitSolarSys (void)
 
 		if (GLOBAL (ip_planet) == 0)
 		{
-			BYTE i;
-			DWORD best_dist;
-			PLANET_DESC *pCurDesc;
-
-			best_dist = ~0L;
-			for (i = 0, pCurDesc = pSolarSysState->PlanetDesc;
-					i < pSolarSysState->SunDesc[0].NumPlanets;
-					++i, ++pCurDesc)
-			{
-				SIZE dx, dy;
-				DWORD dist;
-
-				dx = GLOBAL (ShipStamp.origin.x) - pCurDesc->image.origin.x;
-				dy = GLOBAL (ShipStamp.origin.y) - pCurDesc->image.origin.y;
-				dist = (DWORD) ((long) dx * dx + (long) dy * dy);
-				if (dist < best_dist)
-				{
-					best_dist = dist;
-					pSolarSysState->pBaseDesc = pCurDesc;
-				}
-			}
+			pSolarSysState->pBaseDesc =
+					closestPlanetInterPlanetary (&GLOBAL (ShipStamp.origin));
 
 			(*pSolarSysState->GenFunc) (GENERATE_NAME);
 		}
