@@ -40,6 +40,10 @@ struct context_desc
 	TFB_Image *FontBacking;
 	FBK_FLAGS BackingFlags;
 
+#ifdef DEBUG
+	const char *name;
+	CONTEXT next;
+#endif
 };
 
 #define AllocContext() HCalloc (sizeof (CONTEXT_DESC))

@@ -1266,7 +1266,7 @@ HailAlien (void)
 	SubtitleText.align = CommData.AlienTextAlign;
 
 	// init subtitle cache context
-	TextCacheContext = CreateContext ();
+	TextCacheContext = CreateContext ("TextCacheContext");
 	TextCacheFrame = CaptureDrawable (
 			CreateDrawable (WANT_PIXMAP, SIS_SCREEN_WIDTH,
 			SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2, 1));
@@ -1287,7 +1287,7 @@ HailAlien (void)
 	{
 		RECT r;
 
-		TaskContext = CreateContext ();
+		TaskContext = CreateContext ("TaskContext");
 		SetContext (TaskContext);
 		SetContextFGFrame (Screen);
 		GetFrameRect (CommData.AlienFrame, &r);

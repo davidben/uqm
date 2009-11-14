@@ -761,7 +761,8 @@ DrawStorageBays (BOOLEAN Refresh)
 			--i;
 		}
 
-		r.extent.height = (4 * j + (STORAGE_BAY_CAPACITY - 1)) / STORAGE_BAY_CAPACITY;
+		r.extent.height = (4 * j + (STORAGE_BAY_CAPACITY - 1)) /
+				STORAGE_BAY_CAPACITY;
 		if (r.extent.height)
 		{
 			r.corner.y += 4 - r.extent.height;
@@ -876,14 +877,11 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		s.origin.y = 0;
 		for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
 		{
-			BYTE which_piece;
-
-			if ((which_piece =
-					GLOBAL_SIS (DriveSlots[i])) < EMPTY_SLOT)
+			BYTE which_piece = GLOBAL_SIS (DriveSlots[i]);
+			if (which_piece < EMPTY_SLOT)
 			{
 				s.frame = SetAbsFrameIndex (
-						FlagStatFrame, which_piece + 1 + 0
-						);
+						FlagStatFrame, which_piece + 1 + 0);
 				DrawStamp (&s);
 				s.frame = IncFrameIndex (s.frame);
 				DrawStamp (&s);
@@ -894,14 +892,11 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		s.origin.y = 0;
 		for (i = 0; i < NUM_JET_SLOTS; ++i)
 		{
-			BYTE which_piece;
-
-			if ((which_piece =
-					GLOBAL_SIS (JetSlots[i])) < EMPTY_SLOT)
+			BYTE which_piece = GLOBAL_SIS (JetSlots[i]);
+			if (which_piece < EMPTY_SLOT)
 			{
 				s.frame = SetAbsFrameIndex (
-						FlagStatFrame, which_piece + 1 + 1
-						);
+						FlagStatFrame, which_piece + 1 + 1);
 				DrawStamp (&s);
 				s.frame = IncFrameIndex (s.frame);
 				DrawStamp (&s);
@@ -913,14 +908,11 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		s.origin.x = 1; // This properly centers the modules.
 		for (i = 0; i < NUM_MODULE_SLOTS; ++i)
 		{
-			BYTE which_piece;
-
-			if ((which_piece =
-					GLOBAL_SIS (ModuleSlots[i])) < EMPTY_SLOT)
+			BYTE which_piece = GLOBAL_SIS (ModuleSlots[i]);
+			if (which_piece < EMPTY_SLOT)
 			{
 				s.frame = SetAbsFrameIndex (
-						FlagStatFrame, which_piece + 1 + 2
-						);
+						FlagStatFrame, which_piece + 1 + 2);
 				DrawStamp (&s);
 			}
 
@@ -996,22 +988,25 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 			old_coarse_fuel = (COUNT)~0;
 		else
 		{
-			DWORD FuelCapacity;
 
 			old_coarse_fuel = (COUNT)(
-					GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE
-					);
+					GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE);
 			if (fuel_delta < 0
 					&& GLOBAL_SIS (FuelOnBoard) <= (DWORD)-fuel_delta)
+			{
 				GLOBAL_SIS (FuelOnBoard) = 0;
-			else if ((GLOBAL_SIS (FuelOnBoard) += fuel_delta) >
-					(FuelCapacity = GetFTankCapacity (NULL)))
-				GLOBAL_SIS (FuelOnBoard) = FuelCapacity;
+			}
+			else
+			{
+				DWORD FuelCapacity = GetFTankCapacity (NULL);
+				GLOBAL_SIS (FuelOnBoard) += fuel_delta;
+				if (GLOBAL_SIS (FuelOnBoard) > FuelCapacity)
+					GLOBAL_SIS (FuelOnBoard) = FuelCapacity;
+			}
 		}
 
 		new_coarse_fuel = (COUNT)(
-				GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE
-				);
+				GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE);
 		if (new_coarse_fuel != old_coarse_fuel)
 		{
 			sprintf (buf, "%u", new_coarse_fuel);
@@ -1122,8 +1117,7 @@ GetCPodCapacity (POINT *ppt)
 					SetContextForeGroundColor (crew_rows[which_row]);
 				else
 					SetContextForeGroundColor (
-							BUILD_COLOR (MAKE_RGB15 (0x05, 0x10, 0x05), 0x65)
-					);
+							BUILD_COLOR (MAKE_RGB15 (0x05, 0x10, 0x05), 0x65));
 			}
 
 			capacity += CREW_POD_CAPACITY;
@@ -1169,7 +1163,8 @@ GetSBayCapacity (POINT *ppt)
 				};
 
 				bay_remainder = GLOBAL_SIS (TotalElementMass) - capacity;
-				if ((which_row = bay_remainder / SBAY_MASS_PER_ROW) == 0)
+				which_row = bay_remainder / SBAY_MASS_PER_ROW;
+				if (which_row == 0)
 					SetContextForeGroundColor (BLACK_COLOR);
 				else
 					SetContextForeGroundColor (color_bars[--which_row]);
@@ -1184,7 +1179,7 @@ GetSBayCapacity (POINT *ppt)
 		x -= SHIP_PIECE_OFFSET;
 	} while (slot--);
 
-	return (capacity);
+	return capacity;
 }
 
 DWORD
@@ -1229,8 +1224,7 @@ GetFTankCapacity (POINT *ppt)
 
 				which_row = (COUNT)(
 						(GLOBAL_SIS (FuelOnBoard) - capacity)
-						* MAX_FUEL_BARS / HEFUEL_TANK_CAPACITY
-						);
+						* MAX_FUEL_BARS / HEFUEL_TANK_CAPACITY);
 				ppt->x = x + 1;
 				if (volume == FUEL_TANK_CAPACITY)
 					ppt->y = 27 - which_row;
@@ -1247,7 +1241,7 @@ GetFTankCapacity (POINT *ppt)
 		x -= SHIP_PIECE_OFFSET;
 	} while (slot--);
 
-	return (capacity);
+	return capacity;
 }
 
 COUNT
@@ -1281,7 +1275,7 @@ CountSISPieces (BYTE piece_type)
 		}
 	}
 
-	return (num_pieces);
+	return num_pieces;
 }
 
 void
@@ -1356,6 +1350,7 @@ DrawAutoPilotMessage (BOOLEAN Reset)
 Task flash_task = 0;
 RECT flash_rect;
 static FRAME flash_screen_frame = 0;
+		// The original contents of the flash rectangle.
 static int flash_changed;
 Mutex flash_mutex = 0;
 // XXX: these are currently defined in libs/graphics/sdl/3do_getbody.c
@@ -1369,25 +1364,25 @@ flash_rect_func (void *data)
 #define NORMAL_STRENGTH 4
 #define NORMAL_F_STRENGTH 0
 #define CACHE_SIZE 10
-	DWORD TimeIn, WaitTime;
-	SIZE strength, fstrength, incr;
+	DWORD TimeIn;
+	const DWORD WaitTime = ONE_SECOND / 16;
+	SIZE strength;
 	RECT cached_rect;
 	FRAME cached_screen_frame = 0;
 	Task task = (Task)data;
-	int cached[CACHE_SIZE];
+	bool cached[CACHE_SIZE];
 	STAMP cached_stamp[CACHE_SIZE];
 	int i;
 
+	// Init cache
 	for (i = 0; i < CACHE_SIZE; i++)
 	{
-		cached[i] = 0;
+		cached[i] = false;
 		cached_stamp[i].frame = 0;
 	}
-	fstrength = NORMAL_F_STRENGTH;
-	incr = 1;
+
 	strength = NORMAL_STRENGTH;
 	TimeIn = GetTimeCounter ();
-	WaitTime = ONE_SECOND / 16;
 	while (!Task_ReadState(task, TASK_EXIT))
 	{
 		CONTEXT OldContext;
@@ -1411,10 +1406,12 @@ flash_rect_func (void *data)
 			arith_frame_blit (flash_screen_frame, &screen_rect,
 					cached_screen_frame, NULL, 0, 0);
 			UnlockMutex (flash_mutex);
+
+			// Clear the cache.
 			for (i = 0; i < CACHE_SIZE; i++)
 			{
-				cached[i] = 0;
-				if(cached_stamp[i].frame)
+				cached[i] = false;
+				if (cached_stamp[i].frame)
 					DestroyDrawable (ReleaseDrawable (cached_stamp[i].frame));
 				cached_stamp[i].frame = 0;
 			}
@@ -1436,7 +1433,7 @@ flash_rect_func (void *data)
 			{
 				RECT tmp_rect = cached_rect;
 				pStamp = &cached_stamp[strength - MIN_STRENGTH];
-				cached[strength - MIN_STRENGTH] = 1;
+				cached[strength - MIN_STRENGTH] = true;
 				pStamp->frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
 						cached_rect.extent.width, cached_rect.extent.height,
 						1));
@@ -1451,11 +1448,12 @@ flash_rect_func (void *data)
 					arith_frame_blit (cached_screen_frame, &tmp_rect,
 							pStamp->frame, &tmp_rect, strength, 4);
 			}
+
 			LockMutex (GraphicsLock);
 			OldContext = SetContext (ScreenContext);
 			SetContextClipRect (&cached_rect);
 			// flash changed_can't be modified while GraphicSem is held
-			if (! flash_changed)
+			if (!flash_changed)
 				DrawStamp (pStamp);
 			SetContextClipRect (NULL); // this will flush whatever
 			SetContext (OldContext);
@@ -1465,6 +1463,8 @@ flash_rect_func (void *data)
 		SleepThreadUntil (TimeIn + WaitTime);
 		TimeIn = GetTimeCounter ();
 	}
+
+	// Clear cache
 	{
 		if (cached_screen_frame)
 			DestroyDrawable (ReleaseDrawable (cached_screen_frame));
@@ -1480,7 +1480,7 @@ flash_rect_func (void *data)
 	UnlockMutex (flash_mutex);
 
 	FinishTask (task);
-	return(0);
+	return 0;
 }
 
 void
@@ -1490,7 +1490,7 @@ SetFlashRect (RECT *pRect)
 	CONTEXT OldContext;
 	int create_flash = 0;
 
-	if (! flash_mutex)
+	if (!flash_mutex)
 		flash_mutex = CreateMutex ("FlashRect Lock",
 				SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
@@ -1525,6 +1525,7 @@ SetFlashRect (RECT *pRect)
 
 	if (pRect == 0 || pRect->extent.width == 0)
 	{
+		// End the flashing.
 		flash_rect1.extent.width = 0;
 		if (flash_task)
 		{
@@ -1550,8 +1551,10 @@ SetFlashRect (RECT *pRect)
 			|| old_r.corner.x != flash_rect.corner.x
 			|| old_r.corner.y != flash_rect.corner.y))
 	{
+		// We had a flash rectangle, and now a different one is set.
 		if (flash_screen_frame)
 		{
+			// The screen contents may have changed; we grab a new copy.
 			STAMP old_s;
 			old_s.origin.x = old_r.corner.x;
 			old_s.origin.y = old_r.corner.y;
@@ -1566,6 +1569,7 @@ SetFlashRect (RECT *pRect)
 	
 	if (flash_rect.extent.width)
 	{
+		// A new flash rectangle is set.
 		// Copy the original contents of the rectangle from the screen.
 		if (flash_screen_frame)
 			DestroyDrawable (ReleaseDrawable (flash_screen_frame));

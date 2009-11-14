@@ -6,11 +6,15 @@ require the game to be in a specific state.
 The function debugKeyPressed() in uqmdebug.c is called when the debug key
 is pressed. This function is a suitable place to put various debugging
 calls.
-There is also a global variable 'debugHook', which can be set to a function
-to be called the next iteration of the main game loop (which will occur
-when the current activity (IP, HyperSpace, Communication, Battle) changes.
-By setting this, a function can be called from the main loop, thereby
-eliminating threading issues that may otherwise arrise.
+There are also global variables 'debugHook' and 'doInputDebugHook',
+which can be set to a function to be called from the Starcon2Main thread.
+If if is set, 'debugHook' is called the next iteration of the main game loop
+(which will occur when the current activity (IP, HyperSpace, Communication,
+Battle) changes. The game will be in a well defined state here.
+If 'doInputDebugHook' is set, the function it is set to is called from
+doInput(), which is called all throughout the game.
+By setting one of these hooks, a function can be called from the Starcon2Main
+thread, thereby eliminating threading issues that may otherwise arrise.
 The debug key can be specified in user's override.cfg by adding a line
 with a text similar to "debug.1 = STRING:key F12".
 An interactive way to access various debugging code, similar to
@@ -56,6 +60,13 @@ listed below:
   This function is not defined in sc2code/uqmdebug.h, but in libs/uio.h.
   This function can interactively (tty-based) display information on
   the state of the uio file system, and modifications can be made.
+- the function dumpStrings()
+  This function prints all the game strings, and is useful to check whether
+  the various string bases, as defined in gamestr.h, are correct.
+- the function debugContexts()
+  Prints and visually displays the various graphics contexts.
+  This function should only be called from doInputDebugHook(), as threading
+  issues would otherwise arrise.
 
 
 The first version of this document was created by Serge van den Boom,

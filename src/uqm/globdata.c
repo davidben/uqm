@@ -125,7 +125,7 @@ CreateRadar (void)
 		RECT r;
 		CONTEXT OldContext;
 
-		RadarContext = CreateContext ();
+		RadarContext = CreateContext ("RadarContext");
 		OldContext = SetContext (RadarContext);
 		SetContextFGFrame (Screen);
 		r.corner.x = RADAR_X;

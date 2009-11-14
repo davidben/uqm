@@ -51,6 +51,12 @@ SetContextFGFrame (FRAME Frame)
 	return (LastFrame);
 }
 
+FRAME
+GetContextFGFrame (void)
+{
+	return _CurFramePtr;
+}
+
 DRAWABLE
 CreateDisplay (CREATE_FLAGS CreateFlags, SIZE *pwidth, SIZE *pheight)
 {

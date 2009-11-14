@@ -20,6 +20,7 @@
 
 #include "build.h"
 #include "colors.h"
+#include "controls.h"
 #include "clock.h"
 #include "encount.h"
 #include "element.h"
@@ -68,6 +69,7 @@ static void dumpPlanetTypeCallback (int index, const PlanetFrame *planet,
 BOOLEAN instantMove = FALSE;
 BOOLEAN disableInteractivity = FALSE;
 void (* volatile debugHook) (void) = NULL;
+void (* volatile doInputDebugHook) (void) = NULL;
 
 
 void
@@ -117,6 +119,12 @@ debugKeyPressed (void)
 			// This will cause tallyResourcesToFile to be called from the
 			// main loop. Calling it from here would give threading
 			// problems.
+
+	// Graphical and textual:
+	//doInputDebugHook = debugContexts;
+			// This will cause debugContexts to be called from the
+			// Starcon2Main thread, from DoInput(). Calling it from here
+			// would give threading problems.
 
 	// Interactive:
 //	uio_debugInteractive(stdin, stdout, stderr);
@@ -755,6 +763,7 @@ dumpUniverse (FILE *out)
 	UniverseRecurse (&universeRecurseArg);
 }
 
+// Must be called from the main thread.
 void
 dumpUniverseToFile (void)
 {
@@ -1162,6 +1171,7 @@ tallyResources (FILE *out)
 	UniverseRecurse (&universeRecurseArg);
 }
 
+// Must be called from the main thread.
 void
 tallyResourcesToFile (void)
 {
@@ -1459,7 +1469,8 @@ depositQualityString (BYTE quality)
 
 // playerNr should be 0 or 1
 STARSHIP*
-findPlayerShip (SIZE playerNr) {
+findPlayerShip (SIZE playerNr)
+{
 	HELEMENT hElement, hNextElement;
 
 	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
@@ -1486,7 +1497,8 @@ findPlayerShip (SIZE playerNr) {
 ////////////////////////////////////////////////////////////////////////////
 
 void
-resetCrewBattle(void) {
+resetCrewBattle (void)
+{
 	STARSHIP *StarShipPtr;
 	COUNT delta;
 	CONTEXT OldContext;
@@ -1508,7 +1520,8 @@ resetCrewBattle(void) {
 }
 
 void
-resetEnergyBattle(void) {
+resetEnergyBattle (void)
+{
 	STARSHIP *StarShipPtr;
 	COUNT delta;
 	CONTEXT OldContext;
@@ -1534,7 +1547,8 @@ resetEnergyBattle(void) {
 // This function should help in making sure that gamestr.h matches
 // gamestrings.txt.
 void
-dumpStrings(FILE *out) {
+dumpStrings (FILE *out)
+{
 #define STRINGIZE(a) #a
 #define MAKE_STRING_CATEGORY(prefix) \
 		{ \
@@ -1603,6 +1617,409 @@ dumpStrings(FILE *out) {
 	}
 }
 
-#endif  /* DEBUG */
+////////////////////////////////////////////////////////////////////////////
 
+
+static COLOR
+hsvaToRgba (double hue, double sat, double val, BYTE alpha) {
+	assert (hue >= 0.0 && hue < 360.0);
+	assert (sat >= 0 && sat <= 1.0);
+	assert (val >= 0 && val <= 1.0);
+	/*fprintf(stderr, "hsva = (%.1f, %.2f, %.2f, %.2d)\n",
+			hue, sat, val, alpha);*/
+
+	unsigned int hi = (int) (hue / 60.0);
+	double f = (hue / 60.0) - ((int) (hue / 60.0));
+	double p = val * (1.0 - sat);
+	double q = val * (1.0 - f * sat);
+	double t = val * (1.0 - (1.0 - f * sat));
+
+	// Convert p, q, t, and v from [0..1] to [0..255]
+	BYTE pb = (BYTE) (p * 255.0 + 0.5);
+	BYTE qb = (BYTE) (q * 255.0 + 0.5);
+	BYTE tb = (BYTE) (t * 255.0 + 0.5);
+	BYTE vb = (BYTE) (val * 255.0 + 0.5);
+	
+	assert (hi < 6);
+	switch (hi) {
+		case 0: return BUILD_COLOR_RGBA (vb, tb, pb, alpha);
+		case 1: return BUILD_COLOR_RGBA (qb, vb, pb, alpha);
+		case 2: return BUILD_COLOR_RGBA (pb, vb, tb, alpha);
+		case 3: return BUILD_COLOR_RGBA (pb, qb, vb, alpha);
+		case 4: return BUILD_COLOR_RGBA (tb, pb, vb, alpha);
+		case 5: return BUILD_COLOR_RGBA (vb, pb, qb, alpha);
+	}
+
+	// Should not happen.
+	return BUILD_COLOR_RGBA (0, 0, 0, alpha);
+}
+
+// Work-around: colors returned by BUILD_COLOR_RGBA are not usable to draw
+// with.
+static DWORD
+fixColorRgba (FRAME frame, COLOR col)
+{
+#if 0
+	extern DWORD frame_mapRGBA (FRAME FramePtr, BYTE r, BYTE g, BYTE b,
+			BYTE a);
+
+	BYTE r = (col & 0xff000000) >> 24;
+	BYTE g = (col & 0x00ff0000) >> 16;
+	BYTE b = (col & 0x0000ff00) >> 8;
+	BYTE a = (col & 0x000000ff) >> 0;
+
+	return (DWORD) frame_mapRGBA (frame, r, g, b, a);
+#endif
+
+	BYTE r = (col & 0xff000000) >> 24;
+	BYTE g = (col & 0x00ff0000) >> 16;
+	BYTE b = (col & 0x0000ff00) >> 8;
+
+	(void) frame;
+	return BUILD_COLOR (MAKE_RGB15 (r >> 3, g >> 3, b >> 3) ,0);
+}
+
+// Workaround. DrawFilledRectangle() doesn't handle transparency.
+// We use a temporary frame to achieve the same thing.
+static void
+DrawFilledRectangleTransparent (RECT *rect, BYTE alpha)
+{
+	extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
+			FRAME dstFrame, const RECT *rdst, int num, int denom);
+
+	RECT absRect;
+	FRAME orgRectFrame;
+	COLOR fillColor;
+
+	// Create a rectangle from 'rect', but with (0, 0) as origin.
+	absRect.corner.x = 0;
+	absRect.corner.y = 0;
+	absRect.extent = rect->extent;
+	
+	// Create a new temporary FRAME to store the contents of the original
+	// rectangle in.
+	orgRectFrame = CaptureDrawable (CreateDrawable (
+			WANT_PIXMAP, rect->extent.width, rect->extent.height, 1));
+
+	// Copy the original rectangle, faded.
+	arith_frame_blit (GetContextFGFrame (), rect, orgRectFrame, &absRect,
+			255 - alpha, 255);
+
+	// Apply the transparency to the colour.
+	fillColor = GetContextForeGroundColor ();
+#if 0  /* 32 bits RGBA */
+	fillColor =
+			(((((fillColor & 0xff000000) >> 24) * alpha + 127) / 255) << 24) |
+			(((((fillColor & 0x00ff0000) >> 16) * alpha + 127) / 255) << 16) |
+			(((((fillColor & 0x0000ff00) >>  8) * alpha + 127) / 255) <<  8);
+	*/
+#endif
+	/* 15 bits RGB + index: */
+	fillColor =
+			(((((fillColor & 0x007c0000) >> 18) * alpha + 15) / 31) << 18) |
+			(((((fillColor & 0x0003e000) >> 13) * alpha + 15) / 31) << 13) |
+			(((((fillColor & 0x00001f00) >>  8) * alpha + 15) / 31) <<  8) |
+			(fillColor & 0x000000ff);
+
+	// Fill the frame with fillColor
+	{
+		COLOR oldFgColor = SetContextForeGroundColor (fillColor);
+		DrawFilledRectangle (rect);
+		SetContextForeGroundColor (oldFgColor);
+		FlushGraphics ();
+				// Not really necessary for the Context for which this
+				// function is called, but if this function is ever used
+				// to draw directly to the screen, this will be needed
+				// to make sure the rectangle is drawn before the
+				// arith_frame_blit() call, which is immediate.
+	}
+
+	// Blend in the original rectangle.
+	arith_frame_blit (orgRectFrame, &absRect, GetContextFGFrame (), rect,
+			1, -1);
+	
+	// Destroy the temporary frame
+	DestroyDrawable (ReleaseDrawable (orgRectFrame));
+}
+
+// Returns true iff this context has a visible FRAME.
+static bool
+isContextVisible (CONTEXT context)
+{
+	FRAME contextFrame;
+
+	// Save the original context.
+	CONTEXT oldContext = SetContext (context);
+	
+	// Get the frame of the specified context.
+	contextFrame = GetContextFGFrame ();
+
+	// Restore the original context.
+	SetContext (oldContext);
+
+	return contextFrame == Screen;
+}
+
+static size_t
+countVisibleContexts (void)
+{
+	size_t contextCount;
+	CONTEXT context;
+
+	contextCount = 0;
+	for (context = GetFirstContext (); context != NULL;
+			context = GetNextContext (context))
+	{
+		if (!isContextVisible (context))
+			continue;
+		
+		contextCount++;
+	}
+
+	return contextCount;
+}
+
+static void
+drawContext (CONTEXT context, double hue /* no pun intended */)
+{
+	FRAME drawFrame;
+	CONTEXT oldContext;
+	FONT oldFont;
+	COLOR oldFgCol;
+	COLOR rectCol;
+	COLOR lineCol;
+	COLOR textCol;
+	bool haveClippingRect;
+	RECT rect;
+	LINE line;
+	TEXT text;
+	POINT p1, p2, p3, p4;
+
+	drawFrame = GetContextFGFrame ();
+	rectCol = (COLOR) fixColorRgba (drawFrame,
+			hsvaToRgba (hue, 1.0, 0.5, 127));
+	lineCol = (COLOR) fixColorRgba (drawFrame,
+			hsvaToRgba (hue, 1.0, 1.0, 0));
+	textCol = lineCol;
+
+	// Save the original context.
+	oldContext = SetContext (context);
+	
+	// Get the clipping rectangle of the specified context.
+	haveClippingRect = GetContextClipRect (&rect);
+
+	// Switch back the old context; we're going to draw in it.
+	(void) SetContext (oldContext);
+
+	if (!haveClippingRect)
+	{
+		rect.corner.x = 0;
+		rect.corner.y = 0;
+		rect.extent.width = ScreenWidth;
+		rect.extent.height = ScreenHeight;
+	}
+
+	p1 = rect.corner;
+	p2.x = rect.corner.x + rect.extent.width - 1;
+	p2.y = rect.corner.y;
+	p3.x = rect.corner.x;
+	p3.y = rect.corner.y + rect.extent.height - 1;
+	p4.x = rect.corner.x + rect.extent.width - 1;
+	p4.y = rect.corner.y + rect.extent.height - 1;
+
+	oldFgCol = SetContextForeGroundColor (rectCol);
+	DrawFilledRectangleTransparent (&rect, 63);
+
+	SetContextForeGroundColor (lineCol);
+	line.first = p1; line.second = p2; DrawLine (&line);
+	line.first = p2; line.second = p4; DrawLine (&line);
+	line.first = p1; line.second = p3; DrawLine (&line);
+	line.first = p3; line.second = p4; DrawLine (&line);
+	line.first = p1; line.second = p4; DrawLine (&line);
+	line.first = p2; line.second = p3; DrawLine (&line);
+	// Gimme C'99! So I can do:
+	//     DrawLine ((LINE) { .first = p1, .second = p2 })
+
+	oldFont = SetContextFont (TinyFont);
+	SetContextForeGroundColor (textCol);
+	text.baseline.x = (p1.x + (p2.x + 1)) / 2;
+	text.baseline.y = p1.y + 8;
+	text.pStr = GetContextName (context);
+	text.align = ALIGN_CENTER;
+	text.CharCount = (COUNT) ~0;
+	font_DrawText (&text);
+
+	(void) SetContextForeGroundColor (oldFgCol);
+	(void) SetContextFont (oldFont);
+}
+
+static void
+describeContext (FILE *out, const CONTEXT context) {
+	RECT rect;
+	CONTEXT oldContext = SetContext (context);
+	
+	GetContextClipRect (&rect);
+	fprintf(out, "Context '%s':\n"
+			"\tClipRect = (%d, %d)-(%d, %d)  (%d x %d)\n",
+		   GetContextName (context),
+		   rect.corner.x, rect.corner.y,
+		   rect.corner.x + rect.extent.width,
+		   rect.corner.y + rect.extent.height,
+		   rect.extent.width, rect.extent.height);
+	
+	SetContext (oldContext);
+}
+
+
+typedef struct wait_state
+{
+	// standard state required by DoInput
+	BOOLEAN (*InputFunc) (struct wait_state *self);
+	COUNT MenuRepeatDelay;
+} WAIT_STATE;
+
+		
+// Maybe move to elsewhere, where it can be reused?
+static BOOLEAN
+waitForKey (struct wait_state *self) {
+	if (PulsedInputState.menu[KEY_MENU_SELECT] ||
+			PulsedInputState.menu[KEY_MENU_CANCEL])
+		return FALSE;
+
+	SleepThread (ONE_SECOND / 20);
+	
+	(void) self;
+	return TRUE;
+}
+
+// Maybe move to elsewhere, where it can be reused?
+static FRAME
+getScreen (void)
+{
+	CONTEXT oldContext = SetContext (ScreenContext);
+	FRAME savedFrame;
+	RECT screenRect;
+
+	screenRect.corner.x = 0;
+	screenRect.corner.y = 0;
+	screenRect.extent.width = ScreenWidth;
+	screenRect.extent.height = ScreenHeight;
+	savedFrame = CaptureDrawable (LoadDisplayPixmap (&screenRect, (FRAME) 0));
+
+	(void) SetContext (oldContext);
+	return savedFrame;
+}
+
+static void
+putScreen (FRAME savedFrame) {
+	STAMP stamp;
+	
+	CONTEXT oldContext = SetContext (ScreenContext);
+
+	stamp.origin.x = 0;
+	stamp.origin.y = 0;
+	stamp.frame = savedFrame;
+	DrawStamp (&stamp);
+
+	(void) SetContext (oldContext);
+}
+
+// Show the contexts on the screen.
+// Must be called from the main thread.
+void
+debugContexts (void)
+{
+	extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
+			FRAME dstFrame, const RECT *rdst, int num, int denom);
+	static volatile bool inDebugContexts = false;
+			// Prevent this function from being called from within itself.
+	
+	CONTEXT orgContext;
+	CONTEXT debugDrawContext;
+			// We're going to use this context to draw in.
+	FRAME debugDrawFrame;
+	double hueIncrement;
+	size_t visibleContextI;
+	CONTEXT context;
+	size_t contextCount;
+	FRAME savedScreen;
+
+	// Prevent this function from being called from within itself.
+	if (inDebugContexts)
+		return;
+	inDebugContexts = true;
+
+	contextCount = countVisibleContexts ();
+	if (contextCount == 0)
+		goto out;
+	
+	LockMutex (GraphicsLock);
+	savedScreen = getScreen ();
+	//UnlockMutex (GraphicsLock);
+	FlushGraphics ();
+			// Make sure that the screen has actually been captured,
+			// before we use the frame.
+
+	// Create a new frame to draw on.
+	debugDrawContext = CreateContext ("debugDrawContext");
+	debugDrawFrame = CaptureDrawable (CreateDrawable (
+			WANT_PIXMAP /*| WANT_ALPHA*/, ScreenWidth, ScreenHeight, 1));
+	orgContext = SetContext (debugDrawContext);
+	SetContextFGFrame (debugDrawFrame);
+
+	// Fill the new frame with a copy of the original.
+	arith_frame_blit (savedScreen, NULL, debugDrawFrame, NULL, 1, 1);
+
+	hueIncrement = 360.0 / contextCount;
+
+	//LockMutex (GraphicsLock);
+	visibleContextI = 0;
+	for (context = GetFirstContext (); context != NULL;
+			context = GetNextContext (context))
+	{
+		if (context == debugDrawContext) {
+			// Skip our own context.
+			continue;
+		}
+	
+		if (isContextVisible (context))
+		{
+			// Only draw the visible contexts.
+			drawContext (context, visibleContextI * hueIncrement);
+			visibleContextI++;
+		}
+
+		describeContext (stderr, context);
+	}
+
+	// Blit the final debugging frame to the screen.
+	putScreen (debugDrawFrame);
+	UnlockMutex (GraphicsLock);
+
+	// Wait for a key:
+	{
+		WAIT_STATE state;
+		state.InputFunc = waitForKey;
+		DoInput(&state, TRUE);
+	}
+
+	SetContext (orgContext);
+
+	// Destroy the debugging frame and context.
+	DestroyContext (debugDrawContext);
+			// This does nothing with the drawable set with
+			// SetContextFGFrame().
+	DestroyDrawable (ReleaseDrawable (debugDrawFrame));
+	
+	LockMutex (GraphicsLock);
+	putScreen (savedScreen);
+	UnlockMutex (GraphicsLock);
+
+	DestroyDrawable (ReleaseDrawable (savedScreen));
+
+out:
+	inDebugContexts = false;
+}
+
+#endif  /* DEBUG */
 

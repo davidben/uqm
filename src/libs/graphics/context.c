@@ -22,6 +22,14 @@
 GRAPHICS_STATUS _GraphicsStatusFlags;
 CONTEXT _pCurContext;
 
+#ifdef DEBUG
+// We keep track of all contexts
+CONTEXT firstContext;
+		// The first one in the list.
+CONTEXT *contextEnd = &firstContext;
+		// Where to put the next context.
+#endif
+
 PRIMITIVE _locPrim;
 
 FONT _CurFontPtr;
@@ -37,12 +45,10 @@ SetContext (CONTEXT Context)
 		if (LastContext)
 		{
 			UnsetContextFlags (
-					MAKE_WORD (0, GRAPHICS_ACTIVE | DRAWABLE_ACTIVE)
-					);
+					MAKE_WORD (0, GRAPHICS_ACTIVE | DRAWABLE_ACTIVE));
 			SetContextFlags (
 					MAKE_WORD (0, _GraphicsStatusFlags
-							& (GRAPHICS_ACTIVE | DRAWABLE_ACTIVE))
-					);
+							& (GRAPHICS_ACTIVE | DRAWABLE_ACTIVE)));
 
 			DeactivateContext ();
 		}
@@ -65,17 +71,29 @@ SetContext (CONTEXT Context)
 	return (LastContext);
 }
 
+#ifdef DEBUG
 CONTEXT
-CreateContext (void)
+CreateContextAux (const char *name)
+#else  /* if !defined(DEBUG) */
+CONTEXT
+CreateContextAux (void)
+#endif  /* !defined(DEBUG) */
 {
 	CONTEXT NewContext;
 
 	NewContext = AllocContext ();
 	if (NewContext)
 	{
+		/* initialize context */
 		CONTEXT OldContext;
 
-				/* initialize context */
+#ifdef DEBUG
+		NewContext->name = name;
+		NewContext->next = NULL;
+		*contextEnd = NewContext;
+		contextEnd = &NewContext->next;
+#endif  /* DEBUG */
+
 		OldContext = SetContext (NewContext);
 		SetContextForeGroundColor (
 				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
@@ -85,8 +103,24 @@ CreateContext (void)
 		SetContext (OldContext);
 	}
 
-	return (NewContext);
+	return NewContext;
 }
+
+#ifdef DEBUG
+// Loop through the list of context to the pointer which points to the
+// specified context. This is either 'firstContext' or the address of
+// the 'next' field of some other context.
+static CONTEXT *
+FindContextPtr (CONTEXT context) {
+	CONTEXT *ptr;
+	
+	for (ptr = &firstContext; *ptr != NULL; ptr = &(*ptr)->next) {
+		if (*ptr == context)
+			break;
+	}
+	return ptr;
+}
+#endif  /* DEBUG */
 
 BOOLEAN
 DestroyContext (CONTEXT ContextRef)
@@ -96,6 +130,16 @@ DestroyContext (CONTEXT ContextRef)
 
 	if (_pCurContext && _pCurContext == ContextRef)
 		SetContext ((CONTEXT)0);
+
+#ifdef DEBUG
+	// Unlink the context.
+	{
+		CONTEXT *contextPtr = FindContextPtr (ContextRef);
+		if (contextEnd == &ContextRef->next)
+			contextEnd = contextPtr;
+		*contextPtr = ContextRef->next;
+	}
+#endif  /* DEBUG */
 
 	FreeContext (ContextRef);
 	return TRUE;
@@ -109,7 +153,8 @@ SetContextForeGroundColor (COLOR Color)
 	if (!ContextActive ())
 		return (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 
-	if ((oldColor = _get_context_fg_color ()) != Color)
+	oldColor = _get_context_fg_color ();
+	if (oldColor != Color)
 	{
 		SwitchContextForeGroundColor (Color);
 
@@ -124,6 +169,15 @@ SetContextForeGroundColor (COLOR Color)
 }
 
 COLOR
+GetContextForeGroundColor (void)
+{
+	if (!ContextActive ())
+		return (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+
+	return _get_context_fg_color ();
+}
+
+COLOR
 SetContextBackGroundColor (COLOR Color)
 {
 	COLOR oldColor;
@@ -131,12 +185,20 @@ SetContextBackGroundColor (COLOR Color)
 	if (!ContextActive ())
 		return (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 
-	if ((oldColor = _get_context_bg_color ()) != Color)
-	{
+	oldColor = _get_context_bg_color ();
+	if (oldColor != Color)
 		SwitchContextBackGroundColor (Color);
-	}
 
 	return (oldColor);
+}
+
+COLOR
+GetContextBackGroundColor (void)
+{
+	if (!ContextActive ())
+		return (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+
+	return _get_context_bg_color ();
 }
 
 BOOLEAN
@@ -249,3 +311,24 @@ FixContextFontEffect (void)
 	_pCurContext->FontBacking = img;
 	UnsetContextFBkFlags (FBK_DIRTY);
 }
+
+#ifdef DEBUG
+const char *
+GetContextName (CONTEXT context)
+{
+	return context->name;
+}
+
+CONTEXT
+GetFirstContext (void)
+{
+	return firstContext;
+}
+
+CONTEXT
+GetNextContext (CONTEXT context)
+{
+	return context->next;
+}
+#endif  /* DEBUG */
+

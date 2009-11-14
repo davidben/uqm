@@ -152,7 +152,7 @@ LoadPlanet (FRAME SurfDefFrame)
 
 		StopMusic ();
 
-		TaskContext = CreateContext ();
+		TaskContext = CreateContext ("TaskContext");
 
 		pPlanetDesc = pSolarSysState->pOrbitalDesc;
 

@@ -29,8 +29,13 @@
 // functions are a no-op.
 extern BOOLEAN disableInteractivity;
 
-// If a function is assigned to this, it will be called from the main loop.
+// If a function is assigned to this, it will be called from the
+// Starcon2Main thread, in the main game loop.
 extern void (* volatile debugHook) (void);
+
+// If a function is assigned to this, it will be called from the
+// Starcon2Main thread, in doInput().
+extern void (* volatile doInputDebugHook) (void);
 
 
 // Called when the debug key (symbol 'Debug' in the keys.cfg) is pressed.
@@ -178,6 +183,11 @@ extern BOOLEAN instantMove;
 
 // Dump all game strings.
 void dumpStrings(FILE *out);
+
+
+// Graphically and textually show all the contexts.
+// Should be called from debugHook.
+void debugContexts (void);
 
 
 // To add some day:

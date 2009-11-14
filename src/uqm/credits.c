@@ -315,8 +315,8 @@ credit_roll_task (void *data)
 	TextBack = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00);
 	TextFore = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
 
-	LocalContext = CreateContext ();
-	DrawContext = CreateContext ();
+	LocalContext = CreateContext ("Credits.LocalContext");
+	DrawContext = CreateContext ("Credits.DrawContext");
 	
 	total_h = disp_h = SCREEN_HEIGHT;
 

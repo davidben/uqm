@@ -28,6 +28,7 @@
 #include "settings.h"
 #include "sounds.h"
 #include "tactrans.h"
+#include "uqmdebug.h"
 #include "libs/inplib.h"
 #include "libs/timelib.h"
 #include "libs/threadlib.h"
@@ -351,6 +352,19 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 		TaskSwitch ();
 
 		UpdateInputState ();
+
+#ifdef DEBUG
+		if (doInputDebugHook != NULL)
+		{
+			void (*saveDebugHook) (void);
+			saveDebugHook = doInputDebugHook;
+			doInputDebugHook = NULL;
+					// No further debugHook calls unless the called
+					// function resets doInputDebugHook.
+			(*saveDebugHook) ();
+			continue;
+		}
+#endif
 
 #if DEMO_MODE || CREATE_JOURNAL
 		if (ArrowInput != DemoInput)

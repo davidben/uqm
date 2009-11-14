@@ -110,7 +110,7 @@ GenerateChmmr (BYTE control)
 						CaptureStringTable (
 								LoadStringTable (CHMMR_BASE_STRTAB));
 
-				ScanContext = CreateContext ();
+				ScanContext = CreateContext ("genchmmr.ScanContext");
 				SetContext (ScanContext);
 				SetContextFGFrame (Screen);
 				r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH;

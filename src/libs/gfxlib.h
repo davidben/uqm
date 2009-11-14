@@ -169,8 +169,11 @@ extern void UninitGraphics (void);
 
 extern CONTEXT SetContext (CONTEXT Context);
 extern COLOR SetContextForeGroundColor (COLOR Color);
+extern COLOR GetContextForeGroundColor (void);
 extern COLOR SetContextBackGroundColor (COLOR Color);
+extern COLOR GetContextBackGroundColor (void);
 extern FRAME SetContextFGFrame (FRAME Frame);
+extern FRAME GetContextFGFrame (void);
 extern BOOLEAN SetContextClipping (BOOLEAN ClipStatus);
 extern BOOLEAN SetContextClipRect (RECT *pRect);
 extern BOOLEAN GetContextClipRect (RECT *pRect);
@@ -191,7 +194,13 @@ extern void UnbatchGraphics (void);
 extern void FlushGraphics (void);
 extern void ClearBackGround (RECT *pClipRect);
 extern void ClearDrawable (void);
-extern CONTEXT CreateContext (void);
+#ifdef DEBUG
+extern CONTEXT CreateContextAux (const char *name);
+#define CreateContext(name) CreateContextAux((name))
+#else  /* if !defined(DEBUG) */
+extern CONTEXT CreateContextAux (void);
+#define CreateContext(name) CreateContextAux()
+#endif  /* !defined(DEBUG) */
 extern BOOLEAN DestroyContext (CONTEXT ContextRef);
 extern DRAWABLE CreateDisplay (CREATE_FLAGS CreateFlags, SIZE *pwidth,
 		SIZE *pheight);
@@ -199,6 +208,12 @@ extern DRAWABLE CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width,
 		SIZE height, COUNT num_frames);
 extern BOOLEAN DestroyDrawable (DRAWABLE Drawable);
 extern BOOLEAN GetFrameRect (FRAME Frame, RECT *pRect);
+#ifdef DEBUG
+extern const char *GetContextName (CONTEXT context);
+extern CONTEXT GetFirstContext (void);
+extern CONTEXT GetNextContext (CONTEXT context);
+extern size_t GetContextCount (void);
+#endif  /* DEBUG */
 
 extern HOT_SPOT SetFrameHot (FRAME Frame, HOT_SPOT HotSpot);
 extern HOT_SPOT GetFrameHot (FRAME Frame);

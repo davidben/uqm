@@ -1164,7 +1164,7 @@ ScanSystem (void)
 				(MAP_HEIGHT >> 1) << MAG_SHIFT;
 
 		LockMutex (GraphicsLock);
-		ScanContext = CreateContext ();
+		ScanContext = CreateContext ("ScanContext");
 		SetContext (ScanContext);
 
 		initPlanetLocationImage (&MenuState);

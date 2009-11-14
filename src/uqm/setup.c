@@ -96,7 +96,7 @@ LoadKernel (int argc, char *argv[])
 	InitSound (argc, argv);
 	InitVideoPlayer (TRUE);
 
-	ScreenContext = CreateContext ();
+	ScreenContext = CreateContext ("ScreenContext");
 	if (ScreenContext == NULL)
 		return FALSE;
 
@@ -158,7 +158,7 @@ InitContexts (void)
 {
 	RECT r;
 	
-	StatusContext = CreateContext ();
+	StatusContext = CreateContext ("StatusContext");
 	if (StatusContext == NULL)
 		return FALSE;
 
@@ -170,11 +170,11 @@ InitContexts (void)
 	r.extent.height = STATUS_HEIGHT;
 	SetContextClipRect (&r);
 	
-	SpaceContext = CreateContext ();
+	SpaceContext = CreateContext ("SpaceContext");
 	if (SpaceContext == NULL)
 		return FALSE;
 		
-	OffScreenContext = CreateContext ();
+	OffScreenContext = CreateContext ("OffScreenContext");
 	if (OffScreenContext == NULL)
 		return FALSE;
 
