@@ -1621,13 +1621,8 @@ dumpStrings (FILE *out)
 
 
 static COLOR
-hsvaToRgba (double hue, double sat, double val, BYTE alpha) {
-	assert (hue >= 0.0 && hue < 360.0);
-	assert (sat >= 0 && sat <= 1.0);
-	assert (val >= 0 && val <= 1.0);
-	/*fprintf(stderr, "hsva = (%.1f, %.2f, %.2f, %.2d)\n",
-			hue, sat, val, alpha);*/
-
+hsvaToRgba (double hue, double sat, double val, BYTE alpha)
+{
 	unsigned int hi = (int) (hue / 60.0);
 	double f = (hue / 60.0) - ((int) (hue / 60.0));
 	double p = val * (1.0 - sat);
@@ -1639,6 +1634,12 @@ hsvaToRgba (double hue, double sat, double val, BYTE alpha) {
 	BYTE qb = (BYTE) (q * 255.0 + 0.5);
 	BYTE tb = (BYTE) (t * 255.0 + 0.5);
 	BYTE vb = (BYTE) (val * 255.0 + 0.5);
+
+	assert (hue >= 0.0 && hue < 360.0);
+	assert (sat >= 0 && sat <= 1.0);
+	assert (val >= 0 && val <= 1.0);
+	/*fprintf(stderr, "hsva = (%.1f, %.2f, %.2f, %.2d)\n",
+			hue, sat, val, alpha);*/
 	
 	assert (hi < 6);
 	switch (hi) {
