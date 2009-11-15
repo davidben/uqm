@@ -24,55 +24,8 @@
 #include "libs/reslib.h"
 #include "sis.h"
 #include "velocity.h"
+#include "commanim.h"
 
-
-// XXX: the following should be moved to commanim.h
-// Animation types:
-#define RANDOM_ANIM (1 << 0)
-		// The next index is randomly chosen.
-#define CIRCULAR_ANIM (1 << 1)
-		// After the last index has been reached, the animation starts over.
-#define YOYO_ANIM (1 << 2)
-		// After the last index has been reached, the order that the
-		// animation frames are used is reversed.
-#define ANIM_MASK (RANDOM_ANIM | CIRCULAR_ANIM | YOYO_ANIM)
-		// Mask of all animation types.
-
-#define WAIT_TALKING (1 << 3)
-		// This is set in AlienTalkDesc when the ambient animations should
-		// stop at the end of the current animation cycle.
-		// In AlienAmbientArray, this is set for those ambient animations
-		// which can not be active while the talking animation is active.
-#define PAUSE_TALKING (1 << 4)
-#define TALK_INTRO (1 << 5)
-#define TALK_DONE (1 << 6)
-
-#define ANIM_DISABLED (1 << 7)
-
-#define COLORXFORM_ANIM PAUSE_TALKING
-
-typedef struct
-{
-	COUNT StartIndex;
-			// Index of the first image (for image animation) or
-			// index of the first color map (for palette animation)
-	BYTE NumFrames;
-			// Number of frames in the animation.
-
-	BYTE AnimFlags;
-			// One of RANDOM_ANIM, CIRCULAR_ANIM, or YOYO_ANIM
-
-	COUNT BaseFrameRate;
-	COUNT RandomFrameRate;
-	COUNT BaseRestartRate;
-	COUNT RandomRestartRate;
-
-	DWORD BlockMask;
-			// Bit mask of the indices of all animations that can not
-			// be active at the same time as this animation.
-} ANIMATION_DESC;
-
-#define MAX_ANIMATIONS 20
 
 // general numbers-speech generator info
 // should accomodate most common base-10 languages
@@ -160,7 +113,12 @@ typedef struct
 	COUNT NumAnimations;
 	ANIMATION_DESC AlienAmbientArray[MAX_ANIMATIONS];
 
+	// Transition animation to/from talking state;
+	// the first frame is neutral (sort of like YOYO_ANIM)
 	ANIMATION_DESC AlienTransitionDesc;
+	// Talking animation, like RANDOM_ANIM, except random frames
+	// always alternate with a neutral frame;
+	// the first frame is neutral
 	ANIMATION_DESC AlienTalkDesc;
 
 	NUMBER_SPEECH AlienNumberSpeech;

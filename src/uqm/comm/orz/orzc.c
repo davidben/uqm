@@ -838,14 +838,13 @@ Intro (void)
 
 	if (!GET_GAME_STATE (MET_ORZ_BEFORE))
 	{
-		BYTE N;
-
 		SET_GAME_STATE (MET_ORZ_BEFORE, 1);
 
-		N = CommData.AlienTalkDesc.NumFrames;
-		CommData.AlienTalkDesc.NumFrames = 0;
+		// Disable talking anim and run the computer report
+		EnableTalkingAnim (FALSE);
 		AlienTalkSegue (1);
-		CommData.AlienTalkDesc.NumFrames = N;
+		// Run whatever is left with talking anim
+		EnableTalkingAnim (TRUE);
 	}
 }
 

@@ -123,9 +123,12 @@ SelectAlienZOQ (void)
 {
 	if (LastAlien != ZOQ_ALIEN)
 	{
+		// Transition to neutral state first if Pik was talking
+		if (LastAlien != FOT_ALIEN)
+			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
 		LastAlien = ZOQ_ALIEN;
+		CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
 		CommData.AlienTransitionDesc.StartIndex = FOT_TO_ZOQ;
-		CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
 		CommData.AlienTalkDesc.StartIndex = ZOQ_TALK_INDEX;
 		CommData.AlienTalkDesc.NumFrames = ZOQ_TALK_FRAMES;
 		CommData.AlienAmbientArray[1].AnimFlags &= ~WAIT_TALKING;
@@ -142,9 +145,12 @@ SelectAlienPIK (void)
 {
 	if (LastAlien != PIK_ALIEN)
 	{
+		// Transition to neutral state first if Zoq was talking
+		if (LastAlien != FOT_ALIEN)
+			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
 		LastAlien = PIK_ALIEN;
+		CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
 		CommData.AlienTransitionDesc.StartIndex = FOT_TO_PIK;
-		CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
 		CommData.AlienTalkDesc.StartIndex = PIK_TALK_INDEX;
 		CommData.AlienTalkDesc.NumFrames = PIK_TALK_FRAMES;
 		CommData.AlienAmbientArray[1].AnimFlags |= WAIT_TALKING;

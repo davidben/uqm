@@ -21,14 +21,81 @@
 #include "libs/gfxlib.h"
 #include "libs/tasklib.h"
 
+// Some background: every animation has a neutral frame which returns
+// the image to the state it was in before the animation began. Which
+// frame is neutral depends on the animation type.
+// Animation types:
+#define RANDOM_ANIM (1 << 0)
+		// The next index is randomly chosen.
+		// The first frame is neutral
+#define CIRCULAR_ANIM (1 << 1)
+		// After the last index has been reached, the animation starts over.
+		// The last frame is neutral. This complicates the animation task.
+#define YOYO_ANIM (1 << 2)
+		// After the last index has been reached, the order that the
+		// animation frames are used is reversed.
+		// The first frame is neutral
+#define ANIM_MASK (RANDOM_ANIM | CIRCULAR_ANIM | YOYO_ANIM)
+		// Mask of all animation types.
+		// Static frames do not have any of these flags set.
+
+#define WAIT_TALKING (1 << 3)
+		// This is set in AlienTalkDesc when the talking animation is active
+		// or should be active.
+		// In AlienAmbientArray, this is set for those ambient animations
+		// which can not be active while the talking animation is active.
+		// Such animations stop at the end of the current animation cycle
+		// when the talking animation activates.
+#define PAUSE_TALKING (1 << 4)
+		// Set in AlienTalkDesc when we do not want the talking animation
+#define TALK_INTRO (1 << 5)
+		// In AlienTransitionDesc: indicates a transition to talking state
+#define TALK_DONE (1 << 6)
+		// In AlienTransitionDesc: indicates a transition to silent state
+		// In AlienTalkDesc: signals the end of talking animation
+#define ANIM_DISABLED (1 << 7)
+
+#define COLORXFORM_ANIM PAUSE_TALKING
+
+typedef struct
+{
+	COUNT StartIndex;
+			// Index of the first image (for image animation) or
+			// index of the first color map (for palette animation)
+	BYTE NumFrames;
+			// Number of frames in the animation.
+
+	BYTE AnimFlags;
+			// One of RANDOM_ANIM, CIRCULAR_ANIM, or YOYO_ANIM
+			// plus flags (WAIT_TALKING, ANIM_DISABLED)
+
+	COUNT BaseFrameRate;
+			// Minimum interframe delay
+	COUNT RandomFrameRate;
+			// Maximum additional interframe delay
+			// Actual delay: BaseFrameRate + Random(0..RandomFrameRate)
+	COUNT BaseRestartRate;
+			// Minimum delay before restarting animation
+	COUNT RandomRestartRate;
+			// Maximum additional delay before restarting animation
+			// Actual delay: BaseRestartRate + Random(0..RandomRestartRate)
+
+	DWORD BlockMask;
+			// Bit mask of the indices of all animations that can not
+			// be active at the same time as this animation, usually,
+			// due to the image overlap conflicts.
+} ANIMATION_DESC;
+
+#define MAX_ANIMATIONS 20
+
+
 #ifdef COMM_INTERNAL
+
 typedef enum
 {
-	UP_DIR,
-			// Animation indices are increasing
-	DOWN_DIR,
-			// Animation indices are decreasing
-	NO_DIR
+	DOWN_DIR = -1, // Animation indices are decreasing
+	NO_DIR = 0,
+	UP_DIR = 1,    // Animation indices are increasing
 } ANIM_DIR;
 
 typedef enum
@@ -42,19 +109,21 @@ typedef enum
 // Describes an active animation.
 struct SEQUENCE
 {
-	COUNT Alarm;
+	ANIMATION_DESC *ADPtr;
+	DWORD Alarm;
 	ANIM_DIR Direction;
-	BYTE FramesLeft;
+	COUNT CurIndex;
+	COUNT NextIndex;
+	COUNT FramesLeft;
 	ANIM_TYPE AnimType;
-	union
-	{
-		FRAME CurFrame;
-		COLORMAP CurCMap;
-	} AnimObj;
+	BOOLEAN Change;
 };
 #endif
 
 typedef struct SEQUENCE SEQUENCE;
+
+// Returns TRUE if there was an animation change
+extern BOOLEAN DrawAlienFrame (SEQUENCE *pSeq, COUNT Num, BOOLEAN fullRedraw);
 
 void UpdateSpeechGraphics (BOOLEAN Initialize);
 Task StartCommAnimTask(void);

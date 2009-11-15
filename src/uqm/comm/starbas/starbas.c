@@ -1291,11 +1291,10 @@ DiscussDevices (BOOLEAN TalkAbout)
 			// Run all tracks upto the Vux Beast scientist's report
 			AlienTalkSegue (VuxBeastIndex - 1);
 			// Disable Commander's speech animation and run the report
-			i = CommData.AlienTalkDesc.NumFrames;
-			CommData.AlienTalkDesc.NumFrames = 0;
+			EnableTalkingAnim (FALSE);
 			AlienTalkSegue (VuxBeastIndex);
 			// Enable Commander's speech animation and run the rest
-			CommData.AlienTalkDesc.NumFrames = i;
+			EnableTalkingAnim (TRUE);
 			AlienTalkSegue ((COUNT)~0);
 		}
 	}

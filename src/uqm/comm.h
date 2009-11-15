@@ -28,10 +28,73 @@
 
 #include "commanim.h"
 
-extern void DrawAlienFrame (FRAME aframe, SEQUENCE *pSeq);
-
 extern LOCDATA CommData;
-extern volatile BOOLEAN ClearSummary;
+
+static inline BOOLEAN
+haveTalkingAnim (void)
+{
+	return CommData.AlienTalkDesc.NumFrames > 0;
+}
+
+static inline BOOLEAN
+haveTransitionAnim (void)
+{
+	return CommData.AlienTransitionDesc.NumFrames > 0;
+}
+
+static inline BOOLEAN
+wantTalkingAnim (void)
+{
+	return !(CommData.AlienTalkDesc.AnimFlags & PAUSE_TALKING);
+}
+
+static inline void
+setRunTalkingAnim (void)
+{
+	CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
+}
+
+static inline void
+clearRunTalkingAnim (void)
+{
+	CommData.AlienTalkDesc.AnimFlags &= ~WAIT_TALKING;
+}
+
+static inline BOOLEAN
+runningTalkingAnim (void)
+{
+	return (CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING);
+}
+
+static inline void
+setRunIntroAnim (void)
+{
+	CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
+}
+
+static inline BOOLEAN
+runningIntroAnim (void)
+{
+	return (CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO);
+}
+
+static inline void
+setStopTalkingAnim (void)
+{
+	CommData.AlienTalkDesc.AnimFlags |= TALK_DONE;
+}
+
+static inline void
+clearStopTalkingAnim (void)
+{
+	CommData.AlienTalkDesc.AnimFlags &= ~TALK_DONE;
+}
+
+static inline BOOLEAN
+signaledStopTalkingAnim (void)
+{
+	return CommData.AlienTalkDesc.AnimFlags & TALK_DONE;
+}
 
 #endif
 
@@ -44,6 +107,8 @@ extern void RedrawSubtitles (void);
 extern BOOLEAN HaveSubtitlesChanged (void);
 
 extern RECT CommWndRect; /* comm window rect */
+
+extern void EnableTalkingAnim (BOOLEAN enable);
 
 #endif  /* _COMM_H */
 

@@ -44,118 +44,371 @@ static int ambient_anim_task (void *data);
 
 volatile BOOLEAN PauseAnimTask = FALSE;
 
+static inline DWORD
+randomFrameRate (SEQUENCE *pSeq)
+{
+	ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+
+	return ADPtr->BaseFrameRate	+
+			TFB_Random () % (ADPtr->RandomFrameRate + 1);
+}
+
+static inline DWORD
+randomRestartRate (SEQUENCE *pSeq)
+{
+	ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+
+	return ADPtr->BaseRestartRate +
+			TFB_Random () % (ADPtr->RandomRestartRate + 1);
+}
+
+static inline COUNT
+randomFrameIndex (SEQUENCE *pSeq, COUNT from)
+{
+	ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+
+	return from	+ TFB_Random () % (ADPtr->NumFrames - from);
+}
 
 static void
-SetUpSequence (SEQUENCE *pSeq)
+SetupAmbientSequences (SEQUENCE *pSeq, COUNT Num)
 {
 	COUNT i;
-	ANIMATION_DESC *ADPtr;
-
-	i = CommData.NumAnimations;
-	pSeq = &pSeq[i];
-	ADPtr = &CommData.AlienAmbientArray[i];
-	while (i--)
+	
+	for (i = 0; i < Num; ++i, ++pSeq)
 	{
-		--ADPtr;
-		--pSeq;
+		ANIMATION_DESC *ADPtr = &CommData.AlienAmbientArray[i];
 
+		memset (pSeq, 0, sizeof (*pSeq));
+
+		pSeq->ADPtr = ADPtr;
 		if (ADPtr->AnimFlags & COLORXFORM_ANIM)
 			pSeq->AnimType = COLOR_ANIM;
 		else
 			pSeq->AnimType = PICTURE_ANIM;
 		pSeq->Direction = UP_DIR;
 		pSeq->FramesLeft = ADPtr->NumFrames;
-		if (pSeq->AnimType == COLOR_ANIM)
-			pSeq->AnimObj.CurCMap = SetAbsColorMapIndex (
-					CommData.AlienColorMap, ADPtr->StartIndex);
-		else
-			pSeq->AnimObj.CurFrame = SetAbsFrameIndex (
-					CommData.AlienFrame, ADPtr->StartIndex);
-
+		// Default: first frame is neutral
 		if (ADPtr->AnimFlags & RANDOM_ANIM)
-		{
-			if (pSeq->AnimType == COLOR_ANIM)
-				pSeq->AnimObj.CurCMap =
-						SetRelColorMapIndex (pSeq->AnimObj.CurCMap,
-						(COUNT)((COUNT)TFB_Random () % pSeq->FramesLeft));
-			else
-				pSeq->AnimObj.CurFrame =
-						SetRelFrameIndex (pSeq->AnimObj.CurFrame,
-						(COUNT)((COUNT)TFB_Random () % pSeq->FramesLeft));
+		{	// Set a random frame/colormap
+			pSeq->NextIndex = TFB_Random () % ADPtr->NumFrames;
 		}
 		else if (ADPtr->AnimFlags & YOYO_ANIM)
-		{
+		{	// Skip the first frame/colormap (it's neutral)
+			pSeq->NextIndex = 1;
 			--pSeq->FramesLeft;
-			if (pSeq->AnimType == COLOR_ANIM)
-				pSeq->AnimObj.CurCMap =
-						SetRelColorMapIndex (pSeq->AnimObj.CurCMap, 1);
-			else
-				pSeq->AnimObj.CurFrame =
-						IncFrameIndex (pSeq->AnimObj.CurFrame);
+		}
+		else if (ADPtr->AnimFlags & CIRCULAR_ANIM)
+		{	// Exception that makes everything more painful:
+			// *Last* frame is neutral
+			pSeq->CurIndex = ADPtr->NumFrames - 1;
+			pSeq->NextIndex = 0;
 		}
 
-		pSeq->Alarm = ADPtr->BaseRestartRate
-				+ ((COUNT)TFB_Random () % (ADPtr->RandomRestartRate + 1)) + 1;
+		pSeq->Alarm = randomRestartRate (pSeq) + 1;
 	}
+}
+
+static void
+SetupTalkSequence (SEQUENCE *pSeq, ANIMATION_DESC *ADPtr)
+{
+	memset (pSeq, 0, sizeof (*pSeq));
+	// Initially disabled, and until needed
+	ADPtr->AnimFlags |= ANIM_DISABLED;
+	pSeq->ADPtr = ADPtr;
+	pSeq->AnimType = PICTURE_ANIM;
+}
+
+static inline BOOLEAN
+animAtNeutralIndex (SEQUENCE *pSeq)
+{
+	ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+
+	if (ADPtr->AnimFlags & CIRCULAR_ANIM)
+	{	// CIRCULAR_ANIM's neutral frame is the last
+		return pSeq->NextIndex == 0;
+	}
+	else
+	{	// All others, neutral frame is the first
+		return pSeq->CurIndex == 0;
+	}
+}
+
+static inline BOOLEAN
+conflictsWithTalkingAnim (SEQUENCE *pSeq)
+{
+	ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+
+	return ADPtr->AnimFlags & CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING;
+}
+
+static void
+ProcessColormapAnims (SEQUENCE *pSeq, COUNT Num)
+{
+	COUNT i;
+
+	for (i = 0; i < Num; ++i, ++pSeq)
+	{
+		ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+
+		if ((ADPtr->AnimFlags & ANIM_DISABLED)
+				|| pSeq->AnimType != COLOR_ANIM
+				|| !pSeq->Change)
+			continue;
+
+		XFormColorMap (GetColorMapAddress (
+				SetAbsColorMapIndex (CommData.AlienColorMap,
+				ADPtr->StartIndex + pSeq->CurIndex)),
+				pSeq->Alarm - 1);
+		pSeq->Change = FALSE;
+	}
+}
+
+static BOOLEAN
+AdvanceAmbientSequence (SEQUENCE *pSeq)
+{
+	BOOLEAN active;
+	ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+
+	--pSeq->FramesLeft;
+	// YOYO_ANIM does not actually end until it comes back
+	// in reverse direction, even if FramesLeft gets to 0 here
+	if (pSeq->FramesLeft
+			|| ((ADPtr->AnimFlags & YOYO_ANIM) && pSeq->NextIndex != 0))
+	{
+		active = TRUE;
+		pSeq->Alarm = randomFrameRate (pSeq) + 1;
+	}
+	else
+	{	// animation ended
+		active = FALSE;
+		pSeq->Alarm = randomRestartRate (pSeq) + 1;
+	}
+
+	// Will draw the next frame or change to next colormap
+	pSeq->CurIndex = pSeq->NextIndex;
+	pSeq->Change = TRUE;
+
+	if (pSeq->FramesLeft == 0)
+	{	// Animation ended
+		// Set it up for the next round
+		pSeq->FramesLeft = ADPtr->NumFrames;
+
+		if (ADPtr->AnimFlags & YOYO_ANIM)
+		{	// YOYO_ANIM never draws the first frame
+			// ("first" depends on direction)
+			--pSeq->FramesLeft;
+			pSeq->Direction = -pSeq->Direction;
+		}
+		else if (ADPtr->AnimFlags & CIRCULAR_ANIM)
+		{	// Rewind the CIRCULAR_ANIM
+			// NextIndex will be brought to 0 just below
+			pSeq->NextIndex = -1;
+		}
+		// RANDOM_ANIM is setup just below
+	}
+
+	if (ADPtr->AnimFlags & RANDOM_ANIM)
+		pSeq->NextIndex = randomFrameIndex (pSeq, 0);
+	else
+		pSeq->NextIndex += pSeq->Direction;
+
+	return active;
+}
+
+static void
+ResetSequence (SEQUENCE *pSeq)
+{
+	// Reset the animation and cause a redraw of the neutral frame,
+	// assuming it is not ANIM_DISABLED
+	// NOTE: This does not handle CIRCULAR_ANIM properly
+	pSeq->Direction = NO_DIR;
+	pSeq->CurIndex = 0;
+	pSeq->Change = TRUE;
+}
+
+static void
+AdvanceTalkingSequence (SEQUENCE *pSeq, DWORD ElapsedTicks)
+{
+	// We use the actual descriptor for flags processing and
+	// a copied one for drawing. A copied one is updated only
+	// when it is safe to do so.
+	ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+	
+	if (pSeq->Direction == NO_DIR)
+	{	// just starting now
+		pSeq->Direction = UP_DIR;
+		// It's now safe to pick up new Talk descriptor if changed
+		// (e.g. Zoq and Pik taking turns to talk)
+		if (CommData.AlienTalkDesc.StartIndex != ADPtr->StartIndex)
+		{	// copy the new one
+			*ADPtr = CommData.AlienTalkDesc;
+		}
+
+		assert (pSeq->CurIndex == 0);
+		pSeq->Alarm = 0; // now!
+		ADPtr->AnimFlags &= ~ANIM_DISABLED;
+	}
+
+	if (pSeq->Alarm > ElapsedTicks)
+	{	// Not time yet
+		pSeq->Alarm -= ElapsedTicks;
+		return;
+	}
+
+	// Time to start or advance the animation
+	pSeq->Alarm = randomFrameRate (pSeq);
+	pSeq->Change = TRUE;
+	// Talking animation is like RANDOM_ANIM, except that
+	// random frames always alternate with the neutral one
+	// The animation does not stop until we reset it
+	if (pSeq->CurIndex == 0)
+	{	// random frame next
+		pSeq->CurIndex = randomFrameIndex (pSeq, 1);
+		pSeq->Alarm += randomRestartRate (pSeq);
+	}
+	else
+	{	// neutral frame next
+		pSeq->CurIndex = 0;
+	}
+}
+
+static BOOLEAN
+AdvanceTransitSequence (SEQUENCE *pSeq, DWORD ElapsedTicks)
+{
+	BOOLEAN done = FALSE;
+	// We use the actual descriptor for flags processing and
+	// a copied one for drawing. A copied one is updated only
+	// when it is safe to do so.
+	ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+
+	if (pSeq->Direction == NO_DIR)
+	{	// just starting now
+		pSeq->Alarm = 0; // now!
+		ADPtr->AnimFlags &= ~ANIM_DISABLED;
+	}
+
+	if (pSeq->Alarm > ElapsedTicks)
+	{	// Not time yet
+		pSeq->Alarm -= ElapsedTicks;
+		return FALSE;
+	}
+
+	// Time to start or advance the animation
+	pSeq->Change = TRUE;
+
+	if (pSeq->Direction == NO_DIR)
+	{	// just starting now
+		pSeq->FramesLeft = ADPtr->NumFrames;
+		// Both INTRO and DONE may be set at the same time,
+		// when e.g. Zoq and Pik are taking turns to talk
+		// Process the DONE transition first to go into
+		// a neutral state before switching over.
+		if (CommData.AlienTransitionDesc.AnimFlags & TALK_DONE)
+		{
+			pSeq->Direction = DOWN_DIR;
+			pSeq->CurIndex = ADPtr->NumFrames - 1;
+		}
+		else if (CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO)
+		{
+			pSeq->Direction = UP_DIR;
+			// It's now safe to pick up new Transition descriptor if changed
+			// (e.g. Zoq and Pik taking turns to talk)
+			if (CommData.AlienTransitionDesc.StartIndex
+					!= ADPtr->StartIndex)
+			{	// copy the new one
+				*ADPtr = CommData.AlienTransitionDesc;
+			}
+			
+			pSeq->CurIndex = 0;
+		}
+	}
+
+	--pSeq->FramesLeft;
+	if (pSeq->FramesLeft == 0)
+	{	// animation is done
+		if (pSeq->Direction == UP_DIR)
+		{	// done with TALK_INTRO transition
+			CommData.AlienTransitionDesc.AnimFlags &= ~TALK_INTRO;
+		}
+		else if (pSeq->Direction == DOWN_DIR)
+		{	// done with TALK_DONE transition
+			CommData.AlienTransitionDesc.AnimFlags &= ~TALK_DONE;
+
+			// Done with all transition frames
+			ADPtr->AnimFlags |= ANIM_DISABLED;
+			done = TRUE;
+		}
+		pSeq->Direction = NO_DIR;
+	}
+	else
+	{	// next frame
+		pSeq->Alarm = randomFrameRate (pSeq);
+		pSeq->CurIndex += pSeq->Direction;
+	}
+
+	return done;
 }
 
 static int
 ambient_anim_task (void *data)
 {
-	SIZE TalkAlarm;
-	FRAME TalkFrame;
-	FRAME ResetTalkFrame = NULL;
-	FRAME TransitionFrame = NULL;
-	FRAME AnimFrame[MAX_ANIMATIONS];
 	COUNT i;
-	DWORD LastTime;
-	FRAME CommFrame;
-	SEQUENCE Sequencer[MAX_ANIMATIONS];
-	ANIMATION_DESC TalkBuffer = CommData.AlienTalkDesc;
+	TimeCount LastTime;
+	SEQUENCE Sequences[MAX_ANIMATIONS + 2];
+			// 2 extra for Talk and Transition animations
 	SEQUENCE *pSeq;
-	ANIMATION_DESC *ADPtr;
 	DWORD ActiveMask;
 			// Bit mask of all animations that are currently active.
 			// Bit 'i' is set if the animation with index 'i' is active.
 	DWORD LastOscillTime;
 	Task task = (Task) data;
-	BOOLEAN TransitionDone = FALSE;
-	BOOLEAN TalkFrameChanged = FALSE;
-	BOOLEAN FrameChanged[MAX_ANIMATIONS];
 	BOOLEAN ColorChange = FALSE;
 
-	while ((CommFrame = CommData.AlienFrame) == 0
-			&& !Task_ReadState (task, TASK_EXIT))
+	ANIMATION_DESC TalkDesc;
+	ANIMATION_DESC TransitDesc;
+	SEQUENCE* Talk;
+	SEQUENCE* Transit;
+	COUNT FirstAmbient;
+	COUNT TotalSequences;
+
+	while (!CommData.AlienFrame && !Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
 
-	LockMutex (GraphicsLock);
-	memset (&DisplayArray[0], 0, sizeof (DisplayArray));
-	SetUpSequence (Sequencer);
-	UnlockMutex (GraphicsLock);
-
 	ActiveMask = 0;
-	TalkAlarm = 0;
-	TalkFrame = 0;
+
+	// Certain data must be accessed under GraphicsLock
+	LockMutex (GraphicsLock);
+	
+	memset (&DisplayArray[0], 0, sizeof (DisplayArray));
+	TalkDesc = CommData.AlienTalkDesc;
+	TransitDesc = CommData.AlienTransitionDesc;
+
+	// Animation sequences have to be drawn in reverse, and
+	// talk animations have to be drawn last (so we add them first)
+	TotalSequences = 0;
+	// Transition animation last
+	Transit = Sequences + TotalSequences;
+	SetupTalkSequence (Transit, &TransitDesc);
+	++TotalSequences;
+	// Talk animation second last
+	Talk = Sequences + TotalSequences;
+	SetupTalkSequence (Talk, &TalkDesc);
+	++TotalSequences;
+	FirstAmbient = TotalSequences;
+	SetupAmbientSequences (Sequences + FirstAmbient, CommData.NumAnimations);
+	TotalSequences += CommData.NumAnimations;
+
+	UnlockMutex (GraphicsLock);
+	
 	LastTime = GetTimeCounter ();
 	LastOscillTime = LastTime;
-	memset (FrameChanged, 0, sizeof (FrameChanged));
-	memset (AnimFrame, 0, sizeof (AnimFrame));
-	for (i = 0; i < CommData.NumAnimations; i++)
-	{
-		COUNT nextIndex;
-
-		if (CommData.AlienAmbientArray[i].AnimFlags & YOYO_ANIM)
-			nextIndex = CommData.AlienAmbientArray[i].StartIndex;
-		else
-			nextIndex = (CommData.AlienAmbientArray[i].StartIndex
-					+ CommData.AlienAmbientArray[i].NumFrames - 1);
-		AnimFrame[i] = SetAbsFrameIndex (CommFrame, nextIndex);
-	}
 
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
-		BOOLEAN Change, CanTalk;
-		DWORD CurTime, ElapsedTicks;
+		BOOLEAN CanTalk;
+		TimeCount CurTime;
+		DWORD ElapsedTicks;
 
 		SleepThreadUntil (LastTime + ONE_SECOND / AMBIENT_ANIM_RATE);
 
@@ -165,368 +418,153 @@ ambient_anim_task (void *data)
 		ElapsedTicks = CurTime - LastTime;
 		LastTime = CurTime;
 
-		Change = FALSE;
-		i = CommData.NumAnimations;
-		if (CommData.AlienFrame)
-			CanTalk = TRUE;
+		if (PauseAnimTask)
+		{	// anims not processed
+			i = CommData.NumAnimations;
+			CanTalk = FALSE;
+		}
 		else
 		{
 			i = 0;
-			CanTalk = FALSE;
+			CanTalk = TRUE;
 		}
 
-		pSeq = &Sequencer[i];
-		ADPtr = &CommData.AlienAmbientArray[i];
-		while (i-- && !Task_ReadState (task, TASK_EXIT))
+		// Process ambient animations
+		pSeq = Sequences + FirstAmbient;
+		for ( ; i < CommData.NumAnimations; ++i, ++pSeq)
 		{
-			--ADPtr;
-			--pSeq;
+			ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+			DWORD ActiveBit = 1L << i;
+
 			if (ADPtr->AnimFlags & ANIM_DISABLED)
 				continue;
+			
 			if (pSeq->Direction == NO_DIR)
-			{
-				if (!(ADPtr->AnimFlags
-						& CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
-				{
-					// This animation does not conflict with the talking
-					// animation right now.
+			{	// animation is paused
+				if (!conflictsWithTalkingAnim (pSeq))
+				{	// start it up
 					pSeq->Direction = UP_DIR;
 				}
 			}
-			else if ((DWORD)pSeq->Alarm > ElapsedTicks)
-				pSeq->Alarm -= (COUNT)ElapsedTicks;
+			else if (pSeq->Alarm > ElapsedTicks)
+			{	// not time yet
+				pSeq->Alarm -= ElapsedTicks;
+			}
+			else if (ActiveMask & ADPtr->BlockMask)
+			{	// animation is blocked
+				assert (!(ActiveMask & ActiveBit));
+				assert (animAtNeutralIndex (pSeq));
+				// reschedule
+				pSeq->Alarm = randomRestartRate (pSeq) + 1;
+				continue;
+			}
 			else
-			{
-				if (!(ActiveMask & ADPtr->BlockMask)
-						&& (--pSeq->FramesLeft
-						|| ((ADPtr->AnimFlags & YOYO_ANIM)
-						&& pSeq->Direction == UP_DIR)))
-				{
-					ActiveMask |= 1L << i;
-					pSeq->Alarm = ADPtr->BaseFrameRate
-							+ ((COUNT)TFB_Random ()
-							% (ADPtr->RandomFrameRate + 1)) + 1;
-				}
+			{	// Time to start or advance the animation
+				if (AdvanceAmbientSequence (pSeq))
+					ActiveMask |= ActiveBit;
 				else
-				{
-					ActiveMask &= ~(1L << i);
-					pSeq->Alarm = ADPtr->BaseRestartRate
-							+ ((COUNT)TFB_Random ()
-							% (ADPtr->RandomRestartRate + 1)) + 1;
-					if (ActiveMask & ADPtr->BlockMask)
-						continue;
-				}
-
-				if (pSeq->AnimType == COLOR_ANIM)
-				{
-					XFormColorMap (GetColorMapAddress (pSeq->AnimObj.CurCMap),
-							(COUNT) (pSeq->Alarm - 1));
-				}
-				else
-				{
-					Change = TRUE;
-					AnimFrame[i] = pSeq->AnimObj.CurFrame;
-					FrameChanged[i] = 1;
-				}
-
-				if (pSeq->FramesLeft == 0)
-				{
-					pSeq->FramesLeft = (BYTE)(ADPtr->NumFrames - 1);
-
-					if (pSeq->Direction == DOWN_DIR)
-						pSeq->Direction = UP_DIR;
-					else if (ADPtr->AnimFlags & YOYO_ANIM)
-						pSeq->Direction = DOWN_DIR;
-					else
-					{
-						++pSeq->FramesLeft;
-						if (pSeq->AnimType == COLOR_ANIM)
-							pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
-									pSeq->AnimObj.CurCMap,
-									(SWORD) (-pSeq->FramesLeft));
-						else
-						{
-							pSeq->AnimObj.CurFrame = SetRelFrameIndex (
-									pSeq->AnimObj.CurFrame,
-									(SWORD) (-pSeq->FramesLeft));
-						}
-					}
-				}
-
-				if (ADPtr->AnimFlags & RANDOM_ANIM)
-				{
-					COUNT nextIndex = ADPtr->StartIndex +
-							(TFB_Random () % ADPtr->NumFrames);
-
-					if (pSeq->AnimType == COLOR_ANIM)
-						pSeq->AnimObj.CurCMap = SetAbsColorMapIndex (
-								pSeq->AnimObj.CurCMap, nextIndex);
-					else
-						pSeq->AnimObj.CurFrame = SetAbsFrameIndex (
-								pSeq->AnimObj.CurFrame, nextIndex);
-				}
-				else if (pSeq->AnimType == COLOR_ANIM)
-				{
-					if (pSeq->Direction == UP_DIR)
-						pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
-								pSeq->AnimObj.CurCMap, 1);
-					else
-						pSeq->AnimObj.CurCMap = SetRelColorMapIndex (
-								pSeq->AnimObj.CurCMap, -1);
-				}
-				else
-				{
-					if (pSeq->Direction == UP_DIR)
-						pSeq->AnimObj.CurFrame =
-								IncFrameIndex (pSeq->AnimObj.CurFrame);
-					else
-						pSeq->AnimObj.CurFrame =
-								DecFrameIndex (pSeq->AnimObj.CurFrame);
-				}
+					ActiveMask &= ~ActiveBit;
 			}
 
-			if (pSeq->AnimType == PICTURE_ANIM
-					&& (ADPtr->AnimFlags
-					& CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING)
-					&& pSeq->Direction != NO_DIR)
+			if (pSeq->AnimType == PICTURE_ANIM && pSeq->Direction != NO_DIR
+					&& conflictsWithTalkingAnim (pSeq))
 			{
-				// This is a picture animation which would conflict with
-				// the talking animation, and it is not stopped yet.
-				COUNT index;
-
-				CanTalk = FALSE;
-				if (!(pSeq->Direction != UP_DIR
-						|| (index = GetFrameIndex (pSeq->AnimObj.CurFrame)) >
-						ADPtr->StartIndex + 1
-						|| (index == ADPtr->StartIndex + 1
-						&& (ADPtr->AnimFlags & CIRCULAR_ANIM))))
+				// We want to talk, but this is a running picture animation
+				// which conflicts with the talking animation
+				// See if it is safe to stop it now.
+				if (animAtNeutralIndex (pSeq))
+				{	// pause the animation
 					pSeq->Direction = NO_DIR;
+					ActiveMask &= ~ActiveBit;
+				}
+				else
+				{	// Otherwise, let the animation run until it's safe
+					CanTalk = FALSE;
+				}
 			}
 		}
 
-		ADPtr = &CommData.AlienTalkDesc;
-		if (CanTalk
-				&& ADPtr->NumFrames
-				&& (ADPtr->AnimFlags & WAIT_TALKING)
-				&& !(CommData.AlienTransitionDesc.AnimFlags & PAUSE_TALKING))
+		// Process the talking and transition animations
+		if (CanTalk	&& haveTalkingAnim () && runningTalkingAnim ())
 		{
 			BOOLEAN done = FALSE;
-			for (i = 0; i < CommData.NumAnimations; i++)
-				if (ActiveMask & (1L << i)
-					&& CommData.AlienAmbientArray[i].AnimFlags & WAIT_TALKING)
-					done = TRUE;
-			if (!done)
-			{
 
-				if (ADPtr->StartIndex != TalkBuffer.StartIndex)
-				{
-					Change = TRUE;
-					ResetTalkFrame = SetAbsFrameIndex (CommFrame,
-							TalkBuffer.StartIndex);
-					TalkBuffer = CommData.AlienTalkDesc;
-				}
-
-				if ((long)TalkAlarm > (long)ElapsedTicks)
-					TalkAlarm -= (SIZE)ElapsedTicks;
-				else
-				{
-					BYTE AFlags;
-					SIZE FrameRate;
-
-					if (TalkAlarm > 0)
-						TalkAlarm = 0;
-					else
-						TalkAlarm = -1;
-
-					AFlags = ADPtr->AnimFlags;
-					if (!(AFlags & (TALK_INTRO | TALK_DONE)))
-					{
-						FrameRate =
-								ADPtr->BaseFrameRate
-								+ ((COUNT)TFB_Random ()
-								% (ADPtr->RandomFrameRate + 1));
-						if (TalkAlarm < 0
-								|| GetFrameIndex (TalkFrame) ==
-								ADPtr->StartIndex)
-						{
-							TalkFrame = SetAbsFrameIndex (CommFrame,
-									(COUNT) (ADPtr->StartIndex + 1
-									+ ((COUNT)TFB_Random ()
-									% (ADPtr->NumFrames - 1))));
-							FrameRate += ADPtr->BaseRestartRate
-									+ ((COUNT)TFB_Random ()
-									% (ADPtr->RandomRestartRate + 1));
-						}
-						else
-						{
-							TalkFrame = SetAbsFrameIndex (CommFrame,
-									ADPtr->StartIndex);
-							if (ADPtr->AnimFlags & PAUSE_TALKING)
-							{
-								if (!(CommData.AlienTransitionDesc.AnimFlags
-										& TALK_DONE))
-								{
-									CommData.AlienTransitionDesc.AnimFlags |=
-											PAUSE_TALKING;
-									ADPtr->AnimFlags &= ~PAUSE_TALKING;
-								}
-								else if (CommData.AlienTransitionDesc.NumFrames)
-									ADPtr->AnimFlags |= TALK_DONE;
-								else
-									ADPtr->AnimFlags &=
-											~(WAIT_TALKING | PAUSE_TALKING);
-
-								FrameRate = 0;
-							}
-						}
-					}
-					else
-					{
-						ADPtr = &CommData.AlienTransitionDesc;
-						if (AFlags & TALK_INTRO)
-						{
-							FrameRate = ADPtr->BaseFrameRate
-									+ ((COUNT)TFB_Random ()
-									% (ADPtr->RandomFrameRate + 1));
-							if (TalkAlarm < 0 || TransitionDone)
-							{
-								TalkFrame = SetAbsFrameIndex (CommFrame,
-										ADPtr->StartIndex);
-								TransitionDone = FALSE;
-							}
-							else
-								TalkFrame = IncFrameIndex (TalkFrame);
-
-							if ((BYTE)(GetFrameIndex (TalkFrame)
-									- ADPtr->StartIndex + 1) ==
-									ADPtr->NumFrames)
-							{
-								CommData.AlienTalkDesc.AnimFlags &=
-										~TALK_INTRO;
-								TransitionDone = TRUE;
-							}
-							TransitionFrame = TalkFrame;
-						}
-						else /* if (AFlags & TALK_DONE) */
-						{
-							FrameRate = ADPtr->BaseFrameRate
-									+ ((COUNT)TFB_Random ()
-									% (ADPtr->RandomFrameRate + 1));
-							if (TalkAlarm < 0)
-								TalkFrame = SetAbsFrameIndex (CommFrame,
-										(COUNT) (ADPtr->StartIndex
-										+ ADPtr->NumFrames - 1));
-							else
-								TalkFrame = DecFrameIndex (TalkFrame);
-
-							if (GetFrameIndex (TalkFrame) ==
-									ADPtr->StartIndex)
-							{
-								CommData.AlienTalkDesc.AnimFlags &=
-										~(PAUSE_TALKING | TALK_DONE);
-								if (ADPtr->AnimFlags & TALK_INTRO)
-									CommData.AlienTalkDesc.AnimFlags &=
-											~WAIT_TALKING;
-								else
-								{
-									ADPtr->AnimFlags |= PAUSE_TALKING;
-									ADPtr->AnimFlags &= ~TALK_DONE;
-								}
-								FrameRate = 0;
-							}
-							TransitionFrame = NULL;
-						}
-					}
-					TalkFrameChanged = TRUE;
-
-					Change = TRUE;
-
-					TalkAlarm = FrameRate;
-				}
+			if (signaledStopTalkingAnim () && haveTransitionAnim ())
+			{	// Run the transition. We will clear everything
+				// when it is done
+				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
 			}
-			else if (done && (ADPtr->AnimFlags & PAUSE_TALKING))
+
+			if (CommData.AlienTransitionDesc.AnimFlags
+					& (TALK_INTRO | TALK_DONE))
+			{	// Transitioning in or out of talking
+				if ((CommData.AlienTransitionDesc.AnimFlags & TALK_DONE)
+						&& Transit->Direction == NO_DIR)
+				{	// This is needed when switching talking anims
+					ResetSequence (Talk);
+				}
+				done = AdvanceTransitSequence (Transit, ElapsedTicks);
+			}
+			else if (!signaledStopTalkingAnim ())
+			{	// Talking, transition is done
+				AdvanceTalkingSequence (Talk, ElapsedTicks);
+			}
+			else
+			{	// Not talking
+				ResetSequence (Talk);
+				done = TRUE;
+			}
+
+			if (signaledStopTalkingAnim () && done)
 			{
-				ADPtr->AnimFlags &= ~(WAIT_TALKING | PAUSE_TALKING);	
+				clearRunTalkingAnim ();
+				clearStopTalkingAnim ();
 			}
 		}
+		else
+		{	// Not talking (task may be paused)
+			// Disable talking anim if it is done
+			if (Talk->Direction == NO_DIR)
+				TalkDesc.AnimFlags |= ANIM_DISABLED;
+		}
 
+		// Draw all animations
 		if (!PauseAnimTask)
 		{
 			CONTEXT OldContext;
-			BOOLEAN CheckSub = FALSE;
 			BOOLEAN SubtitleChange;
+			BOOLEAN FullRedraw;
+			BOOLEAN Change;
 
 			// Clearing any active subtitles counts as 'change'
 			SubtitleChange = HaveSubtitlesChanged ();
+			FullRedraw = ColorChange || SubtitleChange;
 
 			OldContext = SetContext (TaskContext);
 
-			if (ColorChange || ClearSummary)
-			{	// Redraw the whole comm screen
-				FRAME F;
-				F = CommData.AlienFrame;
-				CommData.AlienFrame = CommFrame;
-				DrawAlienFrame (TalkFrame,
-						&Sequencer[CommData.NumAnimations - 1]);
-				CommData.AlienFrame = F;
-				CheckSub = TRUE;
-				SubtitleChange = ClearSummary;
-				ColorChange = FALSE;
-				ClearSummary = FALSE;
-			}
-			if (Change || SubtitleChange)
-			{
-				STAMP s;
-				s.origin.x = -SAFE_X;
-				s.origin.y = 0;
-				if (SubtitleChange)
-				{
-					s.frame = CommFrame;
-					DrawStamp (&s);
-				}
-				i = CommData.NumAnimations;
-				while (i--)
-				{
-					if (SubtitleChange || FrameChanged[i])
-					{
-						s.frame = AnimFrame[i];
-						DrawStamp (&s);
-						FrameChanged[i] = 0;
-					}
-				}
-				if (SubtitleChange && TransitionFrame)
-				{
-					s.frame = TransitionFrame;
-					DrawStamp (&s);
-				}
-				if (ResetTalkFrame)
-				{
-					s.frame = ResetTalkFrame;
-					DrawStamp (&s);
-					ResetTalkFrame = NULL;
-				}
-				if (TalkFrame && TalkFrameChanged)
-				{
-					s.frame = TalkFrame;
-					DrawStamp (&s);
-					TalkFrameChanged = FALSE;
-				}
-				Change = FALSE;
-				CheckSub = TRUE;
-			}
+			// Colormap animations are processed separately
+			// from picture anims (see XFormColorMap_step)
+			ProcessColormapAnims (Sequences + FirstAmbient,
+					CommData.NumAnimations);
 
-			if (CheckSub)
+			Change = DrawAlienFrame (Sequences, TotalSequences, FullRedraw);
+			if (FullRedraw || Change)
 				RedrawSubtitles ();
 
 			SetContext (OldContext);
+
+			ColorChange = FALSE;
 		}
+		
 		if (LastOscillTime + (ONE_SECOND / OSCILLOSCOPE_RATE) < CurTime)
 		{
 			LastOscillTime = CurTime;
 			UpdateSpeechGraphics (FALSE);
 		}
+		
 		UnbatchGraphics ();
 		UnlockMutex (GraphicsLock);
+		
 		ColorChange = XFormColorMap_step ();
 	}
 	FinishTask (task);
@@ -539,4 +577,68 @@ StartCommAnimTask (void)
 	return AssignTask (ambient_anim_task, 3072, "ambient animations");
 }
 
+BOOLEAN
+DrawAlienFrame (SEQUENCE *Sequences, COUNT Num, BOOLEAN fullRedraw)
+{
+	int i;
+	STAMP s;
+	BOOLEAN Change = FALSE;
 
+	BatchGraphics ();
+
+	s.origin.x = -SAFE_X;
+	s.origin.y = 0;
+	
+	if (fullRedraw)
+	{
+		// Draw the main frame
+		s.frame = CommData.AlienFrame;
+		DrawStamp (&s);
+
+		// Draw any static frames (has to be in reverse)
+		for (i = CommData.NumAnimations - 1; i >= 0; --i)
+		{
+			ANIMATION_DESC *ADPtr = &CommData.AlienAmbientArray[i];
+
+			if (ADPtr->AnimFlags & ANIM_MASK)
+				continue;
+
+			ADPtr->AnimFlags |= ANIM_DISABLED;
+
+			if (!(ADPtr->AnimFlags & COLORXFORM_ANIM))
+			{	// It's a static frame (e.g. Flagship picture at Starbase)
+				s.frame = SetAbsFrameIndex (CommData.AlienFrame,
+						ADPtr->StartIndex);
+				DrawStamp (&s);
+			}
+		}
+	}
+
+	if (Sequences)
+	{	// Draw the animation sequences (has to be in reverse)
+		for (i = Num - 1; i >= 0; --i)
+		{
+			SEQUENCE *pSeq = &Sequences[i];
+			ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+
+			if ((ADPtr->AnimFlags & ANIM_DISABLED)
+					|| pSeq->AnimType != PICTURE_ANIM)
+				continue;
+
+			// Draw current animation frame only if changed
+			if (!fullRedraw && !pSeq->Change)
+				continue;
+
+			s.frame = SetAbsFrameIndex (CommData.AlienFrame,
+					ADPtr->StartIndex + pSeq->CurIndex);
+			DrawStamp (&s);
+			pSeq->Change = FALSE;
+
+			Change = TRUE;
+		}
+	}
+
+	UnbatchGraphics ();
+
+	return Change;
+}

@@ -53,6 +53,8 @@ LOCDATA CommData;
 int cur_comm;
 UNICODE shared_phrase_buf[2048];
 
+static BOOLEAN TalkingFinished;
+
 typedef struct response_entry
 {
 	RESPONSE_REF response_ref;
@@ -87,7 +89,6 @@ static const UNICODE * volatile last_subtitle;
 static CONTEXT TextCacheContext;
 static FRAME TextCacheFrame;
 
-volatile BOOLEAN ClearSummary;
 
 RECT CommWndRect = {
 	// default values; actually inited by HailAlien()
@@ -383,51 +384,6 @@ DrawSISComWindow (void)
 }
 
 void
-DrawAlienFrame (FRAME aframe, SEQUENCE *pSeq)
-{
-	COUNT i;
-	STAMP s;
-	ANIMATION_DESC *ADPtr;
-
-	s.origin.x = -SAFE_X;
-	s.origin.y = 0;
-	s.frame = CommData.AlienFrame;
-	if (s.frame == 0)
-		s.frame = aframe;
-	
-	BatchGraphics ();
-	DrawStamp (&s);
-	i = CommData.NumAnimations;
-	ADPtr = &CommData.AlienAmbientArray[i];
-	while (i--)
-	{
-		--ADPtr;
-
-		if (!(ADPtr->AnimFlags & ANIM_MASK))
-		{
-			s.frame = SetAbsFrameIndex (s.frame, ADPtr->StartIndex);
-			DrawStamp (&s);
-			ADPtr->AnimFlags |= ANIM_DISABLED;
-		}
-		else if (pSeq)
-		{
-			if (pSeq->AnimType == PICTURE_ANIM)
-			{
-				s.frame = pSeq->AnimObj.CurFrame;
-				DrawStamp (&s);
-			}
-			--pSeq;
-		}
-	}
-	if (aframe && CommData.AlienFrame && aframe != CommData.AlienFrame)
-	{
-		s.frame = aframe;
-		DrawStamp (&s);
-	}
-	UnbatchGraphics ();
-}
-
-void
 init_communication (void)
 {
 	subtitle_mutex = CreateMutex ("Subtitle Lock",
@@ -553,13 +509,11 @@ SpewPhrases (COUNT wait_track)
 	BOOLEAN ContinuityBreak;
 	DWORD TimeIn;
 	COUNT which_track;
-	FRAME F;
 	BOOLEAN rewind = FALSE;
 
 	TimeIn = GetTimeCounter ();
 
 	ContinuityBreak = FALSE;
-	F = CommData.AlienFrame;
 	if (wait_track == 0)
 	{	// Restarting with a rewind
 		wait_track = (COUNT)~0;
@@ -636,12 +590,10 @@ SpewPhrases (COUNT wait_track)
 			else if (optSmoothScroll == OPT_3DO)
 				FastForward_Smooth ();
 			ContinuityBreak = TRUE;
-			// XXX: Ugly hack: This causes all animations (talking and ambient)
+			// XXX: This causes all animations (talking and ambient)
 			// in ambient_anim_task to stop progressing. I see no reason why
-			// the animations cannot continue while seeking. This hack has
-			// spawned a multitude of workarounds in the comm code, and IMHO
-			// should be removed.
-			CommData.AlienFrame = 0;
+			// the animations cannot continue while seeking.
+			PauseAnimTask = TRUE;
 		}
 		else if (left || rewind)
 		{
@@ -652,8 +604,8 @@ SpewPhrases (COUNT wait_track)
 			else if (optSmoothScroll == OPT_3DO)
 				FastReverse_Smooth ();
 			ContinuityBreak = TRUE;
-			// XXX: See ugly hack discussion above
-			CommData.AlienFrame = 0;
+			// XXX: See pause discussion above
+			PauseAnimTask = TRUE;
 		}
 		else if (ContinuityBreak)
 		{
@@ -663,20 +615,20 @@ SpewPhrases (COUNT wait_track)
 			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
 		}
 		else
-		{	// XXX: See ugly hack discussion above
+		{	// XXX: See pause discussion above
 			// Additionally, this used to have a buggy guard condition, which
 			// would cause the animations to remain paused in a couple cases
 			// after seeking back to the beginning.
 			// Broken cases were: Syreen "several hours later" and Starbase
 			// VUX Beast analysis by the scientist.
-			CommData.AlienFrame = F;
+			PauseAnimTask = FALSE;
 		}
 		
 		which_track = PlayingTrack ();
 
 	} while (ContinuityBreak || (which_track && which_track <= wait_track));
 
-	CommData.AlienFrame = F;
+	PauseAnimTask = FALSE;
 	ClearSubtitles ();
 
 	if (!which_track || wait_track == (COUNT)~0)
@@ -696,22 +648,17 @@ DoTalkSegue (COUNT wait_track)
 	BOOLEAN done;
 
 	// Transition animation to talking state, if necessary
-	if (CommData.AlienTalkDesc.NumFrames)
-	{
-		if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_INTRO))
-		{
-			CommData.AlienTransitionDesc.AnimFlags |= TALK_INTRO;
-			if (CommData.AlienTransitionDesc.NumFrames)
-				CommData.AlienTalkDesc.AnimFlags |= TALK_INTRO;
-		}
+	if (wantTalkingAnim () && haveTalkingAnim ())
+	{	
+		if (haveTransitionAnim ())
+			setRunIntroAnim ();
 					
-		CommData.AlienTransitionDesc.AnimFlags &= ~PAUSE_TALKING;
-		if (CommData.AlienTalkDesc.NumFrames)
-			CommData.AlienTalkDesc.AnimFlags |= WAIT_TALKING;
-		while (CommData.AlienTalkDesc.AnimFlags & TALK_INTRO)
+		setRunTalkingAnim ();
+
+		while (runningIntroAnim ())
 		{	// wait until the transition finishes
 			UnlockMutex (GraphicsLock);
-			TaskSwitch ();
+			SleepThread (ONE_SECOND / 30);
 			LockMutex (GraphicsLock);
 		}
 	}
@@ -719,14 +666,8 @@ DoTalkSegue (COUNT wait_track)
 	done = !SpewPhrases (wait_track);
 
 	// transition back to silent, if necessary
-	if (CommData.AlienTalkDesc.NumFrames)
-	{
-		// must set the TALK_DONE flag so that the animation task
-		// releases WAIT_TALKING from AlienTalkDesc
-		CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
-		if ((CommData.AlienTalkDesc.AnimFlags & WAIT_TALKING))
-			CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
-	}
+	if (runningTalkingAnim ())
+		setStopTalkingAnim ();
 
 	return done;
 }
@@ -734,13 +675,15 @@ DoTalkSegue (COUNT wait_track)
 static void
 FlushTalkSegue (void)
 {
+	WaitForNoInput (ONE_SECOND / 2);
 	FlushInput ();
-	while (AnyButtonPress (TRUE))
-		TaskSwitch ();
 
+	// Wait until the animation task stops "talking"
 	do
-		TaskSwitch ();
-	while (CommData.AlienTalkDesc.AnimFlags & PAUSE_TALKING);
+		SleepThread (ONE_SECOND / 30);
+	while (runningTalkingAnim ());
+
+	TalkingFinished = TRUE;
 }
 
 void
@@ -749,8 +692,7 @@ AlienTalkSegue (COUNT wait_track)
 	BOOLEAN done;
 
 	// this skips any talk segues that follow an aborted one
-	if ((GLOBAL (CurrentActivity) & CHECK_ABORT)
-			|| (CommData.AlienTransitionDesc.AnimFlags & TALK_DONE))
+	if ((GLOBAL (CurrentActivity) & CHECK_ABORT) || TalkingFinished)
 		return;
 
 	LockMutex (GraphicsLock);
@@ -758,7 +700,7 @@ AlienTalkSegue (COUNT wait_track)
 	if (!pCurInputState->Initialized)
 	{
 		SetColorMap (GetColorMapAddress (CommData.AlienColorMap));
-		DrawAlienFrame (CommData.AlienFrame, NULL);
+		DrawAlienFrame (NULL, 0, TRUE);
 		UpdateSpeechGraphics (TRUE);
 
 		if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE
@@ -807,8 +749,9 @@ AlienTalkSegue (COUNT wait_track)
 			DWORD TimeOut;
 
 			TimeOut = GetTimeCounter () + (ONE_SECOND >> 1);
-/* if (CommData.NumAnimations) */
-				pCurInputState->AnimTask = StartCommAnimTask ();
+			// Anim task processes not only ambient animations, but also
+			// talking animations and subtitles
+			pCurInputState->AnimTask = StartCommAnimTask ();
 
 			UnlockMutex (GraphicsLock);
 			SleepThreadUntil (TimeOut);
@@ -825,15 +768,9 @@ AlienTalkSegue (COUNT wait_track)
 	UnlockMutex (GraphicsLock);
 	FlushTalkSegue ();
 
-	if (done || wait_track == (COUNT)~0)
-	{	// all done talking here
-		CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
-	}
-	else
+	if (!done && wait_track != (COUNT)~0)
 	{	// there is more to come
-		CommData.AlienTransitionDesc.AnimFlags &= ~TALK_DONE;
-		// allow a transition to talking state again later
-		CommData.AlienTransitionDesc.AnimFlags &= ~TALK_INTRO;
+		TalkingFinished = FALSE;
 	}
 }
 
@@ -1000,7 +937,7 @@ SelectResponse (ENCOUNTER_STATE *pES)
 
 	FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 
-	CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
+	TalkingFinished = FALSE;
 	pES->num_responses = 0;
 	(*pES->response_list[pES->cur_response].response_func)
 			(pES->response_list[pES->cur_response].response_ref);
@@ -1024,7 +961,7 @@ SelectConversationSummary (ENCOUNTER_STATE *pES)
 
 	LockMutex (GraphicsLock);
 	RefreshResponses (pES);
-	ClearSummary = TRUE;
+	clear_subtitles = TRUE;
 	PauseAnimTask = FALSE;
 	UnlockMutex (GraphicsLock);
 }
@@ -1060,9 +997,7 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 			FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 			LockMutex (GraphicsLock);
 			FeedbackPlayerPhrase (pES->phrase_buf);
-			// reset transition state
-			CommData.AlienTransitionDesc.AnimFlags &=
-					~(TALK_INTRO | TALK_DONE);
+			TalkingFinished = FALSE;
 			DoTalkSegue (0);
 
 			if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
@@ -1073,9 +1008,6 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 			
 			UnlockMutex (GraphicsLock);
 			FlushTalkSegue ();
-			// done one way or the other
-			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
-
 		}
 		else if (PulsedInputState.menu[KEY_MENU_UP])
 			response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
@@ -1119,7 +1051,8 @@ DoCommunication (ENCOUNTER_STATE *pES)
 {
 	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
 
-	if (!(CommData.AlienTransitionDesc.AnimFlags & TALK_DONE))
+	// First, finish playing all queued tracks if not done yet
+	if (!TalkingFinished)
 		AlienTalkSegue ((COUNT)~0);
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -1141,14 +1074,10 @@ DoCommunication (ENCOUNTER_STATE *pES)
 			{
 				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 				LockMutex (GraphicsLock);
-				// reset transition state
-				CommData.AlienTransitionDesc.AnimFlags &=
-						~(TALK_INTRO | TALK_DONE);
+				TalkingFinished = FALSE;
 				DoTalkSegue (0);
 				UnlockMutex (GraphicsLock);
 				FlushTalkSegue ();
-				// done one way or the other
-				CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
 
 				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 					break;
@@ -1172,7 +1101,6 @@ DoCommunication (ENCOUNTER_STATE *pES)
 		LockMutex (GraphicsLock);
 		pES->AnimTask = 0;
 	}
-	CommData.AlienTransitionDesc.AnimFlags &= ~(TALK_INTRO | TALK_DONE);
 
 	SetContext (SpaceContext);
 	DestroyContext (TaskContext);
@@ -1242,6 +1170,8 @@ HailAlien (void)
 
 	pCurInputState = &ES;
 	memset (pCurInputState, 0, sizeof (*pCurInputState));
+
+	TalkingFinished = FALSE;
 
 	ES.InputFunc = DoCommunication;
 	PlayerFont = LoadFont (PLAYER_FONT);
@@ -1443,7 +1373,9 @@ InitCommunication (CONVERSATION which_comm)
 			status != YEHAT_REBEL_SHIP ? which_comm :
 			YEHAT_REBEL_CONVERSATION);
 	if (LocDataPtr)
+	{	// We make a copy here
 		CommData = *LocDataPtr;
+	}
 
 	UnlockMutex (GraphicsLock);
 
@@ -1716,4 +1648,13 @@ CheckSubtitles (void)
 			SubtitleText.CharCount = 0;
 	}
 	UnlockMutex (subtitle_mutex);
+}
+
+void
+EnableTalkingAnim (BOOLEAN enable)
+{
+	if (enable)
+		CommData.AlienTalkDesc.AnimFlags &= ~PAUSE_TALKING;
+	else
+		CommData.AlienTalkDesc.AnimFlags |= PAUSE_TALKING;
 }
