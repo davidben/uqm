@@ -99,7 +99,7 @@ generate_energy_nodes (void)
 				SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
 				pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 						&= ~(1L << 0);
-				((PLANETSIDE_DESC*)pMenuState->ModuleFrame)->InTransit = TRUE;
+				pLanderInputState->planetSideDesc->InTransit = TRUE;
 			}
 			else if (pSolarSysState->CurNode == (COUNT)~0)
 				pSolarSysState->CurNode = 1;

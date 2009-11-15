@@ -54,7 +54,7 @@ GenerateUrquanWreck (BYTE control)
 
 					if (!GET_GAME_STATE (PORTAL_KEY))
 					{
-						((PLANETSIDE_DESC*)pMenuState->ModuleFrame)->InTransit = TRUE;
+						pLanderInputState->planetSideDesc->InTransit = TRUE;
 
 						SET_GAME_STATE (PORTAL_KEY, 1);
 						SET_GAME_STATE (PORTAL_KEY_ON_SHIP, 1);

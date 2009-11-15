@@ -53,6 +53,37 @@ typedef struct
 	BYTE FireChance;
 } PLANETSIDE_DESC;
 
+// This is a derived type from INPUT_STATE_DESC.
+// Originally, the general MENU_STATE structure was used. Now, only the
+// fields which are relevant are put in here. In the MENU_STATE structure,
+// these fields were reused for all sorts of purposes, which had nothing
+// to do with what the name suggests. Not all fields have been renamed yet
+// in LanderInputState.
+typedef struct LanderInputState LanderInputState;
+struct LanderInputState {
+	BOOLEAN (*InputFunc) (LanderInputState *pMS);
+	COUNT MenuRepeatDelay;
+
+	PLANETSIDE_DESC *planetSideDesc;
+	SIZE Initialized;
+	MENU_STATE *scanInputState;
+
+	// The following fields need to be renamed:
+	BYTE CurState;
+			// High byte: ?
+			// Low byte: ?
+	SIZE delta_item;
+			// High byte: ?
+			// Low byte: bits 0-6: current lander crew count
+			//           bit 7: set if damage was prevented by a shield
+};
+
+extern LanderInputState *pLanderInputState;
+		// Temporary, to replace the references to pMenuState.
+		// Eventually, this should become a parameter to everything which
+		// needs it.
+
+
 extern CONTEXT ScanContext;
 extern MUSIC_REF LanderMusic;
 

@@ -1267,7 +1267,6 @@ IP_frame (void)
 			select = PulsedInputState.menu[KEY_MENU_SELECT];
 			IP_input_state = (cancel << 1) | select;
 		}
-		// JournalInput (InputState);
 	}
 	else
 	{

@@ -311,13 +311,10 @@ GenerateVUX (BYTE control)
 							& (1L << i))
 							&& !GET_GAME_STATE (VUX_BEAST))
 					{
-						PLANETSIDE_DESC *pPSD;
-
-						pPSD = (PLANETSIDE_DESC*)pMenuState->ModuleFrame;
 						UnbatchGraphics ();
 						DoDiscoveryReport (MenuSounds);
 						BatchGraphics ();
-						pPSD->InTransit = TRUE;
+						pLanderInputState->planetSideDesc->InTransit = TRUE;
 
 						SET_GAME_STATE (VUX_BEAST, 1);
 						SET_GAME_STATE (VUX_BEAST_ON_SHIP, 1);

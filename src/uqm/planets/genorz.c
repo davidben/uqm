@@ -69,9 +69,6 @@ GenerateAndrosynth (BYTE control)
 									|= (1L << (i + 16));
 							if (pSolarSysState->SysInfo.PlanetInfo.DiscoveryString)
 							{
-								PLANETSIDE_DESC *pPSD;
-
-								pPSD = (PLANETSIDE_DESC*)pMenuState->ModuleFrame;
 								UnbatchGraphics ();
 								DoDiscoveryReport (MenuSounds);
 								BatchGraphics ();

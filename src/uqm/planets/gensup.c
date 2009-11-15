@@ -60,7 +60,7 @@ GenerateSupox (BYTE control)
 
 						if (!GET_GAME_STATE (ULTRON_CONDITION))
 						{
-							((PLANETSIDE_DESC*)pMenuState->ModuleFrame)->InTransit = TRUE;
+							pLanderInputState->planetSideDesc->InTransit = TRUE;
 
 							SET_GAME_STATE (ULTRON_CONDITION, 1);
 						}
