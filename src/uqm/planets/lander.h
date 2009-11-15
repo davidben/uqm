@@ -37,8 +37,9 @@ typedef struct
 
 	SOUND OldMenuSounds;
 
-	COUNT ElementLevel, MaxElementLevel,
-				BiologicalLevel;
+	COUNT ElementLevel;
+	COUNT MaxElementLevel;
+	COUNT BiologicalLevel;
 	COUNT ElementAmounts[NUM_ELEMENT_CATEGORIES];
 
 	COUNT NumFrames;
@@ -47,7 +48,9 @@ typedef struct
 
 	COLOR ColorCycle[NUM_TEXT_FRAMES >> 1];
 
-	BYTE TectonicsChance, WeatherChance, FireChance;
+	BYTE TectonicsChance;
+	BYTE WeatherChance;
+	BYTE FireChance;
 } PLANETSIDE_DESC;
 
 extern CONTEXT ScanContext;

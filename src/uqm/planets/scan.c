@@ -670,8 +670,7 @@ PickPlanetSide (MENU_STATE *pMS)
 			COUNT fuel_required;
 
 			fuel_required = (COUNT)(
-					pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity << 1
-					);
+					pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity << 1);
 			if (fuel_required > 3 * FUEL_TANK_SCALE)
 				fuel_required = 3 * FUEL_TANK_SCALE;
 
