@@ -140,6 +140,19 @@ extern PRIM_LINKS DisplayLinks;
 
 static BYTE lander_flags;
 
+#define NUM_LANDING_DELTAS  11
+#define ON_THE_GROUND       -1
+#define IDLE_INDEX          0
+// XXX: These should be calculated based on SURFACE_HEIGHT and not fixed
+//   In fact, because 3DO SURFACE_HEIGHT was smaller, the lander visibly
+//   jumps up during takeoff, and slams hard on landing.
+//   I brought these out here from the only func that used them.
+static signed char landing_pos[NUM_LANDING_DELTAS] =
+{
+	-10, 1, 12, 22, 31, 39, 45, 50, 54, 57, 59
+};
+
+
 static COLOR
 DamageColorCycle (COLOR c, COUNT i)
 {
@@ -1221,12 +1234,11 @@ RepairScan (void)
 }
 
 static void
-ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
+ScrollPlanetSide (SIZE dx, SIZE dy, int landingIndex)
 {
 	POINT old_pt, new_pt;
 	STAMP lander_s, shadow_s, shield_s;
 	CONTEXT OldContext;
-	signed char lander_pos[] = { -10, 1, 12, 22, 31, 39, 45, 50, 54, 57, 59 };
 	MENU_STATE *scanInputState = &pSolarSysState->MenuState;
 			// TODO: Make a new structure ScanInputState, like
 			// LanderInputState, instead of using MENU_STATE.
@@ -1265,18 +1277,6 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 
 	scanInputState->first_item = new_pt;
 
-	{
-		DWORD TimeIn;
-
-		SleepThreadUntil (MAKE_DWORD (
-				scanInputState->flash_rect1.corner.x,
-				scanInputState->flash_rect1.corner.y));
-		// planet-side rate is set here
-		TimeIn = GetTimeCounter () + PLANET_SIDE_RATE;
-		scanInputState->flash_rect1.corner.x = LOWORD (TimeIn);
-		scanInputState->flash_rect1.corner.y = HIWORD (TimeIn);
-	}
-
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 
@@ -1308,13 +1308,13 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 
 		lander_s.origin.x = SURFACE_WIDTH >> 1;
 		lander_s.frame = LanderFrame[0];
-		if (CountDown < 0)
+		if (landingIndex == ON_THE_GROUND)
 			lander_s.origin.y = SURFACE_HEIGHT >> 1;
 		else
-			lander_s.origin.y = lander_pos[CountDown];
+			lander_s.origin.y = landing_pos[landingIndex];
 
-		if (CountDown >= 0)
-		{
+		if (landingIndex != ON_THE_GROUND)
+		{	// Landing, draw a shadow
 			shadow_s.origin.x = lander_s.origin.y + (SURFACE_WIDTH >> 1) - (SURFACE_HEIGHT >> 1);//2;
 			shadow_s.origin.y = lander_s.origin.y;
 			shadow_s.frame = lander_s.frame;
@@ -1354,7 +1354,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 		}
 	}
 	
-	if (CountDown < 0
+	if (landingIndex == ON_THE_GROUND
 			&& HIBYTE (pLanderInputState->delta_item)
 			&& GetPredLink (DisplayLinks) != END_OF_LIST)
 		CheckObjectCollision (END_OF_LIST);
@@ -1397,7 +1397,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, SIZE CountDown)
 }
 
 static void
-AnimateLaunch (FRAME farray, BOOLEAN ShowPlanetSide)
+AnimateLaunch (FRAME farray)
 {
 	RECT r;
 	STAMP s;
@@ -1418,18 +1418,6 @@ AnimateLaunch (FRAME farray, BOOLEAN ShowPlanetSide)
 		DrawStamp (&s);
 
 		UnlockMutex (GraphicsLock);
-
-#if 0
-		if (ShowPlanetSide)
-		{
-			do
-			{
-				ScrollPlanetSide (0, 0, 0);
-			} while (GetTimeCounter () < Time + (ONE_SECOND / 22));
-		}
-#else
-		(void) ShowPlanetSide;  /* Satisfying compiler (unused parameter) */
-#endif
 
 		SleepThreadUntil (Time + (ONE_SECOND / 22));
 		Time = GetTimeCounter ();
@@ -1532,7 +1520,7 @@ InitPlanetSide (void)
 	PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_DEPARTS),
 			NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
 	SetContext (SpaceContext);
-	AnimateLaunch (LanderFrame[5], FALSE);
+	AnimateLaunch (LanderFrame[5]);
 #ifdef SPIN_ON_LAUNCH
 	pSolarSysState->PauseRotate = 1;
 	UnlockMutex (GraphicsLock);
@@ -1667,7 +1655,9 @@ LanderFire (LanderInputState *inputState, SIZE index) {
 static BOOLEAN
 DoPlanetSide (LanderInputState *pMS)
 {
-#define NUM_LANDING_DELTAS 10
+	SIZE dx = 0;
+	SIZE dy = 0;
+
 #define SHUTTLE_TURN_WAIT 2
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
@@ -1691,8 +1681,10 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 #endif
 
 		SetVelocityComponents (&GLOBAL (velocity),
-				COSINE (angle, WORLD_TO_VELOCITY (2 * 8)) / LANDER_SPEED_DENOM,
-				SINE (angle, WORLD_TO_VELOCITY (2 * 8)) / LANDER_SPEED_DENOM);
+				COSINE (angle, landerSpeedNumer) / LANDER_SPEED_DENOM,
+				SINE (angle, landerSpeedNumer) / LANDER_SPEED_DENOM);
+
+		return TRUE;
 	}
 	else if (pMS->delta_item == 0
 			|| (HIBYTE (pMS->delta_item)
@@ -1750,19 +1742,10 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 						" allocate explosion element!");
 			}
 		}
-
-		ScrollPlanetSide (0, 0, -1);
 	}
 	else
 	{
-		SIZE dx, dy;
-
-		if (HIBYTE (pMS->delta_item) == 0)
-		{
-			dx = 0;
-			dy = 0;
-		}
-		else
+		if (HIBYTE (pMS->delta_item) != 0)
 		{
 			SIZE index = GetFrameIndex (LanderFrame[0]);
 			if (LONIBBLE (pMS->CurState))
@@ -1813,9 +1796,12 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 				LanderFire (pMS, index);
 			}
 		}
-
-		ScrollPlanetSide (dx, dy, -1);
 	}
+
+	ScrollPlanetSide (dx, dy, ON_THE_GROUND);
+
+	SleepThreadUntil (pLanderInputState->NextTime);
+	pLanderInputState->NextTime += PLANET_SIDE_RATE;
 
 	return TRUE;
 }
@@ -1906,15 +1892,61 @@ ReturnToOrbit (RECT *pRect)
 	LoadIntoExtraScreen (pRect);
 	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
+}
 
-//	SetPlanetTilt (0);
+static void
+IdlePlanetSide (LanderInputState *inputState, TimeCount howLong)
+{
+	TimeCount TimeOut = GetTimeCounter () + howLong;
+
+	while (GetTimeCounter () < TimeOut)
+	{
+		ScrollPlanetSide (0, 0, IDLE_INDEX);
+		SleepThreadUntil (inputState->NextTime);
+		inputState->NextTime += PLANET_SIDE_RATE;
+	}
+}
+
+static void
+LandingTakeoffSequence (LanderInputState *inputState, BOOLEAN landing)
+{
+	int start;
+	int end;
+	int delta;
+	int index;
+
+	if (landing)
+	{
+		start = 0;
+		end = NUM_LANDING_DELTAS;
+		delta = +1;
+	}
+	else
+	{	// takeoff
+		start = NUM_LANDING_DELTAS - 1;
+		end = -1;
+		delta = -1;
+	}
+
+	if (landing)
+		IdlePlanetSide (inputState, ONE_SECOND);
+
+	// Draw the landing/takeoff lander positions
+	for (index = start; index != end; index += delta)
+	{
+		ScrollPlanetSide (0, 0, index);
+		SleepThreadUntil (inputState->NextTime);
+		inputState->NextTime += PLANET_SIDE_RATE;
+	}
+
+	if (!landing)
+		IdlePlanetSide (inputState, ONE_SECOND / 2);
 }
 
 void
 PlanetSide (MENU_STATE *pMS)
 {
 	SIZE index;
-	DWORD TimeIn;
 	LanderInputState landerInputState;
 	PLANETSIDE_DESC PSD;
 	BYTE TectonicsChanceTab[] = {0*3, 0*3, 1*3, 2*3, 4*3, 8*3, 16*3, 32*3};
@@ -1990,26 +2022,9 @@ PlanetSide (MENU_STATE *pMS)
 
 	InitPlanetSide ();
 
-	TimeIn = GetTimeCounter ();
-	pSolarSysState->MenuState.flash_rect1.corner.x = LOWORD (TimeIn);
-	pSolarSysState->MenuState.flash_rect1.corner.y = HIWORD (TimeIn);
-	for (index = 0; index <= NUM_LANDING_DELTAS; ++index)
-	{
-		if (index == 0)
-			TimeIn += ONE_SECOND;
-		else
-			TimeIn += ONE_SECOND / 60;
-
-		do
-		{
-			ScrollPlanetSide (0, 0, index);
-		} while (GetTimeCounter () < TimeIn);
-	}
+	landerInputState.NextTime = GetTimeCounter () + PLANET_SIDE_RATE;
+	LandingTakeoffSequence (&landerInputState, TRUE);
 	PSD.InTransit = FALSE;
-
-	TimeIn += ONE_SECOND / 30;
-	pSolarSysState->MenuState.flash_rect1.corner.x = LOWORD (TimeIn);
-	pSolarSysState->MenuState.flash_rect1.corner.y = HIWORD (TimeIn);
 
 	landerInputState.Initialized = FALSE;
 	landerInputState.InputFunc = DoPlanetSide;
@@ -2030,10 +2045,6 @@ PlanetSide (MENU_STATE *pMS)
 		r.extent.height = SIS_SCREEN_HEIGHT;
 		if (crew_left == 0)
 		{
-#ifdef NEVER
-			ScrollPlanetSide (0, 0, 0);
-#endif /* NEVER */
-
 			--GLOBAL_SIS (NumLanders);
 			LockMutex (GraphicsLock);
 			DrawLanders ();
@@ -2047,20 +2058,7 @@ PlanetSide (MENU_STATE *pMS)
 			PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_RETURNS),
 					NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
 
-			TimeIn = GetTimeCounter ();
-			for (index = NUM_LANDING_DELTAS; index >= 0; --index)
-			{
-				if (index == 0)
-					TimeIn += (ONE_SECOND >> 1);
-				else
-					TimeIn += ONE_SECOND / 60;
-
-				do
-				{
-					ScrollPlanetSide (0, 0, index);
-				} while (GetTimeCounter () < TimeIn);
-			}
-
+			LandingTakeoffSequence (&landerInputState, FALSE);
 			ReturnToOrbit (&r);
 #ifdef SPIN_ON_LAUNCH
 			// If PauseRotate is set to 2 the plaet will be displayed, but won't rotate
@@ -2073,7 +2071,7 @@ PlanetSide (MENU_STATE *pMS)
 			LockMutex (GraphicsLock);
 			SetContext (SpaceContext);
 
-			AnimateLaunch (LanderFrame[6], TRUE);
+			AnimateLaunch (LanderFrame[6]);
 			DeltaSISGauges (crew_left, 0, 0);
 
 			if (PSD.ElementLevel)

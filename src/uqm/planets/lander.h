@@ -67,6 +67,8 @@ struct LanderInputState {
 	PLANETSIDE_DESC *planetSideDesc;
 	SIZE Initialized;
 	MENU_STATE *scanInputState;
+	TimeCount NextTime;
+			// Frame rate control
 
 	// The following fields need to be renamed:
 	BYTE CurState;
