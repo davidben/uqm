@@ -23,7 +23,7 @@
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
 #include "libs/sndlib.h"
-#include "../menustat.h"
+#include "libs/timelib.h"
 #include "../element.h"
 
 
@@ -66,7 +66,6 @@ struct LanderInputState {
 
 	PLANETSIDE_DESC *planetSideDesc;
 	SIZE Initialized;
-	MENU_STATE *scanInputState;
 	TimeCount NextTime;
 			// Frame rate control
 
@@ -82,14 +81,19 @@ struct LanderInputState {
 
 extern LanderInputState *pLanderInputState;
 		// Temporary, to replace the references to pMenuState.
-		// Eventually, this should become a parameter to everything which
-		// needs it.
+		// TODO: Many functions depend on pLanderInputState. In particular,
+		//   the ELEMENT property functions. Fields in LanderInputState
+		//   should either be made static vars, or ELEMENT should carry
+		//   something like an 'intptr_t private' field
+		// TODO: Generation functions use pLanderInputState to locate
+		//   the PLANETSIDE_DESC.InTransit. Make those instances into
+		//   a function call instead.
 
 
 extern CONTEXT ScanContext;
 extern MUSIC_REF LanderMusic;
 
-extern void PlanetSide (MENU_STATE *pMS);
+extern void PlanetSide (POINT planetLoc);
 extern void DoDiscoveryReport (SOUND ReadOutSounds);
 extern void SetPlanetMusic (BYTE planet_type);
 extern void LoadLanderData (void);

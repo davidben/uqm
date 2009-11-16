@@ -46,8 +46,7 @@ typedef struct
 extern void RepairBackRect (RECT *pRect);
 extern void GeneratePlanetSide (void);
 
-extern void drawPlanetCursor (MENU_STATE *pMS, BOOLEAN filled);
-extern void setPlanetCursorLoc (MENU_STATE *pMS, POINT new_pt);
+extern void RedrawSurfaceScan (const POINT *newLoc);
 
 #endif /* _SCAN_H */
 

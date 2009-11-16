@@ -50,14 +50,17 @@
 
 LanderInputState *pLanderInputState;
 		// Temporary, to replace the references to pMenuState.
-		// Eventually, this should become a parameter to everything which
-		// needs it.
+		// TODO: Many functions depend on pLanderInputState. In particular,
+		//   the ELEMENT property functions. Fields in LanderInputState
+		//   should either be made static vars, or ELEMENT should carry
+		//   something like an 'intptr_t private' field
 
 FRAME LanderFrame[8];
 static SOUND LanderSounds;
 MUSIC_REF LanderMusic;
 #define NUM_ORBIT_THEMES 5
 static MUSIC_REF OrbitMusic[NUM_ORBIT_THEMES];
+
 const LIFEFORM_DESC CreatureData[] =
 {
 	{SPEED_MOTIONLESS | DANGER_HARMLESS, MAKE_BYTE (1, 1)},
@@ -139,6 +142,7 @@ extern PRIM_LINKS DisplayLinks;
 #define LANDER_SPEED_DENOM 10
 
 static BYTE lander_flags;
+static POINT curLanderLoc;
 
 #define NUM_LANDING_DELTAS  11
 #define ON_THE_GROUND       -1
@@ -187,8 +191,8 @@ DamageColorCycle (COLOR c, COUNT i)
 	return (c);
 }
 
-#define MAGNIFICATION (1 << MAG_SHIFT)
-
+// XXX: This function used to erase a moving object by drawing a piece
+//   of surface over its previous location. Now it just moves the object
 static BOOLEAN
 RepairTopography (ELEMENT *ElementPtr)
 {
@@ -339,14 +343,12 @@ object_animation (ELEMENT *ElementPtr)
 				SIZE dx, dy;
 				COUNT old_angle;
 
-				dx = pSolarSysState->MenuState.first_item.x
-						- ElementPtr->next.location.x;
+				dx = curLanderLoc.x - ElementPtr->next.location.x;
 				if (dx < 0 && dx < -(MAP_WIDTH << (MAG_SHIFT - 1)))
 					dx += MAP_WIDTH << MAG_SHIFT;
 				else if (dx > (MAP_WIDTH << (MAG_SHIFT - 1)))
 					dx -= MAP_WIDTH << MAG_SHIFT;
-				dy = pSolarSysState->MenuState.first_item.y
-						- ElementPtr->next.location.y;
+				dy = curLanderLoc.y - ElementPtr->next.location.y;
 				angle = ARCTAN (dx, dy);
 				if (dx < 0)
 					dx = -dx;
@@ -942,8 +944,7 @@ lightning_process (ELEMENT *ElementPtr)
 						&& !pPSD->InTransit)
 					lander_flags |= KILL_CREW;
 
-				ElementPtr->next.location =
-						pSolarSysState->MenuState.first_item;
+				ElementPtr->next.location = curLanderLoc;
 			}
 
 			pPrim->Object.Stamp.frame =
@@ -981,13 +982,11 @@ AddLightning (void)
 
 		rand_val = TFB_Random ();
 		LightningElementPtr->life_span = 10 + (HIWORD (rand_val) % 10) + 1;
-		LightningElementPtr->next.location.x = (
-				pSolarSysState->MenuState.first_item.x
+		LightningElementPtr->next.location.x = (curLanderLoc.x
 				+ ((MAP_WIDTH << MAG_SHIFT) - ((SURFACE_WIDTH >> 1) - 6))
 				+ (LOBYTE (rand_val) % (SURFACE_WIDTH - 12))
 				) % (MAP_WIDTH << MAG_SHIFT);
-		LightningElementPtr->next.location.y = (
-				pSolarSysState->MenuState.first_item.y
+		LightningElementPtr->next.location.y = (curLanderLoc.y
 				+ ((MAP_HEIGHT << MAG_SHIFT) - ((SURFACE_HEIGHT >> 1) - 6))
 				+ (HIBYTE (rand_val) % (SURFACE_HEIGHT - 12))
 				) % (MAP_HEIGHT << MAG_SHIFT);
@@ -1029,13 +1028,11 @@ AddGroundDisaster (COUNT which_disaster)
 		GroundDisasterElementPtr->preprocess_func = object_animation;
 
 		rand_val = TFB_Random ();
-		GroundDisasterElementPtr->next.location.x = (
-				pSolarSysState->MenuState.first_item.x
+		GroundDisasterElementPtr->next.location.x = (curLanderLoc.x
 				+ ((MAP_WIDTH << MAG_SHIFT) - (SURFACE_WIDTH * 3 / 8))
 				+ (LOWORD (rand_val) % (SURFACE_WIDTH * 3 / 4))
 				) % (MAP_WIDTH << MAG_SHIFT);
-		GroundDisasterElementPtr->next.location.y = (
-				pSolarSysState->MenuState.first_item.y
+		GroundDisasterElementPtr->next.location.y = (curLanderLoc.y
 				+ ((MAP_HEIGHT << MAG_SHIFT) - (SURFACE_HEIGHT * 3 / 8))
 				+ (HIWORD (rand_val) % (SURFACE_HEIGHT * 3 / 4))
 				) % (MAP_HEIGHT << MAG_SHIFT);
@@ -1067,6 +1064,10 @@ AddGroundDisaster (COUNT which_disaster)
 	return (hGroundDisasterElement);
 }
 
+// This function replaces the ELEMENT manipulations typically done by
+// PreProcess() and PostProcess() in process.c. Lander code does not
+// call RedrawQueue() & Co and thus does not reap the benefits (or curses,
+// depending how you look at it) of automatic flags processing.
 static void
 BuildObjectList (void)
 {
@@ -1094,7 +1095,7 @@ BuildObjectList (void)
 	if (LOBYTE (LOWORD (rand_val)) < pPSD->WeatherChance)
 		AddLightning ();
 
-	org = pSolarSysState->MenuState.first_item;
+	org = curLanderLoc;
 	for (hElement = GetHeadElement ();
 			hElement; hElement = hNextElement)
 	{
@@ -1109,8 +1110,10 @@ BuildObjectList (void)
 			hNextElement = GetSuccElement (ElementPtr);
 			UnlockElement (hElement);
 
+			// XXX: Hack: APPEARING flag is set by scan.c for scanned blips
 			if (ElementPtr->state_flags & APPEARING)
 			{
+				// XXX: Hack: defer deletion of the element
 				ElementPtr->current.location.x |= 0x8000;
 				ElementPtr->current.location.y |= 0x8000;
 			}
@@ -1130,9 +1133,7 @@ BuildObjectList (void)
 		if (ElementPtr->preprocess_func)
 			(*ElementPtr->preprocess_func) (ElementPtr);
 
-		GetNextVelocityComponents (
-				&ElementPtr->velocity, &dx, &dy, 1
-				);
+		GetNextVelocityComponents (&ElementPtr->velocity, &dx, &dy, 1);
 		if (dx || dy)
 		{
 			ElementPtr->next.location.x += dx;
@@ -1145,8 +1146,11 @@ BuildObjectList (void)
 				else if (ElementPtr->next.location.y >= (MAP_HEIGHT << MAG_SHIFT))
 					ElementPtr->next.location.y = (MAP_HEIGHT << MAG_SHIFT) - 1;
 			}
+			// XXX: Hack: APPEARING flag is set by scan.c for scanned blips
 			if (ElementPtr->state_flags & APPEARING)
+			{	// XXX: Hack: remove the element from display
 				ElementPtr->current.location.x |= 0x8000;
+			}
 			if (ElementPtr->next.location.x < 0)
 				ElementPtr->next.location.x += MAP_WIDTH << MAG_SHIFT;
 			else
@@ -1183,99 +1187,72 @@ BuildObjectList (void)
 }
 
 static void
-RepairScan (void)
+RepairScan (POINT newPlanetLoc)
 {
-	CONTEXT OldContext;
 	HELEMENT hElement, hNextElement;
-
-	OldContext = SetContext (ScanContext);
 
 	for (hElement = GetHeadElement ();
 			hElement; hElement = hNextElement)
 	{
 		ELEMENT *ElementPtr;
+		BOOLEAN remove = FALSE;
 
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetSuccElement (ElementPtr);
 		if (ElementPtr->current.location.x & 0x8000)
-		{
-			BOOLEAN remove;
-			
+		{	// XXX: element removed from display
 			ElementPtr->current.location.x &= ~0x8000;
 			if (ElementPtr->current.location.y & 0x8000)
-			{
+			{	// XXX: deletion of this element was defered
 				remove = TRUE;
 				ElementPtr->current.location.y &= ~0x8000;
 			}
-			else
-				remove = FALSE;
+
 			RepairTopography (ElementPtr);
-			if (remove)
-			{
-				UnlockElement (hElement);
-				RemoveElement (hElement);
-				FreeElement (hElement);
-				continue;
-			}
 		}
 		
 		UnlockElement (hElement);
+
+		if (remove)
+		{
+			RemoveElement (hElement);
+			FreeElement (hElement);
+		}
 	}
 
-	BatchGraphics ();
-#if 1
-	DrawPlanet (0, 0, 0, 0);
-#endif
-	DrawScannedObjects (TRUE);
-	drawPlanetCursor (pLanderInputState->scanInputState, FALSE);
-	UnbatchGraphics ();
-
-	SetContext (OldContext);
+	RedrawSurfaceScan (&newPlanetLoc);
 }
 
 static void
 ScrollPlanetSide (SIZE dx, SIZE dy, int landingIndex)
 {
-	POINT old_pt, new_pt;
+	POINT new_pt;
 	STAMP lander_s, shadow_s, shield_s;
 	CONTEXT OldContext;
-	MENU_STATE *scanInputState = &pSolarSysState->MenuState;
-			// TODO: Make a new structure ScanInputState, like
-			// LanderInputState, instead of using MENU_STATE.
 
-	old_pt.x = scanInputState->first_item.x - (SURFACE_WIDTH >> 1);
-	old_pt.y = scanInputState->first_item.y - (SURFACE_HEIGHT >> 1);
-
-	new_pt.y = old_pt.y + dy;
-	if (new_pt.y < -(SURFACE_HEIGHT >> 1))
+	new_pt.y = curLanderLoc.y + dy;
+	if (new_pt.y < 0)
 	{
-		new_pt.y = -(SURFACE_HEIGHT >> 1);
-		dy = new_pt.y - old_pt.y;
+		new_pt.y = 0;
+		dy = new_pt.y - curLanderLoc.y;
 		dx = 0;
 		ZeroVelocityComponents (&GLOBAL (velocity));
 	}
-	else if (new_pt.y > (MAP_HEIGHT << MAG_SHIFT) - (SURFACE_HEIGHT >> 1))
+	else if (new_pt.y > (MAP_HEIGHT << MAG_SHIFT) - 1)
 	{
-		new_pt.y = (MAP_HEIGHT << MAG_SHIFT) - (SURFACE_HEIGHT >> 1);
-		dy = new_pt.y - old_pt.y;
+		new_pt.y = (MAP_HEIGHT << MAG_SHIFT) - 1;
+		dy = new_pt.y - curLanderLoc.y;
 		dx = 0;
 		ZeroVelocityComponents (&GLOBAL (velocity));
 	}
 
-	new_pt.x = old_pt.x + dx;
+	new_pt.x = curLanderLoc.x + dx;
 	if (new_pt.x < 0)
 		new_pt.x += MAP_WIDTH << MAG_SHIFT;
 	else if (new_pt.x >= MAP_WIDTH << MAG_SHIFT)
 		new_pt.x -= MAP_WIDTH << MAG_SHIFT;
-
-	new_pt.x = scanInputState->first_item.x + dx;
-	if (new_pt.x < 0)
-		new_pt.x += MAP_WIDTH << MAG_SHIFT;
-	else if (new_pt.x >= MAP_WIDTH << MAG_SHIFT)
-		new_pt.x -= MAP_WIDTH << MAG_SHIFT;
-	new_pt.y = scanInputState->first_item.y + dy;
-
-	scanInputState->first_item = new_pt;
+	
+	curLanderLoc = new_pt;
 
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
@@ -1384,8 +1361,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingIndex)
 		}
 	}
 
-	setPlanetCursorLoc (pLanderInputState->scanInputState, new_pt);
-	RepairScan ();
+	RepairScan (new_pt);
 
 	if (lander_flags & KILL_CREW)
 		DeltaLanderCrew (-1, LIGHTNING_DISASTER);
@@ -1430,10 +1406,9 @@ AnimateLaunch (FRAME farray)
 }
 
 static void
-InitPlanetSide (void)
+InitPlanetSide (POINT pt)
 {
 	SIZE num_crew;
-	POINT pt;
 	STAMP s;
 	CONTEXT OldContext;
 	DWORD Time;
@@ -1527,10 +1502,9 @@ InitPlanetSide (void)
 	TaskSwitch ();
 	LockMutex (GraphicsLock);
 #endif
-	// Adjust pSolarSysState->MenuState.first_item by a random jitter.
-#define RANDOM_MISS 64
-	pt = pSolarSysState->MenuState.first_item;
 
+	// Adjust landing location by a random jitter.
+#define RANDOM_MISS 64
 	// Jitter the X landing point.
 	pt.x -= RANDOM_MISS - (SIZE)(LOWORD (TFB_Random ()) % (RANDOM_MISS << 1));
 	if (pt.x < 0)
@@ -1545,8 +1519,8 @@ InitPlanetSide (void)
 	else if (pt.y >= (MAP_HEIGHT << MAG_SHIFT))
 		pt.y = (MAP_HEIGHT << MAG_SHIFT) - 1;
 
-	// Set the planet location
-	pSolarSysState->MenuState.first_item = pt;
+	curLanderLoc = pt;
+
 	SetContext (SpaceContext);
 	SetContextFont (TinyFont);
 
@@ -1594,7 +1568,8 @@ InitPlanetSide (void)
 }
 
 static void
-LanderFire (LanderInputState *inputState, SIZE index) {
+LanderFire (LanderInputState *inputState, SIZE index)
+{
 #define SHUTTLE_FIRE_WAIT 15
 	HELEMENT hWeaponElement;
 	SIZE wdx, wdy;
@@ -1610,8 +1585,7 @@ LanderFire (LanderInputState *inputState, SIZE index) {
 	WeaponElementPtr->mass_points = 1;
 	WeaponElementPtr->life_span = 12;
 	WeaponElementPtr->state_flags = FINITE_LIFE;
-	WeaponElementPtr->next.location =
-			pSolarSysState->MenuState.first_item;
+	WeaponElementPtr->next.location = curLanderLoc;
 	WeaponElementPtr->current.location.x =
 			WeaponElementPtr->next.location.x >> MAG_SHIFT;
 	WeaponElementPtr->current.location.y =
@@ -1714,12 +1688,10 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 				ExplosionElementPtr->playerNr = PS_HUMAN_PLAYER;
 				ExplosionElementPtr->mass_points = DEATH_EXPLOSION;
 				ExplosionElementPtr->state_flags = FINITE_LIFE;
-				ExplosionElementPtr->next.location =
-						pSolarSysState->MenuState.first_item;
+				ExplosionElementPtr->next.location = curLanderLoc;
 				ExplosionElementPtr->preprocess_func = object_animation;
 				ExplosionElementPtr->turn_wait = MAKE_BYTE (2, 2);
-				ExplosionElementPtr->life_span =
-						EXPLOSION_LIFE
+				ExplosionElementPtr->life_span = EXPLOSION_LIFE
 						* (LONIBBLE (ExplosionElementPtr->turn_wait) + 1);
 
 				SetPrimType (&DisplayArray[ExplosionElementPtr->PrimIndex],
@@ -1883,9 +1855,7 @@ ReturnToOrbit (RECT *pRect)
 	SetTransitionSource (pRect);
 	BatchGraphics ();
 	DrawStarBackGround (TRUE);
-	SetContext (ScanContext);
-	DrawPlanet (0, 0, 0, 0);
-	DrawScannedObjects (TRUE);
+	RedrawSurfaceScan (NULL);
 	ScreenTransition (3, pRect);
 	UnbatchGraphics ();
 
@@ -1944,7 +1914,7 @@ LandingTakeoffSequence (LanderInputState *inputState, BOOLEAN landing)
 }
 
 void
-PlanetSide (MENU_STATE *pMS)
+PlanetSide (POINT planetLoc)
 {
 	SIZE index;
 	LanderInputState landerInputState;
@@ -2011,16 +1981,18 @@ PlanetSide (MENU_STATE *pMS)
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F);
 	landerInputState.planetSideDesc = &PSD;
 	
-	// ScrollPlanetSide depends on this. Not just DoPlanetSide().
+	// TODO: Many functions depend on pLanderInputState. In particular,
+	//   the ELEMENT property functions. Fields in LanderInputState
+	//   should either be made static vars, or ELEMENT should carry
+	//   something like an 'intptr_t private' field
 	pLanderInputState = &landerInputState;
-	landerInputState.scanInputState = pMS;
 
 	index = NORMALIZE_FACING ((COUNT)TFB_Random ());
 	LanderFrame[0] = SetAbsFrameIndex (LanderFrame[0], index);
 	landerInputState.delta_item = 0;
 	pSolarSysState->MenuState.Initialized += 4;
 
-	InitPlanetSide ();
+	InitPlanetSide (planetLoc);
 
 	landerInputState.NextTime = GetTimeCounter () + PLANET_SIDE_RATE;
 	LandingTakeoffSequence (&landerInputState, TRUE);
