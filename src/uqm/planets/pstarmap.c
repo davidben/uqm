@@ -37,6 +37,12 @@
 #include "libs/memlib.h"
 
 
+static POINT cursorLoc;
+static POINT mapOrigin;
+static int zoomLevel;
+static FRAME StarMapFrame;
+
+
 static inline long
 signedDivWithError (long val, long divisor)
 {
@@ -55,8 +61,7 @@ signedDivWithError (long val, long divisor)
 static inline COORD
 universeToDispx (COORD ux)
 {
-	return signedDivWithError ((((long)ux - pMenuState->flash_rect1.corner.x)
-			<< LOBYTE (pMenuState->delta_item))
+	return signedDivWithError ((((long)ux - mapOrigin.x) << zoomLevel)
 			* SIS_SCREEN_WIDTH, MAX_X_UNIVERSE + MAP_FIT_X)
 			+ ((SIS_SCREEN_WIDTH - 1) >> 1);
 }
@@ -65,8 +70,7 @@ universeToDispx (COORD ux)
 static inline COORD
 universeToDispy (COORD uy)
 {
-	return signedDivWithError ((((long)pMenuState->flash_rect1.corner.y - uy)
-			<< LOBYTE (pMenuState->delta_item))
+	return signedDivWithError ((((long)mapOrigin.y - uy) << zoomLevel)
 			* SIS_SCREEN_HEIGHT, MAX_Y_UNIVERSE + 2)
 			+ ((SIS_SCREEN_HEIGHT - 1) >> 1);
 }
@@ -76,8 +80,8 @@ static inline COORD
 dispxToUniverse (COORD dx)
 {
 	return (((long)(dx - ((SIS_SCREEN_WIDTH - 1) >> 1))
-			* (MAX_X_UNIVERSE + MAP_FIT_X)) >> LOBYTE (pMenuState->delta_item))
-			/ SIS_SCREEN_WIDTH + pMenuState->flash_rect1.corner.x;
+			* (MAX_X_UNIVERSE + MAP_FIT_X)) >> zoomLevel)
+			/ SIS_SCREEN_WIDTH + mapOrigin.x;
 }
 #define DISP_TO_UNIVERSEX(dx)  dispxToUniverse(dx)
 
@@ -85,8 +89,8 @@ static inline COORD
 dispyToUniverse (COORD dy)
 {
 	return (((long)(((SIS_SCREEN_HEIGHT - 1) >> 1) - dy)
-			* (MAX_Y_UNIVERSE + 2)) >> LOBYTE (pMenuState->delta_item))
-			/ SIS_SCREEN_HEIGHT + pMenuState->flash_rect1.corner.y;
+			* (MAX_Y_UNIVERSE + 2)) >> zoomLevel)
+			/ SIS_SCREEN_HEIGHT + mapOrigin.y;
 }
 #define DISP_TO_UNIVERSEY(dy)  dispyToUniverse(dy)
 
@@ -120,7 +124,7 @@ flashCurrentLocation (POINT *where)
 		OldColor = SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (c, c, c), c));
 		s.origin.x = UNIVERSE_TO_DISPX (universe.x);
 		s.origin.y = UNIVERSE_TO_DISPY (universe.y);
-		s.frame = IncFrameIndex (pMenuState->CurFrame);
+		s.frame = IncFrameIndex (StarMapFrame);
 		DrawFilledStamp (&s);
 		SetContextForeGroundColor (OldColor);
 
@@ -136,7 +140,7 @@ DrawCursor (COORD curs_x, COORD curs_y)
 
 	s.origin.x = curs_x;
 	s.origin.y = curs_y;
-	s.frame = pMenuState->CurFrame;
+	s.frame = StarMapFrame;
 
 	DrawStamp (&s);
 }
@@ -362,13 +366,13 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 
 		r.corner.x = UNIVERSE_TO_DISPX (0);
 		r.corner.y = UNIVERSE_TO_DISPY (i);
-		r.extent.width = SIS_SCREEN_WIDTH << LOBYTE (pMenuState->delta_item);
+		r.extent.width = SIS_SCREEN_WIDTH << zoomLevel;
 		r.extent.height = 1;
 		DrawFilledRectangle (&r);
 
 		r.corner.y = UNIVERSE_TO_DISPY (MAX_Y_UNIVERSE + 1);
 		r.extent.width = 1;
-		r.extent.height = SIS_SCREEN_HEIGHT << LOBYTE (pMenuState->delta_item);
+		r.extent.height = SIS_SCREEN_HEIGHT << zoomLevel;
 		for (j = MAX_X_UNIVERSE + 1; j >= 0; j -= GRID_DELTA)
 		{
 			r.corner.x = UNIVERSE_TO_DISPX (j);
@@ -376,7 +380,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 		}
 	}
 
-	star_frame = SetRelFrameIndex (pMenuState->CurFrame, 2);
+	star_frame = SetRelFrameIndex (StarMapFrame, 2);
 	if (which_space <= 1)
 	{
 		COUNT index;
@@ -544,10 +548,8 @@ printf ("%s\n", buf);
 		{
 			GetContextClipRect (&r);
 			LoadIntoExtraScreen (&r);
-			DrawCursor (
-					UNIVERSE_TO_DISPX (pMenuState->first_item.x),
-					UNIVERSE_TO_DISPY (pMenuState->first_item.y)
-					);
+			DrawCursor (UNIVERSE_TO_DISPX (cursorLoc.x),
+					UNIVERSE_TO_DISPY (cursorLoc.y));
 		}
 	}
 
@@ -560,7 +562,7 @@ EraseCursor (COORD curs_x, COORD curs_y)
 {
 	RECT r;
 
-	GetFrameRect (pMenuState->CurFrame, &r);
+	GetFrameRect (StarMapFrame, &r);
 
 	if ((r.corner.x += curs_x) < 0)
 	{
@@ -594,10 +596,10 @@ ZoomStarMap (SIZE dir)
 #define MAX_ZOOM_SHIFT 4
 	if (dir > 0)
 	{
-		if (LOBYTE (pMenuState->delta_item) < MAX_ZOOM_SHIFT)
+		if (zoomLevel < MAX_ZOOM_SHIFT)
 		{
-			++pMenuState->delta_item;
-			pMenuState->flash_rect1.corner = pMenuState->first_item;
+			++zoomLevel;
+			mapOrigin = cursorLoc;
 
 			DrawStarMap (0, NULL);
 			SleepThread (ONE_SECOND / 8);
@@ -605,16 +607,16 @@ ZoomStarMap (SIZE dir)
 	}
 	else if (dir < 0)
 	{
-		if (LOBYTE (pMenuState->delta_item))
+		if (zoomLevel > 0)
 		{
-			if (LOBYTE (pMenuState->delta_item) > 1)
-				pMenuState->flash_rect1.corner = pMenuState->first_item;
+			if (zoomLevel > 1)
+				mapOrigin = cursorLoc;
 			else
 			{
-				pMenuState->flash_rect1.corner.x = MAX_X_UNIVERSE >> 1;
-				pMenuState->flash_rect1.corner.y = MAX_Y_UNIVERSE >> 1;
+				mapOrigin.x = MAX_X_UNIVERSE >> 1;
+				mapOrigin.y = MAX_Y_UNIVERSE >> 1;
 			}
-			--pMenuState->delta_item;
+			--zoomLevel;
 
 			DrawStarMap (0, NULL);
 			SleepThread (ONE_SECOND / 8);
@@ -623,20 +625,20 @@ ZoomStarMap (SIZE dir)
 }
 
 static void
-UpdateCursorLocation (MENU_STATE *pMS, int sx, int sy, const POINT *newpt)
+UpdateCursorLocation (int sx, int sy, const POINT *newpt)
 {
 	STAMP s;
 	POINT pt;
 
-	pt.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
-	pt.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
+	pt.x = UNIVERSE_TO_DISPX (cursorLoc.x);
+	pt.y = UNIVERSE_TO_DISPY (cursorLoc.y);
 
 	if (newpt)
 	{	// absolute move
 		sx = sy = 0;
 		s.origin.x = UNIVERSE_TO_DISPX (newpt->x);
 		s.origin.y = UNIVERSE_TO_DISPY (newpt->y);
-		pMS->first_item = *newpt;
+		cursorLoc = *newpt;
 	}
 	else
 	{	// incremental move
@@ -646,41 +648,41 @@ UpdateCursorLocation (MENU_STATE *pMS, int sx, int sy, const POINT *newpt)
 
 	if (sx)
 	{
-		pMS->first_item.x = DISP_TO_UNIVERSEX (s.origin.x) - sx;
-		while (UNIVERSE_TO_DISPX (pMS->first_item.x) == pt.x)
-			pMS->first_item.x += sx;
+		cursorLoc.x = DISP_TO_UNIVERSEX (s.origin.x) - sx;
+		while (UNIVERSE_TO_DISPX (cursorLoc.x) == pt.x)
+			cursorLoc.x += sx;
 		
-		if (pMS->first_item.x < 0)
-			pMS->first_item.x = 0;
-		else if (pMS->first_item.x > MAX_X_UNIVERSE)
-			pMS->first_item.x = MAX_X_UNIVERSE;
+		if (cursorLoc.x < 0)
+			cursorLoc.x = 0;
+		else if (cursorLoc.x > MAX_X_UNIVERSE)
+			cursorLoc.x = MAX_X_UNIVERSE;
 
-		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
+		s.origin.x = UNIVERSE_TO_DISPX (cursorLoc.x);
 	}
 
 	if (sy)
 	{
-		pMS->first_item.y = DISP_TO_UNIVERSEY (s.origin.y) + sy;
-		while (UNIVERSE_TO_DISPY (pMS->first_item.y) == pt.y)
-			pMS->first_item.y -= sy;
+		cursorLoc.y = DISP_TO_UNIVERSEY (s.origin.y) + sy;
+		while (UNIVERSE_TO_DISPY (cursorLoc.y) == pt.y)
+			cursorLoc.y -= sy;
 
-		if (pMS->first_item.y < 0)
-			pMS->first_item.y = 0;
-		else if (pMS->first_item.y > MAX_Y_UNIVERSE)
-			pMS->first_item.y = MAX_Y_UNIVERSE;
+		if (cursorLoc.y < 0)
+			cursorLoc.y = 0;
+		else if (cursorLoc.y > MAX_Y_UNIVERSE)
+			cursorLoc.y = MAX_Y_UNIVERSE;
 
-		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
+		s.origin.y = UNIVERSE_TO_DISPY (cursorLoc.y);
 	}
 
 	if (s.origin.x < 0 || s.origin.y < 0
 			|| s.origin.x >= SIS_SCREEN_WIDTH
 			|| s.origin.y >= SIS_SCREEN_HEIGHT)
 	{
-		pMS->flash_rect1.corner = pMS->first_item;
+		mapOrigin = cursorLoc;
 		DrawStarMap (0, NULL);
 
-		s.origin.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
-		s.origin.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
+		s.origin.x = UNIVERSE_TO_DISPX (cursorLoc.x);
+		s.origin.y = UNIVERSE_TO_DISPY (cursorLoc.y);
 	}
 	else
 	{
@@ -695,18 +697,18 @@ UpdateCursorLocation (MENU_STATE *pMS, int sx, int sy, const POINT *newpt)
 #define CURSOR_INFO_BUFSIZE 256
 
 static void
-UpdateCursorInfo (MENU_STATE *pMS, UNICODE *prevbuf)
+UpdateCursorInfo (UNICODE *prevbuf)
 {
 	UNICODE buf[CURSOR_INFO_BUFSIZE] = "";
 	POINT pt;
 	STAR_DESC *SDPtr;
 	STAR_DESC *BestSDPtr;
 
-	pt.x = UNIVERSE_TO_DISPX (pMS->first_item.x);
-	pt.y = UNIVERSE_TO_DISPY (pMS->first_item.y);
+	pt.x = UNIVERSE_TO_DISPX (cursorLoc.x);
+	pt.y = UNIVERSE_TO_DISPY (cursorLoc.y);
 
 	SDPtr = BestSDPtr = 0;
-	while ((SDPtr = FindStar (SDPtr, &pMS->first_item, 75, 75)))
+	while ((SDPtr = FindStar (SDPtr, &cursorLoc, 75, 75)))
 	{
 		if (UNIVERSE_TO_DISPX (SDPtr->star_pt.x) == pt.x
 				&& UNIVERSE_TO_DISPY (SDPtr->star_pt.y) == pt.y
@@ -717,21 +719,21 @@ UpdateCursorInfo (MENU_STATE *pMS, UNICODE *prevbuf)
 
 	if (BestSDPtr)
 	{
-		pMS->first_item = BestSDPtr->star_pt;
+		cursorLoc = BestSDPtr->star_pt;
 		GetClusterName (BestSDPtr, buf);
 	}
 	else
 	{	// No star found. Reset the coordinates to the cursor's location
-		pMS->first_item.x = DISP_TO_UNIVERSEX (pt.x);
-		if (pMS->first_item.x < 0)
-			pMS->first_item.x = 0;
-		else if (pMS->first_item.x > MAX_X_UNIVERSE)
-			pMS->first_item.x = MAX_X_UNIVERSE;
-		pMS->first_item.y = DISP_TO_UNIVERSEY (pt.y);
-		if (pMS->first_item.y < 0)
-			pMS->first_item.y = 0;
-		else if (pMS->first_item.y > MAX_Y_UNIVERSE)
-			pMS->first_item.y = MAX_Y_UNIVERSE;
+		cursorLoc.x = DISP_TO_UNIVERSEX (pt.x);
+		if (cursorLoc.x < 0)
+			cursorLoc.x = 0;
+		else if (cursorLoc.x > MAX_X_UNIVERSE)
+			cursorLoc.x = MAX_X_UNIVERSE;
+		cursorLoc.y = DISP_TO_UNIVERSEY (pt.y);
+		if (cursorLoc.y < 0)
+			cursorLoc.y = 0;
+		else if (cursorLoc.y > MAX_Y_UNIVERSE)
+			cursorLoc.y = MAX_Y_UNIVERSE;
 	}
 
 	if (GET_GAME_STATE (ARILOU_SPACE))
@@ -752,14 +754,14 @@ UpdateCursorInfo (MENU_STATE *pMS, UNICODE *prevbuf)
 		if (UNIVERSE_TO_DISPX (ari_pt.x) == pt.x
 				&& UNIVERSE_TO_DISPY (ari_pt.y) == pt.y)
 		{
-			pMS->first_item = ari_pt;
+			cursorLoc = ari_pt;
 			utf8StringCopy (buf, sizeof (buf),
 					GAME_STRING (STAR_STRING_BASE + 132));
 		}
 	}
 
 	LockMutex (GraphicsLock);
-	DrawHyperCoords (pMS->first_item);
+	DrawHyperCoords (cursorLoc);
 	if (strcmp (buf, prevbuf) != 0)
 	{
 		strcpy (prevbuf, buf);
@@ -769,7 +771,7 @@ UpdateCursorInfo (MENU_STATE *pMS, UNICODE *prevbuf)
 }
 
 static void
-UpdateFuelRequirement (MENU_STATE *pMS)
+UpdateFuelRequirement (void)
 {
 	UNICODE buf[80];
 	COUNT fuel_required;
@@ -783,8 +785,8 @@ UpdateFuelRequirement (MENU_STATE *pMS)
 		pt.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
 		pt.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
 	}
-	pt.x -= pMS->first_item.x;
-	pt.y -= pMS->first_item.y;
+	pt.x -= cursorLoc.x;
+	pt.y -= cursorLoc.y;
 
 	f = (DWORD)((long)pt.x * pt.x + (long)pt.y * pt.y);
 	if (f == 0 || GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
@@ -806,6 +808,7 @@ UpdateFuelRequirement (MENU_STATE *pMS)
 
 typedef struct starsearch_state
 {
+	// TODO: pMS field is probably not needed anymore
 	MENU_STATE *pMS;
 	UNICODE Text[STAR_SEARCH_BUFSIZE];
 	UNICODE LastText[STAR_SEARCH_BUFSIZE];
@@ -1048,7 +1051,7 @@ DrawMatchedStarName (TEXTENTRY_STATE *pTES)
 	
 	LockMutex (GraphicsLock);
 	DrawSISMessageEx (buf, CurPos, ExPos, flags);
-	DrawHyperCoords (pMS->first_item);
+	DrawHyperCoords (cursorLoc);
 	UnlockMutex (GraphicsLock);
 }
 
@@ -1131,10 +1134,10 @@ OnStarNameChange (TEXTENTRY_STATE *pTES)
 
 		// move the cursor to the found star
 		SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
-		UpdateCursorLocation (pMS, 0, 0, &SDPtr->star_pt);
+		UpdateCursorLocation (0, 0, &SDPtr->star_pt);
 
 		DrawMatchedStarName (pTES);
-		UpdateFuelRequirement (pMS);
+		UpdateFuelRequirement ();
 	}
 
 	return ret;
@@ -1161,10 +1164,10 @@ OnStarNameFrame (TEXTENTRY_STATE *pTES)
 
 		// move the cursor to the found star
 		SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
-		UpdateCursorLocation (pMS, 0, 0, &SDPtr->star_pt);
+		UpdateCursorLocation (0, 0, &SDPtr->star_pt);
 
 		DrawMatchedStarName (pTES);
-		UpdateFuelRequirement (pMS);
+		UpdateFuelRequirement ();
 	}
 
 	flashCurrentLocation (NULL);
@@ -1247,8 +1250,8 @@ DoMoveCursor (MENU_STATE *pMS)
 		flashCurrentLocation (&universe);
 
 		last_buf[0] = '\0';
-		UpdateCursorInfo (pMS, last_buf);
-		UpdateFuelRequirement (pMS);
+		UpdateCursorInfo (last_buf);
+		UpdateFuelRequirement ();
 
 		return TRUE;
 	}
@@ -1258,7 +1261,7 @@ DoMoveCursor (MENU_STATE *pMS)
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
-		GLOBAL (autopilot) = pMS->first_item;
+		GLOBAL (autopilot) = cursorLoc;
 #ifdef DEBUG
 		if (instantMove)
 		{
@@ -1287,16 +1290,16 @@ DoMoveCursor (MENU_STATE *pMS)
 	{
 		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 		{	// HyperSpace search
-			POINT oldpt = pMS->first_item;
+			POINT oldpt = cursorLoc;
 
 			if (!DoStarSearch (pMS))
 			{	// search failed or canceled - return cursor
-				UpdateCursorLocation (pMS, 0, 0, &oldpt);
+				UpdateCursorLocation (0, 0, &oldpt);
 			}
 			// make sure cmp fails
 			strcpy (last_buf, "  <random garbage>  ");
-			UpdateCursorInfo (pMS, last_buf);
-			UpdateFuelRequirement (pMS);
+			UpdateCursorInfo (last_buf);
+			UpdateFuelRequirement ();
 
 			SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY,
 					STEP_ACCEL_DELAY, TRUE);
@@ -1328,9 +1331,9 @@ DoMoveCursor (MENU_STATE *pMS)
 
 		if (sx != 0 || sy != 0)
 		{
-			UpdateCursorLocation (pMS, sx, sy, NULL);
-			UpdateCursorInfo (pMS, last_buf);
-			UpdateFuelRequirement (pMS);
+			UpdateCursorLocation (sx, sy, NULL);
+			UpdateCursorInfo (last_buf);
+			UpdateFuelRequirement ();
 		}
 
 		SleepThreadUntil (TimeIn + MIN_ACCEL_DELAY);
@@ -1587,12 +1590,12 @@ DoStarMap (void)
 	CONTEXT OldContext;
 
 	pMenuState = &MenuState;
-	memset (pMenuState, 0, sizeof (*pMenuState));
+	memset (&MenuState, 0, sizeof (MenuState));
 
-	MenuState.flash_rect1.corner.x = MAX_X_UNIVERSE >> 1;
-	MenuState.flash_rect1.corner.y = MAX_Y_UNIVERSE >> 1;
-	MenuState.CurFrame = SetAbsFrameIndex (MiscDataFrame, 48);
-	MenuState.delta_item = 0;
+	zoomLevel = 0;
+	mapOrigin.x = MAX_X_UNIVERSE >> 1;
+	mapOrigin.y = MAX_Y_UNIVERSE >> 1;
+	StarMapFrame = SetAbsFrameIndex (MiscDataFrame, 48);
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
 		universe = CurStarDescPtr->star_pt;
@@ -1602,9 +1605,9 @@ DoStarMap (void)
 		universe.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
 	}
 
-	MenuState.first_item = GLOBAL (autopilot);
-	if (MenuState.first_item.x == ~0 && MenuState.first_item.y == ~0)
-		MenuState.first_item = universe;
+	cursorLoc = GLOBAL (autopilot);
+	if (cursorLoc.x == ~0 && cursorLoc.y == ~0)
+		cursorLoc = universe;
 
 	UnlockMutex (GraphicsLock);
 	TaskSwitch ();
@@ -1626,10 +1629,8 @@ DoStarMap (void)
 	GetContextClipRect (&clip_r);
 	SetContext (OldContext);
 	LoadIntoExtraScreen (&clip_r);
-	DrawCursor (
-			UNIVERSE_TO_DISPX (MenuState.first_item.x),
-			UNIVERSE_TO_DISPY (MenuState.first_item.y)
-			);
+	DrawCursor (UNIVERSE_TO_DISPX (cursorLoc.x),
+			UNIVERSE_TO_DISPY (cursorLoc.y));
 	UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);
 
