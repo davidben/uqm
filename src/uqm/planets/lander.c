@@ -1772,8 +1772,9 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 
 	ScrollPlanetSide (dx, dy, ON_THE_GROUND);
 
-	SleepThreadUntil (pLanderInputState->NextTime);
-	pLanderInputState->NextTime += PLANET_SIDE_RATE;
+	SleepThreadUntil (pMS->NextTime);
+	// NOTE: The rate is not stabilized
+	pMS->NextTime = GetTimeCounter () + PLANET_SIDE_RATE;
 
 	return TRUE;
 }
