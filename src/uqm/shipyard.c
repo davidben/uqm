@@ -802,7 +802,6 @@ DoModifyShips (MENU_STATE *pMS)
 							// refresh SIS display
 							DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
 									UNDEFINED_DELTA);
-							DrawStatusMessage ((UNICODE *)~0);
 							r.corner.x = pMS->flash_rect0.corner.x;
 							r.corner.y = pMS->flash_rect0.corner.y;
 							r.extent.width = SHIP_WIN_WIDTH;

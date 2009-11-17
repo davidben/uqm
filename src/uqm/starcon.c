@@ -209,7 +209,8 @@ while (--ac > 0)
 				continue;
 			}
 #endif
-			
+			SetStatusMessageMode (SMM_DEFAULT);
+
 			if (!((GLOBAL (CurrentActivity) | NextActivity) & CHECK_LOAD))
 				ZeroVelocityComponents (&GLOBAL (velocity));
 					// not going into talking pet conversation

@@ -451,6 +451,7 @@ VisitStarBase (void)
 {
 	MENU_STATE MenuState;
 	CONTEXT OldContext;
+	StatMsgMode prevMsgMode = SMM_UNDEFINED;
 
 	if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 	{
@@ -497,6 +498,7 @@ TimePassage:
 		}
 	}
 
+	prevMsgMode = SetStatusMessageMode (SMM_RES_UNITS);
 	pMenuState = &MenuState;
 
 	memset (&MenuState, 0, sizeof (MenuState));
@@ -514,6 +516,7 @@ TimePassage:
 	SetContext (OldContext);
 
 	pMenuState = 0;
+	SetStatusMessageMode (prevMsgMode);
 
 ExitStarBase:
 	if (!(GLOBAL (CurrentActivity) & (CHECK_LOAD | CHECK_ABORT)))

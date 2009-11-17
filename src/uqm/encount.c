@@ -443,6 +443,7 @@ UninitEncounter (void)
 		STAMP ship_s;
 		const UNICODE *str1 = NULL;
 		const UNICODE *str2 = NULL;
+		StatMsgMode prevMsgMode;
 		UNICODE buf[80];
 		HSHIPFRAG hStarShip;
 		SHIP_FRAGMENT *FragPtr;
@@ -486,6 +487,7 @@ UninitEncounter (void)
 		}
 		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 
+		prevMsgMode = SetStatusMessageMode (SMM_RES_UNITS);
 		Sleepy = TRUE;
 		for (i = 0; i < NUM_SIDES; ++i)
 		{
@@ -539,7 +541,7 @@ UninitEncounter (void)
 							{
 								RecycleAmount = 0;
 
-								DrawStatusMessage ((UNICODE *)~0);
+								DrawStatusMessage (NULL);
 								
 								ship_s.origin.x = scavenge_r.corner.x + 32;
 								ship_s.origin.y = scavenge_r.corner.y + 56;
@@ -651,6 +653,7 @@ UninitEncounter (void)
 				UnlockShipFrag (pQueue, hStarShip);
 			}
 		}
+		SetStatusMessageMode (prevMsgMode);
 
 		if (VictoryState)
 		{

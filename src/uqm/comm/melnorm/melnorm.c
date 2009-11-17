@@ -194,6 +194,7 @@ static NUMBER_SPEECH_DESC melnorme_numbers_english =
 	}
 };
 
+static StatMsgMode prevMsgMode;
 
 static void DoFirstMeeting (RESPONSE_REF R);
 
@@ -574,7 +575,7 @@ DeltaCredit (SIZE delta_credit)
 		SET_GAME_STATE (MELNORME_CREDIT0, LOBYTE (Credit));
 		SET_GAME_STATE (MELNORME_CREDIT1, HIBYTE (Credit));
 		LockMutex (GraphicsLock);
-		DrawStatusMessage ((UNICODE *)~0);
+		DrawStatusMessage (NULL);
 		UnlockMutex (GraphicsLock);
 	}
 	else
@@ -1810,6 +1811,8 @@ DoMelnormeHate (RESPONSE_REF R)
 static void
 Intro (void)
 {
+	prevMsgMode = SetStatusMessageMode (SMM_CREDITS);
+
 	if (GET_GAME_STATE (MET_MELNORME) == 0)
 	{
 		SET_GAME_STATE (MET_MELNORME, 1);
@@ -1841,14 +1844,16 @@ Intro (void)
 static COUNT
 uninit_melnorme (void)
 {
-	return (0);
+	return 0;
 }
 
 static void
 post_melnorme_enc (void)
 {
 	LockMutex (GraphicsLock);
-	DrawStatusMessage (0);
+	if (prevMsgMode != SMM_UNDEFINED)
+		SetStatusMessageMode (prevMsgMode);
+	DrawStatusMessage (NULL);
 	UnlockMutex (GraphicsLock);
 }
 
@@ -1867,6 +1872,8 @@ init_melnorme_comm (void)
 
 	local_stack0 = 0;
 	local_stack1 = 0;
+
+	prevMsgMode = SMM_UNDEFINED;
 
 	SET_GAME_STATE (BATTLE_SEGUE, 0);
 	AskedToBuy = FALSE;

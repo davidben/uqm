@@ -277,7 +277,20 @@ extern void DrawSISMessage (const UNICODE *pStr);
 extern void DrawGameDate (void);
 extern void DateToString (unsigned char *buf, size_t bufLen,
 		BYTE month_index, BYTE day_index, COUNT year_index);
+
 extern void DrawStatusMessage (const UNICODE *pStr);
+typedef enum
+{
+	SMM_UNDEFINED = 0,
+	SMM_DATE,
+	SMM_RES_UNITS,
+	SMM_CREDITS,
+
+	SMM_DEFAULT = SMM_DATE,
+} StatMsgMode;
+// Sets the new mode and return the previous
+extern StatMsgMode SetStatusMessageMode (StatMsgMode);
+
 extern void DrawLanders (void);
 extern void DrawStorageBays (BOOLEAN Refresh);
 extern void GetGaugeRect (RECT *pRect, BOOLEAN IsCrewRect);

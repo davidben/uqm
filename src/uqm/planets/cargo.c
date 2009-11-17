@@ -376,10 +376,6 @@ Cargo (MENU_STATE *pMS)
 	--pMS->Initialized;
 	pMS->CurState = 1;
 
-	LockMutex (GraphicsLock);
-	DrawStatusMessage ((UNICODE *)~0);
-	UnlockMutex (GraphicsLock);
-
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput (pMS, TRUE);
 
