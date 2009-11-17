@@ -44,12 +44,15 @@
 #define SUMMARY_SIDE_OFFS 7
 #define SAVES_PER_PAGE 5
 
+#define MAX_NAME_SIZE  SIS_NAME_SIZE
+
 static BOOLEAN DoSettings (MENU_STATE *pMS);
 static BOOLEAN DoNaming (MENU_STATE *pMS);
 
 static MENU_STATE *pLocMenuState;
 static BYTE prev_save; //keeps track of the last slot that was saved or loaded
 
+static NamingCallback *namingCB;
 
 void
 ConfirmSaveLoad (STAMP *MsgStamp)
@@ -188,17 +191,15 @@ FeedbackSetting (BYTE which_setting)
 #define DDSHS_BLOCKCUR 2
 
 static BOOLEAN
-DrawDescriptionString (MENU_STATE *pMS, COUNT which_string, COUNT state)
+DrawDescriptionString (MENU_STATE *pMS, UNICODE *Str, COUNT CursorPos,
+		COUNT state)
 {
-	COUNT rel_index;
 	RECT r;
 	TEXT lf;
 	COLOR BackGround, ForeGround;
 	FONT Font;
 
 	LockMutex (GraphicsLock);
-
-	rel_index = (COUNT)(which_string - pMS->first_item.y);
 
 	{
 		r.corner.x = 2;
@@ -207,7 +208,7 @@ DrawDescriptionString (MENU_STATE *pMS, COUNT which_string, COUNT state)
 
 		SetContext (StatusContext);
 		if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
-		{
+		{	// Naming the captain
 			Font = TinyFont;
 			r.corner.y = 10;
 			++r.corner.x;
@@ -218,7 +219,7 @@ DrawDescriptionString (MENU_STATE *pMS, COUNT which_string, COUNT state)
 			ForeGround = BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B);
 		}
 		else
-		{
+		{	// Naming the flagship
 			Font = StarConFont;
 			r.corner.y = 20;
 			lf.baseline.x = r.corner.x + (r.extent.width >> 1);
@@ -232,44 +233,23 @@ DrawDescriptionString (MENU_STATE *pMS, COUNT which_string, COUNT state)
 	}
 
 	SetContextFont (Font);
-	lf.pStr = ((GAME_DESC *)pMS->Extra)[rel_index];
+	lf.pStr = Str;
 	lf.CharCount = (COUNT)~0;
 
 	if (!(state & DDSHS_EDIT))
 	{	// normal state
 		SetFlashRect (SFR_MENU_3DO);
 
-		if (pMS->InputFunc == DoNaming)
-		{
-			if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
-				DrawCaptainsName ();
-			else
-			{
-				DrawFlagshipName (TRUE);
-				if (pMenuState && pMenuState->InputFunc == DoOutfit)
-					DrawFlagshipName (FALSE);
-			}
-		}
+		if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
+			DrawCaptainsName ();
 		else
-		{	// XXX: remnants of DOS? this function is never actually
-			//   called outside DoNaming nowadays, which makes this
-			//   code utterly dead
-			if (state == 0)
-			{
-				COLOR OldColor;
-
-				OldColor = SetContextForeGroundColor (BLACK_COLOR);
-				DrawFilledRectangle (&r);
-				SetContextForeGroundColor (OldColor);
-			}
-			font_DrawText (&lf);
-		}
+			DrawFlagshipName (TRUE);
 	}
 	else
 	{	// editing state
 		COUNT i;
 		RECT text_r;
-		BYTE char_deltas[MAX_DESC_CHARS];
+		BYTE char_deltas[MAX_NAME_SIZE];
 		BYTE *pchar_deltas;
 
 		TextRect (&lf, &text_r, char_deltas);
@@ -285,18 +265,18 @@ DrawDescriptionString (MENU_STATE *pMS, COUNT which_string, COUNT state)
 		DrawFilledRectangle (&r);
 
 		pchar_deltas = char_deltas;
-		for (i = pMS->first_item.x; i > 0; --i)
-			text_r.corner.x += (SIZE)*pchar_deltas++;
-		if ((COUNT)pMS->first_item.x < lf.CharCount) /* end of line */
+		for (i = CursorPos; i > 0; --i)
+			text_r.corner.x += *pchar_deltas++;
+		if (CursorPos < lf.CharCount) /* end of line */
 			--text_r.corner.x;
 		
 		if (state & DDSHS_BLOCKCUR)
 		{	// Use block cursor for keyboardless systems
-			if ((COUNT)pMS->first_item.x == lf.CharCount)
+			if (CursorPos == lf.CharCount)
 			{	// cursor at end-line -- use insertion point
 				text_r.extent.width = 1;
 			}
-			else if ((COUNT)pMS->first_item.x + 1 == lf.CharCount)
+			else if (CursorPos + 1 == lf.CharCount)
 			{	// extra pixel for last char margin
 				text_r.extent.width = (SIZE)*pchar_deltas + 2;
 			}
@@ -331,34 +311,23 @@ OnNameChange (TEXTENTRY_STATE *pTES)
 	MENU_STATE *pMS = (MENU_STATE*) pTES->CbParam;
 	COUNT hl = DDSHS_EDIT;
 
-	pMS->first_item.x = pTES->CursorPos;
 	if (pTES->JoystickMode)
 		hl |= DDSHS_BLOCKCUR;
 
-	return DrawDescriptionString (pMS, 0, hl);
+	return DrawDescriptionString (pMS, pTES->BaseStr, pTES->CursorPos, hl);
 }
 
 static BOOLEAN
 DoNaming (MENU_STATE *pMS)
 {
-	GAME_DESC buf;
+	UNICODE buf[MAX_NAME_SIZE] = "";
 	TEXTENTRY_STATE tes;
 	UNICODE *Setting;
 
 	pMS->Initialized = TRUE;
 	pMS->InputFunc = DoNaming;
 
-	buf[0] = '\0';
-	// XXX: this code abuses MENU_STATE struct members to store
-	//  some values:
-	//   first_item.x - current cursor position
-	//   first_item.y - must be set to 0; DrawDescriptionString()
-	//     treats it as base index into array of strings
-	//     supplied in Extra
-	pMS->first_item.x = 0;
-	pMS->first_item.y = 0;
-	pMS->Extra = buf;
-	DrawDescriptionString (pMS, 0, DDSHS_EDIT);
+	DrawDescriptionString (pMS, buf, 0, DDSHS_EDIT);
 
 	LockMutex (GraphicsLock);
 	DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
@@ -388,7 +357,10 @@ DoNaming (MENU_STATE *pMS)
 		utf8StringCopy (Setting, tes.MaxSize, buf);
 	else
 		utf8StringCopy (buf, sizeof (buf), Setting);
-	DrawDescriptionString (pMS, 0, DDSHS_NORMAL);
+	DrawDescriptionString (pMS, buf, 0, DDSHS_NORMAL);
+
+	if (namingCB)
+		namingCB ();
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
@@ -397,6 +369,12 @@ DoNaming (MENU_STATE *pMS)
 		FeedbackSetting (pMS->CurState);
 
 	return (TRUE);
+}
+
+void
+SetNamingCallback (NamingCallback *callback)
+{
+	namingCB = callback;
 }
 
 static BOOLEAN
@@ -867,11 +845,6 @@ DoPickGame (MENU_STATE *pMS)
 		pMS->delta_item = (SIZE)pMS->CurState;
 		pMS->CurState = NewState = prev_save;
 		pMS->InputFunc = DoPickGame;
-		SleepThreadUntil ((DWORD)pMS->CurFrame);
-		pMS->CurFrame = 0;
-		PauseMusic ();
-		StopSound ();
-		FadeMusic (NORMAL_VOLUME, 0);
 
 		{
 			extern FRAME PlayFrame;
@@ -884,7 +857,6 @@ DoPickGame (MENU_STATE *pMS)
 		BatchGraphics ();
 Restart:
 		SetContext (SpaceContext);
-		LoadGameDescriptions ((SUMMARY_DESC *)pMS->Extra);
 		DrawCargo (1);
 		pMS->Initialized = TRUE;
 		goto ChangeGameSelection;
@@ -941,6 +913,7 @@ Restart:
 					SaveProblem ();
 
 					pMS->Initialized = FALSE;
+					LoadGameDescriptions ((SUMMARY_DESC *)pMS->Extra);
 					NewState = pMS->CurState;
 					LockMutex (GraphicsLock);
 					BatchGraphics ();
@@ -1139,6 +1112,9 @@ PickGame (MENU_STATE *pMS)
 	SUMMARY_DESC desc_array[MAX_SAVED_GAMES];
 	RECT DlgRect;
 	STAMP DlgStamp;
+	TimeCount TimeOut;
+
+	TimeOut = FadeMusic (0, ONE_SECOND / 2);
 
 	if (pSolarSysState)
 	{
@@ -1146,6 +1122,8 @@ PickGame (MENU_STATE *pMS)
 		pSolarSysState->PauseRotate = 1;
 		TaskSwitch ();
 	}
+
+	LoadGameDescriptions (desc_array);
 
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
@@ -1164,6 +1142,11 @@ PickGame (MENU_STATE *pMS)
 	pMS->Extra = desc_array;
 	UnlockMutex (GraphicsLock);
 
+	SleepThreadUntil (TimeOut);
+	PauseMusic ();
+	StopSound ();
+	FadeMusic (NORMAL_VOLUME, 0);
+
 	DoInput (pMS, TRUE); 
 	LockMutex (GraphicsLock);
 	pMS->Initialized = -1;
@@ -1179,7 +1162,7 @@ PickGame (MENU_STATE *pMS)
 	}
 
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
-	{
+	{	// Restore previous screen if necessary
 		// TODO: Need a better test for in-encounter
 		if (CommData.ConversationPhrasesRes
 				|| !(pSolarSysState

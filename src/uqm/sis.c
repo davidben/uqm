@@ -237,7 +237,9 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 	{	// editing state
 		int i;
 		RECT text_r;
-		BYTE char_deltas[MAX_DESC_CHARS];
+		// XXX: 128 is currently safe, but it would be better to specify
+		//   the size to TextRect()
+		BYTE char_deltas[128];
 		BYTE *pchar_deltas;
 
 		t.baseline.x = 3;

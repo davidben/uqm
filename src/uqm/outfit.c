@@ -609,6 +609,15 @@ ChangeFuelQuantity (void)
 	}
 }
 
+static void
+onNamingDone (void)
+{
+	// In case player just named a ship, redraw it
+	LockMutex (GraphicsLock);
+	DrawFlagshipName (FALSE);
+	UnlockMutex (GraphicsLock);
+}
+
 BOOLEAN
 DoOutfit (MENU_STATE *pMS)
 {
@@ -619,6 +628,8 @@ DoOutfit (MENU_STATE *pMS)
 	{
 		pMS->InputFunc = DoOutfit;
 		pMS->Initialized = TRUE;
+
+		SetNamingCallback (onNamingDone);
 
 		{
 			COUNT num_frames;
@@ -746,6 +757,8 @@ ExitOutfit:
 			pMS->CurFrame = 0;
 			DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
 			pMS->ModuleFrame = 0;
+
+			SetNamingCallback (NULL);
 
 			return (FALSE);
 		}

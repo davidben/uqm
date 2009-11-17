@@ -46,9 +46,6 @@ extern DWORD PutGroupInfo (DWORD offset, BYTE which_group);
 		// (GROUP_LIST) in one of the state files
 extern void BuildGroups (void);
 
-#define MAX_DESC_CHARS 60
-typedef UNICODE GAME_DESC[MAX_DESC_CHARS + 1];
-
 typedef struct GAME_STATE_FILE GAME_STATE_FILE;
 
 #define STARINFO_FILE 0

@@ -22,5 +22,8 @@
 extern void ConfirmSaveLoad (STAMP *MsgStamp);
 extern BOOLEAN GameOptions (void);
 
+typedef void (NamingCallback) (void);
+extern void SetNamingCallback (NamingCallback *);
+
 #endif  /* _GAMEOPT_H */
 
