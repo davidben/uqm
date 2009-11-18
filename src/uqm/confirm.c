@@ -17,7 +17,6 @@
  */
 
 #include "controls.h"
-#include "commglue.h"
 #include "colors.h"
 #include "settings.h"
 #include "setup.h"
@@ -83,7 +82,7 @@ DoConfirmExit (void)
 {
 	BOOLEAN result;
 
-	if (CommData.ConversationPhrases && PlayingTrack ())
+	if (PlayingTrack ())
 		PauseTrack ();
 
 	LockMutex (GraphicsLock);
@@ -170,7 +169,7 @@ DoConfirmExit (void)
 	}
 	UnlockMutex (GraphicsLock);
 
-	if (CommData.ConversationPhrases && PlayingTrack ())
+	if (PlayingTrack ())
 		ResumeTrack ();
 
 	return (result);
