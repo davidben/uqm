@@ -16,7 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "commglue.h"
 #include "controls.h"
 #include "util.h"
 #include "setup.h"
@@ -161,7 +160,7 @@ PauseGame (void)
 		
 	GLOBAL (CurrentActivity) |= CHECK_PAUSE;
 
-	if (CommData.ConversationPhrases && PlayingTrack ())
+	if (PlayingTrack ())
 		PauseTrack ();
 
 	LockMutex (GraphicsLock);
@@ -218,7 +217,7 @@ PauseGame (void)
 	WaitForNoInput (ONE_SECOND / 4);
 	FlushInput ();
 
-	if (CommData.ConversationPhrases && PlayingTrack ())
+	if (PlayingTrack ())
 		ResumeTrack ();
 
 	UnlockMutex (GraphicsLock);
@@ -257,7 +256,7 @@ SleepGame (void)
 
 	log_add (log_Debug, "Game is going to sleep");
 
-	if (CommData.ConversationPhrases && PlayingTrack ())
+	if (PlayingTrack ())
 		PauseTrack ();
 	PauseMusic ();
 
@@ -273,7 +272,7 @@ SleepGame (void)
 
 	ResumeMusic ();
 
-	if (CommData.ConversationPhrases && PlayingTrack ())
+	if (PlayingTrack ())
 		ResumeTrack ();
 
 	UnlockMutex (GraphicsLock);
