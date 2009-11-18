@@ -51,6 +51,9 @@ extern FRAME SpaceJunkFrame;
 CONTEXT ScanContext;
 
 static POINT planetLoc;
+static RECT cursorRect;
+static FRAME eraseFrame;
+
 
 void
 RepairBackRect (RECT *pRect)
@@ -496,56 +499,54 @@ PrintCoarseScan3DO (void)
 }
 
 static void
-initPlanetLocationImage (MENU_STATE *pMS)
+initPlanetLocationImage (void)
 {
 	EXTENT size;
+	FRAME cursorFrame;
 
 	// Get the cursor image
-	pMS->flash_frame0 = SetAbsFrameIndex (MiscDataFrame, FLASH_INDEX);
-	size.width = GetFrameWidth (pMS->flash_frame0);
-	size.height = GetFrameHeight (pMS->flash_frame0);
-	pMS->flash_rect0.extent = size;
+	cursorFrame = SetAbsFrameIndex (MiscDataFrame, FLASH_INDEX);
+	size.width = GetFrameWidth (cursorFrame);
+	size.height = GetFrameHeight (cursorFrame);
+	cursorRect.extent = size;
 
-	pMS->flash_frame1 = CaptureDrawable (CreateDrawable (
+	eraseFrame = CaptureDrawable (CreateDrawable (
 			WANT_PIXMAP | MAPPED_TO_DISPLAY,
 			size.width, size.height, 1));
 	// copy the hotspot
-	SetFrameHot (pMS->flash_frame1, GetFrameHot (pMS->flash_frame0));
+	SetFrameHot (eraseFrame, GetFrameHot (cursorFrame));
 }
 
 static void
-savePlanetLocationImage (MENU_STATE *pMS)
+savePlanetLocationImage (void)
 {
 	RECT r;
-	HOT_SPOT hs = GetFrameHot (pMS->flash_frame1);
-
-	// Remember what we saved
-	pMS->flash_rect1.corner = pMS->flash_rect0.corner;
+	HOT_SPOT hs = GetFrameHot (eraseFrame);
 
 	GetContextClipRect (&r);
-	r.corner.x += pMS->flash_rect1.corner.x - hs.x;
-	r.corner.y += pMS->flash_rect1.corner.y - hs.y;
-	r.extent = pMS->flash_rect0.extent;
-	LoadDisplayPixmap (&r, pMS->flash_frame1);
+	r.corner.x += cursorRect.corner.x - hs.x;
+	r.corner.y += cursorRect.corner.y - hs.y;
+	r.extent = cursorRect.extent;
+	LoadDisplayPixmap (&r, eraseFrame);
 }
 
 static void
-restorePlanetLocationImage (MENU_STATE *pMS)
+restorePlanetLocationImage (void)
 {
 	STAMP s;
 
-	s.origin = pMS->flash_rect1.corner;
-	s.frame = pMS->flash_frame1; // saved image
+	s.origin = cursorRect.corner;
+	s.frame = eraseFrame; // saved image
 	DrawStamp (&s);
 }
 
 static void
-drawPlanetCursor (MENU_STATE *pMS, BOOLEAN filled)
+drawPlanetCursor (BOOLEAN filled)
 {
 	STAMP s;
 
-	s.origin = pMS->flash_rect0.corner;
-	s.frame = pMS->flash_frame0;
+	s.origin = cursorRect.corner;
+	s.frame = SetAbsFrameIndex (MiscDataFrame, FLASH_INDEX);
 	if (filled)
 		DrawFilledStamp (&s);
 	else
@@ -553,28 +554,26 @@ drawPlanetCursor (MENU_STATE *pMS, BOOLEAN filled)
 }
 
 void
-setPlanetCursorLoc (MENU_STATE *pMS, POINT new_pt)
+setPlanetCursorLoc (POINT new_pt)
 {
 	new_pt.x >>= MAG_SHIFT;
 	new_pt.y >>= MAG_SHIFT;
-	pMS->flash_rect0.corner = new_pt;
+	cursorRect.corner = new_pt;
 }
 
 static void
-setPlanetLoc (MENU_STATE *pMS, POINT new_pt)
+setPlanetLoc (POINT new_pt)
 {
 	planetLoc = new_pt;
 
-	// Set the new flash location
-	setPlanetCursorLoc (pMS, new_pt);
-
 	SetContext (ScanContext);
-	restorePlanetLocationImage (pMS);
-	savePlanetLocationImage (pMS);
+	restorePlanetLocationImage ();
+	setPlanetCursorLoc (new_pt);
+	savePlanetLocationImage ();
 }
 
 static void
-flashPlanetLocation (MENU_STATE *pMS)
+flashPlanetLocation (void)
 {
 #define FLASH_FRAME_DELAY  (ONE_SECOND / 16)
 	static BYTE c = 0x00;
@@ -584,8 +583,8 @@ flashPlanetLocation (MENU_STATE *pMS)
 	BOOLEAN locChanged;
 	TimeCount Now = GetTimeCounter ();
 
-	locChanged = prevPt.x != pMS->flash_rect0.corner.x
-				|| prevPt.y != pMS->flash_rect0.corner.y;
+	locChanged = prevPt.x != cursorRect.corner.x
+				|| prevPt.y != cursorRect.corner.y;
 
 	if (!locChanged && Now < NextTime)
 		return; // nothing to do
@@ -594,7 +593,7 @@ flashPlanetLocation (MENU_STATE *pMS)
 	{	// Reset the flashing cycle
 		c = 0x00;
 		val = -2;
-		prevPt = pMS->flash_rect0.corner;
+		prevPt = cursorRect.corner;
 		
 		NextTime = Now + FLASH_FRAME_DELAY;
 	}
@@ -612,7 +611,7 @@ flashPlanetLocation (MENU_STATE *pMS)
 
 	SetContext (ScanContext);
 	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (c, c, c), c));
-	drawPlanetCursor (pMS, TRUE);
+	drawPlanetCursor (TRUE);
 }
 
 void
@@ -627,9 +626,8 @@ RedrawSurfaceScan (const POINT *newLoc)
 	DrawScannedObjects (TRUE);
 	if (newLoc)
 	{
-		// TODO: Give scan its own STATE struct and pScanState (if needed)
-		setPlanetLoc (pMenuState, *newLoc);
-	 	drawPlanetCursor (pMenuState, FALSE);
+		setPlanetLoc (*newLoc);
+	 	drawPlanetCursor (FALSE);
 	}
 	UnbatchGraphics ();
 
@@ -663,8 +661,8 @@ PickPlanetSide (MENU_STATE *pMS)
 			LockMutex (GraphicsLock);
 			SetContext (ScanContext);
 			// Set the current flash location
-			setPlanetCursorLoc (pMS, planetLoc);
-			savePlanetLocationImage (pMS);
+			setPlanetCursorLoc (planetLoc);
+			savePlanetLocationImage ();
 
 			SetFlashRect (NULL);
 			UnlockMutex (GraphicsLock);
@@ -685,7 +683,7 @@ PickPlanetSide (MENU_STATE *pMS)
 		if (!select)
 		{	// Bailing out
 			LockMutex (GraphicsLock);
-			restorePlanetLocationImage (pMS);
+			restorePlanetLocationImage ();
 			UnlockMutex (GraphicsLock);
 		}
 		else
@@ -702,7 +700,7 @@ PickPlanetSide (MENU_STATE *pMS)
 			LockMutex (GraphicsLock);
 			DeltaSISGauges (0, -(SIZE)fuel_required, 0);
 			SetContext (ScanContext);
-			drawPlanetCursor (pMS, FALSE);
+			drawPlanetCursor (FALSE);
 			UnlockMutex (GraphicsLock);
 
 			PlanetSide (planetLoc);
@@ -798,10 +796,10 @@ ExitPlanetSide:
 		if (new_pt.x != planetLoc.x
 				|| new_pt.y != planetLoc.y)
 		{
-			setPlanetLoc (pMS, new_pt);
+			setPlanetLoc (new_pt);
 		}
 
-		flashPlanetLocation (pMS);
+		flashPlanetLocation ();
 
 		UnbatchGraphics ();
 		UnlockMutex (GraphicsLock);
@@ -1188,7 +1186,7 @@ ScanSystem (void)
 		ScanContext = CreateContext ("ScanContext");
 		SetContext (ScanContext);
 
-		initPlanetLocationImage (&MenuState);
+		initPlanetLocationImage ();
 
 		SetContextFGFrame (Screen);
 		r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH;
@@ -1216,7 +1214,8 @@ ScanSystem (void)
 	{
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
-		DestroyDrawable (ReleaseDrawable (MenuState.flash_frame1));
+		DestroyDrawable (ReleaseDrawable (eraseFrame));
+		eraseFrame = NULL;
 		DestroyContext (ScanContext);
 		ScanContext = NULL;
 		UnlockMutex (GraphicsLock);
