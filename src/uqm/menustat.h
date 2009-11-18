@@ -48,8 +48,6 @@ typedef struct menu_state
 	void *Extra;
 } MENU_STATE;
 
-extern MENU_STATE *pMenuState;
-
 #endif /* _MENUSTAT_H */
 
 

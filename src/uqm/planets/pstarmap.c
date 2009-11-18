@@ -1590,7 +1590,6 @@ DoStarMap (void)
 	RECT clip_r;
 	CONTEXT OldContext;
 
-	pMenuState = &MenuState;
 	memset (&MenuState, 0, sizeof (MenuState));
 
 	zoomLevel = 0;
@@ -1637,8 +1636,6 @@ DoStarMap (void)
 
 	DoInput (&MenuState, FALSE);
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-
-	pMenuState = 0;
 
 	LockMutex (GraphicsLock);
 
@@ -1717,10 +1714,8 @@ DoFlagshipCommands (MENU_STATE *pMS)
 							break;
 						case EQUIP_DEVICE:
 						{
-							pMenuState = pMS;
 							if (!Devices (pMS))
 								select = FALSE;
-							pMenuState = 0;
 							if (GET_GAME_STATE (PORTAL_COUNTER)) {
 								// A player-induced portal to QuasiSpace is
 								// opening.

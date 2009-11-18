@@ -34,8 +34,6 @@
 #include "libs/tasklib.h"
 
 
-MENU_STATE *pMenuState;
-
 static void CleanupAfterStarBase (void);
 
 static void
@@ -473,8 +471,6 @@ VisitStarBase (void)
 		HSHIPFRAG hStarShip;
 		SHIP_FRAGMENT *FragPtr;
 
-		pMenuState = 0;
-
 		// Unallied Starbase conversation
 		SetCommIntroMode (CIM_CROSSFADE_SCREEN, 0);
 		InitCommunication (COMMANDER_CONVERSATION);
@@ -501,25 +497,17 @@ VisitStarBase (void)
 			return; // Killed by Ilwrath
 		
 		// After Ilwrath battle, about-to-ally Starbase conversation
-		{
-			pMenuState = &MenuState;
-			SetCommIntroMode (CIM_CROSSFADE_SCREEN, 0);
-			InitCommunication (COMMANDER_CONVERSATION);
-			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-				return;
-			// XXX: InitCommunication() clears these flags, and we need them
-			//   This marks that we are in Starbase.
-			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, (BYTE)~0);
-		}
+		SetCommIntroMode (CIM_CROSSFADE_SCREEN, 0);
+		InitCommunication (COMMANDER_CONVERSATION);
+		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+			return;
+		// XXX: InitCommunication() clears these flags, and we need them
+		//   This marks that we are in Starbase.
+		SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, (BYTE)~0);
 	}
 
 	prevMsgMode = SetStatusMessageMode (SMM_RES_UNITS);
-	pMenuState = &MenuState;
 
-	memset (&MenuState, 0, sizeof (MenuState));
-
-	MenuState.InputFunc = DoStarBase;
-	
 	if (GET_GAME_STATE (MOONBASE_ON_SHIP)
 			|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 	{	// Go immediately into a conversation with the Commander when the
@@ -538,13 +526,14 @@ VisitStarBase (void)
 		SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, (BYTE)~0);
 	}
 
+	memset (&MenuState, 0, sizeof (MenuState));
+	MenuState.InputFunc = DoStarBase;
+	
 	OldContext = SetContext (ScreenContext);
-	DoInput (pMenuState, TRUE);
+	DoInput (&MenuState, TRUE);
 	SetContext (OldContext);
 
-	pMenuState = 0;
 	SetStatusMessageMode (prevMsgMode);
-
 	CleanupAfterStarBase ();
 }
 
