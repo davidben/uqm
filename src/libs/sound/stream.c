@@ -377,7 +377,7 @@ process_stream (TFB_SoundSource *source)
 	}
     
 	// Unqueue processed buffers and replace them with new ones
-	for (processed; processed > 0; --processed)
+	for (; processed > 0; --processed)
 	{
 		uint32 error;
 		audio_Object buffer;
