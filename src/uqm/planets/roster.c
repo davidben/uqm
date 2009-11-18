@@ -27,6 +27,7 @@
 #include "libs/gfxlib.h"
 #include "libs/tasklib.h"
 
+#include <stdlib.h>
 
 // Ship icon positions in status display around the flagship
 static const POINT ship_pos[MAX_COMBAT_SHIPS] =
