@@ -183,6 +183,10 @@ AdvanceAmbientSequence (SEQUENCE *pSeq)
 	{	// animation ended
 		active = FALSE;
 		pSeq->Alarm = randomRestartRate (pSeq) + 1;
+
+		// RANDOM_ANIM must end on a neutral frame
+		if (ADPtr->AnimFlags & RANDOM_ANIM)
+			pSeq->NextIndex = 0;
 	}
 
 	// Will draw the next frame or change to next colormap
@@ -452,7 +456,8 @@ ambient_anim_task (void *data)
 			}
 			else if (ActiveMask & ADPtr->BlockMask)
 			{	// animation is blocked
-				assert (!(ActiveMask & ActiveBit));
+				assert (!(ActiveMask & ActiveBit) &&
+						"Check animations' mutual blocking masks");
 				assert (animAtNeutralIndex (pSeq));
 				// reschedule
 				pSeq->Alarm = randomRestartRate (pSeq) + 1;
