@@ -17,6 +17,7 @@
  */
 
 #include "planets.h"
+// XXX: for CurStarDescPtr
 #include "../encount.h"
 #include "libs/compiler.h"
 #include "libs/mathlib.h"

@@ -22,6 +22,7 @@
 #include "../cons_res.h"
 #include "../controls.h"
 #include "../encount.h"
+		// for EncounterGroup
 #include "../gamestr.h"
 #include "../nameref.h"
 #include "../resinst.h"

@@ -21,7 +21,9 @@
 #include "build.h"
 #include "colors.h"
 #include "commglue.h"
+		// for CommData
 #include "controls.h"
+// XXX: for FindStart(), GetClusterName()
 #include "encount.h"
 #include "planets/lander.h"
 #include "gamestr.h"

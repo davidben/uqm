@@ -19,6 +19,7 @@
 
 #include "build.h"
 #include "clock.h"
+// XXX: for CurStarDescPtr and XXX_DEFINED constants
 #include "encount.h"
 #include "globdata.h"
 #include "hyper.h"

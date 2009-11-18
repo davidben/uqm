@@ -25,6 +25,7 @@
 #include "process.h"
 #include "grpinfo.h"
 #include "encount.h"
+		// for EncounterGroup, EncounterRace
 #include "libs/mathlib.h"
 
 

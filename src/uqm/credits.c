@@ -19,11 +19,9 @@
 #include "credits.h"
 
 #include "controls.h"
-#include "encount.h"
 #include "options.h"
 #include "oscill.h"
 #include "comm.h"
-#include "commglue.h"
 #include "resinst.h"
 #include "nameref.h"
 #include "settings.h"
@@ -617,6 +615,7 @@ OutTakes (void)
 	for (i = 0; (i < NUM_OUTTAKES) &&
 			!(GLOBAL (CurrentActivity) & CHECK_ABORT); i++)
 	{
+		SetCommIntroMode (CIM_CROSSFADE_WINDOW, 0);
 		InitCommunication (outtake_list[i]);
 	}
 

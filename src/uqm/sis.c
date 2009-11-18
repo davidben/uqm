@@ -17,7 +17,8 @@
  */
 
 #include "colors.h"
-#include "commglue.h"
+#include "races.h"
+// XXX: including encount.h for stuff that does not belong there
 #include "encount.h"
 #include "gamestr.h"
 #include "options.h"

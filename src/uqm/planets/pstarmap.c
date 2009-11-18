@@ -19,6 +19,7 @@
 #include "scan.h"
 #include "../colors.h"
 #include "../controls.h"
+// XXX: for stuff that does not belong there
 #include "../encount.h"
 #include "../gameopt.h"
 #include "../gamestr.h"

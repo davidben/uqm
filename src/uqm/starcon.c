@@ -18,7 +18,7 @@
 
 #include <stdlib.h>
 
-#include "encount.h"
+#include "comm.h"
 #include "battle.h"
 #include "fmv.h"
 #include "gameev.h"

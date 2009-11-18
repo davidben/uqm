@@ -50,10 +50,11 @@
 
 
 LOCDATA CommData;
-int cur_comm;
 UNICODE shared_phrase_buf[2048];
 
 static BOOLEAN TalkingFinished;
+static CommIntroMode curIntroMode = CIM_DEFAULT;
+static TimeCount fadeTime;
 
 typedef struct response_entry
 {
@@ -686,6 +687,47 @@ FlushTalkSegue (void)
 	TalkingFinished = TRUE;
 }
 
+static void
+CommIntroTransition (void)
+{
+	if (curIntroMode == CIM_CROSSFADE_SCREEN)
+	{
+		ScreenTransition (3, NULL);
+		UnbatchGraphics ();
+	}
+	else if (curIntroMode == CIM_CROSSFADE_SPACE)
+	{
+		RECT r;
+		r.corner.x = SIS_ORG_X;
+		r.corner.y = SIS_ORG_Y;
+		r.extent.width = SIS_SCREEN_WIDTH;
+		r.extent.height = SIS_SCREEN_HEIGHT;
+		ScreenTransition (3, &r);
+		UnbatchGraphics ();
+	}
+	else if (curIntroMode == CIM_CROSSFADE_WINDOW)
+	{
+		ScreenTransition (3, &CommWndRect);
+		UnbatchGraphics ();
+	}
+	else if (curIntroMode == CIM_FADE_IN_SCREEN)
+	{
+		BYTE clut_buf[] = {FadeAllToColor};
+		UnbatchGraphics ();
+		XFormColorMap ((COLORMAPPTR)clut_buf, fadeTime);
+	}
+	else
+	{	// Uknown transition
+		// Have to unbatch anyway or no more graphics, ever
+		UnbatchGraphics ();
+		assert (0 && "Unknown comm intro transition");
+	}
+
+	// Reset the mode for next time. Everything that needs a
+	// different one will let us know.
+	curIntroMode = CIM_DEFAULT;
+}
+
 void
 AlienTalkSegue (COUNT wait_track)
 {
@@ -703,43 +745,7 @@ AlienTalkSegue (COUNT wait_track)
 		DrawAlienFrame (NULL, 0, TRUE);
 		UpdateSpeechGraphics (TRUE);
 
-		if (LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE
-				|| (!GET_GAME_STATE (PLAYER_HYPNOTIZED)
-				&& !GET_GAME_STATE (CHMMR_EMERGING)
-				&& GET_GAME_STATE (CHMMR_BOMB_STATE) != 2
-				&& (pMenuState == 0 || !GET_GAME_STATE (MOONBASE_ON_SHIP)
-				|| GET_GAME_STATE (PROBE_ILWRATH_ENCOUNTER))))
-		{
-			RECT r;
-	
-			if (pMenuState == 0 &&
-					LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
-			{
-				r.corner.x = SIS_ORG_X;
-				r.corner.y = SIS_ORG_Y;
-				r.extent.width = SIS_SCREEN_WIDTH;
-				r.extent.height = SIS_SCREEN_HEIGHT;
-				ScreenTransition (3, &r);
-			}
-			else
-			{
-				ScreenTransition (3, &CommWndRect);
-			}
-			UnbatchGraphics ();
-		}
-		else
-		{
-			BYTE clut_buf[] = {FadeAllToColor};
-			
-			UnbatchGraphics ();
-			if (GET_GAME_STATE (MOONBASE_ON_SHIP)
-					|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
-				XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 2);
-			else if (GET_GAME_STATE (CHMMR_EMERGING))
-				XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 2);
-			else
-				XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 5);
-		}
+		CommIntroTransition ();
 		pCurInputState->Initialized = TRUE;
 
 		PlayMusic (CommData.AlienSong, TRUE, 1);
@@ -1238,28 +1244,21 @@ HailAlien (void)
 			SetContextClipRect (&r);
 			CommWndRect.corner = r.corner;
 
-			if (pMenuState == 0)
-			{
-				RepairSISBorder ();
-				UnlockMutex (GraphicsLock);
-				DrawMenuStateStrings ((BYTE)~0, 1);
-				LockMutex (GraphicsLock);
+			DrawSISFrame ();
+			// TODO: find a better way to do this, perhaps set the titles
+			// forward from callers.
+			if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) == (BYTE)~0
+					&& GET_GAME_STATE (STARBASE_AVAILABLE))
+			{	// Talking to allied Starbase
+				DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 1));
+						// "Starbase Commander"
+				DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE + 0));
+						// "Starbase"
 			}
-			else /* in starbase */
-			{
-				DrawSISFrame ();
-				if (GET_GAME_STATE (STARBASE_AVAILABLE))
-				{
-					DrawSISMessage (GAME_STRING (STARBASE_STRING_BASE + 1));
-							// "Starbase Commander"
-					DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE + 0));
-							// "Starbase"
-				}
-				else
-				{
-					DrawSISMessage (NULL);
-					DrawSISTitle (GLOBAL_SIS (PlanetName));
-				}
+			else
+			{	// Default titles: star name + planet name
+				DrawSISMessage (NULL);
+				DrawSISTitle (GLOBAL_SIS (PlanetName));
 			}
 		}
 
@@ -1295,6 +1294,13 @@ HailAlien (void)
 	CommData.ConversationPhrasesRes = 0;
 	CommData.ConversationPhrases = 0;
 	pCurInputState = 0;
+}
+
+void
+SetCommIntroMode (CommIntroMode newMode, TimeCount howLong)
+{
+	curIntroMode = newMode;
+	fadeTime = howLong;
 }
 
 COUNT
@@ -1400,9 +1406,7 @@ InitCommunication (CONVERSATION which_comm)
 
 	if (status == HAIL)
 	{
-		cur_comm = which_comm;
 		HailAlien ();
-		cur_comm = 0;
 	}
 	else if (LocDataPtr)
 	{	// only when comm initied successfully
@@ -1417,10 +1421,14 @@ InitCommunication (CONVERSATION which_comm)
 	status = 0;
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
+		// The Sa-Matra battle is skipped when Cyborg is enabled.
+		// Most likely because the Cyborg is too dumb to know what
+		// to do in this battle.
 		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE
 				&& (GLOBAL (glob_flags) & CYBORG_ENABLED))
 			ReinitQueue (&GLOBAL (npc_built_ship_q));
 
+		// Clear the location flags
 		SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 0);
 		status = (GET_GAME_STATE (BATTLE_SEGUE)
 				&& GetHeadLink (&GLOBAL (npc_built_ship_q)));

@@ -17,6 +17,7 @@
  */
 
 #include "build.h"
+// XXX: for CurStarDescPtr and XXX_DEFINED constants
 #include "encount.h"
 #include "libs/file.h"
 #include "globdata.h"

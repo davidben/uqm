@@ -17,7 +17,6 @@
  */
 
 #include "colors.h"
-#include "commglue.h"
 #include "controls.h"
 #include "options.h"
 #include "setup.h"

@@ -26,6 +26,9 @@
 #include "libs/inplib.h"
 #include "libs/mathlib.h"
 
+// XXX: temporary, for SOL_X/SOL_Y
+#include "uqm/races.h"
+
 
 #define NUM_HISTORY_ITEMS 9
 #define NUM_EVENT_ITEMS 8

@@ -23,6 +23,7 @@
 #include "../cons_res.h"
 #include "../controls.h"
 #include "../colors.h"
+// XXX: for CurStarDescPtr and XXX_DEFINED
 #include "../encount.h"
 #include "../process.h"
 #include "../gamestr.h"

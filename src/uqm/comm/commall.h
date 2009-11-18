@@ -20,7 +20,6 @@
 #include "uqm/colors.h"
 #include "uqm/comm.h"
 #include "uqm/commglue.h"
-#include "uqm/encount.h"
 #include "libs/reslib.h"
 
 #endif  /* _COMMALL_H */

@@ -577,6 +577,7 @@ Intro (void)
 		}
 		else
 		{
+			SetCommIntroMode (CIM_FADE_IN_SCREEN, ONE_SECOND * 2);
 			NPCPhrase (WE_ARE_FREE);
 
 			if (NumVisits)
