@@ -76,7 +76,7 @@ static LOCDATA talkpet_desc =
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			0, /* BlockMask */
 		},
-		{
+		{	/* Blink right eye */
 			18, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
@@ -84,7 +84,7 @@ static LOCDATA talkpet_desc =
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 13) /* BlockMask */
 		},
-		{
+		{	/* Blink left eye */
 			21, /* StartIndex */
 			3, /* NumFrames */
 			YOYO_ANIM, /* AnimFlags */
@@ -149,7 +149,7 @@ static LOCDATA talkpet_desc =
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 5), /* BlockMask */
 		},
-		{
+		{	/* Right eyebrow */
 			48, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
@@ -157,7 +157,7 @@ static LOCDATA talkpet_desc =
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 4), /* BlockMask */
 		},
-		{
+		{	/* Left eyebrow */
 			50, /* StartIndex */
 			2, /* NumFrames */
 			RANDOM_ANIM, /* AnimFlags */
