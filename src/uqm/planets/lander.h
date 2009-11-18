@@ -35,8 +35,6 @@ typedef struct
 			// Landing on or taking of from a planet.
 			// Setting it while landed will initiate takeoff.
 
-	SOUND OldMenuSounds;
-
 	COUNT ElementLevel;
 	COUNT MaxElementLevel;
 	COUNT BiologicalLevel;
@@ -68,15 +66,6 @@ struct LanderInputState {
 	SIZE Initialized;
 	TimeCount NextTime;
 			// Frame rate control
-
-	// The following fields need to be renamed:
-	BYTE CurState;
-			// High byte: ?
-			// Low byte: ?
-	SIZE delta_item;
-			// High byte: ?
-			// Low byte: bits 0-6: current lander crew count
-			//           bit 7: set if damage was prevented by a shield
 };
 
 extern LanderInputState *pLanderInputState;

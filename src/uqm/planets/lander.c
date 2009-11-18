@@ -123,9 +123,15 @@ const LIFEFORM_DESC CreatureData[] =
 extern PRIM_LINKS DisplayLinks;
 
 #define DAMAGE_CYCLE 6
+// XXX: There are actually only 9 explosion images.
+//   The last frame is drawn twice.
 #define EXPLOSION_LIFE 10
-
-#define SHIELD_BIT (1 << 7)
+// How long to wait after the lander explodes, so that the full
+// gravity of the player's situation sinks in
+#define EXPLOSION_WAIT         (ONE_SECOND * 2)
+#define EXPLOSION_WAIT_FRAMES  (EXPLOSION_WAIT / PLANET_SIDE_RATE)
+// The actual number of frame that the explosion and wait takes is:
+//   EXPLOSION_LIFE * 3 + EXPLOSION_WAIT_FRAMES
 
 #define DEATH_EXPLOSION 0
 
@@ -144,6 +150,18 @@ extern PRIM_LINKS DisplayLinks;
 
 static BYTE lander_flags;
 static POINT curLanderLoc;
+static int crew_left;
+static int shieldHit;
+		// which shield was hit, assuming it helped
+static int damage_index;
+		// number of lander damage frames left
+static int explosion_index;
+		// lander explosion progression. Semantics are similar to an
+		// inverse of ELEMENT.life_span
+static int turn_wait;
+		// thus named for similar semantics to ELEMENT.turn_wait
+static int weapon_wait;
+		// semantics similar to STARSHIP.weapon_counter
 
 #define NUM_LANDING_DELTAS  11
 #define ON_THE_GROUND       -1
@@ -275,16 +293,19 @@ object_animation (ELEMENT *ElementPtr)
 	{
 		ElementPtr->turn_wait += HINIBBLE (ElementPtr->turn_wait);
 
-		pPrim->Object.Stamp.frame =
-				IncFrameIndex (pPrim->Object.Stamp.frame);
+		pPrim->Object.Stamp.frame = IncFrameIndex (pPrim->Object.Stamp.frame);
+		
 		if (ElementPtr->state_flags & FINITE_LIFE)
 		{
 			/* A natural disaster */
 			if (ElementPtr->mass_points == DEATH_EXPLOSION)
-			{
-				if (++pLanderInputState->CurState >= EXPLOSION_LIFE)
+			{	// Lander explosion
+				++explosion_index;
+				if (explosion_index >= EXPLOSION_LIFE)
+				{	// XXX: The last frame is drawn twice
 					pPrim->Object.Stamp.frame =
 							DecFrameIndex (pPrim->Object.Stamp.frame);
+				}
 			}
 			else if (ElementPtr->mass_points == EARTHQUAKE_DISASTER)
 			{
@@ -303,7 +324,7 @@ object_animation (ELEMENT *ElementPtr)
 			
 			if (ElementPtr->mass_points == LAVASPOT_DISASTER
 					&& frame_index == 5
-					&& (BYTE)TFB_Random () < 256 * 90 / 100)
+					&& TFB_Random () % 100 < 90)
 			{
 				HELEMENT hLavaElement;
 
@@ -327,7 +348,7 @@ object_animation (ELEMENT *ElementPtr)
 					else
 						LavaElementPtr->next.location.x %= MAP_WIDTH << MAG_SHIFT;
 					LavaElementPtr->facing = NORMALIZE_FACING (
-							ElementPtr->facing + ((COUNT)TFB_Random () % 3) - 1);
+							ElementPtr->facing + (TFB_Random () % 3 - 1));
 					UnlockElement (hLavaElement);
 				}
 			}
@@ -376,7 +397,7 @@ object_animation (ELEMENT *ElementPtr)
 							// as repeating 'random(x / 30)' 30 times doesn't
 							// generally have the same result as repeating
 							// 'random(x / 35)' 25 times. - SvdB
-					if (((BYTE)TFB_Random () % 100) < DetectPercent)
+					if (TFB_Random () % 100 < DetectPercent)
 					{
 						ElementPtr->thrust_wait = 0;
 						ElementPtr->mass_points |= CREATURE_AWARE;
@@ -400,7 +421,7 @@ object_animation (ELEMENT *ElementPtr)
 				{
 					COUNT rand_val;
 
-					rand_val = (COUNT)TFB_Random ();
+					rand_val = TFB_Random ();
 					angle = NORMALIZE_ANGLE (LOBYTE (rand_val));
 					ElementPtr->thrust_wait =
 							(HIBYTE (rand_val) >> 2) + 10;
@@ -418,7 +439,7 @@ object_animation (ELEMENT *ElementPtr)
 								|| old_angle == (FULL_CIRCLE - QUADRANT))
 							angle = old_angle;
 						else
-							angle = (((COUNT)TFB_Random () & 1)
+							angle = ((TFB_Random () & 1)
 										* HALF_CIRCLE) - QUADRANT;
 						ElementPtr->thrust_wait = 5;
 					}
@@ -462,38 +483,29 @@ DeltaLanderCrew (SIZE crew_delta, COUNT which_disaster)
 	if (crew_delta > 0)
 	{
 		// Filling up the crew bar when landing.
-		crew_delta = HIBYTE (pLanderInputState->delta_item);
-		pLanderInputState->delta_item += MAKE_WORD (0, 1);
+		crew_delta = crew_left;
+		crew_left += 1;
 
 		s.frame = SetAbsFrameIndex (LanderFrame[0], 55);
 	}
 	else /* if (crew_delta < 0) */
 	{
-		BYTE ShieldFlags;
-
-		ShieldFlags = GET_GAME_STATE (LANDER_SHIELDS);
-		ShieldFlags &= 1 << which_disaster;
-		crew_delta = HIBYTE (pLanderInputState->delta_item);
-		if (crew_delta < 1)
-			return;
-		if (ShieldFlags && (BYTE)TFB_Random () < 256 * 95 / 100)
-		{
-			// Protected by a lander shield.
-			pLanderInputState->delta_item = SHIELD_BIT;
-		}
-		else
-		{
-			// Deal damage.
-			ShieldFlags = 0;
-			if (--crew_delta == 0)
-				pLanderInputState->CurState = 0;
-			pLanderInputState->delta_item = 0;
+		if (crew_left < 1)
+			return; // irrelevant -- all dead
+		
+		shieldHit = GET_GAME_STATE (LANDER_SHIELDS);
+		shieldHit &= 1 << which_disaster;
+		if (!shieldHit || TFB_Random () % 100 >= 95)
+		{	// No shield, or it did not help
+			shieldHit = 0;
+			--crew_left;
 		}
 
-		pLanderInputState->delta_item |= MAKE_WORD (DAMAGE_CYCLE, crew_delta);
-		if (ShieldFlags)
+		damage_index = DAMAGE_CYCLE;
+		if (shieldHit)
 			return;
 
+		crew_delta = crew_left;
 		s.frame = SetAbsFrameIndex (LanderFrame[0], 56);
 
 		PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_INJURED),
@@ -634,8 +646,7 @@ CheckObjectCollision (COUNT index)
 				if (pLanderPrim == 0)
 				{
 					/* Collision of lander with another object */
-					if (HIBYTE (pLanderInputState->delta_item) == 0
-							|| pPSD->InTransit)
+					if (crew_left == 0 || pPSD->InTransit)
 						break;
 
 					if (ElementPtr->state_flags & FINITE_LIFE)
@@ -646,7 +657,7 @@ CheckObjectCollision (COUNT index)
 						{
 							case EARTHQUAKE_DISASTER:
 							case LAVASPOT_DISASTER:
-								if ((BYTE)TFB_Random () < (256 >> 2))
+								if (TFB_Random () % 100 < 25)
 									DeltaLanderCrew (-1, scan);
 								break;
 						}
@@ -658,21 +669,21 @@ CheckObjectCollision (COUNT index)
 					{
 						if (ElementPtr->mass_points == 1)
 						{
+							#define FWIFFO_FRAGS  8
 							DWORD TimeIn;
+							int i;
 
 							/* Ran into Spathi on Pluto */
 							TimeIn = GetTimeCounter ();
-							which_node = 8;
-							do
+							for (i = 0; i < FWIFFO_FRAGS && crew_left; ++i)
 							{
 								DeltaLanderCrew (-1, LANDER_INJURED);
 								SleepThreadUntil (TimeIn + ONE_SECOND / 20);
 								TimeIn = GetTimeCounter();
-							} while (HIBYTE (pLanderInputState->delta_item) &&
-									--which_node);
+							}
 						}
 
-						if (HIBYTE (pLanderInputState->delta_item)
+						if (crew_left
 								&& pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
 								&& CurStarDescPtr->Index != ANDROSYNTH_DEFINED)
 						{
@@ -703,8 +714,7 @@ CheckObjectCollision (COUNT index)
 								(CreatureData[creatureIndex].Attributes &
 								DANGER_MASK) >> DANGER_SHIFT;
 
-						if (((COUNT)TFB_Random () & 127) <
-								danger_vals[dangerLevel])
+						if (TFB_Random () % 128 < danger_vals[dangerLevel])
 						{
 							PlaySound (SetAbsSoundIndex (
 									LanderSounds, BIOLOGICAL_DISASTER),
@@ -940,8 +950,7 @@ lightning_process (ELEMENT *ElementPtr)
 			{
 				/* This one always strikes the lander and can hurt */
 				PLANETSIDE_DESC *pPSD = pLanderInputState->planetSideDesc;
-				if (HIBYTE (pLanderInputState->delta_item)
-						&& (BYTE)TFB_Random () < (256 / 10)
+				if (crew_left && TFB_Random () % 100 < 10
 						&& !pPSD->InTransit)
 					lander_flags |= KILL_CREW;
 
@@ -950,7 +959,7 @@ lightning_process (ELEMENT *ElementPtr)
 
 			pPrim->Object.Stamp.frame =
 					 SetAbsFrameIndex (pPrim->Object.Stamp.frame,
-					 (COUNT)TFB_Random () % num_frames);
+					 TFB_Random () % num_frames);
 		}
 
 		ElementPtr->turn_wait += HINIBBLE (ElementPtr->turn_wait);
@@ -976,7 +985,7 @@ AddLightning (void)
 		LightningElementPtr->playerNr = PS_NON_PLAYER;
 		LightningElementPtr->state_flags = FINITE_LIFE;
 		LightningElementPtr->preprocess_func = lightning_process;
-		if ((BYTE)TFB_Random () >= (256 >> 2))
+		if (TFB_Random () % 100 >= 25)
 			LightningElementPtr->mass_points = 0; /* harmless */
 		else
 			LightningElementPtr->mass_points = LIGHTNING_DISASTER;
@@ -1280,10 +1289,10 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingIndex)
 	
 	DrawBatch (DisplayArray, DisplayLinks, 0);
 
-	if (pLanderInputState->delta_item || pLanderInputState->CurState < 3)
+	// Draw the lander while is still alive and keep drawing for a few
+	// frames while it is exploding
+	if (crew_left || damage_index || explosion_index < 3)
 	{
-		BYTE damage_index;
-
 		lander_s.origin.x = SURFACE_WIDTH >> 1;
 		lander_s.frame = LanderFrame[0];
 		if (landingIndex == ON_THE_GROUND)
@@ -1300,40 +1309,37 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingIndex)
 			DrawFilledStamp (&shadow_s);
 		}
 
-		damage_index = LOBYTE (pLanderInputState->delta_item);
 		if (damage_index == 0)
+		{	// No damage -- normal lander
 			DrawStamp (&lander_s);
-		else
-		{
-			--pLanderInputState->delta_item;
-			if (!(damage_index & SHIELD_BIT))
+		}
+		else if (shieldHit)
+		{	// Was protected by a shield
+			--damage_index;
+			if (damage_index > 0)
 			{
-				SetContextForeGroundColor (DamageColorCycle (0, damage_index));
-				DrawFilledStamp (&lander_s);
-			}
-			else
-			{
-				damage_index = (BYTE)((damage_index & ~SHIELD_BIT) - 1);
-				if (damage_index == 0)
-					pLanderInputState->delta_item &= ~SHIELD_BIT;
-				else
-				{
-					shield_s.origin = lander_s.origin;
-					shield_s.frame = SetEquFrameIndex (
-							LanderFrame[4], lander_s.frame);
+				shield_s.origin = lander_s.origin;
+				shield_s.frame = SetEquFrameIndex (
+						LanderFrame[4], lander_s.frame);
 
-					SetContextForeGroundColor (BUILD_COLOR (
-							MAKE_RGB15 (0x1F, 0x1F, 0x1F) | 0x8000,
-							damage_index));
-					DrawFilledStamp (&shield_s);
-				}
-				DrawStamp (&lander_s);
+				// XXX: Shouldn't this color-cycle with damage_index?
+				//   damage_index is used, but only as a VGA index!
+				SetContextForeGroundColor (BUILD_COLOR (
+						MAKE_RGB15 (0x1F, 0x1F, 0x1F) | 0x8000,
+						damage_index));
+				DrawFilledStamp (&shield_s);
 			}
+			DrawStamp (&lander_s);
+		}
+		else
+		{	// Direct hit, no shield
+			--damage_index;
+			SetContextForeGroundColor (DamageColorCycle (0, damage_index));
+			DrawFilledStamp (&lander_s);
 		}
 	}
 	
-	if (landingIndex == ON_THE_GROUND
-			&& HIBYTE (pLanderInputState->delta_item)
+	if (landingIndex == ON_THE_GROUND && crew_left
 			&& GetPredLink (DisplayLinks) != END_OF_LIST)
 		CheckObjectCollision (END_OF_LIST);
 
@@ -1507,14 +1513,14 @@ InitPlanetSide (POINT pt)
 	// Adjust landing location by a random jitter.
 #define RANDOM_MISS 64
 	// Jitter the X landing point.
-	pt.x -= RANDOM_MISS - (SIZE)(LOWORD (TFB_Random ()) % (RANDOM_MISS << 1));
+	pt.x -= RANDOM_MISS - TFB_Random () % (RANDOM_MISS << 1);
 	if (pt.x < 0)
 		pt.x += (MAP_WIDTH << MAG_SHIFT);
 	else if (pt.x >= (MAP_WIDTH << MAG_SHIFT))
 		pt.x -= (MAP_WIDTH << MAG_SHIFT);
 
 	// Jitter the Y landing point.
-	pt.y -= RANDOM_MISS - (SIZE)(LOWORD (TFB_Random ()) % (RANDOM_MISS << 1));
+	pt.y -= RANDOM_MISS - TFB_Random () % (RANDOM_MISS << 1);
 	if (pt.y < 0)
 		pt.y = 0;
 	else if (pt.y >= (MAP_HEIGHT << MAG_SHIFT))
@@ -1569,12 +1575,13 @@ InitPlanetSide (POINT pt)
 }
 
 static void
-LanderFire (LanderInputState *inputState, SIZE index)
+LanderFire (SIZE facing)
 {
 #define SHUTTLE_FIRE_WAIT 15
 	HELEMENT hWeaponElement;
 	SIZE wdx, wdy;
 	ELEMENT *WeaponElementPtr;
+	COUNT angle;
 
 	hWeaponElement = AllocElement ();
 	if (hWeaponElement == NULL)
@@ -1594,9 +1601,9 @@ LanderFire (LanderInputState *inputState, SIZE index)
 
 	SetPrimType (&DisplayArray[WeaponElementPtr->PrimIndex], STAMP_PRIM);
 	DisplayArray[WeaponElementPtr->PrimIndex].Object.Stamp.frame =
-			SetAbsFrameIndex (
-			LanderFrame[0],
-			index + ANGLE_TO_FACING (FULL_CIRCLE));
+			SetAbsFrameIndex (LanderFrame[0],
+			/* shot images immediately follow the lander images */
+			facing + ANGLE_TO_FACING (FULL_CIRCLE));
 
 	if (!CurrentInputState.key[PlayerControls[0]][KEY_UP])
 	{
@@ -1608,11 +1615,11 @@ LanderFire (LanderInputState *inputState, SIZE index)
 		GetCurrentVelocityComponents (&GLOBAL (velocity), &wdx, &wdy);
 	}
 
-	index = FACING_TO_ANGLE (index);
+	angle = FACING_TO_ANGLE (facing);
 	SetVelocityComponents (
 			&WeaponElementPtr->velocity,
-			COSINE (index, WORLD_TO_VELOCITY (2 * 3)) + wdx,
-			SINE (index, WORLD_TO_VELOCITY (2 * 3)) + wdy);
+			COSINE (angle, WORLD_TO_VELOCITY (2 * 3)) + wdx,
+			SINE (angle, WORLD_TO_VELOCITY (2 * 3)) + wdy);
 
 	UnlockElement (hWeaponElement);
 
@@ -1620,11 +1627,43 @@ LanderFire (LanderInputState *inputState, SIZE index)
 
 	PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_SHOOTS),
 			NotPositional (), NULL, GAME_SOUND_PRIORITY);
+}
 
-	wdx = SHUTTLE_FIRE_WAIT;
-	if (GET_GAME_STATE (IMPROVED_LANDER_SHOT))
-		wdx >>= 1;
-	inputState->CurState = MAKE_BYTE (LONIBBLE (inputState->CurState), wdx);
+static BOOLEAN
+LanderExplosion (void)
+{
+	HELEMENT hExplosionElement;
+	ELEMENT *ExplosionElementPtr;
+
+	hExplosionElement = AllocElement ();
+	if (!hExplosionElement)
+		return FALSE;
+
+	LockElement (hExplosionElement, &ExplosionElementPtr);
+
+	ExplosionElementPtr->playerNr = PS_HUMAN_PLAYER;
+	ExplosionElementPtr->mass_points = DEATH_EXPLOSION;
+	ExplosionElementPtr->state_flags = FINITE_LIFE;
+	ExplosionElementPtr->next.location = curLanderLoc;
+	ExplosionElementPtr->preprocess_func = object_animation;
+	// Animation advances every 3rd frame
+	ExplosionElementPtr->turn_wait = MAKE_BYTE (2, 2);
+	ExplosionElementPtr->life_span = EXPLOSION_LIFE
+			* (LONIBBLE (ExplosionElementPtr->turn_wait) + 1);
+
+	SetPrimType (&DisplayArray[ExplosionElementPtr->PrimIndex],
+			STAMP_PRIM);
+	DisplayArray[ExplosionElementPtr->PrimIndex].Object.Stamp.frame =
+			SetAbsFrameIndex (LanderFrame[0], 46);
+
+	UnlockElement (hExplosionElement);
+
+	InsertElement (hExplosionElement, GetHeadElement ());
+
+	PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_DESTROYED),
+			NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
+
+	return TRUE;
 }
 
 static BOOLEAN
@@ -1644,7 +1683,9 @@ DoPlanetSide (LanderInputState *pMS)
 		COUNT angle;
 
 		pMS->Initialized = TRUE;
-		pMS->CurState = 0;
+		
+		turn_wait = 0;
+		weapon_wait = 0;
 
 		angle = FACING_TO_ANGLE (GetFrameIndex (LanderFrame[0]));
 		landerSpeedNumer = GET_GAME_STATE (IMPROVED_LANDER_SPEED) ?
@@ -1661,52 +1702,28 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 
 		return TRUE;
 	}
-	else if (pMS->delta_item == 0
-			|| (HIBYTE (pMS->delta_item)
+	else if (crew_left /* alive and taking off */
 			&& ((CurrentInputState.key[PlayerControls[0]][KEY_ESCAPE] ||
 			CurrentInputState.key[PlayerControls[0]][KEY_SPECIAL])
-			|| pLanderInputState->planetSideDesc->InTransit)))
+			|| pLanderInputState->planetSideDesc->InTransit))
 	{
-		if (pMS->delta_item || pMS->CurState > EXPLOSION_LIFE + 60)
+		return FALSE;
+	}
+	else if (!crew_left && !damage_index)
+	{	// Dead, damage dealt, and exploding
+		if (explosion_index > EXPLOSION_LIFE + EXPLOSION_WAIT_FRAMES)
 			return FALSE;
 		
-		if (pMS->CurState > EXPLOSION_LIFE)
-			++pMS->CurState;
-		else if (pMS->CurState == 0)
-		{
-			HELEMENT hExplosionElement;
-
-			hExplosionElement = AllocElement ();
-			if (hExplosionElement)
+		if (explosion_index > EXPLOSION_LIFE)
+		{	// Keep going until the wait expires
+			++explosion_index;
+		}
+		else if (explosion_index == 0)
+		{	// Start the explosion animation
+			if (LanderExplosion ())
 			{
-				ELEMENT *ExplosionElementPtr;
-
 				// Advance the state only once we've got the element
-				++pMS->CurState;
-
-				LockElement (hExplosionElement, &ExplosionElementPtr);
-
-				ExplosionElementPtr->playerNr = PS_HUMAN_PLAYER;
-				ExplosionElementPtr->mass_points = DEATH_EXPLOSION;
-				ExplosionElementPtr->state_flags = FINITE_LIFE;
-				ExplosionElementPtr->next.location = curLanderLoc;
-				ExplosionElementPtr->preprocess_func = object_animation;
-				ExplosionElementPtr->turn_wait = MAKE_BYTE (2, 2);
-				ExplosionElementPtr->life_span = EXPLOSION_LIFE
-						* (LONIBBLE (ExplosionElementPtr->turn_wait) + 1);
-
-				SetPrimType (&DisplayArray[ExplosionElementPtr->PrimIndex],
-						STAMP_PRIM);
-				DisplayArray[ExplosionElementPtr->PrimIndex].Object.Stamp.frame =
-						SetAbsFrameIndex (LanderFrame[0], 46);
-
-				UnlockElement (hExplosionElement);
-
-				InsertElement (hExplosionElement, GetHeadElement ());
-
-				PlaySound (SetAbsSoundIndex (
-						LanderSounds, LANDER_DESTROYED
-						), NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
+				++explosion_index;
 			}
 			else
 			{	// We could not allocate because the queue was full, but
@@ -1718,11 +1735,11 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 	}
 	else
 	{
-		if (HIBYTE (pMS->delta_item) != 0)
+		if (crew_left)
 		{
 			SIZE index = GetFrameIndex (LanderFrame[0]);
-			if (LONIBBLE (pMS->CurState))
-				pMS->CurState -= MAKE_BYTE (1, 0);
+			if (turn_wait)
+				--turn_wait;
 			else if (CurrentInputState.key[PlayerControls[0]][KEY_LEFT] ||
 					CurrentInputState.key[PlayerControls[0]][KEY_RIGHT])
 			{
@@ -1750,8 +1767,7 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 						COSINE (angle, landerSpeedNumer) / LANDER_SPEED_DENOM,
 						SINE (angle, landerSpeedNumer) / LANDER_SPEED_DENOM);
 
-				pMS->CurState = MAKE_BYTE (
-						SHUTTLE_TURN_WAIT, HINIBBLE (pMS->CurState));
+				turn_wait = SHUTTLE_TURN_WAIT;
 			}
 
 			if (!CurrentInputState.key[PlayerControls[0]][KEY_UP])
@@ -1762,11 +1778,15 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 			else
 				GetNextVelocityComponents (&GLOBAL (velocity), &dx, &dy, 1);
 
-			if (HINIBBLE (pMS->CurState))
-				pMS->CurState -= MAKE_BYTE (0, 1);
+			if (weapon_wait)
+				--weapon_wait;
 			else if (CurrentInputState.key[PlayerControls[0]][KEY_WEAPON])
 			{
-				LanderFire (pMS, index);
+				LanderFire (index);
+
+				weapon_wait = SHUTTLE_FIRE_WAIT;
+				if (GET_GAME_STATE (IMPROVED_LANDER_SHOT))
+					weapon_wait >>= 1;
 			}
 		}
 	}
@@ -1989,9 +2009,11 @@ PlanetSide (POINT planetLoc)
 	//   something like an 'intptr_t private' field
 	pLanderInputState = &landerInputState;
 
-	index = NORMALIZE_FACING ((COUNT)TFB_Random ());
+	index = NORMALIZE_FACING (TFB_Random ());
 	LanderFrame[0] = SetAbsFrameIndex (LanderFrame[0], index);
-	landerInputState.delta_item = 0;
+	crew_left = 0;
+	damage_index = 0;
+	explosion_index = 0;
 	pSolarSysState->MenuState.Initialized += 4;
 
 	InitPlanetSide (planetLoc);
@@ -2007,11 +2029,8 @@ PlanetSide (POINT planetLoc)
 
 	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
-		SIZE crew_left;
 		RECT r;
 		//CONTEXT OldContext;
-
-		crew_left = HIBYTE (landerInputState.delta_item);
 
 		r.corner.x = SIS_ORG_X;
 		r.corner.y = SIS_ORG_Y;
