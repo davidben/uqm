@@ -179,29 +179,29 @@ static LOCDATA arilou_desc =
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			(1 << 0) | (1 << 1) | (1 << 2)
 		},
-		{
+		{	/* Hands moving (right up) */
 			155, /* StartIndex */
 			2, /* NumFrames */
-			CIRCULAR_ANIM, /* AnimFlags */
+			CIRCULAR_ANIM | WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
-			0, /* BlockMask */
+			(1 << 19), /* BlockMask */
 		},
-		{
+		{	/* Hands moving (left up) */
 			157, /* StartIndex */
 			2, /* NumFrames */
-			CIRCULAR_ANIM, /* AnimFlags */
+			CIRCULAR_ANIM | WAIT_TALKING, /* AnimFlags */
 			ONE_SECOND / 15, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
-			0, /* BlockMask */
+			(1 << 19), /* BlockMask */
 		},
-		{
+		{	/* Stars flashing next to the head */
 			159, /* StartIndex */
 			4, /* NumFrames */
-			CIRCULAR_ANIM | WAIT_TALKING,/* AnimFlags */
+			CIRCULAR_ANIM, /* AnimFlags */
 			ONE_SECOND / 12, 0, /* FrameRate */
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
-			0, /* BlockMask */
+			(1 << 17) | (1 << 18), /* BlockMask */
 		},
 	},
 	{ /* AlienTransitionDesc */
