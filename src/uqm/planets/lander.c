@@ -163,17 +163,7 @@ static int turn_wait;
 static int weapon_wait;
 		// semantics similar to STARSHIP.weapon_counter
 
-#define NUM_LANDING_DELTAS  11
-#define ON_THE_GROUND       -1
-#define IDLE_INDEX          0
-// XXX: These should be calculated based on SURFACE_HEIGHT and not fixed
-//   In fact, because 3DO SURFACE_HEIGHT was smaller, the lander visibly
-//   jumps up during takeoff, and slams hard on landing.
-//   I brought these out here from the only func that used them.
-static signed char landing_pos[NUM_LANDING_DELTAS] =
-{
-	-10, 1, 12, 22, 31, 39, 45, 50, 54, 57, 59
-};
+#define ON_THE_GROUND   0
 
 
 static COLOR
@@ -1234,7 +1224,7 @@ RepairScan (POINT newPlanetLoc)
 }
 
 static void
-ScrollPlanetSide (SIZE dx, SIZE dy, int landingIndex)
+ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 {
 	POINT new_pt;
 	STAMP lander_s, shadow_s, shield_s;
@@ -1294,13 +1284,10 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingIndex)
 	if (crew_left || damage_index || explosion_index < 3)
 	{
 		lander_s.origin.x = SURFACE_WIDTH >> 1;
+		lander_s.origin.y = (SURFACE_HEIGHT >> 1) + landingOffset;
 		lander_s.frame = LanderFrame[0];
-		if (landingIndex == ON_THE_GROUND)
-			lander_s.origin.y = SURFACE_HEIGHT >> 1;
-		else
-			lander_s.origin.y = landing_pos[landingIndex];
 
-		if (landingIndex != ON_THE_GROUND)
+		if (landingOffset != ON_THE_GROUND)
 		{	// Landing, draw a shadow
 			shadow_s.origin.x = lander_s.origin.y + (SURFACE_WIDTH >> 1) - (SURFACE_HEIGHT >> 1);//2;
 			shadow_s.origin.y = lander_s.origin.y;
@@ -1339,7 +1326,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingIndex)
 		}
 	}
 	
-	if (landingIndex == ON_THE_GROUND && crew_left
+	if (landingOffset == ON_THE_GROUND && crew_left
 			&& GetPredLink (DisplayLinks) != END_OF_LIST)
 		CheckObjectCollision (END_OF_LIST);
 
@@ -1889,11 +1876,13 @@ ReturnToOrbit (RECT *pRect)
 static void
 IdlePlanetSide (LanderInputState *inputState, TimeCount howLong)
 {
+#define IDLE_OFFSET     
 	TimeCount TimeOut = GetTimeCounter () + howLong;
 
 	while (GetTimeCounter () < TimeOut)
 	{
-		ScrollPlanetSide (0, 0, IDLE_INDEX);
+		// 10 to clear the lander off of the screen
+		ScrollPlanetSide (0, 0, -(SURFACE_HEIGHT / 2 + 10));
 		SleepThreadUntil (inputState->NextTime);
 		inputState->NextTime += PLANET_SIDE_RATE;
 	}
@@ -1902,22 +1891,36 @@ IdlePlanetSide (LanderInputState *inputState, TimeCount howLong)
 static void
 LandingTakeoffSequence (LanderInputState *inputState, BOOLEAN landing)
 {
+// We cannot solve a quadratic equation in a macro, so use a sensible max
+#define MAX_OFFSETS  20
+// 10 to clear the lander off of the screen
+#define DISTANCE_COVERED  (SURFACE_HEIGHT / 2 + 10)
+	int landingOfs[MAX_OFFSETS];
 	int start;
 	int end;
 	int delta;
 	int index;
 
+	// Produce smooth acceleration deltas from a simple 1..x progression
+	delta = 0;
+	for (index = 0; index < MAX_OFFSETS && delta < DISTANCE_COVERED; ++index)
+	{
+		delta += index + 1;
+		landingOfs[index] = -delta;
+	}
+	assert (delta >= DISTANCE_COVERED && "Increase MAX_OFFSETS!");
+
 	if (landing)
 	{
-		start = 0;
-		end = NUM_LANDING_DELTAS;
-		delta = +1;
+		start = index - 1;
+		end = -1;
+		delta = -1;
 	}
 	else
 	{	// takeoff
-		start = NUM_LANDING_DELTAS - 1;
-		end = -1;
-		delta = -1;
+		start = 0;
+		end = index;
+		delta = +1;
 	}
 
 	if (landing)
@@ -1926,7 +1929,7 @@ LandingTakeoffSequence (LanderInputState *inputState, BOOLEAN landing)
 	// Draw the landing/takeoff lander positions
 	for (index = start; index != end; index += delta)
 	{
-		ScrollPlanetSide (0, 0, index);
+		ScrollPlanetSide (0, 0, landingOfs[index]);
 		SleepThreadUntil (inputState->NextTime);
 		inputState->NextTime += PLANET_SIDE_RATE;
 	}
