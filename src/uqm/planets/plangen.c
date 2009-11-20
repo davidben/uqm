@@ -2088,7 +2088,6 @@ rotate_planet_task (void *data)
 			// to acquire the graphics lock
 			LockMutex (GraphicsLock);
 			if (*(volatile UBYTE *)&pSS->PauseRotate != 1
-//			if (((SOLARSYS_STATE *volatile)pSS)->MenuState.Initialized <= 3
 					&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
 				//PauseRotate == 2 is a single-step
