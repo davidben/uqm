@@ -180,7 +180,7 @@ AdvanceAmbientSequence (SEQUENCE *pSeq)
 		pSeq->Alarm = randomFrameRate (pSeq) + 1;
 	}
 	else
-	{	// animation ended
+	{	// last animation frame
 		active = FALSE;
 		pSeq->Alarm = randomRestartRate (pSeq) + 1;
 
@@ -413,6 +413,7 @@ ambient_anim_task (void *data)
 		BOOLEAN CanTalk;
 		TimeCount CurTime;
 		DWORD ElapsedTicks;
+		DWORD NextActiveMask;
 
 		SleepThreadUntil (LastTime + ONE_SECOND / AMBIENT_ANIM_RATE);
 
@@ -434,6 +435,7 @@ ambient_anim_task (void *data)
 		}
 
 		// Process ambient animations
+		NextActiveMask = ActiveMask;
 		pSeq = Sequences + FirstAmbient;
 		for ( ; i < CommData.NumAnimations; ++i, ++pSeq)
 		{
@@ -466,9 +468,17 @@ ambient_anim_task (void *data)
 			else
 			{	// Time to start or advance the animation
 				if (AdvanceAmbientSequence (pSeq))
+				{	// Animation is active this frame and the next
 					ActiveMask |= ActiveBit;
+					NextActiveMask |= ActiveBit;
+				}
 				else
-					ActiveMask &= ~ActiveBit;
+				{	// Animation remains active this frame but not the next
+					// This keeps any conflicting animations (BlockMask)
+					// from activating in the same frame and scribbling over
+					// our last image.
+					NextActiveMask &= ~ActiveBit;
+				}
 			}
 
 			if (pSeq->AnimType == PICTURE_ANIM && pSeq->Direction != NO_DIR
@@ -480,7 +490,10 @@ ambient_anim_task (void *data)
 				if (animAtNeutralIndex (pSeq))
 				{	// pause the animation
 					pSeq->Direction = NO_DIR;
-					ActiveMask &= ~ActiveBit;
+					NextActiveMask &= ~ActiveBit;
+					// Talk animation is drawn last, so it's not a conflict
+					// for this frame. The talk animation will be drawn
+					// over the neutral frame.
 				}
 				else
 				{	// Otherwise, let the animation run until it's safe
@@ -488,6 +501,8 @@ ambient_anim_task (void *data)
 				}
 			}
 		}
+		// All ambient animations have been processed. Advance the mask.
+		ActiveMask = NextActiveMask;
 
 		// Process the talking and transition animations
 		if (CanTalk	&& haveTalkingAnim () && runningTalkingAnim ())
