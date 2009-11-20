@@ -200,49 +200,6 @@ DamageColorCycle (COLOR c, COUNT i)
 	return (c);
 }
 
-// XXX: This function used to erase a moving object by drawing a piece
-//   of surface over its previous location. Now it just moves the object
-static BOOLEAN
-RepairTopography (ELEMENT *ElementPtr)
-{
-	//BOOLEAN CursorIntersect;
-	SIZE delta;
-	RECT r;
-	STAMP s;
-
-	s.origin = ElementPtr->current.location;
-
-	GetFrameRect (ElementPtr->next.image.frame, &r);
-	r.corner.x += ElementPtr->current.location.x;
-	r.corner.y += ElementPtr->current.location.y;
-
-	delta = (ElementPtr->next.location.x >> MAG_SHIFT) - r.corner.x;
-	if (delta >= 0)
-		r.extent.width += delta;
-	else
-	{
-		r.corner.x += delta;
-		r.extent.width -= delta;
-	}
-	ElementPtr->current.location.x += delta;
-	if (ElementPtr->current.location.x < 0)
-		ElementPtr->current.location.x += MAP_WIDTH;
-	else if (ElementPtr->current.location.x >= MAP_WIDTH)
-		ElementPtr->current.location.x -= MAP_WIDTH;
-
-	delta = (ElementPtr->next.location.y >> MAG_SHIFT) - r.corner.y;
-	if (delta >= 0)
-		r.extent.height += delta;
-	else
-	{
-		r.corner.y += delta;
-		r.extent.height -= delta;
-	}
-	ElementPtr->current.location.y += delta;
-
-	return FALSE;
-}
-
 static HELEMENT AddGroundDisaster (COUNT which_disaster);
 
 void
@@ -1109,20 +1066,8 @@ BuildObjectList (void)
 		{
 			hNextElement = GetSuccElement (ElementPtr);
 			UnlockElement (hElement);
-
-			// XXX: Hack: APPEARING flag is set by scan.c for scanned blips
-			if (ElementPtr->state_flags & APPEARING)
-			{
-				// XXX: Hack: defer deletion of the element
-				ElementPtr->current.location.x |= 0x8000;
-				ElementPtr->current.location.y |= 0x8000;
-			}
-			else
-			{
-				RemoveElement (hElement);
-				FreeElement (hElement);
-			}
-			
+			RemoveElement (hElement);
+			FreeElement (hElement);
 			continue;
 		}
 		else if (ElementPtr->state_flags & FINITE_LIFE)
@@ -1146,15 +1091,19 @@ BuildObjectList (void)
 				else if (ElementPtr->next.location.y >= (MAP_HEIGHT << MAG_SHIFT))
 					ElementPtr->next.location.y = (MAP_HEIGHT << MAG_SHIFT) - 1;
 			}
-			// XXX: Hack: APPEARING flag is set by scan.c for scanned blips
-			if (ElementPtr->state_flags & APPEARING)
-			{	// XXX: Hack: remove the element from display
-				ElementPtr->current.location.x |= 0x8000;
-			}
 			if (ElementPtr->next.location.x < 0)
 				ElementPtr->next.location.x += MAP_WIDTH << MAG_SHIFT;
 			else
 				ElementPtr->next.location.x %= MAP_WIDTH << MAG_SHIFT;
+			
+			// XXX: APPEARING flag is set by scan.c for scanned blips
+			if (ElementPtr->state_flags & APPEARING)
+			{	// Update the location of a moving object on the scan map
+				ElementPtr->current.location.x =
+						ElementPtr->next.location.x >> MAG_SHIFT;
+				ElementPtr->current.location.y =
+						ElementPtr->next.location.y >> MAG_SHIFT;
+			}
 		}
 
 		{
@@ -1184,43 +1133,6 @@ BuildObjectList (void)
 		hNextElement = GetSuccElement (ElementPtr);
 		UnlockElement (hElement);
 	}
-}
-
-static void
-RepairScan (POINT newPlanetLoc)
-{
-	HELEMENT hElement, hNextElement;
-
-	for (hElement = GetHeadElement ();
-			hElement; hElement = hNextElement)
-	{
-		ELEMENT *ElementPtr;
-		BOOLEAN remove = FALSE;
-
-		LockElement (hElement, &ElementPtr);
-		hNextElement = GetSuccElement (ElementPtr);
-		if (ElementPtr->current.location.x & 0x8000)
-		{	// XXX: element removed from display
-			ElementPtr->current.location.x &= ~0x8000;
-			if (ElementPtr->current.location.y & 0x8000)
-			{	// XXX: deletion of this element was defered
-				remove = TRUE;
-				ElementPtr->current.location.y &= ~0x8000;
-			}
-
-			RepairTopography (ElementPtr);
-		}
-		
-		UnlockElement (hElement);
-
-		if (remove)
-		{
-			RemoveElement (hElement);
-			FreeElement (hElement);
-		}
-	}
-
-	RedrawSurfaceScan (&newPlanetLoc);
 }
 
 static void
@@ -1355,7 +1267,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 		}
 	}
 
-	RepairScan (new_pt);
+	RedrawSurfaceScan (&new_pt);
 
 	if (lander_flags & KILL_CREW)
 		DeltaLanderCrew (-1, LIGHTNING_DISASTER);
@@ -1581,10 +1493,6 @@ LanderFire (SIZE facing)
 	WeaponElementPtr->life_span = 12;
 	WeaponElementPtr->state_flags = FINITE_LIFE;
 	WeaponElementPtr->next.location = curLanderLoc;
-	WeaponElementPtr->current.location.x =
-			WeaponElementPtr->next.location.x >> MAG_SHIFT;
-	WeaponElementPtr->current.location.y =
-			WeaponElementPtr->next.location.y >> MAG_SHIFT;
 
 	SetPrimType (&DisplayArray[WeaponElementPtr->PrimIndex], STAMP_PRIM);
 	DisplayArray[WeaponElementPtr->PrimIndex].Object.Stamp.frame =

@@ -562,12 +562,13 @@ setPlanetCursorLoc (POINT new_pt)
 }
 
 static void
-setPlanetLoc (POINT new_pt)
+setPlanetLoc (POINT new_pt, BOOLEAN restoreOld)
 {
 	planetLoc = new_pt;
 
 	SetContext (ScanContext);
-	restorePlanetLocationImage ();
+	if (restoreOld)
+		restorePlanetLocationImage ();
 	setPlanetCursorLoc (new_pt);
 	savePlanetLocationImage ();
 }
@@ -626,7 +627,7 @@ RedrawSurfaceScan (const POINT *newLoc)
 	DrawScannedObjects (TRUE);
 	if (newLoc)
 	{
-		setPlanetLoc (*newLoc);
+		setPlanetLoc (*newLoc, FALSE);
 	 	drawPlanetCursor (FALSE);
 	}
 	UnbatchGraphics ();
@@ -796,7 +797,7 @@ ExitPlanetSide:
 		if (new_pt.x != planetLoc.x
 				|| new_pt.y != planetLoc.y)
 		{
-			setPlanetLoc (new_pt);
+			setPlanetLoc (new_pt, TRUE);
 		}
 
 		flashPlanetLocation ();
@@ -837,7 +838,7 @@ DrawScannedStuff (COUNT y, BYTE CurState)
 			//DWORD Time;
 			STAMP s;
 
-			// XXX: Hack: flag this as surface scan element
+			// XXX: Hack: flag this as a scanned object
 			ElementPtr->state_flags |= APPEARING;
 
 			s.origin = ElementPtr->current.location;
