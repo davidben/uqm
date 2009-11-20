@@ -1248,9 +1248,6 @@ DoGameOptions (MENU_STATE *pMS)
 		{
 			case SAVE_GAME:
 			case LOAD_GAME:
-				pMS->CurFrame = (FRAME)FadeMusic (0, ONE_SECOND >> 1);
-						// XXX: what is going on here? A DWORD is cast
-						//      to a FRAME.
 				return PickGame (pMS);
 			case QUIT_GAME:
 				if (ConfirmExit ())
