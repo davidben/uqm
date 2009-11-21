@@ -119,7 +119,7 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 }
 
 // Initialise the surface graphics, and start the planet music.
-// Called from the GENERATE_ORBITAL case of an IP generation function
+// Called from the GenerateFunctions.generateOribital() function
 // (when orbit is entered; either from IP, or from loading a saved game)
 // and when "starmap" is selected from orbit and then cancelled;
 // also after in-orbit comm and after defeating planet guards in combat.
@@ -148,8 +148,8 @@ LoadPlanet (FRAME SurfDefFrame)
 	if (pSolarSysState->MenuState.flash_task == 0)
 	{
 		// The "rotate planets" task is not initialised yet.
-		// This means the call to LoadPlanet is made from a
-		// GENERATE_ORBITAL case of an IP generation function.
+		// This means the call to LoadPlanet is made from some
+		// GenerateFunctions.generateOribital() function.
 		PLANET_DESC *pPlanetDesc;
 
 		StopMusic ();

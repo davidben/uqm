@@ -688,7 +688,8 @@ RetrySave:
 
 		SaveRaceQueue (fh, &GLOBAL (avail_race_q));
 		// START_INTERPLANETARY is only set when saving from Homeworld
-		//   encounter screen. When the game is loaded, GENERATE_ORBITAL will
+		//   encounter screen. When the game is loaded, the
+		//   GenerateOrbitalFunction for the current star system
 		//   create the encounter anew and populate the npc queue.
 		if (!(GLOBAL (CurrentActivity) & START_INTERPLANETARY))
 		{

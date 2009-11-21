@@ -24,6 +24,7 @@
 #include "../encount.h"
 #include "../races.h"
 #include "../gamestr.h"
+#include "../gendef.h"
 #include "../globdata.h"
 #include "../sis.h"
 #include "../init.h"
@@ -47,7 +48,10 @@
 
 
 SOLARSYS_STATE *pSolarSysState;
-FRAME SISIPFrame, SunFrame, OrbitalFrame, SpaceJunkFrame;
+FRAME SISIPFrame;
+FRAME SunFrame;
+FRAME OrbitalFrame;
+FRAME SpaceJunkFrame;
 COLORMAP OrbitalCMap;
 COLORMAP SunCMap;
 MUSIC_REF SpaceMusic;
@@ -71,73 +75,61 @@ BYTE draw_sys_flags = DRAW_STARS | DRAW_PLANETS | DRAW_ORBITS
 
 
 bool
-currentWorldIsPlanet (void) {
-	return pSolarSysState->pOrbitalDesc->pPrevDesc == pSolarSysState->SunDesc;
-}
-
-bool
-currentPlanetIndex (void) {
-	return (currentWorldIsPlanet ()) ?
-			(pSolarSysState->pOrbitalDesc - pSolarSysState->PlanetDesc) :
-			pSolarSysState->pOrbitalDesc->pPrevDesc -
-			pSolarSysState->PlanetDesc;
-}
-
-bool
-currentMoonIndex (void) {
-	assert (!currentWorldIsPlanet ());
-	return (pSolarSysState->pOrbitalDesc - pSolarSysState->MoonDesc);
-}
-
-// NB. This function modifies the RNG state.
-static void
-GeneratePlanets (SOLARSYS_STATE *system)
+worldIsPlanet (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world)
 {
-	COUNT i;
-	PLANET_DESC *planet;
+	return world->pPrevDesc == solarSys->SunDesc;
+}
 
-	for (i = system->SunDesc[0].NumPlanets,
-			planet = &system->PlanetDesc[0]; i; --i, ++planet)
+bool
+worldIsMoon (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world)
+{
+	return world->pPrevDesc != solarSys->SunDesc;
+}
+
+// Returns the planet index of the world. If the world is a moon, then
+// this is the index of the planet it is orbiting.
+COUNT
+planetIndex (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world)
+{
+	const PLANET_DESC *planet = worldIsPlanet (solarSys, world) ?
+			world : world->pPrevDesc;
+	return planet - solarSys->PlanetDesc;
+}
+
+COUNT
+moonIndex (const SOLARSYS_STATE *solarSys, const PLANET_DESC *moon)
+{
+	assert (!worldIsPlanet (solarSys, moon));
+	return moon - solarSys->MoonDesc;
+}
+
+// Test whether 'world' is the planetI-th planet, and if moonI is not
+// set to MATCH_PLANET, also whether 'world' is the moonI-th moon.
+bool
+matchWorld (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world,
+		BYTE planetI, BYTE moonI)
+{
+	// Check whether we have the right planet.
+	if (planetIndex (solarSys, world) != planetI)
+		return false;
+
+	if (moonI == MATCH_PLANET)
 	{
-		DWORD rand_val;
-		BYTE byte_val;
-		BYTE num_moons;
-		BYTE type;
-
-		rand_val = TFB_Random ();
-		byte_val = LOBYTE (rand_val);
-
-		num_moons = 0;
-		type = PlanData[planet->data_index & ~PLANET_SHIELDED].Type;
-		switch (PLANSIZE (type))
-		{
-			case LARGE_ROCKY_WORLD:
-				if (byte_val < 0x00FF * 25 / 100)
-				{
-					if (byte_val < 0x00FF * 5 / 100)
-						++num_moons;
-					++num_moons;
-				}
-				break;
-			case GAS_GIANT:
-				if (byte_val < 0x00FF * 90 / 100)
-				{
-					if (byte_val < 0x00FF * 75 / 100)
-					{
-						if (byte_val < 0x00FF * 50 / 100)
-						{
-							if (byte_val < 0x00FF * 25 / 100)
-								++num_moons;
-							++num_moons;
-						}
-						++num_moons;
-					}
-					++num_moons;
-				}
-				break;
-		}
-		planet->NumPlanets = num_moons;
+		// Only test whether we are at the planet.
+		if (!worldIsPlanet (solarSys, world))
+			return false;
 	}
+	else
+	{
+		// Test whether the moon matches too
+		if (!worldIsMoon (solarSys, world))
+			return false;
+
+		if (moonIndex (solarSys, world) != moonI)
+			return false;
+	}
+
+	return true;
 }
 
 static void
@@ -159,8 +151,8 @@ GenerateMoons (void)
 	pCurDesc = pSolarSysState->pBaseDesc;
 	old_seed = TFB_SeedRandom (pCurDesc->rand_seed);
 
-	(*pSolarSysState->GenFunc) (GENERATE_NAME);
-	(*pSolarSysState->GenFunc) (GENERATE_MOONS);
+	(*pSolarSysState->genFuncs->generateName) (pSolarSysState, pCurDesc);
+	(*pSolarSysState->genFuncs->generateMoons) (pSolarSysState, pCurDesc);
 
 	facing = NORMALIZE_FACING (ANGLE_TO_FACING (
 			ARCTAN (pCurDesc->location.x, pCurDesc->location.y)));
@@ -286,7 +278,8 @@ sortPlanetPositions (void)
 static void
 initSolarSysSISCharacteristics (void)
 {
-	BYTE i, num_thrusters;
+	BYTE i;
+	BYTE num_thrusters;
 
 	num_thrusters = 0;
 	for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
@@ -348,7 +341,7 @@ LoadSolarSys (void)
 	pCurDesc->image.origin = pCurDesc->location;
 	pCurDesc->image.frame = SunFrame;
 
-	(*pSolarSysState->GenFunc) (GENERATE_PLANETS);
+	(*pSolarSysState->genFuncs->generatePlanets) (pSolarSysState);
 	if (GET_GAME_STATE (PLANETARY_CHANGE))
 	{
 		PutPlanetInfo ();
@@ -1426,7 +1419,8 @@ StartGroups:
 		}
 
 		GetPlanetInfo ();
-		(*pSolarSysState->GenFunc) (GENERATE_ORBITAL);
+		(*pSolarSysState->genFuncs->generateOrbital) (pSolarSysState,
+				pSolarSysState->pOrbitalDesc);
 		LastActivity &= ~(CHECK_LOAD | CHECK_RESTART);
 		if ((GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD |
 				START_ENCOUNTER)) || GLOBAL_SIS (CrewEnlisted) == (COUNT)~0
@@ -1435,8 +1429,8 @@ StartGroups:
 
 		if (pSolarSysState->MenuState.flash_task == 0)
 		{
-			/* Note!  This implies that our GenFunc was a
-			   conversation; that is, that this is a homeworld */
+			/* Note!  This implies that our generateOrbital function started
+			   a conversation; that is, that this is a homeworld */
 			SetTransitionSource (NULL);
 			LoadSolarSys ();
 			ValidateOrbits ();
@@ -1490,7 +1484,7 @@ InitSolarSys (void)
 
 	if (Reentry)
 	{
-		(*pSolarSysState->GenFunc) (REINIT_NPCS);
+		(*pSolarSysState->genFuncs->reinitNpcs) ();
 	}
 	else
 	{
@@ -1499,7 +1493,7 @@ InitSolarSys (void)
 		GLOBAL (BattleGroupRef) = 0;
 		ReinitQueue (&GLOBAL (ip_group_q));
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
-		(*pSolarSysState->GenFunc) (INIT_NPCS);
+		(*pSolarSysState->genFuncs->initNpcs) ();
 	}
 
 	if (pSolarSysState->MenuState.Initialized == 0)
@@ -1569,7 +1563,7 @@ endInterPlanetary (void)
 	{
 		// These are game state changing ops and so cannot be
 		// called once another game has been loaded!
-		(*pSolarSysState->GenFunc) (UNINIT_NPCS);
+		(*pSolarSysState->genFuncs->uninitNpcs) ();
 		SET_GAME_STATE (USED_BROADCASTER, 0);
 	}
 }
@@ -1629,140 +1623,8 @@ UninitSolarSys (void)
 			pSolarSysState->pBaseDesc =
 					closestPlanetInterPlanetary (&GLOBAL (ShipStamp.origin));
 
-			(*pSolarSysState->GenFunc) (GENERATE_NAME);
-		}
-	}
-}
-
-static void
-GenerateOrbital (void) {
-	COUNT i;
-	DWORD rand_val;
-
-#ifdef DEBUG_SOLARSYS
-	if (currentWorldIsPlanet ())
-	{
-		log_add (log_Debug, "Planet index = %d", currentPlanetIndex ());
-	}
-	else
-	{
-		log_add (log_Debug, "Planet index = %d, Moon index = %d",
-				currentPlanetIndex (), currentMoonIndex ());
-	}
-#endif /* DEBUG_SOLARSYS */
-	rand_val = DoPlanetaryAnalysis (&pSolarSysState->SysInfo,
-			pSolarSysState->pOrbitalDesc);
-
-	pSolarSysState->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
-	i = (COUNT)~0;
-	rand_val = GenerateLifeForms (&pSolarSysState->SysInfo, &i);
-
-	pSolarSysState->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-	i = (COUNT)~0;
-	GenerateMineralDeposits (&pSolarSysState->SysInfo, &i);
-
-	pSolarSysState->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] = rand_val;
-	LoadPlanet (NULL);
-}
-
-static void
-check_yehat_rebellion (void)
-{
-	HIPGROUP hGroup, hNextGroup;
-
-	// XXX: Is there a better way to do this? I could not find one.
-	//   When you talk to a Yehat ship (YEHAT_SHIP) and start the rebellion,
-	//   there is no battle following the comm. There is *never* a battle in
-	//   an encounter with Rebels, but the group race_id (YEHAT_REBEL_SHIP)
-	//   is different from Royalists (YEHAT_SHIP). There is *always* a battle
-	//   in an encounter with Royalists.
-	// TRANSLATION: "If the civil war has not started yet, or the player
-	//   battled a ship -- bail."
-	if (!GET_GAME_STATE (YEHAT_CIVIL_WAR) || EncounterRace >= 0)
-		return; // not this time
-
-	// Send Yehat groups to flee the system, but only if the player
-	// has actually talked to a ship.
-	for (hGroup = GetHeadLink (&GLOBAL (ip_group_q)); hGroup;
-			hGroup = hNextGroup)
-	{
-		IP_GROUP *GroupPtr = LockIpGroup (&GLOBAL (ip_group_q), hGroup);
-		hNextGroup = _GetSuccLink (GroupPtr);
-		// IGNORE_FLAGSHIP was set in ipdisp.c:ip_group_collision()
-		// during a collision with the flagship.
-		if (GroupPtr->race_id == YEHAT_SHIP
-				&& (GroupPtr->task & IGNORE_FLAGSHIP))
-		{
-			GroupPtr->task &= REFORM_GROUP;
-			GroupPtr->task |= FLEE | IGNORE_FLAGSHIP;
-			GroupPtr->dest_loc = 0;
-		}
-		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
-	}
-}
-
-void
-GenerateRandomIP (BYTE control)
-{
-	switch (control)
-	{
-		case INIT_NPCS:
-			if (!GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP))
-			{
-				GLOBAL (BattleGroupRef) = 0;
-				BuildGroups ();
-			}
-			break;
-		case REINIT_NPCS:
-			GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
-			// This is not a great place to do the Yehat rebellion check, but
-			// since you can start the rebellion in any star system (not just
-			// the Homeworld), I could not find a better place for it.
-			// At least it is better than where it was originally.
-			check_yehat_rebellion ();
-			break;
-		case UNINIT_NPCS:
-			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-			ReinitQueue (&GLOBAL (npc_built_ship_q));
-			ReinitQueue (&GLOBAL (ip_group_q));
-			break;
-		case GENERATE_MINERAL:
-			GenerateMineralDeposits (&pSolarSysState->SysInfo,
-					&pSolarSysState->CurNode);
-			break;
-		case GENERATE_ENERGY:
-			pSolarSysState->CurNode = 0;
-			break;
-		case GENERATE_LIFE:
-			GenerateLifeForms (&pSolarSysState->SysInfo,
-					&pSolarSysState->CurNode);
-			break;
-		case GENERATE_ORBITAL:
-		{
-			GenerateOrbital ();
-			break;
-		}
-		case GENERATE_NAME:
-		{
-			COUNT i = pSolarSysState->pBaseDesc - pSolarSysState->PlanetDesc;
-			utf8StringCopy (GLOBAL_SIS (PlanetName),
-					sizeof (GLOBAL_SIS (PlanetName)),
-					GAME_STRING (PLANET_NUMBER_BASE + (9 + 7) + i));
-			SET_GAME_STATE (BATTLE_PLANET,
-					pSolarSysState->PlanetDesc[i].data_index);
-			break;
-		}
-		case GENERATE_MOONS:
-			FillOrbits (pSolarSysState,
-					pSolarSysState->pBaseDesc->NumPlanets,
-					&pSolarSysState->MoonDesc[0], FALSE);
-			break;
-		case GENERATE_PLANETS:
-		{
-			FillOrbits (pSolarSysState,
-					(BYTE)~0, &pSolarSysState->PlanetDesc[0], FALSE);
-			GeneratePlanets (pSolarSysState);
-			break;
+			(*pSolarSysState->genFuncs->generateName) (
+					pSolarSysState, pSolarSysState->pBaseDesc);
 		}
 	}
 }
@@ -2031,7 +1893,7 @@ ExploreSolarSys (void)
 
 	memset (pSolarSysState, 0, sizeof (*pSolarSysState));
 
-	SolarSysState.GenFunc = GenerateIP (CurStarDescPtr->Index);
+	SolarSysState.genFuncs = getGenerateFunctions (CurStarDescPtr->Index);
 
 	InitSolarSys ();
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);

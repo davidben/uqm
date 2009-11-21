@@ -19,6 +19,9 @@
 #ifndef _ENCOUNT_H
 #define _ENCOUNT_H
 
+typedef struct brief_ship_info BRIEF_SHIP_INFO;
+typedef struct encounter ENCOUNTER;
+
 // XXX: temporary, for CONVERSATION
 #include "commglue.h"
 #include "displist.h"
@@ -33,7 +36,7 @@ typedef HLINK HENCOUNTER;
 #define ONE_SHOT_ENCOUNTER (1 << 7)
 #define ENCOUNTER_REFORMING (1 << 6)
 
-typedef struct
+struct brief_ship_info
 {
 	// The only field actually used right now is crew_level
 	BYTE race_id;
@@ -41,9 +44,9 @@ typedef struct
 	COUNT max_crew;
 	BYTE max_energy;
 
-} BRIEF_SHIP_INFO;
+};
 
-typedef struct
+struct encounter
 {
 	// LINK elements; must be first
 	HENCOUNTER pred, succ;
@@ -58,7 +61,7 @@ typedef struct
 	BRIEF_SHIP_INFO ShipList[MAX_HYPER_SHIPS];
 
 	SDWORD log_x, log_y;
-} ENCOUNTER;
+};
 
 #define AllocEncounter() AllocLink (&GLOBAL (encounter_q))
 #define PutEncounter(h) PutQueue (&GLOBAL (encounter_q), h)

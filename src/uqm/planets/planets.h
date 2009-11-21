@@ -19,9 +19,6 @@
 #ifndef _PLANETS_H
 #define _PLANETS_H
 
-#include "../menustat.h"
-#include "../units.h"
-
 #define END_INTERPLANETARY START_INTERPLANETARY
 
 enum
@@ -52,33 +49,6 @@ enum
 
 enum
 {
-	GENERATE_PLANETS = 0,
-			// Layout of planets within a solar system.
-	GENERATE_MOONS,
-			// Layout of moons around a planet.
-	GENERATE_ORBITAL,
-			// Characteristics of words (planets and moons).
-
-	INIT_NPCS,
-			// Ships in the solar system, the first time it is accessed.
-	REINIT_NPCS,
-			// Ships in the solar system, every next time it is accessed.
-	UNINIT_NPCS,
-			// When leaving the solar system.
-
-	GENERATE_MINERAL,
-			// Minerals on the planet surface.
-	GENERATE_ENERGY,
-			// Energy sources on the planet surface.
-	GENERATE_LIFE,
-			// Bio on the planet surface.
-
-	GENERATE_NAME
-			// Name of a planet.
-};
-
-enum
-{
 	BIOLOGICAL_DISASTER = 0,
 	EARTHQUAKE_DISASTER,
 	LIGHTNING_DISASTER,
@@ -95,6 +65,7 @@ enum
 	LANDER_RETURNS,
 	LANDER_DESTROYED
 };
+
 #define MAX_SCROUNGED 50 /* max lander can hold */
 
 #define SCALE_RADIUS(r) ((r) << 6)
@@ -113,7 +84,27 @@ enum
 #define MIN_MOON_RADIUS 35
 #define MOON_DELTA 20
 
-typedef struct planet_desc
+#define MAX_SUNS 1
+#define MAX_PLANETS 16
+#define MAX_MOONS 4
+
+
+typedef struct planet_desc PLANET_DESC;
+typedef struct star_desc STAR_DESC;
+typedef struct planet_orbit PLANET_ORBIT;
+typedef struct solarsys_state SOLARSYS_STATE;
+
+
+#include "generate.h"
+#include "../menustat.h"
+#include "../units.h"
+
+#include "elemdata.h"
+#include "plandata.h"
+#include "sundata.h"
+
+
+struct planet_desc
 {
 	DWORD rand_seed;
 
@@ -126,27 +117,22 @@ typedef struct planet_desc
 	COUNT NextIndex;
 	STAMP image;
 
-	struct planet_desc *pPrevDesc;
-} PLANET_DESC;
+	PLANET_DESC *pPrevDesc;
+			// The Sun or planet that this world is orbiting around.
+};
 
-typedef struct
+struct star_desc
 {
 	POINT star_pt;
-	BYTE Type, Index;
-	BYTE Prefix, Postfix;
-} STAR_DESC;
-
-#define MAX_SUNS 1
-#define MAX_PLANETS 16
-#define MAX_MOONS 4
-
-#include "elemdata.h"
-#include "plandata.h"
-#include "sundata.h"
+	BYTE Type;
+	BYTE Index;
+	BYTE Prefix;
+	BYTE Postfix;
+};
 
 typedef void (*PLAN_GEN_FUNC) (BYTE control);
 
-typedef struct planet_orbit
+struct planet_orbit
 {
 	FRAME TopoZoomFrame;
 			// 4x scaled topo image for planet-side
@@ -167,11 +153,11 @@ typedef struct planet_orbit
 			// temp RGBA data for whatever transforms (nuked often)
 	FRAME WorkFrame;
 			// any extra frame workspace (for dynamic objects)
-}  PLANET_ORBIT;
+};
 
 // See doc/devel/generate for information on how this structure is
 // filled.
-typedef struct solarsys_state
+struct solarsys_state
 {
 	MENU_STATE MenuState;
 
@@ -179,12 +165,12 @@ typedef struct solarsys_state
 	PLANET_DESC SunDesc[MAX_SUNS];
 	PLANET_DESC PlanetDesc[MAX_PLANETS];
 			// Description of the planets in the system.
-			// Only defined after a call to GenFunc with GENERATE_PLANETS
-			// as its argument, and overwritten by subsequent calls.
+			// Only defined after a call to (*genFuncs)->generatePlanets()
+			// and overwritten by subsequent calls.
 	PLANET_DESC MoonDesc[MAX_MOONS];
 			// Description of the moons orbiting the planet pointed to
 			// by pBaseDesc.
-			// Only defined after a call to GenFunc with GENERATE_MOONS
+			// Only defined after a call to (*genFuncs)->generateMoons()
 			// as its argument, and overwritten by subsequent calls.
 	PLANET_DESC *pBaseDesc;
 	PLANET_DESC *pOrbitalDesc;
@@ -196,8 +182,10 @@ typedef struct solarsys_state
 			// PlanetDesc[PlanetDesc[i].NextIndex] is the next planet
 			// after PlanetDesc[i] in the ordering.
 
-	BYTE turn_counter, turn_wait;
-	BYTE thrust_counter, max_ship_speed;
+	BYTE turn_counter;
+	BYTE turn_wait;
+	BYTE thrust_counter;
+	BYTE max_ship_speed;
 
 	STRING XlatRef;
 	STRINGPTR XlatPtr;
@@ -206,23 +194,27 @@ typedef struct solarsys_state
 	SYSTEM_INFO SysInfo;
 
 	COUNT CurNode;
-	PLAN_GEN_FUNC GenFunc;
-			// Function to call to fill in various parts of this structure.
-			// See doc/devel/generate.
+	const GenerateFunctions *genFuncs;
+			// Functions to call to fill in various parts of this structure.
+			// See generate.h, doc/devel/generate
 
 	FRAME PlanetSideFrame[6];
 	UWORD Tint_rgb;
 	UBYTE PauseRotate;
 	FRAME TopoFrame;
 	PLANET_ORBIT Orbit;
-} SOLARSYS_STATE;
+};
 
 extern SOLARSYS_STATE *pSolarSysState;
 extern MUSIC_REF SpaceMusic;
 
-bool currentWorldIsPlanet (void);
-bool currentPlanetIndex (void);
-bool currentMoonIndex (void);
+bool worldIsPlanet (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world);
+bool worldIsMoon (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world);
+COUNT planetIndex (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world);
+COUNT moonIndex (const SOLARSYS_STATE *solarSys, const PLANET_DESC *moon);
+#define MATCH_PLANET ((BYTE) -1)
+bool matchWorld (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world,
+		BYTE planetI, BYTE moonI);
 
 extern void LoadPlanet (FRAME SurfDefFrame);
 extern void DrawPlanet (int x, int y, int dy, unsigned int rgb);
@@ -233,7 +225,6 @@ extern void FreeLanderFont (PLANET_INFO *info);
 extern void ExploreSolarSys (void);
 extern void DrawStarBackGround (BOOLEAN ForPlanet);
 extern void XFormIPLoc (POINT *pIn, POINT *pOut, BOOLEAN ToDisplay);
-extern void GenerateRandomIP (BYTE control);
 extern PLAN_GEN_FUNC GenerateIP (BYTE Index);
 extern void DrawSystem (SIZE radius, BOOLEAN IsInnerSystem);
 extern void DrawOval (RECT *pRect, BYTE num_off_pixels);

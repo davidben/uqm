@@ -904,6 +904,27 @@ DrawScannedStuff (COUNT y, BYTE CurState)
 	SetContextForeGroundColor (OldColor);
 }
 
+bool
+callGenerateForScanType (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT *node, BYTE scanType)
+{
+	switch (scanType)
+	{
+		case MINERAL_SCAN:
+			return (*solarSys->genFuncs->generateMinerals) (
+					solarSys, world, node);
+		case ENERGY_SCAN:
+			return (*solarSys->genFuncs->generateEnergy) (
+					solarSys, world, node);
+		case BIOLOGICAL_SCAN:
+			return (*solarSys->genFuncs->generateLife) (
+					solarSys, world, node);
+	}
+
+	assert (false);
+	return false;
+}
+
 static BOOLEAN
 DoScan (MENU_STATE *pMS)
 {
@@ -1020,7 +1041,9 @@ DoScan (MENU_STATE *pMS)
 			t.CharCount = (COUNT)~0;
 
 			pSolarSysState->CurNode = (COUNT)~0;
-			(*pSolarSysState->GenFunc) ((BYTE)(min_scan + GENERATE_MINERAL));
+			callGenerateForScanType (pSolarSysState,
+					pSolarSysState->pOrbitalDesc, &pSolarSysState->CurNode,
+					min_scan);
 			pMS->delta_item = (SIZE)pSolarSysState->CurNode;
 			t.pStr = GAME_STRING (SCAN_STRING_BASE + min_scan);
 
@@ -1243,7 +1266,8 @@ GeneratePlanetSide (void)
 				NUM_SCANDOT_TRANSITIONS * (scan - ENERGY_SCAN));
 
 		pSolarSysState->CurNode = (COUNT)~0;
-		(*pSolarSysState->GenFunc) ((BYTE)(scan + GENERATE_MINERAL));
+		callGenerateForScanType (pSolarSysState,
+				pSolarSysState->pOrbitalDesc, &pSolarSysState->CurNode, scan);
 
 		num_nodes = pSolarSysState->CurNode;
 		while (num_nodes--)
@@ -1262,7 +1286,9 @@ GeneratePlanetSide (void)
 			LockElement (hNodeElement, &NodeElementPtr);
 
 			pSolarSysState->CurNode = num_nodes;
-			(*pSolarSysState->GenFunc) ((BYTE)(scan + GENERATE_MINERAL));
+			callGenerateForScanType (pSolarSysState,
+					pSolarSysState->pOrbitalDesc, &pSolarSysState->CurNode,
+					scan);
 
 			NodeElementPtr->scan_node = MAKE_WORD (scan, num_nodes + 1);
 			NodeElementPtr->playerNr = PS_NON_PLAYER;

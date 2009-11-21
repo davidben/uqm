@@ -568,7 +568,8 @@ LoadGame (COUNT which_game, SUMMARY_DESC *SummPtr)
 
 	LoadRaceQueue (fh, &GLOBAL (avail_race_q));
 	// START_INTERPLANETARY is only set when saving from Homeworld
-	//   encounter screen. When the game is loaded, GENERATE_ORBITAL will
+	//   encounter screen. When the game is loaded, the
+	//   GenerateOrbitalFunction for the current star system will
 	//   create the encounter anew and populate the npc queue.
 	if (!(NextActivity & START_INTERPLANETARY))
 	{

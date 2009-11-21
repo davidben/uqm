@@ -28,6 +28,7 @@
 #include "status.h"
 #include "gamestr.h"
 #include "gameev.h"
+#include "gendef.h"
 #include "globdata.h"
 #include "planets/lifeform.h"
 #include "races.h"
@@ -635,10 +636,10 @@ starRecurse (STAR_DESC *star, void *arg)
 	SolarSysState.SunDesc[0].location.x = 0;
 	SolarSysState.SunDesc[0].location.y = 0;
 	//SolarSysState.SunDesc[0].radius = MIN_ZOOM_RADIUS;
-	SolarSysState.GenFunc = GenerateIP (star->Index);
+	SolarSysState.genFuncs = getGenerateFunctions (star->Index);
 
 	pSolarSysState = &SolarSysState;
-	(*pSolarSysState->GenFunc) (GENERATE_PLANETS);
+	(*SolarSysState.genFuncs->generatePlanets) (&SolarSysState);
 
 	if (universeRecurseArg->systemFuncPre != NULL)
 	{
@@ -666,8 +667,8 @@ starRecurse (STAR_DESC *star, void *arg)
 }
 
 static void
-planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
-		PLANET_DESC *planet, void *arg)
+planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
+		void *arg)
 {
 	UniverseRecurseArg *universeRecurseArg = (UniverseRecurseArg *) arg;
 	
@@ -681,10 +682,10 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
 	{
 		system->pOrbitalDesc = planet;
 		DoPlanetaryAnalysis (&system->SysInfo, planet);
-				// When GenerateRandomIP is used as GenFunc,
-				// GENERATE_ORBITAL will also call DoPlanetaryAnalysis,
-				// but with other GenFuncs this is not guaranteed.
-		(*system->GenFunc) (GENERATE_ORBITAL);
+				// When GenerateDefaultFunctions is used as genFuncs,
+				// generateOrbital will also call DoPlanetaryAnalysis,
+				// but with other GenerateFunctions this is not guaranteed.
+		(*system->genFuncs->generateOrbital) (system, planet);
 		(*universeRecurseArg->planetFuncPre) (
 				planet, universeRecurseArg->arg);
 	}
@@ -693,7 +694,7 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
 	{
 		DWORD oldSeed = TFB_SeedRandom (planet->rand_seed);
 		
-		(*system->GenFunc) (GENERATE_MOONS);
+		(*system->genFuncs->generateMoons) (system, planet);
 
 		forAllMoons (star, system, planet, moonRecurse,
 				(void *) universeRecurseArg);
@@ -705,10 +706,10 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system,
 	{
 		system->pOrbitalDesc = planet;
 		DoPlanetaryAnalysis (&system->SysInfo, planet);
-				// When GenerateRandomIP is used as GenFunc,
-				// GENERATE_ORBITAL will also call DoPlanetaryAnalysis,
-				// but with other GenFuncs this is not guaranteed.
-		(*system->GenFunc) (GENERATE_ORBITAL);
+				// When GenerateDefaultFunctions is used as genFuncs,
+				// generateOrbital will also call DoPlanetaryAnalysis,
+				// but with other GenerateFunctions this is not guaranteed.
+		(*system->genFuncs->generateOrbital) (system, planet);
 		(*universeRecurseArg->planetFuncPost) (
 				planet, universeRecurseArg->arg);
 	}
@@ -730,10 +731,10 @@ moonRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 	{
 		system->pOrbitalDesc = moon;
 		DoPlanetaryAnalysis (&system->SysInfo, moon);
-				// When GenerateRandomIP is used as GenFunc,
-				// GENERATE_ORBITAL will also call DoPlanetaryAnalysis,
-				// but with other GenFuncs this is not guaranteed.
-		(*system->GenFunc) (GENERATE_ORBITAL);
+				// When GenerateDefaultFunctions is used as genFuncs,
+				// generateOrbital will also call DoPlanetaryAnalysis,
+				// but with other GenerateFunctions this is not guaranteed.
+		(*system->genFuncs->generateOrbital) (system, moon);
 		(*universeRecurseArg->moonFunc) (
 				moon, universeRecurseArg->arg);
 	}
@@ -974,7 +975,8 @@ dumpPlanetCallback (const PLANET_DESC *planet, void *arg)
 void
 dumpPlanet (FILE *out, const PLANET_DESC *planet)
 {
-	(*pSolarSysState->GenFunc) (GENERATE_NAME);
+	(*pSolarSysState->genFuncs->generateName) (
+			pSolarSysState, (PLANET_DESC *) planet);
 	fprintf (out, "- %-37s  %s\n", GLOBAL_SIS (PlanetName),
 			planetTypeString (planet->data_index & ~PLANET_SHIELDED));
 	dumpWorld (out, planet);
@@ -1053,17 +1055,19 @@ calculateBioValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 	COUNT numBio;
 	COUNT i;
 
-	assert(system->pOrbitalDesc == world);
+	assert (system->pOrbitalDesc == world);
 	
 	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
-	(*system->GenFunc) (GENERATE_LIFE);
+	(*system->genFuncs->generateLife) ((SOLARSYS_STATE *) system,
+			(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
 	numBio = system->CurNode;
 
 	result = 0;
 	for (i = 0; i < numBio; i++)
 	{
 		((SOLARSYS_STATE *) system)->CurNode = i;
-		(*system->GenFunc) (GENERATE_LIFE);
+		(*system->genFuncs->generateLife) ((SOLARSYS_STATE *) system,
+				(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
 		result += BIO_CREDIT_VALUE * LONIBBLE (CreatureData[
 				system->SysInfo.PlanetInfo.CurType].ValueAndHitPoints);
 	}
@@ -1071,16 +1075,17 @@ calculateBioValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 }
 
 void
-generateBioIndex(const SOLARSYS_STATE *system,
-		const PLANET_DESC *world, COUNT bio[])
+generateBioIndex(const SOLARSYS_STATE *system, const PLANET_DESC *world,
+		COUNT bio[])
 {
 	COUNT numBio;
 	COUNT i;
 
-	assert(system->pOrbitalDesc == world);
+	assert (system->pOrbitalDesc == world);
 	
 	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
-	(*system->GenFunc) (GENERATE_LIFE);
+	(*system->genFuncs->generateLife) ((SOLARSYS_STATE *) system,
+			(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
 	numBio = system->CurNode;
 
 	for (i = 0; i < NUM_CREATURE_TYPES + NUM_SPECIAL_CREATURE_TYPES; i++)
@@ -1089,30 +1094,32 @@ generateBioIndex(const SOLARSYS_STATE *system,
 	for (i = 0; i < numBio; i++)
 	{
 		((SOLARSYS_STATE *) system)->CurNode = i;
-		(*system->GenFunc) (GENERATE_LIFE);
+		(*system->genFuncs->generateLife) ((SOLARSYS_STATE *) system,
+				(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
 		bio[system->SysInfo.PlanetInfo.CurType]++;
 	}
 }
 
 COUNT
-calculateMineralValue (const SOLARSYS_STATE *system,
-		const PLANET_DESC *world)
+calculateMineralValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 {
 	COUNT result;
 	COUNT numDeposits;
 	COUNT i;
 
-	assert(system->pOrbitalDesc == world);
+	assert (system->pOrbitalDesc == world);
 	
 	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
-	(*system->GenFunc) (GENERATE_MINERAL);
+	(*system->genFuncs->generateMinerals) ((SOLARSYS_STATE *) system,
+			(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
 	numDeposits = system->CurNode;
 
 	result = 0;
 	for (i = 0; i < numDeposits; i++)
 	{
 		((SOLARSYS_STATE *) system)->CurNode = i;
-		(*system->GenFunc) (GENERATE_MINERAL);
+		(*system->genFuncs->generateMinerals) ((SOLARSYS_STATE *) system,
+				(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
 		result += HIBYTE (system->SysInfo.PlanetInfo.CurDensity) *
 				GLOBAL (ElementWorth[ElementCategory (
 				system->SysInfo.PlanetInfo.CurType)]);
@@ -1121,16 +1128,17 @@ calculateMineralValue (const SOLARSYS_STATE *system,
 }
 
 void
-generateMineralIndex(const SOLARSYS_STATE *system,
-		const PLANET_DESC *world, COUNT minerals[])
+generateMineralIndex(const SOLARSYS_STATE *system, const PLANET_DESC *world,
+		COUNT minerals[])
 {
 	COUNT numDeposits;
 	COUNT i;
 
-	assert(system->pOrbitalDesc == world);
+	assert (system->pOrbitalDesc == world);
 	
 	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
-	(*system->GenFunc) (GENERATE_MINERAL);
+	(*system->genFuncs->generateMinerals) ((SOLARSYS_STATE *) system,
+			(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
 	numDeposits = system->CurNode;
 
 	for (i = 0; i < NUM_ELEMENT_CATEGORIES; i++)
@@ -1139,7 +1147,8 @@ generateMineralIndex(const SOLARSYS_STATE *system,
 	for (i = 0; i < numDeposits; i++)
 	{
 		((SOLARSYS_STATE *) system)->CurNode = i;
-		(*system->GenFunc) (GENERATE_MINERAL);
+		(*system->genFuncs->generateMinerals) ((SOLARSYS_STATE *) system,
+				(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
 		minerals[ElementCategory(system->SysInfo.PlanetInfo.CurType)] +=
 				HIBYTE (system->SysInfo.PlanetInfo.CurDensity);
 	}

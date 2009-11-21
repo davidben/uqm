@@ -43,6 +43,8 @@
 #include "libs/mathlib.h"
 #include "libs/memlib.h"
 
+#include <stdlib.h>
+
 
 static POINT cursorLoc;
 static POINT mapOrigin;
@@ -1026,7 +1028,6 @@ static void
 DrawMatchedStarName (TEXTENTRY_STATE *pTES)
 {
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
-	MENU_STATE *pMS = pSS->pMS;
 	UNICODE buf[STAR_SEARCH_BUFSIZE] = "";
 	SIZE ExPos = 0;
 	SIZE CurPos = -1;
@@ -1109,7 +1110,6 @@ static BOOLEAN
 OnStarNameChange (TEXTENTRY_STATE *pTES)
 {
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
-	MENU_STATE *pMS = pSS->pMS;
 	COUNT flags;
 	BOOLEAN ret = TRUE;
 
@@ -1154,7 +1154,6 @@ static BOOLEAN
 OnStarNameFrame (TEXTENTRY_STATE *pTES)
 {
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
-	MENU_STATE *pMS = pSS->pMS;
 
 	if (PulsedInputState.menu[KEY_MENU_NEXT])
 	{	// search for next match

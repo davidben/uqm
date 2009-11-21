@@ -1,27 +1,5 @@
-Note: this file (still) describes the way in which various things were
-generated in the original source. It is still useful, but there are some
-changes:
-- all of this functionality used to be handled through a single function,
-  either the function returned by GenerateIP(), or GenerateRandomIP().
-  Now, there is a structure GenerateFunctions, which contains a function
-  for each of the type of generation. See generate.h.
-- most functions don't use the global variables pSolarSysState, pOrbitalDesc,
-  and pPlanetDesc anymore. Instead, where these are needed, they are passed
-  along through a parameter.
-
-Files related to this system:
-- planets/generate.h
-  Defines GenerateFunctions.
-- planets/generate/gendefault.c
-  Default generation functions for when no specific one is specified.
-- planets/generate/gen*.c
-  Specific generation functions.
-- gendef.c
-  Glue code.
-
-This file should eventually be updated to reflect the new system.
-See the file 'orggenerate' for a description on how the system originally
-worked.
+Note: this file describes the way in which various things were generated
+in the original source. See the file 'generate' for the current system.
 
 ============================================================================
 

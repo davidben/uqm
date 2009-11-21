@@ -17,26 +17,54 @@
  */
 
 #include "encount.h"
+#include "planets/generate.h"
 
-PLAN_GEN_FUNC
-GenerateIP (BYTE Index)
+
+extern GenerateFunctions generateDefaultFunctions;
+
+extern GenerateFunctions generateAndrosynthFunctions;
+extern GenerateFunctions generateBurvixeseFunctions;
+extern GenerateFunctions generateChmmrFunctions;
+extern GenerateFunctions generateColonyFunctions;
+extern GenerateFunctions generateDruugeFunctions;
+extern GenerateFunctions generateIlwrathFunctions;
+extern GenerateFunctions generateMelnormeFunctions;
+extern GenerateFunctions generateMyconFunctions;
+extern GenerateFunctions generateOrzFunctions;
+extern GenerateFunctions generatePkunkFunctions;
+extern GenerateFunctions generateRainbowWorldFunctions;
+extern GenerateFunctions generateSaMatraFunctions;
+extern GenerateFunctions generateShofixtiFunctions;
+extern GenerateFunctions generateSlylandroFunctions;
+extern GenerateFunctions generateSolFunctions;
+extern GenerateFunctions generateSpathiFunctions;
+extern GenerateFunctions generateSupoxFunctions;
+extern GenerateFunctions generateSyreenFunctions;
+extern GenerateFunctions generateTalkingPetFunctions;
+extern GenerateFunctions generateThraddashFunctions;
+extern GenerateFunctions generateTrapFunctions;
+extern GenerateFunctions generateUtwigFunctions;
+extern GenerateFunctions generateVaultFunctions;
+extern GenerateFunctions generateVuxFunctions;
+extern GenerateFunctions generateWreckFunctions;
+extern GenerateFunctions generateYehatFunctions;
+extern GenerateFunctions generateZoqFotPikFunctions;
+extern GenerateFunctions generateZoqFotPikScoutFunctions;
+
+
+const GenerateFunctions *
+getGenerateFunctions (BYTE Index)
 {
-	PLAN_GEN_FUNC GenFunc;
-
 	switch (Index)
 	{
 		case SOL_DEFINED:
-			GenFunc = GenerateSOL;
-			break;
+			return &generateSolFunctions;
 		case SHOFIXTI_DEFINED:
-			GenFunc = GenerateShofixti;
-			break;
+			return &generateShofixtiFunctions;
 		case START_COLONY_DEFINED:
-			GenFunc = GenerateColony;
-			break;
+			return &generateColonyFunctions;
 		case SPATHI_DEFINED:
-			GenFunc = GenerateSpathi;
-			break;
+			return &generateSpathiFunctions;
 		case MELNORME0_DEFINED:
 		case MELNORME1_DEFINED:
 		case MELNORME2_DEFINED:
@@ -46,86 +74,64 @@ GenerateIP (BYTE Index)
 		case MELNORME6_DEFINED:
 		case MELNORME7_DEFINED:
 		case MELNORME8_DEFINED:
-			GenFunc = GenerateMelnorme;
-			break;
+			return &generateMelnormeFunctions;
 		case TALKING_PET_DEFINED:
-			GenFunc = GenerateTalkingPet;
-			break;
+			return &generateTalkingPetFunctions;
 		case CHMMR_DEFINED:
-			GenFunc = GenerateChmmr;
-			break;
+			return &generateChmmrFunctions;
 		case SYREEN_DEFINED:
+			return &generateSyreenFunctions;
 		case MYCON_TRAP_DEFINED:
-			GenFunc = GenerateSyreen;
-			break;
+			return &generateTrapFunctions;
 		case BURVIXESE_DEFINED:
-			GenFunc = GenerateBurvixes;
-			break;
+			return &generateBurvixeseFunctions;
 		case SLYLANDRO_DEFINED:
-			GenFunc = GenerateSlylandro;
-			break;
+			return &generateSlylandroFunctions;
 		case DRUUGE_DEFINED:
-			GenFunc = GenerateDruuge;
-			break;
+			return &generateDruugeFunctions;
 		case BOMB_DEFINED:
 		case UTWIG_DEFINED:
-			GenFunc = GenerateUtwig;
-			break;
+			return &generateUtwigFunctions;
 		case AQUA_HELIX_DEFINED:
 		case THRADD_DEFINED:
-			GenFunc = GenerateThradd;
-			break;
+			return &generateThraddashFunctions;
 		case SUN_DEVICE_DEFINED:
 		case MYCON_DEFINED:
 		case EGG_CASE0_DEFINED:
 		case EGG_CASE1_DEFINED:
 		case EGG_CASE2_DEFINED:
-			GenFunc = GenerateMycon;
-			break;
+			return &generateMyconFunctions;
 		case ANDROSYNTH_DEFINED:
+			return &generateAndrosynthFunctions;
 		case TAALO_PROTECTOR_DEFINED:
 		case ORZ_DEFINED:
-			GenFunc = GenerateOrz;
-			break;
+			return &generateOrzFunctions;
 		case SHIP_VAULT_DEFINED:
-			GenFunc = GenerateShipVault;
-			break;
+			return &generateVaultFunctions;
 		case URQUAN_WRECK_DEFINED:
-			GenFunc = GenerateUrquanWreck;
-			break;
+			return &generateWreckFunctions;
 		case MAIDENS_DEFINED:
 		case VUX_BEAST_DEFINED:
 		case VUX_DEFINED:
-			GenFunc = GenerateVUX;
-			break;
+			return &generateVuxFunctions;
 		case SAMATRA_DEFINED:
-			GenFunc = GenerateSamatra;
-			break;
+			return &generateSaMatraFunctions;
 		case ZOQFOT_DEFINED:
+			return &generateZoqFotPikFunctions;
 		case ZOQ_SCOUT_DEFINED:
-			GenFunc = GenerateZoqFotPik;
-			break;
+			return &generateZoqFotPikScoutFunctions;
 		case YEHAT_DEFINED:
-			GenFunc = GenerateYehat;
-			break;
+			return &generateYehatFunctions;
 		case PKUNK_DEFINED:
-			GenFunc = GeneratePkunk;
-			break;
+			return &generatePkunkFunctions;
 		case SUPOX_DEFINED:
-			GenFunc = GenerateSupox;
-			break;
+			return &generateSupoxFunctions;
 		case RAINBOW_DEFINED:
-			GenFunc = GenerateRainbow;
-			break;
+			return &generateRainbowWorldFunctions;
 		case ILWRATH_DEFINED:
-			GenFunc = GenerateIlwrath;
-			break;
+			return &generateIlwrathFunctions;
 		default:
-			GenFunc = GenerateRandomIP;
-			break;
+			return &generateDefaultFunctions;
 	}
-
-	return (GenFunc);
 }
-
 

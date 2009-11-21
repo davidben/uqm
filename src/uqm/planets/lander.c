@@ -832,7 +832,9 @@ CheckObjectCollision (COUNT index)
 				pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] |=
 						(1L << which_node);
 				pSolarSysState->CurNode = (COUNT)~0;
-				(*pSolarSysState->GenFunc) ((BYTE)(scan + GENERATE_MINERAL));
+				callGenerateForScanType (pSolarSysState,
+						pSolarSysState->pOrbitalDesc,
+						&pSolarSysState->CurNode, scan);
 
 				if (!(pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] &
 						(1L << which_node)))

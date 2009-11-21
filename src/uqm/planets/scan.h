@@ -19,28 +19,34 @@
 #ifndef _SCAN_H
 #define _SCAN_H
 
+typedef struct scan_desc SCAN_DESC;
+typedef struct scan_block SCAN_BLOCK;
+
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
+#include "planets.h"
 
 
-typedef struct
+struct scan_desc
 {
 	POINT start;
 	COUNT start_dot;
 	COUNT num_dots;
 	COUNT dots_per_semi;
-} SCAN_DESC;
+};
 
-typedef struct
+struct scan_block
 {
 	POINT *line_base;
 	COUNT num_scans;
 	COUNT num_same_scans;
 	SCAN_DESC *scan_base;
-} SCAN_BLOCK;
+};
 
 extern void RepairBackRect (RECT *pRect);
 extern void GeneratePlanetSide (void);
+extern bool callGenerateForScanType (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT *node, BYTE scanType);
 
 extern void RedrawSurfaceScan (const POINT *newLoc);
 
