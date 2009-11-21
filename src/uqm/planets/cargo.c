@@ -23,6 +23,9 @@
 #include "../setup.h"
 #include "../sounds.h"
 #include "../util.h"
+#include "../sis.h"
+		// for ClearSISRect(), DrawStatusMessage()
+#include "planets.h"
 
 
 void

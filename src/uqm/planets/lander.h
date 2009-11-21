@@ -27,6 +27,9 @@
 #include "../element.h"
 
 
+// Surface magnification shift (x4)
+#define MAG_SHIFT 2
+
 #define NUM_TEXT_FRAMES 32
 
 typedef struct

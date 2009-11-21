@@ -18,7 +18,9 @@
 
 #include "oscill.h"
 
-#include "sis.h"
+// XXX: we should not refer to units.h here because we should not be
+//   using RADAR_WIDTH constants!
+#include "units.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 #include "libs/sound/sound.h"

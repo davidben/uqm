@@ -22,6 +22,7 @@
 #include "clock.h"
 #include "libs/gfxlib.h"
 #include "libs/reslib.h"
+#include "libs/sndlib.h"
 #include "sis.h"
 #include "velocity.h"
 #include "commanim.h"
@@ -961,6 +962,7 @@ extern GLOBDATA GlobData;
 #define GLOBAL_SIS(f) GlobData.SIS_state.f
 
 #define MAX_ENCOUNTERS  16
+#define MAX_BATTLE_GROUPS 32
 
 //#define STATE_DEBUG
 	
@@ -1002,8 +1004,10 @@ extern CONTEXT RadarContext;
 extern void FreeSC2Data (void);
 extern BOOLEAN LoadSC2Data (void);
 
-void InitGlobData (void);
+extern void InitGlobData (void);
 
+extern BOOLEAN InitGameStructures (void);
+extern void UninitGameStructures (void);
 
 #endif /* _GLOBDATA_H */
 

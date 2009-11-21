@@ -25,6 +25,7 @@
 #include "pickship.h"
 #include "process.h"
 #include "globdata.h"
+#include "hyper.h"
 #include "init.h"
 #include "port.h"
 #include "resinst.h"

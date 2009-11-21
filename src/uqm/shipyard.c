@@ -19,6 +19,7 @@
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
+#include "menustat.h"
 #include "fmv.h"
 #include "gameopt.h"
 #include "gamestr.h"
@@ -32,8 +33,8 @@
 #include "starbase.h"
 #include "setup.h"
 #include "sis.h"
+#include "units.h"
 #include "sounds.h"
-#include "state.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/inplib.h"
 
@@ -296,7 +297,7 @@ ShowCombatShip (MENU_STATE *pMS, COUNT which_window,
 		SHIP_FRAGMENT *StarShipPtr;
 		POINT finished_s;
 		STAMP ship_s, lfdoor_s, rtdoor_s;
-	} ship_win_info[MAX_COMBAT_SHIPS], *pship_win_info;
+	} ship_win_info[MAX_BUILT_SHIPS], *pship_win_info;
 
 	num_ships = 1;
 	pship_win_info = &ship_win_info[0];

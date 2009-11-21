@@ -20,6 +20,7 @@
 
 #include "races.h"
 #include "master.h"
+#include "sis.h"
 #include "setup.h"
 #include "libs/compiler.h"
 #include "libs/mathlib.h"

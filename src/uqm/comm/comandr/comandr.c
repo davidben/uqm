@@ -21,6 +21,8 @@
 #include "strings.h"
 
 #include "uqm/setup.h"
+#include "uqm/sis.h"
+		// for DeltaSISGauges(), DrawLanders()
 #include "libs/graphics/gfx_common.h"
 
 static LOCDATA commander_desc =

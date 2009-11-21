@@ -24,6 +24,7 @@
 #include "clock.h"
 #include "encount.h"
 #include "element.h"
+#include "sis.h"
 #include "status.h"
 #include "gamestr.h"
 #include "gameev.h"

@@ -24,6 +24,8 @@
 #include "commglue.h"
 #include "controls.h"
 #include "colors.h"
+#include "sis.h"
+#include "units.h"
 #include "encount.h"
 #include "endian_uqm.h"
 #include "gamestr.h"

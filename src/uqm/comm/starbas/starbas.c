@@ -23,6 +23,8 @@
 #include "uqm/build.h"
 #include "uqm/setup.h"
 #include "uqm/shipcont.h"
+#include "uqm/sis.h"
+		// for DeltaSISGauges()
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
 #include "libs/inplib.h"

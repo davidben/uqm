@@ -24,6 +24,7 @@
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
+#include "hyper.h"
 #include "element.h"
 #include "battle.h"
 #include "weapon.h"

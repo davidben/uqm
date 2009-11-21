@@ -24,6 +24,7 @@
 // XXX: for star_array[]
 #include "encount.h"
 #include "fmv.h"
+#include "menustat.h"
 #include "gamestr.h"
 #include "globdata.h"
 #include "intel.h"

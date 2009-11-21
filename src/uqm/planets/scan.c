@@ -21,6 +21,7 @@
 #include "../build.h"
 #include "../cons_res.h"
 #include "../controls.h"
+#include "../menustat.h"
 #include "../encount.h"
 		// for EncounterGroup
 #include "../gamestr.h"
@@ -33,6 +34,7 @@
 #include "../setup.h"
 #include "../sounds.h"
 #include "../state.h"
+#include "../sis.h"
 #include "options.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"

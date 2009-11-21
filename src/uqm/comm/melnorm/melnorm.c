@@ -26,8 +26,11 @@
 #include "libs/inplib.h"
 #include "libs/mathlib.h"
 
-// XXX: temporary, for SOL_X/SOL_Y
-#include "uqm/races.h"
+#include "uqm/hyper.h"
+			// for SOL_X/SOL_Y
+#include "uqm/planets/planets.h"
+		// for xxx_DISASTER
+#include "uqm/sis.h"
 
 
 #define NUM_HISTORY_ITEMS 9

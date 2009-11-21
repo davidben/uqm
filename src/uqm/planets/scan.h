@@ -19,8 +19,8 @@
 #ifndef _SCAN_H
 #define _SCAN_H
 
+#include "libs/compiler.h"
 #include "libs/gfxlib.h"
-#include "../menustat.h"
 
 
 typedef struct
@@ -38,10 +38,6 @@ typedef struct
 	COUNT num_same_scans;
 	SCAN_DESC *scan_base;
 } SCAN_BLOCK;
-
-#define SAME_SCAN (1 << 16)
-#define SCALED_ROOT_TWO 92682L /* root 2 * (1 << 16) */
-#define SCALE_FACTOR 16
 
 extern void RepairBackRect (RECT *pRect);
 extern void GeneratePlanetSide (void);

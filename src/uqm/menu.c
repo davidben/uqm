@@ -16,8 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "menustat.h"
+
 #include "colors.h"
 #include "controls.h"
+#include "units.h"
 #include "options.h"
 #include "setup.h"
 #include "gamestr.h"

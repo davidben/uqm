@@ -21,6 +21,7 @@
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
+#include "menustat.h"
 #include "pickmele.h"
 #include "battle.h"
 #include "races.h"

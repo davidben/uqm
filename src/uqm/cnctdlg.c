@@ -23,6 +23,7 @@
 #include "colors.h"
 #include "gamestr.h"
 #include "setup.h"
+#include "units.h"
 #include "resinst.h"
 #include "nameref.h"
 #include "libs/graphics/widgets.h"

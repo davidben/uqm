@@ -22,6 +22,8 @@
 
 #include "uqm/build.h"
 #include "uqm/setup.h"
+#include "uqm/sis.h"
+		// for DeltaSISGauges()
 
 
 static LOCDATA druuge_desc =

@@ -19,6 +19,7 @@
 #include "scan.h"
 #include "../colors.h"
 #include "../controls.h"
+#include "../menustat.h"
 // XXX: for stuff that does not belong there
 #include "../encount.h"
 #include "../races.h"
@@ -26,6 +27,10 @@
 #include "../gamestr.h"
 #include "../globdata.h"
 #include "../shipcont.h"
+#include "../units.h"
+#include "../hyper.h"
+#include "../sis.h"
+		// for DrawHyperCoords(), DrawStatusMessage()
 #include "../settings.h"
 #include "../setup.h"
 #include "../sounds.h"

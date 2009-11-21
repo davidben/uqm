@@ -19,6 +19,7 @@
 #include "controls.h"
 #include "util.h"
 #include "setup.h"
+#include "units.h"
 #include "settings.h"
 #include "libs/inplib.h"
 #include "libs/sound/trackplayer.h"

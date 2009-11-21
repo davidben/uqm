@@ -24,9 +24,12 @@
 #include "colors.h"
 #include "cons_res.h"
 #include "controls.h"
+#include "menustat.h"
 #include "gameopt.h"
 #include "gamestr.h"
 #include "globdata.h"
+#include "sis.h"
+		// for DrawStatusMessage(), SetStatusMessageMode()
 #include "init.h"
 #include "pickship.h"
 #include "intel.h"

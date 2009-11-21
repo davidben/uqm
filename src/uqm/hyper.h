@@ -20,10 +20,42 @@
 #define _HYPER_H
 
 #include "element.h"
+#include "units.h"
+		// for UNIT_SCREEN_WIDTH/HEIGHT
+
+#define NUM_RADAR_SCREENS 12
+
+#define RADAR_SCAN_WIDTH (UNIT_SCREEN_WIDTH * NUM_RADAR_SCREENS)
+#define RADAR_SCAN_HEIGHT (UNIT_SCREEN_HEIGHT * NUM_RADAR_SCREENS)
+
+// Hyperspace coordinates of the naturally occuring portal into QuasiSpace
+#define ARILOU_SPACE_X   438
+#define ARILOU_SPACE_Y  6372
+
+// QuasiSpace coordinates of the same portal
+#define QUASI_SPACE_X  5000
+#define QUASI_SPACE_Y  5000
+
+// QuasiSpace coordinates of the Arilou home world
+#define ARILOU_HOME_X  (QUASI_SPACE_X + ((RADAR_SCAN_WIDTH >> 1) * 3))
+#define ARILOU_HOME_Y  (QUASI_SPACE_Y + ((RADAR_SCAN_HEIGHT >> 1) * 3))
+
+// Hyperspace coordinates of the Sol system
+// Should be the same as in plandata.c
+#define SOL_X  1752
+#define SOL_Y  1450
+
+
+extern BOOLEAN LoadHyperspace (void);
+extern BOOLEAN FreeHyperspace (void);
+extern void SeedUniverse (void);
+extern void MoveSIS (SIZE *pdx, SIZE *pdy);
 
 extern void FreeHyperData (void);
 extern void check_hyperspace_encounter (void);
 extern BOOLEAN hyper_transition (ELEMENT *ElementPtr);
+
+extern void HyperspaceMenu (void);
 
 #endif /* _HYPER_H */
 

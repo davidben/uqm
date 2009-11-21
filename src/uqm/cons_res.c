@@ -22,6 +22,10 @@
 #include "resinst.h"
 #include "nameref.h"
 #include "setup.h"
+#include "units.h"
+		// for NUM_VIEWS
+#include "planets/planets.h"
+		// for NUMBER_OF_PLANET_TYPES, PLANET_SHIELDED
 
 static const char *planet_types[] = {
 	"oolite", "yttric", "quasidegenerate", "lanthanide", "treasure",

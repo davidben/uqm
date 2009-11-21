@@ -26,6 +26,7 @@
 // XXX: for CurStarDescPtr and XXX_DEFINED
 #include "../encount.h"
 #include "../process.h"
+#include "../units.h"
 #include "../gamestr.h"
 #include "../nameref.h"
 #include "../resinst.h"

@@ -46,6 +46,8 @@
 #include "setup.h"
 #include "sounds.h"
 #include "util.h"
+#include "planets/planets.h"
+		// for NUMBER_OF_PLANET_TYPES
 #include "libs/graphics/drawable.h"
 #include "libs/gfxlib.h"
 #include "libs/mathlib.h"

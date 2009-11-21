@@ -16,13 +16,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "sis.h"
+
 #include "colors.h"
 #include "races.h"
 // XXX: including encount.h for stuff that does not belong there
 #include "encount.h"
+#include "units.h"
+#include "menustat.h"
+		// for DrawMenuStateStrings()
 #include "gamestr.h"
 #include "options.h"
-#include "starbase.h"
 #include "battle.h"
 		// For BATTLE_FRAME_RATE
 #include "element.h"
@@ -941,7 +945,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		{
 			HSHIPFRAG hStarShip, hNextShip;
 			POINT *pship_pos;
-			POINT ship_pos[MAX_COMBAT_SHIPS] =
+			POINT ship_pos[MAX_BUILT_SHIPS] =
 			{
 				SUPPORT_SHIP_PTS
 			};

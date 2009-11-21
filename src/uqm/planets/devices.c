@@ -25,6 +25,8 @@
 #include "../load.h"
 #include "../setup.h"
 #include "../state.h"
+#include "../sis.h"
+		// for ClearSISRect(), SaveFlagshipState()
 #include "../grpinfo.h"
 #include "../sounds.h"
 #include "../util.h"

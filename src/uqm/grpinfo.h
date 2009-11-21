@@ -24,6 +24,9 @@
 		// for POINT
 #include <assert.h>
 
+// XXX: Needed to maintain savegame compatibility
+#define NUM_SAVED_BATTLE_GROUPS 64
+
 typedef HLINK HIPGROUP;
 
 typedef struct

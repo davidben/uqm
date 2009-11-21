@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include "gameev.h"
 #include "globdata.h"
+#include "sis.h"
+		// for DrawStatusMessage()
 #include "setup.h"
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"

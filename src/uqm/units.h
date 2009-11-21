@@ -44,7 +44,25 @@ extern int ScreenHeight;
 		/* Width of the usable part of the space "window" */
 #define SIS_SCREEN_HEIGHT (SPACE_HEIGHT - 13)
 		/* Height of the usable part of the space "window" */
+#define RADAR_X (4 + (SCREEN_WIDTH - STATUS_WIDTH - SAFE_X))
+#define RADAR_WIDTH (STATUS_WIDTH - 8)
+#define RADAR_HEIGHT 53
+#define RADAR_Y (SIS_ORG_Y + SIS_SCREEN_HEIGHT - RADAR_HEIGHT)
 
+#define SIS_TITLE_BOX_WIDTH    57
+#define SIS_TITLE_WIDTH        (SIS_TITLE_BOX_WIDTH - 2)
+#define SIS_TITLE_HEIGHT       8
+#define SIS_SPACER_BOX_WIDTH   12
+#define SIS_MESSAGE_BOX_WIDTH  (SIS_SCREEN_WIDTH - SIS_TITLE_BOX_WIDTH \
+			- SIS_SPACER_BOX_WIDTH)
+#define SIS_MESSAGE_WIDTH      (SIS_MESSAGE_BOX_WIDTH - 2)
+#define SIS_MESSAGE_HEIGHT     SIS_TITLE_HEIGHT
+
+#define STATUS_MESSAGE_WIDTH   (STATUS_WIDTH - 4)
+#define STATUS_MESSAGE_HEIGHT  7
+
+#define SHIP_NAME_WIDTH        (STATUS_WIDTH - 4)
+#define SHIP_NAME_HEIGHT       7
 
 #define MAX_REDUCTION 3
 #define MAX_VIS_REDUCTION 2
@@ -87,6 +105,8 @@ extern int ScreenHeight;
 
 #define MAX_FLEET_STRENGTH (254 * SPHERE_RADIUS_INCREMENT)
 
+// XXX: These corrected for the weird screen aspect ratio on DOS
+//   In part because of them, hyperflight is slower vertically
 #define UNIT_SCREEN_WIDTH 63
 #define UNIT_SCREEN_HEIGHT 50
 

@@ -20,21 +20,19 @@
 
 #include "build.h"
 #include "colors.h"
-#include "commglue.h"
-		// for CommData
 #include "controls.h"
 // XXX: for FindStart(), GetClusterName()
 #include "encount.h"
-#include "planets/lander.h"
+#include "menustat.h"
+#include "sis.h"
+#include "units.h"
 #include "gamestr.h"
 #include "load.h"
 #include "options.h"
 #include "save.h"
-#include "starbase.h"
 #include "settings.h"
 #include "setup.h"
 #include "sounds.h"
-#include "state.h"
 #include "util.h"
 #include "libs/graphics/gfx_common.h"
 

@@ -19,6 +19,8 @@
 #include "controls.h"
 #include "options.h"
 #include "settings.h"
+#include "globdata.h"
+#include "sis.h"
 #include "setup.h"
 #include "sounds.h"
 #include "fmv.h"

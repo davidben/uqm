@@ -21,6 +21,8 @@
 #include "strings.h"
 
 #include "uqm/build.h"
+#include "uqm/hyper.h"
+			// for SOL_X/SOL_Y
 
 
 static LOCDATA chmmr_desc =

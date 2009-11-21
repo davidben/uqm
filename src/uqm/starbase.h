@@ -44,8 +44,5 @@ extern COUNT WrapText (const UNICODE *pStr, COUNT len, TEXT *tarray, SIZE
 		field_width);
 		// XXX: Doesn't really belong in this file.
 
-extern const char starbase_str_array[][20];
-
 #endif /* _STARBASE_H */
-
 

@@ -18,6 +18,7 @@
 #define _LOAD_H
 
 #include "sis.h"
+		// for SUMMARY_DESC
 #include "libs/compiler.h"
 #include "globdata.h"
 

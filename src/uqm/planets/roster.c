@@ -20,6 +20,8 @@
 #include "../colors.h"
 #include "../controls.h"
 #include "../races.h"
+#include "../units.h"
+#include "../sis.h"
 #include "../shipcont.h"
 #include "../setup.h"
 #include "../sounds.h"
@@ -30,7 +32,7 @@
 #include <stdlib.h>
 
 // Ship icon positions in status display around the flagship
-static const POINT ship_pos[MAX_COMBAT_SHIPS] =
+static const POINT ship_pos[MAX_BUILT_SHIPS] =
 {
 	SUPPORT_SHIP_PTS
 };
@@ -38,7 +40,7 @@ static const POINT ship_pos[MAX_COMBAT_SHIPS] =
 // Ship icon positions split into (lower half) left and right (upper)
 // and sorted in the Y coord. These are used for navigation around the
 // escort positions.
-static POINT sorted_ship_pos[MAX_COMBAT_SHIPS];
+static POINT sorted_ship_pos[MAX_BUILT_SHIPS];
 
 static SHIP_FRAGMENT* LockSupportShip (MENU_STATE *pMS, HSHIPFRAG *phFrag);
 

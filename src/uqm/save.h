@@ -18,6 +18,7 @@
 #define _SAVE_H
 
 #include "sis.h"
+		// for SUMMARY_DESC
 #include "libs/compiler.h"
 
 extern void SaveProblem (void);
