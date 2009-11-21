@@ -2661,6 +2661,134 @@ SOURCE=..\..\src\uqm\netplay\packetsenders.h
 # Begin Group "planets"
 
 # PROP Default_Filter ""
+# Begin Group "generate"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genall.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genand.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genburv.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genchmmr.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gencol.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gendefault.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gendefault.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gendru.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genilw.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genmel.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genmyc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genorz.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genpet.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genpku.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genrain.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gensam.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genshof.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gensly.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gensol.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genspa.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gensup.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gensyr.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genthrad.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\gentrap.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genutw.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genvault.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genvux.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genwreck.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genyeh.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genzfpscout.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\planets\generate\genzoq.c
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\..\src\uqm\planets\calc.c
@@ -2679,111 +2807,11 @@ SOURCE=..\..\src\uqm\planets\elemdata.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\planets\genall.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genburv.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genchmmr.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\gencol.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\gendru.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genilw.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genmel.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genmyc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genorz.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genpet.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genpku.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genrain.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\gensam.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genshof.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\gensly.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\gensol.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genspa.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\gensup.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\gensyr.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genthrad.c
+SOURCE=..\..\src\uqm\planets\generate.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\planets\gentopo.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genutw.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genvault.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genvux.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genwreck.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genyeh.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\planets\genzoq.c
 # End Source File
 # Begin Source File
 
@@ -4061,6 +4089,10 @@ SOURCE=..\..\src\uqm\gamestr.h
 # Begin Source File
 
 SOURCE=..\..\src\uqm\gendef.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\gendef.h
 # End Source File
 # Begin Source File
 
