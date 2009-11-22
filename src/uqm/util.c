@@ -111,39 +111,6 @@ SeedRandomNumbers (void)
 	return (cur_time);
 }
 
-void
-WaitForNoInput (SIZE Duration)
-{
-	BOOLEAN PressState;
-
-	PressState = AnyButtonPress (FALSE);
-	if (Duration < 0)
-	{
-		if (PressState)
-			return;
-		Duration = -Duration;
-	}
-	else if (!PressState)
-		return;
-	
-	{
-		DWORD TimeOut;
-		BOOLEAN ButtonState;
-
-		TimeOut = GetTimeCounter () + Duration;
-		do
-		{
-			ButtonState = AnyButtonPress (FALSE);
-			if (PressState)
-			{
-				PressState = ButtonState;
-				ButtonState = 0;
-			}
-		} while (!ButtonState &&
-				(TaskSwitch (), GetTimeCounter ()) <= TimeOut);
-	}
-}
-
 BOOLEAN
 PauseGame (void)
 {
@@ -215,8 +182,7 @@ PauseGame (void)
 	SetFrameHot (Screen, OldHot);
 	SetContext (OldContext);
 
-	WaitForNoInput (ONE_SECOND / 4);
-	FlushInput ();
+	WaitForNoInput (ONE_SECOND / 4, TRUE);
 
 	if (PlayingTrack ())
 		ResumeTrack ();
@@ -228,22 +194,73 @@ PauseGame (void)
 	return (TRUE);
 }
 
-// Waits for a new button to be pressed
-// and returns TRUE if Quit was selected
+// Waits for a button to be pressed
+// Returns TRUE if the wait succeeded (found input)
+//    FALSE if timed out or game aborted
 BOOLEAN
-WaitAnyButtonOrQuit (BOOLEAN CheckSpecial)
+WaitForAnyButtonUntil (BOOLEAN newButton, TimeCount timeOut,
+		BOOLEAN resetInput)
 {
-	while (AnyButtonPress (TRUE))
-		TaskSwitch ();
+	BOOLEAN buttonPressed;
 
-	while (!AnyButtonPress (TRUE) &&
-			!(GLOBAL (CurrentActivity) & CHECK_ABORT))
-		TaskSwitch ();
+	if (newButton && !WaitForNoInputUntil (timeOut, FALSE))
+		return FALSE;
 
-	/* Satisfy unused parameter */
-	(void) CheckSpecial;
+	buttonPressed = AnyButtonPress (TRUE);
+	while (!buttonPressed
+			&& (timeOut == WAIT_INFINITE || GetTimeCounter () < timeOut)
+			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT)
+			&& !QuitPosted)
+	{
+		SleepThread (ONE_SECOND / 40);
+		buttonPressed = AnyButtonPress (TRUE);
+	} 
 
-	return (GLOBAL (CurrentActivity) & CHECK_ABORT) != 0;
+	if (resetInput)
+		FlushInput ();
+
+	return buttonPressed;
+}
+
+BOOLEAN
+WaitForAnyButton (BOOLEAN newButton, TimePeriod duration, BOOLEAN resetInput)
+{
+	TimeCount timeOut = duration;
+	if (duration != WAIT_INFINITE)
+		timeOut += GetTimeCounter ();
+	return WaitForAnyButtonUntil (newButton, timeOut, resetInput);
+}
+
+// Returns TRUE if the wait succeeded (found no input)
+//    FALSE if timed out or game aborted
+BOOLEAN
+WaitForNoInputUntil (TimeCount timeOut, BOOLEAN resetInput)
+{
+	BOOLEAN buttonPressed;
+
+	buttonPressed = AnyButtonPress (TRUE);
+	while (buttonPressed
+			&& (timeOut == WAIT_INFINITE || GetTimeCounter () < timeOut)
+			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT)
+			&& !QuitPosted)
+	{
+		SleepThread (ONE_SECOND / 40);
+		buttonPressed = AnyButtonPress (TRUE);
+	} 
+
+	if (resetInput)
+		FlushInput ();
+
+	return !buttonPressed;
+}
+
+BOOLEAN
+WaitForNoInput (TimePeriod duration, BOOLEAN resetInput)
+{
+	TimeCount timeOut = duration;
+	if (duration != WAIT_INFINITE)
+		timeOut += GetTimeCounter ();
+	return WaitForNoInputUntil (timeOut, resetInput);
 }
 
 // Stops game clock and music thread and minimizes interrupts/cycles
@@ -268,8 +285,7 @@ SleepGame (void)
 
 	log_add (log_Debug, "Game is waking up");
 
-	WaitForNoInput (ONE_SECOND / 10);
-	FlushInput ();
+	WaitForNoInput (ONE_SECOND / 10, TRUE);
 
 	ResumeMusic ();
 

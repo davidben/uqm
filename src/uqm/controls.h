@@ -21,7 +21,7 @@
 
 #include "libs/compiler.h"
 #include "libs/strlib.h"
-
+#include "libs/timelib.h"
 
 // Enumerated type for controls
 enum {
@@ -102,9 +102,16 @@ void ResetKeyRepeat (void);
 BOOLEAN PauseGame (void);
 void SleepGame (void);
 BOOLEAN DoConfirmExit (void);
-BOOLEAN WaitAnyButtonOrQuit (BOOLEAN CheckSpecial);
-void WaitForNoInput (SIZE Duration);
 BOOLEAN ConfirmExit (void);
+
+#define WAIT_INFINITE ((TimePeriod)-1)
+BOOLEAN WaitForAnyButton (BOOLEAN newButton, TimePeriod duration,
+		BOOLEAN resetInput);
+BOOLEAN WaitForAnyButtonUntil (BOOLEAN newButton, TimeCount timeOut,
+		BOOLEAN resetInput);
+BOOLEAN WaitForNoInput (TimePeriod duration, BOOLEAN resetInput);
+BOOLEAN WaitForNoInputUntil (TimeCount timeOut, BOOLEAN resetInput);
+
 void DoPopupWindow(const char *msg);
 void DoInput (void *pInputState, BOOLEAN resetInput);
 

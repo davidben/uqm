@@ -928,7 +928,10 @@ callGenerateForScanType (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 static BOOLEAN
 DoScan (MENU_STATE *pMS)
 {
-	DWORD TimeIn, WaitTime;
+#define SCAN_DURATION   (ONE_SECOND * 7 / 4)
+// NUM_FLASH_COLORS for flashing blips; 1 for the final frame
+#define SCAN_LINES      (MAP_HEIGHT + NUM_FLASH_COLORS + 1)
+#define SCAN_LINE_WAIT  (SCAN_DURATION / SCAN_LINES)
 	BOOLEAN select, cancel;
 
 	select = PulsedInputState.menu[KEY_MENU_SELECT];
@@ -959,7 +962,6 @@ DoScan (MENU_STATE *pMS)
 	{
 		BYTE min_scan, max_scan;
 		RECT r;
-		BOOLEAN PressState, ButtonState;
 
 		if (pMS->CurState == DISPATCH_SHUTTLE)
 		{
@@ -1030,7 +1032,7 @@ DoScan (MENU_STATE *pMS)
 			max_scan = BIOLOGICAL_SCAN;
 		}
 
-		do
+		for ( ; min_scan <= max_scan; ++min_scan)
 		{
 			TEXT t;
 			SWORD i;
@@ -1078,6 +1080,7 @@ DoScan (MENU_STATE *pMS)
 
 			{
 				DWORD rgb;
+				TimeCount TimeOut;
 				
 				switch (min_scan)
 				{
@@ -1092,45 +1095,43 @@ DoScan (MENU_STATE *pMS)
 						break;
 				}
 
+				// Draw a virgin surface
 				LockMutex (GraphicsLock);
 				BatchGraphics ();
 				DrawPlanet (0, 0, 0, 0);
 				UnbatchGraphics ();
 				UnlockMutex (GraphicsLock);
 
-				PressState = AnyButtonPress (TRUE);
-				WaitTime = (ONE_SECOND << 1) / MAP_HEIGHT;
-//				LockMutex (GraphicsLock);
-				TimeIn = GetTimeCounter ();
-				for (i = 0; i < MAP_HEIGHT + NUM_FLASH_COLORS + 1; i++)
+				// Draw the scan slowly line by line
+				TimeOut = GetTimeCounter ();
+				for (i = 0; i < SCAN_LINES; i++)
 				{
-					ButtonState = AnyButtonPress (TRUE);
-					if (PressState)
-					{
-						PressState = ButtonState;
-						ButtonState = FALSE;
-					}
-					if (ButtonState)
-						i = -i;
+					TimeOut += SCAN_LINE_WAIT;
+					if (WaitForAnyButtonUntil (TRUE, TimeOut, FALSE))
+						break;
+
 					LockMutex (GraphicsLock);
 					BatchGraphics ();
 					DrawPlanet (0, 0, i, rgb);
-					if (i < 0)
-						i = MAP_HEIGHT + NUM_FLASH_COLORS;
-					if (pMS->delta_item)
-						DrawScannedStuff (i, min_scan);
+					DrawScannedStuff (i, min_scan);
 					UnbatchGraphics ();
 					UnlockMutex (GraphicsLock);
-//					FlushGraphics ();
-					SleepThreadUntil (TimeIn + WaitTime);
-					TimeIn = GetTimeCounter ();
 				}
-//				UnlockMutex (GraphicsLock);
+
+				if (i < SCAN_LINES)
+				{	// Aborted by a keypress; draw in finished state
+					LockMutex (GraphicsLock);
+					BatchGraphics ();
+					// dy < 0 means "from dy to the end"
+					DrawPlanet (0, 0, -i, rgb);
+					DrawScannedStuff (SCAN_LINES - 1, min_scan);
+					UnbatchGraphics ();
+					UnlockMutex (GraphicsLock);
+				}
+
 				pSolarSysState->Tint_rgb = 0;
-
 			}
-
-		} while (++min_scan <= max_scan);
+		}
 
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);

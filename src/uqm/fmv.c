@@ -87,7 +87,6 @@ SplashScreen (void (* DoProcessing)(DWORD TimeOut))
 	BYTE xform_buf[1];
 	STAMP s;
 	DWORD TimeOut;
-	BOOLEAN InputState;
 
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap (
@@ -117,13 +116,7 @@ SplashScreen (void (* DoProcessing)(DWORD TimeOut))
 	 * with the proper operation of the quit operation.
 	 * --Michael */
 
-	TimeOut += ONE_SECOND * 3;
-	while (!(InputState = AnyButtonPress (FALSE)) &&
-	       (GetTimeCounter () <= TimeOut) &&
-	       !(GLOBAL (CurrentActivity) & CHECK_ABORT))
-	{
-		TaskSwitch ();
-	}
+	WaitForAnyButton (FALSE, ONE_SECOND * 3, TRUE);
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
 		return;

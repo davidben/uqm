@@ -606,15 +606,7 @@ SaveProblem (void)
 	FlushGraphics ();
 	UnlockMutex (GraphicsLock);
 
-	while (AnyButtonPress (FALSE))
-		;
-	do
-	{
-		TaskSwitch ();
-		UpdateInputState ();
-	} while (!(PulsedInputState.menu[KEY_MENU_SELECT] ||
-			PulsedInputState.menu[KEY_MENU_SPECIAL] ||
-		 	(GLOBAL (CurrentActivity) & CHECK_ABORT)));
+	WaitForAnyButton (TRUE, WAIT_INFINITE, FALSE);
 
 	LockMutex (GraphicsLock);
 	BatchGraphics ();

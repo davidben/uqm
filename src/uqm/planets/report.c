@@ -151,7 +151,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 			word_chars = utf8StringCountN (t.pStr, pStr);
 			if ((col_cells += word_chars) <= NUM_CELL_COLS)
 			{
-				DWORD TimeOut;
+				TimeCount TimeOut;
 
 				if (StrLen -= word_chars)
 					--StrLen;
@@ -181,22 +181,12 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						if (word_chars == 0)
 							TimeOut += ONE_SECOND / 20;
 
-						TaskSwitch ();
-						while (GetTimeCounter () < TimeOut)
+						if (WaitForAnyButtonUntil (TRUE, TimeOut, FALSE))
 						{
-							if (ButtonState)
-							{
-								if (!AnyButtonPress (TRUE))
-									ButtonState = 0;
-							}
-							else if (AnyButtonPress (TRUE))
-							{
-								Sleepy = FALSE;
-								LockMutex (GraphicsLock);
-								BatchGraphics ();
-								break;
-							}
-							TaskSwitch();
+							Sleepy = FALSE;
+							// We draw the whole thing at once after this
+							LockMutex (GraphicsLock);
+							BatchGraphics ();
 						}
 					}
 					t.pStr = pNextStr;
@@ -219,7 +209,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 				UnlockMutex (GraphicsLock);
 			}
 
-			if (WaitAnyButtonOrQuit (TRUE))
+			if (!WaitForAnyButton (TRUE, WAIT_INFINITE, FALSE))
 				break;
 
 InitPageCell:
@@ -289,9 +279,7 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 		DestroyContext (context);
 
 	UnlockMutex (GraphicsLock);
-	FlushInput ();
-	while (AnyButtonPress (TRUE))
-		TaskSwitch ();
+	WaitForNoInput (WAIT_INFINITE, TRUE);
 	LockMutex (GraphicsLock);
 }
 

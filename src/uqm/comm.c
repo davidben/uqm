@@ -678,8 +678,7 @@ DoTalkSegue (COUNT wait_track)
 static void
 FlushTalkSegue (void)
 {
-	WaitForNoInput (ONE_SECOND / 2);
-	FlushInput ();
+	WaitForNoInput (ONE_SECOND / 2, TRUE);
 
 	// Wait until the animation task stops "talking"
 	do
