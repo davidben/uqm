@@ -517,6 +517,88 @@ FillLanderHold (PLANETSIDE_DESC *pPSD, COUNT scan, COUNT NumRetrieved)
 	SetContext (OldContext);
 }
 
+// returns true iff the node was picked up.
+static bool
+pickupMineralNode (PLANETSIDE_DESC *pPSD, COUNT NumRetrieved,
+		ELEMENT *ElementPtr, const INTERSECT_CONTROL *LanderControl,
+		const INTERSECT_CONTROL *ElementControl)
+{
+	BYTE EType;
+	UNICODE ch;
+	UNICODE *pStr;
+
+	if (pPSD->ElementLevel >= pPSD->MaxElementLevel)
+	{
+		// Lander full
+		PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_FULL),
+				NotPositional (), NULL, GAME_SOUND_PRIORITY);
+		return false;
+	}
+
+	if (pPSD->ElementLevel + NumRetrieved > pPSD->MaxElementLevel)
+	{
+		// Deposit could only be picked up partially.
+		NumRetrieved = (COUNT)(pPSD->MaxElementLevel - pPSD->ElementLevel);
+	}
+
+	FillLanderHold (pPSD, MINERAL_SCAN, NumRetrieved);
+
+	EType = ElementPtr->turn_wait;
+	pPSD->ElementAmounts[ElementCategory (EType)] += NumRetrieved;
+
+	pPSD->NumFrames = NUM_TEXT_FRAMES;
+	sprintf (pPSD->AmountBuf, "%u", NumRetrieved);
+	pStr = GAME_STRING (EType + ELEMENTS_STRING_BASE);
+
+	pPSD->MineralText[0].baseline.x = (SURFACE_WIDTH >> 1)
+			+ (ElementControl->EndPoint.x - LanderControl->EndPoint.x);
+	pPSD->MineralText[0].baseline.y = (SURFACE_HEIGHT >> 1)
+			+ (ElementControl->EndPoint.y - LanderControl->EndPoint.y);
+	pPSD->MineralText[0].CharCount = (COUNT)~0;
+	pPSD->MineralText[1].pStr = pStr;
+
+	while ((ch = *pStr++) && ch != ' ')
+		;
+	if (ch == '\0')
+	{
+		pPSD->MineralText[1].CharCount = (COUNT)~0;
+		pPSD->MineralText[2].CharCount = 0;
+	}
+	else  /* ch == ' ' */
+	{
+		// Name contains a space. Print over
+		// two lines.
+		pPSD->MineralText[1].CharCount = utf8StringCountN(
+				pPSD->MineralText[1].pStr, pStr - 1);
+		pPSD->MineralText[2].pStr = pStr;
+		pPSD->MineralText[2].CharCount = (COUNT)~0;
+	}
+
+	return true;
+}
+
+static bool
+pickupBioNode (PLANETSIDE_DESC *pPSD, COUNT NumRetrieved)
+{
+	if (pPSD->BiologicalLevel >= MAX_SCROUNGED)
+	{
+		// Lander is full.
+		PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_FULL),
+				NotPositional (), NULL, GAME_SOUND_PRIORITY);
+		return false;
+	}
+
+	if (pPSD->BiologicalLevel + NumRetrieved > MAX_SCROUNGED)
+	{
+		// Node could only be picked up partially.
+		NumRetrieved = (COUNT)(MAX_SCROUNGED - pPSD->BiologicalLevel);
+	}
+
+	FillLanderHold (pPSD, BIOLOGICAL_SCAN, NumRetrieved);
+
+	return true;
+}
+
 static void
 CheckObjectCollision (COUNT index)
 {
@@ -692,7 +774,8 @@ CheckObjectCollision (COUNT index)
 						UnlockElement (hElement);
 						break;
 					}
-					else if (scan == BIOLOGICAL_SCAN
+
+					if (scan == BIOLOGICAL_SCAN
 							&& (value = LONIBBLE (CreatureData[
 							ElementPtr->mass_points
 							& ~CREATURE_AWARE
@@ -749,82 +832,15 @@ CheckObjectCollision (COUNT index)
 						case ENERGY_SCAN:
 							break;
 						case MINERAL_SCAN:
-							if (pPSD->ElementLevel < pPSD->MaxElementLevel)
-							{
-								if (pPSD->ElementLevel
-										+ NumRetrieved > pPSD->MaxElementLevel)
-									NumRetrieved = (COUNT)(pPSD->MaxElementLevel
-											- pPSD->ElementLevel);
-								FillLanderHold (pPSD, scan, NumRetrieved);
-								if (scan == MINERAL_SCAN)
-								{
-									BYTE EType;
-									UNICODE ch, *pStr;
-
-									EType = ElementPtr->turn_wait;
-									pPSD->ElementAmounts[
-											ElementCategory (EType)
-											] += NumRetrieved;
-
-									pPSD->NumFrames = NUM_TEXT_FRAMES;
-									sprintf (pPSD->AmountBuf, "%u", NumRetrieved);
-									pStr = GAME_STRING (EType + ELEMENTS_STRING_BASE);
-
-									pPSD->MineralText[0].baseline.x =
-											(SURFACE_WIDTH >> 1)
-											+ (ElementControl.EndPoint.x
-											- LanderControl.EndPoint.x);
-									pPSD->MineralText[0].baseline.y =
-											(SURFACE_HEIGHT >> 1)
-											+ (ElementControl.EndPoint.y
-											- LanderControl.EndPoint.y);
-									pPSD->MineralText[0].CharCount =
-											(COUNT)~0;
-									pPSD->MineralText[1].pStr = pStr;
-									while ((ch = *pStr++) && ch != ' ')
-										;
-									if (ch == '\0')
-									{
-										pPSD->MineralText[1].CharCount =
-												(COUNT)~0;
-										pPSD->MineralText[2].CharCount = 0;
-									}
-									else  /* ch == ' ' */
-									{
-										// Name contains a space. Print over
-										// two lines.
-										pPSD->MineralText[1].CharCount =
-												utf8StringCountN(
-												pPSD->MineralText[1].pStr,
-												pStr - 1);
-										pPSD->MineralText[2].pStr = pStr;
-										pPSD->MineralText[2].CharCount =
-												(COUNT)~0;
-									}
-								}
-								break;
-							}
-							PlaySound (SetAbsSoundIndex (
-									LanderSounds, LANDER_FULL),
-									NotPositional (), NULL,
-									GAME_SOUND_PRIORITY);
-							continue;
+							if (!pickupMineralNode (pPSD, NumRetrieved,
+									ElementPtr, &LanderControl,
+									&ElementControl))
+								continue;
+							break;
 						case BIOLOGICAL_SCAN:
-							if (pPSD->BiologicalLevel < MAX_SCROUNGED)
-							{
-								if (pPSD->BiologicalLevel
-										+ NumRetrieved > MAX_SCROUNGED)
-									NumRetrieved = (COUNT)(
-											MAX_SCROUNGED
-											- pPSD->BiologicalLevel
-											);
-								FillLanderHold (pPSD, scan, NumRetrieved);
-								break;
-							}
-							PlaySound (SetAbsSoundIndex (
-									LanderSounds, LANDER_FULL
-									), NotPositional (), NULL, GAME_SOUND_PRIORITY);
-							continue;
+							if (!pickupBioNode (pPSD, NumRetrieved))
+								continue;
+							break;
 					}
 				}
 
