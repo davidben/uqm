@@ -166,13 +166,21 @@ extern void SetFlashRect (RECT *pRect);
 #define SFR_MENU_ANY ((RECT*)~1L)
 extern void DrawHyperCoords (POINT puniverse);
 extern void DrawSISTitle (UNICODE *pStr);
-extern BOOLEAN DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos,
-		SIZE ExPos, COUNT flags);
+
+// Flags for DrawSISMessageEx (may be OR'ed):
 #define DSME_NONE     0
 #define DSME_SETFR    (1 << 0)
+		// Set the flash rectangle to the message area.
 #define DSME_CLEARFR  (1 << 1)
+		// Disable the flash rectangle.
 #define DSME_BLOCKCUR (1 << 2)
+		// Use a block cursor instead of an insertion point cursor,
+		// when editing in the message field.
 #define DSME_MYCOLOR  (1 << 3)
+		// Use the current foreground color, instead of the default.
+extern BOOLEAN DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos,
+		SIZE ExPos, COUNT flags);
+
 extern void DrawSISMessage (const UNICODE *pStr);
 extern void DateToString (unsigned char *buf, size_t bufLen,
 		BYTE month_index, BYTE day_index, COUNT year_index);

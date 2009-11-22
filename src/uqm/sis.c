@@ -51,24 +51,27 @@ RepairSISBorder (void)
 	OldContext = SetContext (ScreenContext);
 
 	BatchGraphics ();
+
+	// Left border
 	r.corner.x = SIS_ORG_X - 1;
 	r.corner.y = SIS_ORG_Y - 1;
 	r.extent.width = 1;
 	r.extent.height = SIS_SCREEN_HEIGHT + 2;
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
+	SetContextForeGroundColor (SIS_LEFT_BORDER_COLOR);
 	DrawFilledRectangle (&r);
 
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
+	// Right border
+	SetContextForeGroundColor (SIS_BOTTOM_RIGHT_BORDER_COLOR);
 	r.corner.x += (SIS_SCREEN_WIDTH + 2) - 1;
 	DrawFilledRectangle (&r);
 
+	// Bottom border
 	r.corner.x = SIS_ORG_X - 1;
 	r.corner.y += (SIS_SCREEN_HEIGHT + 2) - 1;
 	r.extent.width = SIS_SCREEN_WIDTH + 2;
 	r.extent.height = 1;
 	DrawFilledRectangle (&r);
+
 	UnbatchGraphics ();
 
 	SetContext (OldContext);
@@ -117,6 +120,9 @@ ClearSISRect (BYTE ClearFlags)
 	SetContext (OldContext);
 }
 
+// Draw the SIS title. This is the field at the top of the screen, on the
+// right hand side, containing the coordinates in HyperSpace, or the planet
+// name in IP.
 void
 DrawSISTitle (UNICODE *pStr)
 {
@@ -140,12 +146,15 @@ DrawSISTitle (UNICODE *pStr)
 	SetContextFont (TinyFont);
 
 	BatchGraphics ();
-	SetContextBackGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+
+	// Background color
+	SetContextBackGroundColor (SIS_TITLE_BACKGROUND_COLOR);
 	ClearDrawable ();
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
+
+	// Text color
+	SetContextForeGroundColor (SIS_TITLE_TEXT_COLOR);
 	font_DrawText (&t);
+
 	UnbatchGraphics ();
 
 	SetContextClipRect (NULL);
@@ -158,7 +167,7 @@ DrawHyperCoords (POINT universe)
 {
 	UNICODE buf[100];
 
-	sprintf (buf, "%03u.%01u : %03u.%01u",
+	snprintf (buf, sizeof buf, "%03u.%01u : %03u.%01u",
 			universe.x / 10, universe.x % 10,
 			universe.y / 10, universe.y % 10);
 
@@ -171,6 +180,7 @@ DrawSISMessage (const UNICODE *pStr)
 	DrawSISMessageEx (pStr, -1, -1, DSME_NONE);
 }
 
+// See sis.h for the allowed flags.
 BOOLEAN
 DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 {
@@ -189,8 +199,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 	SetContextClipRect (&r);
 	
 	BatchGraphics ();
-	SetContextBackGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	SetContextBackGroundColor (SIS_MESSAGE_BACKGROUND_COLOR);
 
 	if (pStr == 0)
 	{
@@ -222,8 +231,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 	}
 
 	if (!(flags & DSME_MYCOLOR))
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
+		SetContextForeGroundColor (SIS_MESSAGE_TEXT_COLOR);
 
 	t.baseline.y = SIS_MESSAGE_HEIGHT - 2;
 	t.pStr = pStr;
@@ -296,12 +304,11 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 			
 			cur_r.corner.y = 0;
 			cur_r.extent.height = r.extent.height;
-			SetContextForeGroundColor (BLACK_COLOR);
+			SetContextForeGroundColor (SIS_MESSAGE_CURSOR_COLOR);
 			DrawFilledRectangle (&cur_r);
 		}
 
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33));
+		SetContextForeGroundColor (SIS_MESSAGE_TEXT_COLOR);
 
 		if (ExPos >= 0 && ExPos < t.CharCount)
 		{	// handle extra characters
@@ -309,8 +316,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 			font_DrawText (&t);
 
 			// print extra chars
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x12, 0x00, 0x12), 0x33));
+			SetContextForeGroundColor (SIS_MESSAGE_EXTRA_TEXT_COLOR);
 			for (i = ExPos, pchar_deltas = char_deltas; i > 0; --i)
 				t.baseline.x += (SIZE)*pchar_deltas++;
 			t.pStr = skipUTF8Chars (t.pStr, ExPos);
@@ -366,8 +372,7 @@ DrawStatusMessage (const UNICODE *pStr)
 	SetContextClipRect (&r);
 
 	BatchGraphics ();
-	SetContextBackGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x08, 0x00), 0x6E));
+	SetContextBackGroundColor (STATUS_MESSAGE_BACKGROUND_COLOR);
 	ClearDrawable ();
 
 	if (!pStr)
@@ -412,8 +417,7 @@ DrawStatusMessage (const UNICODE *pStr)
 	t.CharCount = (COUNT)~0;
 
 	SetContextFont (TinyFont);
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B));
+	SetContextForeGroundColor (STATUS_MESSAGE_TEXT_COLOR);
 	font_DrawText (&t);
 	UnbatchGraphics ();
 
@@ -441,8 +445,7 @@ DrawCaptainsName (void)
 
 	OldContext = SetContext (StatusContext);
 	OldFont = SetContextFont (TinyFont);
-	OldColor = SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	OldColor = SetContextForeGroundColor (CAPTAIN_NAME_BACKGROUND_COLOR);
 
 	r.corner.x = 2 + 1;
 	r.corner.y = 10;
@@ -455,8 +458,7 @@ DrawCaptainsName (void)
 	t.align = ALIGN_CENTER;
 	t.pStr = GLOBAL_SIS (CommanderName);
 	t.CharCount = (COUNT)~0;
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x16, 0x0B, 0x1F), 0x38));
+	SetContextForeGroundColor (CAPTAIN_NAME_TEXT_COLOR);
 	font_DrawText (&t);
 
 	SetContextForeGroundColor (OldColor);
@@ -504,7 +506,7 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 		strupr (buf);
 	}
 	OldFontEffect = SetContextFontEffect (NULL);
-	OldColor = SetContextForeGroundColor (BLACK_COLOR);
+	OldColor = SetContextForeGroundColor (FLAGSHIP_NAME_BACKGROUND_COLOR);
 	DrawFilledRectangle (&r);
 
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
@@ -515,8 +517,7 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 		SetContextFontEffect (SetAbsFrameIndex (FontGradFrame,
 				InStatusArea ? 0 : 3));
 	else
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C));
+		SetContextForeGroundColor (THREEDO_FLAGSHIP_NAME_TEXT_COLOR);
 	
 	font_DrawText (&t);
 
@@ -741,6 +742,7 @@ DrawLanders (void)
 	SetContext (OldContext);
 }
 
+// Draw the storage bays, beneath the picture of the flagship.
 void
 DrawStorageBays (BOOLEAN Refresh)
 {
@@ -770,8 +772,7 @@ DrawStorageBays (BOOLEAN Refresh)
 
 		r.corner.x = (STATUS_WIDTH >> 1)
 				- ((i * (r.extent.width + 1)) >> 1);
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
+		SetContextForeGroundColor (STORAGE_BAY_FULL_COLOR);
 		for (j = GLOBAL_SIS (TotalElementMass);
 				j >= STORAGE_BAY_CAPACITY; j -= STORAGE_BAY_CAPACITY)
 		{
@@ -791,8 +792,7 @@ DrawStorageBays (BOOLEAN Refresh)
 			if (r.extent.height)
 			{
 				r.corner.y = 123;
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x20));
+				SetContextForeGroundColor (STORAGE_BAY_EMPTY_COLOR);
 				DrawFilledRectangle (&r);
 			}
 			r.corner.x += r.extent.width + 1;
@@ -801,8 +801,7 @@ DrawStorageBays (BOOLEAN Refresh)
 		}
 		r.extent.height = 4;
 
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x20));
+		SetContextForeGroundColor (STORAGE_BAY_EMPTY_COLOR);
 		while (i--)
 		{
 			DrawFilledRectangle (&r);
@@ -854,15 +853,16 @@ DrawPC_SIS (void)
 	font_DrawText (&t);
 	SetContextFontEffect (NULL);
 
+	// Background of text "CAPTAIN".
 	r.corner.x = 2 + 1;
 	r.corner.y = 3;
 	r.extent.width = 58;
 	r.extent.height = 7;
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	SetContextForeGroundColor (PC_CAPTAIN_STRING_BACKGROUND_COLOR);
 	DrawFilledRectangle (&r);
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x02, 0x04, 0x1E), 0x38));
+
+	// Text "CAPTAIN".
+	SetContextForeGroundColor (PC_CAPTAIN_STRING_TEXT_COLOR);
 	t.baseline.y = r.corner.y + 6;
 	t.pStr = GAME_STRING (STATUS_STRING_BASE + 5); // "CAPTAIN"
 	font_DrawText (&t);
@@ -1104,19 +1104,7 @@ GetCPodCapacity (POINT *ppt)
 					GLOBAL_SIS (CrewEnlisted))
 			{
 				COUNT pod_remainder, which_row;
-				static const COLOR crew_rows[] =
-				{
-					 BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1E, 0x09), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1E, 0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1B, 0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x18, 0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x12, 0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0D, 0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0A, 0x00), 0x65),
-					 BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x00), 0x65),
-				};
+				static const COLOR crew_rows[] = PC_CREW_COLOR_TABLE;
 
 				pod_remainder = GLOBAL_SIS (CrewEnlisted) - capacity;
 
@@ -1127,8 +1115,7 @@ GetCPodCapacity (POINT *ppt)
 				if (optWhichFonts == OPT_PC)
 					SetContextForeGroundColor (crew_rows[which_row]);
 				else
-					SetContextForeGroundColor (
-							BUILD_COLOR (MAKE_RGB15 (0x05, 0x10, 0x05), 0x65));
+					SetContextForeGroundColor (THREEDO_CREW_COLOR);
 			}
 
 			capacity += CREW_POD_CAPACITY;
@@ -1159,19 +1146,7 @@ GetSBayCapacity (POINT *ppt)
 					GLOBAL_SIS (TotalElementMass))
 			{
 				COUNT bay_remainder, which_row;
-				static const COLOR color_bars[] =
-				{
-					 BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F),
-					 BUILD_COLOR (MAKE_RGB15 (0x1C, 0x1C, 0x1C), 0x11),
-					 BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x18), 0x13),
-					 BUILD_COLOR (MAKE_RGB15 (0x15, 0x15, 0x15), 0x15),
-					 BUILD_COLOR (MAKE_RGB15 (0x12, 0x12, 0x12), 0x17),
-					 BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
-					 BUILD_COLOR (MAKE_RGB15 (0x0D, 0x0D, 0x0D), 0x1B),
-					 BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x1D),
-					 BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F),
-					 BUILD_COLOR (MAKE_RGB15 (0x05, 0x05, 0x05), 0x21),
-				};
+				static const COLOR color_bars[] = STORAGE_BAY_COLOR_TABLE;
 
 				bay_remainder = GLOBAL_SIS (TotalElementMass) - capacity;
 				which_row = bay_remainder / SBAY_MASS_PER_ROW;
@@ -1218,20 +1193,7 @@ GetFTankCapacity (POINT *ppt)
 					GLOBAL_SIS (FuelOnBoard))
 			{
 				COUNT which_row;
-				static const COLOR fuel_colors[] =
-				{
-					BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
-					BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C),
-					BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
-					BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A),
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x18, 0x00), 0x79),
-				};
+				static const COLOR fuel_colors[] = FUEL_COLOR_TABLE;
 
 				which_row = (COUNT)(
 						(GLOBAL_SIS (FuelOnBoard) - capacity)
@@ -1297,19 +1259,9 @@ DrawAutoPilotMessage (BOOLEAN Reset)
 	static DWORD cycle_index = 0;
 	BOOLEAN OnAutoPilot;
 	
-	static const COLOR cycle_tab[] =
-	{
-		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x14, 0x18), 0x5B),
-		BUILD_COLOR (MAKE_RGB15 (0x06, 0x10, 0x16), 0x5C),
-		BUILD_COLOR (MAKE_RGB15 (0x03, 0x0E, 0x14), 0x5D),
-		BUILD_COLOR (MAKE_RGB15 (0x02, 0x0C, 0x11), 0x5E),
-		BUILD_COLOR (MAKE_RGB15 (0x01, 0x0B, 0x0F), 0x5F),
-		BUILD_COLOR (MAKE_RGB15 (0x01, 0x09, 0x0D), 0x60),
-		BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x0B), 0x61),
-	};
-#define NUM_CYCLES (sizeof (cycle_tab) / sizeof (cycle_tab[0]))
+	static const COLOR cycle_tab[] = AUTOPILOT_COLOR_CYCLE_TABLE;
+	const size_t cycleCount = sizeof cycle_tab / sizeof cycle_tab[0];
 #define BLINK_RATE (ONE_SECOND * 3 / 40) // 9 @ 120 ticks/second
-
 
 	if (Reset)
 	{	// Just a reset, not drawing
@@ -1349,7 +1301,7 @@ DrawAutoPilotMessage (BOOLEAN Reset)
 				SetContext (OldContext);
 			}
 
-			cycle_index = (cycle_index + 1) % NUM_CYCLES;
+			cycle_index = (cycle_index + 1) % cycleCount;
 			NextTime = GetTimeCounter () + BLINK_RATE;
 		}
 

@@ -156,6 +156,154 @@
 		BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F)
 
 
+// === SIS ===
+
+// Left border of the "SIS" view (the part in which your ship flies).
+#define SIS_LEFT_BORDER_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19)
+
+// Right and bottom border of the "SIS" view.
+#define SIS_BOTTOM_RIGHT_BORDER_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F)
+
+// Text color of the string "CAPTAIN", when using PC fonts.
+#define PC_CAPTAIN_STRING_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x02, 0x04, 0x1E), 0x38)
+
+// Background color of the string "CAPTAIN", when using PC fonts.
+#define PC_CAPTAIN_STRING_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)
+
+// Text color of the captain's name.
+#define CAPTAIN_NAME_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x16, 0x0B, 0x1F), 0x38)
+
+// Background color of the captain's name.
+#define CAPTAIN_NAME_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)
+
+// Text color of the flagship's name, when using 3DO fonts.
+#define THREEDO_FLAGSHIP_NAME_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x14, 0x0A, 0x00), 0x0C)
+
+// Background color of the flagship's name.
+#define FLAGSHIP_NAME_BACKGROUND_COLOR \
+		BLACK_COLOR
+
+// Text color for the message area (at the top of the screen, on the left
+// hand side, containing the name of the solar system.
+#define SIS_MESSAGE_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33)
+
+// Color of autocompleted text after the current cursor position,
+// when editing in the title area.
+#define SIS_MESSAGE_EXTRA_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x12, 0x00, 0x12), 0x33)
+
+// Background color for the message area.
+#define SIS_MESSAGE_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)
+
+// Cursor color when editing in the message area.
+#define SIS_MESSAGE_CURSOR_COLOR \
+		BLACK_COLOR
+
+// Text color of the title (at the top of the screen, on the right
+// hand side, containing the coordinates in HyperSpace, or the planet name
+// in IP.
+#define SIS_TITLE_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33)
+
+// Background color of the title.
+#define SIS_TITLE_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)
+
+// Text color of the status message, below the flagship overview, containing
+// the date, RU, etc.
+#define STATUS_MESSAGE_TEXT_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x6B)
+
+// Background color of the status message.
+#define STATUS_MESSAGE_BACKGROUND_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x08, 0x00), 0x6E)
+
+// Pulsating color of the string "AUTO-PILOT"
+#define AUTOPILOT_COLOR_CYCLE_TABLE \
+		{ \
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x14, 0x18), 0x5B), \
+			BUILD_COLOR (MAKE_RGB15 (0x06, 0x10, 0x16), 0x5C), \
+			BUILD_COLOR (MAKE_RGB15 (0x03, 0x0E, 0x14), 0x5D), \
+			BUILD_COLOR (MAKE_RGB15 (0x02, 0x0C, 0x11), 0x5E), \
+			BUILD_COLOR (MAKE_RGB15 (0x01, 0x0B, 0x0F), 0x5F), \
+			BUILD_COLOR (MAKE_RGB15 (0x01, 0x09, 0x0D), 0x60), \
+			BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x0B), 0x61), \
+		}
+
+// Colors for the fuel in the fuel tanks as they are filled up,
+// when viewed from the shipyard.
+#define FUEL_COLOR_TABLE \
+		{ \
+			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D), \
+			BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C), \
+			BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B), \
+			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A), \
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F), \
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E), \
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D), \
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C), \
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B), \
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A), \
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x18, 0x00), 0x79), \
+		}
+
+// Colors for the crew in the crew pods as they are filled up,
+// when viewed from the shipyard, when using PC fonts.
+#define PC_CREW_COLOR_TABLE \
+		{ \
+			 BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1E, 0x09), 0x65), \
+			 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1E, 0x00), 0x65), \
+			 BUILD_COLOR (MAKE_RGB15 (0x00, 0x1B, 0x00), 0x65), \
+			 BUILD_COLOR (MAKE_RGB15 (0x00, 0x18, 0x00), 0x65), \
+			 BUILD_COLOR (MAKE_RGB15 (0x00, 0x15, 0x00), 0x65), \
+			 BUILD_COLOR (MAKE_RGB15 (0x00, 0x12, 0x00), 0x65), \
+			 BUILD_COLOR (MAKE_RGB15 (0x00, 0x10, 0x00), 0x65), \
+			 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0D, 0x00), 0x65), \
+			 BUILD_COLOR (MAKE_RGB15 (0x00, 0x0A, 0x00), 0x65), \
+			 BUILD_COLOR (MAKE_RGB15 (0x00, 0x07, 0x00), 0x65), \
+		}
+
+// Colors for the crew in the crew pods as they are filled up,
+// when viewed from the shipyard, when using 3DO fonts.
+#define THREEDO_CREW_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x05, 0x10, 0x05), 0x65)
+
+// Colors for the minerals in the storage bays as they are filled up,
+// when viewed from the shipyard.
+#define STORAGE_BAY_COLOR_TABLE \
+		{ \
+			 BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F), \
+			 BUILD_COLOR (MAKE_RGB15 (0x1C, 0x1C, 0x1C), 0x11), \
+			 BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x18), 0x13), \
+			 BUILD_COLOR (MAKE_RGB15 (0x15, 0x15, 0x15), 0x15), \
+			 BUILD_COLOR (MAKE_RGB15 (0x12, 0x12, 0x12), 0x17), \
+			 BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19), \
+			 BUILD_COLOR (MAKE_RGB15 (0x0D, 0x0D, 0x0D), 0x1B), \
+			 BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x1D), \
+			 BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F), \
+			 BUILD_COLOR (MAKE_RGB15 (0x05, 0x05, 0x05), 0x21), \
+		}
+
+// Color of the storage bay indicator, as shown beneath the flagship,
+// for the parts which are full.
+#define STORAGE_BAY_FULL_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08)
+
+// Color of the storage bay indicator, as shown beneath the flagship,
+// for the parts which are empty.
+#define STORAGE_BAY_EMPTY_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x20)
+
+
 // === PC Menus ===
 
 // Background color of the PC-style menus.
