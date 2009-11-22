@@ -17,6 +17,7 @@
  */
 
 #include "lander.h"
+#include "scan.h"
 #include "planets.h"
 #include "../colors.h"
 #include "../controls.h"
@@ -245,13 +246,16 @@ void
 DoDiscoveryReport (SOUND ReadOutSounds)
 {
 	CONTEXT OldContext;
+	CONTEXT context;
+	BOOLEAN ownContext;
 
 #ifdef DEBUG
 	if (disableInteractivity)
 		return;
 #endif
 
-	OldContext = SetContext (ScanContext);
+	context = GetScanContext (&ownContext);
+	OldContext = SetContext (context);
 	{
 		FONT OldFont;
 		FRAME OldFontEffect;
@@ -280,6 +284,9 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 		ClearDrawable ();
 #endif /* OLD */
 	SetContext (OldContext);
+	// TODO: Make CONTEXT ref-counted
+	if (ownContext)
+		DestroyContext (context);
 
 	UnlockMutex (GraphicsLock);
 	FlushInput ();

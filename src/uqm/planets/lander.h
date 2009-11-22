@@ -82,7 +82,6 @@ extern LanderInputState *pLanderInputState;
 		//   a function call instead.
 
 
-extern CONTEXT ScanContext;
 extern MUSIC_REF LanderMusic;
 
 extern void PlanetSide (POINT planetLoc);

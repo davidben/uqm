@@ -50,8 +50,7 @@ extern FRAME SpaceJunkFrame;
 
 #define FLASH_INDEX 105
 
-// TODO: this will become static once genchmmr.c declares its own CONTEXT
-CONTEXT ScanContext;
+static CONTEXT ScanContext;
 
 static POINT planetLoc;
 static RECT cursorRect;
@@ -1168,10 +1167,47 @@ DoScan (MENU_STATE *pMS)
 	return (TRUE);
 }
 
+static CONTEXT
+CreateScanContext (void)
+{
+	CONTEXT oldContext;
+	CONTEXT context;
+	RECT r;
+
+	context = CreateContext ("ScanContext");
+	oldContext = SetContext (context);
+	
+	SetContextFGFrame (Screen);
+	r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH;
+	r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT;
+	r.extent.width = MAP_WIDTH;
+	r.extent.height = MAP_HEIGHT;
+	SetContextClipRect (&r);
+
+	SetContext (oldContext);
+
+	return context;
+}
+
+CONTEXT
+GetScanContext (BOOLEAN *owner)
+{
+	// TODO: Make CONTEXT ref-counted
+	if (ScanContext)
+	{
+		*owner = FALSE;
+		return ScanContext;
+	}
+	else
+	{
+		*owner = TRUE;
+		return CreateScanContext ();
+	}
+}
+
 void
 ScanSystem (void)
 {
-	RECT r;
 	MENU_STATE MenuState;
 
 	MenuState.InputFunc = DoScan;
@@ -1210,17 +1246,9 @@ ScanSystem (void)
 		planetLoc.y = (MAP_HEIGHT >> 1) << MAG_SHIFT;
 
 		LockMutex (GraphicsLock);
-		ScanContext = CreateContext ("ScanContext");
-		SetContext (ScanContext);
-
 		initPlanetLocationImage ();
-
-		SetContextFGFrame (Screen);
-		r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH;
-		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT;
-		r.extent.width = MAP_WIDTH;
-		r.extent.height = MAP_HEIGHT;
-		SetContextClipRect (&r);
+		ScanContext = CreateScanContext ();
+		SetContext (ScanContext);
 		DrawScannedObjects (FALSE);
 		UnlockMutex (GraphicsLock);
 	}

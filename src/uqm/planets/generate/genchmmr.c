@@ -134,28 +134,13 @@ GenerateChmmr_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	else if (matchWorld (solarSys, world, 1, 0))
 	{
 		/* Starbase */
-		RECT r;
-
 		LockMutex (GraphicsLock);
 
 		LoadStdLanderFont (&solarSys->SysInfo.PlanetInfo);
 		solarSys->SysInfo.PlanetInfo.DiscoveryString =
 				CaptureStringTable (LoadStringTable (CHMMR_BASE_STRTAB));
 
-		ScanContext = CreateContext ("genchmmr.ScanContext");
-		SetContext (ScanContext);
-		SetContextFGFrame (Screen);
-		r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH;
-		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT;
-		r.extent.width = MAP_WIDTH;
-		r.extent.height = MAP_HEIGHT;
-		SetContextClipRect (&r);
-
 		DoDiscoveryReport (MenuSounds);
-
-		SetContext (SpaceContext);
-		DestroyContext (ScanContext);
-		ScanContext = 0;
 
 		DestroyStringTable (ReleaseStringTable (
 				solarSys->SysInfo.PlanetInfo.DiscoveryString));
