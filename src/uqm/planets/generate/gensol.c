@@ -527,7 +527,7 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
 				solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 						&= ~(1L << 0);
-				pLanderInputState->planetSideDesc->InTransit = TRUE;
+				SetLanderTakeoff ();
 			}
 			else if (*whichNode == (COUNT)~0)
 				*whichNode = 1;

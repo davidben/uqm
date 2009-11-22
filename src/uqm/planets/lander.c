@@ -50,12 +50,18 @@
 // ONE_SECOND.
 #define PLANET_SIDE_RATE (ONE_SECOND / 35)
 
-LanderInputState *pLanderInputState;
-		// Temporary, to replace the references to pMenuState.
-		// TODO: Many functions depend on pLanderInputState. In particular,
-		//   the ELEMENT property functions. Fields in LanderInputState
-		//   should either be made static vars, or ELEMENT should carry
-		//   something like an 'intptr_t private' field
+
+// This is a derived type from INPUT_STATE_DESC.
+typedef struct LanderInputState LanderInputState;
+struct LanderInputState {
+	// Fields required by DoInput()
+	BOOLEAN (*InputFunc) (LanderInputState *pMS);
+	COUNT MenuRepeatDelay;
+
+	BOOLEAN Initialized;
+	TimeCount NextTime;
+			// Frame rate control
+};
 
 FRAME LanderFrame[8];
 static SOUND LanderSounds;
@@ -163,6 +169,9 @@ static int turn_wait;
 		// thus named for similar semantics to ELEMENT.turn_wait
 static int weapon_wait;
 		// semantics similar to STARSHIP.weapon_counter
+
+// TODO: We may want to make the PLANETSIDE_DESC fields into static vars
+static PLANETSIDE_DESC *planetSideDesc;
 
 #define ON_THE_GROUND   0
 
@@ -646,7 +655,7 @@ CheckObjectCollision (COUNT index)
 	DRAWABLE LanderHandle;
 	PRIMITIVE *pPrim;
 	PRIMITIVE *pLanderPrim;
-	PLANETSIDE_DESC *pPSD;
+	PLANETSIDE_DESC *pPSD = planetSideDesc;
 
 	if (index != END_OF_LIST)
 	{
@@ -663,7 +672,6 @@ CheckObjectCollision (COUNT index)
 		index = GetSuccLink (DisplayLinks);
 	}
 
-	pPSD = pLanderInputState->planetSideDesc;
 	LanderControl.EndPoint = LanderControl.IntersectStamp.origin;
 	LanderHandle = GetFrameParentDrawable (LanderControl.IntersectStamp.frame);
 
@@ -920,9 +928,8 @@ lightning_process (ELEMENT *ElementPtr)
 			if (ElementPtr->mass_points == LIGHTNING_DISASTER)
 			{
 				/* This one always strikes the lander and can hurt */
-				PLANETSIDE_DESC *pPSD = pLanderInputState->planetSideDesc;
 				if (crew_left && TFB_Random () % 100 < 10
-						&& !pPSD->InTransit)
+						&& !planetSideDesc->InTransit)
 					lander_flags |= KILL_CREW;
 
 				ElementPtr->next.location = curLanderLoc;
@@ -1055,13 +1062,12 @@ BuildObjectList (void)
 	DWORD rand_val;
 	POINT org;
 	HELEMENT hElement, hNextElement;
-	PLANETSIDE_DESC *pPSD;
+	PLANETSIDE_DESC *pPSD = planetSideDesc;
 
 	DisplayLinks = MakeLinks (END_OF_LIST, END_OF_LIST);
 	
 	lander_flags &= ~KILL_CREW;
 
-	pPSD = pLanderInputState->planetSideDesc;
 	rand_val = TFB_Random ();
 	if (LOBYTE (HIWORD (rand_val)) < pPSD->FireChance)
 	{
@@ -1267,9 +1273,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 		CheckObjectCollision (END_OF_LIST);
 
 	{
-		PLANETSIDE_DESC *pPSD;
-
-		pPSD = pLanderInputState->planetSideDesc;
+		PLANETSIDE_DESC *pPSD = planetSideDesc;
 		if (pPSD->NumFrames)
 		{
 			--pPSD->NumFrames;
@@ -1624,7 +1628,7 @@ landerSpeedNumer = WORLD_TO_VELOCITY (48);
 	else if (crew_left /* alive and taking off */
 			&& ((CurrentInputState.key[PlayerControls[0]][KEY_ESCAPE] ||
 			CurrentInputState.key[PlayerControls[0]][KEY_SPECIAL])
-			|| pLanderInputState->planetSideDesc->InTransit))
+			|| planetSideDesc->InTransit))
 	{
 		return FALSE;
 	}
@@ -1871,6 +1875,14 @@ LandingTakeoffSequence (LanderInputState *inputState, BOOLEAN landing)
 }
 
 void
+SetLanderTakeoff (void)
+{
+	assert (planetSideDesc != NULL);
+	if (planetSideDesc)
+		planetSideDesc->InTransit = TRUE;
+}
+
+void
 PlanetSide (POINT planetLoc)
 {
 	SIZE index;
@@ -1936,14 +1948,8 @@ PlanetSide (POINT planetLoc)
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D);
 	PSD.ColorCycle[(NUM_TEXT_FRAMES >> 1) - 1] =
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F);
-	landerInputState.planetSideDesc = &PSD;
+	planetSideDesc = &PSD;
 	
-	// TODO: Many functions depend on pLanderInputState. In particular,
-	//   the ELEMENT property functions. Fields in LanderInputState
-	//   should either be made static vars, or ELEMENT should carry
-	//   something like an 'intptr_t private' field
-	pLanderInputState = &landerInputState;
-
 	index = NORMALIZE_FACING (TFB_Random ());
 	LanderFrame[0] = SetAbsFrameIndex (LanderFrame[0], index);
 	crew_left = 0;
@@ -2020,7 +2026,7 @@ PlanetSide (POINT planetLoc)
 		}
 	}
 
-	landerInputState.planetSideDesc = NULL;
+	planetSideDesc = NULL;
 
 	{
 		HELEMENT hElement, hNextElement;

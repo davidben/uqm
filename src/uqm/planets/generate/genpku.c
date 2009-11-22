@@ -152,7 +152,7 @@ GeneratePkunk_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 
 				if (!GET_GAME_STATE (CLEAR_SPINDLE))
 				{
-					pLanderInputState->planetSideDesc->InTransit = TRUE;
+					SetLanderTakeoff ();
 
 					SET_GAME_STATE (CLEAR_SPINDLE, 1);
 					SET_GAME_STATE (CLEAR_SPINDLE_ON_SHIP, 1);

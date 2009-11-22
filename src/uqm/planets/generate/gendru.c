@@ -162,7 +162,7 @@ GenerateDruuge_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 
 				if (!GET_GAME_STATE (ROSY_SPHERE))
 				{
-					pLanderInputState->planetSideDesc->InTransit = TRUE;
+					SetLanderTakeoff ();
 
 					SET_GAME_STATE (ROSY_SPHERE, 1);
 					SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);

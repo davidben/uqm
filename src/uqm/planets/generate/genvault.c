@@ -104,7 +104,7 @@ GenerateVault_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 					&= ~(1L << 0);
 			if (GET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP))
 			{
-				pLanderInputState->planetSideDesc->InTransit = TRUE;
+				SetLanderTakeoff ();
 
 				SET_GAME_STATE (SHIP_VAULT_UNLOCKED, 1);
 				SET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP, 0);

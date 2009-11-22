@@ -348,7 +348,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				UnbatchGraphics ();
 				DoDiscoveryReport (MenuSounds);
 				BatchGraphics ();
-				pLanderInputState->planetSideDesc->InTransit = TRUE;
+				SetLanderTakeoff ();
 
 				SET_GAME_STATE (VUX_BEAST, 1);
 				SET_GAME_STATE (VUX_BEAST_ON_SHIP, 1);

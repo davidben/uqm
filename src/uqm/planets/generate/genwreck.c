@@ -98,7 +98,7 @@ GenerateWreck_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 
 			if (!GET_GAME_STATE (PORTAL_KEY))
 			{
-				pLanderInputState->planetSideDesc->InTransit = TRUE;
+				SetLanderTakeoff ();
 
 				SET_GAME_STATE (PORTAL_KEY, 1);
 				SET_GAME_STATE (PORTAL_KEY_ON_SHIP, 1);

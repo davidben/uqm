@@ -155,7 +155,7 @@ GenerateSupox_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 
 				if (!GET_GAME_STATE (ULTRON_CONDITION))
 				{
-					pLanderInputState->planetSideDesc->InTransit = TRUE;
+					SetLanderTakeoff ();
 
 					SET_GAME_STATE (ULTRON_CONDITION, 1);
 				}
