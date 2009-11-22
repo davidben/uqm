@@ -18,6 +18,7 @@
 
 #include "lander.h"
 #include "lifeform.h"
+#include "scan.h"
 #include "../build.h"
 #include "../cons_res.h"
 #include "../controls.h"
@@ -1303,7 +1304,7 @@ GeneratePlanetSide (void)
 	if (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 		return;
 
-	memset (life_init_tab, 0, sizeof (life_init_tab));
+	memset (life_init_tab, 0, sizeof life_init_tab);
 
 	for (scan = BIOLOGICAL_SCAN; scan >= MINERAL_SCAN; --scan)
 	{
@@ -1323,8 +1324,8 @@ GeneratePlanetSide (void)
 			HELEMENT hNodeElement;
 			ELEMENT *NodeElementPtr;
 
-			if (pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan]
-					& (1L << num_nodes))
+			if (isNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo,
+					scan, num_nodes))
 				continue;
 
 			hNodeElement = AllocElement ();
@@ -1404,4 +1405,22 @@ GeneratePlanetSide (void)
 	}
 }
 
+bool
+isNodeRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr)
+{
+	return (planetInfo->ScanRetrieveMask[scanType] & ((DWORD) 1 << nodeNr))
+			!= 0;
+}
+
+void
+setNodeRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr)
+{
+	planetInfo->ScanRetrieveMask[scanType] |= ((DWORD) 1 << nodeNr);
+}
+
+void
+setNodeNotRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr)
+{
+	planetInfo->ScanRetrieveMask[scanType] &= ~((DWORD) 1 << nodeNr);
+}
 
