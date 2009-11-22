@@ -128,6 +128,11 @@ struct element
 	union
 	{
 		BYTE mass_points;
+				/* Planetside:
+				 * - for living bio: Index in CreatureData, possibly OR'ed
+				 *   with CREATURE_AWARE
+				 * - for canned bio: value of creature
+				 */
 		BYTE sys_loc; /* IP: location in system */
 	};
 	BYTE turn_wait;

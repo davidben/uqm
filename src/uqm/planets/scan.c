@@ -1246,17 +1246,65 @@ ScanSystem (void)
 	}
 }
 
+static void
+generateBioNode (SOLARSYS_STATE *system, ELEMENT *NodeElementPtr,
+		BYTE *life_init_tab)
+{
+	COUNT i;
+	COUNT creatureType;
+
+	creatureType = system->SysInfo.PlanetInfo.CurType;
+
+	if (CreatureData[creatureType].Attributes & SPEED_MASK)
+	{
+		// Place moving creatures at a random location.
+		i = (COUNT)TFB_Random ();
+		NodeElementPtr->current.location.x =
+				(LOBYTE (i) % (MAP_WIDTH - (8 << 1))) + 8;
+		NodeElementPtr->current.location.y =
+				(HIBYTE (i) % (MAP_HEIGHT - (8 << 1))) + 8;
+	}
+
+	if (system->PlanetSideFrame[0] == 0)
+		system->PlanetSideFrame[0] =
+				CaptureDrawable (LoadGraphic (CANNISTER_MASK_PMAP_ANIM));
+
+	for (i = 0; i < MAX_LIFE_VARIATION
+			&& life_init_tab[i] != (BYTE)(creatureType + 1);
+			++i)
+	{
+		if (life_init_tab[i] != 0)
+			continue;
+
+		life_init_tab[i] = (BYTE)creatureType + 1;
+
+		system->PlanetSideFrame[i + 3] = load_life_form (creatureType);
+		break;
+	}
+
+	NodeElementPtr->mass_points = (BYTE)creatureType;
+	NodeElementPtr->hit_points = HINIBBLE (
+			CreatureData[creatureType].ValueAndHitPoints);
+	DisplayArray[NodeElementPtr->PrimIndex].
+			Object.Stamp.frame = SetAbsFrameIndex (
+			system->PlanetSideFrame[i + 3], (COUNT)TFB_Random ());
+}
+
 void
 GeneratePlanetSide (void)
 {
 	SIZE scan;
 	BYTE life_init_tab[MAX_LIFE_VARIATION];
+			// life_init_tab is filled with the creature types of already
+			// selected creatures. If an entry is 0, none has been selected
+			// yet, otherwise, it is 1 more than the creature type.
 
 	InitDisplayList ();
 	if (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 		return;
 
 	memset (life_init_tab, 0, sizeof (life_init_tab));
+
 	for (scan = BIOLOGICAL_SCAN; scan >= MINERAL_SCAN; --scan)
 	{
 		COUNT num_nodes;
@@ -1315,7 +1363,7 @@ GeneratePlanetSide (void)
 				DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
 						IncFrameIndex (NodeElementPtr->next.image.frame);
 			}
-			else
+			else  /* (scan == BIOLOGICAL_SCAN || scan == ENERGY_SCAN) */
 			{
 				NodeElementPtr->current.image.frame = f;
 				NodeElementPtr->next.image.frame = SetRelFrameIndex (
@@ -1325,54 +1373,23 @@ GeneratePlanetSide (void)
 				if (scan == ENERGY_SCAN)
 				{
 					if (pSolarSysState->SysInfo.PlanetInfo.CurType == 1)
+					{
 						NodeElementPtr->mass_points = 0;
+					}
 					else if (pSolarSysState->SysInfo.PlanetInfo.CurType == 2)
+					{
+						// Special case: Fwiffo
 						NodeElementPtr->mass_points = 1;
+					}
 					else
 						NodeElementPtr->mass_points = MAX_SCROUNGED;
 					DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
 							pSolarSysState->PlanetSideFrame[1];
 				}
-				else
+				else /* (scan == BIOLOGICAL_SCAN) */
 				{
-					COUNT i, which_node;
-
-					which_node = pSolarSysState->SysInfo.PlanetInfo.CurType;
-
-					if (CreatureData[which_node].Attributes & SPEED_MASK)
-					{
-						i = (COUNT)TFB_Random ();
-						NodeElementPtr->current.location.x =
-								(LOBYTE (i) % (MAP_WIDTH - (8 << 1))) + 8;
-						NodeElementPtr->current.location.y =
-								(HIBYTE (i) % (MAP_HEIGHT - (8 << 1))) + 8;
-					}
-
-					if (pSolarSysState->PlanetSideFrame[0] == 0)
-						pSolarSysState->PlanetSideFrame[0] =
-								CaptureDrawable (LoadGraphic (
-								CANNISTER_MASK_PMAP_ANIM));
-					for (i = 0; i < MAX_LIFE_VARIATION
-							&& life_init_tab[i] != (BYTE)(which_node + 1);
-							++i)
-					{
-						if (life_init_tab[i] != 0)
-							continue;
-
-						life_init_tab[i] = (BYTE)which_node + 1;
-
-						pSolarSysState->PlanetSideFrame[i + 3] =
-								load_life_form (which_node);
-						break;
-					}
-
-					NodeElementPtr->mass_points = (BYTE)which_node;
-					NodeElementPtr->hit_points = HINIBBLE (
-							CreatureData[which_node].ValueAndHitPoints);
-					DisplayArray[NodeElementPtr->PrimIndex].
-							Object.Stamp.frame = SetAbsFrameIndex (
-							pSolarSysState->PlanetSideFrame[i + 3],
-							(COUNT)TFB_Random ());
+					generateBioNode (pSolarSysState, NodeElementPtr,
+							life_init_tab);
 				}
 			}
 

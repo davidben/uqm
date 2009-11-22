@@ -600,6 +600,46 @@ pickupBioNode (PLANETSIDE_DESC *pPSD, COUNT NumRetrieved)
 }
 
 static void
+shotCreature (ELEMENT *ElementPtr, BYTE value,
+		INTERSECT_CONTROL *LanderControl, PRIMITIVE *pPrim)
+{
+	if (ElementPtr->hit_points == 0)
+	{
+		// Creature is already canned.
+		return;
+	}
+
+	--ElementPtr->hit_points;
+	if (ElementPtr->hit_points == 0)
+	{
+		// Can creature.
+		ElementPtr->mass_points = value;
+		DisplayArray[ElementPtr->PrimIndex].Object.Stamp.frame =
+				pSolarSysState->PlanetSideFrame[0];
+	}
+	else if (CreatureData[ElementPtr->mass_points & ~CREATURE_AWARE]
+			.Attributes & SPEED_MASK)
+	{
+		COUNT angle;
+
+		angle = FACING_TO_ANGLE (GetFrameIndex (
+				LanderControl->IntersectStamp.frame) -
+				ANGLE_TO_FACING (FULL_CIRCLE));
+		DeltaVelocityComponents (&ElementPtr->velocity,
+				COSINE (angle, WORLD_TO_VELOCITY (1)),
+				SINE (angle, WORLD_TO_VELOCITY (1)));
+		ElementPtr->thrust_wait = 0;
+		ElementPtr->mass_points |= CREATURE_AWARE;
+	}
+
+	SetPrimType (pPrim, STAMPFILL_PRIM);
+	SetPrimColor (pPrim, WHITE_COLOR);
+
+	PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_HITS),
+			NotPositional (), NULL, GAME_SOUND_PRIORITY);
+}
+
+static void
 CheckObjectCollision (COUNT index)
 {
 	INTERSECT_CONTROL LanderControl;
@@ -731,8 +771,7 @@ CheckObjectCollision (COUNT index)
 							continue;
 						}
 					}
-					else if (scan == BIOLOGICAL_SCAN
-							&& ElementPtr->hit_points)
+					else if (scan == BIOLOGICAL_SCAN && ElementPtr->hit_points)
 					{
 						BYTE danger_vals[] =
 						{
@@ -782,42 +821,8 @@ CheckObjectCollision (COUNT index)
 							].ValueAndHitPoints)))
 					{
 						/* Collision of a stun bolt with a viable creature */
-						if (ElementPtr->hit_points)
-						{
-							if (--ElementPtr->hit_points == 0)
-							{
-								ElementPtr->mass_points = value;
-								DisplayArray[
-										ElementPtr->PrimIndex
-										].Object.Stamp.frame =
-										pSolarSysState->PlanetSideFrame[0];
-							}
-							else if (CreatureData[
-									ElementPtr->mass_points
-									& ~CREATURE_AWARE
-									].Attributes & SPEED_MASK)
-							{
-								COUNT angle;
-
-								angle = FACING_TO_ANGLE (GetFrameIndex (
-										LanderControl.IntersectStamp.frame
-										) - ANGLE_TO_FACING (FULL_CIRCLE));
-								DeltaVelocityComponents (
-										&ElementPtr->velocity,
-										COSINE (angle, WORLD_TO_VELOCITY (1)),
-										SINE (angle, WORLD_TO_VELOCITY (1)));
-								ElementPtr->thrust_wait = 0;
-								ElementPtr->mass_points |= CREATURE_AWARE;
-							}
-
-							SetPrimType (pPrim, STAMPFILL_PRIM);
-							SetPrimColor (pPrim, WHITE_COLOR);
-
-							PlaySound (SetAbsSoundIndex (
-									LanderSounds, LANDER_HITS),
-									NotPositional (), NULL,
-									GAME_SOUND_PRIORITY);
-						}
+						shotCreature (ElementPtr, value, &LanderControl,
+								pPrim);
 						UnlockElement (hElement);
 						break;
 					}

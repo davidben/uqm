@@ -100,6 +100,7 @@ typedef struct solarsys_state SOLARSYS_STATE;
 #include "../units.h"
 
 #include "elemdata.h"
+#include "lifeform.h"
 #include "plandata.h"
 #include "sundata.h"
 
@@ -174,6 +175,8 @@ struct solarsys_state
 			// as its argument, and overwritten by subsequent calls.
 	PLANET_DESC *pBaseDesc;
 	PLANET_DESC *pOrbitalDesc;
+			// Points into PlanetDesc or MoonDesc to the planet currently
+			// orbiting.
 	SIZE FirstPlanetIndex, LastPlanetIndex;
 			// The planets get sorted on their image.origin.y value.
 			// PlanetDesc[FirstPlanetIndex] is the planet with the lowest
@@ -198,7 +201,15 @@ struct solarsys_state
 			// Functions to call to fill in various parts of this structure.
 			// See generate.h, doc/devel/generate
 
-	FRAME PlanetSideFrame[6];
+	FRAME PlanetSideFrame[3 + MAX_LIFE_VARIATION];
+			/* Frames for planet-side elements.
+			 * [0] = bio cannister
+			 * [1] = energy node (world-specific)
+			 * [2] = unused (formerly static slave shield, presumed)
+			 * [3] = bio 1 (world-specific)
+			 * [4] = bio 2 (world-specific)
+			 * [5] = bio 3 (world-specific)
+			 */
 	UWORD Tint_rgb;
 	UBYTE PauseRotate;
 	FRAME TopoFrame;

@@ -670,8 +670,7 @@ DrawFlagshipStats (void)
 				(((100 * ONE_SECOND * energy_regeneration) /
 				((1 + energy_wait) * BATTLE_FRAME_RATE)) + 5) / 10;
 		sprintf (buf, "%2u.%1u",
-				energy_per_10_sec / 10,
-				energy_per_10_sec % 10);
+				energy_per_10_sec / 10, energy_per_10_sec % 10);
 	}
 	font_DrawText (&t);
 	t.baseline.y += leading;
@@ -723,9 +722,7 @@ DrawLanders (void)
 
 	i = GLOBAL_SIS (NumLanders);
 	r.corner.x = (STATUS_WIDTH >> 1) - r.corner.x;
-	s.origin.x = r.corner.x
-			- (((r.extent.width * i)
-			+ (2 * (i - 1))) >> 1);
+	s.origin.x = r.corner.x - (((r.extent.width * i) + (2 * (i - 1))) >> 1);
 	s.origin.y = 29;
 
 	width = r.extent.width + 2;
