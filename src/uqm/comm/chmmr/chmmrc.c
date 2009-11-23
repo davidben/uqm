@@ -398,7 +398,7 @@ ChmmrAdvice (RESPONSE_REF R)
 	}
 	else if (PLAYER_SAID (R, what_about_samatra))
 	{
-		NPCPhrase (ABOUT_SUN_DEVICE);
+		NPCPhrase (ABOUT_SAMATRA);
 
 		DISABLE_PHRASE (what_about_samatra);
 	}
