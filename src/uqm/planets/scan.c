@@ -1215,23 +1215,6 @@ ScanSystem (void)
 	MenuState.Initialized = FALSE;
 	MenuState.flash_task = 0;
 
-{
-#define REPAIR_SCAN (1 << 6)
-	extern BYTE draw_sys_flags;
-	
-	if (draw_sys_flags & REPAIR_SCAN)
-	{
-		RECT r;
-
-		r.corner.x = SIS_ORG_X;
-		r.corner.y = SIS_ORG_Y;
-		r.extent.width = SIS_SCREEN_WIDTH;
-		r.extent.height = SIS_SCREEN_HEIGHT;
-		LoadIntoExtraScreen (&r);
-		draw_sys_flags &= ~REPAIR_SCAN;
-	}
-}
-
 	if (optWhichMenu == OPT_3DO &&
 			((pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 			|| pSolarSysState->SysInfo.PlanetInfo.AtmoDensity ==

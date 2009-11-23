@@ -66,7 +66,7 @@ BYTE EncounterGroup;
 #define DRAW_HYPER_COORDS (1 << 3)
 #define UNBATCH_SYS (1 << 4)
 #define DRAW_REFRESH (1 << 5)
-#define REPAIR_SCAN (1 << 6)
+// Unused: #define REPAIR_SCAN (1 << 6)
 #define GRAB_BKGND (1 << 7)
 
 static SIZE old_radius;
