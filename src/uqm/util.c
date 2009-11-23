@@ -111,6 +111,32 @@ SeedRandomNumbers (void)
 	return (cur_time);
 }
 
+STAMP
+SaveContextFrame (RECT *saveRect)
+{
+	STAMP s;
+	RECT r;
+
+	GetContextClipRect (&r);
+	if (saveRect)
+	{	// a portion of the context
+		r.corner.x += saveRect->corner.x;
+		r.corner.y += saveRect->corner.y;
+		r.extent = saveRect->extent;
+
+		s.origin = saveRect->corner;
+	}
+	else
+	{	// the entire context
+		s.origin.x = 0;
+		s.origin.y = 0;
+	}
+
+	s.frame = CaptureDrawable (LoadDisplayPixmap (&r, NULL));
+
+	return s;
+}
+
 BOOLEAN
 PauseGame (void)
 {

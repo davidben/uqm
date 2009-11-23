@@ -1105,15 +1105,9 @@ PickGame (MENU_STATE *pMS)
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 
-	DlgStamp.origin.x = 0;
-	DlgStamp.origin.y = 0;
 	// Save the current state of the screen for later restoration
-	DlgRect.corner.x = SIS_ORG_X;
-	DlgRect.corner.y = SIS_ORG_Y;
-	DlgRect.extent.width = SIS_SCREEN_WIDTH;
-	DlgRect.extent.height = SIS_SCREEN_HEIGHT;
-	DlgStamp.frame = CaptureDrawable (LoadDisplayPixmap (
-			&DlgRect, (FRAME)0));
+	DlgStamp = SaveContextFrame (NULL);
+	GetContextClipRect (&DlgRect);
 
 	pMS->Initialized = FALSE;
 	pMS->InputFunc = DoPickGame;

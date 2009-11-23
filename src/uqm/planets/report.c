@@ -23,6 +23,7 @@
 #include "../controls.h"
 #include "../gamestr.h"
 #include "../setup.h"
+#include "../util.h"
 #include "../sounds.h"
 #include "../uqmdebug.h"
 #include "options.h"
@@ -238,6 +239,7 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 	CONTEXT OldContext;
 	CONTEXT context;
 	BOOLEAN ownContext;
+	STAMP saveStamp;
 
 #ifdef DEBUG
 	if (disableInteractivity)
@@ -246,6 +248,7 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 
 	context = GetScanContext (&ownContext);
 	OldContext = SetContext (context);
+	saveStamp = SaveContextFrame (NULL);
 	{
 		FONT OldFont;
 		FRAME OldFontEffect;
@@ -265,14 +268,8 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 		SetContextFontEffect (OldFontEffect);
 		SetContextFont (OldFont);
 	}
-#ifdef OLD
-	ClearDrawable ();
-	if (pSolarSysState->MenuState.Initialized >= 3)
-		DrawScannedObjects (FALSE);
-#else /* !OLD */
-	if (pSolarSysState->MenuState.Initialized < 3)
-		ClearDrawable ();
-#endif /* OLD */
+	// Restore previous screen
+	DrawStamp (&saveStamp);
 	SetContext (OldContext);
 	// TODO: Make CONTEXT ref-counted
 	if (ownContext)

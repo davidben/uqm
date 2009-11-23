@@ -25,5 +25,8 @@ extern void DrawStarConBox (RECT *pRect, SIZE BorderWidth,
 		COLOR InteriorColor);
 extern DWORD SeedRandomNumbers (void);
 
+// saveRect can be NULL to save the entire context frame
+extern STAMP SaveContextFrame (RECT *saveRect);
+
 #endif  /* _UTIL_H */
 
