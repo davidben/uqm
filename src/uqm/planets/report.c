@@ -275,6 +275,8 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 	if (ownContext)
 		DestroyContext (context);
 
+	DestroyDrawable (ReleaseDrawable (saveStamp.frame));
+
 	UnlockMutex (GraphicsLock);
 	WaitForNoInput (WAIT_INFINITE, TRUE);
 	LockMutex (GraphicsLock);
