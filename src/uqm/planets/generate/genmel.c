@@ -24,7 +24,7 @@
 #include "libs/log.h"
 
 
-static bool GenerateMelnorme_initNpcs (void);
+static bool GenerateMelnorme_initNpcs (SOLARSYS_STATE *solarSys);
 
 static int SelectMelnormeRefVar (void);
 static DWORD GetMelnormeRef (void);
@@ -46,7 +46,7 @@ const GenerateFunctions generateMelnormeFunctions = {
 
 
 static bool
-GenerateMelnorme_initNpcs (void)
+GenerateMelnorme_initNpcs (SOLARSYS_STATE *solarSys)
 {
 	GLOBAL (BattleGroupRef) = GetMelnormeRef ();
 	if (GLOBAL (BattleGroupRef) == 0)
@@ -57,7 +57,7 @@ GenerateMelnorme_initNpcs (void)
 		SetMelnormeRef (GLOBAL (BattleGroupRef));
 	}
 
-	GenerateDefault_initNpcs ();
+	GenerateDefault_initNpcs (solarSys);
 
 	return true;
 }

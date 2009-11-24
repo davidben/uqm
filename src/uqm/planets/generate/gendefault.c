@@ -25,9 +25,9 @@
 #include "libs/mathlib.h"
 
 
-bool GenerateDefault_initNpcs (void);
-bool GenerateDefault_reinitNpcs (void);
-bool GenerateDefault_uninitNpcs (void);
+bool GenerateDefault_initNpcs (SOLARSYS_STATE *solarSys);
+bool GenerateDefault_reinitNpcs (SOLARSYS_STATE *solarSys);
+bool GenerateDefault_uninitNpcs (SOLARSYS_STATE *solarSys);
 bool GenerateDefault_generatePlanets (SOLARSYS_STATE *solarSys);
 bool GenerateDefault_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
@@ -61,18 +61,20 @@ const GenerateFunctions generateDefaultFunctions = {
 
 
 bool
-GenerateDefault_initNpcs (void)
+GenerateDefault_initNpcs (SOLARSYS_STATE *solarSys)
 {
 	if (!GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP))
 	{
 		GLOBAL (BattleGroupRef) = 0;
 		BuildGroups ();
 	}
+
+	(void) solarSys;
 	return true;
 }
 
 bool
-GenerateDefault_reinitNpcs (void)
+GenerateDefault_reinitNpcs (SOLARSYS_STATE *solarSys)
 {
 	GetGroupInfo (GROUPS_RANDOM, GROUP_LOAD_IP);
 	// This is not a great place to do the Yehat rebellion check, but
@@ -80,15 +82,19 @@ GenerateDefault_reinitNpcs (void)
 	// the Homeworld), I could not find a better place for it.
 	// At least it is better than where it was originally.
 	check_yehat_rebellion ();
+
+	(void) solarSys;
 	return true;
 }
 
 bool
-GenerateDefault_uninitNpcs (void)
+GenerateDefault_uninitNpcs (SOLARSYS_STATE *solarSys)
 {
 	PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 	ReinitQueue (&GLOBAL (npc_built_ship_q));
 	ReinitQueue (&GLOBAL (ip_group_q));
+
+	(void) solarSys;
 	return true;
 }
 

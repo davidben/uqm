@@ -45,9 +45,9 @@ typedef struct GenerateFunctions GenerateFunctions;
 
 // Any of these functions returning true means that the action has been
 // handled, and that the default function should not be called.
-typedef bool (*InitNpcsFunction)(void);
-typedef bool (*ReinitNpcsFunction)(void);
-typedef bool (*UninitNpcsFunction)(void);
+typedef bool (*InitNpcsFunction)(SOLARSYS_STATE *solarSys);
+typedef bool (*ReinitNpcsFunction)(SOLARSYS_STATE *solarSys);
+typedef bool (*UninitNpcsFunction)(SOLARSYS_STATE *solarSys);
 typedef bool (*GeneratePlanetsFunction)(SOLARSYS_STATE *solarSys);
 typedef bool (*GenerateMoonsFunction)(SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);

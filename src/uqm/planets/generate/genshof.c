@@ -24,9 +24,9 @@
 #include "../planets.h"
 
 
-static bool GenerateShofixti_initNpcs (void);
-static bool GenerateShofixti_reinitNpcs (void);
-static bool GenerateShofixti_uninitNpcs (void);
+static bool GenerateShofixti_initNpcs (SOLARSYS_STATE *solarSys);
+static bool GenerateShofixti_reinitNpcs (SOLARSYS_STATE *solarSys);
+static bool GenerateShofixti_uninitNpcs (SOLARSYS_STATE *solarSys);
 static bool GenerateShofixti_generatePlanets (SOLARSYS_STATE *solarSys);
 
 static void check_old_shofixti (void);
@@ -47,7 +47,7 @@ const GenerateFunctions generateShofixtiFunctions = {
 
 
 static bool
-GenerateShofixti_initNpcs (void)
+GenerateShofixti_initNpcs (SOLARSYS_STATE *solarSys)
 {
 	if (!GET_GAME_STATE (SHOFIXTI_RECRUITED)
 			&& (!GET_GAME_STATE (SHOFIXTI_KIA)
@@ -85,22 +85,24 @@ GenerateShofixti_initNpcs (void)
 
 	// This was originally a fallthrough to REINIT_NPCS.
 	// XXX: is the call to check_old_shofixti() needed?
-	GenerateDefault_initNpcs ();
+	GenerateDefault_initNpcs (solarSys);
 	check_old_shofixti ();
 
 	return true;
 }
 
 static bool
-GenerateShofixti_reinitNpcs (void)
+GenerateShofixti_reinitNpcs (SOLARSYS_STATE *solarSys)
 {
-	GenerateDefault_reinitNpcs ();
+	GenerateDefault_reinitNpcs (solarSys);
 	check_old_shofixti ();
+
+	(void) solarSys;
 	return true;
 }
 
 static bool
-GenerateShofixti_uninitNpcs (void)
+GenerateShofixti_uninitNpcs (SOLARSYS_STATE *solarSys)
 {
 	if (GLOBAL (BattleGroupRef)
 			&& !GET_GAME_STATE (SHOFIXTI_RECRUITED)
@@ -117,7 +119,7 @@ GenerateShofixti_uninitNpcs (void)
 		}
 	}
 	
-	GenerateDefault_uninitNpcs ();
+	GenerateDefault_uninitNpcs (solarSys);
 	return true;
 }
 

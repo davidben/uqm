@@ -26,7 +26,7 @@
 #include "libs/mathlib.h"
 
 
-static bool GenerateZoqFotPik_initNpcs (void);
+static bool GenerateZoqFotPik_initNpcs (SOLARSYS_STATE *solarSys);
 static bool GenerateZoqFotPik_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateZoqFotPik_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
@@ -49,10 +49,10 @@ const GenerateFunctions generateZoqFotPikFunctions = {
 
 
 static bool
-GenerateZoqFotPik_initNpcs (void)
+GenerateZoqFotPik_initNpcs (SOLARSYS_STATE *solarSys)
 {
 	if (GET_GAME_STATE (ZOQFOT_DISTRESS) != 1)
-		GenerateDefault_initNpcs ();
+		GenerateDefault_initNpcs (solarSys);
 
 	return true;
 }

@@ -1476,7 +1476,7 @@ InitSolarSys (void)
 
 	if (Reentry)
 	{
-		(*pSolarSysState->genFuncs->reinitNpcs) ();
+		(*pSolarSysState->genFuncs->reinitNpcs) (pSolarSysState);
 	}
 	else
 	{
@@ -1485,7 +1485,7 @@ InitSolarSys (void)
 		GLOBAL (BattleGroupRef) = 0;
 		ReinitQueue (&GLOBAL (ip_group_q));
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
-		(*pSolarSysState->genFuncs->initNpcs) ();
+		(*pSolarSysState->genFuncs->initNpcs) (pSolarSysState);
 	}
 
 	if (pSolarSysState->MenuState.Initialized == 0)
@@ -1555,7 +1555,7 @@ endInterPlanetary (void)
 	{
 		// These are game state changing ops and so cannot be
 		// called once another game has been loaded!
-		(*pSolarSysState->genFuncs->uninitNpcs) ();
+		(*pSolarSysState->genFuncs->uninitNpcs) (pSolarSysState);
 		SET_GAME_STATE (USED_BROADCASTER, 0);
 	}
 }

@@ -30,8 +30,8 @@
 #include "libs/mathlib.h"
 
 
-static bool GenerateSol_initNpcs (void);
-static bool GenerateSol_reinitNpcs (void);
+static bool GenerateSol_initNpcs (SOLARSYS_STATE *solarSys);
+static bool GenerateSol_reinitNpcs (SOLARSYS_STATE *solarSys);
 static bool GenerateSol_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateSol_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
@@ -63,7 +63,7 @@ const GenerateFunctions generateSolFunctions = {
 
 
 static bool
-GenerateSol_initNpcs (void)
+GenerateSol_initNpcs (SOLARSYS_STATE *solarSys)
 {
 	GLOBAL (BattleGroupRef) = GET_GAME_STATE_32 (URQUAN_PROBE_GRPOFFS0);
 	if (GLOBAL (BattleGroupRef) == 0)
@@ -75,17 +75,17 @@ GenerateSol_initNpcs (void)
 	}
 
 	if (!init_probe ())
-		GenerateDefault_initNpcs ();
+		GenerateDefault_initNpcs (solarSys);
 
 	return true;
 }
 
 static bool
-GenerateSol_reinitNpcs (void)
+GenerateSol_reinitNpcs (SOLARSYS_STATE *solarSys)
 {
 	if (GET_GAME_STATE (CHMMR_BOMB_STATE) != 3)
 	{
-		GenerateDefault_reinitNpcs ();
+		GenerateDefault_reinitNpcs (solarSys);
 		check_probe ();
 	}
 	else

@@ -21,9 +21,9 @@
 #include "../planets.h"
 #include "libs/compiler.h"
 
-bool GenerateDefault_initNpcs (void);
-bool GenerateDefault_reinitNpcs (void);
-bool GenerateDefault_uninitNpcs (void);
+bool GenerateDefault_initNpcs (SOLARSYS_STATE *solarSys);
+bool GenerateDefault_reinitNpcs (SOLARSYS_STATE *solarSys);
+bool GenerateDefault_uninitNpcs (SOLARSYS_STATE *solarSys);
 bool GenerateDefault_generatePlanets (SOLARSYS_STATE *solarSys);
 bool GenerateDefault_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);

@@ -23,8 +23,8 @@
 #include "../../state.h"
 
 
-static bool GenerateZoqFotPikScout_initNpcs (void);
-static bool GenerateZoqFotPikScout_reinitNpcs (void);
+static bool GenerateZoqFotPikScout_initNpcs (SOLARSYS_STATE *solarSys);
+static bool GenerateZoqFotPikScout_reinitNpcs (SOLARSYS_STATE *solarSys);
 
 
 const GenerateFunctions generateZoqFotPikScoutFunctions = {
@@ -42,7 +42,7 @@ const GenerateFunctions generateZoqFotPikScoutFunctions = {
 
 
 static bool
-GenerateZoqFotPikScout_initNpcs (void)
+GenerateZoqFotPikScout_initNpcs (SOLARSYS_STATE *solarSys)
 {
 	if (!GET_GAME_STATE (MET_ZOQFOT))
 	{
@@ -57,18 +57,18 @@ GenerateZoqFotPikScout_initNpcs (void)
 		}
 	}
 
-	GenerateDefault_initNpcs ();
+	GenerateDefault_initNpcs (solarSys);
 
 	return true;
 }
 
 static bool
-GenerateZoqFotPikScout_reinitNpcs (void)
+GenerateZoqFotPikScout_reinitNpcs (SOLARSYS_STATE *solarSys)
 {
 	HIPGROUP hGroup;
 	IP_GROUP *GroupPtr;
 
-	GenerateDefault_reinitNpcs ();
+	GenerateDefault_reinitNpcs (solarSys);
 
 	if (!GLOBAL (BattleGroupRef))
 		return true; // nothing to check

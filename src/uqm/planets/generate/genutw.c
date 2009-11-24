@@ -29,7 +29,7 @@
 #include "libs/mathlib.h"
 
 
-static bool GenerateUtwig_initNpcs (void);
+static bool GenerateUtwig_initNpcs (SOLARSYS_STATE *solarSys);
 static bool GenerateUtwig_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
@@ -52,7 +52,7 @@ const GenerateFunctions generateUtwigFunctions = {
 
 
 static bool
-GenerateUtwig_initNpcs (void)
+GenerateUtwig_initNpcs (SOLARSYS_STATE *solarSys)
 {
 	if (CurStarDescPtr->Index == BOMB_DEFINED
 			&& !GET_GAME_STATE (UTWIG_BOMB))
@@ -62,7 +62,7 @@ GenerateUtwig_initNpcs (void)
 	}
 	else
 	{
-		GenerateDefault_initNpcs ();
+		GenerateDefault_initNpcs (solarSys);
 	}
 
 	return true;
