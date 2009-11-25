@@ -306,7 +306,7 @@ main (int argc, char *argv[])
 
 	if (errBuffer[0] != '\0')
 	{	// Have some saved error to log
-		log_add (log_Error, errBuffer);
+            log_add (log_Error, "%s", errBuffer);
 		errBuffer[0] = '\0';
 	}
 
