@@ -35,7 +35,7 @@ static bool GenerateSaMatra_generateMoons (SOLARSYS_STATE *solarSys,
 static bool GenerateSaMatra_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
 
-static void BuildUrquanGuard (void);
+static void BuildUrquanGuard (SOLARSYS_STATE *solarSys);
 
 
 const GenerateFunctions generateSaMatraFunctions = {
@@ -57,7 +57,7 @@ GenerateSaMatra_initNpcs (SOLARSYS_STATE *solarSys)
 {
 	if (!GET_GAME_STATE (URQUAN_MESSED_UP))
 	{
-		BuildUrquanGuard ();
+		BuildUrquanGuard (solarSys);
 	}
 	else
 	{	// Exorcise Ur-Quan ghosts upon system reentry
@@ -227,7 +227,7 @@ GenerateSaMatra_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static void
-BuildUrquanGuard (void)
+BuildUrquanGuard (SOLARSYS_STATE *solarSys)
 {
 	BYTE ship1, ship2;
 	BYTE b0, b1;
@@ -275,7 +275,7 @@ BuildUrquanGuard (void)
 
 	GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP);
 
-	XFormIPLoc (&pSolarSysState->PlanetDesc[4].image.origin, &org, FALSE);
+	XFormIPLoc (&solarSys->PlanetDesc[4].image.origin, &org, FALSE);
 	hGroup = GetHeadLink (&GLOBAL (ip_group_q));
 	for (b0 = 0, b1 = 0;
 			b0 < NUM_URQUAN_GUARDS0;
