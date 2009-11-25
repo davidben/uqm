@@ -1041,14 +1041,18 @@ ChangeGameSelection:
 
 				t.baseline.x = r.corner.x + 3;
 				if (((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].year_index == 0)
-                                    sprintf (buf, "%s", GAME_STRING (SAVEGAME_STRING_BASE + 3)); // "Empty Slot"
+				{
+					utf8StringCopy (buf, sizeof buf,
+							GAME_STRING (SAVEGAME_STRING_BASE + 3)); // "Empty Slot"
+				}
 				else
 				{
 					DateToString (buf2, sizeof buf2,
 							((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].month_index,
 							((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].day_index,
 							((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].year_index);
-					sprintf (buf, "%s %s", GAME_STRING (SAVEGAME_STRING_BASE + 4), buf2); // "Saved Game - Date:"
+					snprintf (buf, sizeof buf, "%s %s",
+							GAME_STRING (SAVEGAME_STRING_BASE + 4), buf2); // "Saved Game - Date:"
 				}
 				font_DrawText (&t);
 			}
