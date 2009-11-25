@@ -125,6 +125,7 @@ struct options_struct
 	DECL_CONFIG_OPTION(float, musicVolumeScale);
 	DECL_CONFIG_OPTION(float, sfxVolumeScale);
 	DECL_CONFIG_OPTION(float, speechVolumeScale);
+	DECL_CONFIG_OPTION(bool, safeMode);
 
 #define INIT_CONFIG_OPTION(name, val) \
 	{ val, false }
@@ -257,6 +258,7 @@ main (int argc, char *argv[])
 		INIT_CONFIG_OPTION(  musicVolumeScale,  1.0f ),
 		INIT_CONFIG_OPTION(  sfxVolumeScale,    1.0f ),
 		INIT_CONFIG_OPTION(  speechVolumeScale, 1.0f ),
+		INIT_CONFIG_OPTION(  safeMode,          false ),
 	};
 	struct options_struct defaults = options;
 	int optionsResult;
@@ -334,8 +336,11 @@ main (int argc, char *argv[])
 	PlayerControls[1] = CONTROL_TEMPLATE_JOY_1;
 
 	// Fill in the options struct based on uqm.cfg
-	LoadResourceIndex (configDir, "uqm.cfg", "config.");
-	getUserConfigOptions (&options);
+	if (!options.safeMode.value)
+	{
+		LoadResourceIndex (configDir, "uqm.cfg", "config.");
+		getUserConfigOptions (&options);
+	}
 
 	{	/* remove old control template names */
 		int i;
@@ -673,6 +678,7 @@ enum
 	ADDON_OPT,
 	ADDONDIR_OPT,
 	ACCEL_OPT,
+	SAFEMODE_OPT,
 #ifdef NETPLAY
 	NETHOST1_OPT,
 	NETPORT1_OPT,
@@ -719,6 +725,7 @@ static struct option longOptions[] =
 	{"addon", 1, NULL, ADDON_OPT},
 	{"addondir", 1, NULL, ADDONDIR_OPT},
 	{"accel", 1, NULL, ACCEL_OPT},
+	{"safe", 0, NULL, SAFEMODE_OPT},
 #ifdef NETPLAY
 	{"nethost1", 1, NULL, NETHOST1_OPT},
 	{"netport1", 1, NULL, NETPORT1_OPT},
@@ -1007,6 +1014,9 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				}
 				break;
 			}
+	                case SAFEMODE_OPT:
+				setBoolOption (&options->safeMode, true);
+				break;
 #ifdef NETPLAY
 			case NETHOST1_OPT:
 				netplayOptions.peer[0].isServer = false;
@@ -1169,6 +1179,7 @@ usage (FILE *out, const struct options_struct *defaults)
 			"mixsdl)");
 	log_add (log_User, "  --stereosfx (enables positional sound effects, "
 			"currently only for openal)");
+	log_add (log_User, "  --safe (start in safe mode)");
 #ifdef NETPLAY
 	log_add (log_User, "  --nethostN=HOSTNAME (server to connect to for "
 			"player N (1=bottom, 2=top)");
