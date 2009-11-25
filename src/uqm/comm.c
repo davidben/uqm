@@ -71,7 +71,10 @@ typedef struct encounter_state
 	COUNT MenuRepeatDelay;
 
 	COUNT Initialized;
-	BYTE num_responses, cur_response, top_response;
+	TimeCount NextTime; // framerate control
+	BYTE num_responses;
+	BYTE cur_response;
+	BYTE top_response;
 	RESPONSE_ENTRY response_list[MAX_RESPONSES];
 
 	Task AnimTask;
@@ -506,149 +509,118 @@ UpdateSpeechGraphics (BOOLEAN Initialize)
 	SetContext (OldContext);
 }
 
-static BOOLEAN
-SpewPhrases (COUNT wait_track)
+// Derived from INPUT_STATE_DESC
+typedef struct talking_state
 {
-	BOOLEAN ContinuityBreak;
-	DWORD TimeIn;
-	COUNT which_track;
-	BOOLEAN rewind = FALSE;
+	// Fields required by DoInput()
+	BOOLEAN (*InputFunc) (struct talking_state *);
+	COUNT MenuRepeatDelay;
 
-	TimeIn = GetTimeCounter ();
+	TimeCount NextTime;  // framerate control
+	COUNT waitTrack;
+	bool rewind;
+	bool seeking;
+	bool ended;
 
-	ContinuityBreak = FALSE;
-	if (wait_track == 0)
-	{	// Restarting with a rewind
-		wait_track = (COUNT)~0;
-		which_track = (COUNT)~0;
-		rewind = TRUE;
-	}
+} TALKING_STATE;
 
-	which_track = PlayingTrack ();
-	if (which_track == 0 && !rewind)
-	{	// initial start of player
-		UnlockMutex (GraphicsLock);
-		PlayTrack ();
-		// wait for the trackplayer to start playing
-		do
-		{
-			TaskSwitch ();
-			which_track = PlayingTrack ();
-		} while (!which_track);
-		LockMutex (GraphicsLock);
-	}
-	else if (which_track <= wait_track)
-	{	// XXX: I don't know why this is here, but it is not harmful.
-		//   We never actually pause in comm.
-		ResumeTrack ();
-	}
+static BOOLEAN
+DoTalkSegue (TALKING_STATE *pTS)
+{
+	bool left = false;
+	bool right = false;
+	COUNT curTrack;
 
-	do
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
-		BOOLEAN left = FALSE;
-		BOOLEAN right = FALSE;
-
-		if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		{
-			which_track = 0; // abort
-			break;
-		}
-		
-		UnlockMutex (GraphicsLock);
-		// XXX: Executing this loop 64 times a second is a bit extreme
-		SleepThreadUntil (TimeIn + (ONE_SECOND / 64));
-		TimeIn = GetTimeCounter ();
-#if DEMO_MODE || CREATE_JOURNAL
-		InputState = 0;
-#else /* !(DEMO_MODE || CREATE_JOURNAL) */
-		UpdateInputState ();
-#endif
-
-		LockMutex (GraphicsLock);
-		if (PulsedInputState.menu[KEY_MENU_CANCEL])
-		{
-			JumpTrack ();
-			which_track = 0; // player stopped
-			break;
-		}
-
-		CheckSubtitles ();
-
-		if (optSmoothScroll == OPT_PC)
-		{
-			left = PulsedInputState.menu[KEY_MENU_LEFT];
-			right = PulsedInputState.menu[KEY_MENU_RIGHT];
-		}
-		else if (optSmoothScroll == OPT_3DO)
-		{
-			left = ImmediateInputState.menu[KEY_MENU_LEFT];
-			right = ImmediateInputState.menu[KEY_MENU_RIGHT];
-		}
-		
-		if (right)
-		{
-			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 3));
-			if (optSmoothScroll == OPT_PC)
-				FastForward_Page ();
-			else if (optSmoothScroll == OPT_3DO)
-				FastForward_Smooth ();
-			ContinuityBreak = TRUE;
-			// XXX: This causes all animations (talking and ambient)
-			// in ambient_anim_task to stop progressing. I see no reason why
-			// the animations cannot continue while seeking.
-			PauseAnimTask = TRUE;
-		}
-		else if (left || rewind)
-		{
-			rewind = FALSE;
-			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 4));
-			if (optSmoothScroll == OPT_PC)
-				FastReverse_Page ();
-			else if (optSmoothScroll == OPT_3DO)
-				FastReverse_Smooth ();
-			ContinuityBreak = TRUE;
-			// XXX: See pause discussion above
-			PauseAnimTask = TRUE;
-		}
-		else if (ContinuityBreak)
-		{
-			// This is only done once the seeking is over (in the smooth
-			// scroll case, once the user releases the seek button)
-			ContinuityBreak = FALSE;
-			SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
-		}
-		else
-		{	// XXX: See pause discussion above
-			// Additionally, this used to have a buggy guard condition, which
-			// would cause the animations to remain paused in a couple cases
-			// after seeking back to the beginning.
-			// Broken cases were: Syreen "several hours later" and Starbase
-			// VUX Beast analysis by the scientist.
-			PauseAnimTask = FALSE;
-		}
-		
-		which_track = PlayingTrack ();
-
-	} while (ContinuityBreak || (which_track && which_track <= wait_track));
-
-	PauseAnimTask = FALSE;
-	ClearSubtitles ();
-
-	if (!which_track || wait_track == (COUNT)~0)
-	{	// reached the end
-		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
-		return (FALSE);
+		pTS->ended = true;
+		return FALSE;
 	}
 	
-	// We can only get here when we got to the requested track
-	// without ending or aborting
-	return TRUE;
+	if (PulsedInputState.menu[KEY_MENU_CANCEL])
+	{
+		JumpTrack ();
+		pTS->ended = true;
+		return FALSE;
+	}
+
+	if (optSmoothScroll == OPT_PC)
+	{
+		left = PulsedInputState.menu[KEY_MENU_LEFT] != 0;
+		right = PulsedInputState.menu[KEY_MENU_RIGHT] != 0;
+	}
+	else if (optSmoothScroll == OPT_3DO)
+	{
+		left = CurrentInputState.menu[KEY_MENU_LEFT] != 0;
+		right = CurrentInputState.menu[KEY_MENU_RIGHT] != 0;
+	}
+
+#if DEMO_MODE || CREATE_JOURNAL
+	left = false;
+	right = false;
+#endif
+
+	LockMutex (GraphicsLock);
+
+	if (right)
+	{
+		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 3));
+		if (optSmoothScroll == OPT_PC)
+			FastForward_Page ();
+		else if (optSmoothScroll == OPT_3DO)
+			FastForward_Smooth ();
+		pTS->seeking = true;
+		// XXX: This causes all animations (talking and ambient)
+		// in ambient_anim_task to stop progressing. I see no reason why
+		// the animations cannot continue while seeking.
+		PauseAnimTask = TRUE;
+	}
+	else if (left || pTS->rewind)
+	{
+		pTS->rewind = false;
+		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 4));
+		if (optSmoothScroll == OPT_PC)
+			FastReverse_Page ();
+		else if (optSmoothScroll == OPT_3DO)
+			FastReverse_Smooth ();
+		pTS->seeking = true;
+		// XXX: See pause discussion above
+		PauseAnimTask = TRUE;
+	}
+	else if (pTS->seeking)
+	{
+		// This is only done once the seeking is over (in the smooth
+		// scroll case, once the user releases the seek button)
+		pTS->seeking = false;
+		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
+	}
+	else
+	{	// XXX: See pause discussion above
+		// Additionally, this used to have a buggy guard condition, which
+		// would cause the animations to remain paused in a couple cases
+		// after seeking back to the beginning.
+		// Broken cases were: Syreen "several hours later" and Starbase
+		// VUX Beast analysis by the scientist.
+		PauseAnimTask = FALSE;
+		CheckSubtitles ();
+	}
+	
+	UnlockMutex (GraphicsLock);
+
+	curTrack = PlayingTrack ();
+	pTS->ended = !pTS->seeking && !curTrack;
+
+	SleepThreadUntil (pTS->NextTime);
+	// Need a high enough framerate for 3DO smooth seeking
+	pTS->NextTime = GetTimeCounter () + ONE_SECOND / 60;
+
+	return pTS->seeking || (curTrack && curTrack <= pTS->waitTrack);
 }
 
 static BOOLEAN
-DoTalkSegue (COUNT wait_track)
+TalkSegue (COUNT wait_track)
 {
-	BOOLEAN done;
+	TALKING_STATE talkingState;
 
 	// Transition animation to talking state, if necessary
 	if (wantTalkingAnim () && haveTalkingAnim ())
@@ -666,13 +638,41 @@ DoTalkSegue (COUNT wait_track)
 		}
 	}
 
-	done = !SpewPhrases (wait_track);
+	memset (&talkingState, 0, sizeof talkingState);
+
+	if (wait_track == 0)
+	{	// Restarting with a rewind
+		wait_track = WAIT_TRACK_ALL;
+		talkingState.rewind = true;
+	}
+	else if (!PlayingTrack ())
+	{	// initial start of player
+		PlayTrack ();
+		assert (PlayingTrack ());
+	}
+
+	UnlockMutex (GraphicsLock);
+
+	// Run the talking controls
+	talkingState.InputFunc = DoTalkSegue;
+	talkingState.waitTrack = wait_track;
+	DoInput (&talkingState, FALSE);
+
+	LockMutex (GraphicsLock);
+
+	PauseAnimTask = FALSE;
+	ClearSubtitles ();
+
+	if (talkingState.ended)
+	{	// reached the end; set STOP icon
+		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 8));
+	}
 
 	// transition back to silent, if necessary
 	if (runningTalkingAnim ())
 		setStopTalkingAnim ();
 
-	return done;
+	return talkingState.ended;
 }
 
 static void
@@ -768,14 +768,14 @@ AlienTalkSegue (COUNT wait_track)
 		LastActivity &= ~CHECK_LOAD;
 	}
 	
-	done = DoTalkSegue (wait_track);
-	if (done || wait_track == (COUNT)~0)
+	done = TalkSegue (wait_track);
+	if (done)
 		FadeMusic (FOREGROUND_VOL, ONE_SECOND);
 
 	UnlockMutex (GraphicsLock);
 	FlushTalkSegue ();
 
-	if (!done && wait_track != (COUNT)~0)
+	if (!done)
 	{	// there is more to come
 		TalkingFinished = FALSE;
 	}
@@ -957,7 +957,8 @@ SelectConversationSummary (ENCOUNTER_STATE *pES)
 	SUMMARY_STATE SummaryState;
 	
 	LockMutex (GraphicsLock);
-	FeedbackPlayerPhrase (pES->phrase_buf);
+	if (pES)
+		FeedbackPlayerPhrase (pES->phrase_buf);
 	PauseAnimTask = TRUE;
 	UnlockMutex (GraphicsLock);
 	// wait for ambient anim task to pause
@@ -967,17 +968,30 @@ SelectConversationSummary (ENCOUNTER_STATE *pES)
 	DoConvSummary (&SummaryState);
 
 	LockMutex (GraphicsLock);
-	RefreshResponses (pES);
+	if (pES)
+		RefreshResponses (pES);
 	clear_subtitles = TRUE;
 	PauseAnimTask = FALSE;
 	UnlockMutex (GraphicsLock);
 }
 
 static void
+SelectReplay (ENCOUNTER_STATE *pES)
+{
+	FadeMusic (BACKGROUND_VOL, ONE_SECOND);
+	LockMutex (GraphicsLock);
+	if (pES)
+		FeedbackPlayerPhrase (pES->phrase_buf);
+	TalkingFinished = FALSE;
+	TalkSegue (0);
+	UnlockMutex (GraphicsLock);
+	FlushTalkSegue ();
+}
+
+static void
 PlayerResponseInput (ENCOUNTER_STATE *pES)
 {
 	BYTE response;
-	DWORD TimeIn = GetTimeCounter ();
 
 	if (pES->top_response == (BYTE)~0)
 	{
@@ -1001,20 +1015,15 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 		response = pES->cur_response;
 		if (PulsedInputState.menu[KEY_MENU_LEFT])
 		{
-			FadeMusic (BACKGROUND_VOL, ONE_SECOND);
-			LockMutex (GraphicsLock);
-			FeedbackPlayerPhrase (pES->phrase_buf);
-			TalkingFinished = FALSE;
-			DoTalkSegue (0);
+			SelectReplay (pES);
 
 			if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
+				LockMutex (GraphicsLock);
 				RefreshResponses (pES);
+				UnlockMutex (GraphicsLock);
 				FadeMusic (FOREGROUND_VOL, ONE_SECOND);
 			}
-			
-			UnlockMutex (GraphicsLock);
-			FlushTalkSegue ();
 		}
 		else if (PulsedInputState.menu[KEY_MENU_UP])
 			response = (BYTE)((response + (BYTE)(pES->num_responses - 1))
@@ -1049,8 +1058,49 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 			UnlockMutex (GraphicsLock);
 		}
 
-		SleepThreadUntil (TimeIn + ONE_SECOND / 20);
+		SleepThreadUntil (pES->NextTime);
+		pES->NextTime = GetTimeCounter () + ONE_SECOND / 20;
 	}
+}
+
+// Derived from INPUT_STATE_DESC
+typedef struct last_replay_state
+{
+	// Fields required by DoInput()
+	BOOLEAN (*InputFunc) (struct last_replay_state *);
+	COUNT MenuRepeatDelay;
+
+	TimeCount NextTime; // framerate control
+	TimeCount TimeOut;
+
+} LAST_REPLAY_STATE;
+
+static BOOLEAN
+DoLastReplay (LAST_REPLAY_STATE *pLRS)
+{
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		return FALSE;
+
+	if (GetTimeCounter () > pLRS->TimeOut)
+		return FALSE; // timed out and done
+
+	if (PulsedInputState.menu[KEY_MENU_CANCEL] &&
+			LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
+	{
+		FadeMusic (BACKGROUND_VOL, ONE_SECOND);
+		SelectConversationSummary (NULL);
+		pLRS->TimeOut = FadeMusic (0, ONE_SECOND * 2) + ONE_SECOND / 60;
+	}
+	else if (PulsedInputState.menu[KEY_MENU_LEFT])
+	{
+		SelectReplay (NULL);
+		pLRS->TimeOut = FadeMusic (0, ONE_SECOND * 2) + ONE_SECOND / 60;
+	}
+
+	SleepThreadUntil (pLRS->NextTime);
+	pLRS->NextTime = GetTimeCounter () + ONE_SECOND / 60;
+
+	return TRUE;
 }
 
 static BOOLEAN
@@ -1060,38 +1110,20 @@ DoCommunication (ENCOUNTER_STATE *pES)
 
 	// First, finish playing all queued tracks if not done yet
 	if (!TalkingFinished)
-		AlienTalkSegue ((COUNT)~0);
+		AlienTalkSegue (WAIT_TRACK_ALL);
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		;
 	else if (pES->num_responses == 0)
 	{
-		// The player doesn't get a chance to say anything.
-		DWORD TimeIn, TimeOut;
+		// The player doesn't get a chance to say anything,
+		// but can still review alien's last phrases.
+		LAST_REPLAY_STATE replayState;
 
-		TimeOut = FadeMusic (0, ONE_SECOND * 3) + ONE_SECOND / 60;
-		TimeIn = GetTimeCounter ();
-		do
-		{
-			SleepThreadUntil (TimeIn + ONE_SECOND / 120);
-			TimeIn = GetTimeCounter ();
-			// Warning!  This used to re-gather input data to check for rewind.
-			UpdateInputState ();
-			if (PulsedInputState.menu[KEY_MENU_LEFT])
-			{
-				FadeMusic (BACKGROUND_VOL, ONE_SECOND);
-				LockMutex (GraphicsLock);
-				TalkingFinished = FALSE;
-				DoTalkSegue (0);
-				UnlockMutex (GraphicsLock);
-				FlushTalkSegue ();
-
-				if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-					break;
-				TimeOut = FadeMusic (0, ONE_SECOND * 2) + ONE_SECOND / 60;
-				TimeIn = GetTimeCounter ();
-			}
-		} while (TimeIn <= TimeOut);
+		memset (&replayState, 0, sizeof replayState);
+		replayState.TimeOut = FadeMusic (0, ONE_SECOND * 3) + ONE_SECOND / 60;
+		replayState.InputFunc = DoLastReplay;
+		DoInput (&replayState, FALSE);
 	}
 	else
 	{

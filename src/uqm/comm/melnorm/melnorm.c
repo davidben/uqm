@@ -22,6 +22,7 @@
 
 #include "uqm/gameev.h"
 #include "uqm/setup.h"
+		// for GraphicsLock
 #include "uqm/shipcont.h"
 #include "libs/inplib.h"
 #include "libs/mathlib.h"

@@ -111,6 +111,7 @@ extern void uninit_communication (void);
 extern COUNT InitCommunication (CONVERSATION which_comm);
 extern void RaceCommunication (void);
 
+#define WAIT_TRACK_ALL  ((COUNT)~0)
 extern void AlienTalkSegue (COUNT wait_track);
 BOOLEAN getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
 		SIZE maxWidth, COUNT maxChars);

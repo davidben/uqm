@@ -123,6 +123,10 @@ SelectAlienZOQ (void)
 {
 	if (LastAlien != ZOQ_ALIEN)
 	{
+		// XXX: This should hold the GraphicsLock to block comm anims and
+		//   prevent CommData half-updates, but if we do so, the stream
+		//   decoder will deadlock with the drawing thread.
+
 		// Transition to neutral state first if Pik was talking
 		if (LastAlien != FOT_ALIEN)
 			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
@@ -145,6 +149,10 @@ SelectAlienPIK (void)
 {
 	if (LastAlien != PIK_ALIEN)
 	{
+		// XXX: This should hold the GraphicsLock to block comm anims and
+		//   prevent CommData half-updates, but if we do so, the stream
+		//   decoder will deadlock with the drawing thread.
+
 		// Transition to neutral state first if Zoq was talking
 		if (LastAlien != FOT_ALIEN)
 			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;

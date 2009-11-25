@@ -97,8 +97,6 @@ JumpTrack (void)
 	LockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
 	seek_track (tracks_length + 1);
 	UnlockMutex (soundSource[SPEECH_SOURCE].stream_mutex);
-
-	PlayingTrack();
 }
 
 // This should just start playing a stream
