@@ -25,13 +25,13 @@ extern BOOLEAN oscillDisabled;
 
 extern void InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height,
 		FRAME f);
-extern void Oscilloscope (DWORD grab_data);
+extern void DrawOscilloscope (void);
 extern void UninitOscilloscope (void);
 
 extern void InitSlider (int x, int y, int width, int height,
 		int bwidth, int bheight, FRAME f);
 extern void SetSliderImage (FRAME f);
-void Slider (void);
+void DrawSlider (void);
 
 #endif  /* _OSCILL_H */
 

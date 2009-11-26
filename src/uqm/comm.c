@@ -50,6 +50,20 @@
 		(speechVolumeScale == 0.0f ? NORMAL_VOLUME : (NORMAL_VOLUME >> 1))
 #define FOREGROUND_VOL NORMAL_VOLUME
 
+// Oscilloscope frame rate
+// Should be <= COMM_ANIM_RATE
+// XXX: was 32 picked experimentally?
+#define OSCILLOSCOPE_RATE   (ONE_SECOND / 32)
+
+// Maximum comm animation frame rate (actual execution rate)
+// A gfx frame is not always produced during an execution frame,
+// and several animations are combined into one gfx frame.
+// The rate was originally 120fps which allowed for more animation
+// precision which is ultimately wasted on the human eye anyway.
+// The highest known stable animation rate is 40fps, so that's what we use.
+#define COMM_ANIM_RATE   (ONE_SECOND / 40)
+
+static CONTEXT AnimContext;
 
 LOCDATA CommData;
 UNICODE shared_phrase_buf[2048];
@@ -77,20 +91,14 @@ typedef struct encounter_state
 	BYTE top_response;
 	RESPONSE_ENTRY response_list[MAX_RESPONSES];
 
-	Task AnimTask;
-
-	COUNT phrase_buf_index;
-	UNICODE phrase_buf[512];
+	UNICODE phrase_buf[1024];
 } ENCOUNTER_STATE;
 
 static ENCOUNTER_STATE *pCurInputState;
 
-// Mutex guards accesses to SubtitleText, last_subtitle and clear_subtitles.
-static Mutex subtitle_mutex;
-// These vars are indirectly accessed by the ambient_anim_task
-static volatile BOOLEAN clear_subtitles;
+static BOOLEAN clear_subtitles;
 static TEXT SubtitleText;
-static const UNICODE * volatile last_subtitle;
+static const UNICODE *last_subtitle;
 
 static CONTEXT TextCacheContext;
 static FRAME TextCacheFrame;
@@ -104,6 +112,7 @@ RECT CommWndRect = {
 
 static void ClearSubtitles (void);
 static void CheckSubtitles (void);
+static void RedrawSubtitles (void);
 
 
 /* _count_lines - sees how many lines a given input string would take to
@@ -392,14 +401,13 @@ DrawSISComWindow (void)
 void
 init_communication (void)
 {
-	subtitle_mutex = CreateMutex ("Subtitle Lock",
-			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+	// now a no-op
 }
 
 void
 uninit_communication (void)
 {
-	DestroyMutex (subtitle_mutex);
+	// now a no-op
 }
 
 static void
@@ -481,32 +489,71 @@ FeedbackPlayerPhrase (UNICODE *pStr)
 	UnbatchGraphics ();
 }
 
-void
-UpdateSpeechGraphics (BOOLEAN Initialize)
+static void
+InitSpeechGraphics (void)
 {
+	RECT r;
+	RECT sr;
+	FRAME f;
+
+	InitOscilloscope (0, 0, RADAR_WIDTH, RADAR_HEIGHT,
+			SetAbsFrameIndex (ActivityFrame, 9));
+
+	f = SetAbsFrameIndex (ActivityFrame, 2);
+	GetFrameRect (f, &r);
+	SetSliderImage (f);
+	f = SetAbsFrameIndex (ActivityFrame, 5);
+	GetFrameRect (f, &sr);
+	InitSlider (0, SLIDER_Y, SIS_SCREEN_WIDTH, sr.extent.height,
+			r.extent.width, r.extent.height, f);
+}
+
+static void
+UpdateSpeechGraphics (void)
+{
+	static TimeCount NextTime;
 	CONTEXT OldContext;
 
-	if (Initialize)
-	{
-		RECT r, sr;
-		FRAME f;
+	if (GetTimeCounter () < NextTime)
+		return; // too early
 
-		InitOscilloscope (0, 0, RADAR_WIDTH, RADAR_HEIGHT,
-				SetAbsFrameIndex (ActivityFrame, 9));
-		f = SetAbsFrameIndex (ActivityFrame, 2);
-		GetFrameRect (f, &r);
-		SetSliderImage (f);
-		f = SetAbsFrameIndex (ActivityFrame, 5);
-		GetFrameRect (f, &sr);
-		InitSlider (0, SLIDER_Y, SIS_SCREEN_WIDTH, sr.extent.height,
-				r.extent.width, r.extent.height, f);
-	}
+	NextTime = GetTimeCounter () + OSCILLOSCOPE_RATE;
 
 	OldContext = SetContext (RadarContext);
-	Oscilloscope (!Initialize);
+	DrawOscilloscope ();
 	SetContext (SpaceContext);
-	Slider ();
+	DrawSlider ();
 	SetContext (OldContext);
+}
+
+static void
+UpdateAnimations (bool paused)
+{
+	static TimeCount NextTime;
+	CONTEXT OldContext;
+	BOOLEAN change;
+
+	if (GetTimeCounter () < NextTime)
+		return; // too early
+
+	NextTime = GetTimeCounter () + COMM_ANIM_RATE;
+
+	OldContext = SetContext (AnimContext);
+	BatchGraphics ();
+	// Advance and draw ambient, transit and talk animations
+	change = ProcessCommAnimations (clear_subtitles, paused);
+	if (change)
+		RedrawSubtitles ();
+	UnbatchGraphics ();
+	clear_subtitles = FALSE;
+	SetContext (OldContext);
+}
+
+static void
+UpdateCommGraphics (void)
+{
+	UpdateAnimations (false);
+	UpdateSpeechGraphics ();
 }
 
 // Derived from INPUT_STATE_DESC
@@ -560,8 +607,6 @@ DoTalkSegue (TALKING_STATE *pTS)
 	right = false;
 #endif
 
-	LockMutex (GraphicsLock);
-
 	if (right)
 	{
 		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 3));
@@ -570,10 +615,6 @@ DoTalkSegue (TALKING_STATE *pTS)
 		else if (optSmoothScroll == OPT_3DO)
 			FastForward_Smooth ();
 		pTS->seeking = true;
-		// XXX: This causes all animations (talking and ambient)
-		// in ambient_anim_task to stop progressing. I see no reason why
-		// the animations cannot continue while seeking.
-		PauseAnimTask = TRUE;
 	}
 	else if (left || pTS->rewind)
 	{
@@ -584,8 +625,6 @@ DoTalkSegue (TALKING_STATE *pTS)
 		else if (optSmoothScroll == OPT_3DO)
 			FastReverse_Smooth ();
 		pTS->seeking = true;
-		// XXX: See pause discussion above
-		PauseAnimTask = TRUE;
 	}
 	else if (pTS->seeking)
 	{
@@ -595,16 +634,21 @@ DoTalkSegue (TALKING_STATE *pTS)
 		SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
 	}
 	else
-	{	// XXX: See pause discussion above
-		// Additionally, this used to have a buggy guard condition, which
+	{
+		// This used to have a buggy guard condition, which
 		// would cause the animations to remain paused in a couple cases
 		// after seeking back to the beginning.
 		// Broken cases were: Syreen "several hours later" and Starbase
 		// VUX Beast analysis by the scientist.
-		PauseAnimTask = FALSE;
 		CheckSubtitles ();
 	}
-	
+
+	LockMutex (GraphicsLock);
+	// XXX: When seeking, all animations (talking and ambient) stop
+	// progressing. This is an original 3DO behavior, and I see no
+	// reason why the animations cannot continue while seeking.
+	UpdateAnimations (pTS->seeking);
+	UpdateSpeechGraphics ();
 	UnlockMutex (GraphicsLock);
 
 	curTrack = PlayingTrack ();
@@ -615,6 +659,15 @@ DoTalkSegue (TALKING_STATE *pTS)
 	pTS->NextTime = GetTimeCounter () + ONE_SECOND / 60;
 
 	return pTS->seeking || (curTrack && curTrack <= pTS->waitTrack);
+}
+
+static void
+runCommAnimFrame (void)
+{
+	LockMutex (GraphicsLock);
+	UpdateCommGraphics ();
+	UnlockMutex (GraphicsLock);
+	SleepThread (COMM_ANIM_RATE);
 }
 
 static BOOLEAN
@@ -630,12 +683,9 @@ TalkSegue (COUNT wait_track)
 					
 		setRunTalkingAnim ();
 
+		// wait until the transition finishes
 		while (runningIntroAnim ())
-		{	// wait until the transition finishes
-			UnlockMutex (GraphicsLock);
-			SleepThread (ONE_SECOND / 30);
-			LockMutex (GraphicsLock);
-		}
+			runCommAnimFrame ();
 	}
 
 	memset (&talkingState, 0, sizeof talkingState);
@@ -651,16 +701,12 @@ TalkSegue (COUNT wait_track)
 		assert (PlayingTrack ());
 	}
 
-	UnlockMutex (GraphicsLock);
-
 	// Run the talking controls
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	talkingState.InputFunc = DoTalkSegue;
 	talkingState.waitTrack = wait_track;
 	DoInput (&talkingState, FALSE);
 
-	LockMutex (GraphicsLock);
-
-	PauseAnimTask = FALSE;
 	ClearSubtitles ();
 
 	if (talkingState.ended)
@@ -672,20 +718,11 @@ TalkSegue (COUNT wait_track)
 	if (runningTalkingAnim ())
 		setStopTalkingAnim ();
 
-	return talkingState.ended;
-}
-
-static void
-FlushTalkSegue (void)
-{
-	WaitForNoInput (ONE_SECOND / 2, TRUE);
-
 	// Wait until the animation task stops "talking"
-	do
-		SleepThread (ONE_SECOND / 30);
-	while (runningTalkingAnim ());
+	while (runningTalkingAnim ())
+		runCommAnimFrame ();
 
-	TalkingFinished = TRUE;
+	return talkingState.ended;
 }
 
 static void
@@ -732,53 +769,34 @@ CommIntroTransition (void)
 void
 AlienTalkSegue (COUNT wait_track)
 {
-	BOOLEAN done;
-
 	// this skips any talk segues that follow an aborted one
 	if ((GLOBAL (CurrentActivity) & CHECK_ABORT) || TalkingFinished)
 		return;
 
-	LockMutex (GraphicsLock);
-
 	if (!pCurInputState->Initialized)
 	{
+		InitSpeechGraphics ();
+		LockMutex (GraphicsLock);
 		SetColorMap (GetColorMapAddress (CommData.AlienColorMap));
+		SetContext (AnimContext);
 		DrawAlienFrame (NULL, 0, TRUE);
-		UpdateSpeechGraphics (TRUE);
-
+		UpdateSpeechGraphics ();
 		CommIntroTransition ();
+		UnlockMutex (GraphicsLock);
+		
 		pCurInputState->Initialized = TRUE;
 
 		PlayMusic (CommData.AlienSong, TRUE, 1);
 		SetMusicVolume (BACKGROUND_VOL);
 
-		{
-			DWORD TimeOut;
-
-			TimeOut = GetTimeCounter () + (ONE_SECOND >> 1);
-			// Anim task processes not only ambient animations, but also
-			// talking animations and subtitles
-			pCurInputState->AnimTask = StartCommAnimTask ();
-
-			UnlockMutex (GraphicsLock);
-			SleepThreadUntil (TimeOut);
-			LockMutex (GraphicsLock);
-		}
+		InitCommAnimations ();
 
 		LastActivity &= ~CHECK_LOAD;
 	}
 	
-	done = TalkSegue (wait_track);
-	if (done)
+	TalkingFinished = TalkSegue (wait_track);
+	if (TalkingFinished)
 		FadeMusic (FOREGROUND_VOL, ONE_SECOND);
-
-	UnlockMutex (GraphicsLock);
-	FlushTalkSegue ();
-
-	if (!done)
-	{	// there is more to come
-		TalkingFinished = FALSE;
-	}
 }
 
 
@@ -835,7 +853,6 @@ DoConvSummary (SUMMARY_STATE *pSS)
 		RECT r;
 		TEXT t;
 		int row;
-		FONT oldFont;
 
 		r.corner.x = 0;
 		r.corner.y = 0;
@@ -843,6 +860,7 @@ DoConvSummary (SUMMARY_STATE *pSS)
 		r.extent.height = SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2;
 
 		LockMutex (GraphicsLock);
+		SetContext (AnimContext);
 		SetContextForeGroundColor (COMM_HISTORY_BACKGROUND_COLOR);
 		DrawFilledRectangle (&r);
 
@@ -852,7 +870,7 @@ DoConvSummary (SUMMARY_STATE *pSS)
 		t.baseline.x = 2;
 		t.align = ALIGN_LEFT;
 		t.baseline.y = DELTA_Y_SUMMARY;
-		oldFont = SetContextFont (TinyFont);
+		SetContextFont (TinyFont);
 
 		for (row = 0; row < MAX_SUMM_ROWS && pSS->NextSub;
 				++row, pSS->NextSub = GetNextTrackSubtitle (pSS->NextSub))
@@ -910,7 +928,6 @@ DoConvSummary (SUMMARY_STATE *pSS)
 			font_DrawText (&mt);
 		}
 
-		SetContextFont (oldFont);
 		UnlockMutex (GraphicsLock);
 
 		pSS->PrintNext = FALSE;
@@ -927,20 +944,16 @@ DoConvSummary (SUMMARY_STATE *pSS)
 static void
 SelectResponse (ENCOUNTER_STATE *pES)
 {
-	const unsigned char *end;
 	TEXT *response_text =
 			&pES->response_list[pES->cur_response].response_text;
-	end = skipUTF8Chars(response_text->pStr, response_text->CharCount);
-	pES->phrase_buf_index = end - response_text->pStr;
-	memcpy(pES->phrase_buf, response_text->pStr, pES->phrase_buf_index);
-	pES->phrase_buf[pES->phrase_buf_index++] = '\0';
-
+	utf8StringCopy (pES->phrase_buf, sizeof pES->phrase_buf,
+			response_text->pStr);
 	LockMutex (GraphicsLock);
 	FeedbackPlayerPhrase (pES->phrase_buf);
+	UnlockMutex (GraphicsLock);
 	StopTrack ();
 	ClearSubtitles ();
 	SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
-	UnlockMutex (GraphicsLock);
 
 	FadeMusic (BACKGROUND_VOL, ONE_SECOND);
 
@@ -959,10 +972,7 @@ SelectConversationSummary (ENCOUNTER_STATE *pES)
 	LockMutex (GraphicsLock);
 	if (pES)
 		FeedbackPlayerPhrase (pES->phrase_buf);
-	PauseAnimTask = TRUE;
 	UnlockMutex (GraphicsLock);
-	// wait for ambient anim task to pause
-	SleepThread (ONE_SECOND / 30);
 
 	SummaryState.Initialized = FALSE;
 	DoConvSummary (&SummaryState);
@@ -971,7 +981,6 @@ SelectConversationSummary (ENCOUNTER_STATE *pES)
 	if (pES)
 		RefreshResponses (pES);
 	clear_subtitles = TRUE;
-	PauseAnimTask = FALSE;
 	UnlockMutex (GraphicsLock);
 }
 
@@ -982,10 +991,9 @@ SelectReplay (ENCOUNTER_STATE *pES)
 	LockMutex (GraphicsLock);
 	if (pES)
 		FeedbackPlayerPhrase (pES->phrase_buf);
-	TalkingFinished = FALSE;
-	TalkSegue (0);
 	UnlockMutex (GraphicsLock);
-	FlushTalkSegue ();
+
+	TalkSegue (0);
 }
 
 static void
@@ -1058,8 +1066,12 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 			UnlockMutex (GraphicsLock);
 		}
 
+		LockMutex (GraphicsLock);
+		UpdateCommGraphics ();
+		UnlockMutex (GraphicsLock);
+
 		SleepThreadUntil (pES->NextTime);
-		pES->NextTime = GetTimeCounter () + ONE_SECOND / 20;
+		pES->NextTime = GetTimeCounter () + COMM_ANIM_RATE;
 	}
 }
 
@@ -1097,8 +1109,12 @@ DoLastReplay (LAST_REPLAY_STATE *pLRS)
 		pLRS->TimeOut = FadeMusic (0, ONE_SECOND * 2) + ONE_SECOND / 60;
 	}
 
+	LockMutex (GraphicsLock);
+	UpdateCommGraphics ();
+	UnlockMutex (GraphicsLock);
+	
 	SleepThreadUntil (pLRS->NextTime);
-	pLRS->NextTime = GetTimeCounter () + ONE_SECOND / 60;
+	pLRS->NextTime = GetTimeCounter () + COMM_ANIM_RATE;
 
 	return TRUE;
 }
@@ -1110,7 +1126,10 @@ DoCommunication (ENCOUNTER_STATE *pES)
 
 	// First, finish playing all queued tracks if not done yet
 	if (!TalkingFinished)
+	{
 		AlienTalkSegue (WAIT_TRACK_ALL);
+		return TRUE;
+	}
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		;
@@ -1128,23 +1147,13 @@ DoCommunication (ENCOUNTER_STATE *pES)
 	else
 	{
 		PlayerResponseInput (pES);
-		return (TRUE);
+		return TRUE;
 	}
 
 	LockMutex (GraphicsLock);
-
-	if (pES->AnimTask)
-	{
-		UnlockMutex (GraphicsLock);
-		ConcludeTask (pES->AnimTask);
-		LockMutex (GraphicsLock);
-		pES->AnimTask = 0;
-	}
-
 	SetContext (SpaceContext);
-	DestroyContext (TaskContext);
-	TaskContext = 0;
-
+	DestroyContext (AnimContext);
+	AnimContext = NULL;
 	UnlockMutex (GraphicsLock);
 
 	FlushColorXForms ();
@@ -1155,7 +1164,7 @@ DoCommunication (ENCOUNTER_STATE *pES)
 	StopTrack ();
 	SleepThreadUntil (FadeMusic (NORMAL_VOLUME, 0) + ONE_SECOND / 60);
 
-	return (FALSE);
+	return FALSE;
 }
 
 void
@@ -1234,6 +1243,8 @@ HailAlien (void)
 	SubtitleText.baseline = CommData.AlienTextBaseline;
 	SubtitleText.align = CommData.AlienTextAlign;
 
+	LockMutex (GraphicsLock);
+
 	// init subtitle cache context
 	TextCacheContext = CreateContext ("TextCacheContext");
 	TextCacheFrame = CaptureDrawable (
@@ -1247,7 +1258,6 @@ HailAlien (void)
 	ClearDrawable ();
 	SetFrameTransparentColor (TextCacheFrame, TextBack);
 
-	ES.phrase_buf_index = 1;
 	ES.phrase_buf[0] = '\0';
 
 	SetContext (SpaceContext);
@@ -1256,8 +1266,8 @@ HailAlien (void)
 	{
 		RECT r;
 
-		TaskContext = CreateContext ("TaskContext");
-		SetContext (TaskContext);
+		AnimContext = CreateContext ("AnimContext");
+		SetContext (AnimContext);
 		SetContextFGFrame (Screen);
 		GetFrameRect (CommData.AlienFrame, &r);
 		r.extent.width = SIS_SCREEN_WIDTH;
@@ -1308,6 +1318,9 @@ HailAlien (void)
 	(*CommData.uninit_encounter_func) ();
 
 	LockMutex (GraphicsLock);
+	SetContext (SpaceContext);
+	SetContextFont (OldFont);
+	UnlockMutex (GraphicsLock);
 
 	DestroyStringTable (ReleaseStringTable (CommData.ConversationPhrases));
 	DestroyMusic (CommData.AlienSong);
@@ -1318,8 +1331,6 @@ HailAlien (void)
 	DestroyContext (TextCacheContext);
 	DestroyDrawable (ReleaseDrawable (TextCacheFrame));
 
-	SetContext (SpaceContext);
-	SetContextFont (OldFont);
 	DestroyFont (PlayerFont);
 
 	// Some support code tests either of these to see if the
@@ -1373,6 +1384,8 @@ InitCommunication (CONVERSATION which_comm)
 		}
 	}
 
+	UnlockMutex (GraphicsLock);
+
 	if (which_comm == URQUAN_DRONE_CONVERSATION)
 	{
 		status = URQUAN_DRONE_SHIP;
@@ -1416,8 +1429,6 @@ InitCommunication (CONVERSATION which_comm)
 		CommData = *LocDataPtr;
 	}
 
-	UnlockMutex (GraphicsLock);
-
 	if (GET_GAME_STATE (BATTLE_SEGUE) == 0)
 	{
 		// Not offered the chance to attack.
@@ -1435,8 +1446,6 @@ InitCommunication (CONVERSATION which_comm)
 		SET_GAME_STATE (BATTLE_SEGUE, 1);
 	}
 
-	LockMutex (GraphicsLock);
-
 	if (status == HAIL)
 	{
 		HailAlien ();
@@ -1448,8 +1457,6 @@ InitCommunication (CONVERSATION which_comm)
 
 		(*CommData.uninit_encounter_func) (); // cleanup
 	}
-
-	UnlockMutex (GraphicsLock);
 
 	status = 0;
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
@@ -1625,7 +1632,7 @@ RaceCommunication (void)
 	}
 }
 
-void
+static void
 RedrawSubtitles (void)
 {
 	TEXT t;
@@ -1633,38 +1640,20 @@ RedrawSubtitles (void)
 	if (!optSubtitles)
 		return;
 
-	LockMutex (subtitle_mutex);
 	if (SubtitleText.pStr)
 	{
 		t = SubtitleText;
 		add_text (1, &t);
 	}
-	UnlockMutex (subtitle_mutex);
-}
-
-// Returns clear_subtitles and resets it
-BOOLEAN
-HaveSubtitlesChanged (void)
-{
-	BOOLEAN ret;
-
-	LockMutex (subtitle_mutex);
-	ret = clear_subtitles;
-	clear_subtitles = FALSE;
-	UnlockMutex (subtitle_mutex);
-
-	return ret;
 }
 
 static void
 ClearSubtitles (void)
 {
-	LockMutex (subtitle_mutex);
 	clear_subtitles = TRUE;
 	last_subtitle = NULL;
 	SubtitleText.pStr = NULL;
 	SubtitleText.CharCount = 0;
-	UnlockMutex (subtitle_mutex);
 }
 
 static void
@@ -1674,7 +1663,6 @@ CheckSubtitles (void)
 
 	pStr = GetTrackSubtitle ();
 
-	LockMutex (subtitle_mutex);
 	if (pStr != SubtitleText.pStr)
 	{	// Subtitles changed
 		clear_subtitles = TRUE;
@@ -1688,7 +1676,6 @@ CheckSubtitles (void)
 		else
 			SubtitleText.CharCount = 0;
 	}
-	UnlockMutex (subtitle_mutex);
 }
 
 void

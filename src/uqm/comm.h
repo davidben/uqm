@@ -115,8 +115,6 @@ extern void RaceCommunication (void);
 extern void AlienTalkSegue (COUNT wait_track);
 BOOLEAN getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
 		SIZE maxWidth, COUNT maxChars);
-extern void RedrawSubtitles (void);
-extern BOOLEAN HaveSubtitlesChanged (void);
 
 extern RECT CommWndRect; /* comm window rect */
 

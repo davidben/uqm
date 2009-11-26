@@ -22,6 +22,10 @@
 
 #include "uqm/build.h"
 
+#define STROBE_RATE   10
+#define STROBE_LENGTH (ONE_SECOND * 3 / 2)
+#define NUM_STROBES   (STROBE_LENGTH * STROBE_RATE / ONE_SECOND)
+
 static LOCDATA talkpet_desc =
 {
 	NULL, /* init_encounter_func */
@@ -40,7 +44,7 @@ static LOCDATA talkpet_desc =
 	NULL_RESOURCE, /* AlienAltSong */
 	0, /* AlienSongFlags */
 	TALKING_PET_CONVERSATION_PHRASES, /* PlayerPhrases */
-	16, /* NumAnimations */
+	17, /* NumAnimations */
 	{ /* AlienAmbientArray (ambient animations) */
 		{
 			7, /* StartIndex */
@@ -173,6 +177,15 @@ static LOCDATA talkpet_desc =
 			ONE_SECOND, ONE_SECOND * 3, /* RestartRate */
 			0, /* BlockMask */
 		},
+		{	/* Mind control strobe (on-demand) */
+			1, /* StartIndex */
+			NUM_STROBES * 2, /* NumFrames */
+			CIRCULAR_ANIM | COLORXFORM_ANIM | ONE_SHOT_ANIM
+					| ANIM_DISABLED, /* AnimFlags */
+			ONE_SECOND / (STROBE_RATE * 2), 0, /* FrameRate */
+			0, 0, /* RestartRate */
+			0, /* BlockMask */
+		},
 	},
 	{ /* AlienTransitionDesc */
 		0, /* StartIndex */
@@ -196,10 +209,6 @@ static LOCDATA talkpet_desc =
 	NULL,
 	NULL,
 };
-
-#define STROBE_RATE   15
-#define STROBE_LENGTH (ONE_SECOND * 3 / 2)
-#define NUM_STROBES   (STROBE_LENGTH * STROBE_RATE / ONE_SECOND)
 
 static void
 ExitConversation (RESPONSE_REF R)
@@ -266,19 +275,8 @@ static void PetDevice (RESPONSE_REF R);
 static void
 MindControlStrobe (void)
 {
-	BYTE i;
-
-	for (i = 0; i < NUM_STROBES; ++i)
-	{
-		XFormColorMap (GetColorMapAddress (
-				SetAbsColorMapIndex (CommData.AlienColorMap, 1)
-				), 0);
-		SleepThread (ONE_SECOND / (STROBE_RATE * 2));
-		XFormColorMap (GetColorMapAddress (
-				SetAbsColorMapIndex (CommData.AlienColorMap, 0)
-				), 0);
-		SleepThread (ONE_SECOND / (STROBE_RATE * 2));
-	}
+	// Enable the one-shot strobe animation
+	CommData.AlienAmbientArray[16].AnimFlags &= ~ANIM_DISABLED;
 }
 
 static void

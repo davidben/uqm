@@ -19,7 +19,6 @@
 
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
-#include "libs/tasklib.h"
 
 // Some background: every animation has a neutral frame which returns
 // the image to the state it was in before the animation began. Which
@@ -56,6 +55,10 @@
 #define ANIM_DISABLED (1 << 7)
 
 #define COLORXFORM_ANIM PAUSE_TALKING
+
+#define ONE_SHOT_ANIM  TALK_INTRO
+		// Set in AlienAmbientArray for animations that should be
+		// disabled after they run once.
 
 typedef struct
 {
@@ -124,11 +127,8 @@ typedef struct SEQUENCE SEQUENCE;
 
 // Returns TRUE if there was an animation change
 extern BOOLEAN DrawAlienFrame (SEQUENCE *pSeq, COUNT Num, BOOLEAN fullRedraw);
-
-void UpdateSpeechGraphics (BOOLEAN Initialize);
-Task StartCommAnimTask(void);
-
-extern volatile BOOLEAN PauseAnimTask;
+extern void InitCommAnimations (void);
+extern BOOLEAN ProcessCommAnimations (BOOLEAN fullRedraw, BOOLEAN paused);
 
 #endif  /* _COMMANIM_H */
 

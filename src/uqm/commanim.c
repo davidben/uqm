@@ -27,22 +27,19 @@
 #include "libs/mathlib.h"
 
 
-// Maximum ambient animation frame rate (actual execution rate)
-// A gfx frame is not always produced during an execution frame,
-// and several animations are combined into one gfx frame.
-// The rate was originally 120fps which allowed for more animation
-// precision which is ultimately wasted on the human eye anyway.
-// The highest known stable animation rate is 40fps, so that's what we use.
-#define AMBIENT_ANIM_RATE   40
+static TimeCount LastTime;
+static SEQUENCE Sequences[MAX_ANIMATIONS + 2];
+		// 2 extra for Talk and Transition animations
+static DWORD ActiveMask;
+		// Bit mask of all animations that are currently active.
+		// Bit 'i' is set if the animation with index 'i' is active.
+static ANIMATION_DESC TalkDesc;
+static ANIMATION_DESC TransitDesc;
+static SEQUENCE* Talk;
+static SEQUENCE* Transit;
+static COUNT FirstAmbient;
+static COUNT TotalSequences;
 
-// Oscilloscope frame rate
-// Should be <= AMBIENT_ANIM_RATE
-// XXX: was 32 picked experimentally?
-#define OSCILLOSCOPE_RATE   32
-
-static int ambient_anim_task (void *data);
-
-volatile BOOLEAN PauseAnimTask = FALSE;
 
 static inline DWORD
 randomFrameRate (SEQUENCE *pSeq)
@@ -354,37 +351,11 @@ AdvanceTransitSequence (SEQUENCE *pSeq, DWORD ElapsedTicks)
 	return done;
 }
 
-static int
-ambient_anim_task (void *data)
+void
+InitCommAnimations (void)
 {
-	COUNT i;
-	TimeCount LastTime;
-	SEQUENCE Sequences[MAX_ANIMATIONS + 2];
-			// 2 extra for Talk and Transition animations
-	SEQUENCE *pSeq;
-	DWORD ActiveMask;
-			// Bit mask of all animations that are currently active.
-			// Bit 'i' is set if the animation with index 'i' is active.
-	DWORD LastOscillTime;
-	Task task = (Task) data;
-	BOOLEAN ColorChange = FALSE;
-
-	ANIMATION_DESC TalkDesc;
-	ANIMATION_DESC TransitDesc;
-	SEQUENCE* Talk;
-	SEQUENCE* Transit;
-	COUNT FirstAmbient;
-	COUNT TotalSequences;
-
-	while (!CommData.AlienFrame && !Task_ReadState (task, TASK_EXIT))
-		TaskSwitch ();
-
 	ActiveMask = 0;
 
-	// Certain data must be accessed under GraphicsLock
-	LockMutex (GraphicsLock);
-	
-	memset (&DisplayArray[0], 0, sizeof (DisplayArray));
 	TalkDesc = CommData.AlienTalkDesc;
 	TransitDesc = CommData.AlienTransitionDesc;
 
@@ -403,41 +374,35 @@ ambient_anim_task (void *data)
 	SetupAmbientSequences (Sequences + FirstAmbient, CommData.NumAnimations);
 	TotalSequences += CommData.NumAnimations;
 
-	UnlockMutex (GraphicsLock);
-	
 	LastTime = GetTimeCounter ();
-	LastOscillTime = LastTime;
+}
 
-	while (!Task_ReadState (task, TASK_EXIT))
+BOOLEAN
+ProcessCommAnimations (BOOLEAN FullRedraw, BOOLEAN paused)
+{
+	if (paused)
+	{	// Drive colormap xforms and nothing else
+		XFormColorMap_step ();
+		return FALSE;
+	}
+	else
 	{
-		BOOLEAN CanTalk;
+		COUNT i;
+		SEQUENCE *pSeq;
+		BOOLEAN Change;
+		BOOLEAN CanTalk = TRUE;
 		TimeCount CurTime;
 		DWORD ElapsedTicks;
 		DWORD NextActiveMask;
 
-		SleepThreadUntil (LastTime + ONE_SECOND / AMBIENT_ANIM_RATE);
-
-		LockMutex (GraphicsLock);
-		BatchGraphics ();
 		CurTime = GetTimeCounter ();
 		ElapsedTicks = CurTime - LastTime;
 		LastTime = CurTime;
 
-		if (PauseAnimTask)
-		{	// anims not processed
-			i = CommData.NumAnimations;
-			CanTalk = FALSE;
-		}
-		else
-		{
-			i = 0;
-			CanTalk = TRUE;
-		}
-
 		// Process ambient animations
 		NextActiveMask = ActiveMask;
 		pSeq = Sequences + FirstAmbient;
-		for ( ; i < CommData.NumAnimations; ++i, ++pSeq)
+		for (i = 0; i < CommData.NumAnimations; ++i, ++pSeq)
 		{
 			ANIMATION_DESC *ADPtr = pSeq->ADPtr;
 			DWORD ActiveBit = 1L << i;
@@ -542,25 +507,19 @@ ambient_anim_task (void *data)
 			}
 		}
 		else
-		{	// Not talking (task may be paused)
-			// Disable talking anim if it is done
+		{	// Not talking -- disable talking anim if it is done
 			if (Talk->Direction == NO_DIR)
 				TalkDesc.AnimFlags |= ANIM_DISABLED;
 		}
 
+		BatchGraphics ();
+
 		// Draw all animations
-		if (!PauseAnimTask)
 		{
-			CONTEXT OldContext;
-			BOOLEAN SubtitleChange;
-			BOOLEAN FullRedraw;
-			BOOLEAN Change;
+			BOOLEAN ColorChange = XFormColorMap_step ();
 
-			// Clearing any active subtitles counts as 'change'
-			SubtitleChange = HaveSubtitlesChanged ();
-			FullRedraw = ColorChange || SubtitleChange;
-
-			OldContext = SetContext (TaskContext);
+			if (ColorChange)
+				FullRedraw = TRUE;
 
 			// Colormap animations are processed separately
 			// from picture anims (see XFormColorMap_step)
@@ -568,33 +527,33 @@ ambient_anim_task (void *data)
 					CommData.NumAnimations);
 
 			Change = DrawAlienFrame (Sequences, TotalSequences, FullRedraw);
-			if (FullRedraw || Change)
-				RedrawSubtitles ();
-
-			SetContext (OldContext);
-
-			ColorChange = FALSE;
-		}
-		
-		if (LastOscillTime + (ONE_SECOND / OSCILLOSCOPE_RATE) < CurTime)
-		{
-			LastOscillTime = CurTime;
-			UpdateSpeechGraphics (FALSE);
+			if (FullRedraw)
+				Change = TRUE;
 		}
 		
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
-		
-		ColorChange = XFormColorMap_step ();
-	}
-	FinishTask (task);
-	return 0;
-}
 
-Task
-StartCommAnimTask (void)
-{
-	return AssignTask (ambient_anim_task, 3072, "ambient animations");
+		// Post-process ambient animations
+		pSeq = Sequences + FirstAmbient;
+		for (i = 0; i < CommData.NumAnimations; ++i, ++pSeq)
+		{
+			ANIMATION_DESC *ADPtr = pSeq->ADPtr;
+			DWORD ActiveBit = 1L << i;
+
+			if (ADPtr->AnimFlags & ANIM_DISABLED)
+				continue;
+
+			// We can only disable a one-shot anim here, otherwise the
+			// last frame will not be drawn
+			if ((ADPtr->AnimFlags & ONE_SHOT_ANIM)
+					&& !(NextActiveMask & ActiveBit))
+			{	// One-shot animation, inactive next frame
+				ADPtr->AnimFlags |= ANIM_DISABLED;
+			}
+		}
+
+		return Change;
+	}
 }
 
 BOOLEAN
