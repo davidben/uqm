@@ -21,6 +21,9 @@
 #include <errno.h>
 #include <time.h>
 #include <stdio.h>
+#ifdef _MSC_VER
+#	include <stdarg.h>
+#endif  /* _MSC_VER */
 
 #include "iointrn.h"
 #include "ioaux.h"
@@ -364,6 +367,39 @@ uio_StdioAccessHandle_free(uio_StdioAccessHandle *handle) {
 	uio_free(handle);
 }
 
+#ifdef _MSC_VER
+#	include <stdarg.h>
+#if 0  /* Unneeded for now */
+// MSVC does not have snprintf(). It does have a _snprintf(), but it does
+// not \0-terminate a truncated string as the C standard prescribes.
+static inline int
+snprintf(char *str, size_t size, const char *format, ...)
+{
+	int result;
+	va_list args;
+	
+	va_start (args, format);
+	result = _vsnprintf (str, size, format, args);
+	if (str != NULL && size != 0)
+		str[size - 1] = '\0';
+	va_end (args);
+
+	return result;
+}
+#endif
+
+// MSVC does not have vsnprintf(). It does have a _vsnprintf(), but it does
+// not \0-terminate a truncated string as the C standard prescribes.
+static inline int
+vsnprintf(char *str, size_t size, const char *format, va_list args)
+{
+	int result = _vsnprintf (str, size, format, args);
+	if (str != NULL && size != 0)
+		str[size - 1] = '\0';
+	return result;
+}
+#endif  /* _MSC_VER */
+
 // The result should be freed using uio_free().
 // NB. POSIX allows errno to be set for vsprintf(), but does not require it:
 // "The value of errno may be set to nonzero by a library function call
@@ -391,7 +427,7 @@ uio_vasprintf(const char *format, va_list args) {
 	for (;;) {
 		int printResult = vsnprintf(buf, bufSize, format, args);
 		if (printResult < 0) {
-			// This means the buffer was not small enough, but vsnprintf()
+			// This means the buffer was not large enough, but vsnprintf()
 			// does not give us any clue on how large it should be.
 			// Note that this does not happen with a C'99 compliant
 			// vsnprintf(), but it will happen on MS Windows, and on
