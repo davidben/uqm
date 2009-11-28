@@ -583,7 +583,7 @@ ship_death (ELEMENT *ShipPtr)
 void
 cycle_ion_trail (ELEMENT *ElementPtr)
 {
-	static const COLOR color_tab[] =
+	static const COLOR colorTab[] =
 	{
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7a),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7b),
@@ -598,18 +598,18 @@ cycle_ion_trail (ELEMENT *ElementPtr)
 		BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2e),
 		BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2f),
 	};
-#define NUM_TAB_COLORS (sizeof color_tab / sizeof color_tab[0])
+	const size_t colorTabCount = sizeof colorTab / sizeof colorTab[0];
 			
 	assert (!(ElementPtr->state_flags & PLAYER_SHIP));
 
-	ElementPtr->cycle++;
-	if (ElementPtr->cycle != NUM_TAB_COLORS)
+	ElementPtr->colorCycleIndex++;
+	if (ElementPtr->colorCycleIndex != colorTabCount)
 	{
 		ElementPtr->life_span = ElementPtr->thrust_wait;
 				// Reset the life span.
 		
 		SetPrimColor (&DisplayArray[ElementPtr->PrimIndex],
-				color_tab[ElementPtr->cycle]);
+				colorTab[ElementPtr->colorCycleIndex]);
 
 		ElementPtr->state_flags &= ~DISAPPEARING;
 		ElementPtr->state_flags |= CHANGING;
@@ -649,7 +649,7 @@ spawn_ion_trail (ELEMENT *ElementPtr)
 		SetPrimType (&DisplayArray[IonElementPtr->PrimIndex], POINT_PRIM);
 		SetPrimColor (&DisplayArray[IonElementPtr->PrimIndex],
 				START_ION_COLOR);
-		IonElementPtr->cycle = 0;
+		IonElementPtr->colorCycleIndex = 0;
 		IonElementPtr->current.image.frame =
 				DecFrameIndex (stars_in_space);
 		IonElementPtr->current.image.farray = &stars_in_space;
@@ -752,7 +752,7 @@ ship_transition (ELEMENT *ElementPtr)
 					STAMPFILL_PRIM);
 			SetPrimColor (&DisplayArray[ShipImagePtr->PrimIndex],
 					START_ION_COLOR);
-			ShipImagePtr->cycle = 0;
+			ShipImagePtr->colorCycleIndex = 0;
 			ShipImagePtr->current.image = ElementPtr->current.image;
 			ShipImagePtr->current.location = ElementPtr->current.location;
 			if (!(ElementPtr->state_flags & PLAYER_SHIP))
@@ -795,10 +795,18 @@ flee_preprocess (ELEMENT *ElementPtr)
 
 	if (--ElementPtr->turn_wait == 0)
 	{
-		SIZE dir;
-		COLOR c;
-		static const COLOR color_tab[] =
+		static const COLOR colorTab[] =
 		{
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x00, 0x00), 0x2E),
+			BUILD_COLOR (MAKE_RGB15 (0x0E, 0x00, 0x00), 0x2D),
+			BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C),
+			BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
+			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x29),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x04, 0x04), 0x28),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x0A), 0x27),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0F, 0x0F), 0x26),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x13, 0x13), 0x25),
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24),
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x13, 0x13), 0x25),
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0F, 0x0F), 0x26),
@@ -809,34 +817,26 @@ flee_preprocess (ELEMENT *ElementPtr)
 			BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
 			BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C),
 			BUILD_COLOR (MAKE_RGB15 (0x0E, 0x00, 0x00), 0x2D),
-			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x00, 0x00), 0x2E),
 		};
+		const size_t colorTabCount = sizeof colorTab / sizeof colorTab[0];
 
-		dir = HINIBBLE (ElementPtr->thrust_wait) - 1;
+		ElementPtr->colorCycleIndex++;
+		if (ElementPtr->colorCycleIndex == colorTabCount)
+			ElementPtr->colorCycleIndex = 0;
 
-		c = COLOR_256 (GetPrimColor (&DisplayArray[ElementPtr->PrimIndex]));
-		if (c == 0x24)
-			dir = -dir;
-		c += dir;
-		c = color_tab[c - 0x24];
-		SetPrimColor (&DisplayArray[ElementPtr->PrimIndex], c);
+		SetPrimColor (&DisplayArray[ElementPtr->PrimIndex],
+				colorTab[ElementPtr->colorCycleIndex]);
 
-		if (COLOR_256 (c) == 0x2E)
-		{
-			dir = -dir;
+		if (ElementPtr->colorCycleIndex == 0)
 			--ElementPtr->thrust_wait;
-		}
-		dir += 1;
 
-		ElementPtr->turn_wait = LONIBBLE (ElementPtr->thrust_wait);
+		ElementPtr->turn_wait = ElementPtr->thrust_wait;
 		if (ElementPtr->turn_wait)
 		{
-			ElementPtr->thrust_wait = MAKE_BYTE (ElementPtr->turn_wait, dir);
 			ElementPtr->turn_wait = ((ElementPtr->turn_wait - 1) >> 1) + 1;
 		}
-		else if (COLOR_256 (c) != 0x24)
+		else if (ElementPtr->colorCycleIndex != (colorTabCount / 2))
 		{
-			ElementPtr->thrust_wait = MAKE_BYTE (0, dir);
 			ElementPtr->turn_wait = 1;
 		}
 		else
@@ -853,7 +853,8 @@ flee_preprocess (ELEMENT *ElementPtr)
 	}
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
-	StarShipPtr->cur_status_flags
-			&= ~(LEFT | RIGHT | THRUST | WEAPON | SPECIAL);
+	StarShipPtr->cur_status_flags &=
+			~(LEFT | RIGHT | THRUST | WEAPON | SPECIAL);
+			// Ignore control input when fleeing.
 	PreProcessStatus (ElementPtr);
 }

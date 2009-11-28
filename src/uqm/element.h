@@ -124,9 +124,7 @@ struct element
 		COUNT hit_points;
 		COUNT facing; /* Planetside: lava-spot direction of travel */
 		COUNT cycle;
-				/* Planetside: lightning cycle length
-				 * Melee: color cycle index of ion trails and warp shadows
-				 */
+				/* Planetside: lightning cycle length */
 	};
 	union
 	{
@@ -145,6 +143,9 @@ struct element
 		BYTE blast_offset;
 		BYTE next_turn; /* Battle: animation interframe for some elements */
 	};
+	BYTE colorCycleIndex;
+			// Melee: used to cycle ion trails and warp shadows, and
+			//        to cycle the ship color when fleeing.
 
 	VELOCITY_DESC velocity;
 	INTERSECT_CONTROL IntersectControl;

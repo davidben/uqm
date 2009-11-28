@@ -88,7 +88,8 @@ DoRunAway (STARSHIP *StarShipPtr)
 		battle_counter[0]--;
 
 		ElementPtr->turn_wait = 3;
-		ElementPtr->thrust_wait = MAKE_BYTE (4, 0);
+		ElementPtr->thrust_wait = 4;
+		ElementPtr->colorCycleIndex = 0;
 		ElementPtr->preprocess_func = flee_preprocess;
 		ElementPtr->mass_points = MAX_SHIP_MASS * 10;
 		ZeroVelocityComponents (&ElementPtr->velocity);
@@ -97,6 +98,9 @@ DoRunAway (STARSHIP *StarShipPtr)
 
 		SetPrimColor (&DisplayArray[ElementPtr->PrimIndex],
 				BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2E));
+				// XXX: I think this is supposed to be the same as the
+				// first entry of the color cycle table in flee_preeprocess,
+				// but it is slightly different (0x0A as red value). - SvdB.
 		SetPrimType (&DisplayArray[ElementPtr->PrimIndex], STAMPFILL_PRIM);
 	
 		StarShipPtr->ship_input_state = 0;
