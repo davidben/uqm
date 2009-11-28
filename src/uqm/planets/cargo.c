@@ -40,8 +40,7 @@ ShowRemainingCapacity (void)
 	SetContextFont (TinyFont);
 
 	sprintf (rt_amount_buf, "%u",
-			GetSBayCapacity (NULL)
-			- GLOBAL_SIS (TotalElementMass));
+			GetStorageBayCapacity () - GLOBAL_SIS (TotalElementMass));
 	rt.baseline.x = 59;
 	rt.baseline.y = 113;
 	rt.align = ALIGN_RIGHT;

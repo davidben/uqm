@@ -207,11 +207,19 @@ void DrawAutoPilotMessage (BOOLEAN Reset);
 
 extern void DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int
 		resunit_delta);
+
 extern COUNT GetCrewCount (void);
+extern COUNT GetModuleCrewCapacity (BYTE moduleType);
+
+extern COUNT GetCrewPodCapacity (void);
 extern COUNT GetCPodCapacity (POINT *ppt);
-extern COUNT GetLBayCapacity (POINT *ppt);
+
+extern COUNT GetStorageBayCapacity (void);
 extern COUNT GetSBayCapacity (POINT *ppt);
+
+extern DWORD GetFuelTankCapacity (void);
 extern DWORD GetFTankCapacity (POINT *ppt);
+
 extern COUNT CountSISPieces (BYTE piece_type);
 
 extern void DrawFlagshipName (BOOLEAN InStatusArea);

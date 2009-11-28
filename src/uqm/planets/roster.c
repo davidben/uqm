@@ -276,7 +276,7 @@ DoModifyRoster (MENU_STATE *pMS)
 		}
 		else if (down)
 		{
-			if (GLOBAL_SIS (CrewEnlisted) < GetCPodCapacity (NULL))
+			if (GLOBAL_SIS (CrewEnlisted) < GetCrewPodCapacity ())
 				delta = -1;
 			else
 				failed = TRUE;

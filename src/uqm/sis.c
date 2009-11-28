@@ -868,6 +868,38 @@ DrawPC_SIS (void)
 	font_DrawText (&t);
 }
 
+// Pre: GraphicsLock is unlocked
+static void
+DrawSupportShips (void)
+{
+	HSHIPFRAG hStarShip;
+	HSHIPFRAG hNextShip;
+	const POINT *pship_pos;
+	const POINT ship_pos[MAX_BUILT_SHIPS] =
+	{
+		SUPPORT_SHIP_PTS
+	};
+
+	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)),
+			pship_pos = ship_pos;
+			hStarShip; hStarShip = hNextShip, ++pship_pos)
+	{
+		SHIP_FRAGMENT *StarShipPtr;
+		STAMP s;
+
+		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+		hNextShip = _GetSuccLink (StarShipPtr);
+
+		s.origin = *pship_pos;
+		s.frame = StarShipPtr->icons;
+		LockMutex (GraphicsLock);
+		DrawStamp (&s);
+		UnlockMutex (GraphicsLock);
+
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+	}
+}
+
 void
 DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 {
@@ -887,7 +919,8 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 	{
 		COUNT i;
 
-		s.origin.x = s.origin.y = 0;
+		s.origin.x = 0;
+		s.origin.y = 0;
 		s.frame = FlagStatFrame;
 		DrawStamp (&s);
 		if (optWhichFonts == OPT_PC)
@@ -909,6 +942,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 
 			s.origin.y -= 3;
 		}
+
 		s.origin.y = 0;
 		for (i = 0; i < NUM_JET_SLOTS; ++i)
 		{
@@ -939,35 +973,9 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 			s.origin.y -= 3;
 		}
 
-		{
-			HSHIPFRAG hStarShip, hNextShip;
-			POINT *pship_pos;
-			POINT ship_pos[MAX_BUILT_SHIPS] =
-			{
-				SUPPORT_SHIP_PTS
-			};
-
-			UnlockMutex (GraphicsLock);
-			for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)),
-					pship_pos = ship_pos;
-					hStarShip; hStarShip = hNextShip, ++pship_pos)
-			{
-				SHIP_FRAGMENT *StarShipPtr;
-
-				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-				hNextShip = _GetSuccLink (StarShipPtr);
-
-				s.origin.x = pship_pos->x;
-				s.origin.y = pship_pos->y;
-				s.frame = StarShipPtr->icons;
-				LockMutex (GraphicsLock);
-				DrawStamp (&s);
-				UnlockMutex (GraphicsLock);
-
-				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-			}
-			LockMutex (GraphicsLock);
-		}
+		UnlockMutex (GraphicsLock);
+		DrawSupportShips ();
+		LockMutex (GraphicsLock);
 	}
 
 	t.baseline.x = STATUS_WIDTH >> 1;
@@ -984,9 +992,13 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 			if (crew_delta < 0
 					&& GLOBAL_SIS (CrewEnlisted) <= (COUNT)-crew_delta)
 				GLOBAL_SIS (CrewEnlisted) = 0;
-			else if ((GLOBAL_SIS (CrewEnlisted) += crew_delta) >
-					(CrewCapacity = GetCPodCapacity (NULL)))
-				GLOBAL_SIS (CrewEnlisted) = CrewCapacity;
+			else
+			{
+				GLOBAL_SIS (CrewEnlisted) += crew_delta;
+				CrewCapacity = GetCrewPodCapacity ();
+				if (GLOBAL_SIS (CrewEnlisted) > CrewCapacity)
+					GLOBAL_SIS (CrewEnlisted) = CrewCapacity;
+			}
 		}
 
 		sprintf (buf, "%u", GLOBAL_SIS (CrewEnlisted));
@@ -1002,7 +1014,8 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 
 	if (fuel_delta != 0)
 	{
-		COUNT old_coarse_fuel, new_coarse_fuel;
+		COUNT old_coarse_fuel;
+		COUNT new_coarse_fuel;
 
 		if (fuel_delta == UNDEFINED_DELTA)
 			old_coarse_fuel = (COUNT)~0;
@@ -1018,7 +1031,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 			}
 			else
 			{
-				DWORD FuelCapacity = GetFTankCapacity (NULL);
+				DWORD FuelCapacity = GetFuelTankCapacity ();
 				GLOBAL_SIS (FuelOnBoard) += fuel_delta;
 				if (GLOBAL_SIS (FuelOnBoard) > FuelCapacity)
 					GLOBAL_SIS (FuelOnBoard) = FuelCapacity;
@@ -1079,143 +1092,323 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 	SetContext (OldContext);
 }
 
+
+////////////////////////////////////////////////////////////////////////////
+// Crew
+////////////////////////////////////////////////////////////////////////////
+
+// Get the total amount of crew aboard the SIS.
 COUNT
 GetCrewCount (void)
 {
-	return (GLOBAL_SIS (CrewEnlisted));
+	return GLOBAL_SIS (CrewEnlisted);
 }
 
+// Get the number of crew which fit in a module of a specified type.
+COUNT
+GetModuleCrewCapacity (BYTE moduleType)
+{
+	if (moduleType == CREW_POD)
+		return CREW_POD_CAPACITY;
+
+	return 0;
+}
+
+// Gets the amount of crew which currently fit in the ship's crew pods.
+COUNT
+GetCrewPodCapacity (void)
+{
+	COUNT capacity = 0;
+	COUNT slotI;
+
+	for (slotI = 0; slotI < NUM_MODULE_SLOTS; slotI++)
+	{
+		BYTE moduleType = GLOBAL_SIS (ModuleSlots[slotI]);
+		capacity += GetModuleCrewCapacity (moduleType);
+	}
+
+	return capacity;
+}
+
+// Find the slot number of the crew pod and "seat" number in that crew pod,
+// where the Nth crew member would be located.
+// If the crew member does not fit, false is returned, and *slotNr and
+// *seatNr are unchanged.
+static bool
+GetCrewPodForCrewMember (COUNT crewNr, COUNT *slotNr, COUNT *seatNr)
+{
+	COUNT slotI;
+	COUNT capacity = 0;
+
+	slotI = NUM_MODULE_SLOTS;
+	while (slotI--) {
+		BYTE moduleType = GLOBAL_SIS (ModuleSlots[slotI]);
+		COUNT moduleCapacity = GetModuleCrewCapacity (moduleType);
+
+		if (crewNr < capacity + moduleCapacity)
+		{
+			*slotNr = slotI;
+			*seatNr = crewNr - capacity;
+			return true;
+		}
+		capacity += moduleCapacity;
+	}
+
+	return false;
+}
+
+// Get the point where to draw the next crew member,
+// set the foreground color to the color for that crew member,
+// and return GetCrewPodCapacity ().
+// TODO: Split of the parts of this function into separate functions.
 COUNT
 GetCPodCapacity (POINT *ppt)
 {
-	COORD x;
-	COUNT slot, capacity;
+	COUNT crewCount;
+	COUNT slotNr;
+	COUNT seatNr;
 
-	x = 207;
-	capacity = 0;
-	slot = NUM_MODULE_SLOTS - 1;
-	do
+	COUNT rowNr;
+	COUNT colNr;
+				
+	static const COLOR crewRows[] = PC_CREW_COLOR_TABLE;
+
+	crewCount = GetCrewCount ();
+	if (!GetCrewPodForCrewMember (crewCount, &slotNr, &seatNr))
 	{
-		if (GLOBAL_SIS (ModuleSlots[slot]) == CREW_POD)
-		{
-			if (ppt
-					&& capacity <= GLOBAL_SIS (CrewEnlisted)
-					&& capacity + CREW_POD_CAPACITY >
-					GLOBAL_SIS (CrewEnlisted))
-			{
-				COUNT pod_remainder, which_row;
-				static const COLOR crew_rows[] = PC_CREW_COLOR_TABLE;
+		// Crew does not fit. *ppt is unchanged.
+		return GetCrewPodCapacity ();
+	}
 
-				pod_remainder = GLOBAL_SIS (CrewEnlisted) - capacity;
+	rowNr = seatNr / CREW_PER_ROW;
+	colNr = seatNr % CREW_PER_ROW;
 
-				ppt->x = x - ((pod_remainder % CREW_PER_ROW) << 1);
-				which_row = pod_remainder / CREW_PER_ROW;
-				ppt->y = 34 - (which_row << 1);
+	if (optWhichFonts == OPT_PC)
+		SetContextForeGroundColor (crewRows[rowNr]);
+	else
+		SetContextForeGroundColor (THREEDO_CREW_COLOR);
+		
+	ppt->x = 27 + (slotNr * SHIP_PIECE_OFFSET) - (colNr * 2);
+	ppt->y = 34 - (rowNr * 2);
 
-				if (optWhichFonts == OPT_PC)
-					SetContextForeGroundColor (crew_rows[which_row]);
-				else
-					SetContextForeGroundColor (THREEDO_CREW_COLOR);
-			}
-
-			capacity += CREW_POD_CAPACITY;
-		}
-
-		x -= SHIP_PIECE_OFFSET;
-	} while (slot--);
-
-	return (capacity);
+	return GetCrewPodCapacity ();
 }
 
+
+////////////////////////////////////////////////////////////////////////////
+// Storage bays
+////////////////////////////////////////////////////////////////////////////
+
+// Get the total amount of minerals aboard the SIS.
+COUNT
+GetElementMass (void)
+{
+	return GLOBAL_SIS (TotalElementMass);
+}
+
+// Get the number of crew which fit in a module of a specified type.
+COUNT
+GetModuleStorageCapacity (BYTE moduleType)
+{
+	if (moduleType == STORAGE_BAY)
+		return STORAGE_BAY_CAPACITY;
+
+	return 0;
+}
+
+// Gets the amount of minerals which currently fit in the ship's storage.
+COUNT
+GetStorageBayCapacity (void)
+{
+	COUNT capacity = 0;
+	COUNT slotI;
+
+	for (slotI = 0; slotI < NUM_MODULE_SLOTS; slotI++)
+	{
+		BYTE moduleType = GLOBAL_SIS (ModuleSlots[slotI]);
+		capacity += GetModuleStorageCapacity (moduleType);
+	}
+
+	return capacity;
+}
+
+// Find the slot number of the storage bay and "storage cell" number in that
+// storage bay, where the N-1th mineral unit would be located.
+// If the mineral unit does not fit, false is returned, and *slotNr and
+// *cellNr are unchanged.
+static bool
+GetStorageCellForMineralUnit (COUNT unitNr, COUNT *slotNr, COUNT *cellNr)
+{
+	COUNT slotI;
+	COUNT capacity = 0;
+
+	slotI = NUM_MODULE_SLOTS;
+	while (slotI--) {
+		BYTE moduleType = GLOBAL_SIS (ModuleSlots[slotI]);
+		COUNT moduleCapacity = GetModuleStorageCapacity (moduleType);
+
+		if (unitNr <= capacity + moduleCapacity)
+		{
+			*slotNr = slotI;
+			*cellNr = unitNr - capacity;
+			return true;
+		}
+		capacity += moduleCapacity;
+	}
+
+	return false;
+}
+
+// Get the point where to draw the next mineral unit,
+// set the foreground color to the color for that mineral unit,
+// and return GetStorageBayCapacity ().
+// TODO: Split of the parts of this function into separate functions.
 COUNT
 GetSBayCapacity (POINT *ppt)
 {
-	COORD x;
-	COUNT slot, capacity;
+	COUNT massCount;
+	COUNT slotNr;
+	COUNT cellNr;
 
-	x = 207 - 8;
-	capacity = 0;
-	slot = NUM_MODULE_SLOTS - 1;
-	do
+	COUNT rowNr;
+	COUNT colNr;
+				
+	static const COLOR colorBars[] = STORAGE_BAY_COLOR_TABLE;
+
+	massCount = GetElementMass ();
+	if (!GetStorageCellForMineralUnit (massCount, &slotNr, &cellNr))
 	{
-		if (GLOBAL_SIS (ModuleSlots[slot]) == STORAGE_BAY)
-		{
-			if (ppt
-					&& capacity < GLOBAL_SIS (TotalElementMass)
-					&& capacity + STORAGE_BAY_CAPACITY >=
-					GLOBAL_SIS (TotalElementMass))
-			{
-				COUNT bay_remainder, which_row;
-				static const COLOR color_bars[] = STORAGE_BAY_COLOR_TABLE;
+		// Crew does not fit. *ppt is unchanged.
+		return GetStorageBayCapacity ();
+	}
 
-				bay_remainder = GLOBAL_SIS (TotalElementMass) - capacity;
-				which_row = bay_remainder / SBAY_MASS_PER_ROW;
-				if (which_row == 0)
-					SetContextForeGroundColor (BLACK_COLOR);
-				else
-					SetContextForeGroundColor (color_bars[--which_row]);
+	rowNr = cellNr / SBAY_MASS_PER_ROW;
+	colNr = cellNr % SBAY_MASS_PER_ROW;
 
-				ppt->x = x;
-				ppt->y = 34 - (which_row << 1);
-			}
+	if (rowNr == 0)
+		SetContextForeGroundColor (BLACK_COLOR);
+	else
+	{
+		rowNr--;
+		SetContextForeGroundColor (colorBars[rowNr]);
+	}
+		
+	ppt->x = 19 + (slotNr * SHIP_PIECE_OFFSET);
+	ppt->y = 34 - (rowNr * 2);
 
-			capacity += STORAGE_BAY_CAPACITY;
-		}
+	return GetStorageBayCapacity ();
+}
 
-		x -= SHIP_PIECE_OFFSET;
-	} while (slot--);
+
+////////////////////////////////////////////////////////////////////////////
+// Fuel tanks
+////////////////////////////////////////////////////////////////////////////
+
+// Get the total amount of fuel aboard the SIS.
+DWORD
+GetFuelTotal (void)
+{
+	return GLOBAL_SIS (FuelOnBoard);
+}
+
+// Get the amount of fuel which fits in a module of a specified type.
+DWORD
+GetModuleFuelCapacity (BYTE moduleType)
+{
+	if (moduleType == FUEL_TANK)
+		return FUEL_TANK_CAPACITY;
+
+	if (moduleType == HIGHEFF_FUELSYS)
+		return HEFUEL_TANK_CAPACITY;
+
+	return 0;
+}
+
+// Gets the amount of fuel which currently fits in the ship's fuel tanks.
+DWORD
+GetFuelTankCapacity (void)
+{
+	DWORD capacity = FUEL_RESERVE;
+	COUNT slotI;
+
+	for (slotI = 0; slotI < NUM_MODULE_SLOTS; slotI++)
+	{
+		BYTE moduleType = GLOBAL_SIS (ModuleSlots[slotI]);
+		capacity += GetModuleFuelCapacity (moduleType);
+	}
 
 	return capacity;
 }
 
+// Find the slot number of the fuel cell and "compartment" number in that
+// crew pod, where the Nth unit of fuel would be located.
+// If the unit does not fit, false is returned, and *slotNr and
+// *compartmentNr are unchanged.
+static bool
+GetFuelTankForFuelUnit (DWORD unitNr, COUNT *slotNr, DWORD *compartmentNr)
+{
+	COUNT slotI;
+	DWORD capacity = FUEL_RESERVE;
+
+	slotI = NUM_MODULE_SLOTS;
+	while (slotI--) {
+		BYTE moduleType = GLOBAL_SIS (ModuleSlots[slotI]);
+	
+		capacity += GetModuleFuelCapacity (moduleType);
+		if (unitNr < capacity)
+		{
+			*slotNr = slotI;
+			*compartmentNr = capacity - unitNr;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+// Get the point where to draw the next fuel unit,
+// set the foreground color to the color for that unit,
+// and return GetFuelTankCapacity ().
+// TODO: Split of the parts of this function into separate functions.
 DWORD
 GetFTankCapacity (POINT *ppt)
 {
-	COORD x;
-	COUNT slot;
-	DWORD capacity;
+	DWORD fuelAmount;
+	COUNT slotNr;
+	DWORD compartmentNr;
+	BYTE moduleType;
+	DWORD volume;
 
-	x = 200;
-	capacity = FUEL_RESERVE;
-	slot = NUM_MODULE_SLOTS - 1;
-	do
+	COUNT rowNr;
+				
+	static const COLOR fuelColors[] = FUEL_COLOR_TABLE;
+
+	fuelAmount = GetFuelTotal ();
+	if (!GetFuelTankForFuelUnit (fuelAmount, &slotNr, &compartmentNr))
 	{
-		if (GLOBAL_SIS (ModuleSlots[slot]) == FUEL_TANK
-				|| GLOBAL_SIS (ModuleSlots[slot]) == HIGHEFF_FUELSYS)
-		{
-			COUNT volume;
+		// Fuel does not fit. *ppt is unchanged.
+		return GetFuelTankCapacity ();
+	}
 
-			volume = GLOBAL_SIS (ModuleSlots[slot]) == FUEL_TANK
-					? FUEL_TANK_CAPACITY : HEFUEL_TANK_CAPACITY;
-			if (ppt
-					&& capacity <= GLOBAL_SIS (FuelOnBoard)
-					&& capacity + volume >
-					GLOBAL_SIS (FuelOnBoard))
-			{
-				COUNT which_row;
-				static const COLOR fuel_colors[] = FUEL_COLOR_TABLE;
+	moduleType = GLOBAL_SIS (ModuleSlots[slotNr]);
+	volume = GetModuleFuelCapacity (moduleType);
 
-				which_row = (COUNT)(
-						(GLOBAL_SIS (FuelOnBoard) - capacity)
-						* MAX_FUEL_BARS / HEFUEL_TANK_CAPACITY);
-				ppt->x = x + 1;
-				if (volume == FUEL_TANK_CAPACITY)
-					ppt->y = 27 - which_row;
-				else
-					ppt->y = 30 - which_row;
+	rowNr = ((volume - compartmentNr) * MAX_FUEL_BARS / HEFUEL_TANK_CAPACITY);
+		
+	ppt->x = 21 + (slotNr * SHIP_PIECE_OFFSET);
+	if (volume == FUEL_TANK_CAPACITY)
+		ppt->y = 27 - rowNr;
+	else
+		ppt->y = 30 - rowNr;
 
-				SetContextForeGroundColor (fuel_colors[which_row]);
-				SetContextBackGroundColor (fuel_colors[which_row + 1]);
-			}
+	SetContextForeGroundColor (fuelColors[rowNr]);
+	SetContextBackGroundColor (fuelColors[rowNr + 1]);
 
-			capacity += volume;
-		}
-
-		x -= SHIP_PIECE_OFFSET;
-	} while (slot--);
-
-	return capacity;
+	return GetFuelTankCapacity ();
 }
+
+
+////////////////////////////////////////////////////////////////////////////
 
 COUNT
 CountSISPieces (BYTE piece_type)

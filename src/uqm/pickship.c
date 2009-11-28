@@ -194,7 +194,7 @@ ChangeSelection:
 					t.pStr = GLOBAL_SIS (CommanderName);
 					t.CharCount = (COUNT)~0;
 					crew_level = GLOBAL_SIS (CrewEnlisted);
-					max_crew = GetCPodCapacity (NULL);
+					max_crew = GetCrewPodCapacity ();
 				}
 				else
 				{

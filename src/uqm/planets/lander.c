@@ -1917,8 +1917,7 @@ PlanetSide (POINT planetLoc)
 	else
 		PSD.FireChance = FireChanceTab[7];
 
-	PSD.ElementLevel = GetSBayCapacity (NULL)
-			- GLOBAL_SIS (TotalElementMass);
+	PSD.ElementLevel = GetStorageBayCapacity () - GLOBAL_SIS (TotalElementMass);
 	PSD.MaxElementLevel = MAX_SCROUNGED;
 	if (GET_GAME_STATE (IMPROVED_LANDER_CARGO))
 		PSD.MaxElementLevel <<= 1;
@@ -2127,7 +2126,7 @@ InitLander (BYTE LanderFlags)
 			DrawStamp (&s);
 		}
 
-		free_space = GetSBayCapacity (NULL) - GLOBAL_SIS (TotalElementMass);
+		free_space = GetStorageBayCapacity () - GLOBAL_SIS (TotalElementMass);
 		if ((int)free_space < (int)(MAX_SCROUNGED << capacity_shift))
 		{
 			r.corner.x = 1;
