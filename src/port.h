@@ -140,11 +140,12 @@ typedef unsigned short mode_t;
 #	include <alloca.h>
 #endif
 
-// Printf
+// String formatting
 #ifdef _MSC_VER
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
-#endif
+// Defined in port.c
+int snprintf(char *str, size_t size, const char *format, ...);
+int vsnprintf(char *str, size_t size, const char *format, va_list args);
+#endif  /* _MSC_VER */
 
 // setenv()
 #ifndef HAVE_SETENV
