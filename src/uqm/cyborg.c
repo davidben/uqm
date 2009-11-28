@@ -1331,6 +1331,8 @@ StarShipPtr->ship_input_state &= ~SPECIAL;
 			InputState |= BATTLE_WEAPON;
 		if (StarShipPtr->ship_input_state & SPECIAL)
 			InputState |= BATTLE_SPECIAL;
+
+		(void) context;
 		return (InputState);
 	}
 }
