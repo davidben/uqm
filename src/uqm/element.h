@@ -123,7 +123,10 @@ struct element
 		COUNT crew_level;
 		COUNT hit_points;
 		COUNT facing; /* Planetside: lava-spot direction of travel */
-		COUNT cycle;  /* Planetside: lightning cycle length */
+		COUNT cycle;
+				/* Planetside: lightning cycle length
+				 * Melee: color cycle index of ion trails and warp shadows
+				 */
 	};
 	union
 	{
