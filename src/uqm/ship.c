@@ -431,6 +431,7 @@ spawn_ship (STARSHIP *StarShipPtr)
 		ShipElementPtr->turn_wait = 0;
 		ShipElementPtr->thrust_wait = 0;
 		ShipElementPtr->life_span = NORMAL_LIFE;
+		ShipElementPtr->colorCycleIndex = 0;
 
 		SetPrimType (&DisplayArray[ShipElementPtr->PrimIndex], STAMP_PRIM);
 		ShipElementPtr->current.image.farray = RDPtr->ship_data.ship;

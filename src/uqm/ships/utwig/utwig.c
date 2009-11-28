@@ -285,7 +285,8 @@ utwig_preprocess (ELEMENT *ElementPtr)
 				ElementPtr->life_span - (NORMAL_LIFE + 1));
 
 		ProcessSound (SetAbsSoundIndex (
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1),
+				ElementPtr);
 	}
 
 	if (!(StarShipPtr->cur_status_flags & SPECIAL))
@@ -300,61 +301,59 @@ utwig_preprocess (ELEMENT *ElementPtr)
 			StarShipPtr->special_counter =
 					StarShipPtr->RaceDescPtr->characteristics.special_wait;
 			ProcessSound (SetAbsSoundIndex (
-					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2), ElementPtr);
+					StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 2),
+					ElementPtr);
 		}
 	}
 
 	lpPrim = &(GLOBAL (DisplayArray))[ElementPtr->PrimIndex];
 	if (StarShipPtr->special_counter == 0)
 	{
-		SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78));
+		// The shield is off.
+		SetPrimColor (lpPrim,
+				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78));
+		ElementPtr->colorCycleIndex = 0;
 		ElementPtr->life_span = NORMAL_LIFE;
 		SetPrimType (lpPrim, STAMP_PRIM);
 	}
 	else
 	{
-		static const COLOR color_tab[] =
+		// The shield is on.
+
+		/* Originally, this table also contained the now commented out
+		 * entries. It then used some if statements to skip over these.
+		 * The current behaviour is the same as the old behavior,
+		 * but I am not sure that the old behavior was intended. - SvdB
+		 */
+		static const COLOR colorTable[] =
 		{
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7a),
+			//BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7b),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7c),
+			//BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7d),
+			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7e),
+			//BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7f),
 			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x2a),
-			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2b),
+			//BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2b),
 			BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2c),
 			BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2d),
 			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2e),
-			BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2f),
-			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7a),
-			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7b),
-			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7c),
-			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7d),
-			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7e),
-			BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7f),
+			//BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2f),
 		};
-					
-#define NUM_TAB_COLORS (sizeof (color_tab) / sizeof (color_tab[0]))
-			
-		COUNT color_index = 0;
-		COLOR c;
+		const size_t colorTableCount =
+				sizeof colorTable / sizeof colorTable[0];
 
 		if (StarShipPtr->weapon_counter == 0)
 			++StarShipPtr->weapon_counter;
 
-		c = COLOR_256 (GetPrimColor (lpPrim));
-		if (c >= 0x78)
-		{
-			if ((c += 2) > 0x7E)
-				c = 0x2A;
-		}
-		else if (c < 0x2E)
-		{
-			if (++c == 0x2B)
-				c = 0x2C;
-		}
-		else
-			c = 0x7a;
-		if (c <= 0x2f && c >= 0x2a)
-				color_index = (COUNT)c - 0x2a;
-		else /* color is between 0x7a and 0x7f */
-				color_index = (COUNT)(c - 0x7a) + (NUM_TAB_COLORS >> 1);
-		SetPrimColor (lpPrim, color_tab[color_index]);
+		// colorCycleIndex is actually 1 higher than the entry in colorTable
+		// which is currently used, as it is 0 when the shield is off,
+		// and we don't want to skip over the first entry of the table.
+		ElementPtr->colorCycleIndex++;
+		if (ElementPtr->colorCycleIndex == colorTableCount + 1)
+			ElementPtr->colorCycleIndex = 1;
+
+		SetPrimColor (lpPrim, colorTable[ElementPtr->colorCycleIndex - 1]);
 
 		ElementPtr->life_span = NORMAL_LIFE + 1;
 		SetPrimType (lpPrim, STAMPFILL_PRIM);
