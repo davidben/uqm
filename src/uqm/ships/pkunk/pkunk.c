@@ -317,49 +317,34 @@ intercept_pkunk_death (ELEMENT *ElementPtr)
 void
 spawn_phoenix_trail (ELEMENT *ElementPtr)
 {
-	static const COLOR color_tab[] =
+	static const COLOR colorTable[] =
 	{
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x2a),
-		BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2b),
-		BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2c),
-		BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2d),
-		BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2e),
-		BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2f),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7a),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7b),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7c),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7d),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7e),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7f),
+		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x2a),
+		BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2b),
+		BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2c),
+		BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2d),
+		BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2e),
+		BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2f),
 	};
+	const size_t colorTableCount = sizeof colorTable / sizeof colorTable[0];
 	
-#define NUM_TAB_COLORS (sizeof (color_tab) / sizeof (color_tab[0]))
-
-	COUNT color_index = 0;
-	COLOR Color;
-
-	Color = COLOR_256 (
-			GetPrimColor (&(GLOBAL (DisplayArray))[ElementPtr->PrimIndex])
-			);
-	if (Color != 0x2F)
+	ElementPtr->colorCycleIndex++;
+	if (ElementPtr->colorCycleIndex != colorTableCount)
 	{
 		ElementPtr->life_span = TRANSITION_LIFE;
 
-		++Color;
-		if (Color > 0x7F)
-			Color = 0x2A;
-		if (Color <= 0x2f && Color >= 0x2a)
-				color_index = (COUNT)Color - 0x2a;
-		else /* color is between 0x7a and 0x7f */
-				color_index = (COUNT)(Color - 0x7a) + (NUM_TAB_COLORS >> 1);
-		SetPrimColor (
-				&(GLOBAL (DisplayArray))[ElementPtr->PrimIndex],
-				color_tab[color_index]
-				);
+		SetPrimColor (&(GLOBAL (DisplayArray))[ElementPtr->PrimIndex],
+				colorTable[ElementPtr->colorCycleIndex]);
 
 		ElementPtr->state_flags &= ~DISAPPEARING;
 		ElementPtr->state_flags |= CHANGING;
-	}
+	} // else, the element disappears.
 }
 
 #define PHOENIX_LIFE 12
@@ -393,8 +378,8 @@ phoenix_transition (ELEMENT *ElementPtr)
 				STAMPFILL_PRIM);
 		SetPrimColor (
 				&(GLOBAL (DisplayArray))[ShipImagePtr->PrimIndex],
-				START_PHOENIX_COLOR
-				);
+				START_PHOENIX_COLOR);
+		ShipImagePtr->colorCycleIndex = 0;
 		ShipImagePtr->current.image = ElementPtr->current.image;
 		ShipImagePtr->current.location = ElementPtr->current.location;
 		if (!(ElementPtr->state_flags & PLAYER_SHIP))
