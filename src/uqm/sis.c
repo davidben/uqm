@@ -379,7 +379,7 @@ DrawStatusMessage (const UNICODE *pStr)
 	{
 		if (curMsgMode == SMM_CREDITS)
 		{
-			sprintf (buf, "%u %s", MAKE_WORD (
+			snprintf (buf, sizeof buf, "%u %s", MAKE_WORD (
 					GET_GAME_STATE (MELNORME_CREDIT0),
 					GET_GAME_STATE (MELNORME_CREDIT1)
 					), GAME_STRING (STATUS_STRING_BASE + 0)); // "Cr"
@@ -388,12 +388,12 @@ DrawStatusMessage (const UNICODE *pStr)
 		{
 			if (GET_GAME_STATE (CHMMR_BOMB_STATE) < 2)
 			{
-				sprintf (buf, "%u %s", GLOBAL_SIS (ResUnits),
+				snprintf (buf, sizeof buf, "%u %s", GLOBAL_SIS (ResUnits),
 						GAME_STRING (STATUS_STRING_BASE + 1)); // "RU"
 			}
 			else
 			{
-				sprintf (buf, "%s %s",
+				snprintf (buf, sizeof buf, "%s %s",
 						(optWhichMenu == OPT_PC) ?
 							GAME_STRING (STATUS_STRING_BASE + 2)
 							: STR_INFINITY_SIGN, // "UNLIMITED"
@@ -500,8 +500,8 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 		r.extent.height = SHIP_NAME_HEIGHT;
 
 		t.pStr = buf;
-		sprintf (buf, "%s %s", GAME_STRING (NAMING_STRING_BASE + 1),
-				GLOBAL_SIS (ShipName));
+		snprintf (buf, sizeof buf, "%s %s",
+				GAME_STRING (NAMING_STRING_BASE + 1), GLOBAL_SIS (ShipName));
 		// XXX: this will not work with UTF-8 strings
 		strupr (buf);
 	}
@@ -626,16 +626,20 @@ DrawFlagshipStats (void)
 	t.align = ALIGN_LEFT;
 	t.pStr = buf;
 
-	sprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[15])));
+	snprintf (buf, sizeof buf, "%-7.7s",
+			describeWeapon (GLOBAL_SIS (ModuleSlots[15])));
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	sprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[14])));
+	snprintf (buf, sizeof buf,
+			"%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[14])));
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	sprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[13])));
+	snprintf (buf, sizeof buf,
+			"%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[13])));
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	sprintf (buf, "%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[0])));
+	snprintf (buf, sizeof buf,
+			"%-7.7s", describeWeapon (GLOBAL_SIS (ModuleSlots[0])));
 	font_DrawText (&t);
 
 	t.baseline.x = r.extent.width - 25;
@@ -660,22 +664,22 @@ DrawFlagshipStats (void)
 	t.baseline.y = r.corner.y + leading + 3;
 	t.pStr = buf;
 
-	sprintf (buf, "%4u", max_thrust * 4);
+	snprintf (buf, sizeof buf, "%4u", max_thrust * 4);
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	sprintf (buf, "%4u", 1 + TURN_WAIT - turn_wait);
+	snprintf (buf, sizeof buf, "%4u", 1 + TURN_WAIT - turn_wait);
 	font_DrawText (&t);
 	t.baseline.y += leading;
 	{
 		unsigned int energy_per_10_sec =
 				(((100 * ONE_SECOND * energy_regeneration) /
 				((1 + energy_wait) * BATTLE_FRAME_RATE)) + 5) / 10;
-		sprintf (buf, "%2u.%1u",
+		snprintf (buf, sizeof buf, "%2u.%1u",
 				energy_per_10_sec / 10, energy_per_10_sec % 10);
 	}
 	font_DrawText (&t);
 	t.baseline.y += leading;
-	sprintf (buf, "%4u", (fuel / FUEL_TANK_SCALE));
+	snprintf (buf, sizeof buf, "%4u", (fuel / FUEL_TANK_SCALE));
 	font_DrawText (&t);
 
 	SetContextFontEffect (OldFontEffect);
@@ -742,7 +746,7 @@ DrawLanders (void)
 	SetContext (OldContext);
 }
 
-// Draw the storage bays, beneath the picture of the flagship.
+// Draw the storage bays, below the picture of the flagship.
 void
 DrawStorageBays (BOOLEAN Refresh)
 {
@@ -868,6 +872,73 @@ DrawPC_SIS (void)
 	font_DrawText (&t);
 }
 
+static void
+DrawThrusters (void)
+{
+	STAMP s;
+	COUNT i;
+
+	s.origin.x = 1;
+	s.origin.y = 0;
+	for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
+	{
+		BYTE which_piece = GLOBAL_SIS (DriveSlots[i]);
+		if (which_piece < EMPTY_SLOT)
+		{
+			s.frame = SetAbsFrameIndex (FlagStatFrame, which_piece + 1 + 0);
+			DrawStamp (&s);
+			s.frame = IncFrameIndex (s.frame);
+			DrawStamp (&s);
+		}
+
+		s.origin.y -= 3;
+	}
+}
+
+static void
+DrawTurningJets (void)
+{
+	STAMP s;
+	COUNT i;
+
+	s.origin.x = 1;
+	s.origin.y = 0;
+	for (i = 0; i < NUM_JET_SLOTS; ++i)
+	{
+		BYTE which_piece = GLOBAL_SIS (JetSlots[i]);
+		if (which_piece < EMPTY_SLOT)
+		{
+			s.frame = SetAbsFrameIndex (FlagStatFrame, which_piece + 1 + 1);
+			DrawStamp (&s);
+			s.frame = IncFrameIndex (s.frame);
+			DrawStamp (&s);
+		}
+
+		s.origin.y -= 3;
+	}
+}
+
+static void
+DrawModules (void)
+{
+	STAMP s;
+	COUNT i;
+
+	s.origin.x = 1; // This properly centers the modules.
+	s.origin.y = 1;
+	for (i = 0; i < NUM_MODULE_SLOTS; ++i)
+	{
+		BYTE which_piece = GLOBAL_SIS (ModuleSlots[i]);
+		if (which_piece < EMPTY_SLOT)
+		{
+			s.frame = SetAbsFrameIndex (FlagStatFrame, which_piece + 1 + 2);
+			DrawStamp (&s);
+		}
+
+		s.origin.y -= 3;
+	}
+}
+
 // Pre: GraphicsLock is unlocked
 static void
 DrawSupportShips (void)
@@ -917,61 +988,17 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 	BatchGraphics ();
 	if (crew_delta == UNDEFINED_DELTA)
 	{
-		COUNT i;
-
 		s.origin.x = 0;
 		s.origin.y = 0;
 		s.frame = FlagStatFrame;
 		DrawStamp (&s);
+
 		if (optWhichFonts == OPT_PC)
 			DrawPC_SIS();
 
-		s.origin.x = 1;
-		s.origin.y = 0;
-		for (i = 0; i < NUM_DRIVE_SLOTS; ++i)
-		{
-			BYTE which_piece = GLOBAL_SIS (DriveSlots[i]);
-			if (which_piece < EMPTY_SLOT)
-			{
-				s.frame = SetAbsFrameIndex (
-						FlagStatFrame, which_piece + 1 + 0);
-				DrawStamp (&s);
-				s.frame = IncFrameIndex (s.frame);
-				DrawStamp (&s);
-			}
-
-			s.origin.y -= 3;
-		}
-
-		s.origin.y = 0;
-		for (i = 0; i < NUM_JET_SLOTS; ++i)
-		{
-			BYTE which_piece = GLOBAL_SIS (JetSlots[i]);
-			if (which_piece < EMPTY_SLOT)
-			{
-				s.frame = SetAbsFrameIndex (
-						FlagStatFrame, which_piece + 1 + 1);
-				DrawStamp (&s);
-				s.frame = IncFrameIndex (s.frame);
-				DrawStamp (&s);
-			}
-
-			s.origin.y -= 3;
-		}
-		s.origin.y = 1;
-		s.origin.x = 1; // This properly centers the modules.
-		for (i = 0; i < NUM_MODULE_SLOTS; ++i)
-		{
-			BYTE which_piece = GLOBAL_SIS (ModuleSlots[i]);
-			if (which_piece < EMPTY_SLOT)
-			{
-				s.frame = SetAbsFrameIndex (
-						FlagStatFrame, which_piece + 1 + 2);
-				DrawStamp (&s);
-			}
-
-			s.origin.y -= 3;
-		}
+		DrawThrusters ();
+		DrawTurningJets ();
+		DrawModules ();
 
 		UnlockMutex (GraphicsLock);
 		DrawSupportShips ();
@@ -1001,7 +1028,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 			}
 		}
 
-		sprintf (buf, "%u", GLOBAL_SIS (CrewEnlisted));
+		snprintf (buf, sizeof buf, "%u", GLOBAL_SIS (CrewEnlisted));
 		GetGaugeRect (&r, TRUE);
 		t.baseline.y = r.corner.y + r.extent.height;
 		t.CharCount = (COUNT)~0;
@@ -1042,7 +1069,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 				GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE);
 		if (new_coarse_fuel != old_coarse_fuel)
 		{
-			sprintf (buf, "%u", new_coarse_fuel);
+			snprintf (buf, sizeof buf, "%u", new_coarse_fuel);
 			GetGaugeRect (&r, FALSE);
 			t.baseline.y = r.corner.y + r.extent.height;
 			t.CharCount = (COUNT)~0;
