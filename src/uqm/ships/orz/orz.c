@@ -311,46 +311,38 @@ orz_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 
 #define START_ION_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A)
 
-void
+static void
 ion_preprocess (ELEMENT *ElementPtr)
 {
-	static const COLOR color_tab[] =
+	/* Originally, this table also contained the now commented out
+	 * entries. It then used some if statements to skip over these.
+	 * The current behaviour is the same as the old behavior.
+	 */
+	static const COLOR colorTable[] =
 	{
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x2a),
-		BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2b),
-		BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2c),
-		BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2d),
-		BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2e),
-		BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2f),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7a),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7b),
+		//BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7b),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7c),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7d),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7e),
+		//BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7d),
+		//BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7e),
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7f),
-	};
-#define NUM_TAB_COLORS (sizeof (color_tab) / sizeof (color_tab[0]))
-			
-	COUNT color_index = 0;
-	COLOR Color;
 
-	Color = COLOR_256 (GetPrimColor (&(GLOBAL (DisplayArray))[
-			ElementPtr->PrimIndex]));
-	if (Color != 0x2D)
+		//BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x2a),
+		BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2b),
+		//BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2c),
+		BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2d),
+		//BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2e),
+		//BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2f),
+	};
+	const size_t colorTabCount = sizeof colorTable / sizeof colorTable[0];
+
+	ElementPtr->colorCycleIndex++;
+	if (ElementPtr->colorCycleIndex != colorTabCount)
 	{
 		ElementPtr->life_span = ElementPtr->thrust_wait;
 
-		Color += 2;
-		if (Color > 0x7F)
-			Color = 0x2B;
-		else if (Color == 0x7E)
-			Color = 0x7F;
-		if (Color <= 0x2f && Color >= 0x2a)
-				color_index = (COUNT)Color - 0x2a;
-		else /* color is between 0x7a and 0x7f */
-				color_index = (COUNT)(Color - 0x7a) + (NUM_TAB_COLORS >> 1);
-		SetPrimColor (&(GLOBAL (DisplayArray))[
-				ElementPtr->PrimIndex], color_tab[color_index]);
+		SetPrimColor (&(GLOBAL (DisplayArray))[ElementPtr->PrimIndex],
+				colorTable[ElementPtr->colorCycleIndex]);
 
 		ElementPtr->state_flags &= ~DISAPPEARING;
 		ElementPtr->state_flags |= CHANGING;
@@ -469,6 +461,59 @@ LeftShip:
 		ElementPtr->turn_wait =
 				MAKE_BYTE (0, NORMALIZE_FACING ((BYTE)TFB_Random ()));
 		ElementPtr->preprocess_func = marine_preprocess;
+	}
+}
+
+// XXX: merge this with spawn_ion_trail from tactrans.c?
+static void
+spawn_marine_ion_trail (ELEMENT *ElementPtr, STARSHIP *StarShipPtr,
+		COUNT facing)
+{
+	HELEMENT hIonElement;
+
+	hIonElement = AllocElement ();
+	if (hIonElement)
+	{
+#define ION_LIFE 1
+		COUNT angle;
+		ELEMENT *IonElementPtr;
+
+		angle = FACING_TO_ANGLE (facing) + HALF_CIRCLE;
+
+		InsertElement (hIonElement, GetHeadElement ());
+		LockElement (hIonElement, &IonElementPtr);
+		IonElementPtr->playerNr = NEUTRAL_PLAYER_NUM;
+		IonElementPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
+		IonElementPtr->thrust_wait = ION_LIFE;
+		IonElementPtr->life_span = IonElementPtr->thrust_wait;
+				// When the element "dies", in the death_func
+				// 'cycle_ion_trail', it is given new life a number of
+				// times, by setting life_span to thrust_wait.
+		SetPrimType (&(GLOBAL (DisplayArray))[IonElementPtr->PrimIndex],
+				POINT_PRIM);
+		SetPrimColor (&(GLOBAL (DisplayArray))[IonElementPtr->PrimIndex],
+				START_ION_COLOR);
+		IonElementPtr->colorCycleIndex = 0;
+		IonElementPtr->current.location = ElementPtr->current.location;
+		IonElementPtr->current.location.x +=
+				(COORD)COSINE (angle, DISPLAY_TO_WORLD (2));
+		IonElementPtr->current.location.y +=
+				(COORD)SINE (angle, DISPLAY_TO_WORLD (2));
+		IonElementPtr->death_func = ion_preprocess;
+
+		SetElementStarShip (IonElementPtr, StarShipPtr);
+
+		{
+			/* normally done during preprocess, but because
+			 * object is being inserted at head rather than
+			 * appended after tail it may never get preprocessed.
+			 */
+			IonElementPtr->next = IonElementPtr->current;
+			--IonElementPtr->life_span;
+			IonElementPtr->state_flags |= PRE_PROCESS;
+		}
+
+		UnlockElement (hIonElement);
 	}
 }
 
@@ -668,50 +713,7 @@ marine_preprocess (ELEMENT *ElementPtr)
 					|| !(thrust_status
 					& (SHIP_AT_MAX_SPEED | SHIP_BEYOND_MAX_SPEED)))
 			{
-				HELEMENT hIonElement;
-
-				hIonElement = AllocElement ();
-				if (hIonElement)
-				{
-#define ION_LIFE 1
-					COUNT angle;
-					ELEMENT *IonElementPtr;
-
-					angle = FACING_TO_ANGLE (facing) + HALF_CIRCLE;
-
-					InsertElement (hIonElement, GetHeadElement ());
-					LockElement (hIonElement, &IonElementPtr);
-					IonElementPtr->playerNr = NEUTRAL_PLAYER_NUM;
-					IonElementPtr->state_flags =
-							APPEARING | FINITE_LIFE | NONSOLID;
-					IonElementPtr->life_span =
-							IonElementPtr->thrust_wait = ION_LIFE;
-					SetPrimType (&(GLOBAL (DisplayArray))[
-							IonElementPtr->PrimIndex], POINT_PRIM);
-					SetPrimColor (&(GLOBAL (DisplayArray))[
-							IonElementPtr->PrimIndex], START_ION_COLOR);
-					IonElementPtr->current.location =
-							ElementPtr->current.location;
-					IonElementPtr->current.location.x +=
-							(COORD)COSINE (angle, DISPLAY_TO_WORLD (2));
-					IonElementPtr->current.location.y +=
-							(COORD)SINE (angle, DISPLAY_TO_WORLD (2));
-					IonElementPtr->death_func = ion_preprocess;
-
-					SetElementStarShip (IonElementPtr, StarShipPtr);
-
-					{
-						/* normally done during preprocess, but because
-						 * object is being inserted at head rather than
-						 * appended after tail it may never get preprocessed.
-						 */
-						IonElementPtr->next = IonElementPtr->current;
-						--IonElementPtr->life_span;
-						IonElementPtr->state_flags |= PRE_PROCESS;
-					}
-
-					UnlockElement (hIonElement);
-				}
+				spawn_marine_ion_trail (ElementPtr, StarShipPtr, facing);
 			}
 
 			// XXX: thrust_wait is abused to store marine speed and
@@ -1041,9 +1043,10 @@ orz_preprocess (ELEMENT *ElementPtr)
 			TurretPtr->playerNr = ElementPtr->playerNr;
 			TurretPtr->state_flags = FINITE_LIFE | NONSOLID | IGNORE_SIMILAR;
 			TurretPtr->life_span = 1;
-			TurretPtr->current.image.farray = StarShipPtr->RaceDescPtr->ship_data.special;
-			TurretPtr->current.image.frame =
-					SetAbsFrameIndex (StarShipPtr->RaceDescPtr->ship_data.special[0],
+			TurretPtr->current.image.farray =
+					StarShipPtr->RaceDescPtr->ship_data.special;
+			TurretPtr->current.image.frame = SetAbsFrameIndex (
+					StarShipPtr->RaceDescPtr->ship_data.special[0],
 					StarShipPtr->ShipFacing);
 
 			TurretPtr->postprocess_func = turret_postprocess;

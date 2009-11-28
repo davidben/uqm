@@ -663,10 +663,10 @@ spawn_ion_trail (ELEMENT *ElementPtr)
 		SetElementStarShip (IonElementPtr, StarShipPtr);
 
 		{
-				/* normally done during preprocess, but because
-				 * object is being inserted at head rather than
-				 * appended after tail it may never get preprocessed.
-				 */
+			/* normally done during preprocess, but because
+			 * object is being inserted at head rather than
+			 * appended after tail it may never get preprocessed.
+			 */
 			IonElementPtr->next = IonElementPtr->current;
 			--IonElementPtr->life_span;
 			IonElementPtr->state_flags |= PRE_PROCESS;
