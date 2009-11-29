@@ -24,8 +24,7 @@
 static const HOT_SPOT NullHs = {0, 0};
 
 void
-TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, int r, int g, int b,
-		SCREEN dest)
+TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, Color color, SCREEN dest)
 {
 	TFB_DrawCommand DC;
 
@@ -34,16 +33,14 @@ TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, int r, int g, int b,
 	DC.data.line.y1 = y1;
 	DC.data.line.x2 = x2;
 	DC.data.line.y2 = y2;
-	DC.data.line.r = r;
-	DC.data.line.g = g;
-	DC.data.line.b = b;
+	DC.data.line.color = color;
 	DC.data.line.destBuffer = dest;
 
 	TFB_EnqueueDrawCommand (&DC);
 }
 
 void
-TFB_DrawScreen_Rect (RECT *rect, int r, int g, int b, SCREEN dest)
+TFB_DrawScreen_Rect (RECT *rect, Color color, SCREEN dest)
 {
 	RECT locRect;
 	TFB_DrawCommand DC;
@@ -58,9 +55,7 @@ TFB_DrawScreen_Rect (RECT *rect, int r, int g, int b, SCREEN dest)
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_RECTANGLE;
 	DC.data.rect.rect = *rect;
-	DC.data.rect.r = r;
-	DC.data.rect.g = g;
-	DC.data.rect.b = b;
+	DC.data.rect.color = color;
 	DC.data.rect.destBuffer = dest;
 
 	TFB_EnqueueDrawCommand (&DC);
@@ -85,7 +80,7 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
 
 void
 TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale,
-		int r, int g, int b, SCREEN dest)
+		Color color, SCREEN dest)
 {
 	TFB_DrawCommand DC;
 	
@@ -94,9 +89,7 @@ TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale,
 	DC.data.filledimage.x = x;
 	DC.data.filledimage.y = y;
 	DC.data.filledimage.scale = (scale == GSCALE_IDENTITY) ? 0 : scale;
-	DC.data.filledimage.r = r;
-	DC.data.filledimage.g = g;
-	DC.data.filledimage.b = b;
+	DC.data.filledimage.color = color;
 	DC.data.filledimage.destBuffer = dest;
 
 	TFB_EnqueueDrawCommand (&DC);
@@ -240,20 +233,20 @@ TFB_DrawScreen_Callback (void (*callback) (void *arg), void *arg)
 }
 
 void
-TFB_DrawImage_Line (int x1, int y1, int x2, int y2, int r, int g, int b,
+TFB_DrawImage_Line (int x1, int y1, int x2, int y2, Color color,
 		TFB_Image *dest)
 {
 	LockMutex (dest->mutex);
-	TFB_DrawCanvas_Line (x1, y1, x2, y2, r, g, b, dest->NormalImg);
+	TFB_DrawCanvas_Line (x1, y1, x2, y2, color, dest->NormalImg);
 	dest->dirty = TRUE;
 	UnlockMutex (dest->mutex);
 }
 
 void
-TFB_DrawImage_Rect (RECT *rect, int r, int g, int b, TFB_Image *image)
+TFB_DrawImage_Rect (RECT *rect, Color color, TFB_Image *image)
 {
 	LockMutex (image->mutex);
-	TFB_DrawCanvas_Rect (rect, r, g, b, image->NormalImg);
+	TFB_DrawCanvas_Rect (rect, color, image->NormalImg);
 	image->dirty = TRUE;
 	UnlockMutex (image->mutex);
 }
@@ -270,10 +263,10 @@ TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale,
 
 void
 TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale,
-		int r, int g, int b, TFB_Image *target)
+		Color color, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_FilledImage (img, x, y, scale, r, g, b, target->NormalImg);
+	TFB_DrawCanvas_FilledImage (img, x, y, scale, color, target->NormalImg);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }

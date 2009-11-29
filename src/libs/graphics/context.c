@@ -303,7 +303,7 @@ FixContextFontEffect (void)
 		RECT r = { {0, 0}, {w, h} };
 		Color color = _get_context_fg_color ();
 
-		TFB_DrawImage_Rect (&r, color.r, color.g, color.b, img);
+		TFB_DrawImage_Rect (&r, color, img);
 	}
 	
 	_pCurContext->FontBacking = img;

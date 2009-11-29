@@ -150,7 +150,8 @@ PutPixelFn putpixel_for(SDL_Surface *surface)
  * Adapted from Paul Heckbert's implementation of Bresenham's algorithm,
  * 3 Sep 85; taken from Graphics Gems I */
 
-void line(int x1, int y1, int x2, int y2, Uint32 color, PutPixelFn plot, SDL_Surface *surface)
+void line(int x1, int y1, int x2, int y2, Uint32 color, PutPixelFn plot,
+		SDL_Surface *surface)
 {
 	int d, x, y, ax, ay, sx, sy, dx, dy;
 	SDL_Rect r;

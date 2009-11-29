@@ -38,10 +38,9 @@ TFB_Prim_Point (POINT *p, Color color)
 	r.extent.width = r.extent.height = 1;
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
-		TFB_DrawScreen_Rect (&r, color.r, color.g, color.b, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Rect (&r, color, TFB_SCREEN_MAIN);
 	else
-		TFB_DrawImage_Rect (&r, color.r, color.g, color.b,
-				_CurFramePtr->image);
+		TFB_DrawImage_Rect (&r, color, _CurFramePtr->image);
 }
 
 void
@@ -87,18 +86,14 @@ TFB_Prim_FillRect (RECT *r, Color color)
 				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
 		rect.extent.height = (rect.extent.height * gscale
 				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
-		rect.corner.x += (r->extent.width -
-				  rect.extent.width) >> 1;
-		rect.corner.y += (r->extent.height -
-				  rect.extent.height) >> 1;
+		rect.corner.x += (r->extent.width - rect.extent.width) >> 1;
+		rect.corner.y += (r->extent.height - rect.extent.height) >> 1;
 	}
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
-		TFB_DrawScreen_Rect (&rect, color.r, color.g, color.b,
-				TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Rect (&rect, color, TFB_SCREEN_MAIN);
 	else
-		TFB_DrawImage_Rect (&rect, color.r, color.g, color.b,
-				_CurFramePtr->image);
+		TFB_DrawImage_Rect (&rect, color, _CurFramePtr->image);
 }
 
 void
@@ -112,11 +107,9 @@ TFB_Prim_Line (LINE *line, Color color)
 	y2=line->second.y - _CurFramePtr->HotSpot.y;
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
-		TFB_DrawScreen_Line (x1, y1, x2, y2, color.r, color.g, color.b,
-				TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Line (x1, y1, x2, y2, color, TFB_SCREEN_MAIN);
 	else
-		TFB_DrawImage_Line (x1, y1, x2, y2, color.r, color.g, color.b,
-				_CurFramePtr->image);		
+		TFB_DrawImage_Line (x1, y1, x2, y2, color, _CurFramePtr->image);		
 }
 
 void
@@ -174,7 +167,6 @@ TFB_Prim_StampFill (STAMP *stmp, Color color)
 	int x, y;
 	FRAME SrcFramePtr;
 	TFB_Image *img;
-	int r, g, b;
 	int gscale;
 
 	SrcFramePtr = stmp->frame;
@@ -199,21 +191,16 @@ TFB_Prim_StampFill (STAMP *stmp, Color color)
 	x = stmp->origin.x - _CurFramePtr->HotSpot.x;
 	y = stmp->origin.y - _CurFramePtr->HotSpot.y;
 
-	r = color.r;
-	g = color.g;
-	b = color.b;
-
 	UnlockMutex (img->mutex);
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
-		TFB_DrawScreen_FilledImage (img, x, y, gscale, r, g, b,
-					    TFB_SCREEN_MAIN);
+		TFB_DrawScreen_FilledImage (img, x, y, gscale, color, TFB_SCREEN_MAIN);
 	}
 	else
 	{
-		TFB_DrawImage_FilledImage (img, x, y, gscale, r, g, b,
-					   _CurFramePtr->image);
+		TFB_DrawImage_FilledImage (img, x, y, gscale, color,
+				_CurFramePtr->image);
 	}
 }
 
@@ -227,13 +214,11 @@ TFB_Prim_FontChar (POINT *origin, TFB_Char *fontChar, TFB_Image *backing)
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
-		TFB_DrawScreen_FontChar (fontChar, backing, x, y,
-					    TFB_SCREEN_MAIN);
+		TFB_DrawScreen_FontChar (fontChar, backing, x, y, TFB_SCREEN_MAIN);
 	}
 	else
 	{
-		TFB_DrawImage_FontChar (fontChar, backing, x, y,
-					   _CurFramePtr->image);
+		TFB_DrawImage_FontChar (fontChar, backing, x, y, _CurFramePtr->image);
 	}
 }
 

@@ -94,18 +94,21 @@ DrawOscilloscope (void)
 	TFB_DrawImage_Image (scope_bg, 0, 0, 0, NULL, scope_surf);
 	if (GraphForegroundStream (scope_data, RADAR_WIDTH - 2, RADAR_HEIGHT - 2)) 
 	{
-		int i, r, g, b;		
+		int i;
+		Color color;
+
 		TFB_DrawCanvas_GetPixel (scope_bg->NormalImg,
 				scope_bg->extent.width / 2, scope_bg->extent.height / 2,
-				&r, &g, &b);
+				&color);
 		for (i = 0; i < RADAR_WIDTH - 3; ++i)
 			TFB_DrawImage_Line (i + 1, scope_data[i] + 1, i + 2,
-					scope_data[i + 1] + 1, r, g, b, scope_surf);
+					scope_data[i + 1] + 1, color, scope_surf);
 	}
 	TFB_DrawImage_Image (scope_surf, 0, 0, 0, NULL, scope_frame->image);
 
 	s.frame = scope_frame;
-	s.origin.x = s.origin.y = 0;
+	s.origin.x = 0;
+	s.origin.y = 0;
 	DrawStamp (&s);
 }
 

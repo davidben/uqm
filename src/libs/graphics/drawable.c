@@ -254,7 +254,7 @@ RotateFrame (FRAME Frame, int angle_deg)
 void
 SetFrameTransparentColor (FRAME Frame, Color color)
 {
-	TFB_DrawCanvas_SetTransparentColor (Frame->image->NormalImg,
-			color.r, color.g, color.b, FALSE);
+	TFB_DrawCanvas_SetTransparentColor (Frame->image->NormalImg, color,
+			FALSE);
 }
 

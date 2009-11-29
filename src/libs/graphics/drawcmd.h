@@ -46,14 +46,14 @@ enum
 typedef struct tfb_dc_line
 {
 	int x1, y1, x2, y2;
-	int r, g, b;
+	Color color;
 	SCREEN destBuffer;
 } TFB_DrawCommand_Line;
 
 typedef struct tfb_dc_rect
 {
 	RECT rect;
-	int r, g, b;
+	Color color;
 	SCREEN destBuffer;
 } TFB_DrawCommand_Rect;
 
@@ -70,7 +70,7 @@ typedef struct tfb_dc_filledimg
 {
 	TFB_Image *image;
 	int x, y;
-	int r, g, b;
+	Color color;
 	SCREEN destBuffer;
 	int scale;
 } TFB_DrawCommand_FilledImage;
@@ -104,7 +104,7 @@ typedef struct tfb_dc_scissor
 typedef struct tfb_dc_setpal
 {
 	int index;
-	int r, g, b;
+	Color color;
 } TFB_DrawCommand_SetPalette;
 
 typedef struct tfb_dc_setmip

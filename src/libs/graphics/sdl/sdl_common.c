@@ -724,8 +724,7 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 
 				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image,
 						DC.data.filledimage.x, DC.data.filledimage.y,
-						DC.data.filledimage.scale, DC.data.filledimage.r,
-						DC.data.filledimage.g, DC.data.filledimage.b,
+						DC.data.filledimage.scale, DC.data.filledimage.color,
 						SDL_Screens[DC.data.filledimage.destBuffer]);
 
 				if (DC.data.filledimage.destBuffer == 0)
@@ -778,7 +777,7 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 				}
 				TFB_DrawCanvas_Line (DC.data.line.x1, DC.data.line.y1,
 						DC.data.line.x2, DC.data.line.y2,
-						DC.data.line.r, DC.data.line.g, DC.data.line.b,
+						DC.data.line.color,
 						SDL_Screens[DC.data.line.destBuffer]);
 				break;
 			}
@@ -786,8 +785,7 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 			{
 				if (DC.data.rect.destBuffer == 0)
 					TFB_BBox_RegisterRect (&DC.data.rect.rect);
-				TFB_DrawCanvas_Rect (&DC.data.rect.rect, DC.data.rect.r,
-						DC.data.rect.g, DC.data.rect.b,
+				TFB_DrawCanvas_Rect (&DC.data.rect.rect, DC.data.rect.color,
 						SDL_Screens[DC.data.rect.destBuffer]);
 
 				break;

@@ -42,40 +42,42 @@ TFB_DrawCanvas_Initialize (void)
 }
 
 void
-TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, int r, int g, int b, TFB_Canvas target)
+TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, Color color,
+		TFB_Canvas target)
 {
-	Uint32 color;
+	Uint32 sdlColor;
 	PutPixelFn screen_plot;
 	
 	screen_plot = putpixel_for (target);
-	color = SDL_MapRGB (((NativeCanvas) target)->format, r, g, b);
+	sdlColor = SDL_MapRGB (((NativeCanvas) target)->format,
+			color.r, color.g, color.b);
 
 	SDL_LockSurface ((NativeCanvas) target);
-	line (x1, y1, x2, y2, color, screen_plot, (NativeCanvas) target);
+	line (x1, y1, x2, y2, sdlColor, screen_plot, (NativeCanvas) target);
 	SDL_UnlockSurface ((NativeCanvas) target);
 }
 
 void
-TFB_DrawCanvas_Rect (RECT *rect, int r, int g, int b, TFB_Canvas target)
+TFB_DrawCanvas_Rect (RECT *rect, Color color, TFB_Canvas target)
 {
 	SDL_Surface *dst = target;
 	SDL_PixelFormat *fmt = dst->format;
-	Uint32 color;
+	Uint32 sdlColor;
 	SDL_Rect sr;
 	sr.x = rect->corner.x;
 	sr.y = rect->corner.y;
 	sr.w = rect->extent.width;
 	sr.h = rect->extent.height;
 
-	color = SDL_MapRGB (fmt, r, g, b);
+	sdlColor = SDL_MapRGB (fmt, color.r, color.g, color.b);
 	if (fmt->Amask && (dst->flags & SDL_SRCCOLORKEY))
 	{	// special case -- alpha surface with colorkey
 		// colorkey rects are transparent
-		if ((color & ~fmt->Amask) == (fmt->colorkey & ~fmt->Amask))
-			color &= ~fmt->Amask; // make transparent
+		if ((sdlColor & ~fmt->Amask) == (fmt->colorkey & ~fmt->Amask))
+			sdlColor &= ~fmt->Amask; // make transparent
 	}
 	
-	SDL_FillRect (dst, &sr, color);
+	SDL_FillRect (dst, &sr, sdlColor);
 }
 
 void
@@ -88,7 +90,8 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 
 	if (img == 0)
 	{
-		log_add (log_Warning, "ERROR: TFB_DrawCanvas_Image passed null image ptr");
+		log_add (log_Warning,
+				"ERROR: TFB_DrawCanvas_Image passed null image ptr");
 		return;
 	}
 
@@ -240,7 +243,8 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 }
 
 void
-TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int g, int b, TFB_Canvas target)
+TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
+		Color color, TFB_Canvas target)
 {
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
@@ -249,7 +253,8 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 
 	if (img == 0)
 	{
-		log_add (log_Warning, "ERROR: TFB_DrawCanvas_FilledImage passed null image ptr");
+		log_add (log_Warning,
+				"ERROR: TFB_DrawCanvas_FilledImage passed null image ptr");
 		return;
 	}
 
@@ -306,9 +311,9 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 
 		for (i = 0; i < 256; i++)
 		{
-			pal[i].r = r;
-			pal[i].g = g;
-			pal[i].b = b;
+			pal[i].r = color.r;
+			pal[i].g = color.g;
+			pal[i].b = color.b;
 		}
 		SDL_SetColors (surf, pal, 0, 256);
 		// reflect the change in *actual* image palette
@@ -338,19 +343,19 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale, int r, int 
 		}
 
 		if (force_fill ||
-				img->last_fill.r != r ||
-				img->last_fill.g != g ||
-				img->last_fill.b != b)
+				img->last_fill.r != color.r ||
+				img->last_fill.g != color.g ||
+				img->last_fill.b != color.b)
 		{	// image or fillcolor changed - regenerate
-			TFB_DrawCanvas_Fill (surf, surf->w, surf->h,
-					SDL_MapRGBA (newfill->format, r, g, b, 0), newfill);
+			TFB_DrawCanvas_Fill (surf, surf->w, surf->h, SDL_MapRGBA (
+					newfill->format, color.r, color.g, color.b, 0), newfill);
 					// important to keep alpha=0 in fillcolor
 					// -- we process alpha ourselves
 
 			// cache filled image if possible
-			img->last_fill.r = r;
-			img->last_fill.g = g;
-			img->last_fill.b = b;
+			img->last_fill.r = color.r;
+			img->last_fill.g = color.g;
+			img->last_fill.b = color.b;
 		}
 
 		img->FilledImg = newfill;
@@ -687,7 +692,8 @@ TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int index, BOOLEAN rleacc
 }
 
 void
-TFB_DrawCanvas_CopyTransparencyInfo (TFB_Canvas src_canvas, TFB_Canvas dst_canvas)
+TFB_DrawCanvas_CopyTransparencyInfo (TFB_Canvas src_canvas,
+		TFB_Canvas dst_canvas)
 {
 	SDL_Surface* src = (SDL_Surface*)src_canvas;
 
@@ -699,14 +705,14 @@ TFB_DrawCanvas_CopyTransparencyInfo (TFB_Canvas src_canvas, TFB_Canvas dst_canva
 	}
 	else
 	{
-		int r, g, b;
-		if (TFB_DrawCanvas_GetTransparentColor (src_canvas, &r, &g, &b))
-			TFB_DrawCanvas_SetTransparentColor (dst_canvas, r, g, b, FALSE);
+		Color color;
+		if (TFB_DrawCanvas_GetTransparentColor (src_canvas, &color))
+			TFB_DrawCanvas_SetTransparentColor (dst_canvas, color, FALSE);
 	}
 }
 
 BOOLEAN
-TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, int *r, int *g, int *b)
+TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, Color *color)
 {
 	if (!TFB_DrawCanvas_IsPaletted (canvas)
 			&& (((SDL_Surface *)canvas)->flags & SDL_SRCCOLORKEY) )
@@ -714,24 +720,26 @@ TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, int *r, int *g, int *b)
 		Uint8 ur, ug, ub;
 		int colorkey = ((SDL_Surface *)canvas)->format->colorkey;
 		SDL_GetRGB (colorkey, ((SDL_Surface *)canvas)->format, &ur, &ug, &ub);
-		*r = ur;
-		*g = ug;
-		*b = ub;
+		color->r = ur;
+		color->g = ug;
+		color->b = ub;
+		color->a = 0xff;
 		return TRUE;
 	}
 	return FALSE;
 }
 
 void
-TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b,
+TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, Color color,
 		BOOLEAN rleaccel)
 {
-	Uint32 color;
+	Uint32 sdlColor;
 	int flags = SDL_SRCCOLORKEY;
 	if (rleaccel)
 		flags |= SDL_RLEACCEL;
-	color = SDL_MapRGBA (((SDL_Surface *)canvas)->format, r, g, b, 0);
-	SDL_SetColorKey ((SDL_Surface *)canvas, flags, color);
+	sdlColor = SDL_MapRGBA (((SDL_Surface *)canvas)->format,
+			color.r, color.g, color.b, 0);
+	SDL_SetColorKey ((SDL_Surface *)canvas, flags, sdlColor);
 	
 	if (!TFB_DrawCanvas_IsPaletted (canvas))
 	{
@@ -1591,7 +1599,7 @@ TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line)
 }
 
 void
-TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y, int *r, int *g, int *b)
+TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y, Color *color)
 {
 	SDL_Surface* surf = (SDL_Surface *)canvas;
 	Uint8 ur, ug, ub;
@@ -1601,18 +1609,19 @@ TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y, int *r, int *g, int *b
 	getpixel = getpixel_for(surf);
 	pixel = (*getpixel)(surf, x, y);
 	SDL_GetRGB (pixel, surf->format, &ur, &ug, &ub);
-	*r = ur;
-	*g = ug;
-	*b = ub;
+	color->r = ur;
+	color->g = ug;
+	color->b = ub;
 }
 
 void
-TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas, int angle, EXTENT size)
+TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas,
+		int angle, EXTENT size)
 {
 	SDL_Surface *src = (SDL_Surface *)src_canvas;
 	SDL_Surface *dst = (SDL_Surface *)dst_canvas;
 	int ret;
-	int r, g, b;
+	Color color;
 
 	if (size.width > dst->w || size.height > dst->h) 
 	{
@@ -1623,11 +1632,12 @@ TFB_DrawCanvas_Rotate (TFB_Canvas src_canvas, TFB_Canvas dst_canvas, int angle, 
 		return;
 	}
 
-	if (TFB_DrawCanvas_GetTransparentColor (src, &r, &g, &b))
+	if (TFB_DrawCanvas_GetTransparentColor (src, &color))
 	{
-		TFB_DrawCanvas_SetTransparentColor (dst, r, g, b, FALSE);
+		TFB_DrawCanvas_SetTransparentColor (dst, color, FALSE);
 		/* fill destination with transparent color before rotating */
-		SDL_FillRect(dst, NULL, SDL_MapRGBA (dst->format, r, g, b, 0));
+		SDL_FillRect(dst, NULL, SDL_MapRGBA (dst->format,
+				color.r, color.g, color.b, 0));
 	}
 
 	ret = rotateSurface (src, dst, angle, 0);
