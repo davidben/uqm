@@ -88,7 +88,7 @@ colorFromRgb15 (BYTE r, BYTE g, BYTE b)
 	c.r = CC5TO8 (r);
 	c.g = CC5TO8 (g);
 	c.b = CC5TO8 (b);
-	c.a = 0;
+	c.a = 0xff;
 
 	return c;
 }
@@ -99,7 +99,7 @@ colorFromRgb15 (BYTE r, BYTE g, BYTE b)
 		.r = CC5TO8 (r), \
 		.g = CC5TO8 (g), \
 		.b = CC5TO8 (b), \
-		.a = 0 \
+		.a = 0xff \
 	}
 #endif
 
@@ -111,7 +111,7 @@ colorFromRgb15 (BYTE r, BYTE g, BYTE b)
 		CC5TO8 (r), \
 		CC5TO8 (g), \
 		CC5TO8 (b), \
-		0 \
+		0xff \
 	}
 
 static inline Color
