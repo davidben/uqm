@@ -215,17 +215,25 @@ do_damage (ELEMENT *ElementPtr, SIZE damage)
 	}
 }
 
+#define CREW_COLOR_LOW_INTENSITY \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02)
+#define CREW_COLOR_HIGH_INTENSITY \
+		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1E, 0x0A), 0x0A)
 void
 crew_preprocess (ELEMENT *ElementPtr)
 {
 	HELEMENT hTarget;
 
-	SetPrimColor (&DisplayArray[ElementPtr->PrimIndex],
-			GetPrimColor (&DisplayArray[ElementPtr->PrimIndex])
-			^ BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
+	// Switch from dark to light or vice versa:
+	Color oldColor = GetPrimColor (&DisplayArray[ElementPtr->PrimIndex]);
+	Color newColor = sameColor (oldColor, CREW_COLOR_LOW_INTENSITY) ?
+			CREW_COLOR_HIGH_INTENSITY : CREW_COLOR_LOW_INTENSITY;
+	SetPrimColor (&DisplayArray[ElementPtr->PrimIndex], newColor);
+
 	ElementPtr->state_flags |= CHANGING;
 
-	if ((hTarget = ElementPtr->hTarget) == 0)
+	hTarget = ElementPtr->hTarget;
+	if (hTarget == 0)
 	{
 		STARSHIP *StarShipPtr;
 

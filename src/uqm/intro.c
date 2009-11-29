@@ -58,9 +58,9 @@ typedef struct
 	int LastDrawKind;
 	int LastAngle;
 	COUNT OperIndex;
-	COLOR TextFadeColor;
-	COLOR TextColor;
-	COLOR TextBackColor;
+	Color TextFadeColor;
+	Color TextColor;
+	Color TextBackColor;
 	int TextVPos;
 	int TextEffect;
 	RECT clip_r;
@@ -99,14 +99,14 @@ typedef struct
 static BOOLEAN DoPresentation (void *pIS);
 
 static BOOLEAN
-ParseColorString (const char *Src, COLOR* pColor)
+ParseColorString (const char *Src, Color* pColor)
 {
 	unsigned clr;
 	if (1 != sscanf (Src, "%x", &clr))
 		return FALSE;
 
-	*pColor = BUILD_COLOR (MAKE_RGB15 (
-			(clr >> 19) & 0x1f, (clr >> 11) & 0x1f, (clr >> 3) & 0x1f), 0);
+	*pColor = BUILD_COLOR_RGBA (
+			(clr >> 16) & 0xff, (clr >> 8) & 0xff, clr & 0xff, 0);
 	return TRUE;
 }
 
@@ -125,7 +125,7 @@ DoFadeScreen (PRESENTATION_INPUT_STATE* pPIS, const char *Src, BYTE FadeType)
 }
 
 static void
-DrawTextEffect (TEXT *pText, COLOR Fore, COLOR Back, int Effect)
+DrawTextEffect (TEXT *pText, Color Fore, Color Back, int Effect)
 {
 	if (Effect == 'T')
 	{
@@ -197,7 +197,7 @@ Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
 	HOT_SPOT hs;
 	int slot;
 	COUNT piece;
-	COLOR SisBack;
+	Color SisBack;
 
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (OffScreenContext);

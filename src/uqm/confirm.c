@@ -37,7 +37,7 @@
 static void
 DrawConfirmationWindow (BOOLEAN answer)
 {
-	COLOR oldfg = SetContextForeGroundColor (MENU_TEXT_COLOR);
+	Color oldfg = SetContextForeGroundColor (MENU_TEXT_COLOR);
 	FONT  oldfont = SetContextFont (StarConFont);
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	RECT r;

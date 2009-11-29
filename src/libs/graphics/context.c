@@ -17,7 +17,6 @@
  */
 
 #include "gfxintrn.h"
-#include "gfxother.h"
 
 GRAPHICS_STATUS _GraphicsStatusFlags;
 CONTEXT _pCurContext;
@@ -145,30 +144,30 @@ DestroyContext (CONTEXT ContextRef)
 	return TRUE;
 }
 
-COLOR
-SetContextForeGroundColor (COLOR Color)
+Color
+SetContextForeGroundColor (Color color)
 {
-	COLOR oldColor;
+	Color oldColor;
 
 	if (!ContextActive ())
 		return (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 
 	oldColor = _get_context_fg_color ();
-	if (oldColor != Color)
+	if (!sameColor(oldColor, color))
 	{
-		SwitchContextForeGroundColor (Color);
+		SwitchContextForeGroundColor (color);
 
 		if (!(_get_context_fbk_flags () & FBK_IMAGE))
 		{
 			SetContextFBkFlags (FBK_DIRTY);
 		}
 	}
-	SetPrimColor (&_locPrim, Color);
+	SetPrimColor (&_locPrim, color);
 
 	return (oldColor);
 }
 
-COLOR
+Color
 GetContextForeGroundColor (void)
 {
 	if (!ContextActive ())
@@ -177,22 +176,22 @@ GetContextForeGroundColor (void)
 	return _get_context_fg_color ();
 }
 
-COLOR
-SetContextBackGroundColor (COLOR Color)
+Color
+SetContextBackGroundColor (Color color)
 {
-	COLOR oldColor;
+	Color oldColor;
 
 	if (!ContextActive ())
 		return (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 
 	oldColor = _get_context_bg_color ();
-	if (oldColor != Color)
-		SwitchContextBackGroundColor (Color);
+	if (!sameColor(oldColor, color))
+		SwitchContextBackGroundColor (color);
 
-	return (oldColor);
+	return oldColor;
 }
 
-COLOR
+Color
 GetContextBackGroundColor (void)
 {
 	if (!ContextActive ())
@@ -301,10 +300,9 @@ FixContextFontEffect (void)
 	}
 	else
 	{	// solid color backing
-		TFB_Palette color;
 		RECT r = { {0, 0}, {w, h} };
+		Color color = _get_context_fg_color ();
 
-		COLORtoPalette (_get_context_fg_color (), &color);
 		TFB_DrawImage_Rect (&r, color.r, color.g, color.b, img);
 	}
 	

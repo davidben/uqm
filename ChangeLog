@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- All graphics operations use 24-bits colors at the game level too now,
+  instead of 16 bits colors. - SvdB
 - Cross-platform safemode (ignores uqm.cfg, bug #946) - Michael
 - Correct Chmmr response when asking about Sa-Matra (bug #1073) - Alex
 - Refactored universe generation - SvdB

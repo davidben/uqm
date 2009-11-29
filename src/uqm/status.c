@@ -422,19 +422,19 @@ PostProcessStatus (ELEMENT *ShipPtr)
 			if (StarShipPtr->RaceDescPtr->ship_info.crew_level == 0)
 			{
 				BYTE i;
-				COLOR c;
+				Color c;
 				RECT r;
 
 				i = (BYTE)(NUM_EXPLOSION_FRAMES * 3 - 1) - ShipPtr->life_span;
 				if (i <= 4)
 				{
-					static const COLOR flash_tab0[] =
+					static const Color flash_tab0[] =
 					{
-						BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78),
-						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F),
+						BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x00, 0x00), 0x2D),
+						BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x19, 0x19), 0x24),
+						BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x11, 0x00), 0x7B),
+						BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x1C, 0x00), 0x78),
+						BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x1F, 0x1F), 0x0F),
 					};
 
 					c = flash_tab0[i];
@@ -449,23 +449,23 @@ PostProcessStatus (ELEMENT *ShipPtr)
 					i -= 5;
 					if (i <= 14)
 					{
-						static const COLOR flash_tab1[] =
+						static const Color flash_tab1[] =
 						{
-							BUILD_COLOR (MAKE_RGB15 (0x1E, 0x1F, 0x12), 0x70),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x00), 0x71),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x18, 0x00), 0x79),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0A, 0x00), 0x7D),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E),
-							BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
-							BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
-							BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
-							BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C),
-							BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1E, 0x1F, 0x12), 0x70),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x1F, 0x0A), 0x0E),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x1F, 0x00), 0x71),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x1C, 0x00), 0x78),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x18, 0x00), 0x79),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x15, 0x00), 0x7A),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x11, 0x00), 0x7B),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x0E, 0x00), 0x7C),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x0A, 0x00), 0x7D),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x07, 0x00), 0x7E),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x03, 0x00), 0x7F),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x1B, 0x00, 0x00), 0x2A),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x17, 0x00, 0x00), 0x2B),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x13, 0x00, 0x00), 0x2C),
+							BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x00, 0x00), 0x2D),
 						};
 
 						c = flash_tab1[i];
@@ -516,7 +516,7 @@ PostProcessStatus (ELEMENT *ShipPtr)
 								break;
 							default:
 								// Should not happen.
-								c = 0;  // Keeping compiler quiet.
+								c = UNDEFINED_COLOR;  // Keeping compiler quiet.
 								break;
 						}
 						DrawFilledRectangle (&r);
@@ -531,11 +531,11 @@ PostProcessStatus (ELEMENT *ShipPtr)
 							c = BLACK_COLOR;
 						else
 						{
-							static const COLOR flash_tab2[] =
+							static const Color flash_tab2[] =
 							{
-								BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
-								BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
-								BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2E),
+								BUILD_COLOR (MAKE_RGB15_INIT (0x17, 0x00, 0x00), 0x2B),
+								BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x00, 0x00), 0x2D),
+								BUILD_COLOR (MAKE_RGB15_INIT (0x0B, 0x00, 0x00), 0x2E),
 							};
 
 							c = flash_tab2[i];

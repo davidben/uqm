@@ -99,7 +99,7 @@ typedef struct
 
 	RESOURCE AlienFrameRes;
 	RESOURCE AlienFontRes;
-	COLOR AlienTextFColor, AlienTextBColor;
+	Color AlienTextFColor, AlienTextBColor;
 	POINT AlienTextBaseline;
 	COUNT AlienTextWidth;
 	TEXT_ALIGN AlienTextAlign;

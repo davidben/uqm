@@ -47,8 +47,8 @@ static LOCDATA zoqfot_desc =
 	NULL, /* uninit_encounter_func */
 	ZOQFOTPIK_PMAP_ANIM, /* AlienFrame */
 	ZOQFOTPIK_FONT, /* AlienFont */
-	0, /* AlienTextFColor */
-	0, /* AlienTextBColor */
+	UNDEFINED_COLOR_INIT, /* AlienTextFColor */
+	UNDEFINED_COLOR_INIT, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */

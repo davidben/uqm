@@ -1214,7 +1214,7 @@ HailAlien (void)
 	ENCOUNTER_STATE ES;
 	FONT PlayerFont, OldFont;
 	MUSIC_REF SongRef = 0;
-	COLOR TextBack;
+	Color TextBack;
 
 	pCurInputState = &ES;
 	memset (pCurInputState, 0, sizeof (*pCurInputState));

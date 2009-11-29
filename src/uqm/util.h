@@ -21,8 +21,8 @@
 #include "libs/gfxlib.h"
 
 extern void DrawStarConBox (RECT *pRect, SIZE BorderWidth,
-		COLOR TopLeftColor, COLOR BottomRightColor, BOOLEAN FillInterior,
-		COLOR InteriorColor);
+		Color TopLeftColor, Color BottomRightColor, BOOLEAN FillInterior,
+		Color InteriorColor);
 extern DWORD SeedRandomNumbers (void);
 
 // saveRect can be NULL to save the entire context frame

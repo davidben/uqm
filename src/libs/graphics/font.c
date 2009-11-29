@@ -18,7 +18,6 @@
 
 #include "gfxintrn.h"
 #include "tfb_prim.h"
-#include "gfxother.h"
 #include "libs/log.h"
 
 extern void FixContextFontEffect (void);
@@ -64,10 +63,10 @@ font_DrawText (TEXT *lpText)
  * background color one pixel shifted to all 4 directions.
  */
 void
-font_DrawTracedText (TEXT *pText, COLOR text, COLOR trace)
+font_DrawTracedText (TEXT *pText, Color text, Color trace)
 {
 	// Preserve current foreground color for full correctness
-	COLOR oldfg = SetContextForeGroundColor (trace);
+	Color oldfg = SetContextForeGroundColor (trace);
 	pText->baseline.x--;
 	font_DrawText (pText);
 	pText->baseline.x += 2;
@@ -235,7 +234,6 @@ _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr)
 	const unsigned char *pStr;
 	TEXT *TextPtr;
 	POINT origin;
-	TFB_Palette color;
 	TFB_Image *backing;
 
 	FontPtr = _CurFontPtr;
@@ -245,8 +243,6 @@ _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr)
 	if (!backing)
 		return;
 	
-	COLORtoPalette (_get_context_fg_color (), &color);
-
 	TextPtr = &PrimPtr->Object.Text;
 	origin.x = _save_stamp.origin.x;
 	origin.y = TextPtr->baseline.y;

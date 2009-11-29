@@ -62,7 +62,7 @@ static FONT_SIZE_DEF CreditsFont[] =
 
 
 static FRAME
-Credits_MakeTextFrame (int w, int h, COLOR TransColor)
+Credits_MakeTextFrame (int w, int h, Color TransColor)
 {
 	FRAME OldFrame;
 	FRAME f;
@@ -102,7 +102,7 @@ ParseTextLines (TEXT *Lines, int MaxLines, char *Buffer)
 
 static FRAME
 Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
-		COLOR BackColor, COLOR ForeColor)
+		Color BackColor, Color ForeColor)
 {
 	FRAME f;
 	CONTEXT OldContext;
@@ -294,7 +294,7 @@ credit_roll_task (void *data)
 	CONTEXT DrawContext;
 	CONTEXT LocalContext;
 	FRAME Frame;
-	COLOR TransColor, TextFore, TextBack;
+	Color TransColor, TextFore, TextBack;
 	STAMP TaskStamp;
 	STAMP s;
 	FRAME cf[CREDIT_FRAMES]; // preped text frames

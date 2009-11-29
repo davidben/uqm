@@ -17,6 +17,7 @@
  */
 
 #include "planets.h"
+#include "../colors.h"
 #include "../setup.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
@@ -123,8 +124,9 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from,
 	(void)x; // unused param
 }
 
+// rgb.a is ignored
 void
-DrawPlanet (int x, int y, int dy, unsigned int rgb)
+DrawPlanet (int x, int y, int dy, Color rgb)
 {
 	STAMP s;
 	UBYTE a = 128;
@@ -134,7 +136,7 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 	s.origin.y = y;
 	s.frame = pSolarSysState->TopoFrame;
 	BatchGraphics ();
-	if (! rgb)
+	if (sameColor (rgb, BLACK_COLOR))
 	{	// no tint -- just draw the surface
 		DrawStamp (&s);
 	}
@@ -151,14 +153,14 @@ DrawPlanet (int x, int y, int dy, unsigned int rgb)
 		framew = GetFrameWidth (tintFrame[0]);
 		frameh = GetFrameHeight (tintFrame[0]);
 
-		if (rgb != pSolarSysState->Tint_rgb)
+		if (!sameColor (rgb, pSolarSysState->Tint_rgb))
 		{
 			pSolarSysState->Tint_rgb = rgb;
 			// Buffer the topoMap to the tintFrame;
 			arith_frame_blit (s.frame, NULL, tintFrame[0], NULL, 0, 0);
-			r = (rgb & (0x1f << 10)) >> 8;
-			g = (rgb & (0x1f << 5)) >> 3;
-			b = (rgb & 0x1f) << 2;
+			r = rgb.r / 2;
+			g = rgb.g / 2;
+			b = rgb.b / 2;
 #ifdef USE_ADDITIVE_SCAN_BLIT
 			a = 255;
 #endif

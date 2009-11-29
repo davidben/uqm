@@ -481,10 +481,6 @@ SOURCE=..\..\src\libs\graphics\gfxintrn.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\libs\graphics\gfxother.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\libs\graphics\intersec.c
 # End Source File
 # Begin Source File

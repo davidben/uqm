@@ -191,7 +191,7 @@ extern PRIMITIVE DisplayArray[MAX_DISPLAY_PRIMS];
 #define OBJECT_CLOAKED(eptr) \
 		(GetPrimType (&GLOBAL (DisplayArray[(eptr)->PrimIndex])) >= NUM_PRIMS \
 		|| (GetPrimType (&GLOBAL (DisplayArray[(eptr)->PrimIndex])) == STAMPFILL_PRIM \
-		&& GetPrimColor (&GLOBAL (DisplayArray[(eptr)->PrimIndex])) == BLACK_COLOR))
+		&& sameColor (GetPrimColor (&GLOBAL (DisplayArray[(eptr)->PrimIndex])), BLACK_COLOR)))
 #define UNDEFINED_LEVEL 0
 
 extern HELEMENT AllocElement (void);

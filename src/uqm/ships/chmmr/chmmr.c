@@ -205,12 +205,12 @@ initialize_megawatt_laser (ELEMENT *ShipPtr, HELEMENT LaserArray[])
 	RECT r;
 	STARSHIP *StarShipPtr;
 	LASER_BLOCK LaserBlock;
-	static const COLOR cycle_array[] =
+	static const Color cycle_array[] =
 	{
-		BUILD_COLOR (MAKE_RGB15 (0x17, 0x00, 0x00), 0x2B),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x11, 0x00), 0x7B),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x03, 0x00), 0x7F),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x17, 0x00, 0x00), 0x2B),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x03, 0x00), 0x7F),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x11, 0x00), 0x7B),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x03, 0x00), 0x7F),
 	};
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -354,13 +354,13 @@ chmmr_postprocess (ELEMENT *ElementPtr)
 					DISPLAY_TO_WORLD (8 + 9 + 11 + 14),
 					DISPLAY_TO_WORLD (8 + 9 + 11 + 14 + 18),
 				};
-				static const COLOR color_tab[] =
+				static const Color color_tab[] =
 				{
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x53),
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0E), 0x54),
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0C), 0x55),
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x09), 0x56),
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x07), 0x57),
+					BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x00, 0x10), 0x53),
+					BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x00, 0x0E), 0x54),
+					BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x00, 0x0C), 0x55),
+					BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x00, 0x09), 0x56),
+					BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x00, 0x07), 0x57),
 				};
 				DWORD current_speed, max_speed;
 
@@ -375,7 +375,8 @@ chmmr_postprocess (ELEMENT *ElementPtr)
 						+ DISPLAY_TO_WORLD (CHMMR_OFFSET)))
 						- ShipElementPtr->next.location.y;
 				angle = ARCTAN (dx, dy);
-				magnitude = WORLD_TO_VELOCITY (12) / ShipElementPtr->mass_points;
+				magnitude = WORLD_TO_VELOCITY (12) /
+						ShipElementPtr->mass_points;
 				DeltaVelocityComponents (&ShipElementPtr->velocity,
 						COSINE (angle, magnitude), SINE (angle, magnitude));
 

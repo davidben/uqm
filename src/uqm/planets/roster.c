@@ -79,17 +79,33 @@ getSupportShipIcon (MENU_STATE *pMS)
 static void
 flashSupportShip (MENU_STATE *pMS)
 {
-	static COLOR c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x24);
+	static Color c = BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x00, 0x00), 0x24);
 	static TimeCount NextTime = 0;
 
 	if (GetTimeCounter () >= NextTime)
 	{
 		NextTime = GetTimeCounter () + (ONE_SECOND / 15);
 		
+		/* The commented code out code is the old code before the switch
+		 * to 24-bits colors. The current code produces very slightly
+		 * different colors due to rounding errors, but the old code wasn't
+		 * original anyhow, and you can't tell the difference visually.
+		 * - SvdB
 		if (c >= BUILD_COLOR (MAKE_RGB15 (0x1F, 0x19, 0x19), 0x24))
 			c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x24);
 		else
 			c += BUILD_COLOR (MAKE_RGB15 (0x00, 0x02, 0x02), 0x00);
+		*/
+
+		if (c.g >= CC5TO8 (0x19))
+		{
+			c = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x00, 0x00), 0x24);
+		}
+		else
+		{
+			c.g += CC5TO8 (0x02);
+			c.b += CC5TO8 (0x02);
+		}
 		SetContextForeGroundColor (c);
 
 		drawSupportShip (pMS, TRUE);

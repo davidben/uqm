@@ -196,7 +196,7 @@ DrawDescriptionString (MENU_STATE *pMS, UNICODE *Str, COUNT CursorPos,
 {
 	RECT r;
 	TEXT lf;
-	COLOR BackGround, ForeGround;
+	Color BackGround, ForeGround;
 	FONT Font;
 
 	LockMutex (GraphicsLock);
@@ -535,17 +535,17 @@ DrawCargo (COUNT redraw_state)
 	{
 		TEXT t;
 		UNICODE buf[40];
-		static const COLOR cargo_color[] =
+		static const Color cargo_color[] =
 		{
-			BUILD_COLOR (MAKE_RGB15 (0x02, 0x0E, 0x13), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (0x19, 0x00, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (0x03, 0x05, 0x1E), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x18, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (0x1B, 0x1B, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (0x1E, 0x0D, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15 (0x14, 0x00, 0x14), 0x05),
-			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x19), 0x00),
+			BUILD_COLOR (MAKE_RGB15_INIT (0x02, 0x0E, 0x13), 0x00),
+			BUILD_COLOR (MAKE_RGB15_INIT (0x19, 0x00, 0x00), 0x00),
+			BUILD_COLOR (MAKE_RGB15_INIT (0x10, 0x10, 0x10), 0x00),
+			BUILD_COLOR (MAKE_RGB15_INIT (0x03, 0x05, 0x1E), 0x00),
+			BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x18, 0x00), 0x00),
+			BUILD_COLOR (MAKE_RGB15_INIT (0x1B, 0x1B, 0x00), 0x00),
+			BUILD_COLOR (MAKE_RGB15_INIT (0x1E, 0x0D, 0x00), 0x00),
+			BUILD_COLOR (MAKE_RGB15_INIT (0x14, 0x00, 0x14), 0x05),
+			BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x00, 0x19), 0x00),
 		};
 
 		r.extent.width = 23;

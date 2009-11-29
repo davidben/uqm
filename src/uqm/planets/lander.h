@@ -49,7 +49,7 @@ typedef struct
 	UNICODE AmountBuf[40];
 	TEXT MineralText[3];
 
-	COLOR ColorCycle[NUM_TEXT_FRAMES >> 1];
+	Color ColorCycle[NUM_TEXT_FRAMES >> 1];
 
 	BYTE TectonicsChance;
 	BYTE WeatherChance;

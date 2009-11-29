@@ -20,7 +20,6 @@
 #include "gfx_common.h"
 #include "tfb_draw.h"
 #include "tfb_prim.h"
-#include "gfxother.h"
 
 HOT_SPOT
 MAKE_HOT_SPOT (COORD x, COORD y)
@@ -45,7 +44,7 @@ typedef struct
 {
 	PRIM_LINKS Links;
 	GRAPHICS_PRIM Type;
-	COLOR Color;
+	Color Color;
 	INTERNAL_PRIM_DESC Object;
 } INTERNAL_PRIMITIVE;
 
@@ -84,10 +83,8 @@ GetFrameValidRect (RECT *pValidRect, HOT_SPOT *pOldHot)
 void
 ClearBackGround (RECT *pClipRect)
 {
-	TFB_Palette color;
-
-	COLORtoPalette (_get_context_bg_color (), &color);
-	TFB_Prim_FillRect (pClipRect, &color);
+	Color color = _get_context_bg_color ();
+	TFB_Prim_FillRect (pClipRect, color);
 }
 
 void
@@ -103,9 +100,7 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 		PRIM_LINKS OldLinks;
 		PRIMITIVE *lpPrim;
 
-		BatchFlags &= BATCH_SINGLE
-				| BATCH_BUILD_PAGE
-				| BATCH_XFORM;
+		BatchFlags &= BATCH_SINGLE | BATCH_BUILD_PAGE | BATCH_XFORM;
 
 		BatchFlags |= _get_context_flags () & BATCH_CLIP_GRAPHICS;
 
@@ -131,12 +126,13 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 			}
 		}
 
-		for (; CurIndex != END_OF_LIST; CurIndex = GetSuccLink (GetPrimLinks (lpPrim)))
+		for (; CurIndex != END_OF_LIST;
+				CurIndex = GetSuccLink (GetPrimLinks (lpPrim)))
 		{
 			GRAPHICS_PRIM PrimType;
 			PRIMITIVE *lpWorkPrim;
 			RECT ClipRect;
-			TFB_Palette color;
+			Color color;
 
 			lpPrim = &lpBasePrim[CurIndex];
 			PrimType = GetPrimType (lpPrim);
@@ -148,19 +144,19 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 			switch (PrimType)
 			{
 				case POINT_PRIM:
-					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
-					TFB_Prim_Point (&lpWorkPrim->Object.Point, &color);
+					color = GetPrimColor (lpWorkPrim);
+					TFB_Prim_Point (&lpWorkPrim->Object.Point, color);
 					break;
 				case STAMP_PRIM:
 					TFB_Prim_Stamp (&lpWorkPrim->Object.Stamp);
 					break;
 				case STAMPFILL_PRIM:
-					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
-					TFB_Prim_StampFill (&lpWorkPrim->Object.Stamp, &color);
+					color = GetPrimColor (lpWorkPrim);
+					TFB_Prim_StampFill (&lpWorkPrim->Object.Stamp, color);
 					break;
 				case LINE_PRIM:
-					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
-					TFB_Prim_Line (&lpWorkPrim->Object.Line, &color);
+					color = GetPrimColor (lpWorkPrim);
+					TFB_Prim_Line (&lpWorkPrim->Object.Line, color);
 					break;
 				case TEXT_PRIM:
 					if (!TextRect (&lpWorkPrim->Object.Text,
@@ -172,12 +168,12 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 					_text_blt (&ClipRect, lpWorkPrim);
 					break;
 				case RECT_PRIM:
-					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
-					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, &color);
+					color = GetPrimColor (lpWorkPrim);
+					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, color);
 					break;
 				case RECTFILL_PRIM:
-					COLORtoPalette (GetPrimColor (lpWorkPrim), &color);
-					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, &color);
+					color = GetPrimColor (lpWorkPrim);
+					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, color);
 					break;
 			}
 		}
@@ -188,9 +184,7 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 
 		if (BatchFlags & BATCH_SINGLE)
 			SetPrimLinks (lpBasePrim,
-					GetPredLink (OldLinks),
-					GetSuccLink (OldLinks));
-
+					GetPredLink (OldLinks), GetSuccLink (OldLinks));
 	}
 }
 
@@ -218,10 +212,8 @@ DrawPoint (POINT *lpPoint)
 
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
-		TFB_Palette color;
-		
-		COLORtoPalette (GetPrimColor (&_locPrim), &color);
-		TFB_Prim_Point (lpPoint, &color);
+		Color color = GetPrimColor (&_locPrim);
+		TFB_Prim_Point (lpPoint, color);
 		_CurFramePtr->HotSpot = OldHot;
 	}
 }
@@ -234,10 +226,8 @@ DrawRectangle (RECT *lpRect)
 
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
-		TFB_Palette color;
-		
-		COLORtoPalette (GetPrimColor (&_locPrim), &color);
-		TFB_Prim_Rect (lpRect, &color);  
+		Color color = GetPrimColor (&_locPrim);
+		TFB_Prim_Rect (lpRect, color);
 		_CurFramePtr->HotSpot = OldHot;
 	}
 }
@@ -250,10 +240,8 @@ DrawFilledRectangle (RECT *lpRect)
 
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
-		TFB_Palette color;
-		
-		COLORtoPalette (GetPrimColor (&_locPrim), &color);
-		TFB_Prim_FillRect (lpRect, &color);  
+		Color color = GetPrimColor (&_locPrim);
+		TFB_Prim_FillRect (lpRect, color);
 		_CurFramePtr->HotSpot = OldHot;
 	}
 }
@@ -266,12 +254,10 @@ DrawLine (LINE *lpLine)
 
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
-		TFB_Palette color;
-
-		COLORtoPalette (GetPrimColor (&_locPrim), &color);
-		TFB_Prim_Line (lpLine, &color);
+		Color color = GetPrimColor (&_locPrim);
+		TFB_Prim_Line (lpLine, color);
 		_CurFramePtr->HotSpot = OldHot;
-	} 
+	}
 }
 
 void
@@ -295,10 +281,9 @@ DrawFilledStamp (STAMP *stmp)
 
 	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
 	{
-		TFB_Palette color;
-		
-		COLORtoPalette (GetPrimColor (&_locPrim), &color);
-		TFB_Prim_StampFill (stmp, &color);
+		Color color = GetPrimColor (&_locPrim);
+		TFB_Prim_StampFill (stmp, color);
 		_CurFramePtr->HotSpot = OldHot;
 	}
 }
+

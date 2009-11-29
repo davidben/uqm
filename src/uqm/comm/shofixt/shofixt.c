@@ -30,8 +30,8 @@ static LOCDATA shofixti_desc =
 	NULL, /* uninit_encounter_func */
 	SHOFIXTI_PMAP_ANIM, /* AlienFrame */
 	SHOFIXTI_FONT, /* AlienFont */
-	WHITE_COLOR, /* AlienTextFColor */
-	BLACK_COLOR, /* AlienTextBColor */
+	WHITE_COLOR_INIT, /* AlienTextFColor */
+	BLACK_COLOR_INIT, /* AlienTextBColor */
 	{0, 0}, /* AlienTextBaseline */
 	0, /* SIS_TEXT_WIDTH, */ /* AlienTextWidth */
 	ALIGN_CENTER, /* AlienTextAlign */

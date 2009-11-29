@@ -20,6 +20,7 @@
 #include "lifeform.h"
 #include "scan.h"
 #include "../build.h"
+#include "../colors.h"
 #include "../cons_res.h"
 #include "../controls.h"
 #include "../menustat.h"
@@ -625,7 +626,7 @@ RedrawSurfaceScan (const POINT *newLoc)
 	OldContext = SetContext (ScanContext);
 
 	BatchGraphics ();
-	DrawPlanet (0, 0, 0, 0);
+	DrawPlanet (0, 0, 0, BLACK_COLOR);
 	DrawScannedObjects (TRUE);
 	if (newLoc)
 	{
@@ -819,14 +820,14 @@ static void
 DrawScannedStuff (COUNT y, BYTE CurState)
 {
 	HELEMENT hElement, hNextElement;
-	COLOR OldColor;
+	Color OldColor;
 
-	OldColor = SetContextForeGroundColor (0);
+	OldColor = SetContextForeGroundColor (BLACK_COLOR);
 
 	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
 	{
 		ELEMENT *ElementPtr;
-		//COLOR OldColor;
+		//Color OldColor;
 		SIZE dy;
 		
 		LockElement (hElement, &ElementPtr);
@@ -860,7 +861,7 @@ DrawScannedStuff (COUNT y, BYTE CurState)
 			else
 			{
 				BYTE r, g, b;
-				COLOR c;
+				Color c;
 				
 				// mineral -- white --> turquoise?? (contrasts with red)
 				// energy -- white --> red (contrasts with white)
@@ -949,7 +950,8 @@ DoScan (MENU_STATE *pMS)
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		BatchGraphics ();
-		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH, SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
+		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH,
+				SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, BLACK_COLOR);
 		UnbatchGraphics ();
 		UnlockMutex (GraphicsLock);
 
@@ -1001,7 +1003,7 @@ DoScan (MENU_STATE *pMS)
 			LockMutex (GraphicsLock);
 			SetContext (ScanContext);
 			BatchGraphics ();
-			DrawPlanet (0, 0, 0, 0);
+			DrawPlanet (0, 0, 0, BLACK_COLOR);
 			DrawScannedObjects (FALSE);
 			UnbatchGraphics ();
 			UnlockMutex (GraphicsLock);
@@ -1079,26 +1081,27 @@ DoScan (MENU_STATE *pMS)
 			UnlockMutex (GraphicsLock);
 
 			{
-				DWORD rgb;
+				Color rgb;
+						// Alpha value will be ignored.
 				TimeCount TimeOut;
 				
 				switch (min_scan)
 				{
 					case MINERAL_SCAN:
-						rgb = MAKE_RGB15 (0x1f, 0x00, 0x00);
+						rgb = BUILD_COLOR (MAKE_RGB15 (0x1f, 0x00, 0x00), 0x00);
 						break;
 					case ENERGY_SCAN:
-						rgb = MAKE_RGB15 (0x1f, 0x1f, 0x1f);
+						rgb = BUILD_COLOR (MAKE_RGB15 (0x1f, 0x1f, 0x1f), 0x00);
 						break;
 					case BIOLOGICAL_SCAN:
-						rgb = MAKE_RGB15 (0x00, 0x1f, 0x00);
+						rgb = BUILD_COLOR (MAKE_RGB15 (0x00, 0x1f, 0x00), 0x00);
 						break;
 				}
 
 				// Draw a virgin surface
 				LockMutex (GraphicsLock);
 				BatchGraphics ();
-				DrawPlanet (0, 0, 0, 0);
+				DrawPlanet (0, 0, 0, BLACK_COLOR);
 				UnbatchGraphics ();
 				UnlockMutex (GraphicsLock);
 
@@ -1129,7 +1132,7 @@ DoScan (MENU_STATE *pMS)
 					UnlockMutex (GraphicsLock);
 				}
 
-				pSolarSysState->Tint_rgb = 0;
+				pSolarSysState->Tint_rgb = BLACK_COLOR;
 			}
 		}
 
@@ -1145,7 +1148,7 @@ DoScan (MENU_STATE *pMS)
 		SetContext (ScanContext);
 		if (pMS->CurState == AUTO_SCAN)
 		{
-			DrawPlanet (0, 0, 0, 0);
+			DrawPlanet (0, 0, 0, BLACK_COLOR);
 			DrawScannedObjects (FALSE);
 			UnlockMutex (GraphicsLock);
 

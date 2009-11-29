@@ -299,13 +299,13 @@ LoadSolarSys (void)
 	PLANET_DESC *pCurDesc;
 	DWORD old_seed;
 #define NUM_TEMP_RANGES 5
-	static const COLOR temp_color_array[NUM_TEMP_RANGES] =
+	static const Color temp_color_array[NUM_TEMP_RANGES] =
 	{
-		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x0E), 0x54),
-		BUILD_COLOR (MAKE_RGB15 (0x00, 0x06, 0x08), 0x62),
-		BUILD_COLOR (MAKE_RGB15 (0x00, 0x0B, 0x00), 0x6D),
-		BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D),
-		BUILD_COLOR (MAKE_RGB15 (0x0F, 0x08, 0x00), 0x75),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x00, 0x0E), 0x54),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x06, 0x08), 0x62),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x0B, 0x00), 0x6D),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x00, 0x00), 0x2D),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x08, 0x00), 0x75),
 	};
 
 	pSolarSysState->MenuState.CurState = 0;

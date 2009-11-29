@@ -1601,7 +1601,7 @@ SeedUniverse (void)
 void
 HyperspaceMenu (void)
 {
-	COLOR OldColor;
+	Color OldColor;
 	CONTEXT OldContext;
 	MENU_STATE MenuState;
 

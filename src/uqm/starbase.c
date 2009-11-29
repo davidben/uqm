@@ -82,7 +82,8 @@ void
 DrawShipPiece (FRAME ModuleFrame, COUNT which_piece, COUNT which_slot,
 		BOOLEAN DrawBluePrint)
 {
-	COLOR OldColor = 0;  // Initialisation is to keep the compiler silent.
+	Color OldColor = UNDEFINED_COLOR;
+			// Initialisation is just to keep the compiler silent.
 	RECT r;
 	STAMP Side, Top;
 	SBYTE RepairSlot;

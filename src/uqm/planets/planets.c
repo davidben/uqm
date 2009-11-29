@@ -20,6 +20,7 @@
 
 #include "scan.h"
 #include "lander.h"
+#include "../colors.h"
 #include "../element.h"
 #include "../settings.h"
 #include "../setup.h"
@@ -102,7 +103,7 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 	else
 	{
 		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH,
-				SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, 0);
+				SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, BLACK_COLOR);
 	}
 
 	if (Mode != DRAW_ORBITAL_UPDATE)
@@ -247,7 +248,7 @@ FreePlanet (void)
 
 	DestroyDrawable (ReleaseDrawable (Orbit->TintFrame));
 	Orbit->TintFrame = 0;
-	pSolarSysState->Tint_rgb = 0;
+	pSolarSysState->Tint_rgb = BLACK_COLOR;
 
 	DestroyDrawable (ReleaseDrawable (Orbit->ObjectFrame));
 	Orbit->ObjectFrame = 0;

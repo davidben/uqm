@@ -81,7 +81,7 @@ void
 ClearSISRect (BYTE ClearFlags)
 {
 	RECT r;
-	COLOR OldColor;
+	Color OldColor;
 	CONTEXT OldContext;
 
 	OldContext = SetContext (StatusContext);
@@ -441,7 +441,7 @@ DrawCaptainsName (void)
 	TEXT t;
 	CONTEXT OldContext;
 	FONT OldFont;
-	COLOR OldColor;
+	Color OldColor;
 
 	OldContext = SetContext (StatusContext);
 	OldFont = SetContextFont (TinyFont);
@@ -472,7 +472,7 @@ DrawFlagshipName (BOOLEAN InStatusArea)
 	RECT r;
 	TEXT t;
 	FONT OldFont;
-	COLOR OldColor;
+	Color OldColor;
 	CONTEXT OldContext;
 	FRAME OldFontEffect;
 	UNICODE buf[250];
@@ -533,7 +533,7 @@ DrawFlagshipStats (void)
 	RECT r;
 	TEXT t;
 	FONT OldFont;
-	COLOR OldColor;
+	Color OldColor;
 	FRAME OldFontEffect;
 	CONTEXT OldContext;
 	UNICODE buf[128];
@@ -1198,7 +1198,7 @@ GetCPodCapacity (POINT *ppt)
 	COUNT rowNr;
 	COUNT colNr;
 				
-	static const COLOR crewRows[] = PC_CREW_COLOR_TABLE;
+	static const Color crewRows[] = PC_CREW_COLOR_TABLE;
 
 	crewCount = GetCrewCount ();
 	if (!GetCrewPodForCrewMember (crewCount, &slotNr, &seatNr))
@@ -1300,7 +1300,7 @@ GetSBayCapacity (POINT *ppt)
 	COUNT rowNr;
 	COUNT colNr;
 				
-	static const COLOR colorBars[] = STORAGE_BAY_COLOR_TABLE;
+	static const Color colorBars[] = STORAGE_BAY_COLOR_TABLE;
 
 	massCount = GetElementMass ();
 	if (!GetStorageCellForMineralUnit (massCount, &slotNr, &cellNr))
@@ -1408,7 +1408,7 @@ GetFTankCapacity (POINT *ppt)
 
 	COUNT rowNr;
 				
-	static const COLOR fuelColors[] = FUEL_COLOR_TABLE;
+	static const Color fuelColors[] = FUEL_COLOR_TABLE;
 
 	fuelAmount = GetFuelTotal ();
 	if (!GetFuelTankForFuelUnit (fuelAmount, &slotNr, &compartmentNr))
@@ -1479,7 +1479,7 @@ DrawAutoPilotMessage (BOOLEAN Reset)
 	static DWORD cycle_index = 0;
 	BOOLEAN OnAutoPilot;
 	
-	static const COLOR cycle_tab[] = AUTOPILOT_COLOR_CYCLE_TABLE;
+	static const Color cycle_tab[] = AUTOPILOT_COLOR_CYCLE_TABLE;
 	const size_t cycleCount = sizeof cycle_tab / sizeof cycle_tab[0];
 #define BLINK_RATE (ONE_SECOND * 3 / 40) // 9 @ 120 ticks/second
 

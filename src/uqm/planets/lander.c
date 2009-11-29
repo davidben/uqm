@@ -176,38 +176,38 @@ static PLANETSIDE_DESC *planetSideDesc;
 #define ON_THE_GROUND   0
 
 
-static COLOR
-DamageColorCycle (COLOR c, COUNT i)
+static Color
+DamageColorCycle (Color c, COUNT i)
 {
-	static const COLOR damage_tab[DAMAGE_CYCLE + 1] =
+	static const Color damage_tab[DAMAGE_CYCLE + 1] =
 	{
-		WHITE_COLOR,
-		BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x00), 0x2A),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78),
-		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E),
+		WHITE_COLOR_INIT,
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1B, 0x00, 0x00), 0x2A),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x07, 0x00), 0x7E),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x0E, 0x00), 0x7C),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x15, 0x00), 0x7A),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x1C, 0x00), 0x78),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x1F, 0x0A), 0x0E),
 	};
 
 	if (i)
 		c = damage_tab[i];
-	else if (c == WHITE_COLOR)
+	else if (sameColor(c, WHITE_COLOR))
 		c = damage_tab[6];
-	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E))
+	else if (sameColor(c, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x0A), 0x0E)))
 		c = damage_tab[5];
-	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78))
+	else if (sameColor(c, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1C, 0x00), 0x78)))
 		c = damage_tab[4];
-	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A))
+	else if (sameColor(c, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A)))
 		c = damage_tab[3];
-	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C))
+	else if (sameColor(c, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x0E, 0x00), 0x7C)))
 		c = damage_tab[2];
-	else if (c == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E))
+	else if (sameColor(c, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x07, 0x00), 0x7E)))
 		c = damage_tab[1];
 	else
 		c = damage_tab[0];
 
-	return (c);
+	return c;
 }
 
 static HELEMENT AddGroundDisaster (COUNT which_disaster);
@@ -223,10 +223,10 @@ object_animation (ELEMENT *ElementPtr)
 			&& !((ElementPtr->state_flags & FINITE_LIFE)
 			&& ElementPtr->mass_points == EARTHQUAKE_DISASTER))
 	{
-		COLOR c;
+		Color c;
 
 		c = DamageColorCycle (GetPrimColor (pPrim), 0);
-		if (c == WHITE_COLOR)
+		if (sameColor(c, WHITE_COLOR))
 		{
 			SetPrimType (pPrim, STAMP_PRIM);
 			if (ElementPtr->hit_points == 0)
@@ -273,7 +273,8 @@ object_animation (ELEMENT *ElementPtr)
 				else
 					s = (14 - frame_index) >> 1;
 				// XXX: Was 0x8000 the background flag on 3DO?
-				SetPrimColor (pPrim, BUILD_COLOR (0x8000 | MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
+				//SetPrimColor (pPrim, BUILD_COLOR (0x8000 | MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
+				SetPrimColor (pPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
 				if (frame_index == 13)
 					PlaySound (SetAbsSoundIndex (LanderSounds, EARTHQUAKE_DISASTER),
 							NotPositional (), NULL, GAME_SOUND_PRIORITY);
@@ -923,7 +924,8 @@ lightning_process (ELEMENT *ElementPtr)
 			if (s < 0)
 				s = 0;
 			// XXX: Was 0x8000 the background flag on 3DO?
-			SetPrimColor (pPrim, BUILD_COLOR (0x8000 | MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
+			//SetPrimColor (pPrim, BUILD_COLOR (0x8000 | MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
+			SetPrimColor (pPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), s));
 
 			if (ElementPtr->mass_points == LIGHTNING_DISASTER)
 			{
@@ -1253,9 +1255,11 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 
 				// XXX: Shouldn't this color-cycle with damage_index?
 				//   damage_index is used, but only as a VGA index!
-				SetContextForeGroundColor (BUILD_COLOR (
+				/*SetContextForeGroundColor (BUILD_COLOR (
 						MAKE_RGB15 (0x1F, 0x1F, 0x1F) | 0x8000,
-						damage_index));
+						damage_index));*/
+				SetContextForeGroundColor (
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), damage_index));
 				DrawFilledStamp (&shield_s);
 			}
 			DrawStamp (&lander_s);
@@ -1263,7 +1267,8 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 		else
 		{	// Direct hit, no shield
 			--damage_index;
-			SetContextForeGroundColor (DamageColorCycle (0, damage_index));
+			SetContextForeGroundColor (
+					DamageColorCycle (BLACK_COLOR, damage_index));
 			DrawFilledStamp (&lander_s);
 		}
 	}

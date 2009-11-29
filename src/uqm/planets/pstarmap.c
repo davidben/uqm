@@ -118,7 +118,7 @@ flashCurrentLocation (POINT *where)
 
 	if (GetTimeCounter () >= NextTime)
 	{
-		COLOR OldColor;
+		Color OldColor;
 		CONTEXT OldContext;
 		STAMP s;
 
@@ -130,7 +130,8 @@ flashCurrentLocation (POINT *where)
 		if (c == 0x00 || c == 0x1A)
 			val = -val;
 		c += val;
-		OldColor = SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (c, c, c), c));
+		OldColor = SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (c, c, c), c));
 		s.origin.x = UNIVERSE_TO_DISPX (universe.x);
 		s.origin.y = UNIVERSE_TO_DISPY (universe.y);
 		s.frame = IncFrameIndex (StarMapFrame);
@@ -199,7 +200,8 @@ DrawAutoPilot (POINT *pDstPt)
 		cycle = dy;
 	delta = xerror = yerror = cycle >> 1;
 
-	SetContextForeGroundColor (BUILD_COLOR (MAKE_RGB15 (0x04, 0x04, 0x1F), 0x01));
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x04, 0x04, 0x1F), 0x01));
 
 	delta &= ~1;
 	while (delta--)
@@ -260,12 +262,16 @@ GetSphereRect (FLEET_INFO *FleetPtr, RECT *pRect, RECT *pRepairRect)
 		
 		if (pRepairRect->corner.x <= 0)
 			pRepairRect->corner.x = 1;
-		else if (pRepairRect->corner.x + pRepairRect->extent.width >= SIS_SCREEN_WIDTH)
-			pRepairRect->corner.x = SIS_SCREEN_WIDTH - pRepairRect->extent.width - 1;
+		else if (pRepairRect->corner.x + pRepairRect->extent.width >=
+				SIS_SCREEN_WIDTH)
+			pRepairRect->corner.x =
+					SIS_SCREEN_WIDTH - pRepairRect->extent.width - 1;
 		if (pRepairRect->corner.y <= 0)
 			pRepairRect->corner.y = 1;
-		else if (pRepairRect->corner.y + pRepairRect->extent.height >= SIS_SCREEN_HEIGHT)
-			pRepairRect->corner.y = SIS_SCREEN_HEIGHT - pRepairRect->extent.height - 1;
+		else if (pRepairRect->corner.y + pRepairRect->extent.height >=
+				SIS_SCREEN_HEIGHT)
+			pRepairRect->corner.y =
+					SIS_SCREEN_HEIGHT - pRepairRect->extent.height - 1;
 
 		BoxUnion (pRepairRect, pRect, pRepairRect);
 		pRepairRect->extent.width++;
@@ -339,7 +345,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 			&& which_space < 2
 			&& (diameter = (long)GLOBAL_SIS (FuelOnBoard) << 1))
 	{
-		COLOR OldColor;
+		Color OldColor;
 
 		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
 			r.corner = CurStarDescPtr->star_pt;
@@ -394,7 +400,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 	{
 		COUNT index;
 		HFLEETINFO hStarShip, hNextShip;
-		static const COLOR race_colors[] =
+		static const Color race_colors[] =
 		{
 			RACE_COLORS
 		};
@@ -423,7 +429,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 						&& repair_r.corner.x + repair_r.extent.width > pClipRect->corner.x
 						&& repair_r.corner.y + repair_r.extent.height > pClipRect->corner.y)))
 				{
-					COLOR c;
+					Color c;
 					TEXT t;
 					STRING locString;
 
@@ -456,22 +462,16 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 						t.baseline.y -= (r.corner.y + r.extent.height)
 								- SIS_SCREEN_HEIGHT + 1;
 
-					{
-						BYTE r, g, b;
-						COLOR c32k;
+					// The text color is slightly lighter than the color of
+					// the SoI.
+					c.r = (c.r >= 0xff - CC5TO8 (0x03)) ?
+							0xff : c.r + CC5TO8 (0x03);
+					c.g = (c.g >= 0xff - CC5TO8 (0x03)) ?
+							0xff : c.g + CC5TO8 (0x03);
+					c.b = (c.b >= 0xff - CC5TO8 (0x03)) ?
+							0xff : c.b + CC5TO8 (0x03);
 
-						c32k = COLOR_32k (c);
-						r = (BYTE)((c32k >> (5 * 2)) & 0x1F);
-						if ((r += 0x03) > 0x1F) r = 0x1F;
-						g = (BYTE)((c32k >> (5 * 1)) & 0x1F);
-						if ((g += 0x03) > 0x1F) g = 0x1F;
-						b = (BYTE)((c32k >> (5 * 0)) & 0x1F);
-						if ((b += 0x03) > 0x1F) b = 0x1F;
-
-						SetContextForeGroundColor (
-								BUILD_COLOR (MAKE_RGB15 (r, g, b), COLOR_256 (c) - 1)
-								);
-					}
+					SetContextForeGroundColor (c);
 					font_DrawText (&t);
 				}
 			}

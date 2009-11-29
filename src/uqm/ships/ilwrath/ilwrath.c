@@ -233,26 +233,36 @@ ilwrath_preprocess (ELEMENT *ElementPtr)
 	lpPrim = &(GLOBAL (DisplayArray))[ElementPtr->PrimIndex];
 	if (GetPrimType (lpPrim) == STAMPFILL_PRIM)
 	{
-		COLOR Color;
+		Color color;
 		BOOLEAN weapon_discharge;
 
-		Color = GetPrimColor (lpPrim);
+		color = GetPrimColor (lpPrim);
 		weapon_discharge = ((status_flags & WEAPON)
 				&& StarShipPtr->RaceDescPtr->ship_info.energy_level >= WEAPON_ENERGY_COST);
 		if (weapon_discharge
 				|| (StarShipPtr->special_counter == 0
-				&& ((status_flags & SPECIAL) || Color != BLACK_COLOR)))
+				&& ((status_flags & SPECIAL) ||
+				!sameColor (color, BLACK_COLOR))))
 		{
-			if (Color == BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F))
+			if (sameColor (color,
+					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)))
 				SetPrimType (lpPrim, STAMP_PRIM);
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
+			else if (sameColor (color,
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B)))
+				SetPrimColor (lpPrim,
+						BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+			else if (sameColor (color,
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03)))
+				SetPrimColor (lpPrim,
+						BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
+			else if (sameColor (color,
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)))
+				SetPrimColor (lpPrim,
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+			else if (sameColor (color,
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)))
+				SetPrimColor (lpPrim,
+						BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
 			else
 			{
 				ProcessSound (SetAbsSoundIndex (
@@ -329,21 +339,29 @@ ilwrath_preprocess (ELEMENT *ElementPtr)
 			status_flags &= ~SPECIAL;
 			StarShipPtr->special_counter = 0;
 		}
-		else if (Color != BLACK_COLOR)
+		else if (!sameColor (color, BLACK_COLOR))
 		{
-			if (Color == BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01))
+			if (sameColor (color,
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)))
 			{
 				SetPrimColor (lpPrim, BLACK_COLOR);
 				Untarget (ElementPtr);
 			}
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
-			else if (Color == BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B))
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
+			else if (sameColor (color,
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)))
+				SetPrimColor (lpPrim,
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+			else if (sameColor (color,
+					BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03)))
+				SetPrimColor (lpPrim,
+						BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
+			else if (sameColor (color,
+					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B)))
+				SetPrimColor (lpPrim,
+						BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
 			else
-				SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
+				SetPrimColor (lpPrim,
+						BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
 
 			ElementPtr->state_flags |= CHANGING;
 		}
@@ -353,12 +371,14 @@ ilwrath_preprocess (ELEMENT *ElementPtr)
 			&& StarShipPtr->special_counter == 0
 			&& DeltaEnergy (ElementPtr, -SPECIAL_ENERGY_COST))
 	{
-		SetPrimColor (lpPrim, BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+		SetPrimColor (lpPrim,
+				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 		SetPrimType (lpPrim, STAMPFILL_PRIM);
 
 		ProcessSound (SetAbsSoundIndex (
 						/* CLOAKING_ON */
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1), ElementPtr);
+				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1),
+				ElementPtr);
 		StarShipPtr->special_counter =
 				StarShipPtr->RaceDescPtr->characteristics.special_wait;
 

@@ -114,7 +114,7 @@ struct planet_desc
 	SIZE radius;
 	POINT location;
 
-	COLOR temp_color;
+	Color temp_color;
 	COUNT NextIndex;
 	STAMP image;
 
@@ -210,7 +210,7 @@ struct solarsys_state
 			 * [4] = bio 2 (world-specific)
 			 * [5] = bio 3 (world-specific)
 			 */
-	UWORD Tint_rgb;
+	Color Tint_rgb;
 	UBYTE PauseRotate;
 	FRAME TopoFrame;
 	PLANET_ORBIT Orbit;
@@ -228,7 +228,7 @@ bool matchWorld (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world,
 		BYTE planetI, BYTE moonI);
 
 extern void LoadPlanet (FRAME SurfDefFrame);
-extern void DrawPlanet (int x, int y, int dy, unsigned int rgb);
+extern void DrawPlanet (int x, int y, int dy, Color rgb);
 extern void FreePlanet (void);
 extern void LoadStdLanderFont (PLANET_INFO *info);
 extern void FreeLanderFont (PLANET_INFO *info);

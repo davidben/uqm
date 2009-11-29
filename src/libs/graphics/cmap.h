@@ -40,7 +40,7 @@
 
 typedef struct tfb_colormap
 {
-	TFB_Palette colors[NUMBER_OF_PLUTVALS];
+	Color colors[NUMBER_OF_PLUTVALS];
 	int index;
 	int version;
 	int refcount;
@@ -52,7 +52,7 @@ extern volatile int FadeAmount;
 extern void InitColorMaps (void);
 extern void UninitColorMaps (void);
 
-extern void TFB_ColorMapToRGB (TFB_Palette *pal, int colormap_index);
+extern void TFB_ColorMapToRGB (Color *pal, int colormap_index);
 extern TFB_ColorMap * TFB_GetColorMap (int index);
 extern void TFB_ReturnColorMap (TFB_ColorMap *map);
 

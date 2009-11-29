@@ -28,8 +28,8 @@
 
 
 void
-DrawStarConBox (RECT *pRect, SIZE BorderWidth, COLOR TopLeftColor, COLOR
-		BottomRightColor, BOOLEAN FillInterior, COLOR InteriorColor)
+DrawStarConBox (RECT *pRect, SIZE BorderWidth, Color TopLeftColor,
+		Color BottomRightColor, BOOLEAN FillInterior, Color InteriorColor)
 {
 	RECT locRect;
 

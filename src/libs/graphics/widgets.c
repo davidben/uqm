@@ -34,17 +34,20 @@ WIDGET *widget_focus = NULL;
 #define WIDGET_DIALOG_TEXT_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00)
 
-static COLOR win_bg_clr = BUILD_COLOR (MAKE_RGB15 (0x18, 0x18, 0x1F), 0x00);
-static COLOR win_medium_clr = BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x18), 0x00);
-static COLOR win_dark_clr = BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x10), 0x00);
+static Color win_bg_clr =
+		BUILD_COLOR (MAKE_RGB15_INIT (0x18, 0x18, 0x1F), 0x00);
+static Color win_medium_clr =
+		BUILD_COLOR (MAKE_RGB15_INIT (0x10, 0x10, 0x18), 0x00);
+static Color win_dark_clr =
+		BUILD_COLOR (MAKE_RGB15_INIT (0x08, 0x08, 0x10), 0x00);
 
 static FONT cur_font;
 
 void
-DrawShadowedBox (RECT *r, COLOR bg, COLOR dark, COLOR medium)
+DrawShadowedBox (RECT *r, Color bg, Color dark, Color medium)
 {
 	RECT t;
-	COLOR oldcolor;
+	Color oldcolor;
 
 	BatchGraphics ();
 
@@ -84,7 +87,7 @@ DrawShadowedBox (RECT *r, COLOR bg, COLOR dark, COLOR medium)
 void
 DrawLabelAsWindow (WIDGET_LABEL *label, RECT *windowRect)
 {
-	COLOR oldfg = SetContextForeGroundColor (WIDGET_DIALOG_TEXT_COLOR);
+	Color oldfg = SetContextForeGroundColor (WIDGET_DIALOG_TEXT_COLOR);
 	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	RECT r;
@@ -144,7 +147,7 @@ DrawLabelAsWindow (WIDGET_LABEL *label, RECT *windowRect)
 }
 
 void
-Widget_SetWindowColors (COLOR bg, COLOR dark, COLOR medium)
+Widget_SetWindowColors (Color bg, Color dark, Color medium)
 {
 	win_bg_clr = bg;
 	win_dark_clr = dark;
@@ -165,7 +168,7 @@ Widget_DrawToolTips (int numlines, const char **tips)
 	RECT r;
 	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
-	COLOR oldtext = SetContextForeGroundColor (WIDGET_INACTIVE_SELECTED_COLOR);
+	Color oldtext = SetContextForeGroundColor (WIDGET_INACTIVE_SELECTED_COLOR);
 	TEXT t;
 	int i;
 
@@ -199,8 +202,8 @@ void
 Widget_DrawMenuScreen (WIDGET *_self, int x, int y)
 {
 	RECT r;
-	COLOR title, oldtext;
-	COLOR inactive, default_color, selected;
+	Color title, oldtext;
+	Color inactive, default_color, selected;
 	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
@@ -265,8 +268,8 @@ void
 Widget_DrawChoice (WIDGET *_self, int x, int y)
 {
 	WIDGET_CHOICE *self = (WIDGET_CHOICE *)_self;
-	COLOR oldtext;
-	COLOR inactive, default_color, selected;
+	Color oldtext;
+	Color inactive, default_color, selected;
 	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
@@ -299,7 +302,8 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 	t.align = ALIGN_CENTER;
 	for (i = 0; i < self->numopts; i++)
 	{
-		t.baseline.x = home_x + ((i % 3) * (ScreenWidth / (self->maxcolumns + 1)));
+		t.baseline.x = home_x + ((i % 3) *
+				(ScreenWidth / (self->maxcolumns + 1)));
 		t.baseline.y = home_y + (8 * (i / 3));
 		t.pStr = self->options[i].optname;
 		if ((widget_focus == _self) &&
@@ -307,7 +311,7 @@ Widget_DrawChoice (WIDGET *_self, int x, int y)
 		{
 			SetContextForeGroundColor (selected);
 			Widget_DrawToolTips (3, self->options[i].tooltip);
-		} 
+		}
 		else if (i == self->selected)
 		{
 			SetContextForeGroundColor (default_color);
@@ -328,8 +332,8 @@ void
 Widget_DrawButton (WIDGET *_self, int x, int y)
 {
 	WIDGET_BUTTON *self = (WIDGET_BUTTON *)_self;
-	COLOR oldtext;
-	COLOR inactive, selected;
+	Color oldtext;
+	Color inactive, selected;
 	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
@@ -366,7 +370,7 @@ void
 Widget_DrawLabel (WIDGET *_self, int x, int y)
 {
 	WIDGET_LABEL *self = (WIDGET_LABEL *)_self;
-	COLOR oldtext = SetContextForeGroundColor (WIDGET_INACTIVE_SELECTED_COLOR);
+	Color oldtext = SetContextForeGroundColor (WIDGET_INACTIVE_SELECTED_COLOR);
 	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
@@ -397,8 +401,8 @@ void
 Widget_DrawSlider(WIDGET *_self, int x, int y)
 {
 	WIDGET_SLIDER *self = (WIDGET_SLIDER *)_self;
-	COLOR oldtext;
-	COLOR inactive, default_color, selected;
+	Color oldtext;
+	Color inactive, default_color, selected;
 	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
@@ -470,8 +474,8 @@ void
 Widget_DrawTextEntry (WIDGET *_self, int x, int y)
 {
 	WIDGET_TEXTENTRY *self = (WIDGET_TEXTENTRY *)_self;
-	COLOR oldtext;
-	COLOR inactive, default_color, selected;
+	Color oldtext;
+	Color inactive, default_color, selected;
 	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;
@@ -607,8 +611,8 @@ void
 Widget_DrawControlEntry (WIDGET *_self, int x, int y)
 {
 	WIDGET_CONTROLENTRY *self = (WIDGET_CONTROLENTRY *)_self;
-	COLOR oldtext;
-	COLOR inactive, default_color, selected;
+	Color oldtext;
+	Color inactive, default_color, selected;
 	FONT  oldfont = 0;
 	FRAME oldFontEffect = SetContextFontEffect (NULL);
 	TEXT t;

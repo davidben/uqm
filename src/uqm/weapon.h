@@ -29,7 +29,7 @@ typedef struct
 	SIZE sender; // player number
 	SIZE pixoffs;
 	COUNT face;
-	COLOR color;
+	Color color;
 } LASER_BLOCK;
 
 typedef struct

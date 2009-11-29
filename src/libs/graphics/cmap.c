@@ -41,7 +41,7 @@ typedef struct xform_control
 	SIZE Ticks;
 	DWORD StartTime;
 	DWORD EndTime;
-	TFB_Palette OldCMap[NUMBER_OF_PLUTVALS];
+	Color OldCMap[NUMBER_OF_PLUTVALS];
 } XFORM_CONTROL;
 
 #define MAX_XFORMS 16
@@ -225,7 +225,7 @@ TFB_GetColorMap (int index)
 }
 
 void
-TFB_ColorMapToRGB (TFB_Palette *pal, int index)
+TFB_ColorMapToRGB (Color *pal, int index)
 {
 	TFB_ColorMap *map = NULL;
 
@@ -239,7 +239,7 @@ TFB_ColorMapToRGB (TFB_Palette *pal, int index)
 		return;
 	}
 
-	memcpy (pal, map->colors, sizeof (map->colors));
+	memcpy (pal, map->colors, sizeof map->colors);
 }
 
 BOOLEAN
@@ -288,7 +288,7 @@ SetColorMap (COLORMAPPTR map)
 	for (mpp = colormaps + start; start <= end; ++start, ++mpp)
 	{
 		int i;
-		TFB_Palette *pal;
+		Color *pal;
 		TFB_ColorMap *newmap;
 		TFB_ColorMap *oldmap;
 
@@ -464,7 +464,7 @@ XFormColorMap_step (void)
 #define XFORM_SCALE 0x10000
 			TFB_ColorMap *newmap = NULL;
 			UBYTE *pNewCMap;
-			TFB_Palette *pCurCMap, *pOldCMap;
+			Color *pCurCMap, *pOldCMap;
 			int frac;
 			int i;
 
@@ -480,16 +480,16 @@ XFormColorMap_step (void)
 			for (i = 0; i < NUMBER_OF_PLUTVALS; i++, ++pCurCMap, ++pOldCMap)
 			{
 				
-				pCurCMap->r = (UBYTE)(pOldCMap->r + ((int)*pNewCMap - pOldCMap->r)
-							* frac / XFORM_SCALE);
+				pCurCMap->r = (UBYTE)(pOldCMap->r +
+						((int)*pNewCMap - pOldCMap->r) * frac / XFORM_SCALE);
 				pNewCMap++;
 
-				pCurCMap->g = (UBYTE)(pOldCMap->g + ((int)*pNewCMap - pOldCMap->g)
-							* frac / XFORM_SCALE);
+				pCurCMap->g = (UBYTE)(pOldCMap->g +
+						((int)*pNewCMap - pOldCMap->g) * frac / XFORM_SCALE);
 				pNewCMap++;
 				
-				pCurCMap->b = (UBYTE)(pOldCMap->b + ((int)*pNewCMap - pOldCMap->b)
-							* frac / XFORM_SCALE);
+				pCurCMap->b = (UBYTE)(pOldCMap->b +
+						((int)*pNewCMap - pOldCMap->b) * frac / XFORM_SCALE);
 				pNewCMap++;
 			}
 

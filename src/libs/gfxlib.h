@@ -38,12 +38,36 @@ typedef UWORD TIME_VALUE;
 #define MAX_TIME_VALUE ((1 << TIME_SHIFT) + 1)
 
 typedef SWORD COORD;
-typedef DWORD COLOR;
 
-#define BUILD_COLOR(c32k,c256) \
-	(COLOR)(((DWORD)(c32k)<<8)|(BYTE)(c256))
-		// BUILD_COLOR combines a 15-bit RGB color tripple with a
+typedef struct Color {
+	BYTE r;
+	BYTE g;
+	BYTE b;
+	BYTE a;  // Currently unused
+} Color;
+
+static inline bool
+sameColor(Color c1, Color c2)
+{
+	return c1.r == c2.r &&
+			c1.g == c2.g &&
+			c1.b == c2.b &&
+			c1.a == c2.a;
+}
+
+// Transform a 5-bits color component to an 8-bits color component.
+// Form 1, calculates '(r5 / 31.0) * 255.0, highest value is 0xff:
+#define CC5TO8(c) (((c) << 3) | ((c) >> 2))
+// Form 2, calculates '(r5 / 32.0) * 256.0, highest value is 0xf8:
+//#define CC5TO8(c) ((c) << 3)
+
+#define BUILD_COLOR(col, c256) col
+		// BUILD_COLOR used to combine a 15-bit RGB color tripple with a
 		// destination VGA palette index into a 32-bit value.
+		// Now, it is an empty wrapper which returns the first argument,
+		// which is of type Color, and ignores the second argument,
+		// the palette index.
+		//
 		// It is a remnant of 8bpp hardware paletted display (VGA).
 		// The palette index would be overwritten with the RGB value
 		// and the drawing op would use this index on screen.
@@ -54,10 +78,56 @@ typedef DWORD COLOR;
 		// the standard ones (see colors.h; most likely unchanged from SC1)
 		// The palette index is meaningless in UQM for the most part.
 		// New code should just use index 0.
-#define COLOR_32k(c) (UWORD)((COLOR)(c)>>8)
-#define COLOR_256(c) LOBYTE((COLOR)c)
-#define MAKE_RGB15(r,g,b) (UWORD)(((r)<<10)|((g)<<5)|(b))
-#define BUILD_COLOR_RGBA(r,g,b,a) (DWORD)(((r)<<24)|((g)<<16)|((b)<<8)|(a))
+
+// Turn a 15 bits color into a 24-bits color.
+// r, g, and b are each 5-bits color components.
+static inline Color
+colorFromRgb15 (BYTE r, BYTE g, BYTE b)
+{
+	Color c;
+	c.r = CC5TO8 (r);
+	c.g = CC5TO8 (g);
+	c.b = CC5TO8 (b);
+	c.a = 0;
+
+	return c;
+}
+#define MAKE_RGB15(r, g, b) colorFromRgb15 ((r), (g), (b))
+
+#ifdef NOTYET  /* Need C'99 support */
+#define MAKE_RGB15(r, g, b) (Color) { \
+		.r = CC5TO8 (r), \
+		.g = CC5TO8 (g), \
+		.b = CC5TO8 (b), \
+		.a = 0 \
+	}
+#endif
+
+// Temporary, until we can use C'99 features. Then MAKE_RGB15 will be usable
+// anywhere.
+// This define is intended for global initialisations, where the
+// expression must be constant.
+#define MAKE_RGB15_INIT(r, g, b) { \
+		CC5TO8 (r), \
+		CC5TO8 (g), \
+		CC5TO8 (b), \
+		0 \
+	}
+
+static inline Color
+buildColorRgba (BYTE r, BYTE g, BYTE b, BYTE a)
+{
+	Color c;
+	c.r = r;
+	c.g = g;
+	c.b = b;
+	c.a = a;
+
+	return c;
+}
+#define BUILD_COLOR_RGBA(r, g, b, a) \
+		buildColorRgba ((r), (g), (b), (a))
+
 
 typedef BYTE CREATE_FLAGS;
 #define WANT_MASK (CREATE_FLAGS)(1 << 0)
@@ -168,10 +238,10 @@ extern BOOLEAN InitGraphics (int argc, char *argv[], COUNT
 extern void UninitGraphics (void);
 
 extern CONTEXT SetContext (CONTEXT Context);
-extern COLOR SetContextForeGroundColor (COLOR Color);
-extern COLOR GetContextForeGroundColor (void);
-extern COLOR SetContextBackGroundColor (COLOR Color);
-extern COLOR GetContextBackGroundColor (void);
+extern Color SetContextForeGroundColor (Color Color);
+extern Color GetContextForeGroundColor (void);
+extern Color SetContextBackGroundColor (Color Color);
+extern Color GetContextBackGroundColor (void);
 extern FRAME SetContextFGFrame (FRAME Frame);
 extern FRAME GetContextFGFrame (void);
 extern BOOLEAN SetContextClipping (BOOLEAN ClipStatus);
@@ -186,7 +256,7 @@ extern void DrawRectangle (RECT *pRect);
 extern void DrawFilledRectangle (RECT *pRect);
 extern void DrawLine (LINE *pLine);
 extern void font_DrawText (TEXT *pText);
-extern void font_DrawTracedText (TEXT *pText, COLOR text, COLOR trace);
+extern void font_DrawTracedText (TEXT *pText, Color text, Color trace);
 extern void DrawBatch (PRIMITIVE *pBasePrim, PRIM_LINKS PrimLinks,
 		BATCH_FLAGS BatchFlags);
 extern void BatchGraphics (void);
@@ -236,7 +306,7 @@ extern FRAME SetEquFrameIndex (FRAME DstFrame, FRAME SrcFrame);
 extern FRAME IncFrameIndex (FRAME Frame);
 extern FRAME DecFrameIndex (FRAME Frame);
 extern DRAWABLE RotateFrame (FRAME Frame, int angle_deg);
-extern void SetFrameTransparentColor (FRAME Frame, COLOR c32k);
+extern void SetFrameTransparentColor (FRAME Frame, Color c32k);
 
 extern FRAME CaptureDrawable (DRAWABLE Drawable);
 extern DRAWABLE ReleaseDrawable (FRAME Frame);

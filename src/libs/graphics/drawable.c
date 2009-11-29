@@ -19,7 +19,6 @@
 #include "gfxintrn.h"
 #include "libs/memlib.h"
 #include "tfb_draw.h"
-#include "gfxother.h"
 #include <math.h>
 
 #ifndef M_PI
@@ -251,12 +250,10 @@ RotateFrame (FRAME Frame, int angle_deg)
 	return Drawable;
 }
 
+// color.a is ignored
 void
-SetFrameTransparentColor (FRAME Frame, COLOR c32k)
+SetFrameTransparentColor (FRAME Frame, Color color)
 {
-	TFB_Palette color;
-	
-	COLORtoPalette (c32k, &color);
 	TFB_DrawCanvas_SetTransparentColor (Frame->image->NormalImg,
 			color.r, color.g, color.b, FALSE);
 }

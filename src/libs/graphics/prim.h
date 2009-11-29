@@ -45,7 +45,7 @@ typedef struct
 {
 	PRIM_LINKS Links;
 	GRAPHICS_PRIM Type;
-	COLOR Color;
+	Color color;
 	PRIM_DESC Object;
 } PRIMITIVE;
 
@@ -58,8 +58,8 @@ typedef struct
 #define GetPrimLinks(pPrim) ((pPrim)->Links)
 #define SetPrimType(pPrim,t) ((pPrim)->Type = t)
 #define GetPrimType(pPrim) ((pPrim)->Type)
-#define SetPrimColor(pPrim,c) ((pPrim)->Color = c)
-#define GetPrimColor(pPrim) ((pPrim)->Color)
+#define SetPrimColor(pPrim,c) ((pPrim)->color = c)
+#define GetPrimColor(pPrim) ((pPrim)->color)
 
 static inline void
 SetPrimNextLink (PRIMITIVE *pPrim, COUNT Link)

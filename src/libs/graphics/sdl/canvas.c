@@ -84,7 +84,7 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 {
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
-	TFB_Palette* palette;
+	Color *palette;
 
 	if (img == 0)
 	{
@@ -483,7 +483,8 @@ TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha)
 }
 
 TFB_Canvas
-TFB_DrawCanvas_New_Paletted (int w, int h, TFB_Palette *palette, int transparent_index)
+TFB_DrawCanvas_New_Paletted (int w, int h, Color *palette,
+		int transparent_index)
 {
 	SDL_Surface *new_surf;
 	new_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, w, h, 8, 0, 0, 0, 0);
@@ -589,7 +590,7 @@ TFB_DrawCanvas_Delete (TFB_Canvas canvas)
 		log_add (log_Warning, "INTERNAL PANIC: Attempted"
 				" to delete a NULL canvas!");
 		/* Should we actually die here? */
-	} 
+	}
 	else
 	{
 		SDL_FreeSurface ((SDL_Surface *) canvas);
@@ -597,11 +598,11 @@ TFB_DrawCanvas_Delete (TFB_Canvas canvas)
 
 }
 
-TFB_Palette *
+Color *
 TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas)
 {
 	int i;		
-	TFB_Palette *result;
+	Color *result;
 
 	SDL_Surface *surf = (SDL_Surface *)canvas;
 
@@ -610,7 +611,7 @@ TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas)
 		return NULL;
 	}
 
-	result = (TFB_Palette*) HMalloc (sizeof (TFB_Palette) * 256);
+	result = (Color *) HMalloc (sizeof (Color) * 256);
 	for (i = 0; i < 256; ++i)
 	{
 		result[i].r = surf->format->palette->colors[i].r;
@@ -650,7 +651,7 @@ TFB_DrawCanvas_IsPaletted (TFB_Canvas canvas)
 }
 
 void
-TFB_DrawCanvas_SetPalette (TFB_Canvas target, TFB_Palette *palette)
+TFB_DrawCanvas_SetPalette (TFB_Canvas target, Color *palette)
 {
 	SDL_SetColors ((SDL_Surface *)target, (SDL_Color *)palette, 0, 256);
 }
@@ -722,7 +723,8 @@ TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, int *r, int *g, int *b)
 }
 
 void
-TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b, BOOLEAN rleaccel)
+TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, int r, int g, int b,
+		BOOLEAN rleaccel)
 {
 	Uint32 color;
 	int flags = SDL_SRCCOLORKEY;

@@ -30,7 +30,7 @@ struct context_desc
 {
 	UWORD Flags;
 
-	COLOR ForeGroundColor, BackGroundColor;
+	Color ForeGroundColor, BackGroundColor;
 	FRAME ForeGroundFrame;
 	FONT Font;
 
