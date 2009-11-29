@@ -79,6 +79,8 @@ void *GetResourceData (uio_Stream *fp, DWORD length);
 BOOLEAN FreeResourceData (void *);
 
 #include "strlib.h"
+#include "gfxlib.h"
+		// For Color
 
 typedef STRING_TABLE DIRENTRY_REF;
 typedef STRING DIRENTRY;
@@ -113,6 +115,10 @@ void res_PutInteger (const char *key, int value);
 BOOLEAN res_IsBoolean (const char *key);
 BOOLEAN res_GetBoolean (const char *key);
 void res_PutBoolean (const char *key, BOOLEAN value);
+
+BOOLEAN res_IsColor (const char *key);
+Color res_GetColor (const char *key);
+void res_PutColor (const char *key, Color value);
 
 BOOLEAN res_Remove (const char *key);
 

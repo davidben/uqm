@@ -20,6 +20,9 @@
 #define _GFXLIB_H
 
 #include "libs/compiler.h"
+
+typedef struct Color Color;
+
 #include "libs/reslib.h"
 
 typedef struct context_desc CONTEXT_DESC;
@@ -39,12 +42,12 @@ typedef UWORD TIME_VALUE;
 
 typedef SWORD COORD;
 
-typedef struct Color {
+struct Color {
 	BYTE r;
 	BYTE g;
 	BYTE b;
 	BYTE a;  // Currently unused
-} Color;
+};
 
 static inline bool
 sameColor(Color c1, Color c2)
