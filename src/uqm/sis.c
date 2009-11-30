@@ -971,13 +971,142 @@ DrawSupportShips (void)
 	}
 }
 
+static void
+DeltaSISGauges_crewDelta (SIZE crew_delta)
+{
+	if (crew_delta == 0)
+		return;
+
+	if (crew_delta != UNDEFINED_DELTA)
+	{
+		COUNT CrewCapacity;
+
+		if (crew_delta < 0
+				&& GLOBAL_SIS (CrewEnlisted) <= (COUNT)-crew_delta)
+			GLOBAL_SIS (CrewEnlisted) = 0;
+		else
+		{
+			GLOBAL_SIS (CrewEnlisted) += crew_delta;
+			CrewCapacity = GetCrewPodCapacity ();
+			if (GLOBAL_SIS (CrewEnlisted) > CrewCapacity)
+				GLOBAL_SIS (CrewEnlisted) = CrewCapacity;
+		}
+	}
+
+	{
+		TEXT t;
+		UNICODE buf[60];
+		RECT r;
+
+		snprintf (buf, sizeof buf, "%u", GLOBAL_SIS (CrewEnlisted));
+
+		GetGaugeRect (&r, TRUE);
+		
+		t.baseline.x = STATUS_WIDTH >> 1;
+		t.baseline.y = r.corner.y + r.extent.height;
+		t.align = ALIGN_CENTER;
+		t.pStr = buf;
+		t.CharCount = (COUNT)~0;
+
+		SetContextForeGroundColor (BLACK_COLOR);
+		DrawFilledRectangle (&r);
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x0E, 0x00), 0x6C));
+		font_DrawText (&t);
+	}
+}
+
+static void
+DeltaSISGauges_fuelDelta (SIZE fuel_delta)
+{
+	COUNT old_coarse_fuel;
+	COUNT new_coarse_fuel;
+
+	if (fuel_delta == 0)
+		return;
+
+	if (fuel_delta == UNDEFINED_DELTA)
+		old_coarse_fuel = (COUNT)~0;
+	else
+	{
+
+		old_coarse_fuel = (COUNT)(
+				GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE);
+		if (fuel_delta < 0
+				&& GLOBAL_SIS (FuelOnBoard) <= (DWORD)-fuel_delta)
+		{
+			GLOBAL_SIS (FuelOnBoard) = 0;
+		}
+		else
+		{
+			DWORD FuelCapacity = GetFuelTankCapacity ();
+			GLOBAL_SIS (FuelOnBoard) += fuel_delta;
+			if (GLOBAL_SIS (FuelOnBoard) > FuelCapacity)
+				GLOBAL_SIS (FuelOnBoard) = FuelCapacity;
+		}
+	}
+
+	new_coarse_fuel = (COUNT)(
+			GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE);
+	if (new_coarse_fuel != old_coarse_fuel)
+	{
+		TEXT t;
+		UNICODE buf[60];
+		RECT r;
+
+		snprintf (buf, sizeof buf, "%u", new_coarse_fuel);
+
+		GetGaugeRect (&r, FALSE);
+		
+		t.baseline.x = STATUS_WIDTH >> 1;
+		t.baseline.y = r.corner.y + r.extent.height;
+		t.align = ALIGN_CENTER;
+		t.pStr = buf;
+		t.CharCount = (COUNT)~0;
+
+		SetContextForeGroundColor (BLACK_COLOR);
+		DrawFilledRectangle (&r);
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
+		font_DrawText (&t);
+	}
+}
+	
+static void
+DeltaSISGauges_resunitDelta (SIZE resunit_delta)
+{
+	if (resunit_delta == 0)
+		return;
+
+	if (resunit_delta != UNDEFINED_DELTA)
+	{
+		if (resunit_delta < 0
+				&& GLOBAL_SIS (ResUnits) <= (DWORD)-resunit_delta)
+			GLOBAL_SIS (ResUnits) = 0;
+		else
+			GLOBAL_SIS (ResUnits) += resunit_delta;
+
+		assert (curMsgMode == SMM_RES_UNITS);
+	}
+	else
+	{
+		RECT r;
+
+		r.corner.x = 2;
+		r.corner.y = 130;
+		r.extent.width = STATUS_MESSAGE_WIDTH;
+		r.extent.height = STATUS_MESSAGE_HEIGHT;
+		SetContextForeGroundColor (
+				BUILD_COLOR (MAKE_RGB15 (0x00, 0x08, 0x00), 0x6E));
+		DrawFilledRectangle (&r);
+	}
+		
+	DrawStatusMessage (NULL);
+}
+
 void
 DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 {
-	STAMP s;
-	RECT r;
-	TEXT t;
-	UNICODE buf[60];
 	CONTEXT OldContext;
 
 	if (crew_delta == 0 && fuel_delta == 0 && resunit_delta == 0)
@@ -988,6 +1117,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 	BatchGraphics ();
 	if (crew_delta == UNDEFINED_DELTA)
 	{
+		STAMP s;
 		s.origin.x = 0;
 		s.origin.y = 0;
 		s.frame = FlagStatFrame;
@@ -1005,81 +1135,10 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		LockMutex (GraphicsLock);
 	}
 
-	t.baseline.x = STATUS_WIDTH >> 1;
-	t.align = ALIGN_CENTER;
-	t.pStr = buf;
 	SetContextFont (TinyFont);
 
-	if (crew_delta != 0)
-	{
-		if (crew_delta != UNDEFINED_DELTA)
-		{
-			COUNT CrewCapacity;
-
-			if (crew_delta < 0
-					&& GLOBAL_SIS (CrewEnlisted) <= (COUNT)-crew_delta)
-				GLOBAL_SIS (CrewEnlisted) = 0;
-			else
-			{
-				GLOBAL_SIS (CrewEnlisted) += crew_delta;
-				CrewCapacity = GetCrewPodCapacity ();
-				if (GLOBAL_SIS (CrewEnlisted) > CrewCapacity)
-					GLOBAL_SIS (CrewEnlisted) = CrewCapacity;
-			}
-		}
-
-		snprintf (buf, sizeof buf, "%u", GLOBAL_SIS (CrewEnlisted));
-		GetGaugeRect (&r, TRUE);
-		t.baseline.y = r.corner.y + r.extent.height;
-		t.CharCount = (COUNT)~0;
-		SetContextForeGroundColor (BLACK_COLOR);
-		DrawFilledRectangle (&r);
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x0E, 0x00), 0x6C));
-		font_DrawText (&t);
-	}
-
-	if (fuel_delta != 0)
-	{
-		COUNT old_coarse_fuel;
-		COUNT new_coarse_fuel;
-
-		if (fuel_delta == UNDEFINED_DELTA)
-			old_coarse_fuel = (COUNT)~0;
-		else
-		{
-
-			old_coarse_fuel = (COUNT)(
-					GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE);
-			if (fuel_delta < 0
-					&& GLOBAL_SIS (FuelOnBoard) <= (DWORD)-fuel_delta)
-			{
-				GLOBAL_SIS (FuelOnBoard) = 0;
-			}
-			else
-			{
-				DWORD FuelCapacity = GetFuelTankCapacity ();
-				GLOBAL_SIS (FuelOnBoard) += fuel_delta;
-				if (GLOBAL_SIS (FuelOnBoard) > FuelCapacity)
-					GLOBAL_SIS (FuelOnBoard) = FuelCapacity;
-			}
-		}
-
-		new_coarse_fuel = (COUNT)(
-				GLOBAL_SIS (FuelOnBoard) / FUEL_TANK_SCALE);
-		if (new_coarse_fuel != old_coarse_fuel)
-		{
-			snprintf (buf, sizeof buf, "%u", new_coarse_fuel);
-			GetGaugeRect (&r, FALSE);
-			t.baseline.y = r.corner.y + r.extent.height;
-			t.CharCount = (COUNT)~0;
-			SetContextForeGroundColor (BLACK_COLOR);
-			DrawFilledRectangle (&r);
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
-			font_DrawText (&t);
-		}
-	}
+	DeltaSISGauges_crewDelta (crew_delta);
+	DeltaSISGauges_fuelDelta (fuel_delta);
 
 	if (crew_delta == UNDEFINED_DELTA)
 	{
@@ -1089,31 +1148,8 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		DrawStorageBays (FALSE);
 	}
 
-	if (resunit_delta != 0)
-	{
-		if (resunit_delta != UNDEFINED_DELTA)
-		{
-			if (resunit_delta < 0
-					&& GLOBAL_SIS (ResUnits) <= (DWORD)-resunit_delta)
-				GLOBAL_SIS (ResUnits) = 0;
-			else
-				GLOBAL_SIS (ResUnits) += resunit_delta;
+	DeltaSISGauges_resunitDelta (resunit_delta);
 
-			assert (curMsgMode == SMM_RES_UNITS);
-			DrawStatusMessage (NULL);
-		}
-		else
-		{
-			r.corner.x = 2;
-			r.corner.y = 130;
-			r.extent.width = STATUS_MESSAGE_WIDTH;
-			r.extent.height = STATUS_MESSAGE_HEIGHT;
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x08, 0x00), 0x6E));
-			DrawFilledRectangle (&r);
-			DrawStatusMessage (NULL);
-		}
-	}
 	UnbatchGraphics ();
 
 	SetContext (OldContext);
