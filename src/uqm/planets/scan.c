@@ -667,8 +667,6 @@ PickPlanetSide (MENU_STATE *pMS)
 			// Set the current flash location
 			setPlanetCursorLoc (planetLoc);
 			savePlanetLocationImage ();
-
-			SetFlashRect (NULL);
 			UnlockMutex (GraphicsLock);
 
 			InitLander (0);
@@ -1001,15 +999,18 @@ DoScan (MENU_STATE *pMS)
 			UnlockMutex (GraphicsLock);
 
 			LockMutex (GraphicsLock);
+			SetFlashRect (NULL);
 			SetContext (ScanContext);
 			BatchGraphics ();
 			DrawPlanet (0, 0, 0, BLACK_COLOR);
 			DrawScannedObjects (FALSE);
 			UnbatchGraphics ();
 			UnlockMutex (GraphicsLock);
-		
+
 			pMS->Initialized = FALSE;
 			pMS->CurFrame = 0;
+			// XXX: PickPlanetSide() will take over the InputFunc
+			//   and later restore it when its done
 			return PickPlanetSide (pMS);
 		}
 
@@ -1241,6 +1242,9 @@ ScanSystem (void)
 	}
 
 	DrawMenuStateStrings (PM_MIN_SCAN, MenuState.CurState);
+	LockMutex (GraphicsLock);
+	SetFlashRect (SFR_MENU_3DO);
+	UnlockMutex (GraphicsLock);
 
 	if (optWhichCoarseScan == OPT_PC)
 		PrintCoarseScanPC ();
@@ -1249,6 +1253,10 @@ ScanSystem (void)
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput (&MenuState, FALSE);
+
+	LockMutex (GraphicsLock);
+	SetFlashRect (NULL);
+	UnlockMutex (GraphicsLock);
 
 	if (ScanContext)
 	{

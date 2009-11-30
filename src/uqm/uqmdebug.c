@@ -584,7 +584,6 @@ forAllMoons (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 	COUNT i;
 
 	assert(pSolarSysState == system);
-	assert(system->pBaseDesc == planet);
 
 	for (i = 0; i < planet->NumPlanets; i++)
 		callback (star, system, planet, &system->MoonDesc[i], arg);
@@ -675,7 +674,6 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 	assert(CurStarDescPtr == star);
 	assert(pSolarSysState == system);
 
-	system->pBaseDesc = planet;
 	planet->pPrevDesc = &system->SunDesc[0];
 
 	if (universeRecurseArg->planetFuncPre != NULL)
@@ -723,7 +721,6 @@ moonRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 	
 	assert(CurStarDescPtr == star);
 	assert(pSolarSysState == system);
-	assert(system->pBaseDesc == planet);
 	
 	moon->pPrevDesc = planet;
 

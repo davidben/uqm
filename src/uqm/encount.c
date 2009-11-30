@@ -73,15 +73,14 @@ DoSelectAction (MENU_STATE *pMS)
 					pMS->CurState = HAIL;
 				return (FALSE);
 			case ATTACK + 1:
-				pMS->Initialized = GameOptions ();
-				if (pMS->Initialized)
-				{
-					DrawMenuStateStrings (PM_CONVERSE, pMS->CurState);
-					LockMutex (GraphicsLock);
-					SetFlashRect (SFR_MENU_3DO);
-					UnlockMutex (GraphicsLock);
-				}
-				return ((BOOLEAN)pMS->Initialized);
+				// Clearing FlashRect is not necessary
+				if (!GameOptions ())
+					return FALSE;
+				DrawMenuStateStrings (PM_CONVERSE, pMS->CurState);
+				LockMutex (GraphicsLock);
+				SetFlashRect (SFR_MENU_3DO);
+				UnlockMutex (GraphicsLock);
+				break;
 			default:
 				printf ("Unknown option: %d\n", pMS->CurState);
 		}

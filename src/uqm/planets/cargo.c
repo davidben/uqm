@@ -303,10 +303,10 @@ DoDiscardCargo (MENU_STATE *pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
-	if (!(pMS->Initialized & 1))
+	if (!pMS->Initialized)
 	{
 		pMS->InputFunc = DoDiscardCargo;
-		++pMS->Initialized;
+		pMS->Initialized = TRUE;
 
 		NewState = pMS->CurState;
 		pMS->CurState = (BYTE)~0;
@@ -372,16 +372,18 @@ SelectCargo:
 }
 
 void
-Cargo (MENU_STATE *pMS)
+CargoMenu (void)
 {
-	pMS->InputFunc = DoDiscardCargo;
-	--pMS->Initialized;
-	pMS->CurState = 1;
+	// XXX: Should get an own STATE struct
+	MENU_STATE MenuState;
+
+	MenuState.InputFunc = DoDiscardCargo;
+	MenuState.Initialized = FALSE;
+	// XXX: 1-based index because this had to work around the
+	//   pSolarSysState->MenuState.CurState abuse. Should be changed.
+	MenuState.CurState = 1;
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	DoInput (pMS, TRUE);
-
-	pMS->InputFunc = DoFlagshipCommands;
-	pMS->CurState = CARGO + 1;
+	DoInput (&MenuState, TRUE);
 }
 

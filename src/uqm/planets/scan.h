@@ -43,6 +43,8 @@ struct scan_block
 	SCAN_DESC *scan_base;
 };
 
+extern void ScanSystem (void);
+
 extern void RepairBackRect (RECT *pRect);
 extern void GeneratePlanetSide (void);
 extern bool callGenerateForScanType (SOLARSYS_STATE *solarSys,

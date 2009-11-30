@@ -237,20 +237,11 @@ extern void ExploreSolarSys (void);
 extern void DrawStarBackGround (BOOLEAN ForPlanet);
 extern void XFormIPLoc (POINT *pIn, POINT *pOut, BOOLEAN ToDisplay);
 extern PLAN_GEN_FUNC GenerateIP (BYTE Index);
-extern void DrawSystem (SIZE radius, BOOLEAN IsInnerSystem);
 extern void DrawOval (RECT *pRect, BYTE num_off_pixels);
 extern void DrawFilledOval (RECT *pRect);
 extern void FillOrbits (SOLARSYS_STATE *system, BYTE NumPlanets,
 		PLANET_DESC *pBaseDesc, BOOLEAN TypesDefined);
-extern void ScanSystem (void);
-extern void ChangeSolarSys (void);
-extern BOOLEAN DoFlagshipCommands (MENU_STATE *pMS);
-extern void ZoomSystem (void);
-extern void LoadSolarSys (void);
 extern void InitLander (BYTE LanderFlags);
-extern BOOLEAN ValidateOrbits (void);
-extern void IP_reset (void);
-extern void IP_frame (void);
 
 extern RECT* RotatePlanet (int x, int dx, int dy, COUNT scale_amt,
 		UBYTE zoom_from, RECT *r);
@@ -262,6 +253,8 @@ extern void DeltaTopography (COUNT num_iterations, SBYTE *DepthArray,
 
 extern UNICODE* GetNamedPlanetaryBody (void);
 extern void GetPlanetOrMoonName (UNICODE *buf, COUNT bufsize);
+
+extern void PlanetOrbitMenu (void);
 
 #endif /* _PLANETS_H */
 

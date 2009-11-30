@@ -24,7 +24,6 @@
 #ifdef NETPLAY
 #	include "netplay/netmelee.h"
 #endif
-#include "planets/planets.h"
 #include "settings.h"
 #include "sounds.h"
 #include "tactrans.h"
@@ -377,16 +376,7 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 
 		soundFlags = MenuKeysToSoundFlags (&PulsedInputState);
 			
-		if (MenuSounds
-				&& (pSolarSysState == 0
-						/* see if in menu */
-				|| pSolarSysState->MenuState.CurState
-				|| pSolarSysState->MenuState.Initialized > 2)
-		                && (soundFlags & (sound_0 | sound_1))
-#ifdef NEVER
-				&& !PLRPlaying ((MUSIC_REF)~0)
-#endif /* NEVER */
-				)
+		if (MenuSounds && (soundFlags & (sound_0 | sound_1)))
 		{
 			SOUND S;
 

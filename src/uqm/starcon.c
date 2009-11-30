@@ -253,6 +253,9 @@ while (--ac > 0)
 			else if (GLOBAL (CurrentActivity) & START_INTERPLANETARY)
 			{
 				GLOBAL (CurrentActivity) = MAKE_WORD (IN_INTERPLANETARY, 0);
+
+				DrawAutoPilotMessage (TRUE);
+				SetGameClockRate (INTERPLANETARY_CLOCK_RATE);
 				ExploreSolarSys ();
 			}
 			else

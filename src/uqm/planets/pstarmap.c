@@ -1586,8 +1586,8 @@ DoneSphereGrowth:
 	}
 }
 
-static BOOLEAN
-DoStarMap (void)
+BOOLEAN
+StarMap (void)
 {
 	MENU_STATE MenuState;
 	POINT universe;
@@ -1613,9 +1613,6 @@ DoStarMap (void)
 	cursorLoc = GLOBAL (autopilot);
 	if (cursorLoc.x == ~0 && cursorLoc.y == ~0)
 		cursorLoc = universe;
-
-	UnlockMutex (GraphicsLock);
-	TaskSwitch ();
 
 	MenuState.InputFunc = DoMoveCursor;
 	MenuState.Initialized = FALSE;
@@ -1643,10 +1640,10 @@ DoStarMap (void)
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 	LockMutex (GraphicsLock);
-
 	DrawHyperCoords (universe);
 	DrawSISMessage (NULL);
 	DrawStatusMessage (NULL);
+	UnlockMutex (GraphicsLock);
 
 	if (GLOBAL (autopilot.x) == universe.x
 			&& GLOBAL (autopilot.y) == universe.y)
@@ -1654,187 +1651,5 @@ DoStarMap (void)
 
 	return (GLOBAL (autopilot.x) != ~0
 			&& GLOBAL (autopilot.y) != ~0);
-}
-
-BOOLEAN
-DoFlagshipCommands (MENU_STATE *pMS)
-{
-	/* TODO: Make this carried cleanly by MENU_STATE structure */
-	// static DWORD NextTime;
-	if (!(pMS->Initialized & 1))
-	{
-		/* This has some dependency on the IPtask_func */
-		ChangeSolarSys ();
-		// NextTime = GetTimeCounter ();
-	}
-	else
-	{
-		BOOLEAN select = PulsedInputState.menu[KEY_MENU_SELECT];
-		LockMutex (GraphicsLock);
-		if (*(volatile BYTE *)&pMS->CurState == 0
-				&& (*(volatile SIZE *)&pMS->Initialized & 1)
-				&& !(GLOBAL (CurrentActivity)
-				& (START_ENCOUNTER | END_INTERPLANETARY
-				| CHECK_ABORT | CHECK_LOAD))
-				&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
-		{
-			UnlockMutex (GraphicsLock);
-			IP_frame ();
-			return TRUE;
-		}
-		UnlockMutex (GraphicsLock);
-
-		if (pMS->CurState)
-		{
-			BOOLEAN DoMenu;
-			BYTE NewState;
-
-			/* If pMS->CurState == 0, then we're flying
-			 * around in interplanetary.  This needs to be
-			 * corrected for the MenuChooser, which thinks
-			 * that "0" is the first menu option */
-			pMS->CurState --;
-			DoMenu = DoMenuChooser (pMS, 
-				(BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN));
-			pMS->CurState ++;
-
-			if (!DoMenu) {
-
-				NewState = pMS->CurState;
-				if (LastActivity == CHECK_LOAD)
-					select = TRUE; // Selected LOAD from main menu
-				if (select)
-				{
-					if (NewState != SCAN + 1 && NewState != (GAME_MENU) + 1)
-					{
-						LockMutex (GraphicsLock);
-						SetFlashRect (NULL);
-						UnlockMutex (GraphicsLock);
-					}
-
-					switch (NewState - 1)
-					{
-						case SCAN:
-							ScanSystem ();
-							break;
-						case EQUIP_DEVICE:
-						{
-							if (!Devices (pMS))
-								select = FALSE;
-							if (GET_GAME_STATE (PORTAL_COUNTER)) {
-								// A player-induced portal to QuasiSpace is
-								// opening.
-								return (FALSE);
-							}
-							break;
-						}
-						case CARGO:
-						{
-							Cargo (pMS);
-							break;
-						}
-						case ROSTER:
-						{
-							if (!Roster ())
-								select = FALSE;
-							break;
-						}
-						case GAME_MENU:
-							if (GameOptions () == 0)
-								return (FALSE);						
-							break;
-						case STARMAP:
-						{
-							BOOLEAN AutoPilotSet;
-
-							LockMutex (GraphicsLock);
-							if (++pMS->Initialized > 3) {
-								pSolarSysState->PauseRotate = 1;
-								RepairSISBorder ();
-							}
-
-							AutoPilotSet = DoStarMap ();
-							SetDefaultMenuRepeatDelay ();
-
-							if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE
-									|| (GLOBAL (CurrentActivity) & CHECK_ABORT))
-							{
-								UnlockMutex (GraphicsLock);
-								return (FALSE);
-							}
-							else if (pMS->Initialized <= 3)
-							{
-								ZoomSystem ();
-								--pMS->Initialized;
-							}
-							UnlockMutex (GraphicsLock);
-
-							if (!AutoPilotSet && pMS->Initialized >= 3)
-							{
-								LoadPlanet (NULL);
-								--pMS->Initialized;
-								pSolarSysState->PauseRotate = 0;
-								LockMutex (GraphicsLock);
-								SetFlashRect (SFR_MENU_3DO);
-								UnlockMutex (GraphicsLock);
-								break;
-							}
-						}
-						case NAVIGATION:
-							if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
-								return (FALSE);
-
-							if (pMS->Initialized <= 1)
-							{
-								pMS->Initialized = 1;
-							}
-							else if (pMS->flash_task)
-							{	// In planet orbit
-								FreePlanet ();
-								LockMutex (GraphicsLock);
-								LoadSolarSys ();
-								ValidateOrbits ();
-								ZoomSystem ();
-								UnlockMutex (GraphicsLock);
-							}
-
-							LockMutex (GraphicsLock);
-							pMS->CurState = 0;
-							FlushInput ();
-							UnlockMutex (GraphicsLock);
-							break;
-					}
-				
-					if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-						;
-					else if (pMS->CurState)
-					{
-						LockMutex (GraphicsLock);
-						SetFlashRect (SFR_MENU_3DO);
-						UnlockMutex (GraphicsLock);
-						if (select)
-						{
-							if (optWhichMenu != OPT_PC)
-								pMS->CurState = (NAVIGATION) + 1;
-							DrawMenuStateStrings ((BYTE)(pMS->Initialized <= 1 ? PM_STARMAP : PM_SCAN),
-									pMS->CurState - 1);
-						}
-					}
-					else
-					{
-						LockMutex (GraphicsLock);
-						SetFlashRect (NULL);
-						UnlockMutex (GraphicsLock);
-						DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
-					}
-				}
-			}
-		}
-	}
-
-	return (!(GLOBAL (CurrentActivity)
-			& (START_ENCOUNTER | END_INTERPLANETARY
-			| CHECK_ABORT | CHECK_LOAD))
-			&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0);
 }
 

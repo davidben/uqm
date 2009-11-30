@@ -401,7 +401,7 @@ compShipPos (const void *ptr1, const void *ptr2)
 }
 
 BOOLEAN
-Roster (void)
+RosterMenu (void)
 {
 	SIZE num_support_ships;
 

@@ -22,10 +22,12 @@
 #include "collide.h"
 #include "colors.h"
 #include "controls.h"
+#include "gameopt.h"
 #include "menustat.h"
 		// for DrawMenuStateStrings()
 #include "encount.h"
 #include "ship.h"
+#include "shipcont.h"
 #include "process.h"
 #include "globdata.h"
 #include "sis.h"
@@ -35,9 +37,9 @@
 #include "resinst.h"
 #include "setup.h"
 #include "sounds.h"
+#include "options.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
-
 
 
 #define XOFFS ((RADAR_SCAN_WIDTH + (UNIT_SCREEN_WIDTH << 2)) >> 1)
@@ -1598,6 +1600,74 @@ SeedUniverse (void)
 	}
 }
 
+static BOOLEAN
+DoHyperspaceMenu (MENU_STATE *pMS)
+{
+	BOOLEAN select = PulsedInputState.menu[KEY_MENU_SELECT];
+	BOOLEAN handled;
+
+	if ((GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
+			|| GLOBAL_SIS (CrewEnlisted) == (COUNT)~0)
+		return FALSE;
+
+	handled = DoMenuChooser (pMS, PM_STARMAP);
+	if (handled)
+		return TRUE;
+
+	if (!select)
+		return TRUE;
+
+	LockMutex (GraphicsLock);
+	SetFlashRect (NULL);
+	UnlockMutex (GraphicsLock);
+
+	switch (pMS->CurState)
+	{
+		case EQUIP_DEVICE:
+			select = DevicesMenu ();
+			if (GET_GAME_STATE (PORTAL_COUNTER))
+			{	// A player-induced portal to QuasiSpace is opening
+				return FALSE;
+			}
+			if (GLOBAL (CurrentActivity) & START_ENCOUNTER)
+			{	// Selected Talking Pet, going into conversation
+				return FALSE;
+			}
+			break;
+		case CARGO:
+			CargoMenu ();
+			break;
+		case ROSTER:
+			select = RosterMenu ();
+			break;
+		case GAME_MENU:
+			if (!GameOptions ())
+				return FALSE; // abort or load
+			break;
+		case STARMAP:
+			StarMap ();
+			SetDefaultMenuRepeatDelay ();
+			return FALSE;
+		case NAVIGATION:
+			return FALSE;
+	}
+
+	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
+	{
+		if (select)
+		{	// 3DO menu jumps to NAVIGATE after a successful submenu run
+			if (optWhichMenu != OPT_PC)
+				pMS->CurState = NAVIGATION;
+			DrawMenuStateStrings (PM_STARMAP, pMS->CurState);
+		}
+		LockMutex (GraphicsLock);
+		SetFlashRect (SFR_MENU_3DO);
+		UnlockMutex (GraphicsLock);
+	}
+
+	return TRUE;
+}
+
 void
 HyperspaceMenu (void)
 {
@@ -1613,9 +1683,9 @@ UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);
 
 	memset (&MenuState, 0, sizeof (MenuState));
-	MenuState.InputFunc = DoFlagshipCommands;
-	MenuState.Initialized = 1;
-	MenuState.CurState = STARMAP + 1;
+	MenuState.InputFunc = DoHyperspaceMenu;
+	MenuState.Initialized = TRUE;
+	MenuState.CurState = STARMAP;
 
 	DrawMenuStateStrings (PM_STARMAP, STARMAP);
 	LockMutex (GraphicsLock);

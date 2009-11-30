@@ -460,12 +460,12 @@ DoManipulateDevices (MENU_STATE *pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
-	if (!(pMS->Initialized & 1))
+	if (!pMS->Initialized)
 	{
 		DrawDevices (pMS, (BYTE)~0, (BYTE)~0);
 
 		pMS->InputFunc = DoManipulateDevices;
-		++pMS->Initialized;
+		pMS->Initialized = TRUE;
 		NewState = pMS->CurState;
 		goto SelectDevice;
 	}
@@ -640,27 +640,28 @@ InventoryDevices (BYTE *pDeviceMap, COUNT Size)
 }
 
 BOOLEAN
-Devices (MENU_STATE *pMS)
+DevicesMenu (void)
 {
 	BYTE DeviceMap[NUM_DEVICES];
+	MENU_STATE MenuState;
 
-	pMS->first_item.x = InventoryDevices (DeviceMap, NUM_DEVICES);
-	if (pMS->first_item.x)
+	memset (&MenuState, 0, sizeof MenuState);
+
+	MenuState.first_item.x = InventoryDevices (DeviceMap, NUM_DEVICES);
+	if (MenuState.first_item.x)
 	{
-		pMS->InputFunc = DoManipulateDevices;
-		--pMS->Initialized;
-		pMS->CurState = 1;
-		pMS->first_item.y = 0;
+		MenuState.InputFunc = DoManipulateDevices;
+		MenuState.Initialized = FALSE;
+		// XXX: 1-based index because this had to work around the
+		//   pSolarSysState->MenuState.CurState abuse. Should be changed.
+		MenuState.CurState = 1;
+		MenuState.first_item.y = 0;
 
-		pMS->CurFrame = (FRAME)DeviceMap;
-		FlushInput ();
-		DoManipulateDevices (pMS); /* to make sure it's initialized */
+		// XXX: CurFrame hack
+		MenuState.CurFrame = (FRAME)DeviceMap;
+		//DoManipulateDevices (pMS); /* to make sure it's initialized */
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-		DoInput (pMS, TRUE);
-		pMS->CurFrame = 0;
-
-		pMS->InputFunc = DoFlagshipCommands;
-		pMS->CurState = EQUIP_DEVICE + 1;
+		DoInput (&MenuState, TRUE);
 
 		if (GLOBAL_SIS (CrewEnlisted) != (COUNT)~0
 				&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))

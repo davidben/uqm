@@ -23,10 +23,15 @@
 #include "../colors.h"
 #include "../element.h"
 #include "../settings.h"
+#include "../controls.h"
+#include "../sounds.h"
+#include "../gameopt.h"
+#include "../shipcont.h"
 #include "../setup.h"
 #include "../uqmdebug.h"
 #include "../resinst.h"
 #include "../nameref.h"
+#include "options.h"
 #include "libs/graphics/gfx_common.h"
 
 
@@ -294,4 +299,120 @@ FreeLanderFont (PLANET_INFO *info)
 	info->LanderFont = NULL;
 	DestroyDrawable (ReleaseDrawable (info->LanderFontEff));
 	info->LanderFontEff = NULL;
+}
+
+static BOOLEAN
+DoPlanetOrbit (MENU_STATE *pMS)
+{
+	BOOLEAN select = PulsedInputState.menu[KEY_MENU_SELECT];
+	BOOLEAN handled;
+
+	if ((GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
+			|| GLOBAL_SIS (CrewEnlisted) == (COUNT)~0)
+		return FALSE;
+
+	// XXX: pMS actually refers to pSolarSysState->MenuState
+	handled = DoMenuChooser (pMS, PM_SCAN);
+	if (handled)
+		return TRUE;
+
+	if (!select)
+		return TRUE;
+
+	LockMutex (GraphicsLock);
+	SetFlashRect (NULL);
+	UnlockMutex (GraphicsLock);
+
+	switch (pMS->CurState)
+	{
+		case SCAN:
+			ScanSystem ();
+			break;
+		case EQUIP_DEVICE:
+			select = DevicesMenu ();
+			if (GLOBAL (CurrentActivity) & START_ENCOUNTER)
+			{	// Invoked Talking Pet, a Caster or Sun Device over Chmmr,
+				// or a Caster for Ilwrath
+				// Going into conversation
+				return FALSE;
+			}
+			break;
+		case CARGO:
+			CargoMenu ();
+			break;
+		case ROSTER:
+			select = RosterMenu ();
+			break;
+		case GAME_MENU:
+			if (!GameOptions ())
+				return FALSE; // abort or load
+			break;
+		case STARMAP:
+		{
+			BOOLEAN AutoPilotSet;
+
+			LockMutex (GraphicsLock);
+			pSolarSysState->PauseRotate = 1;
+			RepairSISBorder ();
+			UnlockMutex (GraphicsLock);
+			TaskSwitch ();
+
+			AutoPilotSet = StarMap ();
+			SetDefaultMenuRepeatDelay ();
+
+			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+				return FALSE;
+
+			if (!AutoPilotSet)
+			{	// Redraw the orbital display
+				LoadPlanet (NULL);
+				LockMutex (GraphicsLock);
+				pSolarSysState->PauseRotate = 0;
+				UnlockMutex (GraphicsLock);
+				break;
+			}
+			// Fall through !!!
+		}
+		case NAVIGATION:
+			return FALSE;
+	}
+
+	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
+	{
+		if (select)
+		{	// 3DO menu jumps to NAVIGATE after a successful submenu run
+			if (optWhichMenu != OPT_PC)
+				pMS->CurState = NAVIGATION;
+			DrawMenuStateStrings (PM_SCAN, pMS->CurState);
+		}
+		LockMutex (GraphicsLock);
+		SetFlashRect (SFR_MENU_3DO);
+		UnlockMutex (GraphicsLock);
+	}
+
+	return TRUE;
+}
+
+void
+PlanetOrbitMenu (void)
+{
+	void *oldInputFunc = pSolarSysState->MenuState.InputFunc;
+
+	DrawMenuStateStrings (PM_SCAN, SCAN);
+	LockMutex (GraphicsLock);
+	SetFlashRect (SFR_MENU_3DO);
+	UnlockMutex (GraphicsLock);
+
+	pSolarSysState->MenuState.CurState = SCAN;
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
+	// XXX: temporary; will have an own MENU_STATE
+	pSolarSysState->MenuState.InputFunc = DoPlanetOrbit;
+	DoInput (&pSolarSysState->MenuState, TRUE);
+	pSolarSysState->MenuState.InputFunc = oldInputFunc;
+
+	LockMutex (GraphicsLock);
+	SetFlashRect (NULL);
+	UnlockMutex (GraphicsLock);
+	DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
 }
