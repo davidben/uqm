@@ -177,7 +177,7 @@ DescriptorToColor (const char *descriptor, RESOURCE_DATA *resdata)
 	int componentBits;
 	int maxComponentValue;
 	size_t componentCount;
-	size_t compI;;
+	size_t compI;
 	int comps[4];
 			// One element for each of r, g, b, a.
 
