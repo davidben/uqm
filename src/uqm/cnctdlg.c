@@ -330,13 +330,12 @@ OnTextEntryChange (TEXTENTRY_STATE *pTES)
 static BOOLEAN
 OnTextEntryFrame (TEXTENTRY_STATE *pTES)
 {
-	WIDGET_TEXTENTRY *widget = (WIDGET_TEXTENTRY *) pTES->CbParam;
-
 	DrawConnectDialog ();
 
 	SleepThreadUntil (pTES->NextTime);
 	pTES->NextTime = GetTimeCounter () + MENU_FRAME_RATE;
 
+	(void) pTES;  // satisfying compiler
 	return TRUE; // continue
 }
 
