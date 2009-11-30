@@ -613,7 +613,7 @@ res_PutColor (const char *key, Color value)
 	{
 		/* TODO: This is kind of roundabout. We can do better by refactoring
 		 * newResourceDesc */
-		process_resource_desc(key, "COLOR:#000000");
+		process_resource_desc(key, "COLOR:rgb(0, 0, 0)");
 		desc = lookupResourceDesc (idx, key);
 	}
 	desc->resdata.num =
