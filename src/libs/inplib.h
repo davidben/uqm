@@ -22,6 +22,7 @@
 #include <stddef.h>
 #include "libs/compiler.h"
 #include "libs/uio.h"
+#include "libs/unicode.h"
 
 
 extern BOOLEAN AnyButtonPress (BOOLEAN DetectSpecial);
@@ -43,8 +44,8 @@ extern volatile int GameActive;
 
 void EnterCharacterMode (void);
 void ExitCharacterMode (void);
-wchar_t GetNextCharacter (void);
-wchar_t GetLastCharacter (void);
+UniChar GetNextCharacter (void);
+UniChar GetLastCharacter (void);
 
 /* Interrogating the current key configuration */
 

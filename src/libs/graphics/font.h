@@ -26,9 +26,9 @@
 typedef struct FontPage
 {
 	struct FontPage *next;
-	wchar_t pageStart;
+	UniChar pageStart;
 #define CHARACTER_PAGE_MASK 0xff800
-	wchar_t firstChar;
+	UniChar firstChar;
 	size_t numChars;
 	TFB_Char *charDesc;
 } FONT_PAGE;

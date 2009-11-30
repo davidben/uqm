@@ -33,8 +33,8 @@
 
 #define KBDBUFSIZE (1 << 8)
 static int kbdhead=0, kbdtail=0;
-static wchar_t kbdbuf[KBDBUFSIZE];
-static wchar_t lastchar;
+static UniChar kbdbuf[KBDBUFSIZE];
+static UniChar lastchar;
 static int num_keys = 0;
 static int *kbdstate = NULL;
 		// Holds all SDL keys +1 for holding invalid values
@@ -291,10 +291,10 @@ ExitCharacterMode (void)
 	lastchar = 0;
 }
 
-wchar_t
+UniChar
 GetNextCharacter (void)
 {
-	wchar_t result;
+	UniChar result;
 	if (kbdhead == kbdtail)
 		return 0;
 	result = kbdbuf[kbdhead];
@@ -302,7 +302,7 @@ GetNextCharacter (void)
 	return result;
 }	
 
-wchar_t
+UniChar
 GetLastCharacter (void)
 {
 	return lastchar;
@@ -353,7 +353,7 @@ ProcessInputEvent (const SDL_Event *Event)
 	if (Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP)
 	{	// process character input event, if any
 		SDLKey k = Event->key.keysym.sym;
-		wchar_t map_key = Event->key.keysym.unicode;
+		UniChar map_key = Event->key.keysym.unicode;
 
 		if (k < 0 || k > num_keys)
 			k = num_keys; // for unknown keys

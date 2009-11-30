@@ -36,9 +36,9 @@ resyncUTF8(const unsigned char **ptr) {
 // Returns 0 if the encoding is bad. This can be distinguished from the
 // '\0' character by checking whether **ptr == '\0' before calling this
 // function.
-wchar_t
+UniChar
 getCharFromString(const unsigned char **ptr) {
-	wchar_t result;
+	UniChar result;
 
 	if (**ptr < 0x80) {
 		// 0xxxxxxx, regular ASCII
@@ -126,7 +126,7 @@ err:
 	return 0;
 }
 
-wchar_t
+UniChar
 getCharFromStringN(const unsigned char **ptr, const unsigned char *end) {
 	size_t numBytes;
 
@@ -167,7 +167,7 @@ getLineFromString(const unsigned char *start, const unsigned char **end,
 		const unsigned char **startNext) {
 	const unsigned char *ptr = start;
 	const unsigned char *lastPtr;
-	wchar_t ch;
+	UniChar ch;
 
 	// Search for the first newline.
 	for (;;) {
@@ -215,7 +215,7 @@ getLineFromString(const unsigned char *start, const unsigned char **end,
 size_t
 utf8StringCount(const unsigned char *start) {
 	size_t count = 0;
-	wchar_t ch;
+	UniChar ch;
 
 	for (;;) {
 		ch = getCharFromString(&start);
@@ -228,7 +228,7 @@ utf8StringCount(const unsigned char *start) {
 size_t
 utf8StringCountN(const unsigned char *start, const unsigned char *end) {
 	size_t count = 0;
-	wchar_t ch;
+	UniChar ch;
 
 	for (;;) {
 		ch = getCharFromStringN(&start, end);
@@ -238,11 +238,11 @@ utf8StringCountN(const unsigned char *start, const unsigned char *end) {
 	}
 }
 
-// Locates a wide char (ch) in a UTF-8 string (pStr)
+// Locates a unicode character (ch) in a UTF-8 string (pStr)
 // returns the char positions when found
 //  -1 when not found
 int
-utf8StringPos (const unsigned char *pStr, wchar_t ch)
+utf8StringPos (const unsigned char *pStr, UniChar ch)
 {
 	int pos;
  
@@ -278,9 +278,9 @@ int
 utf8StringCompare (const unsigned char *str1, const unsigned char *str2)
 {
 #if 0
-	// wchar_t comparing version
-	wchar_t ch1;
-	wchar_t ch2;
+	// UniChar comparing version
+	UniChar ch1;
+	UniChar ch2;
 
 	for (;;)
 	{
@@ -321,7 +321,7 @@ utf8StringCompare (const unsigned char *str1, const unsigned char *str2)
 
 unsigned char *
 skipUTF8Chars(const unsigned char *ptr, size_t num) {
-	wchar_t ch;
+	UniChar ch;
 	const unsigned char *oldPtr;
 
 	while (num--) {
@@ -333,16 +333,16 @@ skipUTF8Chars(const unsigned char *ptr, size_t num) {
 	return (unsigned char *) ptr;
 }
 
-// Decodes a UTF-8 string (start) into a wide char string (wstr)
+// Decodes a UTF-8 string (start) into a unicode character string (wstr)
 // returns number of chars decoded and stored, not counting 0-term
 // any chars that do not fit are truncated
 // wide string term 0 is always appended, unless the destination
 // buffer is 0 chars long
 size_t
-getWideFromStringN(wchar_t *wstr, size_t maxcount,
+getUniCharFromStringN(UniChar *wstr, size_t maxcount,
 		const unsigned char *start, const unsigned char *end)
 {
-	wchar_t *next;
+	UniChar *next;
 
 	if (maxcount == 0)
 		return 0;
@@ -366,9 +366,10 @@ getWideFromStringN(wchar_t *wstr, size_t maxcount,
 //  the only difference is that the source string (start) length is
 //  calculated by searching for 0-term
 size_t
-getWideFromString(wchar_t *wstr, size_t maxcount, const unsigned char *start)
+getUniCharFromString(UniChar *wstr, size_t maxcount,
+		const unsigned char *start)
 {
-	wchar_t *next;
+	UniChar *next;
 
 	if (maxcount == 0)
 		return 0;
@@ -394,12 +395,12 @@ getWideFromString(wchar_t *wstr, size_t maxcount, const unsigned char *start)
 //  <0 : negative of bytes needed if buffer too small
 // string term '\0' is *not* appended or counted
 int
-getStringFromChar(unsigned char *ptr, size_t size, wchar_t ch)
+getStringFromChar(unsigned char *ptr, size_t size, UniChar ch)
 {
 	int i;
 	static const struct range_def
 	{
-		wchar_t lim;
+		UniChar lim;
 		int marker;
 		int mask;
 	}
@@ -420,8 +421,8 @@ getStringFromChar(unsigned char *ptr, size_t size, wchar_t ch)
 		;
 	if (def->mask == 0)
 	{	// invalid or unsupported char
-		log_add(log_Warning, "Warning: Invalid or unsupported wide char (%lu)",
-				(unsigned long)ch);
+		log_add(log_Warning, "Warning: Invalid or unsupported unicode "
+				"char (%lu)", (unsigned long) ch);
 		return 0;
 	}
 
@@ -454,7 +455,7 @@ getStringFromChar(unsigned char *ptr, size_t size, wchar_t ch)
 // buffer is 0 bytes long
 size_t
 getStringFromWideN(unsigned char *ptr, size_t size,
-		const wchar_t *wstr, size_t count)
+		const UniChar *wstr, size_t count)
 {
 	unsigned char *next;
 	int used;
@@ -487,9 +488,9 @@ getStringFromWideN(unsigned char *ptr, size_t size,
 //  the only difference is that the source string (wstr) length is
 //  calculated by searching for 0-term
 size_t
-getStringFromWide(unsigned char *ptr, size_t size, const wchar_t *wstr)
+getStringFromWide(unsigned char *ptr, size_t size, const UniChar *wstr)
 {
-	const wchar_t *end;
+	const UniChar *end;
 
 	for (end = wstr; *end != 0; ++end)
 		;
@@ -498,7 +499,7 @@ getStringFromWide(unsigned char *ptr, size_t size, const wchar_t *wstr)
 }
 
 int
-isWideGraphChar(wchar_t ch)
+UniChar_isGraph(UniChar ch)
 {	// this is not technically sufficient, but close enough for us
 	// we'll consider all non-control (CO and C1) chars in 'graph' class
 	// except for the "Private Use Area" (0xE000 - 0xF8FF)
@@ -512,23 +513,24 @@ isWideGraphChar(wchar_t ch)
 }
 
 int
-isWidePrintChar(wchar_t ch)
+UniChar_isPrint(UniChar ch)
 {	// this is not technically sufficient, but close enough for us
 	// chars in 'print' class are 'graph' + 'space' classes
 	// the only space we currently have defined is 0x20
-	return (ch == 0x20) || isWideGraphChar(ch);
+	return (ch == 0x20) || UniChar_isGraph(ch);
 }
 
-wchar_t
-toWideUpper(wchar_t ch)
+UniChar
+UniChar_toUpper(UniChar ch)
 {	// this is a very basic Latin-1 implementation
 	// just to get things going
-	return (ch < 0x100) ? toupper(ch) : ch;
+	return (ch < 0x100) ? (UniChar) toupper((int) ch) : ch;
 }
 
-wchar_t
-toWideLower(wchar_t ch)
+UniChar
+UniChar_toLower(UniChar ch)
 {	// this is a very basic Latin-1 implementation
 	// just to get things going
-	return (ch < 0x100) ? tolower(ch) : ch;
+	return (ch < 0x100) ? (UniChar) tolower((int) ch) : ch;
 }
+

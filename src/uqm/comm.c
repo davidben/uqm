@@ -323,7 +323,7 @@ getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
 	COUNT oldCount;
 	const unsigned char *ptr;
 	const unsigned char *wordStart;
-	wchar_t ch;
+	UniChar ch;
 	COUNT charCount;
 
 	//GetContextClipRect (&rect);

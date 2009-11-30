@@ -968,10 +968,10 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 		for (c = 0, sptr = pSS->Cluster, dptr = ClusterName;
 				c < pSS->ClusterLen; ++c)
 		{
-			wchar_t sc = getCharFromString (&sptr);
-			wchar_t dc = getCharFromString (&dptr);
+			UniChar sc = getCharFromString (&sptr);
+			UniChar dc = getCharFromString (&dptr);
 
-			if (toWideUpper (sc) != toWideUpper (dc))
+			if (UniChar_toUpper (sc) != UniChar_toUpper (dc))
 				break;
 		}
 
@@ -1010,10 +1010,10 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 		for (c = 0, sptr = pSS->Prefix, dptr = FullName;
 				c < pSS->PrefixLen; ++c)
 		{
-			wchar_t sc = getCharFromString (&sptr);
-			wchar_t dc = getCharFromString (&dptr);
+			UniChar sc = getCharFromString (&sptr);
+			UniChar dc = getCharFromString (&dptr);
 
-			if (toWideUpper (sc) != toWideUpper (dc))
+			if (UniChar_toUpper (sc) != UniChar_toUpper (dc))
 				break;
 		}
 

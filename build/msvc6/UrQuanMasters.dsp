@@ -1568,6 +1568,10 @@ SOURCE=..\..\src\libs\uio.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\libs\unicode.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\libs\vidlib.h
 # End Source File
 # End Group

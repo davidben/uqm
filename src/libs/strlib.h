@@ -22,6 +22,7 @@
 #include "libs/compiler.h"
 #include "port.h"
 #include "libs/uio.h"
+#include "libs/unicode.h"
 
 #include <stddef.h>
 
@@ -57,42 +58,15 @@ extern STRINGPTR GetStringTimeStamp (STRING String);
 extern BOOLEAN GetStringContents (STRING String, STRINGPTR StringBuf,
 		BOOLEAN AppendSpace);
 
-wchar_t getCharFromString(const unsigned char **ptr);
-wchar_t getCharFromStringN(const unsigned char **ptr,
-		const unsigned char *end);
-unsigned char *getLineFromString(const unsigned char *start,
-		const unsigned char **end, const unsigned char **startNext);
-size_t utf8StringCount(const unsigned char *start);
-size_t utf8StringCountN(const unsigned char *start,
-		const unsigned char *end);
-int utf8StringPos (const unsigned char *pStr, wchar_t ch);
-unsigned char *utf8StringCopy (unsigned char *dst, size_t size,
-		const unsigned char *src);
-int utf8StringCompare (const unsigned char *str1, const unsigned char *str2);
-unsigned char *skipUTF8Chars(const unsigned char *ptr, size_t num);
-size_t getWideFromString(wchar_t *wstr, size_t maxcount,
-		const unsigned char *start);
-size_t getWideFromStringN(wchar_t *wstr, size_t maxcount,
-		const unsigned char *start, const unsigned char *end);
-int getStringFromChar(unsigned char *ptr, size_t size, wchar_t ch);
-size_t getStringFromWideN(unsigned char *ptr, size_t size,
-		const wchar_t *wstr, size_t count);
-size_t getStringFromWide(unsigned char *ptr, size_t size,
-		const wchar_t *wstr);
-int isWideGraphChar(wchar_t ch);
-int isWidePrintChar(wchar_t ch);
-wchar_t toWideUpper(wchar_t ch);
-wchar_t toWideLower(wchar_t ch);
-
-#define WCHAR_DEGREE_SIGN   0x00b0
+#define UNICHAR_DEGREE_SIGN   0x00b0
 #define STR_DEGREE_SIGN     "\xC2\xB0"
-#define WCHAR_INFINITY_SIGN 0x221e
+#define UNICHAR_INFINITY_SIGN 0x221e
 #define STR_INFINITY_SIGN   "\xE2\x88\x9E"
-#define WCHAR_EARTH_SIGN    0x2641
+#define UNICHAR_EARTH_SIGN    0x2641
 #define STR_EARTH_SIGN      "\xE2\x99\x81"
-#define WCHAR_MIDDLE_DOT    0x00b7
+#define UNICHAR_MIDDLE_DOT    0x00b7
 #define STR_MIDDLE_DOT      "\xC2\xB7"
-#define WCHAR_BULLET        0x2022
+#define UNICHAR_BULLET        0x2022
 #define STR_BULLET          "\xE2\x80\xA2"
 
 #endif /* _STRLIB_H */

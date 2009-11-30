@@ -89,7 +89,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 	BYTE ButtonState;
 	int end_page_len;
 	UNICODE end_page_buf[200];
-	wchar_t last_c;
+	UniChar last_c;
 	COUNT row_cells;
 	BOOLEAN Sleepy;
 	RECT r;
@@ -142,11 +142,11 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 		{
 			COUNT word_chars;
 			const UNICODE *pStr;
-			wchar_t c;
+			UniChar c;
  
 			pStr = t.pStr;
 			pNextStr = t.pStr;
-			while (isWideGraphChar (getCharFromString (&pNextStr)))
+			while (UniChar_isGraph (getCharFromString (&pNextStr)))
 				pStr = pNextStr;
 
 			word_chars = utf8StringCountN (t.pStr, pStr);

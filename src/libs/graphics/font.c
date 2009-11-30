@@ -21,7 +21,7 @@
 #include "libs/log.h"
 
 extern void FixContextFontEffect (void);
-static inline TFB_Char *getCharFrame (FONT_DESC *fontPtr, wchar_t ch);
+static inline TFB_Char *getCharFrame (FONT_DESC *fontPtr, UniChar ch);
 
 
 FONT
@@ -119,7 +119,7 @@ TextRect (TEXT *lpText, RECT *pRect, BYTE *pdelta)
 	{
 		COORD top_y, bot_y;
 		SIZE width;
-		wchar_t next_ch;
+		UniChar next_ch;
 		const unsigned char *pStr;
 		COUNT num_chars;
 	
@@ -150,7 +150,7 @@ TextRect (TEXT *lpText, RECT *pRect, BYTE *pdelta)
 		}
 		while (num_chars--)
 		{
-			wchar_t ch;
+			UniChar ch;
 			SIZE last_width;
 			TFB_Char *charFrame;
 
@@ -230,7 +230,7 @@ _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr)
 	FONT FontPtr;
 
 	COUNT num_chars;
-	wchar_t next_ch;
+	UniChar next_ch;
 	const unsigned char *pStr;
 	TEXT *TextPtr;
 	POINT origin;
@@ -257,7 +257,7 @@ _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr)
 		num_chars = 0;
 	while (num_chars--)
 	{
-		wchar_t ch;
+		UniChar ch;
 		TFB_Char* fontChar;
 
 		ch = next_ch;
@@ -295,9 +295,9 @@ _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr)
 }
 
 static inline TFB_Char *
-getCharFrame (FONT_DESC *fontPtr, wchar_t ch)
+getCharFrame (FONT_DESC *fontPtr, UniChar ch)
 {
-	wchar_t pageStart = ch & CHARACTER_PAGE_MASK;
+	UniChar pageStart = ch & CHARACTER_PAGE_MASK;
 	size_t charIndex;
 
 	FONT_PAGE *page = fontPtr->fontPages;

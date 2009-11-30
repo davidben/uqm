@@ -123,7 +123,7 @@ JoyCharToLower (joy_char_t *outch, const joy_char_t *ch,
 BOOLEAN
 DoTextEntry (TEXTENTRY_STATE *pTES)
 {
-	wchar_t ch;
+	UniChar ch;
 	UNICODE *pStr;
 	UNICODE *CacheInsPt;
 	int CacheCursorPos;
@@ -209,7 +209,7 @@ DoTextEntry (TEXTENTRY_STATE *pTES)
 		pTES->JoystickMode = FALSE;
 
 		chsize = getStringFromChar (chbuf, sizeof (chbuf), ch);
-		if (isWidePrintChar (ch) && chsize > 0)
+		if (UniChar_isPrint (ch) && chsize > 0)
 		{
 			if (pStr + len - pTES->BaseStr + chsize < pTES->MaxSize)
 			{	// insert character, when fits
