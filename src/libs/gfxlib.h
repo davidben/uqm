@@ -22,6 +22,12 @@
 #include "libs/compiler.h"
 
 typedef struct Color Color;
+struct Color {
+	BYTE r;
+	BYTE g;
+	BYTE b;
+	BYTE a;  // Currently unused
+};
 
 #include "libs/reslib.h"
 
@@ -41,13 +47,6 @@ typedef UWORD TIME_VALUE;
 #define MAX_TIME_VALUE ((1 << TIME_SHIFT) + 1)
 
 typedef SWORD COORD;
-
-struct Color {
-	BYTE r;
-	BYTE g;
-	BYTE b;
-	BYTE a;  // Currently unused
-};
 
 static inline bool
 sameColor(Color c1, Color c2)
