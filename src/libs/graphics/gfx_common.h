@@ -77,12 +77,10 @@ typedef enum {
 
 void LoadIntoExtraScreen (RECT *r);
 void DrawFromExtraScreen (RECT *r);
-void SetGraphicGrabOther (int grab_other);
 int SetGraphicScale (int scale);
 int GetGraphicScale (void);
 int SetGraphicScaleMode (int mode /* enum SCALE */);
 int GetGraphicScaleMode (void);
-void SetGraphicUseOtherExtra (int other);
 void SetTransitionSource (RECT *pRect);
 void ScreenTransition (int transition, RECT *pRect);
 

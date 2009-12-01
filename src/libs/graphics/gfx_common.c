@@ -38,22 +38,6 @@ int TFB_DEBUG_HALT = 0;
 static int gscale = GSCALE_IDENTITY;
 static int gscale_mode = TFB_SCALE_NEAREST;
 
-// Status: Ignored (only used in fmv.c)
-void
-SetGraphicUseOtherExtra (int other) //Could this possibly be more cryptic?!? :)
-{
-	//log_add (log_Debug, "SetGraphicUseOtherExtra %d", other);
-	(void)other; /* lint */
-}
-
-// Status: Ignored (only used in solarsys.c)
-void
-SetGraphicGrabOther (int grab_other)
-{
-	//log_add (log_Debug, "SetGraphicGrabOther %d", grab_other);
-	(void)grab_other; /* lint */
-}
-
 void
 DrawFromExtraScreen (RECT *r)
 {

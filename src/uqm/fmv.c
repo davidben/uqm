@@ -38,7 +38,6 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 	BYTE clut_buf[1];
 	RECT old_r, r;
 
-	SetGraphicUseOtherExtra (1);
 	LoadIntoExtraScreen (0);
 #if 0
 	/* This is cut out right now but should be part of the 3DO side */
@@ -66,7 +65,6 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 	r.extent.height = SCREEN_HEIGHT;
 	SetContextClipRect (&r);
 	DrawFromExtraScreen (0);
-	SetGraphicUseOtherExtra (0);
 	SetContextClipRect (&old_r);
 
 	if (hMusic)
