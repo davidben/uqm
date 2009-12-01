@@ -21,7 +21,6 @@
 #include "save.h"
 
 #include "build.h"
-#include "libs/declib.h"
 #include "controls.h"
 #include "encount.h"
 #include "libs/file.h"
@@ -34,9 +33,14 @@
 #include "state.h"
 #include "grpinfo.h"
 #include "util.h"
+#include "hyper.h"
+		// for SaveSisHyperState()
+#include "planets/planets.h"
+		// for SaveSolarSysLocation() and tests
 #include "libs/inplib.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
+#include "libs/declib.h"
 
 
 // XXX: these should handle endian conversions later
@@ -481,7 +485,7 @@ PrepareSummary (SUMMARY_DESC *SummPtr)
 					sizeof (SummPtr->SS.PlanetName));
 			if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) == (BYTE)~0)
 				SummPtr->Activity = IN_STARBASE;
-			else if (pSolarSysState && pSolarSysState->MenuState.Initialized >= 3)
+			else if (playerInPlanetOrbit ())
 				SummPtr->Activity = IN_PLANET_ORBIT;
 			break;
 		case IN_LAST_BATTLE:
@@ -615,6 +619,20 @@ SaveProblem (void)
 	SetContext (OldContext);
 	DestroyDrawable (ReleaseDrawable (s.frame));
 	UnlockMutex (GraphicsLock);
+}
+
+static void
+SaveFlagshipState (void)
+{
+	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	{
+		// Player is in HyperSpace or QuasiSpace.
+		SaveSisHyperState ();
+	}
+	else if (playerInSolarSystem ())
+	{
+		SaveSolarSysLocation ();
+	}
 }
 
 // This function first writes to a memory file, and then writes the whole

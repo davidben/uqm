@@ -202,7 +202,6 @@ extern void DrawLanders (void);
 extern void DrawStorageBays (BOOLEAN Refresh);
 extern void GetGaugeRect (RECT *pRect, BOOLEAN IsCrewRect);
 extern void DrawFlagshipStats (void);
-extern void SaveFlagshipState (void);
 void DrawAutoPilotMessage (BOOLEAN Reset);
 
 extern void DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int

@@ -142,10 +142,24 @@ matchWorld (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world,
 	return true;
 }
 
-// TODO: make code outside solarsys.c call a similar external version
-static inline bool
-inInnerSystem (void)
+bool
+playerInSolarSystem (void)
 {
+	return pSolarSysState != NULL;
+}
+
+bool
+playerInPlanetOrbit (void)
+{
+	return playerInSolarSystem () &&
+			pSolarSysState->MenuState.Initialized >= 3;
+			// XXX: This test will change eventually
+}
+
+bool
+playerInInnerSystem (void)
+{
+	assert (playerInSolarSystem ());
 	assert (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc
 			|| pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc);
 	return pSolarSysState->pBaseDesc != pSolarSysState->PlanetDesc;
@@ -433,10 +447,8 @@ FreeSolarSys (void)
 		}
 		pSolarSysState->MenuState.flash_task = 0;
 		
-		LockMutex (GraphicsLock);
 		if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
-			SaveFlagshipState ();
-		UnlockMutex (GraphicsLock);
+			SaveSolarSysLocation ();
 	}
 
 	LockMutex (GraphicsLock);
@@ -519,7 +531,7 @@ ShowPlanet:
 	{
 		PlanetIntersect.IntersectStamp.origin = pCurDesc->image.origin;
 		PlanetIntersect.EndPoint = PlanetIntersect.IntersectStamp.origin;
-		if (inInnerSystem ())
+		if (playerInInnerSystem ())
 		{
 			PlanetOffset = pCurDesc->pPrevDesc -
 					pSolarSysState->PlanetDesc;
@@ -552,7 +564,7 @@ ShowPlanet:
 				return;
 			else if (pSolarSysState->WaitIntersect == NewWaitPlanet)
 				continue;
-			else if (inInnerSystem ())
+			else if (playerInInnerSystem ())
 				goto ShowPlanet;
 			else if (!just_checking) /* pBaseDesc == PlanetDesc */
 			{
@@ -768,7 +780,7 @@ ZoomSystem (void)
 
 	SetTransitionSource (&r);
 	BatchGraphics ();
-	if (inInnerSystem ())
+	if (playerInInnerSystem ())
 		DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius, TRUE);
 	else
 		DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
@@ -910,7 +922,7 @@ UndrawShip (void)
 			|| GLOBAL (ShipStamp.origin.y) >= SIS_SCREEN_HEIGHT)
 	{
 		// The ship leaves the screen.
-		if (!inInnerSystem ())
+		if (!playerInInnerSystem ())
 		{
 			if (radius == MAX_ZOOM_RADIUS)
 			{
@@ -940,7 +952,7 @@ UndrawShip (void)
 			pSolarSysState->MenuState.flash_rect0.corner.x;
 	delta_y = GLOBAL (ShipStamp.origin.y) -
 			pSolarSysState->MenuState.flash_rect0.corner.y;
-	if (!inInnerSystem ()
+	if (!playerInInnerSystem ()
 			&& (radius > MAX_ZOOM_RADIUS
 			|| (delta_x >= 0 && delta_y >= 0
 			&& delta_x < pSolarSysState->MenuState.flash_rect0.extent.width
@@ -1106,7 +1118,7 @@ IP_frame (void)
 		// we have to treat things slightly differently depending on the
 		// situation (note that DRAW_REFRESH means entered a new system
 		// not from a load)
-		startedInInner = inInnerSystem ();
+		startedInInner = playerInInnerSystem ();
 		if (startedInInner)
 		{
 			SetTransitionSource (NULL);
@@ -1145,13 +1157,13 @@ IP_frame (void)
 		// Don't redraw if entering/exiting inner system
 		// this screws up ScreenTransition by leaving an image of the
 		// ship in the ExtraScreen (which we use for repair)
-		if (startedInInner == inInnerSystem ())
+		if (startedInInner == playerInInnerSystem ())
 			RedrawQueue (FALSE);
 	}
 	
 	if (startedInInner)
 	{
-		if (!inInnerSystem ())
+		if (!playerInInnerSystem ())
 		{
 			// transition screen if we left inner system (if going
 			// from outer to inner, ScreenTransition happens elsewhere)
@@ -1186,7 +1198,7 @@ IP_frame (void)
 	}
 	
 	// Save the system image if we left inner system, or we forced a redraw
-	if ((startedInInner && !inInnerSystem ())
+	if ((startedInInner && !playerInInnerSystem ())
 			|| (draw_sys_flags & DRAW_REFRESH))
 	{
 		LoadIntoExtraScreen (&r);
@@ -1214,7 +1226,7 @@ ValidateOrbits (void)
 	POINT old_pts[2] = { { 0, 0 }, { 0, 0 } };
 	PLANET_DESC *pCurDesc;
 
-	InnerSystem = inInnerSystem ();
+	InnerSystem = playerInInnerSystem ();
 	if (InnerSystem)
 	{
 		old_pts[0] = GLOBAL (ShipStamp.origin);
@@ -1623,7 +1635,7 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 		}
 	}
 
-		if (!inInnerSystem ())
+		if (!playerInInnerSystem ())
 			XFormIPLoc (&GLOBAL (ip_location),
 					&GLOBAL (ShipStamp.origin),
 					TRUE);
@@ -1915,6 +1927,51 @@ GetPlanetOrMoonName (UNICODE *buf, COUNT bufsize)
 	{
 		snprintf (buf, bufsize, "-%c", 'A' + moon);
 		buf[bufsize - 1] = '\0';
+	}
+}
+
+void
+SaveSolarSysLocation (void)
+{
+	assert (playerInSolarSystem ());
+
+	if (!playerInPlanetOrbit ())
+	{
+		// XXX: Solar system reentry test depends on ShipFacing != 0
+		GLOBAL (ShipFacing) = GetFrameIndex (GLOBAL (ShipStamp.frame)) + 1;
+		GLOBAL (in_orbit) = 0;
+		if (!playerInInnerSystem ())
+		{
+			GLOBAL (ip_planet) = 0;
+		}
+		else
+		{
+			// XXX: Is that even correct? pBaseDesc should point to PlanetDesc
+			GLOBAL (ip_planet) = pSolarSysState->pBaseDesc->pPrevDesc
+					- pSolarSysState->PlanetDesc + 1;
+			GLOBAL (ip_location) = pSolarSysState->SunDesc[0].location;
+		}
+	}
+	else
+	{	// In orbit around a planet.
+		BYTE moon;
+
+		// Update the starinfo.dat file if necessary.
+		if (GET_GAME_STATE (PLANETARY_CHANGE))
+		{
+			PutPlanetInfo ();
+			SET_GAME_STATE (PLANETARY_CHANGE, 0);
+		}
+
+		// GLOBAL (ip_planet) is already set
+		moon = 1; /* the planet itself */
+		// XXX: This test is convoluted, and we should come up with a
+		//   better linking system
+		if (pSolarSysState->pOrbitalDesc !=
+				pSolarSysState->pBaseDesc->pPrevDesc)
+			moon += pSolarSysState->pOrbitalDesc
+					- pSolarSysState->pBaseDesc + 1;
+		GLOBAL (in_orbit) = moon;
 	}
 }
 

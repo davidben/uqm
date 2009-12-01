@@ -736,7 +736,7 @@ PickPlanetSide (MENU_STATE *pMS)
 					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 				}
 
-				SaveFlagshipState ();
+				SaveSolarSysLocation ();
 				return (FALSE);
 			}
 

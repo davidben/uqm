@@ -137,7 +137,7 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 
 	InitIntersectStartPoint (EPtr);
 
-	if (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
+	if (!playerInInnerSystem ())
 		flagship_loc = 0;
 	else
 		flagship_loc = (BYTE)(pSolarSysState->pBaseDesc->pPrevDesc
@@ -676,7 +676,7 @@ flag_ship_preprocess (ELEMENT *ElementPtr)
 
 		GetCurrentVelocityComponents (&GLOBAL (velocity), &vdx, &vdy);
 
-		if (pSolarSysState->pBaseDesc == pSolarSysState->MoonDesc)
+		if (playerInInnerSystem ())
 		{
 			flagship_loc = (BYTE)(pSolarSysState->pBaseDesc->pPrevDesc
 						- pSolarSysState->PlanetDesc + 2);
@@ -767,7 +767,7 @@ spawn_flag_ship (void)
 
 		LockElement (hFlagShipElement, &FlagShipElementPtr);
 		FlagShipElementPtr->hit_points = 1;
-		if (pSolarSysState->pBaseDesc == pSolarSysState->PlanetDesc)
+		if (!playerInInnerSystem ())
 			FlagShipElementPtr->sys_loc = 1;
 		else
 			FlagShipElementPtr->sys_loc =

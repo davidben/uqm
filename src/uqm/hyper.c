@@ -448,7 +448,7 @@ unhyper_transition (ELEMENT *ElementPtr)
 		switch ((TRANSITION_TYPE) ElementPtr->turn_wait)
 		{
 			case RANDOM_ENCOUNTER_TRANSITION:
-				SaveFlagshipState ();
+				SaveSisHyperState ();
 				GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 				break;
 			case INTERPLANETARY_TRANSITION:
@@ -879,6 +879,15 @@ getSisElement (void)
 	StarShipPtr = LockStarShip (&race_q[RPG_PLAYER_NUM], hSis);
 	hShip = StarShipPtr->hShip;
 	UnlockStarShip (&race_q[RPG_PLAYER_NUM], hSis);
+
+#ifdef DEBUG
+	{
+		ELEMENT *ElementPtr;
+		LockElement (hShip, &ElementPtr);
+		assert (ElementPtr->state_flags & PLAYER_SHIP);
+		UnlockElement (hShip);
+	}
+#endif
 
 	return hShip;
 }
@@ -1716,3 +1725,19 @@ UnbatchGraphics ();
 BatchGraphics ();
 }
 
+void
+SaveSisHyperState (void)
+{
+	HELEMENT hSisElement;
+	ELEMENT *ElementPtr;
+	STARSHIP *StarShipPtr;
+
+	// Update 'GLOBAL (ShipFacing)' to the direction the flagship is facing
+	hSisElement = getSisElement ();
+	//if (ElementPtr->state_flags & PLAYER_SHIP)
+	LockElement (hSisElement, &ElementPtr);
+	GetElementStarShip (ElementPtr, &StarShipPtr);
+	// XXX: Solar system reentry test depends on ShipFacing != 0
+	GLOBAL (ShipFacing) = StarShipPtr->ShipFacing + 1;
+	UnlockElement (hSisElement);
+}

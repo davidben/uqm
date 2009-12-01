@@ -219,6 +219,9 @@ struct solarsys_state
 extern SOLARSYS_STATE *pSolarSysState;
 extern MUSIC_REF SpaceMusic;
 
+bool playerInSolarSystem (void);
+bool playerInPlanetOrbit (void);
+bool playerInInnerSystem (void);
 bool worldIsPlanet (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world);
 bool worldIsMoon (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world);
 COUNT planetIndex (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world);
@@ -255,6 +258,7 @@ extern UNICODE* GetNamedPlanetaryBody (void);
 extern void GetPlanetOrMoonName (UNICODE *buf, COUNT bufsize);
 
 extern void PlanetOrbitMenu (void);
+extern void SaveSolarSysLocation (void);
 
 #endif /* _PLANETS_H */
 
