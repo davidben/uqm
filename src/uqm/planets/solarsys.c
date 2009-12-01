@@ -70,19 +70,17 @@ BYTE EncounterGroup;
 
 #define DRAW_STARS (1 << 0)
 		// only ever cleared by DrawSimpleSystem() which is currently disabled
-#define DRAW_PLANETS (1 << 1)
-		// only ever cleared by DrawSimpleSystem() which is currently disabled
-#define DRAW_ORBITS (1 << 2)
-		// only ever cleared by DrawSimpleSystem() which is currently disabled
+// Unused: #define DRAW_PLANETS (1 << 1)
+// Unused: #define DRAW_ORBITS (1 << 2)
 #define DRAW_HYPER_COORDS (1 << 3)
+		// only ever cleared by DrawSimpleSystem() which is currently disabled
 #define UNBATCH_SYS (1 << 4)
 #define DRAW_REFRESH (1 << 5)
 // Unused: #define REPAIR_SCAN (1 << 6)
 #define GRAB_BKGND (1 << 7)
 
 static SIZE old_radius;
-BYTE draw_sys_flags = DRAW_STARS | DRAW_PLANETS | DRAW_ORBITS
-		| DRAW_HYPER_COORDS | GRAB_BKGND;
+BYTE draw_sys_flags = DRAW_STARS | DRAW_HYPER_COORDS | GRAB_BKGND;
 
 
 bool
@@ -637,9 +635,6 @@ DrawOrbit (PLANET_DESC *pPlanetDesc, COUNT xnumer, COUNT ynumer0,
 	COORD cx, cy;
 	RECT r;
 
-if (!(draw_sys_flags & (DRAW_ORBITS | DRAW_PLANETS)))
-	return;
-	
 	cx = pPlanetDesc->radius;
 	cy = pPlanetDesc->radius;
 	if (xnumer > (COUNT)DISPLAY_FACTOR)
@@ -649,19 +644,13 @@ if (!(draw_sys_flags & (DRAW_ORBITS | DRAW_PLANETS)))
 	}
 	GetOrbitRect (&r, cx, cy, pPlanetDesc->radius, xnumer, ynumer0, denom);
 
-if (draw_sys_flags & DRAW_ORBITS)
-{
 	// XXX: ValidateOrbits() sets pBaseDesc=0
 	if (pSolarSysState->pBaseDesc)
 	{
 		SetContextForeGroundColor (pPlanetDesc->temp_color);
 		DrawOval (&r, 1);
 	}
-}
 
-if (!(draw_sys_flags & DRAW_PLANETS))
-	return;
-	
 	r.corner.x += (r.extent.width >> 1);
 	r.corner.y += (r.extent.height >> 1);
 	r.corner.x = r.corner.x
@@ -1580,8 +1569,7 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 		pCurDesc->image.frame = SetRelFrameIndex (SunFrame, index);
 
 		index = pSolarSysState->FirstPlanetIndex;
-	if (draw_sys_flags & DRAW_PLANETS)
-	{
+
 		for (;;)
 		{
 			pCurDesc = &pSolarSysState->PlanetDesc[index];
@@ -1605,7 +1593,6 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 				break;
 			index = pCurDesc->NextIndex;
 		}
-	}
 
 		if (!playerInInnerSystem ())
 			XFormIPLoc (&GLOBAL (ip_location),
