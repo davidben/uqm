@@ -53,7 +53,7 @@
 
 static BOOLEAN DoIpFlight (MENU_STATE *pMS);
 static void DrawSystem (SIZE radius, BOOLEAN IsInnerSystem);
-
+static FRAME CreateStarBackGround (void);
 
 SOLARSYS_STATE *pSolarSysState;
 FRAME SISIPFrame;
@@ -68,19 +68,22 @@ SIZE EncounterRace;
 BYTE EncounterGroup;
 		// last encountered group info
 
-#define DRAW_STARS (1 << 0)
-		// only ever cleared by DrawSimpleSystem() which is currently disabled
+static FRAME StarsFrame;
+		// prepared star-field graphic
+static FRAME SolarSysFrame;
+		// saved solar system view graphic
+
+// Unused: #define DRAW_STARS (1 << 0)
 // Unused: #define DRAW_PLANETS (1 << 1)
 // Unused: #define DRAW_ORBITS (1 << 2)
-#define DRAW_HYPER_COORDS (1 << 3)
-		// only ever cleared by DrawSimpleSystem() which is currently disabled
+// Unused: #define DRAW_HYPER_COORDS (1 << 3)
 #define UNBATCH_SYS (1 << 4)
 #define DRAW_REFRESH (1 << 5)
 // Unused: #define REPAIR_SCAN (1 << 6)
-#define GRAB_BKGND (1 << 7)
+// Unused: #define GRAB_BKGND (1 << 7)
 
 static SIZE old_radius;
-BYTE draw_sys_flags = DRAW_STARS | DRAW_HYPER_COORDS | GRAB_BKGND;
+static BYTE draw_sys_flags = 0;
 
 
 bool
@@ -324,6 +327,13 @@ initSolarSysSISCharacteristics (void)
 	}
 }
 
+static DWORD
+seedRandomForSolarSys (void)
+{
+	return TFB_SeedRandom (MAKE_DWORD (CurStarDescPtr->star_pt.x,
+			CurStarDescPtr->star_pt.y));
+}
+
 static BOOLEAN
 LoadSolarSys (void)
 {
@@ -341,8 +351,7 @@ LoadSolarSys (void)
 		BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x08, 0x00), 0x75),
 	};
 
-	old_seed = TFB_SeedRandom (MAKE_DWORD (CurStarDescPtr->star_pt.x,
-			CurStarDescPtr->star_pt.y));
+	old_seed = seedRandomForSolarSys ();
 
 	SunFrame = SetAbsFrameIndex (SunFrame, STAR_TYPE (CurStarDescPtr->Type));
 
@@ -449,6 +458,9 @@ FreeSolarSys (void)
 		if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 			SaveSolarSysLocation ();
 	}
+
+	DestroyDrawable (ReleaseDrawable (SolarSysFrame));
+	SolarSysFrame = NULL;
 
 	StopMusic ();
 
@@ -597,7 +609,6 @@ ShowPlanet:
 				r.extent.height = SIS_SCREEN_HEIGHT;
 				ScreenTransition (3, &r);
 				UnbatchGraphics ();
-				LoadIntoExtraScreen (&r);
 			}
 			break;
 		}
@@ -766,7 +777,6 @@ ZoomSystem (void)
 		DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
 	ScreenTransition (3, &r);
 	UnbatchGraphics ();
-	LoadIntoExtraScreen (&r);
 }
 
 static UWORD
@@ -966,16 +976,6 @@ UndrawShip (void)
 		CheckIntersect (FALSE);
 }
 
-
-static void
-DrawSimpleSystem (SIZE radius, BYTE notFlags)
-{
-	BYTE oldFlags = draw_sys_flags;
-	draw_sys_flags &= notFlags;
-	DrawSystem (radius, FALSE);
-	draw_sys_flags = oldFlags;
-}
-
 static void
 ScaleSystem (void)
 {
@@ -987,51 +987,33 @@ ScaleSystem (void)
 	COUNT i;
 	SIZE new_radius;
 	SIZE d, step;
-	RECT r;
-	CONTEXT OldContext;
-	STAMP StarsStamp;
 
 	new_radius = pSolarSysState->SunDesc[0].radius;
 
 	assert (old_radius != 0);
 	assert (old_radius != new_radius);
 
-	GetContextClipRect (&r);
-	StarsStamp.origin.x = 0;
-	StarsStamp.origin.y = 0;
-	// Draw the stars background to off-screen frame
-	StarsStamp.frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
-			r.extent.width, r.extent.height, 1));
-	OldContext = SetContext (OffScreenContext);
-	SetContextFGFrame (StarsStamp.frame);
-	SetContextClipRect (NULL);
-	DrawStarBackGround ();
-	SetContext (OldContext);
-
 	pSolarSysState->SunDesc[0].radius = old_radius;
 
 	d = new_radius - old_radius;
 	step = d / NUM_STEPS;
 
-	for (i = 0; i < NUM_STEPS; ++i)
+	for (i = 0; i < NUM_STEPS - 1; ++i)
 	{
 		pSolarSysState->SunDesc[0].radius += step;
 
 		BatchGraphics ();
-		DrawStamp (&StarsStamp);
-		DrawSimpleSystem (pSolarSysState->SunDesc[0].radius,
-				~(DRAW_STARS | GRAB_BKGND | DRAW_HYPER_COORDS));
+		DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
 		RedrawQueue (FALSE);
 		UnbatchGraphics ();
 
 		SleepThread (ONE_SECOND / 30);
 	}
 	
+	// Final zoom step
 	pSolarSysState->SunDesc[0].radius = new_radius;
 	DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
 	
-	DestroyDrawable (ReleaseDrawable (StarsStamp.frame));
-
 	old_radius = 0;
 #else // !SMOOTH_SYSTEM_ZOOM
 	RECT r;
@@ -1042,7 +1024,6 @@ ScaleSystem (void)
 	DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
 	ScreenTransition (3, &r);
 	UnbatchGraphics ();
-	LoadIntoExtraScreen (&r);
 	
 	old_radius = 0;
 #endif // SMOOTH_SYSTEM_ZOOM
@@ -1051,13 +1032,12 @@ ScaleSystem (void)
 static void
 RestoreSystemView (void)
 {
-	CONTEXT oldContext;
-	RECT r;
+	STAMP s;
 
-	oldContext = SetContext (SpaceContext);
-	GetContextClipRect (&r);
-	DrawFromExtraScreen (&r);
-	SetContext (oldContext);
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = SolarSysFrame;
+	DrawStamp (&s);
 }
 
 /* Constants and routines for handling interplanetary play. */
@@ -1138,7 +1118,6 @@ IP_frame (void)
 	}
 	else if (draw_sys_flags & DRAW_REFRESH)
 	{
-		// must set rect for LoadIntoExtraScreen below
 		r.corner.x = SIS_ORG_X;
 		r.corner.y = SIS_ORG_Y;
 		r.extent.width = SIS_SCREEN_WIDTH;
@@ -1158,13 +1137,7 @@ IP_frame (void)
 		UnbatchGraphics ();
 	}
 	
-	// Save the system image if we left inner system, or we forced a redraw
-	if ((startedInInner && !playerInInnerSystem ())
-			|| (draw_sys_flags & DRAW_REFRESH))
-	{
-		LoadIntoExtraScreen (&r);
-		draw_sys_flags &= ~DRAW_REFRESH;
-	}
+	draw_sys_flags &= ~DRAW_REFRESH;
 	
 	UnlockMutex (GraphicsLock);
 }
@@ -1359,6 +1332,8 @@ InitSolarSys (void)
 		XFormIPLoc (&GLOBAL (ShipStamp.origin), &GLOBAL (ip_location), FALSE);
 	}
 
+	StarsFrame = CreateStarBackGround ();
+
 	orbital = LoadSolarSys ();
 	InnerSystem = ValidateOrbits ();
 
@@ -1423,7 +1398,6 @@ InitSolarSys (void)
 			draw_sys_flags &= ~UNBATCH_SYS;
 			ScreenTransition (3, NULL);
 			UnbatchGraphics ();
-			LoadIntoExtraScreen (NULL);
 		}
 		else
 		{
@@ -1491,6 +1465,9 @@ UninitSolarSys (void)
 //FreeLanderData ();
 //FreeIPData ();
 
+	DestroyDrawable (ReleaseDrawable (StarsFrame));
+	StarsFrame = NULL;
+
 	if (GLOBAL (CurrentActivity) & END_INTERPLANETARY)
 	{
 		endInterPlanetary ();
@@ -1519,10 +1496,23 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 	BYTE i;
 	PLANET_DESC *pCurDesc;
 	PLANET_DESC *pBaseDesc;
+	CONTEXT oldContext;
+	STAMP s;
 
-	BatchGraphics ();
-	if (draw_sys_flags & DRAW_STARS)
-		DrawStarBackGround ();
+	if (!SolarSysFrame)
+	{	// Create the saved view graphic
+		RECT clipRect;
+
+		GetContextClipRect (&clipRect);
+		SolarSysFrame = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
+				clipRect.extent.width, clipRect.extent.height, 1));
+	}
+
+	oldContext = SetContext (OffScreenContext);
+	SetContextFGFrame (SolarSysFrame);
+	SetContextClipRect (NULL);
+
+	DrawStarBackGround ();
 
 	if (!IsInnerSystem)
 	{
@@ -1533,12 +1523,14 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 	{
 		pBaseDesc = pSolarSysState->pBaseDesc;
 
+		// Draw the inner system view planet orbit segment + planet image
 		pCurDesc = pBaseDesc->pPrevDesc;
 		pSolarSysState->pOrbitalDesc = pCurDesc;
 		DrawOrbit (pCurDesc, DISPLAY_FACTOR << 2, DISPLAY_FACTOR,
 				DISPLAY_FACTOR << 1, radius);
 	}
 
+	// Draw the planet or moon orbits
 	for (i = pBaseDesc->pPrevDesc->NumPlanets,
 			pCurDesc = pBaseDesc; i; --i, ++pCurDesc)
 	{
@@ -1603,19 +1595,16 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 					&GLOBAL (ShipStamp.origin),
 					TRUE);
 
-		if (draw_sys_flags & DRAW_HYPER_COORDS)
-			DrawHyperCoords (CurStarDescPtr->star_pt);
+		DrawHyperCoords (CurStarDescPtr->star_pt);
 	}
 
-	UnbatchGraphics ();
+	SetContext (oldContext);
 
-	if (draw_sys_flags & GRAB_BKGND)
-	{
-		RECT r;
-
-		GetContextClipRect (&r);
-		LoadIntoExtraScreen (&r);
-	}
+	// Draw the now-saved view graphic
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = SolarSysFrame;
+	DrawStamp (&s);
 
 //    pSolarSysState->WaitIntersect = TRUE;
 }
@@ -1623,18 +1612,39 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 void
 DrawStarBackGround (void)
 {
+	STAMP s;
+	
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = StarsFrame;
+	DrawStamp (&s);
+}
+
+static FRAME
+CreateStarBackGround (void)
+{
 	COUNT i, j;
 	DWORD rand_val;
 	STAMP s;
 	DWORD old_seed;
+	CONTEXT oldContext;
+	RECT clipRect;
+	FRAME frame;
 
+	oldContext = SetContext (SpaceContext);
+	GetContextClipRect (&clipRect);
+
+	// Prepare a pre-drawn stars frame for this system
+	frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
+			clipRect.extent.width, clipRect.extent.height, 1));
+	SetContext (OffScreenContext);
+	SetContextFGFrame (frame);
+	SetContextClipRect (NULL);
 	SetContextBackGroundColor (BLACK_COLOR);
 
 	ClearDrawable ();
 
-	old_seed = TFB_SeedRandom (
-			MAKE_DWORD (CurStarDescPtr->star_pt.x,
-			CurStarDescPtr->star_pt.y));
+	old_seed = seedRandomForSolarSys ();
 
 #define NUM_DIM_PIECES 8
 	s.frame = SpaceJunkFrame;
@@ -1667,6 +1677,10 @@ DrawStarBackGround (void)
 	}
 
 	TFB_SeedRandom (old_seed);
+
+	SetContext (oldContext);
+
+	return frame;
 }
 
 void
