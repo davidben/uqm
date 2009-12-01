@@ -34,6 +34,9 @@ extern FRAME MiscDataFrame;
 extern FRAME FontGradFrame;
 
 extern CONTEXT OffScreenContext;
+		// OffScreenContext can often refer to a deleted ForeGroundFrame
+		// Always call SetContextFGFrame() before drawing anything to it
+		// Neither is the state of its ClipRect guaranteed.
 extern CONTEXT ScreenContext;
 extern CONTEXT SpaceContext;
 extern CONTEXT StatusContext;

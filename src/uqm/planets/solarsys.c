@@ -49,6 +49,7 @@
 
 
 //#define DEBUG_SOLARSYS
+//#define SMOOTH_SYSTEM_ZOOM  1
 
 static BOOLEAN DoIpFlight (MENU_STATE *pMS);
 static void DrawSystem (SIZE radius, BOOLEAN IsInnerSystem);
@@ -451,15 +452,9 @@ FreeSolarSys (void)
 			SaveSolarSysLocation ();
 	}
 
-	LockMutex (GraphicsLock);
-
-	SetContext (SpaceContext);
-
 	StopMusic ();
 
 //    FreeIPData ();
-
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -596,10 +591,8 @@ ShowPlanet:
 				NewWaitPlanet = 0;
 				SetTransitionSource (NULL);
 				BatchGraphics ();
-				SetGraphicGrabOther (1);
 				DrawSystem (pSolarSysState->pBaseDesc->pPrevDesc->radius,
 						TRUE);
-				SetGraphicGrabOther (0);
 				r.corner.x = SIS_ORG_X;
 				r.corner.y = SIS_ORG_Y;
 				r.extent.width = SIS_SCREEN_WIDTH;
@@ -773,11 +766,9 @@ static void
 ZoomSystem (void)
 {
 	RECT r;
-	r.corner.x = SIS_ORG_X;
-	r.corner.y = SIS_ORG_Y;
-	r.extent.width = SIS_SCREEN_WIDTH;
-	r.extent.height = SIS_SCREEN_HEIGHT;
 
+	SetContext (SpaceContext);
+	GetContextClipRect (&r);
 	SetTransitionSource (&r);
 	BatchGraphics ();
 	if (playerInInnerSystem ())
@@ -967,14 +958,11 @@ UndrawShip (void)
 			return;
 		
 		old_radius = 0;
-		if (LeavingInnerSystem)
-			SetGraphicGrabOther (1);
 		DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
 		if (LeavingInnerSystem)
 		{
 			COUNT OldWI;
 
-			SetGraphicGrabOther (0);
 			OldWI = pSolarSysState->WaitIntersect;
 			CheckIntersect (TRUE);
 			if (pSolarSysState->WaitIntersect != OldWI)
@@ -989,90 +977,76 @@ UndrawShip (void)
 		CheckIntersect (FALSE);
 }
 
-#if 0
+
 static void
-DrawSimpleSystem (SIZE radius, BYTE flags)
+DrawSimpleSystem (SIZE radius, BYTE notFlags)
 {
-	draw_sys_flags &= ~flags;
+	BYTE oldFlags = draw_sys_flags;
+	draw_sys_flags &= notFlags;
 	DrawSystem (radius, FALSE);
-	draw_sys_flags |= flags;
+	draw_sys_flags = oldFlags;
 }
-#endif
 
 static void
 ScaleSystem (void)
 {
-#if 0
+#ifdef SMOOTH_SYSTEM_ZOOM
 	// XXX: This appears to have been an attempt to zoom the system view
-	//   in a different way. This code would zoom gradually instead of
-	//   doing crossfade from one zoom level to the other.
-	//   Working state unknown.
-#define NUM_STEPS 8
-	COUNT num_steps;
-	SIZE err, d, new_radius, step;
+	//   in a different way. This code zooms gradually instead of
+	//   doing a crossfade from one zoom level to the other.
+#define NUM_STEPS 10
+	COUNT i;
+	SIZE new_radius;
+	SIZE d, step;
 	RECT r;
-	BOOLEAN first_time;
 	CONTEXT OldContext;
+	STAMP StarsStamp;
 
-	first_time = TRUE;
 	new_radius = pSolarSysState->SunDesc[0].radius;
-	
-	BatchGraphics ();
-	DrawSimpleSystem (new_radius, DRAW_PLANETS | DRAW_ORBITS | GRAB_BKGND);
+
+	assert (old_radius != 0);
+	assert (old_radius != new_radius);
+
+	GetContextClipRect (&r);
+	StarsStamp.origin.x = 0;
+	StarsStamp.origin.y = 0;
+	// Draw the stars background to off-screen frame
+	StarsStamp.frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
+			r.extent.width, r.extent.height, 1));
+	OldContext = SetContext (OffScreenContext);
+	SetContextFGFrame (StarsStamp.frame);
+	SetContextClipRect (NULL);
+	DrawStarBackGround ();
+	SetContext (OldContext);
 
 	pSolarSysState->SunDesc[0].radius = old_radius;
-	
+
 	d = new_radius - old_radius;
 	step = d / NUM_STEPS;
-	if (d < 0)
-		d = -d;
 
-	num_steps = err = NUM_STEPS;
-
-	OldContext = SetContext (SpaceContext);
-	GetContextClipRect (&r);
-	SetGraphicGrabOther (1); // to grab from hidden screen (since we haven't flipped yet)
-	LoadIntoExtraScreen (&r);
-	SetGraphicGrabOther (0);
-	SetContextFGFrame (Screen);
-
-	do
+	for (i = 0; i < NUM_STEPS; ++i)
 	{
-		err -= d;
-		if (err <= 0)
-		{
-			pSolarSysState->SunDesc[0].radius += step;
+		pSolarSysState->SunDesc[0].radius += step;
 
-			BatchGraphics ();
+		BatchGraphics ();
+		DrawStamp (&StarsStamp);
+		DrawSimpleSystem (pSolarSysState->SunDesc[0].radius,
+				~(DRAW_STARS | GRAB_BKGND | DRAW_HYPER_COORDS));
+		RedrawQueue (FALSE);
+		UnbatchGraphics ();
 
-			DrawFromExtraScreen (r.corner.x, r.corner.y);
-
-			DrawSimpleSystem (pSolarSysState->SunDesc[0].radius,
-					DRAW_ORBITS | DRAW_STARS | GRAB_BKGND | DRAW_HYPER_COORDS);
-					
-			RedrawQueue (FALSE);
-			
-			if (first_time)
-			{
-				first_time = FALSE;
-				UnbatchGraphics (); // to balance out Batch before DrawSimpleSystem above
-			}
-
-			UnbatchGraphics ();
-			
-			err += d;
-		}
-	} while (--num_steps);
+		SleepThread (ONE_SECOND / 30);
+	}
 	
-	SetContext (OldContext);
 	pSolarSysState->SunDesc[0].radius = new_radius;
 	DrawSystem (pSolarSysState->SunDesc[0].radius, FALSE);
-	old_radius = 0;
-#else
-	RECT r;
-	CONTEXT OldContext;
 	
-	OldContext = SetContext (SpaceContext);
+	DestroyDrawable (ReleaseDrawable (StarsStamp.frame));
+
+	old_radius = 0;
+#else // !SMOOTH_SYSTEM_ZOOM
+	RECT r;
+
 	GetContextClipRect (&r);
 	SetTransitionSource (&r);
 	BatchGraphics ();
@@ -1080,10 +1054,9 @@ ScaleSystem (void)
 	ScreenTransition (3, &r);
 	UnbatchGraphics ();
 	LoadIntoExtraScreen (&r);
-	SetContext (OldContext);
 	
 	old_radius = 0;
-#endif
+#endif // SMOOTH_SYSTEM_ZOOM
 }
 
 static void
@@ -1106,12 +1079,11 @@ RestoreSystemView (void)
 static void
 IP_frame (void)
 {
-	CONTEXT OldContext;
 	BOOLEAN startedInInner;
 	RECT r;
 
 	LockMutex (GraphicsLock);
-	OldContext = SetContext (StatusContext);
+	SetContext (SpaceContext);
 
 	{
 		// this is a mess:
@@ -1205,7 +1177,6 @@ IP_frame (void)
 		draw_sys_flags &= ~DRAW_REFRESH;
 	}
 	
-	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
 }
 
@@ -1312,6 +1283,7 @@ static void
 ReinitInnerSystem (void)
 {
 	LockMutex (GraphicsLock);
+	SetContext (SpaceContext);
 	SetTransitionSource (NULL);
 	LoadSolarSys ();
 	ValidateOrbits ();
@@ -1561,7 +1533,7 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 
 	BatchGraphics ();
 	if (draw_sys_flags & DRAW_STARS)
-		DrawStarBackGround (FALSE);
+		DrawStarBackGround ();
 
 	if (!IsInnerSystem)
 	{
@@ -1650,8 +1622,6 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 
 	UnbatchGraphics ();
 
-	SetContext (SpaceContext);
-	
 	if (draw_sys_flags & GRAB_BKGND)
 	{
 		RECT r;
@@ -1664,14 +1634,13 @@ DrawSystem (SIZE radius, BOOLEAN IsInnerSystem)
 }
 
 void
-DrawStarBackGround (BOOLEAN ForPlanet)
+DrawStarBackGround (void)
 {
 	COUNT i, j;
 	DWORD rand_val;
 	STAMP s;
 	DWORD old_seed;
 
-	SetContext (SpaceContext);
 	SetContextBackGroundColor (BLACK_COLOR);
 
 	ClearDrawable ();
@@ -1708,58 +1677,6 @@ DrawStarBackGround (BOOLEAN ForPlanet)
 			DrawStamp (&s);
 		}
 		s.frame = IncFrameIndex (s.frame);
-	}
-
-	if (ForPlanet)
-	{
-		RECT r;
-
-		// 2002-12-13 PhracturedBlue's fix to planet changing color when
-		// using device problem
-		/*if (pSolarSysState->MenuState.flash_task
-				|| (LastActivity & CHECK_LOAD))
-			RenderTopography (TRUE);*/
-
-		BatchGraphics ();
-
-		SetContext (ScreenContext);
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
-		r.corner.x = SIS_ORG_X - 1;
-		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT - 4;
-		r.extent.width = SIS_SCREEN_WIDTH + 2;
-		r.extent.height = 3;
-		DrawFilledRectangle (&r);
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
-		r.extent.width = 1;
-		r.extent.height = MAP_HEIGHT + 1;
-		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT;
-		r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH - 1;
-		DrawFilledRectangle (&r);
-		r.corner.x = SIS_ORG_X + SIS_SCREEN_WIDTH;
-		DrawFilledRectangle (&r);
-		r.extent.width = SIS_SCREEN_WIDTH + 1;
-		r.extent.height = 1;
-		r.corner.x = SIS_ORG_X;
-		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT - 5;
-		DrawFilledRectangle (&r);
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19));
-		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT - 1;
-		r.extent.width = MAP_WIDTH + 2;
-		r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH - 1;
-		DrawFilledRectangle (&r);
-		r.extent.width = 1;
-		r.extent.height = MAP_HEIGHT + 1;
-		r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT;
-		r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH - 1;
-		DrawFilledRectangle (&r);
-		
-		UnbatchGraphics ();
 	}
 
 	TFB_SeedRandom (old_seed);

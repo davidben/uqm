@@ -66,6 +66,71 @@ DrawScannedObjects (BOOLEAN Reversed)
 	}
 }
 
+void
+DrawPlanetSurfaceBorder (void)
+{
+#define BORDER_HEIGHT  5
+	CONTEXT oldContext;
+	RECT oldClipRect;
+	RECT clipRect;
+	RECT r;
+
+	oldContext = SetContext (SpaceContext);
+	GetContextClipRect (&oldClipRect);
+
+	// Expand the context clip-rect so that we can tweak the existing border
+	clipRect = oldClipRect;
+	clipRect.corner.x -= 1;
+	clipRect.extent.width += 2;
+	clipRect.extent.height += 1;
+	SetContextClipRect (&clipRect);
+
+	BatchGraphics ();
+
+	// Border bulk
+	SetContextForeGroundColor (
+			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
+	r.corner.x = 0;
+	r.corner.y = clipRect.extent.height - MAP_HEIGHT - BORDER_HEIGHT;
+	r.extent.width = clipRect.extent.width;
+	r.extent.height = BORDER_HEIGHT - 2;
+	DrawFilledRectangle (&r);
+
+	SetContextForeGroundColor (SIS_BOTTOM_RIGHT_BORDER_COLOR);
+	
+	// Border top shadow line
+	r.extent.width -= 1;
+	r.extent.height = 1;
+	r.corner.x = 1;
+	r.corner.y -= 1;
+	DrawFilledRectangle (&r);
+	
+	// XXX: We will need bulk left and right rects here if MAP_WIDTH changes
+
+	// Right shadow line
+	r.extent.width = 1;
+	r.extent.height = MAP_HEIGHT + 2;
+	r.corner.y += BORDER_HEIGHT - 1;
+	r.corner.x = clipRect.extent.width - 1;
+	DrawFilledRectangle (&r);
+
+	SetContextForeGroundColor (SIS_LEFT_BORDER_COLOR);
+	
+	// Left shadow line
+	r.corner.x -= MAP_WIDTH + 1;
+	DrawFilledRectangle (&r);
+
+	// Border bottom shadow line
+	r.extent.width = MAP_WIDTH + 2;
+	r.extent.height = 1;
+	DrawFilledRectangle (&r);
+	
+	UnbatchGraphics ();
+
+	SetContextClipRect (&oldClipRect);
+	SetContext (oldContext);
+}
+
 typedef enum
 {
 	DRAW_ORBITAL_FULL,
@@ -89,7 +154,8 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 		DrawSISFrame ();
 		DrawSISMessage (NULL);
 		DrawSISTitle (GLOBAL_SIS (PlanetName));
-		DrawStarBackGround (TRUE);
+		DrawStarBackGround ();
+		DrawPlanetSurfaceBorder ();
 	}
 
 	SetContext (SpaceContext);
