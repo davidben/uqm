@@ -304,7 +304,7 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 		}
 		else if (group_loc == 0)
 		{
-			if (GroupPtr->dest_loc == 0)
+			if (GroupPtr->dest_loc == IPNL_INTERCEPT_PLAYER)
 				dest_pt = pSolarSysState->SunDesc[0].location;
 			else
 				dest_pt = planetOuterLocation (target_loc - 1);
