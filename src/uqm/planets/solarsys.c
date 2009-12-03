@@ -1968,8 +1968,6 @@ DoSolarSysMenu (MENU_STATE *pMS)
 			TransitionSystemIn ();
 			// Fall through !!!
 		case NAVIGATION:
-			// TODO: what's this?
-			//DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
 			return FALSE;
 	}
 
@@ -2014,6 +2012,8 @@ SolarSysMenu (void)
 	pSolarSysState->MenuState.InputFunc = DoSolarSysMenu;
 	DoInput (&pSolarSysState->MenuState, TRUE);
 	pSolarSysState->MenuState.InputFunc = oldInputFunc;
+
+	DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
 }
 
 static BOOLEAN
