@@ -163,6 +163,10 @@ struct solarsys_state
 	MENU_STATE MenuState;
 
 	COUNT WaitIntersect;
+			// Planet/moon number with which the flagship should not collide
+			// For example, if the player just left the planet or inner system
+			// If set to (COUNT)~0, all planet collisions are disabled until
+			// the flagship stops intersecting with all planets.
 	PLANET_DESC SunDesc[MAX_SUNS];
 	PLANET_DESC PlanetDesc[MAX_PLANETS];
 			// Description of the planets in the system.
@@ -175,8 +179,10 @@ struct solarsys_state
 			// as its argument, and overwritten by subsequent calls.
 	PLANET_DESC *pBaseDesc;
 	PLANET_DESC *pOrbitalDesc;
-			// Points into PlanetDesc or MoonDesc to the planet currently
-			// orbiting.
+			// In orbit: points into PlanetDesc or MoonDesc to the planet
+			// currently orbiting.
+			// In inner system: points into PlanetDesc to the planet whose
+			// inner system the ship is inside
 	SIZE FirstPlanetIndex, LastPlanetIndex;
 			// The planets get sorted on their image.origin.y value.
 			// PlanetDesc[FirstPlanetIndex] is the planet with the lowest
