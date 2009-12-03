@@ -134,9 +134,14 @@ struct element
 				 *   with CREATURE_AWARE
 				 * - for canned bio: value of creature
 				 */
-		BYTE sys_loc; /* IP: location in system */
+		// TODO: Use a different name for Planetside bio, like
+		// BYTE bio_state;
 	};
-	BYTE turn_wait;
+	union
+	{
+		BYTE turn_wait;
+		BYTE sys_loc; /* IP flagship: location in system */
+	};
 	union
 	{
 		BYTE thrust_wait;

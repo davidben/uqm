@@ -85,7 +85,7 @@ static RECT scaleRect;
 
 #define DISPLAY_TO_LOC  (DISPLAY_FACTOR >> 1)
 
-static POINT
+POINT
 locationToDisplay (POINT pt, SIZE scaleRadius)
 {
 	POINT out;
@@ -98,7 +98,7 @@ locationToDisplay (POINT pt, SIZE scaleRadius)
 	return out;
 }
 
-static POINT
+POINT
 displayToLocation (POINT pt, SIZE scaleRadius)
 {
 	POINT out;
@@ -109,6 +109,14 @@ displayToLocation (POINT pt, SIZE scaleRadius)
 			* scaleRadius / DISPLAY_TO_LOC;
 
 	return out;
+}
+
+POINT
+planetOuterLocation (COUNT planetI)
+{
+	SIZE scaleRadius = pSolarSysState->SunDesc[0].radius;
+	return displayToLocation (pSolarSysState->PlanetDesc[planetI].image.origin,
+			scaleRadius);
 }
 
 bool
@@ -892,8 +900,8 @@ enterInnerSystem (PLANET_DESC *planet)
 	GLOBAL (ip_location) = displayToLocation (
 			GLOBAL (ShipStamp.origin), MAX_ZOOM_RADIUS);
 	
-	XFormIPLoc (&planet->image.origin, &pSolarSysState->SunDesc[0].location,
-			FALSE);
+	pSolarSysState->SunDesc[0].location =
+			planetOuterLocation (planetIndex (pSolarSysState, planet));
 	ZeroVelocityComponents (&GLOBAL (velocity));
 
 	GenerateMoons (pSolarSysState, planet);

@@ -114,7 +114,7 @@ GenerateSaMatra_reinitNpcs (SOLARSYS_STATE *solarSys)
 		COUNT angle;
 		POINT org;
 
-		XFormIPLoc (&solarSys->PlanetDesc[4].image.origin, &org, FALSE);
+		org = planetOuterLocation (4);
 		angle = ARCTAN (GLOBAL (ip_location.x) - org.x,
 				GLOBAL (ip_location.y) - org.y);
 		GLOBAL (ip_location.x) = org.x + COSINE (angle, 3000);
@@ -275,7 +275,7 @@ BuildUrquanGuard (SOLARSYS_STATE *solarSys)
 
 	GetGroupInfo (GLOBAL (BattleGroupRef), GROUP_INIT_IP);
 
-	XFormIPLoc (&solarSys->PlanetDesc[4].image.origin, &org, FALSE);
+	org = planetOuterLocation (4);
 	hGroup = GetHeadLink (&GLOBAL (ip_group_q));
 	for (b0 = 0, b1 = 0;
 			b0 < NUM_URQUAN_GUARDS0;

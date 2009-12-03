@@ -236,6 +236,10 @@ COUNT moonIndex (const SOLARSYS_STATE *solarSys, const PLANET_DESC *moon);
 bool matchWorld (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world,
 		BYTE planetI, BYTE moonI);
 
+POINT locationToDisplay (POINT pt, SIZE scaleRadius);
+POINT displayToLocation (POINT pt, SIZE scaleRadius);
+POINT planetOuterLocation (COUNT planetI);
+
 extern void LoadPlanet (FRAME SurfDefFrame);
 extern void DrawPlanet (int x, int y, int dy, Color rgb);
 extern void FreePlanet (void);

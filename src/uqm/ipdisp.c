@@ -97,6 +97,43 @@ NotifyOthers (COUNT which_race, BYTE target_loc)
 	}
 }
 
+static SIZE
+zoomRadiusForLocation (BYTE location)
+{
+	if (location == 0)
+	{	// In outer system view; use current zoom radius
+		return pSolarSysState->SunDesc[0].radius;
+	}
+	else
+	{	// In inner system view; always max zoom
+		return MAX_ZOOM_RADIUS;
+	}
+}
+
+static inline void
+adjustDeltaVforZoom (SIZE zoom, SIZE *dx, SIZE *dy)
+{
+	if (zoom == MIN_ZOOM_RADIUS)
+	{
+		*dx >>= 2;
+		*dy >>= 2;
+	}
+	else if (zoom < MAX_ZOOM_RADIUS)
+	{
+		*dx >>= 1;
+		*dy >>= 1;
+	}
+}
+
+static BYTE
+getFlagshipLocation (void)
+{
+	if (!playerInInnerSystem ())
+		return 0;
+	else
+		return 1 + planetIndex (pSolarSysState, pSolarSysState->pOrbitalDesc);
+}
+
 static void
 ip_group_preprocess (ELEMENT *ElementPtr)
 {
@@ -117,17 +154,8 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 	group_loc = GroupPtr->sys_loc; // save old location
 	DisplayArray[EPtr->PrimIndex].Object.Point = GroupPtr->loc;
 
-	if (group_loc != 0)
-		radius = MAX_ZOOM_RADIUS;
-	else
-		radius = pSolarSysState->SunDesc[0].radius;
-
-	dest_pt.x = (SIS_SCREEN_WIDTH >> 1)
-			+ (SIZE)((long)GroupPtr->loc.x
-			* (DISPLAY_FACTOR >> 1) / radius);
-	dest_pt.y = (SIS_SCREEN_HEIGHT >> 1)
-			+ (SIZE)((long)GroupPtr->loc.y
-			* (DISPLAY_FACTOR >> 1) / radius);
+	radius = zoomRadiusForLocation (group_loc);
+	dest_pt = locationToDisplay (GroupPtr->loc, radius);
 	EPtr->current.location.x = DISPLAY_TO_WORLD (dest_pt.x)
 			+ (COORD)(LOG_SPACE_WIDTH >> 1)
 			- (LOG_SPACE_WIDTH >> (MAX_REDUCTION + 1));
@@ -137,11 +165,7 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 
 	InitIntersectStartPoint (EPtr);
 
-	if (!playerInInnerSystem ())
-		flagship_loc = 0;
-	else
-		flagship_loc = (BYTE)(pSolarSysState->pBaseDesc->pPrevDesc
-				- pSolarSysState->PlanetDesc + 1);
+	flagship_loc = getFlagshipLocation ();
 
 	task = GroupPtr->task;
 
@@ -246,13 +270,7 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 				else
 				{
 					orbit_dist = STATION_RADIUS;
-					XFormIPLoc (
-							&pSolarSysState->PlanetDesc[
-								target_loc - 1
-							].image.origin,
-							&org,
-							FALSE
-							);
+					org = planetOuterLocation (target_loc - 1);
 				}
 
 				angle = FACING_TO_ANGLE (GroupPtr->orbit_pos + 1);
@@ -289,8 +307,7 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 			if (GroupPtr->dest_loc == 0)
 				dest_pt = pSolarSysState->SunDesc[0].location;
 			else
-				XFormIPLoc (&pSolarSysState->PlanetDesc[
-						target_loc - 1].image.origin, &dest_pt, FALSE);
+				dest_pt = planetOuterLocation (target_loc - 1);
 		}
 		else
 		{
@@ -331,12 +348,13 @@ ip_group_preprocess (ELEMENT *ElementPtr)
 				EPtr->thrust_wait = TRACK_WAIT;
 			}
 
-			SetVelocityComponents (&EPtr->velocity,
-					vdx = COSINE (angle, speed),
-					vdy = SINE (angle, speed));
+			vdx = COSINE (angle, speed);
+			vdy = SINE (angle, speed);
+			SetVelocityComponents (&EPtr->velocity, vdx, vdy);
 		}
 
-		dx = vdx, dy = vdy;
+		dx = vdx;
+		dy = vdy;
 		if (group_loc == target_loc)
 		{
 			if (target_loc == 0)
@@ -351,7 +369,8 @@ PartialRevolution:
 						>= (long)delta_x * delta_x + (long)delta_y * delta_y)
 				{
 					GroupPtr->loc = dest_pt;
-					vdx = vdy = 0;
+					vdx = 0;
+					vdy = 0;
 					ZeroVelocityComponents (&EPtr->velocity);
 				}
 			}
@@ -359,17 +378,8 @@ PartialRevolution:
 		else
 		{
 			if (group_loc == 0)
-			{
-				if (pSolarSysState->SunDesc[0].radius < MAX_ZOOM_RADIUS)
-				{
-					dx >>= 1;
-					dy >>= 1;
-					if (pSolarSysState->SunDesc[0].radius == MIN_ZOOM_RADIUS)
-					{
-						dx >>= 1;
-						dy >>= 1;
-					}
-				}
+			{	// In outer system
+				adjustDeltaVforZoom (radius, &dx, &dy);
 
 				if (task == ON_STATION && GroupPtr->dest_loc)
 					goto PartialRevolution;
@@ -378,14 +388,9 @@ PartialRevolution:
 					Transition = TRUE;
 			}
 			else
-			{
+			{	// In inner system; also leaving outer CheckGetAway hack
 CheckGetAway:
-				dest_pt.x = (SIS_SCREEN_WIDTH >> 1)
-						+ (SIZE)((long)GroupPtr->loc.x
-						* (DISPLAY_FACTOR >> 1) / MAX_ZOOM_RADIUS);
-				dest_pt.y = (SIS_SCREEN_HEIGHT >> 1)
-						+ (SIZE)((long)GroupPtr->loc.y
-						* (DISPLAY_FACTOR >> 1) / MAX_ZOOM_RADIUS);
+				dest_pt = locationToDisplay (GroupPtr->loc, radius);
 				if (dest_pt.x < 0
 						|| dest_pt.x >= SIS_SCREEN_WIDTH
 						|| dest_pt.y < 0
@@ -398,15 +403,12 @@ CheckGetAway:
 						/* no collisions during transition */
 				EPtr->state_flags |= NONSOLID;
 
-				vdx = vdy = 0;
+				vdx = 0;
+				vdy = 0;
 				ZeroVelocityComponents (&EPtr->velocity);
 				if (group_loc != 0)
 				{
-					PLANET_DESC *pCurDesc;
-
-					pCurDesc = &pSolarSysState->PlanetDesc[group_loc - 1];
-					XFormIPLoc (&pCurDesc->image.origin, &GroupPtr->loc,
-							FALSE);
+					GroupPtr->loc = planetOuterLocation (group_loc - 1);
 					group_loc = 0;
 					GroupPtr->sys_loc = 0;
 				}
@@ -420,6 +422,8 @@ CheckGetAway:
 				}
 				else
 				{
+					POINT entryPt;
+
 					if (target_loc == GroupPtr->dest_loc)
 					{
 						GroupPtr->orbit_pos = NORMALIZE_FACING (
@@ -428,14 +432,17 @@ CheckGetAway:
 								((COUNT)TFB_Random () % MAX_REVOLUTIONS)
 								<< FACING_SHIFT;
 					}
-
-					GroupPtr->loc.x = -(SIZE)((long)COSINE (
-							angle, SIS_SCREEN_WIDTH * 9 / 16
-							) * MAX_ZOOM_RADIUS / (DISPLAY_FACTOR >> 1));
-					GroupPtr->loc.y = -(SIZE)((long)SINE (
-							angle, SIS_SCREEN_WIDTH * 9 / 16
-							) * MAX_ZOOM_RADIUS / (DISPLAY_FACTOR >> 1));
-
+					// The group enters inner system exactly on the edge of a
+					// circle with radius = 9/16 * window-dim, which is
+					// different from how the flagship enters, but similar
+					// in the way that the group will never show up in any
+					// of the corners.
+					entryPt.x = (SIS_SCREEN_WIDTH >> 1) - COSINE (angle,
+							SIS_SCREEN_WIDTH * 9 / 16);
+					entryPt.y = (SIS_SCREEN_HEIGHT >> 1) - SINE (angle,
+							SIS_SCREEN_HEIGHT * 9 / 16);
+					GroupPtr->loc = displayToLocation (entryPt,
+							MAX_ZOOM_RADIUS);
 					group_loc = target_loc;
 					GroupPtr->sys_loc = target_loc;
 				}
@@ -443,32 +450,12 @@ CheckGetAway:
 		}
 	}
 
-	if (group_loc != 0)
-		radius = MAX_ZOOM_RADIUS;
-	else
-	{
-		radius = pSolarSysState->SunDesc[0].radius;
-		if (radius < MAX_ZOOM_RADIUS)
-		{
-			vdx >>= 1;
-			vdy >>= 1;
-			if (radius == MIN_ZOOM_RADIUS)
-			{
-				vdx >>= 1;
-				vdy >>= 1;
-			}
-		}
-	}
+	radius = zoomRadiusForLocation (group_loc);
+	adjustDeltaVforZoom (radius, &vdx, &vdy);
 	GroupPtr->loc.x += vdx;
 	GroupPtr->loc.y += vdy;
 
-	dest_pt.x = (SIS_SCREEN_WIDTH >> 1)
-			+ (SIZE)((long)GroupPtr->loc.x
-			* (DISPLAY_FACTOR >> 1) / radius);
-	dest_pt.y = (SIS_SCREEN_HEIGHT >> 1)
-			+ (SIZE)((long)GroupPtr->loc.y
-			* (DISPLAY_FACTOR >> 1) / radius);
-
+	dest_pt = locationToDisplay (GroupPtr->loc, radius);
 	EPtr->next.location.x = DISPLAY_TO_WORLD (dest_pt.x)
 			+ (COORD)(LOG_SPACE_WIDTH >> 1)
 			- (LOG_SPACE_WIDTH >> (MAX_REDUCTION + 1));
@@ -583,9 +570,8 @@ spawn_ip_group (IP_GROUP *GroupPtr)
 		ELEMENT *IPSHIPElementPtr;
 
 		LockElement (hIPSHIPElement, &IPSHIPElementPtr);
-		// XXX: turn_wait hack is not actually used anywhere
-		//IPSHIPElementPtr->turn_wait = GroupPtr->group_id;
-		IPSHIPElementPtr->sys_loc = 1;
+		// Must have mass_points for collisions to work
+		IPSHIPElementPtr->mass_points = 1;
 		IPSHIPElementPtr->hit_points = 1;
 		IPSHIPElementPtr->state_flags =
 				CHANGING | FINITE_LIFE | IGNORE_VELOCITY;
@@ -608,17 +594,8 @@ spawn_ip_group (IP_GROUP *GroupPtr)
 			SIZE radius;
 			POINT pt;
 
-			if (GroupPtr->sys_loc != 0)
-				radius = MAX_ZOOM_RADIUS;
-			else
-				radius = pSolarSysState->SunDesc[0].radius;
-
-			pt.x = (SIS_SCREEN_WIDTH >> 1)
-					+ (SIZE)((long)GroupPtr->loc.x
-					* DISPLAY_FACTOR / radius);
-			pt.y = (SIS_SCREEN_HEIGHT >> 1)
-					+ (SIZE)((long)GroupPtr->loc.y
-					* (DISPLAY_FACTOR >> 1) / radius);
+			radius = zoomRadiusForLocation (GroupPtr->sys_loc);
+			pt = locationToDisplay (GroupPtr->loc, radius);
 
 			IPSHIPElementPtr->current.location.x =
 					DISPLAY_TO_WORLD (pt.x)
@@ -676,34 +653,11 @@ flag_ship_preprocess (ELEMENT *ElementPtr)
 
 		GetCurrentVelocityComponents (&GLOBAL (velocity), &vdx, &vdy);
 
-		if (playerInInnerSystem ())
-		{
-			flagship_loc = (BYTE)(pSolarSysState->pBaseDesc->pPrevDesc
-						- pSolarSysState->PlanetDesc + 2);
-			radius = MAX_ZOOM_RADIUS;
-		}
-		else
-		{
-			flagship_loc = 1;
-			radius = pSolarSysState->SunDesc[0].radius;
-			if (radius < MAX_ZOOM_RADIUS)
-			{
-				vdx >>= 1;
-				vdy >>= 1;
-				if (radius == MIN_ZOOM_RADIUS)
-				{
-					vdx >>= 1;
-					vdy >>= 1;
-				}
-			}
-		}
+		flagship_loc = getFlagshipLocation ();
+		radius = zoomRadiusForLocation (flagship_loc);
+		adjustDeltaVforZoom (radius, &vdx, &vdy);
 
-		pt.x = (SIS_SCREEN_WIDTH >> 1)
-				+ (SIZE)((long)GLOBAL (ip_location.x)
-				* (DISPLAY_FACTOR >> 1) / radius);
-		pt.y = (SIS_SCREEN_HEIGHT >> 1)
-				+ (SIZE)((long)GLOBAL (ip_location.y)
-				* (DISPLAY_FACTOR >> 1) / radius);
+		pt = locationToDisplay (GLOBAL (ip_location), radius);
 		ElementPtr->current.location.x = DISPLAY_TO_WORLD (pt.x)
 				+ (COORD)(LOG_SPACE_WIDTH >> 1)
 				- (LOG_SPACE_WIDTH >> (MAX_REDUCTION + 1));
@@ -715,12 +669,7 @@ flag_ship_preprocess (ELEMENT *ElementPtr)
 		GLOBAL (ip_location.x) += vdx;
 		GLOBAL (ip_location.y) += vdy;
 
-		pt.x = (SIS_SCREEN_WIDTH >> 1)
-				+ (SIZE)((long)GLOBAL (ip_location.x)
-				* (DISPLAY_FACTOR >> 1) / radius);
-		pt.y = (SIS_SCREEN_HEIGHT >> 1)
-				+ (SIZE)((long)GLOBAL (ip_location.y)
-				* (DISPLAY_FACTOR >> 1) / radius);
+		pt = locationToDisplay (GLOBAL (ip_location), radius);
 		ElementPtr->next.location.x = DISPLAY_TO_WORLD (pt.x)
 				+ (COORD)(LOG_SPACE_WIDTH >> 1)
 				- (LOG_SPACE_WIDTH >> (MAX_REDUCTION + 1));
@@ -767,12 +716,9 @@ spawn_flag_ship (void)
 
 		LockElement (hFlagShipElement, &FlagShipElementPtr);
 		FlagShipElementPtr->hit_points = 1;
-		if (!playerInInnerSystem ())
-			FlagShipElementPtr->sys_loc = 1;
-		else
-			FlagShipElementPtr->sys_loc =
-					(BYTE)(pSolarSysState->pBaseDesc->pPrevDesc
-					- pSolarSysState->PlanetDesc + 2);
+		// Must have mass_points for collisions to work
+		FlagShipElementPtr->mass_points = 1;
+		FlagShipElementPtr->sys_loc = getFlagshipLocation ();
 		FlagShipElementPtr->state_flags = APPEARING | IGNORE_VELOCITY;
 		if (GET_GAME_STATE (ESCAPE_COUNTER))
 			FlagShipElementPtr->state_flags |= NONSOLID;
