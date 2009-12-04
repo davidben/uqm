@@ -178,6 +178,8 @@ struct solarsys_state
 			// Only defined after a call to (*genFuncs)->generateMoons()
 			// as its argument, and overwritten by subsequent calls.
 	PLANET_DESC *pBaseDesc;
+			// In outer system: points to PlanetDesc[]
+			// In inner system: points to MoonDesc[]
 	PLANET_DESC *pOrbitalDesc;
 			// In orbit: points into PlanetDesc or MoonDesc to the planet
 			// currently orbiting.
@@ -260,7 +262,8 @@ extern RECT* RotatePlanet (int x, int dx, int dy, COUNT scale_amt,
 		UBYTE zoom_from, RECT *r);
 extern void SetPlanetTilt (int da);
 extern void DrawScannedObjects (BOOLEAN Reversed);
-extern void GeneratePlanetMask (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame);
+extern void GeneratePlanetSurface (PLANET_DESC *pPlanetDesc,
+		FRAME SurfDefFrame);
 extern void DeltaTopography (COUNT num_iterations, SBYTE *DepthArray,
 		RECT *pRect, SIZE depth_delta);
 

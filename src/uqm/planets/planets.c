@@ -230,18 +230,8 @@ LoadPlanet (FRAME SurfDefFrame)
 
 		pPlanetDesc = pSolarSysState->pOrbitalDesc;
 
-
-		/* 
-		if (pPlanetDesc->data_index & PLANET_SHIELDED)
-			pSolarSysState->PlanetSideFrame[2] = CaptureDrawable (
-					LoadGraphic (PLANET_SHIELDED_MASK_PMAP_ANIM)
-					);
-		else if (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity != GAS_GIANT_ATMOSPHERE)
-			LoadLanderData ();
-		*/
-
-		GeneratePlanetMask (pPlanetDesc, SurfDefFrame);
-		SetPlanetMusic ((UBYTE)(pPlanetDesc->data_index & ~PLANET_SHIELDED));
+		GeneratePlanetSurface (pPlanetDesc, SurfDefFrame);
+		SetPlanetMusic (pPlanetDesc->data_index & ~PLANET_SHIELDED);
 
 		if (pPlanetDesc->pPrevDesc != &pSolarSysState->SunDesc[0])
 			pPlanetDesc = pPlanetDesc->pPrevDesc;
@@ -251,17 +241,6 @@ LoadPlanet (FRAME SurfDefFrame)
 
 	LockMutex (GraphicsLock);
 	DrawOrbitalDisplay (WaitMode ? DRAW_ORBITAL_UPDATE : DRAW_ORBITAL_FULL);
-#if 0
-	// this used to draw the static slave shield graphic
-	SetContext (SpaceContext);
-	s.frame = pSolarSysState->PlanetSideFrame[2];
-	if (s.frame)
-	{
-		s.origin.x = SIS_SCREEN_WIDTH >> 1;
-		s.origin.y = ((116 - SIS_ORG_Y) >> 1) + 2;
-		DrawStamp (&s);
-	}
-#endif
 	UnlockMutex (GraphicsLock);
 
 	if (!PLRPlaying ((MUSIC_REF)~0))

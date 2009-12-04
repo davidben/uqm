@@ -88,7 +88,7 @@ RotatePlanet (int x, int dx, int dy, COUNT scale_amt, UBYTE zoom_from,
 	// is checked here because it is possile that PauseRotate was
 	// set between then and now, and we don't want too push
 	// anything onto the DrawQueue in that case.  If the locking
-	// operation is moved before the RenderLevelMasks call, one of
+	// operation is moved before the RenderPlanetSphere call, one of
 	// the two PauseRotate checks can be removed.
 
 	//if (((SOLARSYS_STATE *volatile)pSolarSysState)->PauseRotate !=1)

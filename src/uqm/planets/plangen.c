@@ -107,7 +107,7 @@ typedef struct
 } POINT3;
 
 static void
-TransformTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
+RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 {
 	CONTEXT OldContext;
 	FRAME OldFrame;
@@ -150,7 +150,7 @@ TransformTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 		pBatch = &BatchArray[0];
 		for (i = 0; i < NUM_BATCH_POINTS; ++i, ++pBatch)
 		{
-			SetPrimNextLink (pBatch, (COUNT)(i + 1));
+			SetPrimNextLink (pBatch, i + 1);
 			SetPrimType (pBatch, POINT_PRIM);
 		}
 		SetPrimNextLink (&pBatch[-1], END_OF_LIST);
@@ -221,16 +221,6 @@ TransformTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 	SetContext (OldContext);
 }
 
-static void
-RenderTopography (BOOLEAN Reconstruct)
-		// Reconstruct arg was not used on 3DO and is not needed here either
-{
-	TransformTopography (pSolarSysState->TopoFrame,
-			pSolarSysState->Orbit.lpTopoData, MAP_WIDTH, MAP_HEIGHT);
-
-	(void)Reconstruct; // swallow compiler whining
-}
-
 static inline void
 P3mult (POINT3 *res, POINT3 *vec, double cnst)
 {
@@ -260,10 +250,10 @@ P3norm (POINT3 *res, POINT3 *vec)
 	P3mult (res, vec, 1/mag);
 }
 
-// RenderPhongMask builds a shadow map for the rotating planet
+// GenerateSphereMask builds a shadow map for the rotating planet
 //  loc indicates the planet's position relative to the sun
 static void
-RenderPhongMask (POINT loc)
+GenerateSphereMask (POINT loc)
 {
 	POINT pt;
 	POINT3 light;
@@ -312,7 +302,7 @@ RenderPhongMask (POINT loc)
 				//  if someone decides to use it later for some reason.
 				//  Specular highlight is only good for perfectly smooth
 				//  surfaces, like balls (of which planets are not)
-				//  This wouldn't be RenderPhongMask without the Phong eq.
+				//  This is the Phong equation
 #define LIGHT_INTENS  0.3
 #define MSHI          2
 				double fb, spec;
@@ -447,7 +437,7 @@ get_avg_rgb (DWORD p1[4], DWORD mult[4], COUNT offset)
 	//c is the red/green/blue value of this pixel
 	for (j = 0; j < 4; j++)
 	{
-		c = (UBYTE)(p1[j] >> i);
+		c = p1[j] >> i;
 		ci += c * mult[j];
 	}
 	ci >>= AA_WEIGHT_BITS;
@@ -458,10 +448,10 @@ get_avg_rgb (DWORD p1[4], DWORD mult[4], COUNT offset)
 	return ((UBYTE)ci);
 }
 
-// SetPlanetTilt creates 'map_rotate' to map the topo data
+// CreateSphereTiltMap creates 'map_rotate' to map the topo data
 //  for a tilted planet.  It also does the sphere->plane mapping
 void
-SetPlanetTilt (int angle)
+CreateSphereTiltMap (int angle)
 {
 	int x, y;
 	const double multx = ((double)SPHERE_SPAN_X / M_PI);
@@ -545,7 +535,7 @@ init_zoom_array (COUNT *zoom_arr)
 
 //CreateShieldMask
 // The shield is created in two parts.  This routine creates the Halo.
-// The red tint of the planet is currently applied in RenderLevelMasks
+// The red tint of the planet is currently applied in RenderPlanetSphere
 // This was done because the shield glows and needs to modify how the planet
 // gets lit. Currently, the planet area is transparent in the mask made by
 // this routine, but a filter can be applied if desired too.
@@ -747,11 +737,11 @@ get_map_elev (SBYTE *elevs, int x, int y, int offset)
 	return elevs[y * MAP_WIDTH + (offset + x) % MAP_WIDTH];
 }
 
-// RenderLevelMasks builds a frame for the rotating planet view
+// RenderPlanetSphere builds a frame for the rotating planet view
 // offset is effectively the angle of rotation around the planet's axis
 // We use the SDL routines to directly write to the SDL_Surface to improve performance
 void
-RenderLevelMasks (FRAME MaskFrame, int offset, BOOLEAN doThrob)
+RenderPlanetSphere (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 {
 	POINT pt;
 	DWORD *rgba, *p_rgba;
@@ -886,29 +876,22 @@ RenderLevelMasks (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 static void
 DitherMap (SBYTE *DepthArray)
 {
+#define DITHER_VARIANCE  (1 << (RANGE_SHIFT - 3))
 	COUNT i;
-	SBYTE *lpDst;
+	SBYTE *elev;
+	DWORD rand_val;
 
-	i = (MAP_WIDTH * MAP_HEIGHT) >> 2;
-	lpDst = DepthArray;
-	do
+	for (i = 0, elev = DepthArray; i < MAP_WIDTH * MAP_HEIGHT; ++i, ++elev)
 	{
-		DWORD rand_val;
+		// Use up the random value byte by byte
+		if ((i & 3) == 0)
+			rand_val = TFB_Random ();
+		else
+			rand_val >>= 8;
 
-		rand_val = TFB_Random ();
-		*lpDst++ += (SBYTE) ((1 << (RANGE_SHIFT - 4))
-				- (LOBYTE (LOWORD (rand_val)) &
-				((1 << (RANGE_SHIFT - 3)) - 1)));
-		*lpDst++ += (SBYTE) ((1 << (RANGE_SHIFT - 4))
-				- (HIBYTE (LOWORD (rand_val)) &
-				((1 << (RANGE_SHIFT - 3)) - 1)));
-		*lpDst++ += (SBYTE) ((1 << (RANGE_SHIFT - 4))
-				- (LOBYTE (HIWORD (rand_val)) &
-				((1 << (RANGE_SHIFT - 3)) - 1)));
-		*lpDst++ += (SBYTE) ((1 << (RANGE_SHIFT - 4))
-				- (HIBYTE (HIWORD (rand_val)) &
-				((1 << (RANGE_SHIFT - 3)) - 1)));
-	} while (--i);
+		// Bring the elevation point up or down
+		*elev += DITHER_VARIANCE / 2 - (rand_val & (DITHER_VARIANCE - 1));
+	}
 }
 
 static void
@@ -1292,7 +1275,7 @@ MakeGasGiant (COUNT num_bands, SBYTE *DepthArray, RECT *pRect, SIZE
 				& (((1 << RANGE_SHIFT) * NUM_BAND_COLORS) - 1);
 	}
 
-	MakeStorms ((COUNT)(4 + ((COUNT)TFB_Random () & 3) + 1), DepthArray);
+	MakeStorms (4 + (TFB_Random () & 3) + 1, DepthArray);
 
 	DitherMap (DepthArray);
 }
@@ -1351,22 +1334,19 @@ ValidateMap (SBYTE *DepthArray)
 }
 
 void
-planet_orbit_init ()
+planet_orbit_init (void)
 {
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
-	Orbit->PlanetFrameArray = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP | WANT_ALPHA, DIAMETER, DIAMETER,
-				2));
-	Orbit->TintFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP | WANT_ALPHA, (SWORD)MAP_WIDTH,
-				(SWORD)MAP_HEIGHT, 2));
+	Orbit->PlanetFrameArray = CaptureDrawable (CreateDrawable (
+			WANT_PIXMAP | WANT_ALPHA, DIAMETER, DIAMETER, 2));
+	Orbit->TintFrame = CaptureDrawable (CreateDrawable (
+			WANT_PIXMAP | WANT_ALPHA, MAP_WIDTH, MAP_HEIGHT, 2));
 	Orbit->ObjectFrame = 0;
 	Orbit->WorkFrame = 0;
 	Orbit->lpTopoData = HMalloc (MAP_WIDTH * MAP_HEIGHT);
-	Orbit->TopoZoomFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP, (COUNT)(MAP_WIDTH << 2),
-				(COUNT)(MAP_HEIGHT << 2), 1));
+	Orbit->TopoZoomFrame = CaptureDrawable (CreateDrawable (
+			WANT_PIXMAP, MAP_WIDTH << 2, MAP_HEIGHT << 2, 1));
 	Orbit->lpTopoMap = HMalloc (sizeof (DWORD)
 			* (MAP_HEIGHT * (MAP_WIDTH + SPHERE_SPAN_X)));
 	// always allocate the scratch array to largest needed size
@@ -1375,7 +1355,7 @@ planet_orbit_init ()
 }
 
 static unsigned
-frandom ()
+frandom (void)
 {
 	static unsigned seed = 0x12345678;
 	
@@ -1782,7 +1762,7 @@ GenerateLightMap (SBYTE *pTopo, int w, int h)
 }
 
 void
-GeneratePlanetMask (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
+GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 {
 	RECT r;
 	DWORD old_seed;
@@ -1943,7 +1923,9 @@ GeneratePlanetMask (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 					pSolarSysState->XlatRef, 1);
 		}
 		pSolarSysState->XlatPtr = GetStringAddress (pSolarSysState->XlatRef);
-		RenderTopography (FALSE);
+		RenderTopography (pSolarSysState->TopoFrame,
+				pSolarSysState->Orbit.lpTopoData, MAP_WIDTH, MAP_HEIGHT);
+
 	}
 
 	if (!(pPlanetDesc->data_index & PLANET_SHIELDED)
@@ -1957,7 +1939,7 @@ GeneratePlanetMask (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 			TopoScale4x (pScaledTopo, Orbit->lpTopoData,
 					PlanDataPtr->num_faults, PlanDataPtr->fault_depth
 					* (PLANALGO (PlanDataPtr->Type) == CRATERED_ALGO ? 2 : 1  ));
-			TransformTopography (Orbit->TopoZoomFrame, pScaledTopo,
+			RenderTopography (Orbit->TopoZoomFrame, pScaledTopo,
 					MAP_WIDTH * 4, MAP_HEIGHT * 4);
 
 			HFree (pScaledTopo);
@@ -1997,7 +1979,8 @@ GeneratePlanetMask (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 		loc = pSolarSysState->pOrbitalDesc->pPrevDesc->location;
 	}
 	
-	RenderPhongMask (loc);
+	GenerateSphereMask (loc);
+	CreateSphereTiltMap (pSolarSysState->SysInfo.PlanetInfo.AxialTilt);
 
 	if (pPlanetDesc->data_index & PLANET_SHIELDED)
 	{
@@ -2037,7 +2020,6 @@ rotate_planet_task (void *data)
 			!Task_ReadState (task, TASK_EXIT))
 		TaskSwitch ();
 
-	SetPlanetTilt (pSS->SysInfo.PlanetInfo.AxialTilt);
 	Orbit = &pSolarSysState->Orbit;
 
 	spin_dir = 1 - ((pSS->SysInfo.PlanetInfo.AxialTilt & 1) << 1);
@@ -2059,9 +2041,9 @@ rotate_planet_task (void *data)
 	}
 	
 	// Render the first planet frame
-	RenderLevelMasks (Orbit->PlanetFrameArray, init_x, doThrob);
+	RenderPlanetSphere (Orbit->PlanetFrameArray, init_x, doThrob);
 
-	zoom_from = (UBYTE)TFB_Random () & 0x03;
+	zoom_from = TFB_Random () & 0x03;
 	zoom_frames = init_zoom_array (zoom_arr);
 	zoom_amt = zoom_arr[frame_num];
 
@@ -2121,7 +2103,7 @@ rotate_planet_task (void *data)
 			
 			// Generate the next rotation frame
 			altfi ^= 1;
-			RenderLevelMasks (SetAbsFrameIndex (Orbit->PlanetFrameArray,
+			RenderPlanetSphere (SetAbsFrameIndex (Orbit->PlanetFrameArray,
 					altfi), x, doThrob);
 			if (doThrob)
 			{	// prepare next throb frame
