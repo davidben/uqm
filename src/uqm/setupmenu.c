@@ -571,6 +571,7 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 			(*(widget->onChange))(widget);
 		}
 	}
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 	widget->state = WTE_NORMAL;
 	redraw_menu ();
