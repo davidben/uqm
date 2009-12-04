@@ -618,7 +618,7 @@ GetMeleeStarShips (COUNT playerMask, HSTARSHIP *ships)
 	SetContext (OffScreenContext);
 
 	UnlockMutex (GraphicsLock);
-	ResetKeyRepeat ();
+
 	DoInput (&gmstate, FALSE);
 	WaitForSoundEnd (0);
 

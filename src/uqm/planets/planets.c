@@ -424,7 +424,6 @@ DoPlanetOrbit (MENU_STATE *pMS)
 			TaskSwitch ();
 
 			AutoPilotSet = StarMap ();
-			SetDefaultMenuRepeatDelay ();
 
 			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 				return FALSE;

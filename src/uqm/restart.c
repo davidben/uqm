@@ -318,6 +318,7 @@ RestartMenu (MENU_STATE *pMS)
 	DrawRestartMenuGraphic (pMS);
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
+	SetDefaultMenuRepeatDelay ();
 	DoInput (pMS, TRUE);
 	
 	StopMusic ();

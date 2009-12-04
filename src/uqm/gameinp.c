@@ -34,7 +34,7 @@
 
 
 #define ACCELERATION_INCREMENT (ONE_SECOND / 12)
-#define MENU_REPEAT_DELAY (ONE_SECOND >> 1)
+#define MENU_REPEAT_DELAY (ONE_SECOND / 2)
 
 
 typedef struct
@@ -283,18 +283,18 @@ SetMenuRepeatDelay (DWORD min, DWORD max, DWORD step, BOOLEAN gestalt)
 	_max_accel = max;
 	_step_accel = step;
 	_gestalt_keys = gestalt;
-	_clear_menu_state ();
+	//_clear_menu_state ();
 	ResetKeyRepeat ();
 }
 
 void
-SetDefaultMenuRepeatDelay ()
+SetDefaultMenuRepeatDelay (void)
 {
 	_min_accel = ACCELERATION_INCREMENT;
 	_max_accel = MENU_REPEAT_DELAY;
 	_step_accel = ACCELERATION_INCREMENT;
 	_gestalt_keys = FALSE;
-	_clear_menu_state ();
+	//_clear_menu_state ();
 	ResetKeyRepeat ();
 }
 
@@ -340,8 +340,6 @@ MenuKeysToSoundFlags (const CONTROLLER_INPUT_STATE *state)
 void
 DoInput (void *pInputState, BOOLEAN resetInput)
 {
-	SetMenuRepeatDelay (ACCELERATION_INCREMENT, MENU_REPEAT_DELAY,
-			ACCELERATION_INCREMENT, FALSE);
 	if (resetInput)
 		FlushInput ();
 

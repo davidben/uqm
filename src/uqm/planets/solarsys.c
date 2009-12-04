@@ -1960,8 +1960,6 @@ DoSolarSysMenu (MENU_STATE *pMS)
 			break;
 		case STARMAP:
 			StarMap ();
-			SetDefaultMenuRepeatDelay ();
-
 			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 				return FALSE;
 

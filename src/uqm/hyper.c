@@ -1655,7 +1655,6 @@ DoHyperspaceMenu (MENU_STATE *pMS)
 			break;
 		case STARMAP:
 			StarMap ();
-			SetDefaultMenuRepeatDelay ();
 			return FALSE;
 		case NAVIGATION:
 			return FALSE;
