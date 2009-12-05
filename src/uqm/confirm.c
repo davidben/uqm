@@ -108,13 +108,7 @@ DoConfirmExit (void)
 		SetSystemRect (&r);
 
 		DrawConfirmationWindow (response);
-
-		// Releasing the lock lets the rotate_planet_task
-		// draw a frame.  PauseRotate can still allow one more frame
-		// to be drawn, so it is safer to just not release the lock
-		//UnlockMutex (GraphicsLock);
 		FlushGraphics ();
-		//LockMutex (GraphicsLock);
 
 		FlushInput ();
 		done = FALSE;
@@ -188,7 +182,8 @@ DoPopup (struct popup_state *self)
 	(void)self;
 	SleepThread (ONE_SECOND / 20);
 	return !(PulsedInputState.menu[KEY_MENU_SELECT] || 
-			PulsedInputState.menu[KEY_MENU_CANCEL]);
+			PulsedInputState.menu[KEY_MENU_CANCEL] ||
+			(GLOBAL (CurrentActivity) & CHECK_ABORT));
 }
 
 void
@@ -205,7 +200,7 @@ DoPopupWindow (const char *msg)
 	RECT windowRect;
 	POPUP_STATE state;
 	MENU_SOUND_FLAGS s0, s1;
-	
+	InputFrameCallback *oldCallback;
 
 	if (!bank)
 	{
@@ -247,10 +242,12 @@ DoPopupWindow (const char *msg)
 
 	GetMenuSounds (&s0, &s1);
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
+	oldCallback = SetInputCallback (NULL);
 
 	state.InputFunc = DoPopup;
 	DoInput (&state, TRUE);
 
+	SetInputCallback (oldCallback);
 	ClearSystemRect ();
 	DrawStamp (&s);
 	DestroyDrawable (ReleaseDrawable (s.frame));

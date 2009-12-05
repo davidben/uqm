@@ -172,9 +172,8 @@ PauseGame (void)
 	SetSystemRect (&r);
 	DrawStamp (&s);
 
-	// Releasing the lock lets the rotate_planet_task
-	// draw a frame.  PauseRotate can still allow one more frame
-	// to be drawn, so it is safer to just not release the lock
+	// It is safer to just not release the lock so any graphics tasks
+	// would be blocked
 	//UnlockMutex (GraphicsLock);
 	FlushGraphics ();
 	//LockMutex (GraphicsLock);

@@ -69,6 +69,15 @@ DrawPlanetSphere (int x, int y)
 	UnbatchGraphics ();
 }
 
+void
+DrawDefaultPlanetSphere (void)
+{
+	CONTEXT oldContext;
+
+	oldContext = SetContext (SpaceContext);
+	DrawPlanetSphere (SIS_SCREEN_WIDTH / 2, PLANET_ORG_Y);
+	SetContext (oldContext);
+}
 
 void
 InitSphereRotation (int direction, BOOLEAN shielded)
@@ -216,6 +225,21 @@ ZoomInPlanetSphere (void)
 
 		SleepThreadUntil (NextTime);
 	}
+}
+
+void
+RotatePlanetSphere (BOOLEAN keepRate)
+{
+	static TimeCount NextTime;
+	TimeCount Now = GetTimeCounter ();
+
+	if (keepRate && Now < NextTime)
+		return; // not time yet
+
+	NextTime = Now + PLANET_ROTATION_RATE;
+	DrawDefaultPlanetSphere ();
+
+	PrepareNextRotationFrame ();
 }
 
 // rgb.a is ignored

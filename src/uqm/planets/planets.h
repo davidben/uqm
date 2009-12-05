@@ -226,7 +226,6 @@ struct solarsys_state
 			 * [5] = bio 3 (world-specific)
 			 */
 	Color Tint_rgb;
-	UBYTE PauseRotate;
 	FRAME TopoFrame;
 	PLANET_ORBIT Orbit;
 };
@@ -269,10 +268,12 @@ extern void InitSphereRotation (int direction, BOOLEAN shielded);
 extern void UninitSphereRotation (void);
 extern void PrepareNextRotationFrame (void);
 extern void DrawPlanetSphere (int x, int y);
+extern void DrawDefaultPlanetSphere (void);
 extern void RenderPlanetSphere (FRAME Frame, int offset, BOOLEAN doThrob);
 extern void SetShieldThrobEffect (FRAME FromFrame, int offset, FRAME ToFrame);
 
 extern void ZoomInPlanetSphere (void);
+extern void RotatePlanetSphere (BOOLEAN keepRate);
 
 extern void DrawScannedObjects (BOOLEAN Reversed);
 extern void GeneratePlanetSurface (PLANET_DESC *pPlanetDesc,

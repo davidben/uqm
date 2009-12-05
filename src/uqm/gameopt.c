@@ -1099,14 +1099,12 @@ PickGame (MENU_STATE *pMS)
 	RECT DlgRect;
 	STAMP DlgStamp;
 	TimeCount TimeOut;
+	InputFrameCallback *oldCallback;
 
 	TimeOut = FadeMusic (0, ONE_SECOND / 2);
 
-	if (pSolarSysState)
-	{
-		pSolarSysState->PauseRotate = 1;
-		TaskSwitch ();
-	}
+	// Deactivate any background drawing, like planet rotation
+	oldCallback = SetInputCallback (NULL);
 
 	LoadGameDescriptions (desc_array);
 
@@ -1128,6 +1126,7 @@ PickGame (MENU_STATE *pMS)
 	FadeMusic (NORMAL_VOLUME, 0);
 
 	DoInput (pMS, TRUE); 
+
 	LockMutex (GraphicsLock);
 	pMS->Initialized = FALSE;
 	pMS->InputFunc = DoGameOptions;
@@ -1148,15 +1147,15 @@ PickGame (MENU_STATE *pMS)
 		DrawStamp (&DlgStamp);
 		ScreenTransition (3, &DlgRect);
 		UnbatchGraphics ();
-
-		if (pSolarSysState)
-			pSolarSysState->PauseRotate = 0;
 	}
 
 	DestroyDrawable (ReleaseDrawable (DlgStamp.frame));
 
 	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
+
+	// Reactivate any background drawing, like planet rotation
+	SetInputCallback (oldCallback);
 
 	return (retval);
 }

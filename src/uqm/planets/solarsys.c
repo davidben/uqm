@@ -186,8 +186,10 @@ playerInSolarSystem (void)
 bool
 playerInPlanetOrbit (void)
 {
+	assert (!pSolarSysState || pSolarSysState->MenuState.Initialized < 4);
+
 	return playerInSolarSystem () &&
-			pSolarSysState->MenuState.Initialized >= 3;
+			pSolarSysState->MenuState.Initialized == 3;
 			// XXX: This test will change eventually
 }
 
@@ -1275,8 +1277,9 @@ EnterPlanetOrbit (void)
 			|| GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 		return;
 
-	if (pSolarSysState->MenuState.flash_task)
-	{	// We've entered orbit; LoadPlanet() set flash_task to rotate planet
+	// Implement a to-do in generate.h for a better test
+	if (pSolarSysState->TopoFrame)
+	{	// We've entered orbit; LoadPlanet() called planet surface-gen code
 		PlanetOrbitMenu ();
 		FreePlanet ();
 	}

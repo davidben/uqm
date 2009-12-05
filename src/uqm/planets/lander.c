@@ -1312,51 +1312,77 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 }
 
 static void
+animationInterframe (TimeCount *TimeIn, COUNT periods)
+{
+#define ANIM_FRAME_RATE  (ONE_SECOND / 30)
+
+	for ( ; periods; --periods)
+	{
+		LockMutex (GraphicsLock);
+		RotatePlanetSphere (TRUE);
+		UnlockMutex (GraphicsLock);
+
+		SleepThreadUntil (*TimeIn + ANIM_FRAME_RATE);
+		*TimeIn = GetTimeCounter ();
+	}
+}
+
+static void
 AnimateLaunch (FRAME farray)
 {
 	RECT r;
 	STAMP s;
 	COUNT num_frames;
-	DWORD Time;
+	TimeCount NextTime;
 
-	Time = GetTimeCounter ();
+	LockMutex (GraphicsLock);
+	SetContext (SpaceContext);
 
-	s.origin.x = s.origin.y = 0;
-	s.frame = DecFrameIndex (farray);
+	r.corner.x = 0;
+	r.corner.y = 0;
+	r.extent.width = 0;
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = farray;
 
-	num_frames = GetFrameCount (s.frame);
-	do
+	for (num_frames = GetFrameCount (s.frame); num_frames; --num_frames)
 	{
-		GetFrameRect (s.frame, &r);
-		s.frame = IncFrameIndex (s.frame);
-		RepairBackRect (&r);
-		DrawStamp (&s);
+		NextTime = GetTimeCounter () + (ONE_SECOND / 22);
 
+		BatchGraphics ();
+		RepairBackRect (&r);
+#ifdef SPIN_ON_LAUNCH
+		RotatePlanetSphere (FALSE);
+#else
+		DrawDefaultPlanetSphere ();
+#endif
+		DrawStamp (&s);
+		UnbatchGraphics ();
 		UnlockMutex (GraphicsLock);
 
-		SleepThreadUntil (Time + (ONE_SECOND / 22));
-		Time = GetTimeCounter ();
+		GetFrameRect (s.frame, &r);
+		s.frame = IncFrameIndex (s.frame);
+
+		SleepThreadUntil (NextTime);
 
 		LockMutex (GraphicsLock);
-	} while (--num_frames);
+	}
 
-	GetFrameRect (s.frame, &r);
 	RepairBackRect (&r);
+	UnlockMutex (GraphicsLock);
 }
 
 static void
-InitPlanetSide (POINT pt)
+AnimateLanderWarmup (void)
 {
 	SIZE num_crew;
 	STAMP s;
 	CONTEXT OldContext;
-	DWORD Time;
+	TimeCount TimeIn = GetTimeCounter ();
 
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (RadarContext);
 	UnlockMutex (GraphicsLock);
-
-	Time = GetTimeCounter ();
 
 	s.origin.x = 0;
 	s.origin.y = 0;
@@ -1367,22 +1393,20 @@ InitPlanetSide (POINT pt)
 	DrawStamp (&s);
 	UnlockMutex (GraphicsLock);
 
-	SleepThread (ONE_SECOND / 15);
-	Time = GetTimeCounter ();
+	animationInterframe (&TimeIn, 2);
 
 	for (num_crew = 0; num_crew < (NUM_CREW_COLS * NUM_CREW_ROWS)
 			&& GLOBAL_SIS (CrewEnlisted); ++num_crew)
 	{
-		SleepThreadUntil (Time + ONE_SECOND / 30);
-		Time = GetTimeCounter ();
+		animationInterframe (&TimeIn, 1);
+		
 		LockMutex (GraphicsLock);
 		DeltaSISGauges (-1, 0, 0);
 		DeltaLanderCrew (1, 0);
 		UnlockMutex (GraphicsLock);
 	}
 
-	SleepThreadUntil (Time + (ONE_SECOND / 15));
-	Time = GetTimeCounter ();
+	animationInterframe (&TimeIn, 2);
 
 	if (GET_GAME_STATE (IMPROVED_LANDER_SHOT))
 		s.frame = SetAbsFrameIndex (s.frame, 58);
@@ -1393,8 +1417,7 @@ InitPlanetSide (POINT pt)
 	DrawStamp (&s);
 	UnlockMutex (GraphicsLock);
 
-	SleepThreadUntil (Time + (ONE_SECOND / 15));
-	Time = GetTimeCounter ();
+	animationInterframe (&TimeIn, 2);
 
 	if (GET_GAME_STATE (IMPROVED_LANDER_SPEED))
 		s.frame = SetAbsFrameIndex (s.frame, 57);
@@ -1406,8 +1429,7 @@ InitPlanetSide (POINT pt)
 		DrawStamp (&s);
 		UnlockMutex (GraphicsLock);
 
-		SleepThreadUntil (Time + (ONE_SECOND / 15));
-		Time = GetTimeCounter ();
+		animationInterframe (&TimeIn, 2);
 
 		s.frame = IncFrameIndex (s.frame);
 	}
@@ -1417,31 +1439,23 @@ InitPlanetSide (POINT pt)
 
 	if (GET_GAME_STATE (IMPROVED_LANDER_CARGO))
 	{
-		SleepThreadUntil (Time + (ONE_SECOND / 15));
-		Time = GetTimeCounter ();
+		animationInterframe (&TimeIn, 2);
 
 		s.frame = SetAbsFrameIndex (s.frame, 59);
 		LockMutex (GraphicsLock);
 		DrawStamp (&s);
 		UnlockMutex (GraphicsLock);
 	}
-#ifndef SPIN_ON_LAUNCH
-	pSolarSysState->PauseRotate = 1;
-#endif
-	SleepThreadUntil (Time + (ONE_SECOND / 15));
 
-	LockMutex (GraphicsLock);
+	animationInterframe (&TimeIn, 2);
+
 	PlaySound (SetAbsSoundIndex (LanderSounds, LANDER_DEPARTS),
 			NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
-	SetContext (SpaceContext);
-	AnimateLaunch (LanderFrame[5]);
-#ifdef SPIN_ON_LAUNCH
-	pSolarSysState->PauseRotate = 1;
-	UnlockMutex (GraphicsLock);
-	TaskSwitch ();
-	LockMutex (GraphicsLock);
-#endif
+}
 
+static void
+InitPlanetSide (POINT pt)
+{
 	// Adjust landing location by a random jitter.
 #define RANDOM_MISS 64
 	// Jitter the X landing point.
@@ -1460,6 +1474,7 @@ InitPlanetSide (POINT pt)
 
 	curLanderLoc = pt;
 
+	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
 	SetContextFont (TinyFont);
 
@@ -1495,11 +1510,7 @@ InitPlanetSide (POINT pt)
 
 		ScreenTransition (3, &r);
 		UnbatchGraphics ();
-
-		LoadIntoExtraScreen (&r);
 	}
-
-	SetContext (OldContext);
 
 	UnlockMutex (GraphicsLock);
 
@@ -1810,7 +1821,6 @@ ReturnToOrbit (RECT *pRect)
 	ScreenTransition (3, pRect);
 	UnbatchGraphics ();
 
-	LoadIntoExtraScreen (pRect);
 	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
 }
@@ -1960,8 +1970,9 @@ PlanetSide (POINT planetLoc)
 	crew_left = 0;
 	damage_index = 0;
 	explosion_index = 0;
-	pSolarSysState->MenuState.Initialized += 4;
 
+	AnimateLanderWarmup ();
+	AnimateLaunch (LanderFrame[5]);
 	InitPlanetSide (planetLoc);
 
 	landerInputState.NextTime = GetTimeCounter () + PLANET_SIDE_RATE;
@@ -1999,18 +2010,9 @@ PlanetSide (POINT planetLoc)
 
 			LandingTakeoffSequence (&landerInputState, FALSE);
 			ReturnToOrbit (&r);
-#ifdef SPIN_ON_LAUNCH
-			// If PauseRotate is set to 2 the plaet will be displayed, but won't rotate
-			// Until the lander animation is complete
-			pSolarSysState->PauseRotate = 0;
-			// Give The RotatePlanet thread a slice to draw the planet
-			SleepThread (1);
-#endif
-
-			LockMutex (GraphicsLock);
-			SetContext (SpaceContext);
-
 			AnimateLaunch (LanderFrame[6]);
+			
+			LockMutex (GraphicsLock);
 			DeltaSISGauges (crew_left, 0, 0);
 
 			if (PSD.ElementLevel)
@@ -2024,7 +2026,6 @@ PlanetSide (POINT planetLoc)
 				}
 				DrawStorageBays (FALSE);
 			}
-
 			UnlockMutex (GraphicsLock);
 
 			GLOBAL_SIS (TotalBioMass) += PSD.BiologicalLevel;
@@ -2058,9 +2059,6 @@ PlanetSide (POINT planetLoc)
 
 	ZeroVelocityComponents (&GLOBAL (velocity));
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	
-	pSolarSysState->MenuState.Initialized -= 4;
-	pSolarSysState->PauseRotate = 0;
 }
 
 void

@@ -28,6 +28,8 @@ typedef struct GenerateFunctions GenerateFunctions;
  * - split off pickupMineral, pickupEnergy, pickupLife from Generate*
  * - split off generateOrbital in a calculation and an activation
  *   (graphics and music) part.
+ * - make generateOrbital return a meaningful value, specifically, whether
+ *   or not the player is going into orbit
  * - for GenerateNameFunction, set the name in an argument, instead
  *   of in GLOBAL_SYS(PlanetName)
  * - make generateName work for moons

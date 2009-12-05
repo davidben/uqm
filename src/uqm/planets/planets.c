@@ -35,9 +35,6 @@
 #include "libs/graphics/gfx_common.h"
 
 
-extern int rotate_planet_task (void *data);
-
-
 void
 DrawScannedObjects (BOOLEAN Reversed)
 {
@@ -170,7 +167,12 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 		DrawStamp (&s);
 		DestroyDrawable (ReleaseDrawable (s.frame));
 	}
-	else
+	else if (Mode == DRAW_ORBITAL_FULL)
+	{
+		DrawDefaultPlanetSphere ();
+	}
+
+	if (Mode != DRAW_ORBITAL_WAIT)
 	{
 		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH,
 				SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, BLACK_COLOR);
@@ -185,6 +187,7 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 
 	if (Mode != DRAW_ORBITAL_WAIT)
 	{
+		// for later RepairBackRect()
 		LoadIntoExtraScreen (&r);
 	}
 }
@@ -207,7 +210,7 @@ LoadPlanet (FRAME SurfDefFrame)
 #endif
 
 	WaitMode = !(LastActivity & CHECK_LOAD) &&
-			(pSolarSysState->MenuState.Initialized <= 2);
+			(pSolarSysState->MenuState.Initialized != 3);
 
 	if (WaitMode)
 	{
@@ -216,9 +219,11 @@ LoadPlanet (FRAME SurfDefFrame)
 		UnlockMutex (GraphicsLock);
 	}
 
-	if (pSolarSysState->MenuState.flash_task == 0)
+	// TODO: split off the scan screen redraw code into a separate
+	//   function so that we could lose this hack.
+	if (!pSolarSysState->TopoFrame)
 	{
-		// The "rotate planets" task is not initialised yet.
+		// TopoFrame has not been initialised yet.
 		// This means the call to LoadPlanet is made from some
 		// GenerateFunctions.generateOribital() function.
 		PLANET_DESC *pPlanetDesc;
@@ -231,10 +236,6 @@ LoadPlanet (FRAME SurfDefFrame)
 
 		GeneratePlanetSurface (pPlanetDesc, SurfDefFrame);
 		SetPlanetMusic (pPlanetDesc->data_index & ~PLANET_SHIELDED);
-
-		if (pPlanetDesc->pPrevDesc != &pSolarSysState->SunDesc[0])
-			pPlanetDesc = pPlanetDesc->pPrevDesc;
-
 		GeneratePlanetSide ();
 	}
 
@@ -245,20 +246,14 @@ LoadPlanet (FRAME SurfDefFrame)
 	if (!PLRPlaying ((MUSIC_REF)~0))
 		PlayMusic (LanderMusic, TRUE, 1);
 
-	if (pSolarSysState->MenuState.flash_task == 0)
+	if (WaitMode)
 	{
 		assert (pSolarSysState->MenuState.Initialized == 2);
 
-		// Only zoom when not already in orbit
-		if (!(LastActivity & CHECK_LOAD))
-			ZoomInPlanetSphere ();
+		ZoomInPlanetSphere ();
 		
 		// XXX: Mark as in-orbit. This should go away eventually
 		pSolarSysState->MenuState.Initialized = 3;
-		
-		pSolarSysState->MenuState.flash_task =
-				AssignTask (rotate_planet_task, 4096,
-				"rotate planets");
 	}
 }
 
@@ -267,13 +262,6 @@ FreePlanet (void)
 {
 	COUNT i;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
-
-	if (pSolarSysState->MenuState.flash_task)
-	{
-		ConcludeTask (pSolarSysState->MenuState.flash_task);
-//		Task_SetState (pSolarSysState->MenuState.flash_task, TASK_EXIT);
-		pSolarSysState->MenuState.flash_task = 0;
-	}
 
 	UninitSphereRotation ();
 
@@ -331,7 +319,6 @@ FreePlanet (void)
 			));
 	pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
 	FreeLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
-	pSolarSysState->PauseRotate = 0;
 
 	UnlockMutex (GraphicsLock);
 }
@@ -402,24 +389,25 @@ DoPlanetOrbit (MENU_STATE *pMS)
 		case STARMAP:
 		{
 			BOOLEAN AutoPilotSet;
+			InputFrameCallback *oldCallback;
+
+			// Deactivate planet rotation
+			oldCallback = SetInputCallback (NULL);
 
 			LockMutex (GraphicsLock);
-			pSolarSysState->PauseRotate = 1;
 			RepairSISBorder ();
 			UnlockMutex (GraphicsLock);
-			TaskSwitch ();
 
 			AutoPilotSet = StarMap ();
-
 			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 				return FALSE;
+
+			// Reactivate planet rotation
+			SetInputCallback (oldCallback);
 
 			if (!AutoPilotSet)
 			{	// Redraw the orbital display
 				LoadPlanet (NULL);
-				LockMutex (GraphicsLock);
-				pSolarSysState->PauseRotate = 0;
-				UnlockMutex (GraphicsLock);
 				break;
 			}
 			// Fall through !!!
@@ -444,10 +432,19 @@ DoPlanetOrbit (MENU_STATE *pMS)
 	return TRUE;
 }
 
+static void
+on_input_frame (void)
+{
+	LockMutex (GraphicsLock);
+	RotatePlanetSphere (TRUE);
+	UnlockMutex (GraphicsLock);
+}
+
 void
 PlanetOrbitMenu (void)
 {
 	void *oldInputFunc = pSolarSysState->MenuState.InputFunc;
+	InputFrameCallback *oldCallback;
 
 	DrawMenuStateStrings (PM_SCAN, SCAN);
 	LockMutex (GraphicsLock);
@@ -456,11 +453,14 @@ PlanetOrbitMenu (void)
 
 	pSolarSysState->MenuState.CurState = SCAN;
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+	oldCallback = SetInputCallback (on_input_frame);
 
 	// XXX: temporary; will have an own MENU_STATE
 	pSolarSysState->MenuState.InputFunc = DoPlanetOrbit;
 	DoInput (&pSolarSysState->MenuState, TRUE);
 	pSolarSysState->MenuState.InputFunc = oldInputFunc;
+
+	SetInputCallback (oldCallback);
 
 	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);

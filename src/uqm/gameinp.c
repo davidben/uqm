@@ -68,6 +68,8 @@ volatile CONTROLLER_INPUT_STATE ImmediateInputState;
 volatile BOOLEAN ExitRequested;
 volatile BOOLEAN GamePaused;
 
+static InputFrameCallback *inputCallback;
+
 static void
 _clear_menu_state (void)
 {
@@ -275,6 +277,18 @@ UpdateInputState (void)
 		ExitRequested = TRUE;
 }
 
+InputFrameCallback *
+SetInputCallback (InputFrameCallback *callback)
+{
+	InputFrameCallback *old = inputCallback;
+	
+	// Replacing an existing callback with another is not a problem,
+	// but currently this should never happen, which is why the assert.
+	assert (!old || !callback);
+	inputCallback = callback;
+
+	return old;
+}
 
 void
 SetMenuRepeatDelay (DWORD min, DWORD max, DWORD step, BOOLEAN gestalt)
@@ -384,6 +398,10 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 
 			PlaySoundEffect (S, 0, NotPositional (), NULL, 0);
 		}
+
+		if (inputCallback)
+			inputCallback ();
+
 	} while (((INPUT_STATE_DESC*)pInputState)->InputFunc (pInputState));
 
 	if (resetInput)

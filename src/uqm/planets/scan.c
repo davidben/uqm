@@ -645,6 +645,7 @@ PickPlanetSide (MENU_STATE *pMS)
 {
 	DWORD TimeIn = GetTimeCounter ();
 	BOOLEAN select, cancel;
+
 	select = PulsedInputState.menu[KEY_MENU_SELECT];
 	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
 	
@@ -689,6 +690,7 @@ PickPlanetSide (MENU_STATE *pMS)
 		}
 		else
 		{
+			InputFrameCallback *oldCallback;
 			COUNT fuel_required;
 
 			fuel_required = (COUNT)(
@@ -697,6 +699,9 @@ PickPlanetSide (MENU_STATE *pMS)
 				fuel_required = 3 * FUEL_TANK_SCALE;
 
 			EraseCoarseScan ();
+
+			// Deactivate planet rotation callback
+			oldCallback = SetInputCallback (NULL);
 
 			LockMutex (GraphicsLock);
 			DeltaSISGauges (0, -(SIZE)fuel_required, 0);
@@ -743,6 +748,9 @@ PickPlanetSide (MENU_STATE *pMS)
 				PrintCoarseScanPC ();
 			else
 				PrintCoarseScan3DO ();
+
+			// Reactivate planet rotation callback
+			SetInputCallback (oldCallback);
 		}
 
 		DrawMenuStateStrings (PM_MIN_SCAN, DISPATCH_SHUTTLE);
@@ -1019,11 +1027,6 @@ DoScan (MENU_STATE *pMS)
 			return (TRUE);
 		}
 
-		pSolarSysState->MenuState.Initialized += 4;
-#ifndef SPIN_ON_SCAN
-		pSolarSysState->PauseRotate = 1;
-#endif
-	
 		min_scan = pMS->CurState;
 		if (min_scan != AUTO_SCAN)
 			max_scan = min_scan;
@@ -1117,6 +1120,9 @@ DoScan (MENU_STATE *pMS)
 					DrawPlanet (0, 0, i, rgb);
 					DrawScannedStuff (i, min_scan);
 					UnbatchGraphics ();
+#ifdef SPIN_ON_SCAN
+					RotatePlanetSphere (TRUE);
+#endif
 					UnlockMutex (GraphicsLock);
 				}
 
@@ -1157,8 +1163,6 @@ DoScan (MENU_STATE *pMS)
 		else
 			UnlockMutex (GraphicsLock);
 			
-		pSolarSysState->MenuState.Initialized -= 4;
-		pSolarSysState->PauseRotate = 0;
 		FlushInput ();
 	}
 	else if (optWhichMenu == OPT_PC ||
