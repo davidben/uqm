@@ -76,33 +76,23 @@ RepairBackRect (RECT *pRect)
 static void
 EraseCoarseScan (void)
 {
-	RECT r, tr;
-	const int leftScanWidth   = 80;
-	const int rightScanWidth  = 80;
-	const int leftScanOffset  = 5;
-	const int rightScanOffset = 50;
-	const int nameEraseWidth = SIS_SCREEN_WIDTH - 2;
+	RECT oldClipRect;
+	RECT clipRect;
 
 	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
-
-	r.corner.x = (SIS_SCREEN_WIDTH >> 1) - (nameEraseWidth >> 1);
-	r.corner.y = 13 - 10;
-	r.extent.width = nameEraseWidth;
-	r.extent.height = 14;
-	RepairBackRect (&r);
-
-	GetFrameRect (SetAbsFrameIndex (SpaceJunkFrame, 20), &tr);
-	r = tr;
-	r.corner.x += leftScanOffset;
-	r.extent.width = leftScanWidth;
-	RepairBackRect (&r);
-
-	r = tr;
-	r.corner.x += (r.extent.width - rightScanOffset);
-	r.extent.width = rightScanWidth;
-	RepairBackRect (&r);
-
+	// TODO: Give coarse scan an own context
+	GetContextClipRect (&oldClipRect);
+	clipRect = oldClipRect;
+	clipRect.extent.height = SCAN_SCREEN_HEIGHT;
+	SetContextClipRect (&clipRect);
+	
+	BatchGraphics ();
+	DrawStarBackGround ();
+	DrawDefaultPlanetSphere ();
+	UnbatchGraphics ();
+	
+	SetContextClipRect (&oldClipRect);
 	UnlockMutex (GraphicsLock);
 }
 
