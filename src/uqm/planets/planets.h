@@ -88,6 +88,13 @@ enum
 #define MAX_PLANETS 16
 #define MAX_MOONS 4
 
+#define MAP_BORDER_HEIGHT  5
+#define SCAN_SCREEN_HEIGHT (SIS_SCREEN_HEIGHT - MAP_HEIGHT - MAP_BORDER_HEIGHT)
+
+#define PLANET_ROTATION_TIME (ONE_SECOND * 12)
+#define PLANET_ROTATION_RATE (PLANET_ROTATION_TIME / MAP_WIDTH)
+// XXX: -9 to match the original, but why? I have no idea
+#define PLANET_ORG_Y ((SCAN_SCREEN_HEIGHT - 9) / 2)
 
 typedef struct planet_desc PLANET_DESC;
 typedef struct star_desc STAR_DESC;
@@ -141,7 +148,7 @@ struct planet_orbit
 			// normal topo data; expressed in elevation levels
 			// data is signed for planets other than gas giants
 			// transformed to light variance map for 3d planet
-	FRAME PlanetFrameArray;
+	FRAME SphereFrame;
 			// rotating 3d planet frames (current and next)
 	FRAME ObjectFrame;
 			// any extra planetary object (shield, atmo, rings)
@@ -258,9 +265,15 @@ extern void FillOrbits (SOLARSYS_STATE *system, BYTE NumPlanets,
 		PLANET_DESC *pBaseDesc, BOOLEAN TypesDefined);
 extern void InitLander (BYTE LanderFlags);
 
-extern RECT* RotatePlanet (int x, int dx, int dy, COUNT scale_amt,
-		UBYTE zoom_from, RECT *r);
-extern void SetPlanetTilt (int da);
+extern void InitSphereRotation (int direction, BOOLEAN shielded);
+extern void UninitSphereRotation (void);
+extern void PrepareNextRotationFrame (void);
+extern void DrawPlanetSphere (int x, int y);
+extern void RenderPlanetSphere (FRAME Frame, int offset, BOOLEAN doThrob);
+extern void SetShieldThrobEffect (FRAME FromFrame, int offset, FRAME ToFrame);
+
+extern void ZoomInPlanetSphere (void);
+
 extern void DrawScannedObjects (BOOLEAN Reversed);
 extern void GeneratePlanetSurface (PLANET_DESC *pPlanetDesc,
 		FRAME SurfDefFrame);

@@ -69,7 +69,6 @@ DrawScannedObjects (BOOLEAN Reversed)
 void
 DrawPlanetSurfaceBorder (void)
 {
-#define BORDER_HEIGHT  5
 	CONTEXT oldContext;
 	RECT oldClipRect;
 	RECT clipRect;
@@ -91,9 +90,9 @@ DrawPlanetSurfaceBorder (void)
 	SetContextForeGroundColor (
 			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x0A), 0x08));
 	r.corner.x = 0;
-	r.corner.y = clipRect.extent.height - MAP_HEIGHT - BORDER_HEIGHT;
+	r.corner.y = clipRect.extent.height - MAP_HEIGHT - MAP_BORDER_HEIGHT;
 	r.extent.width = clipRect.extent.width;
-	r.extent.height = BORDER_HEIGHT - 2;
+	r.extent.height = MAP_BORDER_HEIGHT - 2;
 	DrawFilledRectangle (&r);
 
 	SetContextForeGroundColor (SIS_BOTTOM_RIGHT_BORDER_COLOR);
@@ -110,7 +109,7 @@ DrawPlanetSurfaceBorder (void)
 	// Right shadow line
 	r.extent.width = 1;
 	r.extent.height = MAP_HEIGHT + 2;
-	r.corner.y += BORDER_HEIGHT - 1;
+	r.corner.y += MAP_BORDER_HEIGHT - 1;
 	r.corner.x = clipRect.extent.width - 1;
 	DrawFilledRectangle (&r);
 
@@ -248,12 +247,18 @@ LoadPlanet (FRAME SurfDefFrame)
 
 	if (pSolarSysState->MenuState.flash_task == 0)
 	{
+		assert (pSolarSysState->MenuState.Initialized == 2);
+
+		// Only zoom when not already in orbit
+		if (!(LastActivity & CHECK_LOAD))
+			ZoomInPlanetSphere ();
+		
+		// XXX: Mark as in-orbit. This should go away eventually
+		pSolarSysState->MenuState.Initialized = 3;
+		
 		pSolarSysState->MenuState.flash_task =
 				AssignTask (rotate_planet_task, 4096,
 				"rotate planets");
-
-		while (pSolarSysState->MenuState.Initialized == 2)
-			TaskSwitch ();
 	}
 }
 
@@ -269,6 +274,8 @@ FreePlanet (void)
 //		Task_SetState (pSolarSysState->MenuState.flash_task, TASK_EXIT);
 		pSolarSysState->MenuState.flash_task = 0;
 	}
+
+	UninitSphereRotation ();
 
 	StopMusic ();
 	LockMutex (GraphicsLock);
@@ -293,8 +300,8 @@ FreePlanet (void)
 	Orbit->lpTopoData = 0;
 	DestroyDrawable (ReleaseDrawable (Orbit->TopoZoomFrame));
 	Orbit->TopoZoomFrame = 0;
-	DestroyDrawable (ReleaseDrawable (Orbit->PlanetFrameArray));
-	Orbit->PlanetFrameArray = 0;
+	DestroyDrawable (ReleaseDrawable (Orbit->SphereFrame));
+	Orbit->SphereFrame = NULL;
 
 	DestroyDrawable (ReleaseDrawable (Orbit->TintFrame));
 	Orbit->TintFrame = 0;

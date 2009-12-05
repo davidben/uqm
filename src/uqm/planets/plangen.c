@@ -32,10 +32,6 @@
 
 
 #undef PROFILE_ROTATION
-#define ROTATION_TIME 12
-
-// The initial size of the planet when zooming.  MUST BE ODD
-#define PLANET_INIT_ZOOM_SIZE 3
 
 // define USE_ALPHA_SHIELD to use an aloha overlay instead of
 // an additive overlay for the shield effect
@@ -59,7 +55,6 @@ extern void getpixelarray (void *map, int Bpp, FRAME FramePtr,
 #define SHIELD_REFLECT_COMP 100
 
 #define NUM_BATCH_POINTS 64
-#define USE_3D_PLANET 1
 #define RADIUS 37
 //2*RADIUS
 #define TWORADIUS (RADIUS << 1)
@@ -117,15 +112,9 @@ RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 
 	if (pSolarSysState->XlatRef == 0)
 	{
-		STAMP s;
-
-		s.origin.x = s.origin.y = 0;
-#if 0
-		s.frame = SetAbsFrameIndex (
-				pSolarSysState->PlanetFrameArray[2], 1
-				);
-		DrawStamp (&s);
-#endif
+		// There is currently nothing we can do w/o an xlat table
+		// This is still called for Earth for 4x scaled topo, but we
+		// do not need it because we cannot land on Earth.
 	}
 	else
 	{
@@ -450,7 +439,7 @@ get_avg_rgb (DWORD p1[4], DWORD mult[4], COUNT offset)
 
 // CreateSphereTiltMap creates 'map_rotate' to map the topo data
 //  for a tilted planet.  It also does the sphere->plane mapping
-void
+static void
 CreateSphereTiltMap (int angle)
 {
 	int x, y;
@@ -505,32 +494,6 @@ CreateSphereTiltMap (int angle)
 			create_aa_points (ppt, newx, newy);
 		}
 	}
-}
-
-//init_zoom_array
-// evaluate the function 5/6*(1-e^(-x/14)) to get a decelerating zoom
-// on entering planet orbit.  This gives us nearly equivalent to what
-// the 3DO does.
-#define ZOOM_TIME (1.13)
-#define ZOOM_FACT1 (6.0 / 5)
-#define ZOOM_FACT2 (14.0 / 25)
-COUNT
-init_zoom_array (COUNT *zoom_arr)
-{
-	float frames_per_sec;
-	int num_frames, i;
-	int base = GSCALE_IDENTITY;
-
-	frames_per_sec = (float)MAP_WIDTH / ROTATION_TIME;
-	num_frames = (int)((frames_per_sec * ZOOM_TIME)  + 0.5);
-	for (i = 0; i < num_frames; i++)
-	{
-		zoom_arr[i] = (COUNT) (base * ZOOM_FACT1 * 
-				(1 - exp (-(i + 1) / (ZOOM_FACT2 * num_frames))));
-	}
-	zoom_arr[i] = base;
-	
-	return i;
 }
 
 //CreateShieldMask
@@ -641,7 +604,7 @@ shield_level (int offset)
 
 // See description above
 // offset is effectively the angle of rotation around the planet's axis
-static void
+void
 SetShieldThrobEffect (FRAME ShieldFrame, int offset, FRAME ThrobFrame)
 {
 	int i;
@@ -1333,12 +1296,12 @@ ValidateMap (SBYTE *DepthArray)
 	} while (--i);
 }
 
-void
+static void
 planet_orbit_init (void)
 {
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
-	Orbit->PlanetFrameArray = CaptureDrawable (CreateDrawable (
+	Orbit->SphereFrame = CaptureDrawable (CreateDrawable (
 			WANT_PIXMAP | WANT_ALPHA, DIAMETER, DIAMETER, 2));
 	Orbit->TintFrame = CaptureDrawable (CreateDrawable (
 			WANT_PIXMAP | WANT_ALPHA, MAP_WIDTH, MAP_HEIGHT, 2));
@@ -1767,11 +1730,13 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 	RECT r;
 	DWORD old_seed;
 	const PlanetFrame *PlanDataPtr;
+	PLANET_INFO *PlanetInfo = &pSolarSysState->SysInfo.PlanetInfo;
 	COUNT i, y;
 	POINT loc;
 	CONTEXT OldContext;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 	BYTE *pScaledTopo = 0;
+	BOOLEAN shielded = (pPlanetDesc->data_index & PLANET_SHIELDED) != 0;
 
 	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);
 
@@ -1906,16 +1871,14 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 		pSolarSysState->XlatRef = CaptureStringTable (
 				LoadStringTable (PlanDataPtr->XlatTabInstance));
 
-		if (pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature >
-				HOT_THRESHOLD)
+		if (PlanetInfo->SurfaceTemperature > HOT_THRESHOLD)
 		{
 			pSolarSysState->OrbitalCMap = SetAbsColorMapIndex (
 					pSolarSysState->OrbitalCMap, 2);
 			pSolarSysState->XlatRef = SetAbsStringTableIndex (
 					pSolarSysState->XlatRef, 2);
 		}
-		else if (pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature >
-				COLD_THRESHOLD)
+		else if (PlanetInfo->SurfaceTemperature > COLD_THRESHOLD)
 		{
 			pSolarSysState->OrbitalCMap = SetAbsColorMapIndex (
 					pSolarSysState->OrbitalCMap, 1);
@@ -1928,10 +1891,8 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 
 	}
 
-	if (!(pPlanetDesc->data_index & PLANET_SHIELDED)
-			&& pSolarSysState->SysInfo.PlanetInfo.AtmoDensity
-				!= GAS_GIANT_ATMOSPHERE)
-	{	// produce 4x scaled topo image for IP
+	if (!shielded && PlanetInfo->AtmoDensity != GAS_GIANT_ATMOSPHERE)
+	{	// produce 4x scaled topo image for Planetside
 		// for the planets that we can land on
 		pScaledTopo = HMalloc (MAP_WIDTH * 4 * MAP_HEIGHT * 4);
 		if (pScaledTopo)
@@ -1979,12 +1940,16 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 		loc = pSolarSysState->pOrbitalDesc->pPrevDesc->location;
 	}
 	
+	// Rotating planet sphere initialization
 	GenerateSphereMask (loc);
-	CreateSphereTiltMap (pSolarSysState->SysInfo.PlanetInfo.AxialTilt);
-
-	if (pPlanetDesc->data_index & PLANET_SHIELDED)
-	{
+	CreateSphereTiltMap (PlanetInfo->AxialTilt);
+	if (shielded)
 		Orbit->ObjectFrame = CreateShieldMask ();
+	InitSphereRotation (1 - 2 * (PlanetInfo->AxialTilt & 1), shielded);
+
+	if (shielded)
+	{	// This overwrites pSolarSysState->TopoFrame, so everything that
+		// needs it has to come before
 		ApplyShieldTint ();
 	}
 
@@ -1997,69 +1962,16 @@ int
 rotate_planet_task (void *data)
 {
 	Task task = (Task) data;
-	SIZE spin_dir;
-	COORD init_x;
 	DWORD TimeIn;
 	SOLARSYS_STATE *pSS;
-	BOOLEAN zooming;
-	RECT r, *repair = &r;
-	UBYTE zoom_from;
-	COUNT zoom_arr[50];
-	COUNT zoom_amt, frame_num = 0, zoom_frames;
-	PLANET_ORBIT *Orbit;
-	FRAME OldShieldFrame = 0;
-	FRAME ShieldFrame = 0;
-	BOOLEAN doThrob = FALSE;
-	COUNT altfi;  // alternating frame index
-
-	r.extent.width = 0;
-	zooming = TRUE;
 
 	pSS = pSolarSysState;
-	while (*(volatile SIZE *)&pSS->MenuState.Initialized < 2 &&
-			!Task_ReadState (task, TASK_EXIT))
-		TaskSwitch ();
-
-	Orbit = &pSolarSysState->Orbit;
-
-	spin_dir = 1 - ((pSS->SysInfo.PlanetInfo.AxialTilt & 1) << 1);
-	init_x = (spin_dir == 1) ? (0) : (MAP_WIDTH - 1);
-	altfi = 0;
-
-	if (optWhichShield == OPT_3DO &&
-			pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
-	{	// prepare the shield throb effect
-		doThrob = TRUE;
-
-		OldShieldFrame = Orbit->ObjectFrame;
-		ShieldFrame = CaptureDrawable (
-			CreateDrawable (WANT_PIXMAP | WANT_ALPHA,
-				GetFrameWidth (OldShieldFrame),
-				GetFrameHeight (OldShieldFrame), 2));
-
-		SetShieldThrobEffect (OldShieldFrame, init_x, ShieldFrame);
-	}
-	
-	// Render the first planet frame
-	RenderPlanetSphere (Orbit->PlanetFrameArray, init_x, doThrob);
-
-	zoom_from = TFB_Random () & 0x03;
-	zoom_frames = init_zoom_array (zoom_arr);
-	zoom_amt = zoom_arr[frame_num];
-
-	// Disable zooming when already in orbit
-	if (LastActivity & CHECK_LOAD)
-		zoom_amt = 0;
 
 	TimeIn = GetTimeCounter ();
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
-		BYTE view_index;
-		COORD x;
+		CONTEXT oldContext;
 
-		x = init_x;
-		view_index = MAP_WIDTH;
-		do
 		{
 			// This lock was placed before the RotatePlanet call
 			// To prevent the thread from being interrupted by the flash
@@ -2069,6 +1981,7 @@ rotate_planet_task (void *data)
 			// to guarantee that PauseRotate doesn't change while waiting
 			// to acquire the graphics lock
 			LockMutex (GraphicsLock);
+
 			if (*(volatile UBYTE *)&pSS->PauseRotate != 1
 					&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
@@ -2076,64 +1989,18 @@ rotate_planet_task (void *data)
 				if (*(volatile UBYTE *)&pSS->PauseRotate == 2)
 					pSS->PauseRotate = 1;
 
-				// go to the next frame
-				Orbit->PlanetFrameArray = SetAbsFrameIndex (
-						Orbit->PlanetFrameArray, altfi);
-				if (doThrob)
-				{
-					Orbit->ObjectFrame = SetAbsFrameIndex (
-							ShieldFrame, altfi);
-				}
+				oldContext = SetContext (SpaceContext);
+				DrawPlanetSphere (SIS_SCREEN_WIDTH / 2, PLANET_ORG_Y);
+				SetContext (oldContext);
 
-				repair = RotatePlanet (x, SIS_SCREEN_WIDTH >> 1,
-						(148 - SIS_ORG_Y) >> 1, zoom_amt, zoom_from, repair);
-
-				if (!repair && zooming)
-				{
-					zooming = FALSE;
-					zoom_amt = 0;
-					++pSS->MenuState.Initialized;
-				}
-				x += spin_dir;
+				PrepareNextRotationFrame ();
 			}
-			else
-				view_index++;
 
 			UnlockMutex (GraphicsLock);
-			
-			// Generate the next rotation frame
-			altfi ^= 1;
-			RenderPlanetSphere (SetAbsFrameIndex (Orbit->PlanetFrameArray,
-					altfi), x, doThrob);
-			if (doThrob)
-			{	// prepare next throb frame
-				SetShieldThrobEffect (OldShieldFrame, x,
-						SetAbsFrameIndex (ShieldFrame, altfi));
-			}
-			
-			if (zooming)
-			{
-				frame_num++;
-				if (frame_num > zoom_frames)
-				{
-					log_add (log_Warning, "rotate_planet_task() : zoom frame"
-							" out of bounds!");
-					frame_num = zoom_frames;
-				}
-				zoom_amt = zoom_arr[frame_num];
-			}
 
-
-			SleepThreadUntil (TimeIn + (ONE_SECOND * ROTATION_TIME) /
-					(MAP_WIDTH));
+			SleepThreadUntil (TimeIn + PLANET_ROTATION_RATE);
 			TimeIn = GetTimeCounter ();
-		} while (--view_index && !Task_ReadState (task, TASK_EXIT));
-	}
-
-	if (OldShieldFrame)
-	{
-		Orbit->ObjectFrame = OldShieldFrame;
-		DestroyDrawable (ReleaseDrawable (ShieldFrame));
+		}
 	}
 
 	FinishTask (task);
