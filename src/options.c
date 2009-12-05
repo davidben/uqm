@@ -492,7 +492,8 @@ loadIndices (uio_DirHandle *dir)
 		
 		for (i = 0; i < indices->numNames; i++)
 		{
-			log_add (log_Debug, "Loading resouce index '%s'", indices->names[i]);
+			log_add (log_Debug, "Loading resource index '%s'",
+					indices->names[i]);
 			LoadResourceIndex (dir, indices->names[i], NULL);
 			numLoaded++;
 		}			
