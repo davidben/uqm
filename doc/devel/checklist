@@ -38,8 +38,9 @@ Announcing the release:
 - add a new entry for the release in the bugs database
 - update the home page
   - http://sc2.sourceforge.net/index.php (News item)
-  - http://sc2.sf.net/downloads.php
-  - http://sc2.sf.net/WhatsNew
+  - http://sc2.sourceforge.net/downloads.php
+  - http://sc2.sourceforge.net/info.php
+  - http://sc2.sourceforge.net/WhatsNew
   - http://sc2.sourceforge.net/screenshots.php
 - send a mail to sc2-announce
 - set the forum 'news'
