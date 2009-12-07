@@ -58,7 +58,6 @@ font_DrawText (TEXT *lpText)
 	DrawBatch (&_locPrim, 0, BATCH_SINGLE);
 }
 
- 
 /* Draw the stroke by drawing the same text in the
  * background color one pixel shifted to all 4 directions.
  */
@@ -225,7 +224,7 @@ TextRect (TEXT *lpText, RECT *pRect, BYTE *pdelta)
 }
 
 void
-_text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr)
+_text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr, POINT ctxOrigin)
 {
 	FONT FontPtr;
 
@@ -244,7 +243,7 @@ _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr)
 		return;
 	
 	TextPtr = &PrimPtr->Object.Text;
-	origin.x = _save_stamp.origin.x;
+	origin.x = pClipRect->corner.x;
 	origin.y = TextPtr->baseline.y;
 	num_chars = TextPtr->CharCount;
 	if (num_chars == 0)
@@ -277,10 +276,9 @@ _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr)
 			r.corner.y = origin.y - fontChar->HotSpot.y;
 			r.extent.width = fontChar->disp.width;
 			r.extent.height = fontChar->disp.height;
-			_save_stamp.origin = r.corner;
 			if (BoxIntersect (&r, pClipRect, &r))
 			{
-				TFB_Prim_FontChar (&origin, fontChar, backing);
+				TFB_Prim_FontChar (origin, fontChar, backing, ctxOrigin);
 			}
 
 			origin.x += fontChar->disp.width;

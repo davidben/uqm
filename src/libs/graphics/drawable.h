@@ -57,6 +57,7 @@ struct drawable_desc
 
 #define GetFrameWidth(f) ((f)->Bounds.width)
 #define GetFrameHeight(f) ((f)->Bounds.height)
+#define GetFrameBounds(f) ((f)->Bounds)
 #define SetFrameBounds(f,w,h) \
 		((f)->Bounds.width=(w), \
 		((f))->Bounds.height=(h))
@@ -84,11 +85,10 @@ extern INTERSECT_CODE _clip_line (RECT *pClipRect, BRESENHAM_LINE *pLine);
 extern void *_GetCelData (uio_Stream *fp, DWORD length);
 extern BOOLEAN _ReleaseCelData (void *handle);
 
-extern STAMP _save_stamp;
 extern FRAME _CurFramePtr;
 
-extern void _rect_blt (RECT *pClipRect, PRIMITIVE *PrimPtr);
-extern void _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr);
+// ClipRect is relative to ctxOrigin
+extern void _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr, POINT ctxOrigin);
 
 #endif /* _DRAWABLE_H */
 

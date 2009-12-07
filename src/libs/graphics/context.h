@@ -152,5 +152,8 @@ extern GRAPHICS_STATUS _GraphicsStatusFlags;
 		(_GraphicsStatusFlags & (GRAPHICS_STATUS)(GRAPHICS_ACTIVE \
 							| GRAPHICS_VISIBLE))
 
+// pValidRect or origin may be NULL
+BOOLEAN GetContextValidRect (RECT *pValidRect, POINT *origin);
+
 #endif /* _CONTEXT_H */
 

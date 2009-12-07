@@ -48,43 +48,51 @@ typedef struct
 	INTERNAL_PRIM_DESC Object;
 } INTERNAL_PRIMITIVE;
 
-STAMP _save_stamp;
 
-static BOOLEAN
-GetFrameValidRect (RECT *pValidRect, HOT_SPOT *pOldHot)
+// pValidRect or origin may be NULL
+BOOLEAN
+GetContextValidRect (RECT *pValidRect, POINT *origin)
 {
-	COORD hx, hy;
-	HOT_SPOT OldHot;
+	RECT tempRect;
+	POINT tempPt;
 
-	OldHot = _CurFramePtr->HotSpot;
-	hx = OldHot.x;
-	hy = OldHot.y;
-	pValidRect->corner.x = hx;
-	pValidRect->corner.y = hy;
-	pValidRect->extent.width = GetFrameWidth (_CurFramePtr);
-	pValidRect->extent.height = GetFrameHeight (_CurFramePtr);
+	if (!pValidRect)
+		pValidRect = &tempRect;
+	if (!origin)
+		origin = &tempPt;
+
+	// Start with a rect the size of foreground frame
+	pValidRect->corner.x = 0;
+	pValidRect->corner.y = 0;
+	pValidRect->extent = GetFrameBounds (_CurFramePtr);
+	*origin = _CurFramePtr->HotSpot;
+
 	if (_pCurContext->ClipRect.extent.width)
 	{
+		// If the cliprect is completely outside of the valid frame
+		// bounds we have nothing to draw
 		if (!BoxIntersect (&_pCurContext->ClipRect,
 				pValidRect, pValidRect))
 			return (FALSE);
 
-		hx -= _pCurContext->ClipRect.corner.x;
-		hy -= _pCurContext->ClipRect.corner.y;
-		pValidRect->corner.x += hx;
-		pValidRect->corner.y += hy;
-		_CurFramePtr->HotSpot = MAKE_HOT_SPOT (hx, hy);
+		// Foreground frame hotspot defines a drawing position offset
+		// WRT the context cliprect
+		origin->x += _pCurContext->ClipRect.corner.x;
+		origin->y += _pCurContext->ClipRect.corner.y;
 	}
 
-	*pOldHot = OldHot;
 	return (TRUE);
 }
 
-void
+static void
 ClearBackGround (RECT *pClipRect)
 {
+	RECT clearRect;
 	Color color = _get_context_bg_color ();
-	TFB_Prim_FillRect (pClipRect, color);
+	clearRect.corner.x = 0;
+	clearRect.corner.y = 0;
+	clearRect.extent = pClipRect->extent;
+	TFB_Prim_FillRect (&clearRect, color, pClipRect->corner);
 }
 
 void
@@ -92,9 +100,9 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 		BATCH_FLAGS BatchFlags)
 {
 	RECT ValidRect;
-	HOT_SPOT OldHot;
+	POINT origin;
 
-	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	if (GraphicsSystemActive () && GetContextValidRect (&ValidRect, &origin))
 	{
 		COUNT CurIndex;
 		PRIM_LINKS OldLinks;
@@ -145,42 +153,38 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 			{
 				case POINT_PRIM:
 					color = GetPrimColor (lpWorkPrim);
-					TFB_Prim_Point (&lpWorkPrim->Object.Point, color);
+					TFB_Prim_Point (&lpWorkPrim->Object.Point, color, origin);
 					break;
 				case STAMP_PRIM:
-					TFB_Prim_Stamp (&lpWorkPrim->Object.Stamp);
+					TFB_Prim_Stamp (&lpWorkPrim->Object.Stamp, origin);
 					break;
 				case STAMPFILL_PRIM:
 					color = GetPrimColor (lpWorkPrim);
-					TFB_Prim_StampFill (&lpWorkPrim->Object.Stamp, color);
+					TFB_Prim_StampFill (&lpWorkPrim->Object.Stamp, color,
+							origin);
 					break;
 				case LINE_PRIM:
 					color = GetPrimColor (lpWorkPrim);
-					TFB_Prim_Line (&lpWorkPrim->Object.Line, color);
+					TFB_Prim_Line (&lpWorkPrim->Object.Line, color, origin);
 					break;
 				case TEXT_PRIM:
-					if (!TextRect (&lpWorkPrim->Object.Text,
-							&ClipRect, NULL))
+					if (!TextRect (&lpWorkPrim->Object.Text, &ClipRect, NULL))
 						continue;
-
-					_save_stamp.origin = ClipRect.corner;
-					
-					_text_blt (&ClipRect, lpWorkPrim);
+					// ClipRect is relative to origin
+					_text_blt (&ClipRect, lpWorkPrim, origin);
 					break;
 				case RECT_PRIM:
 					color = GetPrimColor (lpWorkPrim);
-					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, color);
+					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, color, origin);
 					break;
 				case RECTFILL_PRIM:
 					color = GetPrimColor (lpWorkPrim);
-					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, color);
+					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, color, origin);
 					break;
 			}
 		}
 
 		UnbatchGraphics ();
-
-		_CurFramePtr->HotSpot = OldHot;
 
 		if (BatchFlags & BATCH_SINGLE)
 			SetPrimLinks (lpBasePrim,
@@ -192,98 +196,81 @@ void
 ClearDrawable (void)
 {
 	RECT ValidRect;
-	HOT_SPOT OldHot;
 
-	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	if (GraphicsSystemActive () && GetContextValidRect (&ValidRect, NULL))
 	{
-		BatchGraphics ();
 		ClearBackGround (&ValidRect);
-		UnbatchGraphics ();
-
-		_CurFramePtr->HotSpot = OldHot;
 	}
 }
 
 void
 DrawPoint (POINT *lpPoint)
 {
-	RECT ValidRect;
-	HOT_SPOT OldHot;
+	POINT origin;
 
-	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_Point (lpPoint, color);
-		_CurFramePtr->HotSpot = OldHot;
+		TFB_Prim_Point (lpPoint, color, origin);
 	}
 }
 
 void
 DrawRectangle (RECT *lpRect)
 {
-	RECT ValidRect;
-	HOT_SPOT OldHot;
+	POINT origin;
 
-	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_Rect (lpRect, color);
-		_CurFramePtr->HotSpot = OldHot;
+		TFB_Prim_Rect (lpRect, color, origin);
 	}
 }
 
 void
 DrawFilledRectangle (RECT *lpRect)
 {
-	RECT ValidRect;
-	HOT_SPOT OldHot;
+	POINT origin;
 
-	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_FillRect (lpRect, color);
-		_CurFramePtr->HotSpot = OldHot;
+		TFB_Prim_FillRect (lpRect, color, origin);
 	}
 }
 
 void
 DrawLine (LINE *lpLine)
 {
-	RECT ValidRect;
-	HOT_SPOT OldHot;
+	POINT origin;
 
-	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_Line (lpLine, color);
-		_CurFramePtr->HotSpot = OldHot;
+		TFB_Prim_Line (lpLine, color, origin);
 	}
 }
 
 void
 DrawStamp (STAMP *stmp)
 {
-	RECT ValidRect;
-	HOT_SPOT OldHot;
+	POINT origin;
 
-	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
-		TFB_Prim_Stamp (stmp);
-		_CurFramePtr->HotSpot = OldHot;
+		TFB_Prim_Stamp (stmp, origin);
 	}
 }
 
 void
 DrawFilledStamp (STAMP *stmp)
 {
-	RECT ValidRect;
-	HOT_SPOT OldHot;
+	POINT origin;
 
-	if (GraphicsSystemActive () && GetFrameValidRect (&ValidRect, &OldHot))
+	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_StampFill (stmp, color);
-		_CurFramePtr->HotSpot = OldHot;
+		TFB_Prim_StampFill (stmp, color, origin);
 	}
 }
 
