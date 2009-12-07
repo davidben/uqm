@@ -123,6 +123,7 @@ GenerateSaMatra_reinitNpcs (SOLARSYS_STATE *solarSys)
 				&GLOBAL (ShipStamp.origin), TRUE);
 	}
 
+	(void) solarSys;
 	return true;
 }
 
@@ -317,5 +318,7 @@ BuildUrquanGuard (SOLARSYS_STATE *solarSys)
 		UnlockIpGroup (&GLOBAL (ip_group_q), hGroup);
 		hGroup = hNextGroup;
 	}
+
+	(void) solarSys;
 }
 
