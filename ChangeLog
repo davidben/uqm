@@ -1,6 +1,8 @@
 Changes towards version 0.7:
 - Fixed planet blinking when exiting scan (bug #799) - Alex
 - Restore menu sounds after editing a control set name (bug #1066) - Alex
+- Use an own 'UniChar' rather than 'wchar_t', which may not be large
+  enough, depending on the platform - SvdB
 - Added 'COLOR' resource type - SvdB
 - All graphics operations use 24-bits colors at the game level too now,
   instead of 16 bits colors. - SvdB
