@@ -40,6 +40,27 @@
 #define ARILOU_HOME_X  (QUASI_SPACE_X + ((RADAR_SCAN_WIDTH >> 1) * 3))
 #define ARILOU_HOME_Y  (QUASI_SPACE_Y + ((RADAR_SCAN_HEIGHT >> 1) * 3))
 
+// HyperSpace coordinates of the locations where the QuasiSpace portals
+// take you.
+#define QUASISPACE_PORTALS_HYPERSPACE_ENDPOINTS \
+		{ \
+			{4091, 7748}, \
+			{3184, 4906}, \
+			{9211, 6104}, \
+			{5673, 1207}, \
+			{1910,  926}, \
+			{8607,  151}, \
+			{  50, 1647}, \
+			{6117, 4131}, \
+			{5658, 9712}, \
+			{2302, 3988}, \
+			{ 112, 9409}, \
+			{7752, 8906}, \
+			{ 368, 6332}, \
+			{9735, 3153}, \
+			{5850, 6213}, \
+		}
+
 // Hyperspace coordinates of the Sol system
 // Should be the same as in plandata.c
 #define SOL_X  1752
