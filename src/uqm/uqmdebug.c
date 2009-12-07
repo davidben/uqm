@@ -1920,11 +1920,14 @@ debugContexts (void)
 		return;
 	inDebugContexts = true;
 
+	LockMutex (GraphicsLock);
 	contextCount = countVisibleContexts ();
 	if (contextCount == 0)
+	{
+		UnlockMutex (GraphicsLock);
 		goto out;
+	}
 	
-	LockMutex (GraphicsLock);
 	savedScreen = getScreen ();
 	//UnlockMutex (GraphicsLock);
 	FlushGraphics ();
@@ -1974,7 +1977,9 @@ debugContexts (void)
 		DoInput(&state, TRUE);
 	}
 
+	LockMutex (GraphicsLock);
 	SetContext (orgContext);
+	UnlockMutex (GraphicsLock);
 
 	// Destroy the debugging frame and context.
 	DestroyContext (debugDrawContext);
