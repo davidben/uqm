@@ -729,14 +729,6 @@ DrawOrbit (PLANET_DESC *planet, int sizeNumer, int dyNumer, int denom)
 	DrawOval (&r, 1);
 }
 
-static inline bool
-pointWithinRect (RECT *r, POINT p)
-{
-	return p.x >= r->corner.x && p.y >= r->corner.y
-			&& p.x < r->corner.x + r->extent.width
-			&& p.y < r->corner.y + r->extent.height;
-}
-
 static SIZE
 FindRadius (POINT shipLoc, SIZE fromRadius)
 {
@@ -755,7 +747,7 @@ FindRadius (POINT shipLoc, SIZE fromRadius)
 				DISPLAY_FACTOR, DISPLAY_FACTOR >> 2, fromRadius);
 		displayLoc = locationToDisplay (shipLoc, fromRadius);
 	
-	} while (pointWithinRect (&scaleRect, displayLoc));
+	} while (pointWithinRect (scaleRect, displayLoc));
 
 	return fromRadius;
 }
@@ -981,7 +973,7 @@ CheckShipLocation (SIZE *newRadius)
 	}
 
 	if (!playerInInnerSystem ()
-			&& pointWithinRect (&scaleRect, GLOBAL (ShipStamp.origin)))
+			&& pointWithinRect (scaleRect, GLOBAL (ShipStamp.origin)))
 	{	// Outer zoom-in transition
 		*newRadius = FindRadius (GLOBAL (ip_location), radius);
 		return TRUE;

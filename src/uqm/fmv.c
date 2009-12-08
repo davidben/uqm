@@ -36,9 +36,9 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 #ifdef WANT_SHIP_SPINS
 	char vnbuf[32];
 	BYTE clut_buf[1];
-	RECT old_r, r;
+	RECT old_r;
 
-	LoadIntoExtraScreen (0);
+	LoadIntoExtraScreen (NULL);
 #if 0
 	/* This is cut out right now but should be part of the 3DO side */
 	clut_buf[0] = FadeAllToBlack;
@@ -60,11 +60,8 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 	FlushColorXForms ();
 
 	GetContextClipRect (&old_r);
-	r.corner.x = r.corner.y = 0;
-	r.extent.width = SCREEN_WIDTH;
-	r.extent.height = SCREEN_HEIGHT;
-	SetContextClipRect (&r);
-	DrawFromExtraScreen (0);
+	SetContextClipRect (NULL);
+	DrawFromExtraScreen (NULL);
 	SetContextClipRect (&old_r);
 
 	if (hMusic)

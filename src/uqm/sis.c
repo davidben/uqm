@@ -1764,11 +1764,7 @@ SetFlashRect (RECT *pRect)
 	LockMutex (flash_mutex);
 	flash_rect = flash_rect1;
 
-	if (old_r.extent.width
-			&& (old_r.extent.width != flash_rect.extent.width
-			|| old_r.extent.height != flash_rect.extent.height
-			|| old_r.corner.x != flash_rect.corner.x
-			|| old_r.corner.y != flash_rect.corner.y))
+	if (old_r.extent.width && !rectsEqual (old_r, flash_rect))
 	{
 		// We had a flash rectangle, and now a different one is set.
 		if (flash_screen_frame)

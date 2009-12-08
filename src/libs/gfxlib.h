@@ -164,6 +164,33 @@ typedef struct line
 	POINT first, second;
 } LINE;
 
+static inline bool
+pointsEqual (POINT p1, POINT p2)
+{
+	return p1.x == p2.x && p1.y == p2.y;
+}
+
+static inline bool
+extentsEqual (EXTENT e1, EXTENT e2)
+{
+	return e1.width == e2.width && e1.height == e2.height;
+}
+
+static inline bool
+rectsEqual (RECT r1, RECT r2)
+{
+	return pointsEqual (r1.corner, r2.corner)
+			&& extentsEqual (r1.extent, r2.extent);
+}
+
+static inline bool
+pointWithinRect (RECT r, POINT p)
+{
+	return p.x >= r.corner.x && p.y >= r.corner.y
+			&& p.x < r.corner.x + r.extent.width
+			&& p.y < r.corner.y + r.extent.height;
+}
+
 typedef enum
 {
 	ALIGN_LEFT,
@@ -248,6 +275,8 @@ extern FRAME GetContextFGFrame (void);
 // Context cliprect defines the drawing bounds. Additionally, all
 // drawing positions (x,y) are relative to the cliprect corner.
 extern BOOLEAN SetContextClipRect (RECT *pRect);
+// The returned rect is always filled in. If the context cliprect
+// is undefined, the returned rect has foreground frame dimensions.
 extern BOOLEAN GetContextClipRect (RECT *pRect);
 
 extern TIME_VALUE DrawablesIntersect (INTERSECT_CONTROL *pControl0,

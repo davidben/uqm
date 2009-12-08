@@ -172,8 +172,7 @@ GetFrameRect (FRAME FramePtr, RECT *pRect)
 	{
 		pRect->corner.x = -FramePtr->HotSpot.x;
 		pRect->corner.y = -FramePtr->HotSpot.y;
-		pRect->extent.width = GetFrameWidth (FramePtr);
-		pRect->extent.height = GetFrameHeight (FramePtr);
+		pRect->extent = GetFrameBounds (FramePtr);
 
 		return (TRUE);
 	}

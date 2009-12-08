@@ -105,7 +105,6 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 	if (GraphicsSystemActive () && GetContextValidRect (&ValidRect, &origin))
 	{
 		COUNT CurIndex;
-		PRIM_LINKS OldLinks;
 		PRIMITIVE *lpPrim;
 
 		BatchGraphics ();

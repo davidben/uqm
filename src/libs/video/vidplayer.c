@@ -232,11 +232,7 @@ TFB_PlayVideo (VIDEO_REF vid, uint32 x, uint32 y)
 
 	// calculate the frame-source and screen-destination rects
 	GetContextClipRect (&scrn_r);
-	if (scrn_r.extent.width <= 0 || scrn_r.extent.height <= 0)
-	{	// bad or empty rect
-		scrn_r = vid_r;
-	}
-	else if (!BoxIntersect(&scrn_r, &vid_r, &scrn_r))
+	if (!BoxIntersect(&scrn_r, &vid_r, &scrn_r))
 		return false; // drawing outside visible
 
 	sr = dr;

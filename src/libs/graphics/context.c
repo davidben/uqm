@@ -199,6 +199,15 @@ GetContextBackGroundColor (void)
 	return _get_context_bg_color ();
 }
 
+// Returns a rect based at 0,0 and the size of context foreground frame
+static inline RECT
+_get_context_fg_rect (void)
+{
+	RECT r = { {0, 0}, {0, 0} };
+	r.extent = GetFrameBounds (_CurFramePtr);
+	return r;
+}
+
 BOOLEAN
 SetContextClipRect (RECT *lpRect)
 {
@@ -206,11 +215,22 @@ SetContextClipRect (RECT *lpRect)
 		return (FALSE);
 
 	if (lpRect)
-		_pCurContext->ClipRect = *lpRect;
+	{
+		if (rectsEqual (*lpRect, _get_context_fg_rect ()))
+		{	// Cliprect is undefined to mirror GetContextClipRect()
+			_pCurContext->ClipRect.extent.width = 0;
+		}
+		else
+		{	// We have a cliprect
+			_pCurContext->ClipRect = *lpRect;
+		}
+	}
 	else
+	{	// Set cliprect as undefined
 		_pCurContext->ClipRect.extent.width = 0;
+	}
 
-	return (TRUE);
+	return TRUE;
 }
 
 BOOLEAN
@@ -220,7 +240,13 @@ GetContextClipRect (RECT *lpRect)
 		return (FALSE);
 
 	*lpRect = _pCurContext->ClipRect;
-	return (lpRect->extent.width != 0);
+	if (!_pCurContext->ClipRect.extent.width)
+	{	// Though the cliprect is undefined, drawing will be clipped
+		// to the extent of the foreground frame
+		*lpRect = _get_context_fg_rect ();
+	}
+
+	return (_pCurContext->ClipRect.extent.width != 0);
 }
 
 

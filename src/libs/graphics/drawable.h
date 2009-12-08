@@ -80,7 +80,8 @@ typedef struct
 
 extern DRAWABLE _request_drawable (COUNT NumFrames, DRAWABLE_TYPE
 		DrawableType, CREATE_FLAGS flags, SIZE width, SIZE height);
-extern INTERSECT_CODE _clip_line (RECT *pClipRect, BRESENHAM_LINE *pLine);
+extern INTERSECT_CODE _clip_line (const RECT *pClipRect,
+		BRESENHAM_LINE *pLine);
 
 extern void *_GetCelData (uio_Stream *fp, DWORD length);
 extern BOOLEAN _ReleaseCelData (void *handle);

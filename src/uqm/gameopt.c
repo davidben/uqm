@@ -62,12 +62,6 @@ ConfirmSaveLoad (STAMP *MsgStamp)
 
 	SetContextFont (StarConFont);
 	GetContextClipRect (&clip_r);
-	if (clip_r.extent.width == 0)
-	{
-		clip_r.corner.x = clip_r.corner.y = 0;
-		clip_r.extent.width = SCREEN_WIDTH;
-		clip_r.extent.height = SCREEN_HEIGHT;
-	}
 
 	t.baseline.x = clip_r.extent.width >> 1;
 	t.baseline.y = (clip_r.extent.height >> 1) + 3;
