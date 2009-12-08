@@ -107,7 +107,7 @@ LoadKernel (int argc, char *argv[])
 
 	SetContext (ScreenContext);
 	SetContextFGFrame (Screen);
-	SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
+	SetContextOrigin (MAKE_POINT (0, 0));
 
 	hResIndex = (RESOURCE_INDEX) InitResourceSystem ();
 	if (hResIndex == 0)

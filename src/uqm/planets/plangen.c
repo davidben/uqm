@@ -128,10 +128,10 @@ RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 		BYTE *pSrc;
 		BYTE *xlat_tab;
 		BYTE *cbase;
-		HOT_SPOT OldHot;
+		POINT oldOrigin;
 		RECT ClipRect;
 
-		OldHot = SetFrameHot (DstFrame, MAKE_HOT_SPOT (0, 0));
+		oldOrigin = SetContextOrigin (MAKE_POINT (0, 0));
 		GetContextClipRect (&ClipRect);
 		SetContextClipRect (NULL);
 
@@ -201,7 +201,7 @@ RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 		}
 
 		SetContextClipRect (&ClipRect);
-		SetFrameHot (DstFrame, OldHot);
+		SetContextOrigin (oldOrigin);
 	}
 
 	SetContextFGFrame (OldFrame);

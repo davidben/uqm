@@ -363,6 +363,7 @@ RepairMeleeFrame (RECT *pRect)
 	RECT r;
 	CONTEXT OldContext;
 	RECT OldRect;
+	POINT oldOrigin;
 
 	r.corner.x = pRect->corner.x + SAFE_X;
 	r.corner.y = pRect->corner.y + SAFE_Y;
@@ -376,8 +377,9 @@ RepairMeleeFrame (RECT *pRect)
 	OldContext = SetContext (SpaceContext);
 	GetContextClipRect (&OldRect);
 	SetContextClipRect (&r);
-	SetFrameHot (Screen,
-			MAKE_HOT_SPOT (r.corner.x - SAFE_X, r.corner.y - SAFE_Y));
+	// Offset the origin so that we draw the correct gfx in the cliprect
+	oldOrigin = SetContextOrigin (MAKE_POINT (-r.corner.x + SAFE_X,
+			-r.corner.y + SAFE_Y));
 	BatchGraphics ();
 
 	DrawMeleeIcon (0);   /* Entire melee screen */
@@ -413,7 +415,7 @@ RepairMeleeFrame (RECT *pRect)
 		DrawPickFrame (pMeleeState);
 		
 	UnbatchGraphics ();
-	SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
+	SetContextOrigin (oldOrigin);
 	SetContextClipRect (&OldRect);
 	SetContext (OldContext);
 }

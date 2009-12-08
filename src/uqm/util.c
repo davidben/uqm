@@ -144,7 +144,7 @@ PauseGame (void)
 	STAMP s;
 	CONTEXT OldContext;
 	FRAME F;
-	HOT_SPOT OldHot;
+	POINT oldOrigin;
 	RECT OldRect;
 
 	if (ActivityFrame == 0
@@ -159,7 +159,7 @@ PauseGame (void)
 
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (ScreenContext);
-	OldHot = SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
+	oldOrigin = SetContextOrigin (MAKE_POINT (0, 0));
 	GetContextClipRect (&OldRect);
 	SetContextClipRect (NULL);
 
@@ -204,7 +204,7 @@ PauseGame (void)
 	ClearSystemRect ();
 
 	SetContextClipRect (&OldRect);
-	SetFrameHot (Screen, OldHot);
+	SetContextOrigin (oldOrigin);
 	SetContext (OldContext);
 
 	WaitForNoInput (ONE_SECOND / 4, TRUE);

@@ -164,6 +164,13 @@ typedef struct line
 	POINT first, second;
 } LINE;
 
+static inline POINT
+MAKE_POINT (COORD x, COORD y)
+{
+	POINT pt = {x, y};
+	return pt;
+}
+
 static inline bool
 pointsEqual (POINT p1, POINT p2)
 {
@@ -278,6 +285,8 @@ extern BOOLEAN SetContextClipRect (RECT *pRect);
 // The returned rect is always filled in. If the context cliprect
 // is undefined, the returned rect has foreground frame dimensions.
 extern BOOLEAN GetContextClipRect (RECT *pRect);
+// The actual origin will be orgOffset + context ClipRect.corner
+extern POINT SetContextOrigin (POINT orgOffset);
 
 extern TIME_VALUE DrawablesIntersect (INTERSECT_CONTROL *pControl0,
 		INTERSECT_CONTROL *pControl1, TIME_VALUE max_time_val);

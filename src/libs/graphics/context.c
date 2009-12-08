@@ -249,6 +249,12 @@ GetContextClipRect (RECT *lpRect)
 	return (_pCurContext->ClipRect.extent.width != 0);
 }
 
+POINT
+SetContextOrigin (POINT orgOffset)
+{
+	// XXX: This is a hack, kind of. But that's what the original did.
+	return SetFrameHot (_CurFramePtr, orgOffset);
+}
 
 FRAME
 SetContextFontEffect (FRAME EffectFrame)

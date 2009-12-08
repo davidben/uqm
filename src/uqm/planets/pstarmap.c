@@ -287,6 +287,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 	COUNT which_space;
 	long diameter;
 	RECT r, old_r;
+	POINT oldOrigin;
 	STAMP s;
 	FRAME star_frame;
 	STAR_DESC *SDPtr;
@@ -312,8 +313,9 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 		SetContextClipRect (pClipRect);
 		pClipRect->corner.x -= old_r.corner.x;
 		pClipRect->corner.y -= old_r.corner.y;
-		SetFrameHot (Screen,
-				MAKE_HOT_SPOT (pClipRect->corner.x, pClipRect->corner.y));
+		// Offset the origin so that we draw the correct gfx in the cliprect
+		oldOrigin = SetContextOrigin (MAKE_POINT (-pClipRect->corner.x,
+				-pClipRect->corner.y));
 	}
 
 	if (transition_pending)
@@ -548,7 +550,7 @@ printf ("%s\n", buf);
 	if (pClipRect)
 	{
 		SetContextClipRect (&old_r);
-		SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
+		SetContextOrigin (oldOrigin);
 	}
 
 	if (race_update == 0)

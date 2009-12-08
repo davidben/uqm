@@ -139,6 +139,8 @@ InitShipStatus (SHIP_INFO *SIPtr, STARSHIP *StarShipPtr, RECT *pClipRect)
 	COORD y = 0; // default, for Melee menu
 	STAMP Stamp;
 	CONTEXT OldContext;
+	RECT oldClipRect;
+	POINT oldOrigin;
 
 	if (StarShipPtr) // set during battle
 	{
@@ -149,14 +151,16 @@ InitShipStatus (SHIP_INFO *SIPtr, STARSHIP *StarShipPtr, RECT *pClipRect)
 	OldContext = SetContext (StatusContext);
 	if (pClipRect)
 	{
-		GetContextClipRect (&r);
+		GetContextClipRect (&oldClipRect);
+		r = oldClipRect;
 		r.corner.x += pClipRect->corner.x;
 		r.corner.y += (pClipRect->corner.y & ~1);
 		r.extent = pClipRect->extent;
 		r.extent.height += pClipRect->corner.y & 1;
 		SetContextClipRect (&r);
-		SetFrameHot (Screen, MAKE_HOT_SPOT (
-				pClipRect->corner.x, (pClipRect->corner.y & ~1)));
+		// Offset the origin so that we draw into the cliprect
+		oldOrigin = SetContextOrigin (MAKE_POINT (-pClipRect->corner.x,
+				-(pClipRect->corner.y & ~1)));
 	}
 
 	BatchGraphics ();
@@ -291,12 +295,8 @@ InitShipStatus (SHIP_INFO *SIPtr, STARSHIP *StarShipPtr, RECT *pClipRect)
 
 	if (pClipRect)
 	{
-		SetFrameHot (Screen, MAKE_HOT_SPOT (0, 0));
-		r.corner.x = SPACE_WIDTH + SAFE_X;
-		r.corner.y = SAFE_Y;
-		r.extent.width = STATUS_WIDTH;
-		r.extent.height = STATUS_HEIGHT;
-		SetContextClipRect (&r);
+		SetContextOrigin (oldOrigin);
+		SetContextClipRect (&oldClipRect);
 	}
 
 	SetContext (OldContext);
