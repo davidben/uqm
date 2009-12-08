@@ -78,12 +78,7 @@ ConfirmSaveLoad (STAMP *MsgStamp)
 	r.extent.height += 8;
 	if (MsgStamp)
 	{
-		MsgStamp->origin = r.corner;
-		r.corner.x += clip_r.corner.x;
-		r.corner.y += clip_r.corner.y;
-		MsgStamp->frame = CaptureDrawable (LoadDisplayPixmap (&r, (FRAME)0));
-		r.corner.x -= clip_r.corner.x;
-		r.corner.y -= clip_r.corner.y;
+		*MsgStamp = SaveContextFrame (&r);
 	}
 	DrawStarConBox (&r, 2,
 			BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),

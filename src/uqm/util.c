@@ -143,7 +143,8 @@ PauseGame (void)
 	RECT r;
 	STAMP s;
 	CONTEXT OldContext;
-	FRAME F;
+	STAMP saveStamp;
+	RECT ctxRect;
 	POINT oldOrigin;
 	RECT OldRect;
 
@@ -163,12 +164,15 @@ PauseGame (void)
 	GetContextClipRect (&OldRect);
 	SetContextClipRect (NULL);
 
+	GetContextClipRect (&ctxRect);
 	GetFrameRect (ActivityFrame, &r);
-	r.corner.x = (SCREEN_WIDTH - r.extent.width) >> 1;
-	r.corner.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
+	r.corner.x = (ctxRect.extent.width - r.extent.width) >> 1;
+	r.corner.y = (ctxRect.extent.height - r.extent.height) >> 1;
+	saveStamp = SaveContextFrame (&r);
+
+	// TODO: This should draw a localizable text message instead
 	s.origin = r.corner;
 	s.frame = ActivityFrame;
-	F = CaptureDrawable (LoadDisplayPixmap (&r, (FRAME)0));
 	SetSystemRect (&r);
 	DrawStamp (&s);
 
@@ -198,9 +202,8 @@ PauseGame (void)
 
 	GamePaused = FALSE;
 
-	s.frame = F;
-	DrawStamp (&s);
-	DestroyDrawable (ReleaseDrawable (s.frame));
+	DrawStamp (&saveStamp);
+	DestroyDrawable (ReleaseDrawable (saveStamp.frame));
 	ClearSystemRect ();
 
 	SetContextClipRect (&OldRect);
