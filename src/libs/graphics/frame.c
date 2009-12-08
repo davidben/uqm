@@ -108,8 +108,6 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 		PRIM_LINKS OldLinks;
 		PRIMITIVE *lpPrim;
 
-		BatchFlags &= BATCH_SINGLE | BATCH_BUILD_PAGE | BATCH_XFORM;
-
 		BatchGraphics ();
 
 		if (BatchFlags & BATCH_BUILD_PAGE)
@@ -118,19 +116,6 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 		}
 
 		CurIndex = GetPredLink (PrimLinks);
-
-		if (BatchFlags & BATCH_SINGLE)
-		{
-			if (CurIndex == END_OF_LIST)
-				BatchFlags &= ~BATCH_SINGLE;
-			else
-			{
-				lpBasePrim += CurIndex;
-				OldLinks = GetPrimLinks (lpBasePrim);
-				SetPrimLinks (lpBasePrim, END_OF_LIST, END_OF_LIST);
-				CurIndex = 0;
-			}
-		}
 
 		for (; CurIndex != END_OF_LIST;
 				CurIndex = GetSuccLink (GetPrimLinks (lpPrim)))
@@ -183,10 +168,6 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 		}
 
 		UnbatchGraphics ();
-
-		if (BatchFlags & BATCH_SINGLE)
-			SetPrimLinks (lpBasePrim,
-					GetPredLink (OldLinks), GetSuccLink (OldLinks));
 	}
 }
 

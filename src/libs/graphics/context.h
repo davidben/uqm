@@ -110,17 +110,6 @@ extern PRIMITIVE _locPrim;
 	SetContextFBkFlags (FBK_DIRTY); \
 }
 
-/*
-These seem to have been moved to gfxlib.h, but not in their
-entirety.  That's rather unpleasant.  -- Michael
-
-#define BATCH_BUILD_PAGE (BATCH_FLAGS)(1 << 0)
-#define BATCH_SINGLE (BATCH_FLAGS)(1 << 1)
-#define BATCH_UPDATE_DRAWABLE (BATCH_FLAGS)(1 << 2)
-*/
-#define BATCH_CLIP_GRAPHICS (BATCH_FLAGS)(1 << 3)
-#define BATCH_XFORM (BATCH_FLAGS)(1 << 4)
-
 typedef BYTE GRAPHICS_STATUS;
 
 extern GRAPHICS_STATUS _GraphicsStatusFlags;

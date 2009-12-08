@@ -195,9 +195,8 @@ typedef STRINGPTR COLORMAPPTR;
 #include "graphics/prim.h"
 
 typedef BYTE BATCH_FLAGS;
-
+// This flag is currently unused but it might make sense to restore it
 #define BATCH_BUILD_PAGE (BATCH_FLAGS)(1 << 0)
-#define BATCH_SINGLE (BATCH_FLAGS)(1 << 1)
 
 typedef struct
 {
