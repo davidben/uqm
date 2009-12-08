@@ -88,7 +88,7 @@ extern BOOLEAN _ReleaseCelData (void *handle);
 extern FRAME _CurFramePtr;
 
 // ClipRect is relative to ctxOrigin
-extern void _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr, POINT ctxOrigin);
+extern void _text_blt (RECT *pClipRect, TEXT *TextPtr, POINT ctxOrigin);
 
 #endif /* _DRAWABLE_H */
 

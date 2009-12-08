@@ -171,7 +171,7 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 					if (!TextRect (&lpWorkPrim->Object.Text, &ClipRect, NULL))
 						continue;
 					// ClipRect is relative to origin
-					_text_blt (&ClipRect, lpWorkPrim, origin);
+					_text_blt (&ClipRect, &lpWorkPrim->Object.Text, origin);
 					break;
 				case RECT_PRIM:
 					color = GetPrimColor (lpWorkPrim);

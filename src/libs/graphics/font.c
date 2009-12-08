@@ -49,13 +49,24 @@ DestroyFont (FONT FontRef)
 	return (FreeFont (FontRef));
 }
 
+// XXX: Should be in frame.c (renamed to something decent?)
 void
 font_DrawText (TEXT *lpText)
 {
+	RECT ClipRect;
+	POINT origin;
+	TEXT text;
+
 	FixContextFontEffect ();
-	SetPrimType (&_locPrim, TEXT_PRIM);
-	_locPrim.Object.Text = *lpText;
-	DrawBatch (&_locPrim, 0, BATCH_SINGLE);
+	if (!GraphicsSystemActive () || !GetContextValidRect (NULL, &origin))
+		return;
+
+	// TextRect() clobbers TEXT.CharCount so we have to make a copy
+	text = *lpText;
+	if (!TextRect (&text, &ClipRect, NULL))
+		return;
+	// ClipRect is relative to origin
+	_text_blt (&ClipRect, &text, origin);
 }
 
 /* Draw the stroke by drawing the same text in the
@@ -224,14 +235,12 @@ TextRect (TEXT *lpText, RECT *pRect, BYTE *pdelta)
 }
 
 void
-_text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr, POINT ctxOrigin)
+_text_blt (RECT *pClipRect, TEXT *TextPtr, POINT ctxOrigin)
 {
 	FONT FontPtr;
-
 	COUNT num_chars;
 	UniChar next_ch;
 	const unsigned char *pStr;
-	TEXT *TextPtr;
 	POINT origin;
 	TFB_Image *backing;
 
@@ -242,7 +251,6 @@ _text_blt (RECT *pClipRect, PRIMITIVE *PrimPtr, POINT ctxOrigin)
 	if (!backing)
 		return;
 	
-	TextPtr = &PrimPtr->Object.Text;
 	origin.x = pClipRect->corner.x;
 	origin.y = TextPtr->baseline.y;
 	num_chars = TextPtr->CharCount;
