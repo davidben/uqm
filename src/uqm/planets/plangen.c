@@ -134,7 +134,6 @@ RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 		OldHot = SetFrameHot (DstFrame, MAKE_HOT_SPOT (0, 0));
 		GetContextClipRect (&ClipRect);
 		SetContextClipRect (NULL);
-		SetContextClipping (FALSE);
 
 		pBatch = &BatchArray[0];
 		for (i = 0; i < NUM_BATCH_POINTS; ++i, ++pBatch)
@@ -201,7 +200,6 @@ RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 			DrawBatch (BatchArray, i, 0);
 		}
 
-		SetContextClipping (TRUE);
 		SetContextClipRect (&ClipRect);
 		SetFrameHot (DstFrame, OldHot);
 	}

@@ -98,7 +98,6 @@ CreateContextAux (void)
 				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
 		SetContextBackGroundColor (
 				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
-		SetContextClipping (TRUE);
 		SetContext (OldContext);
 	}
 
@@ -198,27 +197,6 @@ GetContextBackGroundColor (void)
 		return (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
 
 	return _get_context_bg_color ();
-}
-
-BOOLEAN
-SetContextClipping (BOOLEAN ClipStatus)
-{
-	BOOLEAN oldClipStatus;
-
-	if (!ContextActive ())
-		return (TRUE);
-
-	oldClipStatus = (_get_context_flags () & BATCH_CLIP_GRAPHICS) != 0;
-	if (ClipStatus)
-	{
-		SetContextFlags (BATCH_CLIP_GRAPHICS);
-	}
-	else
-	{
-		UnsetContextFlags (BATCH_CLIP_GRAPHICS);
-	}
-
-	return (oldClipStatus);
 }
 
 BOOLEAN

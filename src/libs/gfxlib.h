@@ -246,7 +246,6 @@ extern Color SetContextBackGroundColor (Color Color);
 extern Color GetContextBackGroundColor (void);
 extern FRAME SetContextFGFrame (FRAME Frame);
 extern FRAME GetContextFGFrame (void);
-extern BOOLEAN SetContextClipping (BOOLEAN ClipStatus);
 // Context cliprect defines the drawing bounds. Additionally, all
 // drawing positions (x,y) are relative to the cliprect corner.
 extern BOOLEAN SetContextClipRect (RECT *pRect);

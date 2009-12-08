@@ -110,8 +110,6 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 
 		BatchFlags &= BATCH_SINGLE | BATCH_BUILD_PAGE | BATCH_XFORM;
 
-		BatchFlags |= _get_context_flags () & BATCH_CLIP_GRAPHICS;
-
 		BatchGraphics ();
 
 		if (BatchFlags & BATCH_BUILD_PAGE)

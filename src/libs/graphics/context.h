@@ -29,6 +29,8 @@ typedef UWORD FBK_FLAGS;
 struct context_desc
 {
 	UWORD Flags;
+			// Low nibble currently unused
+			// High nibble contains GRAPHICS_STATUS
 
 	Color ForeGroundColor, BackGroundColor;
 	FRAME ForeGroundFrame;

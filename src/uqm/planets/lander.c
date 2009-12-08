@@ -1486,7 +1486,6 @@ InitPlanetSide (POINT pt)
 		r.extent.width = SURFACE_WIDTH;
 		r.extent.height = SURFACE_HEIGHT;
 		SetContextClipRect (&r);
-		SetContextClipping (TRUE);
 
 		SetTransitionSource (&r);
 		BatchGraphics ();
