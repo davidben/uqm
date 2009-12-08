@@ -23,6 +23,7 @@
 #include "sis.h"
 #include "setup.h"
 #include "sounds.h"
+#include "colors.h"
 #include "fmv.h"
 #include "resinst.h"
 #include "nameref.h"
@@ -686,17 +687,10 @@ DoPresentation (void *pIS)
 		}
 		else if (strcmp (Opcode, "CLS") == 0)
 		{	/* clear screen */
-			RECT r;
-
 			Present_UnbatchGraphics (pPIS, TRUE);
 
 			LockMutex (GraphicsLock);
-			GetContextClipRect (&r);
-			r.corner.x = r.corner.y = 0;
-			/* paint black rect over screen	*/
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
-			DrawFilledRectangle (&r);	
+			ClearDrawable ();	
 			UnlockMutex (GraphicsLock);
 		}
 		else if (strcmp (Opcode, "CALL") == 0)
@@ -781,6 +775,7 @@ ShowSlidePresentation (STRING PresStr)
 	OldContext = SetContext (ScreenContext);
 	GetContextClipRect (&OldRect);
 	OldFont = SetContextFont (NULL);
+	SetContextBackGroundColor (BLACK_COLOR);
 	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
@@ -857,18 +852,16 @@ static void
 FadeClearScreen (void)
 {
 	BYTE xform_buf[1];
-	RECT r = {{0, 0}, {SCREEN_WIDTH, SCREEN_HEIGHT}};
 
 	xform_buf[0] = FadeAllToBlack;
 	SleepThreadUntil (XFormColorMap (
 			(COLORMAPPTR) xform_buf, ONE_SECOND / 2));
 	
-	// paint black rect over screen	
+	// clear the screen with black
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
-	DrawFilledRectangle (&r);	
+	SetContextBackGroundColor (BLACK_COLOR);
+	ClearDrawable ();
 	UnlockMutex (GraphicsLock);
 
 	// fade in black rect instantly
