@@ -937,7 +937,7 @@ PostProcessQueue (VIEW_STATE view_state, SIZE scroll_x,
 									ElementPtr->next.image.frame);
 
 							if (optMeleeScale == TFB_SCALE_TRILINEAR &&
-									index < 2 && scale != 256)
+									index < 2 && scale != GSCALE_IDENTITY)
 							{
 								// enqueues drawcommand to assign next
 								// (smaller) zoom level image as mipmap,

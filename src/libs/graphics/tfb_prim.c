@@ -33,6 +33,7 @@ TFB_Prim_Point (POINT *p, Color color, POINT ctxOrigin)
 {
 	RECT r;
 
+	// The caller must scale the origin!
 	r.corner.x = p->x + ctxOrigin.x;
 	r.corner.y = p->y + ctxOrigin.y;
 	r.extent.width = r.extent.height = 1;
@@ -48,6 +49,10 @@ TFB_Prim_Rect (RECT *r, Color color, POINT ctxOrigin)
 {
 	RECT arm;
 	int gscale;
+
+	// XXX: Rect prim scaling is currently unused
+	//   We scale the rect size just to be consistent with stamp prim,
+	//   which does same. The caller must scale the origin!
 	gscale = GetGraphicScale ();
 	arm = *r;
 	arm.extent.width = r->extent.width;
@@ -79,6 +84,9 @@ TFB_Prim_FillRect (RECT *r, Color color, POINT ctxOrigin)
 	rect.extent.width = r->extent.width;
 	rect.extent.height = r->extent.height;
 
+	// XXX: Rect prim scaling is currently unused
+	//   We scale the rect size just to be consistent with stamp prim,
+	//   which does same. The caller must scale the origin!
 	gscale = GetGraphicScale ();
 	if (gscale != GSCALE_IDENTITY)
 	{	// rounding error correction here
@@ -86,8 +94,6 @@ TFB_Prim_FillRect (RECT *r, Color color, POINT ctxOrigin)
 				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
 		rect.extent.height = (rect.extent.height * gscale
 				+ (GSCALE_IDENTITY >> 1)) / GSCALE_IDENTITY;
-		rect.corner.x += (r->extent.width - rect.extent.width) >> 1;
-		rect.corner.y += (r->extent.height - rect.extent.height) >> 1;
 	}
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
@@ -101,6 +107,7 @@ TFB_Prim_Line (LINE *line, Color color, POINT ctxOrigin)
 {
 	int x1, y1, x2, y2;
 
+	// The caller must scale the origins!
 	x1=line->first.x + ctxOrigin.x;
 	y1=line->first.y + ctxOrigin.y;
 	x2=line->second.x + ctxOrigin.x;
@@ -140,6 +147,7 @@ TFB_Prim_Stamp (STAMP *stmp, POINT ctxOrigin)
 	LockMutex (img->mutex);
 
 	img->NormalHs = SrcFramePtr->HotSpot;
+	// We scale the image size here, but the caller must scale the origin!
 	x = stmp->origin.x + ctxOrigin.x;
 	y = stmp->origin.y + ctxOrigin.y;
 
@@ -188,6 +196,7 @@ TFB_Prim_StampFill (STAMP *stmp, Color color, POINT ctxOrigin)
 	LockMutex (img->mutex);
 
 	img->NormalHs = SrcFramePtr->HotSpot;
+	// We scale the image size here, but the caller must scale the origin!
 	x = stmp->origin.x + ctxOrigin.x;
 	y = stmp->origin.y + ctxOrigin.y;
 
@@ -210,6 +219,7 @@ TFB_Prim_FontChar (POINT charOrigin, TFB_Char *fontChar, TFB_Image *backing,
 {
 	int x, y;
 
+	// Text prim does not scale
 	x = charOrigin.x + ctxOrigin.x;
 	y = charOrigin.y + ctxOrigin.y;
 
