@@ -19,6 +19,7 @@
 #include "credits.h"
 
 #include "controls.h"
+#include "colors.h"
 #include "options.h"
 #include "oscill.h"
 #include "comm.h"
@@ -27,8 +28,7 @@
 #include "settings.h"
 #include "sounds.h"
 #include "setup.h"
-#include "libs/graphics/gfx_common.h"
-#include "libs/sound/sound.h"
+#include "libs/graphics/drawable.h"
 #include <math.h>
 
 // Rates in pixel lines per second
@@ -39,11 +39,45 @@
 
 #define CREDITS_TIMEOUT   (ONE_SECOND * 5)
 
-static volatile int CreditsRate;
-static volatile BOOLEAN OutTakesRunning;
-static volatile BOOLEAN CreditsRunning;
+#define TRANS_COLOR   BLUE_COLOR
+
+// Positive or negative scroll rate in pixel lines per second
+static int CreditsRate;
+
+static BOOLEAN OutTakesRunning;
+static BOOLEAN CreditsRunning;
 static STRING CreditsTab;
 static FRAME CreditsBack;
+
+// Context used for drawing to the screen
+static CONTEXT DrawContext;
+// Context used for pre-rendering a credits frame
+static CONTEXT LocalContext;
+// Pre-rendered frame, possibly with a cutout
+static FRAME CreditsFrame;
+// Size of the credits "window" (normally screen size)
+static EXTENT CreditsExtent;
+
+typedef struct
+{
+	FRAME frame;
+	int strIndex;
+} CreditTextFrame;
+
+#define MAX_CREDIT_FRAMES 32
+// Circular text frame buffer for scrolling
+// Text frames are generated as needed, and when a text frame scrolls
+// of the screen, it is destroyed
+static CreditTextFrame textFrames[MAX_CREDIT_FRAMES];
+// Index of first active frame in the circular buffer (the first frame
+// is the one on top)
+static int firstFrame;
+// Index of last active frame in the circular buffer + 1
+static int lastFrame;
+// Total height of all active frames in the circular buffer
+static int totalHeight;
+// Current vertical offset into the first text frame
+static int curFrameOfs;
 
 typedef struct
 {
@@ -62,7 +96,7 @@ static FONT_SIZE_DEF CreditsFont[] =
 
 
 static FRAME
-Credits_MakeTextFrame (int w, int h, Color TransColor)
+Credits_MakeTransFrame (int w, int h, Color TransColor)
 {
 	FRAME OldFrame;
 	FRAME f;
@@ -191,7 +225,7 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 	for (i = 0; i < MAX_TEXT_COLS; ++i)
 	{
 		colfmt[i].align = ALIGN_LEFT;
-		colfmt[i].basex = SCREEN_WIDTH / 64;
+		colfmt[i].basex = CreditsExtent.width / 64;
 	}
 
 	// find the right font
@@ -246,14 +280,14 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 				if (n >= 2)
 					colfmt[i].basex = x;
 				else
-					colfmt[i].basex = SCREEN_WIDTH / 2;
+					colfmt[i].basex = CreditsExtent.width / 2;
 				break;
 			case 'R':
 				colfmt[i].align = ALIGN_RIGHT;
 				if (n >= 2)
 					colfmt[i].basex = x;
 				else
-					colfmt[i].basex = SCREEN_WIDTH - r.extent.width;
+					colfmt[i].basex = CreditsExtent.width - r.extent.width;
 				break;
 		}
 	}
@@ -268,7 +302,7 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 		TextLines[i].baseline.y *= leading;
 	}
 
-	f = Credits_MakeTextFrame (SCREEN_WIDTH, leading * rows + (leading >> 1),
+	f = Credits_MakeTransFrame (CreditsExtent.width, leading * rows + (leading >> 1),
 			BackColor);
 	OldFrame = SetContextFGFrame (f);
 	// draw text
@@ -283,86 +317,153 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 	return f;
 }
 
-#define CREDIT_FRAMES 32
-
-static int
-credit_roll_task (void *data)
+static inline int
+frameIndex (int index)
 {
-	Task task = (Task) data;
-	CONTEXT OldContext;
-	DWORD TimeIn;
-	CONTEXT DrawContext;
-	CONTEXT LocalContext;
-	FRAME Frame;
-	Color TransColor, TextFore, TextBack;
-	STAMP TaskStamp;
+	// Make sure index is positive before %
+	return (index + MAX_CREDIT_FRAMES) % MAX_CREDIT_FRAMES;
+}
+
+static void
+RenderCreditsScreen (CONTEXT targetContext)
+{
+	CONTEXT oldContext;
 	STAMP s;
-	FRAME cf[CREDIT_FRAMES]; // preped text frames
-	int ci[CREDIT_FRAMES];   // strtab indices
-	int first = 0, last;
-	int dy = 0, total_h, disp_h, deficit_h = 0;
-	int strcnt;
+	int i;
 
-	CreditsRunning = TRUE;
+	LockMutex (GraphicsLock);
+	oldContext = SetContext (targetContext);
+	// draw background
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = CreditsBack;
+	DrawStamp (&s);
+	
+	// draw text frames
+	s.origin.y = -curFrameOfs;
+	for (i = firstFrame; i != lastFrame; i = frameIndex (i + 1))
+	{
+		RECT fr;
 
-	memset(cf, 0, sizeof(cf));
+		s.frame = textFrames[i].frame;
+		DrawStamp (&s);
+		GetFrameRect (s.frame, &fr);
+		s.origin.y += fr.extent.height;
+	}
 
-	strcnt = GetStringTableCount (CreditsTab);
+	if (OutTakesRunning)
+	{	// Cut out the Outtakes rect
+		SetContextForeGroundColor (TRANS_COLOR);
+		DrawFilledRectangle (&CommWndRect);
+	}
+	
+	SetContext (oldContext);
+	UnlockMutex (GraphicsLock);
+}
 
-	TransColor = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x10), 0x01);
-	TextBack = BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00);
-	TextFore = BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F);
+static void
+InitCredits (void)
+{
+	RECT ctxRect;
+	CONTEXT oldContext;
+	FRAME targetFrame;
+
+	memset (textFrames, 0, sizeof textFrames);
 
 	LocalContext = CreateContext ("Credits.LocalContext");
 	DrawContext = CreateContext ("Credits.DrawContext");
-	
-	total_h = disp_h = SCREEN_HEIGHT;
 
 	LockMutex (GraphicsLock);
+	targetFrame = GetContextFGFrame ();
+	GetContextClipRect (&ctxRect);
+	CreditsExtent = ctxRect.extent;
+
 	// prep our local context
-	OldContext = SetContext (LocalContext);
+	oldContext = SetContext (LocalContext);
+	// Local screen copy. We draw everything to this frame, then cut
+	// the Outtakes rect out and draw this frame to the screen.
+	CreditsFrame = Credits_MakeTransFrame (CreditsExtent.width,
+			CreditsExtent.height, TRANS_COLOR);
+	SetContextFGFrame (CreditsFrame);
 	
-	// prep the first frame
-	cf[0] = Credits_MakeTextFrame (1, total_h, TransColor);
-	ci[0] = -1;
-	last = 1;
-	// prep the local screen copy
-	Frame = Credits_MakeTextFrame (SCREEN_WIDTH, disp_h, TransColor);
-	SetContextFGFrame (Frame);
+	// The first credits frame is fake, the height of the screen,
+	// so that the credits can roll in from the bottom
+	textFrames[0].frame = Credits_MakeTransFrame (1, CreditsExtent.height,
+			TRANS_COLOR);
+	textFrames[0].strIndex = -1;
+	firstFrame = 0;
+	lastFrame = firstFrame + 1;
+
+	totalHeight = GetFrameHeight (textFrames[0].frame);
+	curFrameOfs = 0;
 	
-	// prep our task context
+	// We use an own screen draw context to avoid collisions
 	SetContext (DrawContext);
-	SetContextFGFrame (Screen);
+	SetContextFGFrame (targetFrame);
 
-	SetContext (OldContext);
+	SetContext (oldContext);
 	UnlockMutex (GraphicsLock);
 
-	TaskStamp.origin.x = TaskStamp.origin.y = 0;
-	TaskStamp.frame = Frame;
+	// Prepare the first screen frame
+	RenderCreditsScreen (LocalContext);
 
-	// stary background is the first screen frame
-	LockMutex (GraphicsLock);
-	OldContext = SetContext (LocalContext);
-	// draw 
-	s.origin.x = s.origin.y = 0;
-	s.frame = CreditsBack;
-	DrawStamp (&s);
-	// draw clipped rect, if any
-	if (OutTakesRunning)
-	{
-		SetContextForeGroundColor (TransColor);
-		DrawFilledRectangle (&CommWndRect);
-	}
-	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
+	CreditsRate = CREDITS_BASE_RATE;
+	CreditsRunning = TRUE;
+}
 
-	while (!Task_ReadState (task, TASK_EXIT))
+static void
+freeCreditTextFrame (CreditTextFrame *tf)
+{
+	DestroyDrawable (ReleaseDrawable (tf->frame));
+	tf->frame = NULL;
+}
+
+static void
+UninitCredits (void)
+{
+	DestroyContext (DrawContext);
+	DrawContext = NULL;
+	DestroyContext (LocalContext);
+	LocalContext = NULL;
+
+	// free remaining frames
+	DestroyDrawable (ReleaseDrawable (CreditsFrame));
+	CreditsFrame = NULL;
+	for ( ; firstFrame != lastFrame; firstFrame = frameIndex (firstFrame + 1))
+		freeCreditTextFrame (&textFrames[firstFrame]);
+}
+
+static int
+calcDeficitHeight (void)
+{
+	int i;
+	int maxPos;
+
+	maxPos = -curFrameOfs;
+	for (i = firstFrame; i != lastFrame; i = frameIndex (i + 1))
 	{
 		RECT fr;
-		int i;
-		int rate, direction, dirstep;
 
-		TimeIn = GetTimeCounter ();
+		GetFrameRect (textFrames[i].frame, &fr);
+		maxPos += fr.extent.height;
+	}
+
+	return CreditsExtent.height - maxPos;
+}
+
+static void
+processCreditsFrame (void)
+{
+	static TimeCount NextTime;
+	TimeCount Now = GetTimeCounter ();
+
+	if (Now >= NextTime)
+	{
+		RECT fr;
+		CONTEXT OldContext;
+		int rate, direction, dirstep;
+		int deficitHeight;
+		STAMP s;
 
 		rate = abs (CreditsRate);
 		if (rate != 0)
@@ -383,28 +484,33 @@ credit_roll_task (void *data)
 			rate = ONE_SECOND;
 		}
 
+		NextTime = GetTimeCounter () + rate;
+
 		// draw the credits
 		//  comm animations play with contexts so we need to make
 		//  sure the context is not desynced
+		s.origin.x = 0;
+		s.origin.y = 0;
+		s.frame = CreditsFrame;
+
 		LockMutex (GraphicsLock);
 		OldContext = SetContext (DrawContext);
-		DrawStamp (&TaskStamp);
+		DrawStamp (&s);
 		SetContext (OldContext);
 		FlushGraphics ();
 		UnlockMutex (GraphicsLock);
 
 		// prepare next screen frame
-		dy += dirstep;
+		deficitHeight = calcDeficitHeight ();
+		curFrameOfs += dirstep;
 		// cap scroll
-		if (dy < -(disp_h / 20))
-		{	// at the begining
-			// accelerated slow down
+		if (curFrameOfs < -(CreditsExtent.height / 20))
+		{	// at the begining, deceleration
 			if (CreditsRate < 0)
 				CreditsRate -= CreditsRate / 10 - 1;
 		}
-		else if (deficit_h > disp_h / 25)
-		{	// frame deficit -- task almost over
-			// accelerated slow down
+		else if (deficitHeight > CreditsExtent.height / 25)
+		{	// frame deficit -- credits almost over, deceleration
 			if (CreditsRate > 0)
 				CreditsRate -= CreditsRate / 10 + 1;
 
@@ -415,32 +521,32 @@ credit_roll_task (void *data)
 			CreditsRunning = TRUE;
 		}
 
-		if (first != last)
+		if (firstFrame != lastFrame)
 		{	// clean up frames that scrolled off the screen
 			if (direction > 0)
 			{	// forward scroll
-				GetFrameRect (cf[first], &fr);
-				if (dy >= (int)fr.extent.height)
+				GetFrameRect (textFrames[firstFrame].frame, &fr);
+				if (curFrameOfs >= fr.extent.height)
 				{	// past this frame already
-					total_h -= fr.extent.height;
-					DestroyDrawable (ReleaseDrawable (cf[first]));
-					cf[first] = 0;
+					totalHeight -= fr.extent.height;
+					freeCreditTextFrame (&textFrames[firstFrame]);
 					// next frame
-					first = (first + 1) % CREDIT_FRAMES;
-					dy = 0;
+					firstFrame = frameIndex (firstFrame + 1);
+					curFrameOfs -= fr.extent.height;
 				}
 			}
 			else if (direction < 0)
 			{	// backward scroll
-				int index = (last - 1 + CREDIT_FRAMES) % CREDIT_FRAMES; 
-				
-				GetFrameRect (cf[index], &fr);
-				if (total_h - dy - (int)fr.extent.height >= disp_h)
+				int index = frameIndex (lastFrame - 1);
+				int framePos;
+
+				GetFrameRect (textFrames[index].frame, &fr);
+				framePos = totalHeight - curFrameOfs - fr.extent.height;
+				if (framePos >= CreditsExtent.height)
 				{	// past this frame already
-					last = index;
-					total_h -= fr.extent.height;
-					DestroyDrawable (ReleaseDrawable (cf[last]));
-					cf[last] = 0;
+					lastFrame = index;
+					totalHeight -= fr.extent.height;
+					freeCreditTextFrame (&textFrames[lastFrame]);
 				}
 			}
 		}
@@ -451,116 +557,72 @@ credit_roll_task (void *data)
 			int next_s = 0;
 
 			// get next string
-			if (first != last)
-				next_s = ci[(last - 1 + CREDIT_FRAMES) % CREDIT_FRAMES] + 1;
+			if (firstFrame != lastFrame)
+				next_s = textFrames[frameIndex (lastFrame - 1)].strIndex + 1;
 
-			while (total_h - dy < disp_h && next_s < strcnt)
+			while (totalHeight - curFrameOfs < CreditsExtent.height
+					&& next_s < GetStringTableCount (CreditsTab))
 			{
-				cf[last] = Credits_RenderTextFrame (LocalContext,
-						&next_s, direction, TextBack, TextFore);
-				ci[last] = next_s - 1;
-				if (cf[last])
+				CreditTextFrame *tf = &textFrames[lastFrame];
+
+				tf->frame = Credits_RenderTextFrame (LocalContext, &next_s,
+						direction, BLACK_COLOR, CREDITS_TEXT_COLOR);
+				tf->strIndex = next_s - 1;
+				if (tf->frame)
 				{
-					GetFrameRect (cf[last], &fr);
-					total_h += fr.extent.height;
+					GetFrameRect (tf->frame, &fr);
+					totalHeight += fr.extent.height;
 					
-					last = (last + 1) % CREDIT_FRAMES;
+					lastFrame = frameIndex (lastFrame + 1);
 				}
 			}
 		}
 		else if (direction < 0)
 		{	// backward scroll
-			int next_s = strcnt - 1;
+			int next_s = GetStringTableCount (CreditsTab) - 1;
 
 			// get next string
-			if (first != last)
-				next_s = ci[first] - 1;
+			if (firstFrame != lastFrame)
+				next_s = textFrames[firstFrame].strIndex - 1;
 			
-			while (dy < 0 && next_s >= 0)
+			while (curFrameOfs < 0 && next_s >= 0)
 			{
-				int index = (first - 1 + CREDIT_FRAMES) % CREDIT_FRAMES;
-				cf[index] = Credits_RenderTextFrame (LocalContext,
-						&next_s, direction, TextBack, TextFore);
-				ci[index] = next_s + 1;
-				if (cf[index])
+				int index = frameIndex (firstFrame - 1);
+				CreditTextFrame *tf = &textFrames[index];
+
+				tf->frame = Credits_RenderTextFrame (LocalContext, &next_s,
+						direction, BLACK_COLOR, CREDITS_TEXT_COLOR);
+				tf->strIndex = next_s + 1;
+				if (tf->frame)
 				{
-					GetFrameRect (cf[index], &fr);
-					total_h += fr.extent.height;
+					GetFrameRect (tf->frame, &fr);
+					totalHeight += fr.extent.height;
 					
-					first = index;
-					dy += fr.extent.height;
+					firstFrame = index;
+					curFrameOfs += fr.extent.height;
 				}
 			}
 		}
 
 		// draw next screen frame
-		LockMutex (GraphicsLock);
-		OldContext = SetContext (LocalContext);
-		// draw background
-		s.origin.x = s.origin.y = 0;
-		s.frame = CreditsBack;
-		DrawStamp (&s);
-		// draw text frames
-		s.origin.y = -dy;
-		for (i = first; i != last; i = (i + 1) % CREDIT_FRAMES)
-		{
-			s.frame = cf[i];
-			DrawStamp (&s);
-			GetFrameRect (s.frame, &fr);
-			s.origin.y += fr.extent.height;
-		}
-		if (direction > 0)
-			deficit_h = disp_h - s.origin.y;
-
-		// draw clipped rect, if any
-		if (OutTakesRunning)
-		{
-			SetContextForeGroundColor (TransColor);
-			DrawFilledRectangle (&CommWndRect);
-		}
-		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
-
-		// wait till begining of next screen frame
-		while (GetTimeCounter () < TimeIn + rate
-				&& !Task_ReadState (task, TASK_EXIT))
-		{
-			SleepThreadUntil (ONE_SECOND / CREDITS_FRAME_RATE / 2);
-		}
+		RenderCreditsScreen (LocalContext);
 	}
-
-	DestroyContext (DrawContext);
-	DestroyContext (LocalContext);
-
-	// free remaining frames
-	DestroyDrawable (ReleaseDrawable (Frame));
-	for ( ; first != last; first = (first + 1) % CREDIT_FRAMES)
-		DestroyDrawable (ReleaseDrawable (cf[first]));
-
-	FinishTask (task);
-	return 0;
 }
 
-static Task
-StartCredits (void)
+static BOOLEAN
+LoadCredits (void)
 {
-	Task task;
 	FONT_SIZE_DEF *fdef;
 
 	CreditsTab = CaptureStringTable (LoadStringTable (CREDITS_STRTAB));
 	if (!CreditsTab)
-		return 0;
+		return FALSE;
 	CreditsBack = CaptureDrawable (LoadGraphic (CREDITS_BACK_ANIM));
 	// load fonts
 	for (fdef = CreditsFont; fdef->size; ++fdef)
 		fdef->font = LoadFont (fdef->res);
 
-	CreditsRate = CREDITS_BASE_RATE;
-	CreditsRunning = FALSE;
-
-	task = AssignTask (credit_roll_task, 4096, "credit roll");
-
-	return task;
+	return TRUE;
 }
 
 static void
@@ -569,16 +631,16 @@ FreeCredits (void)
 	FONT_SIZE_DEF *fdef;
 
 	DestroyStringTable (ReleaseStringTable (CreditsTab));
-	CreditsTab = 0;
+	CreditsTab = NULL;
 	
 	DestroyDrawable (ReleaseDrawable (CreditsBack));
-	CreditsBack = 0;
+	CreditsBack = NULL;
 
 	// free fonts
 	for (fdef = CreditsFont; fdef->size; ++fdef)
 	{
 		DestroyFont (fdef->font);
-		fdef->font = 0;
+		fdef->font = NULL;
 	}
 }
 
@@ -608,6 +670,7 @@ OutTakes (void)
 	BOOLEAN oldsubtitles = optSubtitles;
 	int i = 0;
 
+	// Outtakes have no voice tracks, so the subtitles are always on
 	optSubtitles = TRUE;
 	sliderDisabled = TRUE;
 	oscillDisabled = TRUE;
@@ -699,9 +762,15 @@ DoCreditsInput (void *pIS)
 		return FALSE;
 	}
 
-	SleepThread (ONE_SECOND / 30);
+	SleepThread (ONE_SECOND / CREDITS_FRAME_RATE);
 
 	return TRUE;
+}
+
+static void
+on_input_frame (void)
+{
+	processCreditsFrame ();
 }
 
 void
@@ -709,34 +778,41 @@ Credits (BOOLEAN WithOuttakes)
 {
 	BYTE fade_buf[1];
 	MUSIC_REF hMusic;
-	Task CredTask;
 	CREDITS_INPUT_STATE cis;
+	RECT screenRect;
+	STAMP s;
 
 	hMusic = LoadMusic (CREDITS_MUSIC);
 
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	SetContextClipRect (NULL);
-	SetContextBackGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+	GetContextClipRect (&screenRect);
+	SetContextBackGroundColor (BLACK_COLOR);
 	ClearDrawable ();
+	UnlockMutex (GraphicsLock);
+
+	if (!LoadCredits ())
+		return;
+
+	// Fade in the background
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = CreditsBack;
+	LockMutex (GraphicsLock);
+	DrawStamp (&s);
 	fade_buf[0] = FadeAllToColor;
-	XFormColorMap ((COLORMAPPTR)fade_buf, 0);
+	XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2);
 	UnlockMutex (GraphicsLock);
 
 	// set the position of outtakes comm
-	CommWndRect.corner.x = ((SCREEN_WIDTH - SIS_SCREEN_WIDTH) >> 1);
+	CommWndRect.corner.x = (screenRect.extent.width - CommWndRect.extent.width)
+			/ 2;
 	CommWndRect.corner.y = 5;
 	
-	// launch credits and wait for the task to start up
-	CredTask = StartCredits ();
-	while (CredTask && !CreditsRunning
-			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
-	{
-		UpdateInputState ();
-		SleepThread(ONE_SECOND / 20);
-	}
-	
+	InitCredits ();
+	SetInputCallback (on_input_frame);
+
 	if (WithOuttakes)
 	{
 		OutTakesRunning = TRUE;
@@ -760,10 +836,10 @@ Credits (BOOLEAN WithOuttakes)
 		DoInput (&cis, TRUE);
 	}
 
-	if (CredTask)
-		ConcludeTask (CredTask);
-
+	SetInputCallback (NULL);
 	FadeMusic (0, ONE_SECOND / 2);
+	UninitCredits ();
+
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	fade_buf[0] = FadeAllToBlack;

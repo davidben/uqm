@@ -68,6 +68,8 @@
 		BUILD_COLOR (MAKE_RGB15 (0x06, 0x06, 0x06), 0x00)
 #define WHITE_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
+#define BLUE_COLOR \
+		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x1F), 0x01)
 
 #define NORMAL_ILLUMINATED_COLOR \
 		WHITE_COLOR
@@ -340,6 +342,9 @@
 #define THREEDOMENU_TEXT_COLOR \
 		BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x00)
 
+// === Credits ===
+#define CREDITS_TEXT_COLOR \
+		WHITE_COLOR
 
 // Temporary, until we can use C'99 features:
 #define BLACK_COLOR_INIT \
