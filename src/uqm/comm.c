@@ -750,9 +750,8 @@ CommIntroTransition (void)
 	}
 	else if (curIntroMode == CIM_FADE_IN_SCREEN)
 	{
-		BYTE clut_buf[] = {FadeAllToColor};
 		UnbatchGraphics ();
-		XFormColorMap ((COLORMAPPTR)clut_buf, fadeTime);
+		FadeScreen (FadeAllToColor, fadeTime);
 	}
 	else
 	{	// Uknown transition

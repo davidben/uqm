@@ -306,19 +306,14 @@ DeviceFailed (BYTE which_device)
 			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY
 					&& playerInPlanetOrbit ())
 			{
-				BYTE fade_buf[1];
-
 				PlayMenuSound (MENU_SOUND_INVOKED);
-				fade_buf[0] = FadeAllToWhite;
-				SleepThreadUntil (
-						XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND * 1)
+				SleepThreadUntil (FadeScreen (FadeAllToWhite, ONE_SECOND * 1)
 						+ (ONE_SECOND * 2));
 				if (CurStarDescPtr->Index != CHMMR_DEFINED
 						|| pSolarSysState->pOrbitalDesc !=
 						&pSolarSysState->PlanetDesc[1])
 				{
-					fade_buf[0] = FadeAllToColor;
-					XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND * 2);
+					FadeScreen (FadeAllToColor, ONE_SECOND * 2);
 				}
 				else
 				{

@@ -239,9 +239,7 @@ ZapToUrquanEncounter (void)
 
 		{
 #define LOST_DAYS 15
-			BYTE black_buf[] = {FadeAllToBlack};
-
-			SleepThreadUntil (XFormColorMap ((COLORMAPPTR)black_buf, ONE_SECOND * 2));
+			SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND * 2));
 			LockMutex (GraphicsLock);
 			MoveGameClockDays (LOST_DAYS);
 			UnlockMutex (GraphicsLock);

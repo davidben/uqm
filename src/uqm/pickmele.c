@@ -696,12 +696,9 @@ GetInitialMeleeStarShips (HSTARSHIP *result)
 	}
 
 	// Fade in
-	{
-		BYTE fade_buf[] = {FadeAllToColor};
-		SleepThreadUntil (XFormColorMap
-				((COLORMAPPTR) fade_buf, ONE_SECOND / 2) + ONE_SECOND / 60);
-		FlushColorXForms ();
-	}
+	SleepThreadUntil (FadeScreen (FadeAllToColor, ONE_SECOND / 2)
+			+ ONE_SECOND / 60);
+	FlushColorXForms ();
 
 	playerMask = 0;
 	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)

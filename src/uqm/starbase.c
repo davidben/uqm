@@ -443,10 +443,7 @@ static void
 DoTimePassage (void)
 {
 #define LOST_DAYS 14
-	BYTE clut_buf[1];
-
-	clut_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND * 2));
+	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND * 2));
 	LockMutex (GraphicsLock);
 	MoveGameClockDays (LOST_DAYS);
 	UnlockMutex (GraphicsLock);
@@ -556,8 +553,6 @@ CleanupAfterStarBase (void)
 void
 InstallBombAtEarth (void)
 {
-	BYTE clut_buf[1];
-
 	DoTimePassage ();
 
 	LockMutex (GraphicsLock);
@@ -567,8 +562,7 @@ InstallBombAtEarth (void)
 	ClearDrawable ();
 	UnlockMutex (GraphicsLock);
 	
-	clut_buf[0] = FadeAllToColor;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, 0));
+	SleepThreadUntil (FadeScreen (FadeAllToColor, 0));
 	
 	SET_GAME_STATE (CHMMR_BOMB_STATE, 3); /* bomb processed */
 	GLOBAL (CurrentActivity) = CHECK_LOAD; /* fake a load game */

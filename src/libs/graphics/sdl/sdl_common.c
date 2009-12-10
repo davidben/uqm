@@ -253,7 +253,7 @@ TFB_SwapBuffers (int force_full_redraw)
 	static int last_fade_amount = 255, last_transition_amount = 255;
 	static int fade_amount = 255, transition_amount = 255;
 
-	fade_amount = FadeAmount;
+	fade_amount = GetFadeAmount ();
 	transition_amount = TransitionAmount;
 
 	if (force_full_redraw == TFB_REDRAW_NO && !TFB_BBox.valid &&
@@ -618,7 +618,7 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 	{
 		static int last_fade = 255;
 		static int last_transition = 255;
-		int current_fade = FadeAmount;
+		int current_fade = GetFadeAmount ();
 		int current_transition = TransitionAmount;
 		
 		if ((current_fade != 255 && current_fade != last_fade) ||

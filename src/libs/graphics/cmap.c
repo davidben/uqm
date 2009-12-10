@@ -17,22 +17,11 @@
  */
 
 #include "gfx_common.h"
-#include "libs/tasklib.h"
+#include "libs/timelib.h"
 #include "libs/inplib.h"
 #include "libs/log.h"
 #include <string.h>
 
-
-static struct
-{
-	COLORMAPPTR CMapPtr;
-	SIZE Ticks;
-	union
-	{
-		COUNT NumCycles;
-		Task XFormTask;
-	} tc;
-} FadeControl;
 
 typedef struct xform_control
 {
@@ -53,8 +42,10 @@ static struct
 	Mutex Lock;
 } XFormControl;
 
-volatile int FadeAmount = FADE_NORMAL_INTENSITY;
-static volatile int FadeEnd, XForming;
+static int fadeAmount = FADE_NORMAL_INTENSITY;
+static int fadeDelta;
+static TimeCount fadeStartTime;
+static sint32 fadeInterval;
 
 #define SPARE_COLORMAPS  20
 #define MAP_POOL_SIZE    (MAX_COLORMAPS + SPARE_COLORMAPS)
@@ -313,63 +304,59 @@ SetColorMap (COLORMAPPTR map)
 
 /* Fade Transforms */
 
-static int 
-fade_xform_task (void *data)
+int
+GetFadeAmount (void)
 {
-	SIZE TDelta, TTotal;
-	DWORD CurTime;
-	Task task = (Task)data;
+	int newAmount;
 
-	XForming = TRUE;
-	while (FadeControl.tc.XFormTask == 0
-			&& (!Task_ReadState (task, TASK_EXIT)))
-		TaskSwitch ();
-	TTotal = FadeControl.Ticks;
-	FadeControl.tc.XFormTask = 0;
+	LockMutex (XFormControl.Lock);
 
-	{
-		CurTime = GetTimeCounter ();
-		do
-		{
-			DWORD StartTime;
+	if (fadeInterval)
+	{	// have a pending fade
+		TimeCount Now = GetTimeCounter ();
+		sint32 elapsed;
+		
+		elapsed = Now - fadeStartTime;
+		if (elapsed > fadeInterval)
+			elapsed = fadeInterval;
 
-			StartTime = CurTime;
-			SleepThreadUntil (CurTime + ONE_SECOND / 60);
-			CurTime = GetTimeCounter ();
-			if (!XForming || (TDelta = (SIZE)(CurTime - StartTime)) > TTotal)
-				TDelta = TTotal;
+		newAmount = fadeAmount + (long)fadeDelta * elapsed / fadeInterval;
 
-			FadeAmount += (FadeEnd - FadeAmount) * TDelta / TTotal;
-			//log_add (log_Debug, "fade_xform_task FadeAmount %d\n", FadeAmount);
-		} while ((TTotal -= TDelta) && (!Task_ReadState (task, TASK_EXIT)));
+		if (elapsed >= fadeInterval)
+		{	// fade is over
+			fadeAmount = newAmount;
+			fadeInterval = 0;
+		}
+	}
+	else
+	{	// no fade pending, return the current
+		newAmount = fadeAmount;
 	}
 
-	XForming = FALSE;
+	UnlockMutex (XFormControl.Lock);
 
-	FinishTask (task);
-	return 0;
+	return newAmount;
 }
 
 static void
 FlushFadeXForms (void)
 {
-	if (XForming)
-	{
-		XForming = FALSE;
-		TaskSwitch ();
+	LockMutex (XFormControl.Lock);
+	if (fadeInterval)
+	{	// end the fade immediately
+		fadeAmount += fadeDelta;
+		fadeInterval = 0;
 	}
+	UnlockMutex (XFormControl.Lock);
 }
 
-static DWORD
-XFormFade (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
+DWORD
+FadeScreen (ScreenFadeType fadeType, SIZE TimeInterval)
 {
-	BYTE what;
-	DWORD TimeOut;
+	TimeCount TimeOut;
+	int FadeEnd;
 
-	FlushFadeXForms ();
-
-	what = *ColorMapPtr;
-	switch (what)
+	switch (fadeType)
 	{
 	case FadeAllToBlack:
 	case FadeSomeToBlack:
@@ -387,24 +374,26 @@ XFormFade (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 		return (GetTimeCounter ());
 	}
 
-	FadeControl.Ticks = TimeInterval;
-	if (FadeControl.Ticks <= 0 ||
-			(FadeControl.tc.XFormTask = AssignTask (fade_xform_task,
-					1024, "fade transform")) == 0)
-	{
-		FadeAmount = FadeEnd;
+	LockMutex (XFormControl.Lock);
+
+	if (TimeInterval <= 0)
+	{	// end the fade immediately
+		fadeAmount = FadeEnd;
+		// cancel any pending fades
+		fadeInterval = 0;
 		TimeOut = GetTimeCounter ();
 	}
 	else
 	{
-		do
-			TaskSwitch ();
-		while (FadeControl.tc.XFormTask);
-
-		TimeOut = GetTimeCounter () + TimeInterval + 1;
+		fadeInterval = TimeInterval;
+		fadeDelta = FadeEnd - fadeAmount;
+		fadeStartTime = GetTimeCounter ();
+		TimeOut = fadeStartTime + TimeInterval + 1;
 	}
 
-	return (TimeOut);
+	UnlockMutex (XFormControl.Lock);
+
+	return TimeOut;
 }
 
 /* Colormap Transforms */
@@ -598,23 +587,16 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	return (EndTime);
 }
 
-
 DWORD
 XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 {
-	int what;
-
 	if (!ColorMapPtr)
 		return (0);
 
 	if (QuitPosted) // Don't make users wait for fades
 		TimeInterval = 0;
 
-	what = *ColorMapPtr;
-	if (what >= (int)FadeAllToWhite && what <= (int)FadeSomeToColor)
-		return XFormFade (ColorMapPtr, TimeInterval);
-	else
-		return XFormPLUT (ColorMapPtr, TimeInterval);
+	return XFormPLUT (ColorMapPtr, TimeInterval);
 }
 
 void

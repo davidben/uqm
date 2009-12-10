@@ -47,7 +47,7 @@ typedef struct tfb_colormap
 	struct tfb_colormap *next;
 } TFB_ColorMap;
 
-extern volatile int FadeAmount;
+extern int GetFadeAmount (void);
 
 extern void InitColorMaps (void);
 extern void UninitColorMaps (void);

@@ -776,7 +776,6 @@ on_input_frame (void)
 void
 Credits (BOOLEAN WithOuttakes)
 {
-	BYTE fade_buf[1];
 	MUSIC_REF hMusic;
 	CREDITS_INPUT_STATE cis;
 	RECT screenRect;
@@ -801,8 +800,7 @@ Credits (BOOLEAN WithOuttakes)
 	s.frame = CreditsBack;
 	LockMutex (GraphicsLock);
 	DrawStamp (&s);
-	fade_buf[0] = FadeAllToColor;
-	XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2);
+	FadeScreen (FadeAllToColor, ONE_SECOND / 2);
 	UnlockMutex (GraphicsLock);
 
 	// set the position of outtakes comm
@@ -842,8 +840,7 @@ Credits (BOOLEAN WithOuttakes)
 
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
-	fade_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)fade_buf, ONE_SECOND / 2));
+	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 2));
 	FlushColorXForms ();
 	UnlockMutex (GraphicsLock);
 

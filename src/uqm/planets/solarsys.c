@@ -1379,12 +1379,10 @@ InitSolarSys (void)
 		if (LastActivity == (CHECK_LOAD | CHECK_RESTART))
 		{	// Starting a new game, NOT from load!
 			// We have to fade the screen in from intro or menu
-			BYTE clut_buf[] = {FadeAllToColor};
-
 			DrawOuterSystem ();
 			RedrawQueue (FALSE);
 			UnbatchGraphics ();
-			XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
+			FadeScreen (FadeAllToColor, ONE_SECOND / 2);
 
 			LastActivity = 0;
 		}

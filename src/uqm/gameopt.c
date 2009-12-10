@@ -1052,10 +1052,8 @@ ChangeGameSelection:
 			}
 			if (LastActivity == CHECK_LOAD && first_time)
 			{
-				BYTE clut_buf[] = {FadeAllToColor};
-
 				UnbatchGraphics ();
-				XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 2);
+				FadeScreen (FadeAllToColor, ONE_SECOND / 2);
 			}
 			else
 			{

@@ -35,14 +35,12 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 {
 #ifdef WANT_SHIP_SPINS
 	char vnbuf[32];
-	BYTE clut_buf[1];
 	RECT old_r;
 
 	LoadIntoExtraScreen (NULL);
 #if 0
 	/* This is cut out right now but should be part of the 3DO side */
-	clut_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
+	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 4));
 	FlushColorXForms ();
 #endif
 	
@@ -55,8 +53,7 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 	sprintf (vnbuf, "slides.spins.%02u", (unsigned)index);
 	ShowPresentation (vnbuf);
 
-	clut_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
+	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 4));
 	FlushColorXForms ();
 
 	GetContextClipRect (&old_r);
@@ -67,8 +64,7 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 	if (hMusic)
 		PlayMusic (hMusic, TRUE, 1);
 		
-	clut_buf[0] = FadeAllToColor;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)clut_buf, ONE_SECOND / 4));
+	SleepThreadUntil (FadeScreen (FadeAllToColor, ONE_SECOND / 4));
 	FlushColorXForms ();
 #else
 	(void) index;  /* Satisfy compiler */
@@ -79,13 +75,10 @@ DoShipSpin (COUNT index, MUSIC_REF hMusic)
 void
 SplashScreen (void (* DoProcessing)(DWORD TimeOut))
 {
-	BYTE xform_buf[1];
 	STAMP s;
 	DWORD TimeOut;
 
-	xform_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap (
-			(COLORMAPPTR) xform_buf, ONE_SECOND / 120));
+	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 120));
 	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	s.origin.x = s.origin.y = 0;
@@ -94,8 +87,7 @@ SplashScreen (void (* DoProcessing)(DWORD TimeOut))
 	DestroyDrawable (ReleaseDrawable (s.frame));
 	UnlockMutex (GraphicsLock);
 
-	xform_buf[0] = FadeAllToColor;
-	TimeOut = XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2);
+	TimeOut = FadeScreen (FadeAllToColor, ONE_SECOND / 2);
 
 	if (DoProcessing)
 		DoProcessing (TimeOut);
@@ -118,35 +110,26 @@ SplashScreen (void (* DoProcessing)(DWORD TimeOut))
 	}
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 
-	xform_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
+	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 2));
 }
 
 void
 Introduction (void)
 {
-	BYTE xform_buf[1];
-
 	ShowPresentation (INTROPRES_STRTAB);
-
-	xform_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
+	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 2));
 }
 
 void
 Victory (void)
 {
-	BYTE xform_buf[1];
-
-	xform_buf[0] = FadeAllToBlack;
-	SleepThreadUntil (XFormColorMap ((COLORMAPPTR)xform_buf, ONE_SECOND / 2));
+	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 2));
 
 	/* by default we do 3DO cinematics; or PC slides when 3DO files are
 	 * not present */
 	ShowPresentation (FINALPRES_STRTAB);
 		
-	xform_buf[0] = FadeAllToBlack;
-	XFormColorMap ((COLORMAPPTR)xform_buf, 0);
+	FadeScreen (FadeAllToBlack, 0);
 }
 
 void

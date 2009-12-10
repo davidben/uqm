@@ -258,7 +258,7 @@ extern HOT_SPOT MAKE_HOT_SPOT (COORD, COORD);
 extern INTERSECT_CODE BoxIntersect (RECT *pr1, RECT *pr2, RECT *printer);
 extern void BoxUnion (RECT *pr1, RECT *pr2, RECT *punion);
 
-enum
+typedef enum
 {
 	FadeAllToWhite = 250,
 	FadeSomeToWhite,
@@ -266,7 +266,7 @@ enum
 	FadeAllToColor,
 	FadeSomeToBlack,
 	FadeSomeToColor
-};
+} ScreenFadeType;
 
 extern BOOLEAN InitGraphics (int argc, char *argv[], COUNT
 		KbytesRequired);
@@ -356,6 +356,7 @@ extern DRAWABLE GetFrameParentDrawable (FRAME Frame);
 
 extern BOOLEAN SetColorMap (COLORMAPPTR ColorMapPtr);
 extern DWORD XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval);
+extern DWORD FadeScreen (ScreenFadeType fadeType, SIZE TimeInterval);
 extern void FlushColorXForms (void);
 #define InitColorMapResources InitStringTableResources
 #define LoadColorMapFile LoadStringTableFile
