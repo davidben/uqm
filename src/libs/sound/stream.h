@@ -17,6 +17,9 @@
 #ifndef STREAM_H
 #define STREAM_H
 
+int InitStreamDecoder (void);
+void UninitStreamDecoder (void);
+
 void PlayStream (TFB_SoundSample *sample, uint32 source, bool looping, 
 				 bool scope, bool rewind);
 void StopStream (uint32 source);
@@ -24,8 +27,10 @@ void PauseStream (uint32 source);
 void ResumeStream (uint32 source);
 void SeekStream (uint32 source, uint32 pos);
 BOOLEAN PlayingStream (uint32 source);
-int StreamDecoderTaskFunc (void *data);
 
 int GraphForegroundStream (uint8 *data, sint32 width, sint32 height);
+
+// returns TRUE if the fade was accepted by stream decoder
+bool SetMusicStreamFade (sint32 howLong, int endVolume);
 
 #endif

@@ -19,13 +19,10 @@
 
 #include "audiodrv_sdl.h"
 #include "../../sndintrn.h"
-#include "libs/tasklib.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
 #include <stdlib.h>
 
-
-static Task StreamDecoderTask;
 
 static const audio_Driver mixSDL_Driver =
 {
@@ -202,15 +199,23 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 		soundSource[i].stream_mutex = CreateMutex ("MixSDL stream mutex", SYNC_CLASS_AUDIO);
 	}
 
+	if (InitStreamDecoder ())
+	{
+		log_add (log_Error, "Stream decoder initialization failed.");
+		// TODO: cleanup source mutexes [or is it "muti"? :) ]
+		SDL_CloseAudio ();
+		SoundDecoder_Uninit ();
+		mixer_Uninit ();
+		SDL_QuitSubSystem (SDL_INIT_AUDIO);
+		return -1;
+	}
+
 	atexit (unInitAudio);
 
 	SetSFXVolume (sfxVolumeScale);
 	SetSpeechVolume (speechVolumeScale);
 	SetMusicVolume ((COUNT)musicVolume);
 				
-	StreamDecoderTask = AssignTask (StreamDecoderTaskFunc, 1024, 
-		"audio stream decoder");
-
 	SDL_PauseAudio (0);
 		
 	return 0;
@@ -221,11 +226,7 @@ mixSDL_Uninit (void)
 {
 	int i;
 
-	if (StreamDecoderTask)
-	{
-		ConcludeTask (StreamDecoderTask);
-		StreamDecoderTask = NULL;
-	}
+	UninitStreamDecoder ();
 
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
 	{

@@ -22,7 +22,6 @@
 
 #include "audiodrv_openal.h"
 #include "../sndintrn.h"
-#include "libs/tasklib.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
 #include <stdlib.h>
@@ -34,7 +33,6 @@ ALfloat defaultPos[] = {0.0f, 0.0f, -1.0f};
 ALfloat listenerPos[] = {0.0f, 0.0f, 0.0f};
 ALfloat listenerVel[] = {0.0f, 0.0f, 0.0f};
 ALfloat listenerOri[] = {0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f};
-static Task StreamDecoderTask;
 
 static const audio_Driver openAL_Driver =
 {
@@ -185,6 +183,19 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 		
 		soundSource[i].stream_mutex = CreateMutex ("OpenAL stream mutex", SYNC_CLASS_AUDIO);
 	}
+
+	if (InitStreamDecoder ())
+	{
+		log_add (log_Error, "Stream decoder initialization failed.");
+		// TODO: cleanup source mutexes [or is it "muti"? :) ]
+		SoundDecoder_Uninit ();
+		alcMakeContextCurrent (NULL);
+		alcDestroyContext (alcContext);
+		alcContext = NULL;
+		alcCloseDevice (alcDevice);
+		alcDevice = NULL;
+		return -1;
+	}
 	
 	SetSFXVolume (sfxVolumeScale);
 	SetSpeechVolume (speechVolumeScale);
@@ -194,9 +205,6 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 		alDistanceModel (AL_INVERSE_DISTANCE);
 	else
 		alDistanceModel (AL_NONE);
-
-	StreamDecoderTask = AssignTask (StreamDecoderTaskFunc, 1024, 
-		"audio stream decoder");
 
 	(void) driver; // eat compiler warning
 
@@ -208,11 +216,7 @@ openAL_Uninit (void)
 {
 	int i;
 
-	if (StreamDecoderTask)
-	{
-		ConcludeTask (StreamDecoderTask);
-		StreamDecoderTask = NULL;
-	}
+	UninitStreamDecoder ();
 
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
 	{

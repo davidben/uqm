@@ -19,14 +19,9 @@
 #include "sound.h"
 #include "sndintrn.h"
 #include "libs/compiler.h"
-#include "libs/tasklib.h"
 #include "libs/inplib.h"
 #include "libs/memlib.h"
 
-
-static Task FadeTask;
-static SIZE TTotal;
-static SIZE volume_end;
 
 int musicVolume = NORMAL_VOLUME;
 float musicVolumeScale;
@@ -160,66 +155,24 @@ SetSpeechVolume (float volume)
 	audio_Sourcef (soundSource[SPEECH_SOURCE].handle, audio_GAIN, volume);
 }
 
-static int
-fade_task (void *data)
-{
-	SIZE TDelta, volume_beg;
-	DWORD StartTime, CurTime;
-	Task task = (Task) data;
-
-	volume_beg = musicVolume;
-	StartTime = CurTime = GetTimeCounter ();
-	do
-	{
-		SleepThreadUntil (CurTime + ONE_SECOND / 120);
-		CurTime = GetTimeCounter ();
-		if ((TDelta = (SIZE) (CurTime - StartTime)) > TTotal)
-			TDelta = TTotal;
-
-		SetMusicVolume ((COUNT) (volume_beg + (SIZE)
-				((long) (volume_end - volume_beg) * TDelta / TTotal)));
-	} while (TDelta < TTotal);
-
-	FadeTask = 0;
-	FinishTask (task);
-	return 1;
-}
-
 DWORD
 FadeMusic (BYTE end_vol, SIZE TimeInterval)
 {
-	DWORD TimeOut;
-
 	if (QuitPosted) // Don't make users wait for fades
 		TimeInterval = 0;
 
-	if (FadeTask)
-	{
-		volume_end = musicVolume;
-		TTotal = 1;
-		do
-			TaskSwitch ();
-		while (FadeTask);
-		TaskSwitch ();
-	}
+	if (TimeInterval < 0)
+		TimeInterval = 0;
 
-	TTotal = TimeInterval;
-	if (TTotal <= 0)
-		TTotal = 1; /* prevent divide by zero and negative fade */
-	volume_end = end_vol;
-		
-	if (TTotal > 1 && (FadeTask = AssignTask (fade_task, 0,
-			"fade music")))
-	{
-		TimeOut = GetTimeCounter () + TTotal + 1;
+	if (!SetMusicStreamFade (TimeInterval, end_vol))
+	{	// fade rejected, maybe due to TimeInterval==0
+		SetMusicVolume (end_vol);
+		return GetTimeCounter ();
 	}
 	else
 	{
-		SetMusicVolume (end_vol);
-		TimeOut = GetTimeCounter ();
+		return GetTimeCounter () + TimeInterval + 1;
 	}
-
-	return TimeOut;
 }
 
 

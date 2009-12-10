@@ -21,9 +21,20 @@
 #include "sound.h"
 #include "sndintrn.h"
 #include "libs/tasklib.h"
+#include "libs/timelib.h"
+#include "libs/threadlib.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
 
+
+static Task decoderTask;
+
+static TimeCount musicFadeStartTime;
+static sint32 musicFadeInterval;
+static int musicFadeStartVolume;
+static int musicFadeDelta;
+// Mutex protects fade structures
+static Mutex fade_mutex;
 
 static void add_scope_data (TFB_SoundSource *source, uint32 bytes);
 
@@ -491,7 +502,37 @@ process_stream (TFB_SoundSource *source)
 	}
 }
 
-int
+static void
+processMusicFade (void)
+{
+	TimeCount Now;
+	sint32 elapsed;
+	int newVolume;
+
+	LockMutex (fade_mutex);
+
+	if (!musicFadeInterval)
+	{	// there is no fade set
+		UnlockMutex (fade_mutex);
+		return;
+	}
+
+	Now = GetTimeCounter ();
+	elapsed = Now - musicFadeStartTime;
+	if (elapsed > musicFadeInterval)
+		elapsed = musicFadeInterval;
+
+	newVolume = musicFadeStartVolume + (long)musicFadeDelta * elapsed
+			/ musicFadeInterval;
+	SetMusicVolume (newVolume);
+
+	if (elapsed >= musicFadeInterval)
+		musicFadeInterval = 0; // fade is over
+
+	UnlockMutex (fade_mutex);
+}
+
+static int
 StreamDecoderTaskFunc (void *data)
 {
 	Task task = (Task)data;
@@ -501,6 +542,8 @@ StreamDecoderTaskFunc (void *data)
 	while (!Task_ReadState (task, TASK_EXIT))
 	{
 		active_streams = 0;
+
+		processMusicFade ();
 
 		for (i = MUSIC_SOURCE; i < NUM_SOUNDSOURCES; ++i)
 		{
@@ -719,3 +762,56 @@ GraphForegroundStream (uint8 *data, sint32 width, sint32 height)
 	return 1;
 }
 
+// This function is normally called on the Starcon2Main thread
+bool
+SetMusicStreamFade (sint32 howLong, int endVolume)
+{
+	bool ret = true;
+
+	LockMutex (fade_mutex);
+
+	if (howLong < 0)
+		howLong = 0;
+	
+	musicFadeStartTime = GetTimeCounter ();
+	musicFadeInterval = howLong;
+	musicFadeStartVolume = musicVolume;
+	musicFadeDelta = endVolume - musicFadeStartVolume;
+	if (!musicFadeInterval)
+		ret = false; // reject
+
+	UnlockMutex (fade_mutex);
+
+	return ret;
+}
+
+int
+InitStreamDecoder (void)
+{
+	fade_mutex = CreateMutex ("Stream fade mutex", SYNC_CLASS_AUDIO);
+	if (!fade_mutex)
+		return -1;
+
+	decoderTask = AssignTask (StreamDecoderTaskFunc, 1024, 
+		"audio stream decoder");
+	if (!decoderTask)
+		return -1;
+
+	return 0;
+}
+
+void
+UninitStreamDecoder (void)
+{
+	if (decoderTask)
+	{
+		ConcludeTask (decoderTask);
+		decoderTask = NULL;
+	}
+
+	if (fade_mutex)
+	{
+		DestroyMutex (fade_mutex);
+		fade_mutex = NULL;
+	}
+}

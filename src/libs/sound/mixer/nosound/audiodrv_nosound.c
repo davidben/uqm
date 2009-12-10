@@ -25,7 +25,6 @@
 #include <stdlib.h>
 
 
-static Task StreamDecoderTask;
 static Task PlaybackTask;
 static uint32 nosound_freq = 22050;
 
@@ -138,14 +137,21 @@ noSound_Init (audio_Driver *driver, sint32 flags)
 		soundSource[i].stream_mutex = CreateMutex ("Nosound stream mutex", SYNC_CLASS_AUDIO);
 	}
 
+	if (InitStreamDecoder ())
+	{
+		log_add (log_Error, "Stream decoder initialization failed.");
+		// TODO: cleanup source mutexes [or is it "muti"? :) ]
+		SoundDecoder_Uninit ();
+		mixer_Uninit ();
+		return -1;
+	}
+
 	atexit (unInitAudio);
 
 	SetSFXVolume (sfxVolumeScale);
 	SetSpeechVolume (speechVolumeScale);
 	SetMusicVolume ((COUNT)musicVolume);
 		
-	StreamDecoderTask = AssignTask (StreamDecoderTaskFunc, 1024, 
-		"audio stream decoder");	
 	PlaybackTask = AssignTask (PlaybackTaskFunc, 1024, 
 		"nosound audio playback");
 
@@ -157,11 +163,7 @@ noSound_Uninit (void)
 {
 	int i;
 
-	if (StreamDecoderTask)
-	{
-		ConcludeTask (StreamDecoderTask);
-		StreamDecoderTask = NULL;
-	}
+	UninitStreamDecoder ();
 
 	for (i = 0; i < NUM_SOUNDSOURCES; ++i)
 	{
