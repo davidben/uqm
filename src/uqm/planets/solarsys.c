@@ -53,7 +53,7 @@
 
 #define IP_FRAME_RATE  (ONE_SECOND / 30)
 
-static BOOLEAN DoIpFlight (MENU_STATE *pMS);
+static BOOLEAN DoIpFlight (SOLARSYS_STATE *pSS);
 static void DrawSystem (SIZE radius, BOOLEAN IsInnerSystem);
 static FRAME CreateStarBackGround (void);
 static void DrawInnerSystem (void);
@@ -482,15 +482,9 @@ saveNonOrbitalLocation (void)
 static void
 FreeSolarSys (void)
 {
-	if (pSolarSysState->MenuState.flash_task)
+	if (pSolarSysState->InIpFlight)
 	{
-		if (pSolarSysState->MenuState.flash_task != (Task)(~0))
-		{
-			log_add (log_Warning, "DIAGNOSTIC: FreeSolarSys cancels a "
-					"flash_task that wasn't the placeholder for IP flight");
-			ConcludeTask (pSolarSysState->MenuState.flash_task);
-		}
-		pSolarSysState->MenuState.flash_task = 0;
+		pSolarSysState->InIpFlight = FALSE;
 		
 		if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 			saveNonOrbitalLocation ();
@@ -1226,7 +1220,7 @@ ResetSolarSys (void)
 	// Originally there was a flash_task test here, however, I found no cases
 	// where flash_task could be set at the time of call. The test was
 	// probably needed on 3DO when IP_frame() was a task.
-	assert (!pSolarSysState->MenuState.flash_task);
+	assert (!pSolarSysState->InIpFlight);
 
 	DrawMenuStateStrings (PM_STARMAP, -(PM_NAVIGATE - PM_SCAN));
 
@@ -1237,7 +1231,7 @@ ResetSolarSys (void)
 	// Figure out and note which planet/moon we just left, if any
 	CheckIntersect (TRUE);
 	
-	pSolarSysState->MenuState.flash_task = (Task)(~0);
+	pSolarSysState->InIpFlight = TRUE;
 
 	// Do not start playing the music if we entered the solarsys only
 	// to load a game (load invoked from Main menu)
@@ -1252,7 +1246,7 @@ ResetSolarSys (void)
 static void
 EnterPlanetOrbit (void)
 {
-	if (pSolarSysState->MenuState.flash_task)
+	if (pSolarSysState->InIpFlight)
 	{	// This means we hit a planet in IP flight; not a Load into orbit
 		FreeSolarSys ();
 
@@ -1311,7 +1305,7 @@ EnterPlanetOrbit (void)
 	}
 }
 
-void
+static void
 InitSolarSys (void)
 {
 	BOOLEAN InnerSystem;
@@ -1323,8 +1317,6 @@ InitSolarSys (void)
 	LoadIPData ();
 	LoadLanderData ();
 	UnlockMutex (GraphicsLock);
-
-	pSolarSysState->MenuState.InputFunc = DoIpFlight;
 
 	Reentry = (GLOBAL (ShipFacing) != 0);
 	if (!Reentry)
@@ -1747,9 +1739,9 @@ ExploreSolarSys (void)
 	SolarSysState.genFuncs = getGenerateFunctions (CurStarDescPtr->Index);
 
 	InitSolarSys ();
-	SolarSysState.MenuState.Initialized = TRUE;
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
-	DoInput (&SolarSysState.MenuState, FALSE);
+	SolarSysState.InputFunc = DoIpFlight;
+	DoInput (&SolarSysState, FALSE);
 	UninitSolarSys ();
 	pSolarSysState = 0;
 }
@@ -1915,7 +1907,6 @@ DoSolarSysMenu (MENU_STATE *pMS)
 			|| GLOBAL_SIS (CrewEnlisted) == (COUNT)~0)
 		return FALSE;
 
-	// XXX: pMS actually refers to pSolarSysState->MenuState
 	handled = DoMenuChooser (pMS, PM_STARMAP);
 	if (handled)
 		return TRUE;
@@ -1980,16 +1971,18 @@ DoSolarSysMenu (MENU_STATE *pMS)
 static void
 SolarSysMenu (void)
 {
-	void *oldInputFunc = pSolarSysState->MenuState.InputFunc;
+	MENU_STATE MenuState;
+
+	memset (&MenuState, 0, sizeof MenuState);
 
 	if (LastActivity == CHECK_LOAD)
 	{	// Selected LOAD from main menu
-		pSolarSysState->MenuState.CurState = GAME_MENU;
+		MenuState.CurState = GAME_MENU;
 	}
 	else
 	{
 		DrawMenuStateStrings (PM_STARMAP, STARMAP);
-		pSolarSysState->MenuState.CurState = STARMAP;
+		MenuState.CurState = STARMAP;
 	}
 
 	LockMutex (GraphicsLock);
@@ -1998,27 +1991,23 @@ SolarSysMenu (void)
 	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	// XXX: temporary; will have an own MENU_STATE
-	pSolarSysState->MenuState.InputFunc = DoSolarSysMenu;
-	DoInput (&pSolarSysState->MenuState, TRUE);
-	pSolarSysState->MenuState.InputFunc = oldInputFunc;
+	MenuState.InputFunc = DoSolarSysMenu;
+	DoInput (&MenuState, TRUE);
 
 	DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
 }
 
 static BOOLEAN
-DoIpFlight (MENU_STATE *pMS)
+DoIpFlight (SOLARSYS_STATE *pSS)
 {
 	static TimeCount NextTime;
 	BOOLEAN cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
 
-	(void) pMS; // suppress unused warning
-
-	if (pSolarSysState->InOrbit)
+	if (pSS->InOrbit)
 	{	// CheckShipLocation() or InitSolarSys() sent us to orbital
 		EnterPlanetOrbit ();
 		SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
-		pSolarSysState->InOrbit = FALSE;
+		pSS->InOrbit = FALSE;
 	}
 	else if (cancel || LastActivity == CHECK_LOAD)
 	{
@@ -2027,6 +2016,7 @@ DoIpFlight (MENU_STATE *pMS)
 	}
 	else
 	{
+		assert (pSS->InIpFlight);
 		IP_frame ();
 		SleepThreadUntil (NextTime);
 		NextTime = GetTimeCounter () + IP_FRAME_RATE;

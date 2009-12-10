@@ -426,22 +426,22 @@ on_input_frame (void)
 void
 PlanetOrbitMenu (void)
 {
-	void *oldInputFunc = pSolarSysState->MenuState.InputFunc;
+	MENU_STATE MenuState;
 	InputFrameCallback *oldCallback;
+
+	memset (&MenuState, 0, sizeof MenuState);
 
 	DrawMenuStateStrings (PM_SCAN, SCAN);
 	LockMutex (GraphicsLock);
 	SetFlashRect (SFR_MENU_3DO);
 	UnlockMutex (GraphicsLock);
 
-	pSolarSysState->MenuState.CurState = SCAN;
+	MenuState.CurState = SCAN;
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	oldCallback = SetInputCallback (on_input_frame);
 
-	// XXX: temporary; will have an own MENU_STATE
-	pSolarSysState->MenuState.InputFunc = DoPlanetOrbit;
-	DoInput (&pSolarSysState->MenuState, TRUE);
-	pSolarSysState->MenuState.InputFunc = oldInputFunc;
+	MenuState.InputFunc = DoPlanetOrbit;
+	DoInput (&MenuState, TRUE);
 
 	SetInputCallback (oldCallback);
 
