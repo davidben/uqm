@@ -131,7 +131,6 @@ typedef struct textentry_state
 {
 	// standard state required by DoInput
 	BOOLEAN (*InputFunc) (struct textentry_state *pTES);
-	COUNT MenuRepeatDelay;
 
 	// these are semi-private read-only
 	BOOLEAN Initialized;

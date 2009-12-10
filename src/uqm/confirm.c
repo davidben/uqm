@@ -173,7 +173,6 @@ typedef struct popup_state
 {
 	// standard state required by DoInput
 	BOOLEAN (*InputFunc) (struct popup_state *self);
-	COUNT MenuRepeatDelay;
 } POPUP_STATE;
 
 static BOOLEAN

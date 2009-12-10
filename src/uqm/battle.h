@@ -33,7 +33,6 @@ typedef void (BattleFrameCallback) (void);
 
 typedef struct battlestate_struct {
 	BOOLEAN (*InputFunc) (struct battlestate_struct *pInputState);
-	COUNT MenuRepeatDelay;
 	BOOLEAN first_time;
 	DWORD NextTime;
 	BattleFrameCallback *frame_cb;

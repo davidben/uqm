@@ -45,7 +45,7 @@ BOOLEAN selectShipNetwork (NetworkInputContext *context, GETMELEE_STATE *gms);
 
 struct getmelee_struct {
 	BOOLEAN (*InputFunc) (struct getmelee_struct *pInputState);
-	COUNT MenuRepeatDelay;
+
 	BOOLEAN Initialized;
 	
 	struct {

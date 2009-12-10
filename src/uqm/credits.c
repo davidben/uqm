@@ -691,7 +691,6 @@ typedef struct
 {
 	// standard state required by DoInput
 	BOOLEAN (*InputFunc) (void *pInputState);
-	COUNT MenuRepeatDelay;
 
 	BOOLEAN AllowCancel;
 	BOOLEAN AllowSpeedChange;
@@ -825,7 +824,6 @@ Credits (BOOLEAN WithOuttakes)
 
 		// nothing to do now but wait until credits
 		//  are done or canceled by user
-		cis.MenuRepeatDelay = 0;
 		cis.InputFunc = DoCreditsInput;
 		cis.AllowCancel = !WithOuttakes;
 		cis.CloseWhenDone = !WithOuttakes;

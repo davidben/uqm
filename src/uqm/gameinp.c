@@ -40,7 +40,6 @@
 typedef struct
 {
 	BOOLEAN (*InputFunc) (void *pInputState);
-	COUNT MenuRepeatDelay;
 } INPUT_STATE_DESC;
 
 /* These static variables are the values that are set by the controllers. */

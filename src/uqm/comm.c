@@ -82,7 +82,6 @@ typedef struct response_entry
 typedef struct encounter_state
 {
 	BOOLEAN (*InputFunc) (struct encounter_state *pES);
-	COUNT MenuRepeatDelay;
 
 	COUNT Initialized;
 	TimeCount NextTime; // framerate control
@@ -561,7 +560,6 @@ typedef struct talking_state
 {
 	// Fields required by DoInput()
 	BOOLEAN (*InputFunc) (struct talking_state *);
-	COUNT MenuRepeatDelay;
 
 	TimeCount NextTime;  // framerate control
 	COUNT waitTrack;
@@ -803,7 +801,6 @@ typedef struct summary_state
 {
 	// standard state required by DoInput
 	BOOLEAN (*InputFunc) (struct summary_state *pSS);
-	COUNT MenuRepeatDelay;
 
 	// extended state
 	BOOLEAN Initialized;
@@ -825,7 +822,6 @@ DoConvSummary (SUMMARY_STATE *pSS)
 		pSS->PrintNext = TRUE;
 		pSS->NextSub = GetFirstTrackSubtitle ();
 		pSS->LeftOver = NULL;
-		pSS->MenuRepeatDelay = 0;
 		pSS->InputFunc = DoConvSummary;
 		pSS->Initialized = TRUE;
 		DoInput (pSS, FALSE);
@@ -1079,7 +1075,6 @@ typedef struct last_replay_state
 {
 	// Fields required by DoInput()
 	BOOLEAN (*InputFunc) (struct last_replay_state *);
-	COUNT MenuRepeatDelay;
 
 	TimeCount NextTime; // framerate control
 	TimeCount TimeOut;

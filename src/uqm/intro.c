@@ -41,7 +41,6 @@ typedef struct
 {
 	/* standard state required by DoInput */
 	BOOLEAN (*InputFunc) (void *pInputState);
-	COUNT MenuRepeatDelay;
 
 	/* Presentation state */
 	TimeCount StartTime;
@@ -79,7 +78,6 @@ typedef struct
 typedef struct {
 	/* standard state required by DoInput */
 	BOOLEAN (*InputFunc) (void *pInputState);
-	COUNT MenuRepeatDelay;
 
 	/* Spinanim state */
 	STAMP anim;
@@ -91,7 +89,6 @@ typedef struct
 {
 	// standard state required by DoInput
 	BOOLEAN (*InputFunc) (void *pInputState);
-	COUNT MenuRepeatDelay;
 
 	LEGACY_VIDEO_REF CurVideo;
 
@@ -778,7 +775,6 @@ ShowSlidePresentation (STRING PresStr)
 	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
-	pis.MenuRepeatDelay = 0;
 	pis.InputFunc = DoPresentation;
 	pis.LastDrawKind = -1;
 	pis.TextVPos = 'B';
@@ -874,7 +870,6 @@ ShowLegacyVideo (LEGACY_VIDEO vid)
 	if (!ref)
 		return FALSE;
 
-	vis.MenuRepeatDelay = 0;
 	vis.InputFunc = DoVideoInput;
 	vis.CurVideo = ref;
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);

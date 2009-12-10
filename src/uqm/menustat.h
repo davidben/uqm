@@ -26,8 +26,8 @@
 
 typedef struct menu_state
 {
+	// Standard field required by DoInput()
 	BOOLEAN (*InputFunc) (struct menu_state *pMS);
-	COUNT MenuRepeatDelay;
 
 	SIZE Initialized;
 

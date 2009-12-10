@@ -56,7 +56,6 @@ typedef struct LanderInputState LanderInputState;
 struct LanderInputState {
 	// Fields required by DoInput()
 	BOOLEAN (*InputFunc) (LanderInputState *pMS);
-	COUNT MenuRepeatDelay;
 
 	BOOLEAN Initialized;
 	TimeCount NextTime;
@@ -1614,7 +1613,6 @@ DoPlanetSide (LanderInputState *pMS)
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return (FALSE);
 
-	pMS->MenuRepeatDelay = 0;
 	if (!pMS->Initialized)
 	{
 		COUNT landerSpeedNumer;

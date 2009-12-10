@@ -337,7 +337,6 @@ DoNaming (MENU_STATE *pMS)
 
 	// text entry setup
 	tes.Initialized = FALSE;
-	tes.MenuRepeatDelay = 0;
 	tes.BaseStr = buf;
 	tes.CursorPos = 0;
 	tes.CbParam = pMS;

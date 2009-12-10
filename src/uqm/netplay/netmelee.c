@@ -550,7 +550,6 @@ struct NegotiateReadyState {
 	// Common fields of INPUT_STATE_DESC, from which this structure
 	// "inherits".
 	BOOLEAN(*InputFunc)(void *pInputState);
-	COUNT MenuRepeatDelay;
 
 	NetConnection *conn;
 	NetState nextState;
@@ -593,7 +592,6 @@ bool
 negotiateReady(NetConnection *conn, bool notifyRemote, NetState nextState) {
 	NegotiateReadyState state;
 	state.InputFunc = (BOOLEAN(*)(void *)) negotiateReadyInputFunc;
-	state.MenuRepeatDelay = 0;
 	state.conn = conn;
 	state.nextState = nextState;
 	state.done = false;
@@ -639,7 +637,6 @@ struct WaitReadyState {
 	// Common fields of INPUT_STATE_DESC, from which this structure
 	// "inherits".
 	BOOLEAN(*InputFunc)(void *pInputState);
-	COUNT MenuRepeatDelay;
 
 	NetConnection *conn;
 	NetConnection_ReadyCallback readyCallback;
@@ -677,7 +674,6 @@ bool
 waitReady(NetConnection *conn) {
 	WaitReadyState state;
 	state.InputFunc =(BOOLEAN(*)(void *)) waitReadyInputFunc;
-	state.MenuRepeatDelay = 0;
 	state.conn = conn;
 	state.readyCallback = NetConnection_getReadyCallback(conn);
 	state.readyCallbackArg = NetConnection_getReadyCallbackArg(conn);
@@ -698,7 +694,6 @@ struct WaitResetState {
 	// Common fields of INPUT_STATE_DESC, from which this structure
 	// "inherits".
 	BOOLEAN(*InputFunc)(void *pInputState);
-	COUNT MenuRepeatDelay;
 
 	NetConnection *conn;
 	NetState nextState;
@@ -743,7 +738,6 @@ bool
 waitReset(NetConnection *conn, NetState nextState) {
 	WaitResetState state;
 	state.InputFunc = (BOOLEAN(*)(void *)) waitResetInputFunc;
-	state.MenuRepeatDelay = 0;
 	state.conn = conn;
 	state.nextState = nextState;
 	state.done = false;

@@ -1128,7 +1128,6 @@ DoEdit (MELEE_STATE *pMS)
 				UnlockMutex (GraphicsLock);
 
 				tes.Initialized = FALSE;
-				tes.MenuRepeatDelay = 0;
 				tes.BaseStr = pMS->SideState[pMS->side].TeamImage.TeamName;
 				tes.CursorPos = 0;
 				tes.MaxSize = MAX_TEAM_CHARS + 1;

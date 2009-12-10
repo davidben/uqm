@@ -103,7 +103,6 @@ struct melee_side_state
 struct melee_state
 {
 	BOOLEAN (*InputFunc) (struct melee_state *pInputState);
-	COUNT MenuRepeatDelay;
 
 	BOOLEAN Initialized;
 	MELEE_OPTIONS MeleeOption;

@@ -42,7 +42,7 @@ static STRING SetupTab;
 
 typedef struct setup_menu_state {
 	BOOLEAN (*InputFunc) (struct setup_menu_state *pInputState);
-	COUNT MenuRepeatDelay;
+
 	BOOLEAN initialized;
 	int anim_frame_count;
 	DWORD NextTime;
@@ -550,7 +550,6 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 
 	// text entry setup
 	tes.Initialized = FALSE;
-	tes.MenuRepeatDelay = 0;
 	tes.NextTime = GetTimeCounter () + MENU_FRAME_RATE;
 	tes.BaseStr = widget->value;
 	tes.MaxSize = widget->maxlen;

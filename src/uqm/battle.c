@@ -266,7 +266,6 @@ DoBattle (BATTLE_STATE *bs)
 	RECT r;
 	BYTE battle_speed;
 
-	bs->MenuRepeatDelay = 0;
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 
 #if defined (NETPLAY) && defined (NETPLAY_CHECKSUM)

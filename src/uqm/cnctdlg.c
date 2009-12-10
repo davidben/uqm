@@ -37,7 +37,6 @@
 typedef struct connect_dialog_state
 {
 	BOOLEAN (*InputFunc) (struct connect_dialog_state *pInputState);
-	COUNT MenuRepeatDelay;
 
 	DWORD NextTime;
 	BOOLEAN Initialized;
@@ -355,7 +354,6 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 
 	// text entry setup
 	tes.Initialized = FALSE;
-	tes.MenuRepeatDelay = 0;
 	tes.NextTime = GetTimeCounter () + MENU_FRAME_RATE;
 	tes.BaseStr = widget->value;
 	tes.MaxSize = widget->maxlen;
