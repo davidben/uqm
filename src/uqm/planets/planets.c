@@ -185,11 +185,8 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 
 	UnbatchGraphics ();
 
-	if (Mode != DRAW_ORBITAL_WAIT)
-	{
-		// for later RepairBackRect()
-		LoadIntoExtraScreen (&r);
-	}
+	// for later RepairBackRect()
+	LoadIntoExtraScreen (&r);
 }
 
 // Initialise the surface graphics, and start the planet music.
@@ -227,10 +224,6 @@ LoadPlanet (FRAME SurfDefFrame)
 	SetPlanetMusic (pPlanetDesc->data_index & ~PLANET_SHIELDED);
 	GeneratePlanetSide ();
 
-	LockMutex (GraphicsLock);
-	DrawOrbitalDisplay (WaitMode ? DRAW_ORBITAL_UPDATE : DRAW_ORBITAL_FULL);
-	UnlockMutex (GraphicsLock);
-
 	if (!PLRPlaying ((MUSIC_REF)~0))
 		PlayMusic (LanderMusic, TRUE, 1);
 
@@ -238,6 +231,15 @@ LoadPlanet (FRAME SurfDefFrame)
 	{
 		assert (pSolarSysState->MenuState.Initialized == 2);
 		ZoomInPlanetSphere ();
+		LockMutex (GraphicsLock);
+		DrawOrbitalDisplay (DRAW_ORBITAL_UPDATE);
+		UnlockMutex (GraphicsLock);
+	}
+	else
+	{
+		LockMutex (GraphicsLock);
+		DrawOrbitalDisplay (DRAW_ORBITAL_FULL);
+		UnlockMutex (GraphicsLock);
 	}
 
 	// XXX: Mark as in-orbit. This should go away eventually
