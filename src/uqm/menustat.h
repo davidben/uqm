@@ -21,7 +21,6 @@
 
 #include "libs/gfxlib.h"
 #include "libs/sndlib.h"
-#include "libs/tasklib.h"
 #include "flash.h"
 
 typedef struct menu_state
@@ -38,7 +37,6 @@ typedef struct menu_state
 	SIZE delta_item;
 
 	FRAME ModuleFrame;
-	Task flash_task;
 	RECT flash_rect0, flash_rect1;
 	FRAME flash_frame0, flash_frame1;
 	FlashContext *flashContext;

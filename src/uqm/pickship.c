@@ -273,7 +273,6 @@ OldContext = SetContext (SpaceContext);
 		MenuState.Initialized = FALSE;
 		MenuState.first_item.x = NUM_PICK_SHIP_COLUMNS >> 1;
 		MenuState.first_item.y = 0;
-		MenuState.flash_task = 0;
 		MenuState.CurFrame = 0;
 		MenuState.flash_rect1.corner = pick_r.corner;
 		MenuState.flash_rect1.extent.width = 0;

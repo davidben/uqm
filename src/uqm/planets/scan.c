@@ -1207,9 +1207,9 @@ ScanSystem (void)
 {
 	MENU_STATE MenuState;
 
+	memset (&MenuState, 0, sizeof MenuState);
+
 	MenuState.InputFunc = DoScan;
-	MenuState.Initialized = FALSE;
-	MenuState.flash_task = 0;
 
 	if (optWhichMenu == OPT_3DO &&
 			((pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)

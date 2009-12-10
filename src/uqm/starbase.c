@@ -317,12 +317,6 @@ DoStarBase (MENU_STATE *pMS)
 			pMS->hMusic = 0;
 		}
 
-		if (pMS->flash_task)
-		{
-			Task_SetState (pMS->flash_task, TASK_EXIT);
-			pMS->flash_task = 0;
-		}
-
 		pMS->Initialized = TRUE;
 		UnlockMutex (GraphicsLock);
 
