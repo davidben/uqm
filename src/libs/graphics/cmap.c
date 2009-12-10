@@ -374,6 +374,10 @@ FadeScreen (ScreenFadeType fadeType, SIZE TimeInterval)
 		return (GetTimeCounter ());
 	}
 
+	// Don't make users wait for fades
+	if (QuitPosted)
+		TimeInterval = 0;
+
 	LockMutex (XFormControl.Lock);
 
 	if (TimeInterval <= 0)
@@ -593,7 +597,8 @@ XFormColorMap (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	if (!ColorMapPtr)
 		return (0);
 
-	if (QuitPosted) // Don't make users wait for fades
+	// Don't make users wait for transforms
+	if (QuitPosted)
 		TimeInterval = 0;
 
 	return XFormPLUT (ColorMapPtr, TimeInterval);
