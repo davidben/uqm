@@ -228,6 +228,9 @@ struct solarsys_state
 	Color Tint_rgb;
 	FRAME TopoFrame;
 	PLANET_ORBIT Orbit;
+	BOOLEAN InOrbit;
+			// Set to TRUE when player hits a world in an inner system
+			// Homeworld encounters count as 'in orbit'
 };
 
 extern SOLARSYS_STATE *pSolarSysState;

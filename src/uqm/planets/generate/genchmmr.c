@@ -92,10 +92,8 @@ GenerateChmmr_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	{
 		if (GET_GAME_STATE (CHMMR_UNLEASHED))
 		{
-			solarSys->MenuState.Initialized += 2;
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
 			InitCommunication (CHMMR_CONVERSATION);
-			solarSys->MenuState.Initialized -= 2;
 
 			if (GET_GAME_STATE (CHMMR_BOMB_STATE) == 2)
 			{
@@ -115,11 +113,9 @@ GenerateChmmr_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 			CloneShipFragment (ILWRATH_SHIP,
 					&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
 
-			solarSys->MenuState.Initialized += 2;
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 6);
 			GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 			InitCommunication (ILWRATH_CONVERSATION);
-			solarSys->MenuState.Initialized -= 2;
 
 			if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 			{

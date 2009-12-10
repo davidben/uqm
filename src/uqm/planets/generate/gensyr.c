@@ -88,9 +88,7 @@ GenerateSyreen_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	if (matchWorld (solarSys, world, 0, 0))
 	{
 		/* Starbase */
-		solarSys->MenuState.Initialized += 2;
 		InitCommunication (SYREEN_CONVERSATION);
-		solarSys->MenuState.Initialized -= 2;
 		return true;
 	}
 

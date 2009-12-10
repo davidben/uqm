@@ -207,7 +207,7 @@ LoadPlanet (FRAME SurfDefFrame)
 		return;
 #endif
 
-	assert (pSolarSysState->MenuState.Initialized != 3);
+	assert (pSolarSysState->InOrbit && !pSolarSysState->TopoFrame);
 
 	if (WaitMode)
 	{
@@ -228,7 +228,6 @@ LoadPlanet (FRAME SurfDefFrame)
 
 	if (WaitMode)
 	{
-		assert (pSolarSysState->MenuState.Initialized == 2);
 		ZoomInPlanetSphere ();
 		LockMutex (GraphicsLock);
 		DrawOrbitalDisplay (DRAW_ORBITAL_UPDATE);
@@ -240,9 +239,6 @@ LoadPlanet (FRAME SurfDefFrame)
 		DrawOrbitalDisplay (DRAW_ORBITAL_FULL);
 		UnlockMutex (GraphicsLock);
 	}
-
-	// XXX: Mark as in-orbit. This should go away eventually
-	pSolarSysState->MenuState.Initialized = 3;
 }
 
 void

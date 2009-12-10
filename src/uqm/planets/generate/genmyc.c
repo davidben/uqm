@@ -106,7 +106,6 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 								&GLOBAL (npc_built_ship_q), 0);
 				}
 
-				solarSys->MenuState.Initialized += 2;
 				GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 				if (CurStarDescPtr->Index == MYCON_DEFINED)
 				{
@@ -117,7 +116,6 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 					SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 6);
 				}
 				InitCommunication (MYCON_CONVERSATION);
-				solarSys->MenuState.Initialized -= 2;
 
 				if (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
 					return true;

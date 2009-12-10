@@ -112,7 +112,6 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 			CloneShipFragment (UTWIG_SHIP,
 					&GLOBAL (npc_built_ship_q), INFINITE_FLEET);
 
-			solarSys->MenuState.Initialized += 2;
 			GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 			if (CurStarDescPtr->Index == UTWIG_DEFINED)
 			{
@@ -123,7 +122,6 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 6);
 			}
 			InitCommunication (UTWIG_CONVERSATION);
-			solarSys->MenuState.Initialized -= 2;
 
 			if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 			{
@@ -149,11 +147,9 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				CloneShipFragment (DRUUGE_SHIP,
 						&GLOBAL (npc_built_ship_q), 0);
 			}
-			solarSys->MenuState.Initialized += 2;
 			GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 6);
 			InitCommunication (DRUUGE_CONVERSATION);
-			solarSys->MenuState.Initialized -= 2;
 
 			if (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
 				return true;

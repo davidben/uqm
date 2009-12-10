@@ -188,7 +188,6 @@ GenerateSaMatra_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 			}
 		}
 
-		solarSys->MenuState.Initialized += 2;
 		GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 		SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
 		SET_GAME_STATE (URQUAN_PROTECTING_SAMATRA, 1);
@@ -219,7 +218,6 @@ GenerateSaMatra_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 					InitCommunication (YEHAT_REBEL_CONVERSATION);
 			}
 		}
-		solarSys->MenuState.Initialized -= 2;
 		return true;
 	}
 

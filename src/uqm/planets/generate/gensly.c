@@ -57,9 +57,7 @@ GenerateSlylandro_generateOrbital (SOLARSYS_STATE *solarSys,
 {
 	if (matchWorld (solarSys, world, 3, MATCH_PLANET))
 	{
-		solarSys->MenuState.Initialized += 2;
 		InitCommunication (SLYLANDRO_HOME_CONVERSATION);
-		solarSys->MenuState.Initialized -= 2;
 		return true;
 	}
 

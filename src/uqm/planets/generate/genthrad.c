@@ -102,7 +102,6 @@ GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 			CloneShipFragment (THRADDASH_SHIP, &GLOBAL (npc_built_ship_q),
 					INFINITE_FLEET);
 
-			solarSys->MenuState.Initialized += 2;
 			GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 			if (CurStarDescPtr->Index == THRADD_DEFINED)
 			{
@@ -113,7 +112,6 @@ GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 				SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 6);
 			}
 			InitCommunication (THRADD_CONVERSATION);
-			solarSys->MenuState.Initialized -= 2;
 
 			if (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
 				return true;

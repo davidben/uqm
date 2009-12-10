@@ -93,11 +93,9 @@ GenerateZoqFotPik_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				CloneShipFragment (BLACK_URQUAN_SHIP,
 						&GLOBAL (npc_built_ship_q), 0);
 
-				solarSys->MenuState.Initialized += 2;
 				GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 				SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
 				InitCommunication (BLACKURQ_CONVERSATION);
-				solarSys->MenuState.Initialized -= 2;
 
 				if (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
 					return true;
@@ -114,11 +112,9 @@ GenerateZoqFotPik_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 			CloneShipFragment (ZOQFOTPIK_SHIP, &GLOBAL (npc_built_ship_q),
 					INFINITE_FLEET);
 
-			solarSys->MenuState.Initialized += 2;
 			GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
 			InitCommunication (ZOQFOTPIK_CONVERSATION);
-			solarSys->MenuState.Initialized -= 2;
 
 			if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 			{

@@ -186,11 +186,7 @@ playerInSolarSystem (void)
 bool
 playerInPlanetOrbit (void)
 {
-	assert (!pSolarSysState || pSolarSysState->MenuState.Initialized < 4);
-
-	return playerInSolarSystem () &&
-			pSolarSysState->MenuState.Initialized == 3;
-			// XXX: This test will change eventually
+	return playerInSolarSystem () && pSolarSysState->InOrbit;
 }
 
 bool
@@ -348,11 +344,12 @@ seedRandomForSolarSys (void)
 			CurStarDescPtr->star_pt.y));
 }
 
-static BOOLEAN
+// Returns an orbital PLANET_DESC when player is in orbit
+static PLANET_DESC *
 LoadSolarSys (void)
 {
 	COUNT i;
-	BOOLEAN orbital = FALSE;
+	PLANET_DESC *orbital = NULL;
 	PLANET_DESC *pCurDesc;
 	DWORD old_seed;
 #define NUM_TEMP_RANGES 5
@@ -433,18 +430,16 @@ LoadSolarSys (void)
 
 	if (GLOBAL (in_orbit))
 	{	// Only when loading a game into orbital
-		orbital = TRUE;
 		i = GLOBAL (in_orbit) - 1;
 		if (i == 0)
 		{	// Orbiting the planet itself
-			pSolarSysState->pOrbitalDesc =
-					pSolarSysState->pBaseDesc->pPrevDesc;
+			orbital = pSolarSysState->pBaseDesc->pPrevDesc;
 		}
 		else
 		{	// Orbiting a moon
 			// -1 because planet itself is 1, and moons have to be 1-based
 			i -= 1;
-			pSolarSysState->pOrbitalDesc = &pSolarSysState->MoonDesc[i];
+			orbital = &pSolarSysState->MoonDesc[i];
 		}
 		GLOBAL (ip_location) = pSolarSysState->SunDesc[0].location;
 		GLOBAL (in_orbit) = 0;
@@ -466,6 +461,25 @@ LoadSolarSys (void)
 }
 
 static void
+saveNonOrbitalLocation (void)
+{
+	// XXX: Solar system reentry test depends on ShipFacing != 0
+	GLOBAL (ShipFacing) = GetFrameIndex (GLOBAL (ShipStamp.frame)) + 1;
+	GLOBAL (in_orbit) = 0;
+	if (!playerInInnerSystem ())
+	{
+		GLOBAL (ip_planet) = 0;
+	}
+	else
+	{
+		// ip_planet is 1-based because code tests for ip_planet!=0
+		GLOBAL (ip_planet) = 1 + planetIndex (pSolarSysState,
+				pSolarSysState->pOrbitalDesc);
+		GLOBAL (ip_location) = pSolarSysState->SunDesc[0].location;
+	}
+}
+
+static void
 FreeSolarSys (void)
 {
 	if (pSolarSysState->MenuState.flash_task)
@@ -479,7 +493,7 @@ FreeSolarSys (void)
 		pSolarSysState->MenuState.flash_task = 0;
 		
 		if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
-			SaveSolarSysLocation ();
+			saveNonOrbitalLocation ();
 	}
 
 	DestroyDrawable (ReleaseDrawable (SolarSysFrame));
@@ -932,10 +946,7 @@ enterOrbital (PLANET_DESC *planet)
 {
 	ZeroVelocityComponents (&GLOBAL (velocity));
 	pSolarSysState->pOrbitalDesc = planet;
-
-	// XXX: This is nasty: signal enter orbital
-	assert (pSolarSysState->MenuState.Initialized == 1);
-	pSolarSysState->MenuState.Initialized = 2;
+	pSolarSysState->InOrbit = TRUE;
 }
 
 static BOOLEAN
@@ -1286,7 +1297,8 @@ EnterPlanetOrbit (void)
 			CHECK_ABORT | CHECK_LOAD))
 			&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
 	{	// Reload the system and return to the inner view
-		LoadSolarSys ();
+		PLANET_DESC *orbital = LoadSolarSys ();
+		assert (!orbital);
 		CheckZoomLevel ();
 		ValidateOrbits ();
 		ValidateInnerOrbits ();
@@ -1304,7 +1316,7 @@ InitSolarSys (void)
 {
 	BOOLEAN InnerSystem;
 	BOOLEAN Reentry;
-	BOOLEAN orbital;
+	PLANET_DESC *orbital;
 
 	LockMutex (GraphicsLock);
 
@@ -1359,8 +1371,7 @@ InitSolarSys (void)
 
 	if (orbital)
 	{
-		// XXX: signal enter orbital
-		pSolarSysState->MenuState.Initialized = 2;
+		enterOrbital (orbital);
 	}
 	else
 	{	// Draw the borders, the system (inner or outer) and fade/transition
@@ -1374,7 +1385,6 @@ InitSolarSys (void)
 		DrawSISMessage (NULL);
 
 		ResetSolarSys ();
-		pSolarSysState->MenuState.Initialized = 1;
 
 		if (LastActivity == (CHECK_LOAD | CHECK_RESTART))
 		{	// Starting a new game, NOT from load!
@@ -1737,6 +1747,7 @@ ExploreSolarSys (void)
 	SolarSysState.genFuncs = getGenerateFunctions (CurStarDescPtr->Index);
 
 	InitSolarSys ();
+	SolarSysState.MenuState.Initialized = TRUE;
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	DoInput (&SolarSysState.MenuState, FALSE);
 	UninitSolarSys ();
@@ -1746,7 +1757,7 @@ ExploreSolarSys (void)
 UNICODE *
 GetNamedPlanetaryBody (void)
 {
-	if (!CurStarDescPtr || !playerInInnerSystem ())
+	if (!CurStarDescPtr || !playerInSolarSystem () || !playerInInnerSystem ())
 		return NULL; // Not inside an inner system, so no name
 
 	assert (pSolarSysState->pOrbitalDesc != NULL);
@@ -1837,7 +1848,7 @@ GetPlanetOrMoonName (UNICODE *buf, COUNT bufsize)
 	// Either not named or we already have a name
 	utf8StringCopy (buf, bufsize, GLOBAL_SIS (PlanetName));
 
-	if (!playerInInnerSystem () ||
+	if (!playerInSolarSystem () || !playerInInnerSystem () ||
 			worldIsPlanet (pSolarSysState, pSolarSysState->pOrbitalDesc))
 	{	// Outer or inner system or orbiting a planet
 		return;
@@ -1861,25 +1872,12 @@ SaveSolarSysLocation (void)
 	assert (playerInSolarSystem ());
 
 	// This is a two-stage saving procedure
-	// Stage 1: called when saving from inner/outer view, and when
-	//   entering orbital
+	// Stage 1: called when saving from inner/outer view
 	// Stage 2: called when saving from orbital
 
 	if (!playerInPlanetOrbit ())
 	{
-		// XXX: Solar system reentry test depends on ShipFacing != 0
-		GLOBAL (ShipFacing) = GetFrameIndex (GLOBAL (ShipStamp.frame)) + 1;
-		GLOBAL (in_orbit) = 0;
-		if (!playerInInnerSystem ())
-		{
-			GLOBAL (ip_planet) = 0;
-		}
-		else
-		{
-			GLOBAL (ip_planet) = 1 + planetIndex (pSolarSysState,
-					pSolarSysState->pOrbitalDesc);
-			GLOBAL (ip_location) = pSolarSysState->SunDesc[0].location;
-		}
+		saveNonOrbitalLocation ();
 	}
 	else
 	{	// In orbit around a planet.
@@ -1895,6 +1893,7 @@ SaveSolarSysLocation (void)
 		// GLOBAL (ip_planet) is already set
 		assert (GLOBAL (ip_planet) != 0);
 
+		// has to be at least 1 because code tests for in_orbit!=0
 		moon = 1; /* the planet itself */
 		if (worldIsMoon (pSolarSysState, pSolarSysState->pOrbitalDesc))
 		{
@@ -2013,18 +2012,13 @@ DoIpFlight (MENU_STATE *pMS)
 	static TimeCount NextTime;
 	BOOLEAN cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
 
-	if (!pMS->Initialized)
-	{
-		// XXX: This should be unreachable now
-		// XXX: pMS refers to pSolarSysState->MenuState
-		pMS->Initialized = 1;
-	}
-	else if (pMS->Initialized == 2)
+	(void) pMS; // suppress unused warning
+
+	if (pSolarSysState->InOrbit)
 	{	// CheckShipLocation() or InitSolarSys() sent us to orbital
 		EnterPlanetOrbit ();
 		SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
-		// XXX: pMS refers to pSolarSysState->MenuState
-		pMS->Initialized = 1;
+		pSolarSysState->InOrbit = FALSE;
 	}
 	else if (cancel || LastActivity == CHECK_LOAD)
 	{
