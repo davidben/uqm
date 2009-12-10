@@ -104,10 +104,8 @@ typedef struct
 static void
 RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 {
-	CONTEXT OldContext;
 	FRAME OldFrame;
 
-	OldContext = SetContext (TaskContext);
 	OldFrame = SetContextFGFrame (DstFrame);
 
 	if (pSolarSysState->XlatRef == 0)
@@ -205,7 +203,6 @@ RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 	}
 
 	SetContextFGFrame (OldFrame);
-	SetContext (OldContext);
 }
 
 static inline void
@@ -1732,13 +1729,15 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 	COUNT i, y;
 	POINT loc;
 	CONTEXT OldContext;
+	CONTEXT TopoContext;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 	BYTE *pScaledTopo = 0;
 	BOOLEAN shielded = (pPlanetDesc->data_index & PLANET_SHIELDED) != 0;
 
 	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);
 
-	OldContext = SetContext (TaskContext);
+	TopoContext = CreateContext ("Plangen.TopoContext");
+	OldContext = SetContext (TopoContext);
 	planet_orbit_init ();
 
 	PlanDataPtr = &PlanData[pPlanetDesc->data_index & ~PLANET_SHIELDED];
@@ -1952,6 +1951,7 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 	}
 
 	SetContext (OldContext);
+	DestroyContext (TopoContext);
 
 	TFB_SeedRandom (old_seed);
 }

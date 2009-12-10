@@ -40,7 +40,6 @@ extern CONTEXT OffScreenContext;
 extern CONTEXT ScreenContext;
 extern CONTEXT SpaceContext;
 extern CONTEXT StatusContext;
-extern CONTEXT TaskContext;
 
 extern SIZE screen_width, screen_height;
 

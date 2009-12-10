@@ -217,7 +217,6 @@ LoadPlanet (FRAME SurfDefFrame)
 	}
 
 	StopMusic ();
-	TaskContext = CreateContext ("TaskContext");
 
 	pPlanetDesc = pSolarSysState->pOrbitalDesc;
 	GeneratePlanetSurface (pPlanetDesc, SurfDefFrame);
@@ -300,9 +299,6 @@ FreePlanet (void)
 		Orbit->ScratchArray = 0;
 	}
 
-	DestroyContext (TaskContext);
-	TaskContext = 0;
-	
 	DestroyStringTable (ReleaseStringTable (
 			pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
 			));
