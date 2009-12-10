@@ -251,10 +251,10 @@ LoadPlanet (FRAME SurfDefFrame)
 		assert (pSolarSysState->MenuState.Initialized == 2);
 
 		ZoomInPlanetSphere ();
-		
-		// XXX: Mark as in-orbit. This should go away eventually
-		pSolarSysState->MenuState.Initialized = 3;
 	}
+
+	// XXX: Mark as in-orbit. This should go away eventually
+	pSolarSysState->MenuState.Initialized = 3;
 }
 
 void
