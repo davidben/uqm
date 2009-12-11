@@ -331,15 +331,7 @@ DoStarBase (MENU_STATE *pMS)
 		ClearDrawable ();
 		rotateStarbase (pMS, pMS->CurFrame);
 		DrawBaseStateStrings ((STARBASE_STATE)~0, pMS->CurState);
-		{
-			RECT r;
-			
-			r.corner.x = 0;
-			r.corner.y = 0;
-			r.extent.width = SCREEN_WIDTH;
-			r.extent.height = SCREEN_HEIGHT;
-			ScreenTransition (3, &r);
-		}
+		ScreenTransition (3, NULL);
 		PlayMusic (pMS->hMusic, TRUE, 1);
 		UnbatchGraphics ();
 		UnlockMutex (GraphicsLock);
