@@ -75,9 +75,6 @@ DrawConfirmationWindow (BOOLEAN answer)
 	SetContextForeGroundColor (oldfg);
 }
 
-/* This code assumes that you aren't in Character Mode.  This is
- * currently safe because VControl doesn't see keystrokes when you
- * are, and thus cannot conclude that an exit is necessary. */
 BOOLEAN
 DoConfirmExit (void)
 {
