@@ -38,6 +38,7 @@
 
 #include <ctype.h>
 
+extern FRAME PlayFrame;
 
 #define MAX_SAVED_GAMES 50
 #define SUMMARY_X_OFFS 14
@@ -49,7 +50,6 @@
 static BOOLEAN DoSettings (MENU_STATE *pMS);
 static BOOLEAN DoNaming (MENU_STATE *pMS);
 
-static MENU_STATE *pLocMenuState;
 static BYTE prev_save; //keeps track of the last slot that was saved or loaded
 
 static NamingCallback *namingCB;
@@ -399,7 +399,7 @@ DoSettings (MENU_STATE *pMS)
 
 		pMS->CurState = SETTINGS;
 		pMS->InputFunc = DoGameOptions;
-		pMS->Initialized = 0;
+		pMS->Initialized = FALSE;
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
@@ -445,179 +445,157 @@ DoSettings (MENU_STATE *pMS)
 	return (TRUE);
 }
 
-static void
-DrawCargo (COUNT redraw_state)
+typedef struct
 {
-	BYTE i;
-	RECT r;
+	SUMMARY_DESC summary[MAX_SAVED_GAMES];
+	BOOLEAN saving;
+			// TRUE when saving, FALSE when loading
+	BOOLEAN abortOnCancel;
+			// TRUE when loading from the Main menu so that
+			// we do not end up in a newly started game
+	FRAME SummaryFrame;
 
-	SetContext (SpaceContext);
-	if (redraw_state)
-	{
-		STAMP s;
+} PICK_GAME_STATE;
 
-		if (redraw_state == 2)
-		{
-			SetContextForeGroundColor (BLACK_COLOR);
-			r.corner.x = 1 + SUMMARY_X_OFFS;
-			r.corner.y = 12;
-			r.extent.width = ((SIS_SCREEN_WIDTH - STATUS_WIDTH) >> 1) - r.corner.x;
-			r.extent.height = 62 - r.corner.y;
-			DrawFilledRectangle (&r);
-			GetFrameRect (SetRelFrameIndex (
-					pLocMenuState->ModuleFrame, 1), &r);
-			r.extent.width += SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
-			DrawFilledRectangle (&r);
-		}
-		else
-		{
-			s.origin.x = 0;
-			s.origin.y = 0;
-			s.frame = SetAbsFrameIndex (pLocMenuState->ModuleFrame,
-					GetFrameCount (pLocMenuState->ModuleFrame) - 1);
-			if (!pLocMenuState->Initialized)
-			{
-				DrawStamp (&s);
-				s.origin.x = SUMMARY_X_OFFS + 1;
-				s.frame = DecFrameIndex (s.frame);
-				if (pLocMenuState->delta_item == SAVE_GAME)
-					s.frame = DecFrameIndex (s.frame);
-				DrawStamp (&s);
-				if (((SUMMARY_DESC *)pLocMenuState->Extra)
-						[pLocMenuState->CurState].year_index == 0)
-					return;
-			}
-			else
-			{
-				GetContextClipRect (&r);
-				r.extent.height = 136;
-				SetContextClipRect (&r);
-				DrawStamp (&s);
-				r.extent.height = SIS_SCREEN_HEIGHT;
-				SetContextClipRect (&r);
-			}
-		}
+static void
+DrawBlankSavegameDisplay (PICK_GAME_STATE *pickState)
+{
+	STAMP s;
 
-		s.frame = SetAbsFrameIndex (
-				MiscDataFrame,
-				(NUM_SCANDOT_TRANSITIONS << 1) + 3
-				);
-		if (redraw_state == 2
-				|| (redraw_state == 1
-				/*&& !(((SUMMARY_DESC *)pLocMenuState->Extra)
-				[pLocMenuState->CurState].Flags & AFTER_BOMB_INSTALLED)*/))
-		{
-			s.origin.x = 7 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 3;
-			s.origin.y = 17;
-			for (i = 0; i < NUM_ELEMENT_CATEGORIES; ++i)
-			{
-				if (i == NUM_ELEMENT_CATEGORIES >> 1)
-				{
-					s.origin.x += 36;
-					s.origin.y = 17;
-				}
-				DrawStamp (&s);
-				s.frame = SetRelFrameIndex (s.frame, 5);
-				s.origin.y += 12;
-			}
-		}
-		s.origin.x = 24 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS;
-		s.origin.y = 68;
-		s.frame = SetAbsFrameIndex (s.frame, 68);
-		DrawStamp (&s);
-	}
-	else
-	{
-		TEXT t;
-		UNICODE buf[40];
-		static const Color cargo_color[] =
-		{
-			BUILD_COLOR (MAKE_RGB15_INIT (0x02, 0x0E, 0x13), 0x00),
-			BUILD_COLOR (MAKE_RGB15_INIT (0x19, 0x00, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15_INIT (0x10, 0x10, 0x10), 0x00),
-			BUILD_COLOR (MAKE_RGB15_INIT (0x03, 0x05, 0x1E), 0x00),
-			BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x18, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15_INIT (0x1B, 0x1B, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15_INIT (0x1E, 0x0D, 0x00), 0x00),
-			BUILD_COLOR (MAKE_RGB15_INIT (0x14, 0x00, 0x14), 0x05),
-			BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x00, 0x19), 0x00),
-		};
-
-		r.extent.width = 23;
-		r.extent.height = SHIP_NAME_HEIGHT;
-		SetContextFont (StarConFont);
-		t.baseline.x = 33 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 3;
-		t.baseline.y = 20;
-		t.align = ALIGN_RIGHT;
-		t.pStr = buf;
-		for (i = 0; i < NUM_ELEMENT_CATEGORIES; ++i)
-		{
-			if (i == NUM_ELEMENT_CATEGORIES >> 1)
-			{
-				t.baseline.x += 36;
-				t.baseline.y = 20;
-			}
-			SetContextForeGroundColor (BLACK_COLOR);
-			r.corner.x = t.baseline.x - r.extent.width + 1;
-			r.corner.y = t.baseline.y - r.extent.height + 1;
-			DrawFilledRectangle (&r);
-			SetContextForeGroundColor (cargo_color[i]);
-			sprintf (buf, "%u", GLOBAL_SIS (ElementAmounts[i]));
-			t.CharCount = (COUNT)~0;
-			font_DrawText (&t);
-			t.baseline.y += 12;
-		}
-		t.baseline.x = 50 + SUMMARY_X_OFFS;
-		t.baseline.y = 71;
-		SetContextForeGroundColor (BLACK_COLOR);
-		r.corner.x = t.baseline.x - r.extent.width + 1;
-		r.corner.y = t.baseline.y - r.extent.height + 1;
-		DrawFilledRectangle (&r);
-		SetContextForeGroundColor (cargo_color[i]);
-		sprintf (buf, "%u", GLOBAL_SIS (TotalBioMass));
-		t.CharCount = (COUNT)~0;
-		font_DrawText (&t);
-	}
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = SetAbsFrameIndex (pickState->SummaryFrame,
+			GetFrameCount (pickState->SummaryFrame) - 1);
+	DrawStamp (&s);
 }
 
 static void
-ShowSummary (SUMMARY_DESC *pSD)
+DrawSaveLoad (PICK_GAME_STATE *pickState)
 {
+	STAMP s;
+
+	s.origin.x = SUMMARY_X_OFFS + 1;
+	s.origin.y = 0;
+	s.frame = SetAbsFrameIndex (pickState->SummaryFrame,
+			GetFrameCount (pickState->SummaryFrame) - 2);
+	if (pickState->saving)
+		s.frame = DecFrameIndex (s.frame);
+	DrawStamp (&s);
+}
+
+static void
+DrawSavegameCargo (PICK_GAME_STATE *pickState, COUNT gameIndex)
+{
+	COUNT i;
+	STAMP s;
+	TEXT t;
+	UNICODE buf[40];
+	static const Color cargo_color[] =
+	{
+		BUILD_COLOR (MAKE_RGB15_INIT (0x02, 0x0E, 0x13), 0x00),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x19, 0x00, 0x00), 0x00),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x10, 0x10, 0x10), 0x00),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x03, 0x05, 0x1E), 0x00),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x18, 0x00), 0x00),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1B, 0x1B, 0x00), 0x00),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x1E, 0x0D, 0x00), 0x00),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x14, 0x00, 0x14), 0x05),
+		BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x00, 0x19), 0x00),
+	};
+#define ELEMENT_ORG_Y      17
+#define ELEMENT_SPACING_Y  12
+#define ELEMENT_SPACING_X  36
+
+	SetContext (SpaceContext);
+	BatchGraphics ();
+	SetContextFont (StarConFont);
+
+	// setup element icons
+	s.frame = SetAbsFrameIndex (MiscDataFrame,
+			(NUM_SCANDOT_TRANSITIONS << 1) + 3);
+	s.origin.x = 7 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 3;
+	s.origin.y = ELEMENT_ORG_Y;
+	// setup element amounts
+	t.baseline.x = 33 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 3;
+	t.baseline.y = ELEMENT_ORG_Y + 3;
+	t.align = ALIGN_RIGHT;
+	t.pStr = buf;
+
+	// draw element icons and amounts
+	for (i = 0; i < NUM_ELEMENT_CATEGORIES; ++i)
+	{
+		if (i == NUM_ELEMENT_CATEGORIES / 2)
+		{
+			s.origin.x += ELEMENT_SPACING_X;
+			s.origin.y = ELEMENT_ORG_Y;
+			t.baseline.x += ELEMENT_SPACING_X;
+			t.baseline.y = ELEMENT_ORG_Y + 3;
+		}
+		// draw element icon
+		DrawStamp (&s);
+		s.frame = SetRelFrameIndex (s.frame, 5);
+		s.origin.y += ELEMENT_SPACING_Y;
+		// print element amount
+		SetContextForeGroundColor (cargo_color[i]);
+		snprintf (buf, sizeof buf, "%u", GLOBAL_SIS (ElementAmounts[i]));
+		t.CharCount = (COUNT)~0;
+		font_DrawText (&t);
+		t.baseline.y += ELEMENT_SPACING_Y;
+	}
+
+	// draw Bio icon
+	s.origin.x = 24 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS;
+	s.origin.y = 68;
+	s.frame = SetAbsFrameIndex (s.frame, 68);
+	DrawStamp (&s);
+	// print Bio amount
+	t.baseline.x = 50 + SUMMARY_X_OFFS;
+	t.baseline.y = s.origin.y + 3;
+	SetContextForeGroundColor (cargo_color[i]);
+	snprintf (buf, sizeof buf, "%u", GLOBAL_SIS (TotalBioMass));
+	t.CharCount = (COUNT)~0;
+	font_DrawText (&t);
+
+	UnbatchGraphics ();
+}
+
+static void
+DrawSavegameSummary (PICK_GAME_STATE *pickState, COUNT gameIndex)
+{
+	SUMMARY_DESC *pSD = pickState->summary + gameIndex;
 	RECT r;
 	STAMP s;
+
+	BatchGraphics ();
 
 	if (pSD->year_index == 0)
 	{
 		// Unused save slot, draw 'Empty Game' message.
-		s.origin.x = s.origin.y = 0;
-		s.frame = SetAbsFrameIndex (pLocMenuState->ModuleFrame,
-				GetFrameCount (pLocMenuState->ModuleFrame) - 4);
+		s.origin.x = 0;
+		s.origin.y = 0;
+		s.frame = SetAbsFrameIndex (pickState->SummaryFrame,
+				GetFrameCount (pickState->SummaryFrame) - 4);
 		DrawStamp (&s);
-		r.corner.x = 2;
-		r.corner.y = 139;
-		r.extent.width = SIS_SCREEN_WIDTH - 4;
-		r.extent.height = 7;
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
-		DrawFilledRectangle (&r);
 	}
 	else
 	{
 		// Game slot used, draw information about save game.
-		BYTE i;
+		COUNT i;
 		RECT OldRect;
 		TEXT t;
 		QUEUE player_q;
 		CONTEXT OldContext;
 		SIS_STATE SaveSS;
 		UNICODE buf[256];
+		POINT starPt;
 
+		// Save the states because we will hack them
 		SaveSS = GlobData.SIS_state;
 		player_q = GLOBAL (built_ship_q);
 
 		OldContext = SetContext (StatusContext);
+		// Hack StatusContext so we can use standard SIS display funcs
 		GetContextClipRect (&OldRect);
-
 		r.corner.x = SIS_ORG_X + ((SIS_SCREEN_WIDTH - STATUS_WIDTH) >> 1) +
 				SAFE_X - 16 + SUMMARY_X_OFFS;
 //		r.corner.x = SIS_ORG_X + ((SIS_SCREEN_WIDTH - STATUS_WIDTH) >> 1);
@@ -626,6 +604,7 @@ ShowSummary (SUMMARY_DESC *pSD)
 		r.extent.height = STATUS_HEIGHT;
 		SetContextClipRect (&r);
 
+		// Hack the states so that we can use standard SIS display funcs
 		GlobData.SIS_state = pSD->SS;
 		InitQueue (&GLOBAL (built_ship_q),
 				MAX_BUILT_SHIPS, sizeof (SHIP_FRAGMENT));
@@ -638,36 +617,28 @@ ShowSummary (SUMMARY_DESC *pSD)
 		UninitQueue (&GLOBAL (built_ship_q));
 
 		SetContextClipRect (&OldRect);
+		
 		SetContext (SpaceContext);
-		BatchGraphics ();
-		DrawCargo (0);
+		// draw devices
 		s.origin.y = 13;
-		r.extent.width = r.extent.height = 16;
-		SetContextForeGroundColor (BLACK_COLOR);
 		for (i = 0; i < 4; ++i)
 		{
-			BYTE j;
+			COUNT j;
 
 			s.origin.x = 140 + SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
 			for (j = 0; j < 4; ++j)
 			{
-				if ((i << 2) + j >= pSD->NumDevices)
+				COUNT devIndex = (i * 4) + j;
+				if (devIndex < pSD->NumDevices)
 				{
-					r.corner = s.origin;
-					DrawFilledRectangle (&r);
-				}
-				else
-				{
-					s.frame = SetAbsFrameIndex (
-							MiscDataFrame, 77 + pSD->DeviceList[(i << 2) + j]
-							);
+					s.frame = SetAbsFrameIndex (MiscDataFrame, 77
+							+ pSD->DeviceList[devIndex]);
 					DrawStamp (&s);
 				}
 				s.origin.x += 18;
 			}
 			s.origin.y += 18;
 		}
-		UnbatchGraphics ();
 
 		SetContextFont (StarConFont);
 		t.baseline.x = 173 + SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
@@ -676,66 +647,55 @@ ShowSummary (SUMMARY_DESC *pSD)
 		t.pStr = buf;
 		if (pSD->Flags & AFTER_BOMB_INSTALLED)
 		{
+			// draw the bomb and the escape pod
 			s.origin.x = SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS + 6;
 			s.origin.y = 0;
-			s.frame = SetRelFrameIndex (pLocMenuState->ModuleFrame, 0);
+			s.frame = SetRelFrameIndex (pickState->SummaryFrame, 0);
 			DrawStamp (&s);
+			// draw RU "NO LIMIT" 
 			s.origin.x = SUMMARY_X_OFFS + SUMMARY_SIDE_OFFS;
 			s.frame = IncFrameIndex (s.frame);
 			DrawStamp (&s);
 		}
 		else
 		{
+			DrawSavegameCargo (pickState, gameIndex);
+
 			SetContext (RadarContext);
+			// Hack RadarContext so we can use standard Lander display funcs
 			GetContextClipRect (&OldRect);
 			r.corner.x = SIS_ORG_X + 10 + SUMMARY_X_OFFS - SUMMARY_SIDE_OFFS;
 			r.corner.y = SIS_ORG_Y + 84;
 			r.extent = OldRect.extent;
 			SetContextClipRect (&r);
 			UnlockMutex (GraphicsLock);
-			InitLander ((unsigned char)(pSD->Flags | OVERRIDE_LANDER_FLAGS));
+			// draw the lander with upgrades
+			InitLander (pSD->Flags | OVERRIDE_LANDER_FLAGS);
 			LockMutex (GraphicsLock);
 			SetContextClipRect (&OldRect);
 			SetContext (SpaceContext);
 
-			sprintf (buf, "%u", GLOBAL_SIS (ResUnits));
+			snprintf (buf, sizeof buf, "%u", GLOBAL_SIS (ResUnits));
 			t.baseline.y = 102;
-			r.extent.width = 76;
-			r.extent.height = SHIP_NAME_HEIGHT;
-			r.corner.x = t.baseline.x - (r.extent.width >> 1);
-			r.corner.y = t.baseline.y - SHIP_NAME_HEIGHT + 1;
-			SetContextForeGroundColor (BLACK_COLOR);
-			DrawFilledRectangle (&r);
 			SetContextForeGroundColor (
 					BUILD_COLOR (MAKE_RGB15 (0x10, 0x00, 0x10), 0x01));
 			font_DrawText (&t);
 			t.CharCount = (COUNT)~0;
 		}
 		t.baseline.y = 126;
-		sprintf (buf, "%u", MAKE_WORD (pSD->MCreditLo, pSD->MCreditHi));
-		r.extent.width = 30;
-		r.extent.height = SHIP_NAME_HEIGHT;
-		r.corner.x = t.baseline.x - (r.extent.width >> 1);
-		r.corner.y = t.baseline.y - SHIP_NAME_HEIGHT + 1;
-		SetContextForeGroundColor (BLACK_COLOR);
-		DrawFilledRectangle (&r);
+		snprintf (buf, sizeof buf, "%u",
+				MAKE_WORD (pSD->MCreditLo, pSD->MCreditHi));
 		SetContextForeGroundColor (
 				BUILD_COLOR (MAKE_RGB15 (0x10, 0x00, 0x10), 0x01));
 		font_DrawText (&t);
 		
-		r.corner.x = 2;
-		r.corner.y = 139;
-		r.extent.width = SIS_SCREEN_WIDTH - 4;
-		r.extent.height = 7;
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
-		DrawFilledRectangle (&r);
-		t.baseline.x = /*r.corner.x + (SIS_MESSAGE_WIDTH >> 1)*/ 6;
-		t.baseline.y = r.corner.y + (r.extent.height - 1);
+		// print the location
+		t.baseline.x = 6;
+		t.baseline.y = 139 + 6;
 		t.align = ALIGN_LEFT;
 		t.pStr = buf;
-		r.corner.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
-		r.corner.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
+		starPt.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
+		starPt.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
 		switch (pSD->Activity)
 		{
 			case IN_LAST_BATTLE:
@@ -748,12 +708,12 @@ ShowSummary (SUMMARY_DESC *pSD)
 				
 				QuasiState = GET_GAME_STATE (ARILOU_SPACE_SIDE);
 				SET_GAME_STATE (ARILOU_SPACE_SIDE, 0);
-				SDPtr = FindStar (NULL, &r.corner, 1, 1);
+				SDPtr = FindStar (NULL, &starPt, 1, 1);
 				SET_GAME_STATE (ARILOU_SPACE_SIDE, QuasiState);
 				if (SDPtr)
 				{
 					GetClusterName (SDPtr, buf);
-					r.corner = SDPtr->star_pt;
+					starPt = SDPtr->star_pt;
 					break;
 				}
 			}
@@ -792,18 +752,105 @@ ShowSummary (SUMMARY_DESC *pSD)
 				utf8StringCopy (buf, sizeof (buf), GLOBAL_SIS (PlanetName));
 				break;
 			default:
-				sprintf (buf, "%03u.%01u : %03u.%01u",
-						r.corner.x / 10, r.corner.x % 10,
-						r.corner.y / 10, r.corner.y % 10);
+				snprintf (buf, sizeof buf, "%03u.%01u : %03u.%01u",
+						starPt.x / 10, starPt.x % 10,
+						starPt.y / 10, starPt.y % 10);
 		}
 		t.CharCount = (COUNT)~0;
 		font_DrawText (&t);
 
 		SetContext (OldContext);
 
+		// Restore the states because we hacked them
 		GLOBAL (built_ship_q) = player_q;
 		GlobData.SIS_state = SaveSS;
 	}
+
+	UnbatchGraphics ();
+}
+
+static void
+DrawGameSelection (PICK_GAME_STATE *pickState, COUNT selSlot)
+{
+	RECT r;
+	TEXT t;
+	COUNT i;
+	COUNT curSlot;
+	UNICODE buf[256];
+	UNICODE buf2[80];
+	
+	BatchGraphics ();
+
+	SetContextFont (TinyFont);
+	
+	// Erase the selection menu
+	r.extent.width = 240;
+	r.extent.height = 65;
+	r.corner.x = 1;
+	r.corner.y = 160;
+	SetContextForeGroundColor (BLACK_COLOR);
+	DrawFilledRectangle (&r);
+
+	t.CharCount = (COUNT)~0;
+	t.pStr = buf;
+	t.align = ALIGN_LEFT;
+
+	// Draw savegame slots info
+	curSlot = selSlot - (selSlot % SAVES_PER_PAGE);
+	for (i = 0; i < SAVES_PER_PAGE && curSlot < MAX_SAVED_GAMES;
+			++i, ++curSlot)
+	{
+		SUMMARY_DESC *desc = &pickState->summary[curSlot];
+
+		SetContextForeGroundColor ((curSlot == selSlot) ?
+				(BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33)):
+				(BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)));
+		r.extent.width = 15;
+		if (MAX_SAVED_GAMES > 99)
+			r.extent.width += 5;
+		r.extent.height = 11;
+		r.corner.x = 8;
+		r.corner.y = 160 + (i * 13);
+		DrawRectangle (&r);
+
+		t.baseline.x = r.corner.x + 3;
+		t.baseline.y = r.corner.y + 8;
+		snprintf (buf, sizeof buf, (MAX_SAVED_GAMES > 99) ? "%03u" : "%02u",
+				curSlot);
+		font_DrawText (&t);
+
+		r.extent.width = 204 - SAFE_X;
+		r.corner.x = 30 + SAFE_X;
+		DrawRectangle (&r);
+
+		t.baseline.x = r.corner.x + 3;
+		if (desc->year_index == 0)
+		{
+			utf8StringCopy (buf, sizeof buf,
+					GAME_STRING (SAVEGAME_STRING_BASE + 3)); // "Empty Slot"
+		}
+		else
+		{
+			DateToString (buf2, sizeof buf2, desc->month_index,
+					desc->day_index, desc->year_index);
+			snprintf (buf, sizeof buf, "%s %s",
+					GAME_STRING (SAVEGAME_STRING_BASE + 4), buf2);
+						// "Saved Game - Date:"
+		}
+		font_DrawText (&t);
+	}
+
+	UnbatchGraphics ();
+}
+
+static void
+RedrawPickDisplay (PICK_GAME_STATE *pickState, COUNT selSlot)
+{
+	BatchGraphics ();
+	DrawBlankSavegameDisplay (pickState);
+	DrawSavegameSummary (pickState, selSlot);
+	DrawGameSelection (pickState, selSlot);
+	UnbatchGraphics ();
 }
 
 static void
@@ -821,106 +868,80 @@ LoadGameDescriptions (SUMMARY_DESC *pSD)
 static BOOLEAN
 DoPickGame (MENU_STATE *pMS)
 {
+	PICK_GAME_STATE *pickState = pMS->privData;
 	BYTE NewState;
 	SUMMARY_DESC *pSD;
-	BOOLEAN first_time;
 	DWORD TimeIn = GetTimeCounter ();
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		return FALSE;
+
+	if (PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
-		pMS->ModuleFrame = 0;
-		
-		return (FALSE);
-	}
-	first_time = !pMS->Initialized;
-	SetMenuSounds (MENU_SOUND_ARROWS | MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN, MENU_SOUND_SELECT);
-
-	if (!pMS->Initialized)
-	{
-		// XXX: Save DoGameOptions() state
-		pMS->delta_item = (SIZE)pMS->CurState;
-		pMS->CurState = NewState = prev_save;
-		pMS->InputFunc = DoPickGame;
-
-		{
-			extern FRAME PlayFrame;
-
-			pMS->ModuleFrame = SetAbsFrameIndex (PlayFrame, 39);
-		}
-
-		LockMutex (GraphicsLock);
-		SetTransitionSource (NULL);
-		BatchGraphics ();
-Restart:
-		SetContext (SpaceContext);
-		DrawCargo (1);
-		pMS->Initialized = TRUE;
-		goto ChangeGameSelection;
-	}
-	else if (PulsedInputState.menu[KEY_MENU_CANCEL])
-	{
-		pMS->ModuleFrame = 0;
-		// XXX: Restore DoGameOptions() state
-		pMS->CurState = (BYTE)pMS->delta_item;
 		ResumeMusic ();
-		if (LastActivity == CHECK_LOAD)
+		if (pickState->abortOnCancel)
 		{	// Selected LOAD from main menu, and now canceled
 			GLOBAL (CurrentActivity) |= CHECK_ABORT;
 		}
-		return (FALSE);
+		return FALSE;
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
-		pSD = &((SUMMARY_DESC *)pMS->Extra)[pMS->CurState];
+		pSD = &pickState->summary[pMS->CurState];
 		prev_save = pMS->CurState;
-		if (pMS->delta_item == SAVE_GAME || pSD->year_index)
+		if (pickState->saving || pSD->year_index)
 		{
-			LockMutex (GraphicsLock);
-			if (pMS->delta_item == SAVE_GAME)
+			if (pickState->saving)
 			{
 				STAMP MsgStamp;
 
+				LockMutex (GraphicsLock);
 				ConfirmSaveLoad (&MsgStamp);
-				if (SaveGame ((COUNT)pMS->CurState, pSD))
+				UnlockMutex (GraphicsLock);
+
+				if (SaveGame (pMS->CurState, pSD))
 				{
 					DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
 					GLOBAL (CurrentActivity) |= CHECK_LOAD;
 				}
 				else
 				{
+					LockMutex (GraphicsLock);
 					DrawStamp (&MsgStamp);
 					DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
 					UnlockMutex (GraphicsLock);
 					
 					SaveProblem ();
 
-					pMS->Initialized = FALSE;
-					LoadGameDescriptions ((SUMMARY_DESC *)pMS->Extra);
-					NewState = pMS->CurState;
+					// reload and redraw everything
+					LoadGameDescriptions (pickState->summary);
 					LockMutex (GraphicsLock);
-					BatchGraphics ();
-					goto Restart;
+					SetContext (SpaceContext);
+					RedrawPickDisplay (pickState, pMS->CurState);
+					UnlockMutex (GraphicsLock);
+					
+					return TRUE;
 				}
 				ResumeMusic ();
 			}
 			else
 			{
-				ConfirmSaveLoad (0);
-				if (LoadGame ((COUNT)pMS->CurState, NULL))
+				LockMutex (GraphicsLock);
+				ConfirmSaveLoad (NULL);
+				UnlockMutex (GraphicsLock);
+
+				if (LoadGame (pMS->CurState, NULL))
 					GLOBAL (CurrentActivity) |= CHECK_LOAD;
 			}
-			UnlockMutex (GraphicsLock);
 
-			pMS->ModuleFrame = 0;
-			// XXX: Restore DoGameOptions() state
-			pMS->CurState = (BYTE)pMS->delta_item;
-			return (FALSE);
+			return FALSE;
 		}
 	}
 	else
 	{
 		NewState = pMS->CurState;
-		if (PulsedInputState.menu[KEY_MENU_LEFT] || PulsedInputState.menu[KEY_MENU_PAGE_UP])
+		if (PulsedInputState.menu[KEY_MENU_LEFT]
+				|| PulsedInputState.menu[KEY_MENU_PAGE_UP])
 		{
 			if (NewState == 0)
 				NewState = MAX_SAVED_GAMES - 1;
@@ -929,7 +950,8 @@ Restart:
 			else 
 				NewState = 0;
 		}
-		else if (PulsedInputState.menu[KEY_MENU_RIGHT] || PulsedInputState.menu[KEY_MENU_PAGE_DOWN])
+		else if (PulsedInputState.menu[KEY_MENU_RIGHT]
+				|| PulsedInputState.menu[KEY_MENU_PAGE_DOWN])
 		{
 			if (NewState == MAX_SAVED_GAMES - 1)
 				NewState = 0;
@@ -955,155 +977,54 @@ Restart:
 
 		if (NewState != pMS->CurState)
 		{
-			RECT r;
-			TEXT t;
-			BYTE i, SHIFT;
-			UNICODE buf[256];
-			UNICODE buf2[80];
 			LockMutex (GraphicsLock);
-
-			BatchGraphics ();
-			if (((SUMMARY_DESC *)pMS->Extra)[NewState].year_index != 0)
-			{
-				if (!(((SUMMARY_DESC *)pMS->Extra)[NewState].Flags
-						& AFTER_BOMB_INSTALLED))
-				{
-					if (((SUMMARY_DESC *)pMS->Extra)[pMS->CurState].year_index == 0)
-						DrawCargo (1);
-					else if (((SUMMARY_DESC *)pMS->Extra)[pMS->CurState].Flags
-							& AFTER_BOMB_INSTALLED)
-						DrawCargo (2);
-				}
-				else if (((SUMMARY_DESC *)pMS->Extra)[pMS->CurState].year_index == 0)
-					DrawCargo (3);
-			}
-
-ChangeGameSelection:
 			pMS->CurState = NewState;
-			ShowSummary (&((SUMMARY_DESC *)pMS->Extra)[pMS->CurState]);
-
-			SetContextFont (TinyFont);
-			r.extent.width = 240;
-			r.extent.height = 65;
-			r.corner.x = 1;
-			r.corner.y = 160;
-			SetContextForeGroundColor (BLACK_COLOR);
-			DrawFilledRectangle (&r);
-
-			t.CharCount = (COUNT)~0;
-			t.pStr = buf;
-			t.align = ALIGN_LEFT;
-#if 0
-			/* This code will return in modified form later. */
-			if (optSmoothScroll == OPT_3DO)  // 'Smooth' Scrolling
-			{
-				if (NewState <= (SAVES_PER_PAGE / 2))
-					SHIFT = NewState;
-				else if ((NewState > (SAVES_PER_PAGE / 2)) &&
-						(NewState < (MAX_SAVED_GAMES - (SAVES_PER_PAGE / 2))))
-					SHIFT = (SAVES_PER_PAGE / 2);
-				else //if (NewState >= (MAX_SAVED_GAMES - (SAVES_PER_PAGE / 2)))
-					SHIFT = SAVES_PER_PAGE - (MAX_SAVED_GAMES - NewState) ;
-			}
-			else         // 'Per-Page'  Scrolling
-#endif
-				SHIFT = NewState - ((NewState / SAVES_PER_PAGE) * SAVES_PER_PAGE);
-			for (i = 0; i < SAVES_PER_PAGE && NewState - SHIFT + i < MAX_SAVED_GAMES; i++)
-			{
-				SetContextForeGroundColor ((i == SHIFT) ?
-						(BUILD_COLOR (MAKE_RGB15 (0x1B, 0x00, 0x1B), 0x33)):
-						(BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01)));
-				r.extent.width = 15;
-				if (MAX_SAVED_GAMES > 99)
-					r.extent.width += 5;
-				r.extent.height = 11;
-				r.corner.x = 8;
-				r.corner.y = 160 + (i * 13);
-				DrawRectangle (&r);
-
-				t.baseline.x = r.corner.x + 3;
-				t.baseline.y = r.corner.y + 8;
-				sprintf (buf, "%02i", NewState - SHIFT + i);
-				if (MAX_SAVED_GAMES > 99)
-					sprintf (buf, "%03i", NewState - SHIFT + i);
-				font_DrawText (&t);
-
-				r.extent.width = 204 - SAFE_X;
-				r.corner.x = 30 + SAFE_X;
-				DrawRectangle (&r);
-
-				t.baseline.x = r.corner.x + 3;
-				if (((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].year_index == 0)
-				{
-					utf8StringCopy (buf, sizeof buf,
-							GAME_STRING (SAVEGAME_STRING_BASE + 3)); // "Empty Slot"
-				}
-				else
-				{
-					DateToString (buf2, sizeof buf2,
-							((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].month_index,
-							((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].day_index,
-							((SUMMARY_DESC *)pMS->Extra)[NewState - SHIFT + i].year_index);
-					snprintf (buf, sizeof buf, "%s %s",
-							GAME_STRING (SAVEGAME_STRING_BASE + 4), buf2); // "Saved Game - Date:"
-				}
-				font_DrawText (&t);
-			}
-			if (LastActivity == CHECK_LOAD && first_time)
-			{
-				UnbatchGraphics ();
-				FadeScreen (FadeAllToColor, ONE_SECOND / 2);
-			}
-			else
-			{
-				if (first_time)
-				{
-					r.corner.x = SIS_ORG_X;
-					r.corner.y = SIS_ORG_Y;
-					r.extent.width = SIS_SCREEN_WIDTH;
-					r.extent.height = SIS_SCREEN_HEIGHT;
-
-					ScreenTransition (3, &r);
-				}
-				UnbatchGraphics ();
-			}
+			SetContext (SpaceContext);
+			RedrawPickDisplay (pickState, pMS->CurState);
 			UnlockMutex (GraphicsLock);
 		}
 		
 		SleepThreadUntil (TimeIn + ONE_SECOND / 30);
 	}
 
-	return (TRUE);
+	return TRUE;
 }
 
 static BOOLEAN
-PickGame (MENU_STATE *pMS)
+PickGame (BOOLEAN saving)
 {
 	BOOLEAN retval;
 	CONTEXT OldContext;
-	SUMMARY_DESC desc_array[MAX_SAVED_GAMES];
+	MENU_STATE MenuState;
+	PICK_GAME_STATE pickState;
 	RECT DlgRect;
 	STAMP DlgStamp;
 	TimeCount TimeOut;
 	InputFrameCallback *oldCallback;
+
+	memset (&pickState, 0, sizeof pickState);
+	pickState.saving = saving;
+	pickState.SummaryFrame = SetAbsFrameIndex (PlayFrame, 39);
+	if (LastActivity == CHECK_LOAD)
+		pickState.abortOnCancel = TRUE;
+
+	memset (&MenuState, 0, sizeof MenuState);
+	MenuState.privData = &pickState;
+	// select the last used slot
+	MenuState.CurState = prev_save;
 
 	TimeOut = FadeMusic (0, ONE_SECOND / 2);
 
 	// Deactivate any background drawing, like planet rotation
 	oldCallback = SetInputCallback (NULL);
 
-	LoadGameDescriptions (desc_array);
+	LoadGameDescriptions (pickState.summary);
 
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
-
 	// Save the current state of the screen for later restoration
 	DlgStamp = SaveContextFrame (NULL);
 	GetContextClipRect (&DlgRect);
-
-	pMS->Initialized = FALSE;
-	pMS->InputFunc = DoPickGame;
-	pMS->Extra = desc_array;
 	UnlockMutex (GraphicsLock);
 
 	SleepThreadUntil (TimeOut);
@@ -1111,16 +1032,43 @@ PickGame (MENU_STATE *pMS)
 	StopSound ();
 	FadeMusic (NORMAL_VOLUME, 0);
 
-	DoInput (pMS, TRUE); 
+	// draw the current savegame and fade in
+	LockMutex (GraphicsLock);
+	SetTransitionSource (NULL);
+	BatchGraphics ();
+	
+	SetContextBackGroundColor (BLACK_COLOR);
+	ClearDrawable ();
+	RedrawPickDisplay (&pickState, MenuState.CurState);
+	DrawSaveLoad (&pickState);
+	
+	if (pickState.abortOnCancel)
+	{
+		UnbatchGraphics ();
+		FadeScreen (FadeAllToColor, ONE_SECOND / 2);
+	}
+	else
+	{
+		RECT ctxRect;
+
+		GetContextClipRect (&ctxRect);
+		ScreenTransition (3, &ctxRect);
+		UnbatchGraphics ();
+	}
+	UnlockMutex (GraphicsLock);
+
+	SetMenuSounds (MENU_SOUND_ARROWS | MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN,
+			MENU_SOUND_SELECT);
+	MenuState.InputFunc = DoPickGame;
+	MenuState.Initialized = TRUE;
+	DoInput (&MenuState, TRUE); 
 
 	LockMutex (GraphicsLock);
-	pMS->Initialized = FALSE;
-	pMS->InputFunc = DoGameOptions;
 
 	retval = TRUE;
 	if (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
 	{
-		if (pMS->CurState == SAVE_GAME)
+		if (saving)
 			GLOBAL (CurrentActivity) &= ~CHECK_LOAD;
 
 		retval = FALSE;
@@ -1143,7 +1091,7 @@ PickGame (MENU_STATE *pMS)
 	// Reactivate any background drawing, like planet rotation
 	SetInputCallback (oldCallback);
 
-	return (retval);
+	return retval;
 }
 
 static BOOLEAN
@@ -1165,7 +1113,6 @@ DoGameOptions (MENU_STATE *pMS)
 		DrawMenuStateStrings (PM_SAVE_GAME, pMS->CurState);
 
 		pMS->Initialized = TRUE;
-		pMS->InputFunc = DoGameOptions;
 	}
 	else if (PulsedInputState.menu[KEY_MENU_CANCEL]
 			|| (PulsedInputState.menu[KEY_MENU_SELECT]
@@ -1183,7 +1130,7 @@ DoGameOptions (MENU_STATE *pMS)
 				LockMutex (GraphicsLock);
 				SetFlashRect (NULL);
 				UnlockMutex (GraphicsLock);
-				if (!PickGame (pMS))
+				if (!PickGame (pMS->CurState == SAVE_GAME))
 					return FALSE;
 				LockMutex (GraphicsLock);
 				SetFlashRect (SFR_MENU_3DO);
@@ -1211,9 +1158,7 @@ GameOptions (void)
 {
 	MENU_STATE MenuState;
 
-	pLocMenuState = &MenuState;
-
-	memset (pLocMenuState, 0, sizeof (MenuState));
+	memset (&MenuState, 0, sizeof MenuState);
 
 	MenuState.InputFunc = DoGameOptions;
 	MenuState.CurState = SAVE_GAME;
@@ -1228,8 +1173,6 @@ GameOptions (void)
 	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
 	UnlockMutex (GraphicsLock);
-
-	pLocMenuState = 0;
 
 	return ((GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)) ? FALSE : TRUE);
 }

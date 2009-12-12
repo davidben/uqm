@@ -43,7 +43,10 @@ typedef struct menu_state
 
 	MUSIC_REF hMusic;
 
-	void *Extra;
+	// For private use by various menus
+	// Usually, a menu associates its internal data struct using this
+	void *privData;
+
 } MENU_STATE;
 
 // XXX: Should probably go to menu.h (does not yet exist)
