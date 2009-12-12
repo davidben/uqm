@@ -136,7 +136,7 @@ typedef struct {
 	uint32 id;
 } Packet_Ping;
 
-// Acknowldement of a Ping.
+// Acknowledgement of a Ping.
 typedef struct {
 	PacketHeader header;
 	uint32 id;
