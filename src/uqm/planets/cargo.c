@@ -26,52 +26,216 @@
 #include "../sis.h"
 		// for ClearSISRect(), DrawStatusMessage()
 #include "planets.h"
+#include "libs/graphics/drawable.h"
+		// for GetFrameBounds()
+
+
+#define ELEMENT_ORG_Y      35
+#define FREE_ORG_Y         (ELEMENT_ORG_Y + (NUM_ELEMENT_CATEGORIES \
+							* ELEMENT_SPACING_Y))
+#define BIO_ORG_Y          119
+#define ELEMENT_SPACING_Y  9
+
+#define ELEMENT_COL_0      7
+#define ELEMENT_COL_1      32
+#define ELEMENT_COL_2      58
+
+#define ELEMENT_SEL_ORG_X  (ELEMENT_COL_0 + 7 + 5)
+#define ELEMENT_SEL_WIDTH  (ELEMENT_COL_2 - ELEMENT_SEL_ORG_X + 1)
+
+#define TEXT_BASELINE      6
 
 
 void
 ShowRemainingCapacity (void)
 {
 	RECT r;
-	TEXT rt;
+	TEXT t;
 	CONTEXT OldContext;
-	UNICODE rt_amount_buf[40];
+	UNICODE buf[40];
 
 	OldContext = SetContext (StatusContext);
 	SetContextFont (TinyFont);
 
-	sprintf (rt_amount_buf, "%u",
-			GetStorageBayCapacity () - GLOBAL_SIS (TotalElementMass));
-	rt.baseline.x = 59;
-	rt.baseline.y = 113;
-	rt.align = ALIGN_RIGHT;
-	rt.pStr = rt_amount_buf;
-	rt.CharCount = (COUNT)~0;
-
 	r.corner.x = 40;
-	r.corner.y = rt.baseline.y - 6;
-	r.extent.width = rt.baseline.x - r.corner.x + 1;
-	r.extent.height = 7;
+	r.corner.y = FREE_ORG_Y;
+
+	snprintf (buf, sizeof buf, "%u",
+			GetStorageBayCapacity () - GLOBAL_SIS (TotalElementMass));
+	t.baseline.x = ELEMENT_COL_2 + 1;
+	t.baseline.y = r.corner.y + TEXT_BASELINE;
+	t.align = ALIGN_RIGHT;
+	t.pStr = buf;
+	t.CharCount = (COUNT)~0;
+
+	r.extent.width = t.baseline.x - r.corner.x + 1;
+	r.extent.height = ELEMENT_SPACING_Y - 2;
 
 	BatchGraphics ();
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+	// erase previous free amount
+	SetContextForeGroundColor (CARGO_BACK_COLOR);
 	DrawFilledRectangle (&r);
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
-	font_DrawText (&rt);
+	// print the new free amount
+	SetContextForeGroundColor (CARGO_WORTH_COLOR);
+	font_DrawText (&t);
 	UnbatchGraphics ();
 	
 	SetContext (OldContext);
 }
 
+static void
+DrawElementAmount (COUNT element, bool selected)
+{
+	RECT r;
+	TEXT t;
+	UNICODE buf[40];
+
+	r.corner.x = ELEMENT_SEL_ORG_X;
+	r.extent.width = ELEMENT_SEL_WIDTH;
+	r.extent.height = ELEMENT_SPACING_Y - 2;
+
+	if (element == NUM_ELEMENT_CATEGORIES)
+		r.corner.y = BIO_ORG_Y;
+	else
+		r.corner.y = ELEMENT_ORG_Y + (element * ELEMENT_SPACING_Y);
+	
+	// draw line background
+	SetContextForeGroundColor (selected ?
+			CARGO_SELECTED_BACK_COLOR : CARGO_BACK_COLOR);
+	DrawFilledRectangle (&r);
+
+	t.pStr = buf;
+	t.baseline.y = r.corner.y + TEXT_BASELINE;
+
+	if (element == NUM_ELEMENT_CATEGORIES)
+	{	// Bio
+		snprintf (buf, sizeof buf, "%u", GLOBAL_SIS (TotalBioMass));
+	}
+	else
+	{	// Element
+		// print element's worth
+		SetContextForeGroundColor (selected ?
+				CARGO_SELECTED_WORTH_COLOR : CARGO_WORTH_COLOR);
+		t.baseline.x = ELEMENT_COL_1;
+		snprintf (buf, sizeof buf, "%u", GLOBAL (ElementWorth[element]));
+		t.CharCount = (COUNT)~0;
+		font_DrawText (&t);
+		
+		snprintf (buf, sizeof buf, "%u", GLOBAL_SIS (ElementAmounts[element]));
+	}
+
+	// print the element/bio amount
+	SetContextForeGroundColor (selected ?
+			CARGO_SELECTED_AMOUNT_COLOR : CARGO_AMOUNT_COLOR);
+	t.baseline.x = ELEMENT_COL_2;
+	t.CharCount = (COUNT)~0;
+	font_DrawText (&t);
+}
+
+static void
+DrawCargoDisplay (void)
+{
+	STAMP s;
+	TEXT t;
+	RECT r;
+	COORD cy;
+	COUNT i;
+
+	r.corner.x = 2;
+	r.extent.width = FIELD_WIDTH + 1;
+
+	r.corner.y = 20;
+	r.extent.height = 109;
+	DrawStarConBox (&r, 1,
+			SHADOWBOX_MEDIUM_COLOR, SHADOWBOX_DARK_COLOR,
+			TRUE, CARGO_BACK_COLOR);
+
+	// draw the "CARGO" title
+	SetContextFont (StarConFont);
+	t.baseline.x = (STATUS_WIDTH >> 1) - 1;
+	t.baseline.y = 27;
+	t.align = ALIGN_CENTER;
+	t.pStr = GAME_STRING (CARGO_STRING_BASE);
+	t.CharCount = (COUNT)~0;
+	SetContextForeGroundColor (CARGO_SELECTED_AMOUNT_COLOR);
+	font_DrawText (&t);
+
+	SetContextFont (TinyFont);
+
+	s.frame = SetAbsFrameIndex (MiscDataFrame,
+			(NUM_SCANDOT_TRANSITIONS * 2) + 3);
+	r.corner.x = ELEMENT_COL_0;
+	r.extent = GetFrameBounds (s.frame);
+	s.origin.x = r.corner.x + (r.extent.width >> 1);
+
+	cy = ELEMENT_ORG_Y;
+
+	// print element column headings
+	t.align = ALIGN_RIGHT;
+	t.baseline.y = cy - 1;
+	t.CharCount = (COUNT)~0;
+
+	SetContextForeGroundColor (CARGO_WORTH_COLOR);
+	t.baseline.x = ELEMENT_COL_1;
+	t.pStr = "$";
+	font_DrawText (&t);
+
+	t.baseline.x = ELEMENT_COL_2;
+	t.pStr = "#";
+	font_DrawText (&t);
+
+	// draw element icons and print amounts
+	for (i = 0; i < NUM_ELEMENT_CATEGORIES; ++i, cy += ELEMENT_SPACING_Y)
+	{
+		// erase background under an element icon
+		SetContextForeGroundColor (BLACK_COLOR);
+		r.corner.y = cy;
+		DrawFilledRectangle (&r);
+
+		// draw an element icon
+		s.origin.y = r.corner.y + (r.extent.height >> 1);
+		DrawStamp (&s);
+		s.frame = SetRelFrameIndex (s.frame, 5);
+
+		DrawElementAmount (i, false);
+	}
+
+	// erase background under the Bio icon
+	SetContextForeGroundColor (BLACK_COLOR);
+	r.corner.y = BIO_ORG_Y;
+	DrawFilledRectangle (&r);
+
+	// draw the Bio icon
+	s.origin.y = r.corner.y + (r.extent.height >> 1);
+	s.frame = SetAbsFrameIndex (s.frame, 68);
+	DrawStamp (&s);
+
+	// print the Bio amount
+	DrawElementAmount (NUM_ELEMENT_CATEGORIES, false);
+
+	// draw the line over the Bio amount
+	r.corner.x = 4;
+	r.corner.y = BIO_ORG_Y - 2;
+	r.extent.width = FIELD_WIDTH - 3;
+	r.extent.height = 1;
+	SetContextForeGroundColor (CARGO_SELECTED_BACK_COLOR);
+	DrawFilledRectangle (&r);
+
+	// print "Free"
+	t.baseline.x = 5;
+	t.baseline.y = FREE_ORG_Y + TEXT_BASELINE;
+	t.align = ALIGN_LEFT;
+	t.pStr = GAME_STRING (CARGO_STRING_BASE + 1);
+	t.CharCount = (COUNT)~0;
+	font_DrawText (&t);
+
+	ShowRemainingCapacity ();
+}
+
 void
 DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 {
-	COORD y, cy;
-	TEXT rt;
-	RECT r;
 	CONTEXT OldContext;
-	UNICODE rt_amount_buf[40];
 
 	LockMutex (GraphicsLock);
 
@@ -80,213 +244,34 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 
 	BatchGraphics ();
 
-	y = 41;
-	rt.align = ALIGN_RIGHT;
-	rt.pStr = rt_amount_buf;
-
 	if (OldElement > NUM_ELEMENT_CATEGORIES)
-	{
-		STAMP s;
+	{	// Asked for the initial display
+		DrawCargoDisplay ();
 
-		r.corner.x = 2;
-		r.extent.width = FIELD_WIDTH + 1;
-
-		{
-			TEXT ct;
-
-			r.corner.y = 20;
-			r.extent.height = 109;
-			DrawStarConBox (&r, 1,
-					BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
-					BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F),
-					TRUE,
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
-
-			SetContextFont (StarConFont);
-			ct.baseline.x = (STATUS_WIDTH >> 1) - 1;
-			ct.baseline.y = 27;
-			ct.align = ALIGN_CENTER;
-			ct.pStr = GAME_STRING (CARGO_STRING_BASE);
-			ct.CharCount = (COUNT)~0;
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
-			font_DrawText (&ct);
-
-			SetContextFont (TinyFont);
-		}
-
-		r.corner.x = 7;
-		r.extent.width = 7;
-		r.extent.height = 7;
-
-		s.origin.x = r.corner.x + (r.extent.width >> 1);
-		s.frame = SetAbsFrameIndex (
-				MiscDataFrame,
-				(NUM_SCANDOT_TRANSITIONS << 1) + 3
-				);
-		cy = y;
-
-		rt.baseline.y = cy - 7;
-		rt.CharCount = 1;
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
-		rt.baseline.x = 32;
-		rt_amount_buf[0] = '$';
-		font_DrawText (&rt);
-
-		rt.baseline.x = 58;
-		rt_amount_buf[0] = '#';
-		font_DrawText (&rt);
-
-		for (OldElement = 0;
-				OldElement < NUM_ELEMENT_CATEGORIES; ++OldElement)
-		{
-			SetContextForeGroundColor (BLACK_COLOR);
-			r.corner.y = cy - 6;
-			DrawFilledRectangle (&r);
-
-			s.origin.y = r.corner.y + (r.extent.height >> 1);
-			DrawStamp (&s);
-			s.frame = SetRelFrameIndex (s.frame, 5);
-
-			if (OldElement != NewElement)
-			{
-				rt.baseline.y = cy;
-
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
-				rt.baseline.x = 32;
-				sprintf (rt_amount_buf, "%u",
-						GLOBAL (ElementWorth[OldElement]));
-				rt.CharCount = (COUNT)~0;
-				font_DrawText (&rt);
-
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
-				rt.baseline.x = 58;
-				sprintf (rt_amount_buf, "%u",
-						GLOBAL_SIS (ElementAmounts[OldElement]));
-				rt.CharCount = (COUNT)~0;
-				font_DrawText (&rt);
-			}
-
-			cy += 9;
-		}
-
+		// do not draw unselected again this time
 		OldElement = NewElement;
-
-		rt.baseline.y = 125;
-
-		SetContextForeGroundColor (BLACK_COLOR);
-		r.corner.y = rt.baseline.y - 6;
-		DrawFilledRectangle (&r);
-
-		s.origin.y = r.corner.y + (r.extent.height >> 1);
-		s.frame = SetAbsFrameIndex (s.frame, 68);
-		DrawStamp (&s);
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
-		rt.baseline.x = 58;
-		sprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
-		rt.CharCount = (COUNT)~0;
-		font_DrawText (&rt);
-
-		r.corner.x = 4;
-		r.corner.y = 117;
-		r.extent.width = 56;
-		r.extent.height = 1;
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
-		DrawFilledRectangle (&r);
-
-		{
-			TEXT lt;
-			
-			lt.baseline.x = 5;
-			lt.baseline.y = 113;
-			lt.align = ALIGN_LEFT;
-			lt.pStr = GAME_STRING (CARGO_STRING_BASE + 1);
-			lt.CharCount = (COUNT)~0;
-			font_DrawText (&lt);
-		}
-
-		ShowRemainingCapacity ();
 	}
 
-	r.corner.x = 19;
-	r.extent.width = 40;
-	r.extent.height = 7;
-
 	if (OldElement != NewElement)
-	{
-		if (OldElement == NUM_ELEMENT_CATEGORIES)
-			cy = 125;
-		else
-			cy = y + (OldElement * 9);
-		r.corner.y = cy - 6;
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
-		DrawFilledRectangle (&r);
-
-		rt.baseline.y = cy;
-
-		if (OldElement == NUM_ELEMENT_CATEGORIES)
-			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
-		else
-		{
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
-			rt.baseline.x = 32;
-			sprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[OldElement]));
-			rt.CharCount = (COUNT)~0;
-			font_DrawText (&rt);
-			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[OldElement]));
-		}
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
-		rt.baseline.x = 58;
-		rt.CharCount = (COUNT)~0;
-		font_DrawText (&rt);
+	{	// unselect the previous element
+		DrawElementAmount (OldElement, false);
 	}
 
 	if (NewElement != (BYTE)~0)
-	{
-		if (NewElement == NUM_ELEMENT_CATEGORIES)
-			cy = 125;
-		else
-			cy = y + (NewElement * 9);
-		r.corner.y = cy - 6;
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
-		DrawFilledRectangle (&r);
-
-		rt.baseline.y = cy;
-
-		if (NewElement == NUM_ELEMENT_CATEGORIES)
-			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (TotalBioMass));
-		else
-		{
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
-			rt.baseline.x = 32;
-			sprintf (rt_amount_buf, "%u", GLOBAL (ElementWorth[NewElement]));
-			rt.CharCount = (COUNT)~0;
-			font_DrawText (&rt);
-			sprintf (rt_amount_buf, "%u", GLOBAL_SIS (ElementAmounts[NewElement]));
-		}
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
-		rt.baseline.x = 58;
-		rt.CharCount = (COUNT)~0;
-		font_DrawText (&rt);
+	{	// select the new element
+		DrawElementAmount (NewElement, true);
 	}
 
 	UnbatchGraphics ();
 	SetContext (OldContext);
+	UnlockMutex (GraphicsLock);
+}
+
+static void
+DrawElementDescription (COUNT element)
+{
+	LockMutex (GraphicsLock);
+	DrawStatusMessage (GAME_STRING (element + (CARGO_STRING_BASE + 2)));
 	UnlockMutex (GraphicsLock);
 }
 
@@ -295,37 +280,25 @@ DoDiscardCargo (MENU_STATE *pMS)
 {
 	BYTE NewState;
 	BOOLEAN select, cancel, back, forward;
+	
 	select = PulsedInputState.menu[KEY_MENU_SELECT];
 	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
 	back = PulsedInputState.menu[KEY_MENU_UP] || PulsedInputState.menu[KEY_MENU_LEFT];
 	forward = PulsedInputState.menu[KEY_MENU_DOWN] || PulsedInputState.menu[KEY_MENU_RIGHT];
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
+		return FALSE;
 
-	if (!pMS->Initialized)
+	if (cancel)
 	{
-		pMS->InputFunc = DoDiscardCargo;
-		pMS->Initialized = TRUE;
-
-		NewState = pMS->CurState;
-		pMS->CurState = (BYTE)~0;
-		goto SelectCargo;
-	}
-	else if (cancel)
-	{
-		LockMutex (GraphicsLock);
-		ClearSISRect (DRAW_SIS_DISPLAY);
-		UnlockMutex (GraphicsLock);
-
-		return (FALSE);
+		return FALSE;
 	}
 	else if (select)
 	{
-		if (GLOBAL_SIS (ElementAmounts[pMS->CurState - 1]))
+		if (GLOBAL_SIS (ElementAmounts[pMS->CurState]))
 		{
-			--GLOBAL_SIS (ElementAmounts[pMS->CurState - 1]);
-			DrawCargoStrings ((BYTE)(pMS->CurState - 1), (BYTE)(pMS->CurState - 1));
+			--GLOBAL_SIS (ElementAmounts[pMS->CurState]);
+			DrawCargoStrings (pMS->CurState, pMS->CurState);
 
 			LockMutex (GraphicsLock);
 			--GLOBAL_SIS (TotalElementMass);
@@ -339,7 +312,7 @@ DoDiscardCargo (MENU_STATE *pMS)
 	}
 	else
 	{
-		NewState = pMS->CurState - 1;
+		NewState = pMS->CurState;
 		if (back)
 		{
 			if (NewState == 0)
@@ -353,15 +326,10 @@ DoDiscardCargo (MENU_STATE *pMS)
 				NewState = 0;
 		}
 
-		++NewState;
 		if (NewState != pMS->CurState)
 		{
-SelectCargo:
-			DrawCargoStrings ((BYTE)(pMS->CurState - 1), (BYTE)(NewState - 1));
-			LockMutex (GraphicsLock);
-			DrawStatusMessage (GAME_STRING (NewState - 1 + (CARGO_STRING_BASE + 2)));
-			UnlockMutex (GraphicsLock);
-
+			DrawCargoStrings (pMS->CurState, NewState);
+			DrawElementDescription (NewState);
 			pMS->CurState = NewState;
 		}
 	}
@@ -374,16 +342,22 @@ SelectCargo:
 void
 CargoMenu (void)
 {
-	// XXX: Should get an own STATE struct
 	MENU_STATE MenuState;
 
-	MenuState.InputFunc = DoDiscardCargo;
-	MenuState.Initialized = FALSE;
-	// XXX: 1-based index because this had to work around the
-	//   pSolarSysState->MenuState.CurState abuse. Should be changed.
-	MenuState.CurState = 1;
+	memset (&MenuState, 0, sizeof MenuState);
+
+	// draw the initial cargo display
+	DrawCargoStrings ((BYTE)~0, MenuState.CurState);
+	DrawElementDescription (MenuState.CurState);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
+	MenuState.InputFunc = DoDiscardCargo;
 	DoInput (&MenuState, TRUE);
+
+	// erase the cargo display
+	LockMutex (GraphicsLock);
+	ClearSISRect (DRAW_SIS_DISPLAY);
+	UnlockMutex (GraphicsLock);
 }
 
