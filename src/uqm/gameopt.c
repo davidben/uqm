@@ -47,10 +47,7 @@ extern FRAME PlayFrame;
 
 #define MAX_NAME_SIZE  SIS_NAME_SIZE
 
-static BOOLEAN DoSettings (MENU_STATE *pMS);
-static BOOLEAN DoNaming (MENU_STATE *pMS);
-
-static BYTE prev_save; //keeps track of the last slot that was saved or loaded
+static COUNT lastUsedSlot;
 
 static NamingCallback *namingCB;
 
@@ -94,10 +91,9 @@ enum
 	SAVE_GAME = 0,
 	LOAD_GAME,
 	QUIT_GAME,
-	SETTINGS
+	SETTINGS,
+	EXIT_GAME_MENU,
 };
-
-static BOOLEAN DoGameOptions (MENU_STATE *pMS);
 
 enum
 {
@@ -111,7 +107,7 @@ enum
 	CYBORG_SUPER_SETTING,
 	CHANGE_CAPTAIN_SETTING,
 	CHANGE_SHIP_SETTING,
-	EXIT_MENU_SETTING
+	EXIT_SETTINGS_MENU,
 };
 
 static void
@@ -180,7 +176,7 @@ FeedbackSetting (BYTE which_setting)
 #define DDSHS_BLOCKCUR 2
 
 static BOOLEAN
-DrawDescriptionString (MENU_STATE *pMS, UNICODE *Str, COUNT CursorPos,
+DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		COUNT state)
 {
 	RECT r;
@@ -196,7 +192,7 @@ DrawDescriptionString (MENU_STATE *pMS, UNICODE *Str, COUNT CursorPos,
 		r.extent.height = SHIP_NAME_HEIGHT;
 
 		SetContext (StatusContext);
-		if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
+		if (nameCaptain)
 		{	// Naming the captain
 			Font = TinyFont;
 			r.corner.y = 10;
@@ -227,7 +223,7 @@ DrawDescriptionString (MENU_STATE *pMS, UNICODE *Str, COUNT CursorPos,
 
 	if (!(state & DDSHS_EDIT))
 	{	// normal state
-		if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
+		if (nameCaptain)
 			DrawCaptainsName ();
 		else
 			DrawFlagshipName (TRUE);
@@ -295,36 +291,33 @@ DrawDescriptionString (MENU_STATE *pMS, UNICODE *Str, COUNT CursorPos,
 static BOOLEAN
 OnNameChange (TEXTENTRY_STATE *pTES)
 {
-	MENU_STATE *pMS = (MENU_STATE*) pTES->CbParam;
+	bool nameCaptain = (bool) pTES->CbParam;
 	COUNT hl = DDSHS_EDIT;
 
 	if (pTES->JoystickMode)
 		hl |= DDSHS_BLOCKCUR;
 
-	return DrawDescriptionString (pMS, pTES->BaseStr, pTES->CursorPos, hl);
+	return DrawNameString (nameCaptain, pTES->BaseStr, pTES->CursorPos, hl);
 }
 
-static BOOLEAN
-DoNaming (MENU_STATE *pMS)
+static void
+NameCaptainOrShip (bool nameCaptain)
 {
 	UNICODE buf[MAX_NAME_SIZE] = "";
 	TEXTENTRY_STATE tes;
 	UNICODE *Setting;
 
-	pMS->Initialized = TRUE;
-	pMS->InputFunc = DoNaming;
-
 	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
 	UnlockMutex (GraphicsLock);
 
-	DrawDescriptionString (pMS, buf, 0, DDSHS_EDIT);
+	DrawNameString (nameCaptain, buf, 0, DDSHS_EDIT);
 
 	LockMutex (GraphicsLock);
 	DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
 	UnlockMutex (GraphicsLock);
 
-	if (pMS->CurState == CHANGE_CAPTAIN_SETTING)
+	if (nameCaptain)
 	{
 		Setting = GLOBAL_SIS (CommanderName);
 		tes.MaxSize = sizeof (GLOBAL_SIS (CommanderName));
@@ -339,7 +332,7 @@ DoNaming (MENU_STATE *pMS)
 	tes.Initialized = FALSE;
 	tes.BaseStr = buf;
 	tes.CursorPos = 0;
-	tes.CbParam = pMS;
+	tes.CbParam = (void*) nameCaptain;
 	tes.ChangeCallback = OnNameChange;
 	tes.FrameCallback = 0;
 
@@ -352,18 +345,12 @@ DoNaming (MENU_STATE *pMS)
 	SetFlashRect (SFR_MENU_3DO);
 	UnlockMutex (GraphicsLock);
 	
-	DrawDescriptionString (pMS, buf, 0, DDSHS_NORMAL);
+	DrawNameString (nameCaptain, buf, 0, DDSHS_NORMAL);
 
 	if (namingCB)
 		namingCB ();
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-
-	pMS->InputFunc = DoSettings;
-	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
-		FeedbackSetting (pMS->CurState);
-
-	return (TRUE);
 }
 
 void
@@ -378,28 +365,15 @@ DoSettings (MENU_STATE *pMS)
 	BYTE cur_speed;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
+		return FALSE;
 
-	cur_speed = (BYTE)(GLOBAL (glob_flags) & COMBAT_SPEED_MASK) >> COMBAT_SPEED_SHIFT;
-	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	if (!pMS->Initialized)
-	{
-		DrawMenuStateStrings (PM_SOUND_ON, pMS->CurState);
-		FeedbackSetting (pMS->CurState);
-		pMS->Initialized = TRUE;
-		pMS->InputFunc = DoSettings;
-	}
-	else if (PulsedInputState.menu[KEY_MENU_CANCEL]
+	cur_speed = (GLOBAL (glob_flags) & COMBAT_SPEED_MASK) >> COMBAT_SPEED_SHIFT;
+
+	if (PulsedInputState.menu[KEY_MENU_CANCEL]
 			|| (PulsedInputState.menu[KEY_MENU_SELECT]
-			&& pMS->CurState == EXIT_MENU_SETTING))
+			&& pMS->CurState == EXIT_SETTINGS_MENU))
 	{
-		LockMutex (GraphicsLock);
-		DrawStatusMessage (NULL);
-		UnlockMutex (GraphicsLock);
-
-		pMS->CurState = SETTINGS;
-		pMS->InputFunc = DoGameOptions;
-		pMS->Initialized = FALSE;
+		return FALSE;
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
@@ -419,9 +393,8 @@ DoSettings (MENU_STATE *pMS)
 				break;
 			case CHANGE_CAPTAIN_SETTING:
 			case CHANGE_SHIP_SETTING:
-				pMS->Initialized = FALSE;
-				pMS->InputFunc = DoNaming;
-				return (TRUE);
+				NameCaptainOrShip (pMS->CurState == CHANGE_CAPTAIN_SETTING);
+				break;
 			default:
 				if (cur_speed++ < NUM_COMBAT_SPEEDS - 1)
 					GLOBAL (glob_flags) |= CYBORG_ENABLED;
@@ -431,7 +404,7 @@ DoSettings (MENU_STATE *pMS)
 					GLOBAL (glob_flags) &= ~CYBORG_ENABLED;
 				}
 				GLOBAL (glob_flags) =
-						(BYTE)((GLOBAL (glob_flags) & ~COMBAT_SPEED_MASK)
+						((GLOBAL (glob_flags) & ~COMBAT_SPEED_MASK)
 						| (cur_speed << COMBAT_SPEED_SHIFT));
 				pMS->CurState = CYBORG_OFF_SETTING + cur_speed;
 				DrawMenuStateStrings (PM_SOUND_ON, pMS->CurState);
@@ -442,7 +415,26 @@ DoSettings (MENU_STATE *pMS)
 	else if (DoMenuChooser (pMS, PM_SOUND_ON))
 		FeedbackSetting (pMS->CurState);
 
-	return (TRUE);
+	return TRUE;
+}
+
+static void
+SettingsMenu (void)
+{
+	MENU_STATE MenuState;
+
+	memset (&MenuState, 0, sizeof MenuState);
+	MenuState.CurState = SOUND_ON_SETTING;
+
+	DrawMenuStateStrings (PM_SOUND_ON, MenuState.CurState);
+	FeedbackSetting (MenuState.CurState);
+
+	MenuState.InputFunc = DoSettings;
+	DoInput (&MenuState, FALSE);
+
+	LockMutex (GraphicsLock);
+	DrawStatusMessage (NULL);
+	UnlockMutex (GraphicsLock);
 }
 
 typedef struct
@@ -450,9 +442,8 @@ typedef struct
 	SUMMARY_DESC summary[MAX_SAVED_GAMES];
 	BOOLEAN saving;
 			// TRUE when saving, FALSE when loading
-	BOOLEAN abortOnCancel;
-			// TRUE when loading from the Main menu so that
-			// we do not end up in a newly started game
+	BOOLEAN success;
+			// TRUE when load/save succeeded
 	FRAME SummaryFrame;
 
 } PICK_GAME_STATE;
@@ -878,64 +869,19 @@ DoPickGame (MENU_STATE *pMS)
 
 	if (PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
-		ResumeMusic ();
-		if (pickState->abortOnCancel)
-		{	// Selected LOAD from main menu, and now canceled
-			GLOBAL (CurrentActivity) |= CHECK_ABORT;
-		}
+		pickState->success = FALSE;
 		return FALSE;
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
 		pSD = &pickState->summary[pMS->CurState];
-		prev_save = pMS->CurState;
 		if (pickState->saving || pSD->year_index)
-		{
-			if (pickState->saving)
-			{
-				STAMP MsgStamp;
-
-				LockMutex (GraphicsLock);
-				ConfirmSaveLoad (&MsgStamp);
-				UnlockMutex (GraphicsLock);
-
-				if (SaveGame (pMS->CurState, pSD))
-				{
-					DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
-					GLOBAL (CurrentActivity) |= CHECK_LOAD;
-				}
-				else
-				{
-					LockMutex (GraphicsLock);
-					DrawStamp (&MsgStamp);
-					DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
-					UnlockMutex (GraphicsLock);
-					
-					SaveProblem ();
-
-					// reload and redraw everything
-					LoadGameDescriptions (pickState->summary);
-					LockMutex (GraphicsLock);
-					SetContext (SpaceContext);
-					RedrawPickDisplay (pickState, pMS->CurState);
-					UnlockMutex (GraphicsLock);
-					
-					return TRUE;
-				}
-				ResumeMusic ();
-			}
-			else
-			{
-				LockMutex (GraphicsLock);
-				ConfirmSaveLoad (NULL);
-				UnlockMutex (GraphicsLock);
-
-				if (LoadGame (pMS->CurState, NULL))
-					GLOBAL (CurrentActivity) |= CHECK_LOAD;
-			}
-
+		{	// valid slot
+			PlayMenuSound (MENU_SOUND_SUCCESS);
+			pickState->success = TRUE;
 			return FALSE;
 		}
+		PlayMenuSound (MENU_SOUND_FAILURE);
 	}
 	else
 	{
@@ -991,9 +937,34 @@ DoPickGame (MENU_STATE *pMS)
 }
 
 static BOOLEAN
-PickGame (BOOLEAN saving)
+SaveLoadGame (PICK_GAME_STATE *pickState, COUNT gameIndex)
 {
-	BOOLEAN retval;
+	SUMMARY_DESC *desc = pickState->summary + gameIndex;
+	STAMP saveStamp;
+	BOOLEAN success;
+
+	LockMutex (GraphicsLock);
+	ConfirmSaveLoad (&saveStamp);
+	UnlockMutex (GraphicsLock);
+
+	if (pickState->saving)
+		success = SaveGame (gameIndex, desc);
+	else
+		success = LoadGame (gameIndex, NULL);
+
+	// restore the screen under "Saving..." message
+	LockMutex (GraphicsLock);
+	DrawStamp (&saveStamp);
+	UnlockMutex (GraphicsLock);
+
+	DestroyDrawable (ReleaseDrawable (saveStamp.frame));
+
+	return success;
+}
+
+static BOOLEAN
+PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
+{
 	CONTEXT OldContext;
 	MENU_STATE MenuState;
 	PICK_GAME_STATE pickState;
@@ -1005,13 +976,11 @@ PickGame (BOOLEAN saving)
 	memset (&pickState, 0, sizeof pickState);
 	pickState.saving = saving;
 	pickState.SummaryFrame = SetAbsFrameIndex (PlayFrame, 39);
-	if (LastActivity == CHECK_LOAD)
-		pickState.abortOnCancel = TRUE;
 
 	memset (&MenuState, 0, sizeof MenuState);
 	MenuState.privData = &pickState;
 	// select the last used slot
-	MenuState.CurState = prev_save;
+	MenuState.CurState = lastUsedSlot;
 
 	TimeOut = FadeMusic (0, ONE_SECOND / 2);
 
@@ -1042,7 +1011,7 @@ PickGame (BOOLEAN saving)
 	RedrawPickDisplay (&pickState, MenuState.CurState);
 	DrawSaveLoad (&pickState);
 	
-	if (pickState.abortOnCancel)
+	if (fromMainMenu)
 	{
 		UnbatchGraphics ();
 		FadeScreen (FadeAllToColor, ONE_SECOND / 2);
@@ -1058,70 +1027,80 @@ PickGame (BOOLEAN saving)
 	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS | MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN,
-			MENU_SOUND_SELECT);
+			0);
 	MenuState.InputFunc = DoPickGame;
-	MenuState.Initialized = TRUE;
-	DoInput (&MenuState, TRUE); 
-
-	LockMutex (GraphicsLock);
-
-	retval = TRUE;
-	if (GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD))
+	
+	// Save/load retry loop
+	while (1)
 	{
-		if (saving)
-			GLOBAL (CurrentActivity) &= ~CHECK_LOAD;
+		pickState.success = FALSE;
+		DoInput (&MenuState, TRUE);
+		if (!pickState.success)
+			break; // canceled
 
-		retval = FALSE;
+		lastUsedSlot = MenuState.CurState;
+
+		if (SaveLoadGame (&pickState, MenuState.CurState))
+			break; // all good
+
+		// something broke
+		if (saving)
+			SaveProblem ();
+		// TODO: Shouldn't we have a Problem() equivalent for Load too?
+
+		// reload and redraw everything
+		LoadGameDescriptions (pickState.summary);
+		LockMutex (GraphicsLock);
+		RedrawPickDisplay (&pickState, MenuState.CurState);
+		UnlockMutex (GraphicsLock);
 	}
 
-	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
+	if (pickState.success && !saving)
+	{	// Load succeeded, signal up the chain
+		GLOBAL (CurrentActivity) |= CHECK_LOAD;
+	}
+	
+	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT) &&
+			(saving || (!pickState.success && !fromMainMenu)))
 	{	// Restore previous screen
+		LockMutex (GraphicsLock);
 		SetTransitionSource (&DlgRect);
 		BatchGraphics ();
 		DrawStamp (&DlgStamp);
 		ScreenTransition (3, &DlgRect);
 		UnbatchGraphics ();
+		UnlockMutex (GraphicsLock);
 	}
 
 	DestroyDrawable (ReleaseDrawable (DlgStamp.frame));
 
+	LockMutex (GraphicsLock);
 	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
+
+	ResumeMusic ();
 
 	// Reactivate any background drawing, like planet rotation
 	SetInputCallback (oldCallback);
 
-	return retval;
+	return pickState.success;
 }
 
 static BOOLEAN
 DoGameOptions (MENU_STATE *pMS)
 {
-	BOOLEAN force_select = FALSE;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
+		return FALSE;
 
-	if (LastActivity == CHECK_LOAD)
-		force_select = TRUE; // Selected LOAD from main menu
-
-	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-
-	if (!pMS->Initialized)
-	{
-		if (LastActivity == CHECK_LOAD)
-			pMS->CurState = LOAD_GAME;
-		DrawMenuStateStrings (PM_SAVE_GAME, pMS->CurState);
-
-		pMS->Initialized = TRUE;
-	}
-	else if (PulsedInputState.menu[KEY_MENU_CANCEL]
+	if (PulsedInputState.menu[KEY_MENU_CANCEL]
 			|| (PulsedInputState.menu[KEY_MENU_SELECT]
-			&& pMS->CurState == SETTINGS + 1))
+			&& pMS->CurState == EXIT_GAME_MENU))
 	{
-		pMS->CurState = SETTINGS + 1;
-		return (FALSE);
+		return FALSE;
 	}
-	else if (PulsedInputState.menu[KEY_MENU_SELECT] || force_select)
+	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
 		switch (pMS->CurState)
 		{
@@ -1130,7 +1109,7 @@ DoGameOptions (MENU_STATE *pMS)
 				LockMutex (GraphicsLock);
 				SetFlashRect (NULL);
 				UnlockMutex (GraphicsLock);
-				if (!PickGame (pMS->CurState == SAVE_GAME))
+				if (PickGame (pMS->CurState == SAVE_GAME, FALSE))
 					return FALSE;
 				LockMutex (GraphicsLock);
 				SetFlashRect (SFR_MENU_3DO);
@@ -1141,18 +1120,18 @@ DoGameOptions (MENU_STATE *pMS)
 					return FALSE;
 				break;
 			case SETTINGS:
-				pMS->Initialized = FALSE;
-				pMS->InputFunc = DoSettings;
-				pMS->CurState = SOUND_ON_SETTING;
+				SettingsMenu ();
+				DrawMenuStateStrings (PM_SAVE_GAME, pMS->CurState);
 				break;
 		}
 	}
 	else
 		DoMenuChooser (pMS, PM_SAVE_GAME);
 
-	return (TRUE);
+	return TRUE;
 }
 
+// Returns TRUE when the owner menu should continue
 BOOLEAN
 GameOptions (void)
 {
@@ -1160,20 +1139,34 @@ GameOptions (void)
 
 	memset (&MenuState, 0, sizeof MenuState);
 
-	MenuState.InputFunc = DoGameOptions;
+	if (LastActivity == CHECK_LOAD)
+	{	// Selected LOAD from main menu
+		BOOLEAN success;
+
+		DrawMenuStateStrings (PM_SAVE_GAME, LOAD_GAME);
+		success	= PickGame (FALSE, TRUE);
+		if (!success)
+		{	// Selected LOAD from main menu, and canceled
+			GLOBAL (CurrentActivity) |= CHECK_ABORT;
+		}
+		return FALSE;
+	}
+
 	MenuState.CurState = SAVE_GAME;
+	DrawMenuStateStrings (PM_SAVE_GAME, MenuState.CurState);
 
 	LockMutex (GraphicsLock);
 	SetFlashRect (SFR_MENU_3DO);
 	UnlockMutex (GraphicsLock);
 	
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+	MenuState.InputFunc = DoGameOptions;
 	DoInput (&MenuState, TRUE);
 
 	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
 	UnlockMutex (GraphicsLock);
 
-	return ((GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)) ? FALSE : TRUE);
+	return !(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD));
 }
 
