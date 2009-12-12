@@ -17,6 +17,7 @@
  */
 
 #include "../build.h"
+#include "../colors.h"
 #include "../encount.h"
 #include "../gamestr.h"
 #include "../controls.h"
@@ -42,155 +43,172 @@
 // devices the player actually possesses.
 //#define DEBUG_DEVICES
 
-static void
-DrawDevices (MENU_STATE *pMS, BYTE OldDevice, BYTE NewDevice)
+#define DEVICE_ICON_WIDTH  16
+#define DEVICE_ICON_HEIGHT 16
+
+#define DEVICE_ORG_Y       33
+#define DEVICE_SPACING_Y   (DEVICE_ICON_HEIGHT + 2)
+
+#define DEVICE_COL_0       4
+#define DEVICE_COL_1       40
+
+#define DEVICE_SEL_ORG_X  (DEVICE_COL_0 + DEVICE_ICON_WIDTH)
+#define DEVICE_SEL_WIDTH  (FIELD_WIDTH + 1 - DEVICE_SEL_ORG_X + 1)
+
+#define ICON_OFS_Y         1
+#define NAME_OFS_Y         2
+#define TEXT_BASELINE      6
+#define TEXT_SPACING_Y     7
+
+#define MAX_VIS_DEVICES    ((129 - DEVICE_ORG_Y) / DEVICE_SPACING_Y)
+
+
+typedef enum
 {
-#define MAX_VIS_DEVICES 5
-	COORD y, cy;
-	TEXT t;
+	DEVICE_FAILURE = 0,
+	DEVICE_SUCCESS,
+	DEVICE_SUCCESS_NO_SOUND,
+} DeviceStatus;
+
+typedef struct
+{
+	BYTE list[NUM_DEVICES];
+			// List of all devices player has
+	COUNT count;
+			// Number of devices in the list
+	COUNT topIndex;
+			// Index of the top device displayed
+} DEVICES_STATE;
+
+
+#if 0
+static void
+EraseDevicesBackground (void)
+{
 	RECT r;
-	BYTE *pDeviceMap;
 
-	LockMutex (GraphicsLock);
+	r.corner.x = 2 + 1;
+	r.extent.width = FIELD_WIDTH + 1 - 2;
+	r.corner.y = DEVICE_ORG_Y;
+	r.extent.height = MAX_VIS_DEVICES * DEVICE_SPACING_Y;
+	SetContextForeGroundColor (DEVICES_BACK_COLOR);
+	DrawFilledRectangle (&r);
+}
+#endif
 
-	SetContext (StatusContext);
+static void
+DrawDevice (COUNT device, COUNT pos, bool selected)
+{
+	RECT r;
+	TEXT t;
+
+	t.align = ALIGN_CENTER;
+	t.baseline.x = DEVICE_COL_1;
+
+	r.extent.width = DEVICE_SEL_WIDTH;
+	r.extent.height = TEXT_SPACING_Y * 2;
+	r.corner.x = DEVICE_SEL_ORG_X;
+
+	// draw line background
+	r.corner.y = DEVICE_ORG_Y + pos * DEVICE_SPACING_Y + NAME_OFS_Y;
+	SetContextForeGroundColor (selected ?
+			DEVICES_SELECTED_BACK_COLOR : DEVICES_BACK_COLOR);
+	DrawFilledRectangle (&r);
+
 	SetContextFont (TinyFont);
 
-	y = 41;
-	t.baseline.x = 40;
+	// print device name
+	SetContextForeGroundColor (selected ?
+			DEVICES_SELECTED_NAME_COLOR : DEVICES_NAME_COLOR);
+	t.baseline.y = r.corner.y + TEXT_BASELINE;
+	t.pStr = GAME_STRING (device + DEVICE_STRING_BASE + 1);
+	t.CharCount = utf8StringPos (t.pStr, ' ');
+	font_DrawText (&t);
+	t.baseline.y += TEXT_SPACING_Y;
+	t.pStr = skipUTF8Chars (t.pStr, t.CharCount + 1);
+	t.CharCount = (COUNT)~0;
+	font_DrawText (&t);
+}
+
+static void
+DrawDevicesDisplay (DEVICES_STATE *devState)
+{
+	TEXT t;
+	RECT r;
+	STAMP s;
+	COORD cy;
+	COUNT i;
+
+	r.corner.x = 2;
+	r.corner.y = 20;
+	r.extent.width = FIELD_WIDTH + 1;
+	// XXX: Shouldn't the height be 1 less? This draws the bottom border
+	//   1 pixel too low. Or if not, why do we need another box anyway?
+	r.extent.height = 129 - r.corner.y;
+	DrawStarConBox (&r, 1,
+			SHADOWBOX_MEDIUM_COLOR, SHADOWBOX_DARK_COLOR,
+			TRUE, DEVICES_BACK_COLOR);
+
+	// print the "DEVICES" title
+	SetContextFont (StarConFont);
+	t.baseline.x = (STATUS_WIDTH >> 1) - 1;
+	t.baseline.y = r.corner.y + 7;
 	t.align = ALIGN_CENTER;
-	t.CharCount = 3;
+	t.pStr = GAME_STRING (DEVICE_STRING_BASE);
+	t.CharCount = (COUNT)~0;
+	SetContextForeGroundColor (DEVICES_SELECTED_NAME_COLOR);
+	font_DrawText (&t);
 
-	pDeviceMap = (BYTE*)pMS->CurFrame;
-	if (OldDevice > NUM_DEVICES
-			|| (NewDevice < NUM_DEVICES
-			&& (NewDevice < (BYTE)pMS->first_item.y
-			|| NewDevice >= (BYTE)(pMS->first_item.y + MAX_VIS_DEVICES))))
+	s.origin.x = DEVICE_COL_0;
+	cy = DEVICE_ORG_Y;
+
+	// draw device icons and print names
+	for (i = 0; i < MAX_VIS_DEVICES; ++i, cy += DEVICE_SPACING_Y)
 	{
-		STAMP s;
+		COUNT devIndex = devState->topIndex + i;
 
-		r.corner.x = 2;
-		r.extent.width = FIELD_WIDTH + 1;
+		if (devIndex >= devState->count)
+			break;
 
-		if (!(pMS->Initialized & 1))
-		{
-			++r.corner.x;
-			r.extent.width -= 2;
-			r.corner.y = 33;
-			r.extent.height = 89;
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
-			DrawFilledRectangle (&r);
-		}
-		else
-		{
-			TEXT ct;
+		// draw device icon
+		s.origin.y = cy + ICON_OFS_Y;
+		s.frame = SetAbsFrameIndex (MiscDataFrame,
+				77 + devState->list[devIndex]);
+		DrawStamp (&s);
 
-			r.corner.y = 20;
-			r.extent.height = 109;
-			DrawStarConBox (&r, 1,
-					BUILD_COLOR (MAKE_RGB15 (0x10, 0x10, 0x10), 0x19),
-					BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F),
-					TRUE,
-					BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
+		DrawDevice (devState->list[devIndex], i, false);
+	}
+}
 
-			SetContextFont (StarConFont);
-			ct.baseline.x = (STATUS_WIDTH >> 1) - 1;
-			ct.baseline.y = 27;
-			ct.align = ALIGN_CENTER;
-			ct.pStr = GAME_STRING (DEVICE_STRING_BASE);
-			ct.CharCount = (COUNT)~0;
-			SetContextForeGroundColor (
-					BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
-			font_DrawText (&ct);
+static void
+DrawDevices (DEVICES_STATE *devState, COUNT OldDevice, COUNT NewDevice)
+{
+	LockMutex (GraphicsLock);
+	BatchGraphics ();
 
-			SetContextFont (TinyFont);
-		}
+	SetContext (StatusContext);
 
-		if (NewDevice < (BYTE)pMS->first_item.y)
-			pMS->first_item.y = NewDevice;
-		else if (NewDevice >= (BYTE)(pMS->first_item.y + MAX_VIS_DEVICES))
-			pMS->first_item.y = NewDevice - (MAX_VIS_DEVICES - 1);
+	if (OldDevice > NUM_DEVICES)
+	{	// Asked for the initial display or refresh
+		DrawDevicesDisplay (devState);
 
-		s.origin.x = 4;
-		s.origin.y = 34;
-		cy = y;
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
-		for (OldDevice = (BYTE)pMS->first_item.y;
-				OldDevice < (BYTE)(pMS->first_item.y + MAX_VIS_DEVICES)
-				&& OldDevice < (BYTE)pMS->first_item.x;
-				++OldDevice)
-		{
-			s.frame = SetAbsFrameIndex (
-					MiscDataFrame, 77 + pDeviceMap[OldDevice]);
-			DrawStamp (&s);
-
-			if (OldDevice != NewDevice)
-			{
-				t.baseline.y = cy;
-				t.pStr = GAME_STRING (pDeviceMap[OldDevice] +
-						DEVICE_STRING_BASE + 1);
-				t.CharCount = utf8StringPos (t.pStr, ' ');
-				font_DrawText (&t);
-				t.baseline.y += 7;
-				t.pStr = skipUTF8Chars (t.pStr, t.CharCount + 1);
-				t.CharCount = (COUNT)~0;
-				font_DrawText (&t);
-			}
-
-			cy += 18;
-			s.origin.y += 18;
-		}
-
+		// do not draw unselected again this time
 		OldDevice = NewDevice;
 	}
 
-	r.extent.width = 41;
-	r.extent.height = 14;
-	r.corner.x = t.baseline.x - (r.extent.width >> 1);
-
 	if (OldDevice != NewDevice)
-	{
-		cy = y + ((OldDevice - pMS->first_item.y) * 18);
-		r.corner.y = cy - 6;
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
-		DrawFilledRectangle (&r);
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x14), 0x03));
-		t.baseline.y = cy;
-		t.pStr = GAME_STRING (pDeviceMap[OldDevice] + DEVICE_STRING_BASE + 1);
-		t.CharCount = utf8StringPos (t.pStr, ' ');
-		font_DrawText (&t);
-		t.baseline.y += 7;
-		t.pStr = skipUTF8Chars (t.pStr, t.CharCount + 1);
-		t.CharCount = (COUNT)~0;
-		font_DrawText (&t);
+	{	// unselect the previous element
+		DrawDevice (devState->list[OldDevice], OldDevice - devState->topIndex,
+				false);
 	}
 
 	if (NewDevice < NUM_DEVICES)
-	{
-		cy = y + ((NewDevice - pMS->first_item.y) * 18);
-		r.corner.y = cy - 6;
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09));
-		DrawFilledRectangle (&r);
-
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B));
-		t.baseline.y = cy;
-		t.pStr = GAME_STRING (pDeviceMap[NewDevice] + DEVICE_STRING_BASE + 1);
-		t.CharCount = utf8StringPos (t.pStr, ' ');
-		font_DrawText (&t);
-		t.baseline.y += 7;
-		t.pStr = skipUTF8Chars (t.pStr, t.CharCount + 1);
-		t.CharCount = (COUNT)~0;
-		font_DrawText (&t);
+	{	// select the new element
+		DrawDevice (devState->list[NewDevice], NewDevice - devState->topIndex,
+				true);
 	}
 
+	UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);
 }
 
@@ -280,8 +298,8 @@ UseCaster (void)
 	return FALSE;
 }
 
-static UWORD
-DeviceFailed (BYTE which_device)
+static DeviceStatus
+InvokeDevice (BYTE which_device)
 {
 	BYTE val;
 
@@ -295,7 +313,7 @@ DeviceFailed (BYTE which_device)
 				SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 0);
 				SET_GAME_STATE (DISCUSSED_ULTRON, 0);
 				SET_GAME_STATE (SUPOX_ULTRON_HELP, 0);
-				return (FALSE);
+				return DEVICE_SUCCESS;
 			}
 			break;
 		case ARTIFACT_2_DEVICE:
@@ -329,14 +347,14 @@ DeviceFailed (BYTE which_device)
 					CloneShipFragment (CHMMR_SHIP,
 							&GLOBAL (npc_built_ship_q), 0);
 				}
-				return (MAKE_WORD (0, 1));
+				return DEVICE_SUCCESS_NO_SOUND;
 			}
 			break;
 		case UTWIG_BOMB_DEVICE:
 			SET_GAME_STATE (UTWIG_BOMB, 0);
 			GLOBAL (CurrentActivity) &= ~IN_BATTLE;
 			GLOBAL_SIS (CrewEnlisted) = (COUNT)~0;
-			return (FALSE);
+			return DEVICE_SUCCESS;
 		case ULTRON_0_DEVICE:
 			break;
 		case ULTRON_1_DEVICE:
@@ -380,7 +398,7 @@ DeviceFailed (BYTE which_device)
 				if (playerInPlanetOrbit ())
 					SaveSolarSysLocation ();
 			}
-			return (FALSE);
+			return DEVICE_SUCCESS;
 		case AQUA_HELIX_DEVICE:
 			val = GET_GAME_STATE (ULTRON_CONDITION);
 			if (val)
@@ -389,7 +407,7 @@ DeviceFailed (BYTE which_device)
 				SET_GAME_STATE (AQUA_HELIX_ON_SHIP, 0);
 				SET_GAME_STATE (DISCUSSED_ULTRON, 0);
 				SET_GAME_STATE (SUPOX_ULTRON_HELP, 0);
-				return (FALSE);
+				return DEVICE_SUCCESS;
 			}
 			break;
 		case CLEAR_SPINDLE_DEVICE:
@@ -400,13 +418,13 @@ DeviceFailed (BYTE which_device)
 				SET_GAME_STATE (CLEAR_SPINDLE_ON_SHIP, 0);
 				SET_GAME_STATE (DISCUSSED_ULTRON, 0);
 				SET_GAME_STATE (SUPOX_ULTRON_HELP, 0);
-				return (FALSE);
+				return DEVICE_SUCCESS;
 			}
 			break;
 		case UMGAH_HYPERWAVE_DEVICE:
 		case BURVIX_HYPERWAVE_DEVICE:
 			if (UseCaster ())
-				return FALSE;
+				return DEVICE_SUCCESS;
 			break;
 		case TAALO_PROTECTOR_DEVICE:
 			break;
@@ -431,7 +449,7 @@ DeviceFailed (BYTE which_device)
 				 */
 				GLOBAL_SIS (FuelOnBoard) -= PORTAL_FUEL_COST;
 				SET_GAME_STATE (PORTAL_COUNTER, 1);
-				return (FALSE);
+				return DEVICE_SUCCESS;
 			}
 			break;
 		case URQUAN_WARP_DEVICE:
@@ -440,95 +458,89 @@ DeviceFailed (BYTE which_device)
 			break;
 	}
 
-	return (TRUE);
+	return DEVICE_FAILURE;
 }
 
 static BOOLEAN
 DoManipulateDevices (MENU_STATE *pMS)
 {
-	BYTE NewState;
+	DEVICES_STATE *devState = pMS->privData;
 	BOOLEAN select, cancel, back, forward;
+	BOOLEAN pagefwd, pageback;
+	
 	select = PulsedInputState.menu[KEY_MENU_SELECT];
 	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
 	back = PulsedInputState.menu[KEY_MENU_UP] ||
 			PulsedInputState.menu[KEY_MENU_LEFT];
 	forward = PulsedInputState.menu[KEY_MENU_DOWN]
 			|| PulsedInputState.menu[KEY_MENU_RIGHT];
+	pagefwd = PulsedInputState.menu[KEY_MENU_PAGE_DOWN];
+	pageback = PulsedInputState.menu[KEY_MENU_PAGE_UP];
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
+		return FALSE;
 
-	if (!pMS->Initialized)
+	if (cancel)
 	{
-		DrawDevices (pMS, (BYTE)~0, (BYTE)~0);
-
-		pMS->InputFunc = DoManipulateDevices;
-		pMS->Initialized = TRUE;
-		NewState = pMS->CurState;
-		goto SelectDevice;
-	}
-	else if (cancel)
-	{
-		return (FALSE);
+		return FALSE;
 	}
 	else if (select)
 	{
-		UWORD status;
+		DeviceStatus status;
 
 		LockMutex (GraphicsLock);
-		status = DeviceFailed (
-				((BYTE*)pMS->CurFrame)[pMS->CurState - 1]
-				);
-		NewState = LOBYTE (status);
-		if (NewState)
+		status = InvokeDevice (devState->list[pMS->CurState]);
+		if (status == DEVICE_FAILURE)
 			PlayMenuSound (MENU_SOUND_FAILURE);
-		else if (HIBYTE (status) == 0)
+		else if (status == DEVICE_SUCCESS)
 			PlayMenuSound (MENU_SOUND_INVOKED);
 		UnlockMutex (GraphicsLock);
 
-		return ((BOOLEAN)NewState);
+		return (status == DEVICE_FAILURE);
 	}
 	else
 	{
 		SIZE NewTop;
+		SIZE NewState;
 
-		NewTop = pMS->first_item.y;
-		NewState = pMS->CurState - 1;
+		NewTop = devState->topIndex;
+		NewState = pMS->CurState;
+		
 		if (back)
-		{
-			if (NewState > 0)
-				--NewState;
-
-			if ((SIZE)NewState < NewTop && (NewTop -= MAX_VIS_DEVICES) < 0)
-				NewTop = 0;
-		}
+			--NewState;
 		else if (forward)
-		{
 			++NewState;
-			if (NewState == (BYTE)pMS->first_item.x)
-				NewState = (BYTE)(pMS->first_item.x - 1);
+		else if (pagefwd)
+			NewState += MAX_VIS_DEVICES;
+		else if (pageback)
+			NewState -= MAX_VIS_DEVICES;
 
-			if (NewState >= NewTop + MAX_VIS_DEVICES)
-				NewTop = NewState;
-		}
+		if (NewState < 0)
+			NewState = 0;
+		else if (NewState >= devState->count)
+			NewState = devState->count - 1;
 
-		++NewState;
+		if (NewState < NewTop || NewState >= NewTop + MAX_VIS_DEVICES)
+			NewTop = NewState - NewState % MAX_VIS_DEVICES;
+
 		if (NewState != pMS->CurState)
 		{
-			if (NewTop != pMS->first_item.y)
-			{
-				pMS->first_item.y = NewTop;
-				pMS->CurState = (BYTE)~0;
+			if (NewTop != devState->topIndex)
+			{	// redraw the display
+				devState->topIndex = NewTop;
+				DrawDevices (devState, (COUNT)~0, NewState);
 			}
-SelectDevice:
-			DrawDevices (pMS, (BYTE)(pMS->CurState - 1), (BYTE)(NewState - 1));
+			else
+			{	// move selection to new device
+				DrawDevices (devState, pMS->CurState, NewState);
+			}
 			pMS->CurState = NewState;
 		}
 
 		SleepThread (ONE_SECOND / 30);
 	}
 
-	return (TRUE);
+	return TRUE;
 }
 
 SIZE
@@ -634,48 +646,47 @@ InventoryDevices (BYTE *pDeviceMap, COUNT Size)
 		}
 	}
 	
-	return (DevicesOnBoard);
+	return DevicesOnBoard;
 }
 
 BOOLEAN
 DevicesMenu (void)
 {
-	BYTE DeviceMap[NUM_DEVICES];
 	MENU_STATE MenuState;
+	DEVICES_STATE DevicesState;
 
 	memset (&MenuState, 0, sizeof MenuState);
+	MenuState.privData = &DevicesState;
 
-	MenuState.first_item.x = InventoryDevices (DeviceMap, NUM_DEVICES);
-	if (MenuState.first_item.x)
+	memset (&DevicesState, 0, sizeof DevicesState);
+
+	DevicesState.count = InventoryDevices (DevicesState.list, NUM_DEVICES);
+	if (!DevicesState.count)
+		return FALSE;
+
+	DrawDevices (&DevicesState, (COUNT)~0, MenuState.CurState);
+
+	SetMenuSounds (MENU_SOUND_ARROWS | MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN,
+			MENU_SOUND_SELECT);
+
+	MenuState.InputFunc = DoManipulateDevices;
+	DoInput (&MenuState, TRUE);
+
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
+	if (GLOBAL_SIS (CrewEnlisted) != (COUNT)~0
+			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
-		MenuState.InputFunc = DoManipulateDevices;
-		MenuState.Initialized = FALSE;
-		// XXX: 1-based index because this had to work around the
-		//   pSolarSysState->MenuState.CurState abuse. Should be changed.
-		MenuState.CurState = 1;
-		MenuState.first_item.y = 0;
+		LockMutex (GraphicsLock);
+		ClearSISRect (DRAW_SIS_DISPLAY);
+		UnlockMutex (GraphicsLock);
 
-		// XXX: CurFrame hack
-		MenuState.CurFrame = (FRAME)DeviceMap;
-		//DoManipulateDevices (pMS); /* to make sure it's initialized */
-		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-		DoInput (&MenuState, TRUE);
-
-		if (GLOBAL_SIS (CrewEnlisted) != (COUNT)~0
-				&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
-		{
-			LockMutex (GraphicsLock);
-			ClearSISRect (DRAW_SIS_DISPLAY);
-			UnlockMutex (GraphicsLock);
-
-			if (!GET_GAME_STATE (PORTAL_COUNTER)
-					&& !(GLOBAL (CurrentActivity) & START_ENCOUNTER)
-					&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
-// DrawMenuStateStrings (PM_SCAN, pMS->CurState - 1);
-				return (TRUE);
-		}
+		if (!GET_GAME_STATE (PORTAL_COUNTER)
+				&& !(GLOBAL (CurrentActivity) & START_ENCOUNTER)
+				&& GLOBAL_SIS (CrewEnlisted) != (COUNT)~0)
+			return TRUE;
 	}
 	
-	return (FALSE);
+	return FALSE;
 }
 

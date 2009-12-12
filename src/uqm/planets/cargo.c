@@ -143,9 +143,10 @@ DrawCargoDisplay (void)
 
 	r.corner.x = 2;
 	r.extent.width = FIELD_WIDTH + 1;
-
 	r.corner.y = 20;
-	r.extent.height = 109;
+	// XXX: Shouldn't the height be 1 less? This draws the bottom border
+	//   1 pixel too low. Or if not, why do we need another box anyway?
+	r.extent.height = 129 - r.corner.y;
 	DrawStarConBox (&r, 1,
 			SHADOWBOX_MEDIUM_COLOR, SHADOWBOX_DARK_COLOR,
 			TRUE, CARGO_BACK_COLOR);
