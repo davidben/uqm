@@ -354,21 +354,32 @@ DateToString (unsigned char *buf, size_t bufLen,
 }
 
 void
+GetStatusMessageRect (RECT *r)
+{
+	r->corner.x = 2;
+	r->corner.y = 130;
+	r->extent.width = STATUS_MESSAGE_WIDTH;
+	r->extent.height = STATUS_MESSAGE_HEIGHT;
+}
+
+void
 DrawStatusMessage (const UNICODE *pStr)
 {
 	RECT r;
+	RECT ctxRect;
 	TEXT t;
 	UNICODE buf[128];
 	CONTEXT OldContext;
 
 	OldContext = SetContext (StatusContext);
-	GetContextClipRect (&r);
+	GetContextClipRect (&ctxRect);
+	// XXX: Technically, this does not need OffScreenContext. The only reason
+	//   it is used is to avoid preserving StatusContext settings.
 	SetContext (OffScreenContext);
 	SetContextFGFrame (Screen);
-	r.corner.x += 2;
-	r.corner.y += 130;
-	r.extent.width = STATUS_MESSAGE_WIDTH;
-	r.extent.height = STATUS_MESSAGE_HEIGHT;
+	GetStatusMessageRect (&r);
+	r.corner.x += ctxRect.corner.x;
+	r.corner.y += ctxRect.corner.y;
 	SetContextClipRect (&r);
 
 	BatchGraphics ();

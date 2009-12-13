@@ -37,23 +37,36 @@ static const POINT ship_pos[MAX_BUILT_SHIPS] =
 	SUPPORT_SHIP_PTS
 };
 
-// Ship icon positions split into (lower half) left and right (upper)
-// and sorted in the Y coord. These are used for navigation around the
-// escort positions.
-static POINT sorted_ship_pos[MAX_BUILT_SHIPS];
+typedef struct
+{
+	// Ship icon positions split into (lower half) left and right (upper)
+	// and sorted in the Y coord. These are used for navigation around the
+	// escort positions.
+	POINT shipPos[MAX_BUILT_SHIPS];
+	COUNT count;
+			// Number of ships
+	
+	POINT curShipPt;
+			// Location of the currently selected escort
+	FRAME curShipFrame;
+			// Icon of the currently selected escort
+	bool modifyingCrew;
+			// true when in crew modification "sub-menu". This is simple
+			// enough that it does not require a real sub-menu.
+} ROSTER_STATE;
 
-static SHIP_FRAGMENT* LockSupportShip (MENU_STATE *pMS, HSHIPFRAG *phFrag);
+static SHIP_FRAGMENT* LockSupportShip (ROSTER_STATE *, HSHIPFRAG *phFrag);
 
 static void
-drawSupportShip (MENU_STATE *pMS, BOOLEAN filled)
+drawSupportShip (ROSTER_STATE *rosterState, bool filled)
 {
 	STAMP s;
 
-	if (!pMS->flash_frame0)
+	if (!rosterState->curShipFrame)
 		return;
 
-	s.origin = pMS->first_item;
-	s.frame = pMS->flash_frame0;
+	s.origin = rosterState->curShipPt;
+	s.frame = rosterState->curShipFrame;
 	
 	if (filled)
 		DrawFilledStamp (&s);
@@ -62,22 +75,22 @@ drawSupportShip (MENU_STATE *pMS, BOOLEAN filled)
 }
 
 static void
-getSupportShipIcon (MENU_STATE *pMS)
+getSupportShipIcon (ROSTER_STATE *rosterState)
 {
 	HSHIPFRAG hShipFrag;
 	SHIP_FRAGMENT *ShipFragPtr;
 
-	pMS->flash_frame0 = NULL;
-	ShipFragPtr = LockSupportShip (pMS, &hShipFrag);
+	rosterState->curShipFrame = NULL;
+	ShipFragPtr = LockSupportShip (rosterState, &hShipFrag);
 	if (!ShipFragPtr)
 		return;
 
-	pMS->flash_frame0 = ShipFragPtr->icons;
+	rosterState->curShipFrame = ShipFragPtr->icons;
 	UnlockShipFrag (&GLOBAL (built_ship_q), hShipFrag);
 }
 
 static void
-flashSupportShip (MENU_STATE *pMS)
+flashSupportShip (ROSTER_STATE *rosterState)
 {
 	static Color c = BUILD_COLOR (MAKE_RGB15_INIT (0x1F, 0x00, 0x00), 0x24);
 	static TimeCount NextTime = 0;
@@ -108,16 +121,18 @@ flashSupportShip (MENU_STATE *pMS)
 		}
 		SetContextForeGroundColor (c);
 
-		drawSupportShip (pMS, TRUE);
+		drawSupportShip (rosterState, TRUE);
 	}
 }
 
 static SHIP_FRAGMENT *
-LockSupportShip (MENU_STATE *pMS, HSHIPFRAG *phFrag)
+LockSupportShip (ROSTER_STATE *rosterState, HSHIPFRAG *phFrag)
 {
 	const POINT *pship_pos;
 	HSHIPFRAG hStarShip, hNextShip;
 
+	// Lookup the current escort's location in the unsorted points list
+	// to find the original escort index
 	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)),
 			pship_pos = ship_pos;
 			hStarShip; hStarShip = hNextShip, ++pship_pos)
@@ -126,8 +141,7 @@ LockSupportShip (MENU_STATE *pMS, HSHIPFRAG *phFrag)
 
 		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
-		if (pship_pos->x == pMS->first_item.x
-				&& pship_pos->y == pMS->first_item.y)
+		if (pointsEqual (*pship_pos, rosterState->curShipPt))
 		{
 			*phFrag = hStarShip;
 			return StarShipPtr;
@@ -140,8 +154,18 @@ LockSupportShip (MENU_STATE *pMS, HSHIPFRAG *phFrag)
 	return NULL;
 }
 
+static void
+flashSupportShipCrew (void)
+{
+	RECT r;
+
+	SetContext (StatusContext);
+	GetStatusMessageRect (&r);
+	SetFlashRect (&r);
+}
+
 static BOOLEAN
-DeltaSupportCrew (MENU_STATE *pMS, SIZE crew_delta)
+DeltaSupportCrew (ROSTER_STATE *rosterState, SIZE crew_delta)
 {
 	BOOLEAN ret = FALSE;
 	UNICODE buf[40];
@@ -150,7 +174,7 @@ DeltaSupportCrew (MENU_STATE *pMS, SIZE crew_delta)
 	SHIP_FRAGMENT *StarShipPtr;
 	FLEET_INFO *TemplatePtr;
 
-	StarShipPtr = LockSupportShip (pMS, &hShipFrag);
+	StarShipPtr = LockSupportShip (rosterState, &hShipFrag);
 	if (!StarShipPtr)
 		return FALSE;
 
@@ -178,14 +202,7 @@ DeltaSupportCrew (MENU_STATE *pMS, SIZE crew_delta)
 		DeltaSISGauges (-crew_delta, 0, 0);
 		if (crew_delta)
 		{
-			RECT r;
-
-			r.corner.x = 2;
-			r.corner.y = 130;
-			r.extent.width = STATUS_MESSAGE_WIDTH;
-			r.extent.height = STATUS_MESSAGE_HEIGHT;
-			SetContext (StatusContext);
-			SetFlashRect (&r);
+			flashSupportShipCrew ();
 		}
 		ret = TRUE;
 	}
@@ -196,21 +213,26 @@ DeltaSupportCrew (MENU_STATE *pMS, SIZE crew_delta)
 	return ret;
 }
 
-#define SHIP_TOGGLE ((BYTE)(1 << 7))
-
 static void
-RosterCleanup (MENU_STATE *pMS)
+drawModifiedSupportShip (ROSTER_STATE *rosterState)
 {
 	SetContext (StatusContext);
-	SetContextForeGroundColor (WHITE_COLOR);
-	drawSupportShip (pMS, (pMS->CurState & SHIP_TOGGLE));
+	SetContextForeGroundColor (ROSTER_MODIFY_SHIP_COLOR);
+	drawSupportShip (rosterState, TRUE);
+}
+
+static void
+selectSupportShip (ROSTER_STATE *rosterState, COUNT shipIndex)
+{
+	rosterState->curShipPt = rosterState->shipPos[shipIndex];
+	getSupportShipIcon (rosterState);
+	DeltaSupportCrew (rosterState, 0);
 }
 
 static BOOLEAN
 DoModifyRoster (MENU_STATE *pMS)
 {
-	BYTE NewState;
-	RECT r;
+	ROSTER_STATE *rosterState = pMS->privData;
 	BOOLEAN select, cancel, up, down, horiz;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -224,61 +246,29 @@ DoModifyRoster (MENU_STATE *pMS)
 	horiz = PulsedInputState.menu[KEY_MENU_LEFT] ||
 			PulsedInputState.menu[KEY_MENU_RIGHT];
 
-	if (pMS->Initialized && (pMS->CurState & SHIP_TOGGLE))
+	if (cancel && !rosterState->modifyingCrew)
 	{
-		SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
-				MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
-	}
-	else
-	{
-		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	}
-
-	if (!pMS->Initialized)
-	{
-		pMS->InputFunc = DoModifyRoster;
-		pMS->Initialized = TRUE;
-		pMS->CurState = 0;
-		pMS->first_item = sorted_ship_pos[pMS->CurState];
-
-		LockMutex (GraphicsLock);
-		SetContext (StatusContext);
-		getSupportShipIcon (pMS);
-		DeltaSupportCrew (pMS, 0);
-		UnlockMutex (GraphicsLock);
-
-		return TRUE;
-	}
-	else if (cancel && !(pMS->CurState & SHIP_TOGGLE))
-	{
-		LockMutex (GraphicsLock);
-		SetFlashRect (NULL);
-		RosterCleanup (pMS);
-		DrawStatusMessage (NULL);
-		UnlockMutex (GraphicsLock);
-
 		return FALSE;
 	}
 	else if (select || cancel)
 	{
 		LockMutex (GraphicsLock);
-		pMS->CurState ^= SHIP_TOGGLE;
-		if (!(pMS->CurState & SHIP_TOGGLE))
+		rosterState->modifyingCrew ^= true;
+		if (!rosterState->modifyingCrew)
+		{
 			SetFlashRect (NULL);
+			SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+		}
 		else
 		{
-			RosterCleanup (pMS);
-
-			r.corner.x = 2;
-			r.corner.y = 130;
-			r.extent.width = STATUS_MESSAGE_WIDTH;
-			r.extent.height = STATUS_MESSAGE_HEIGHT;
-			SetContext (StatusContext);
-			SetFlashRect (&r);
+			drawModifiedSupportShip (rosterState);
+			flashSupportShipCrew ();
+			SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+					MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 		}
 		UnlockMutex (GraphicsLock);
 	}
-	else if (pMS->CurState & SHIP_TOGGLE)
+	else if (rosterState->modifyingCrew)
 	{
 		SIZE delta = 0;
 		BOOLEAN failed = FALSE;
@@ -301,9 +291,10 @@ DoModifyRoster (MENU_STATE *pMS)
 		if (delta != 0)
 		{
 			LockMutex (GraphicsLock);
-			failed = !DeltaSupportCrew (pMS, delta);
+			failed = !DeltaSupportCrew (rosterState, delta);
 			UnlockMutex (GraphicsLock);
 		}
+
 		if (failed)
 		{	// not enough room or crew
 			PlayMenuSound (MENU_SOUND_FAILURE);
@@ -311,16 +302,20 @@ DoModifyRoster (MENU_STATE *pMS)
 	}
 	else
 	{
-		POINT *pship_pos = sorted_ship_pos;
-		BYTE num_escorts = (BYTE) pMS->delta_item;
-		BYTE top_right = (num_escorts + 1) >> 1;
+		COUNT NewState;
+		POINT *pship_pos = rosterState->shipPos;
+		COUNT top_right = (rosterState->count + 1) >> 1;
 
 		NewState = pMS->CurState;
 		
-		if (horiz)
+		if (rosterState->count < 2)
+		{
+			// no navigation allowed
+		}
+		else if (horiz)
 		{
 			if (NewState == top_right - 1)
-				NewState = num_escorts - 1;
+				NewState = rosterState->count - 1;
 			else if (NewState >= top_right)
 			{
 				NewState -= top_right;
@@ -338,7 +333,7 @@ DoModifyRoster (MENU_STATE *pMS)
 		else if (down)
 		{
 			++NewState;
-			if (NewState == num_escorts)
+			if (NewState == rosterState->count)
 				NewState = top_right;
 			else if (NewState == top_right)
 				NewState = 0;
@@ -348,7 +343,7 @@ DoModifyRoster (MENU_STATE *pMS)
 			if (NewState == 0)
 				NewState = top_right - 1;
 			else if (NewState == top_right)
-				NewState = num_escorts - 1;
+				NewState = rosterState->count - 1;
 			else
 				--NewState;
 		}
@@ -360,15 +355,13 @@ DoModifyRoster (MENU_STATE *pMS)
 		if (NewState != pMS->CurState)
 		{
 			// Draw the previous escort in unselected state
-			drawSupportShip (pMS, FALSE);
+			drawSupportShip (rosterState, FALSE);
 			// Select the new one
-			pMS->first_item = pship_pos[NewState];
-			getSupportShipIcon (pMS);
-			DeltaSupportCrew (pMS, 0);
+			selectSupportShip (rosterState, NewState);
 			pMS->CurState = NewState;
 		}
 
-		flashSupportShip (pMS);
+		flashSupportShip (rosterState);
 
 		UnbatchGraphics ();
 		UnlockMutex (GraphicsLock);
@@ -403,30 +396,41 @@ compShipPos (const void *ptr1, const void *ptr2)
 BOOLEAN
 RosterMenu (void)
 {
-	SIZE num_support_ships;
+	MENU_STATE MenuState;
+	ROSTER_STATE RosterState;
 
-	num_support_ships = CountLinks (&GLOBAL (built_ship_q));
-	if (num_support_ships)
-	{
-		MENU_STATE MenuState;
+	memset (&MenuState, 0, sizeof MenuState);
+	MenuState.privData = &RosterState;
 
-		// Get the ship positions we will use and sort on X then Y
-		assert (sizeof (sorted_ship_pos) == sizeof (ship_pos));
-		memcpy (sorted_ship_pos, ship_pos, sizeof (ship_pos));
-		qsort (sorted_ship_pos, num_support_ships,
-				sizeof (sorted_ship_pos[0]), compShipPos);
-
-		memset (&MenuState, 0, sizeof (MenuState));
-		MenuState.InputFunc = DoModifyRoster;
-		MenuState.Initialized = FALSE;
-		MenuState.delta_item = num_support_ships;
-		
-		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-		DoInput (&MenuState, TRUE);
-
-		return TRUE;
-	}
+	memset (&RosterState, 0, sizeof RosterState);
 	
-	return FALSE;
+	RosterState.count = CountLinks (&GLOBAL (built_ship_q));
+	if (!RosterState.count)
+		return FALSE;
+
+	// Get the escort positions we will use and sort on X then Y
+	assert (sizeof (RosterState.shipPos) == sizeof (ship_pos));
+	memcpy (RosterState.shipPos, ship_pos, sizeof (ship_pos));
+	qsort (RosterState.shipPos, RosterState.count,
+			sizeof (RosterState.shipPos[0]), compShipPos);
+
+	LockMutex (GraphicsLock);
+	SetContext (StatusContext);
+	selectSupportShip (&RosterState, MenuState.CurState);
+	UnlockMutex (GraphicsLock);
+
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
+	MenuState.InputFunc = DoModifyRoster;
+	DoInput (&MenuState, TRUE);
+
+	LockMutex (GraphicsLock);
+	SetContext (StatusContext);
+	// unselect the last ship
+	drawSupportShip (&RosterState, FALSE);
+	DrawStatusMessage (NULL);
+	UnlockMutex (GraphicsLock);
+
+	return TRUE;
 }
 

@@ -385,6 +385,12 @@
 		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x1F, 0x1F), 0x0B)
 
 
+// === Roster menu ===
+
+#define ROSTER_MODIFY_SHIP_COLOR \
+		WHITE_COLOR
+
+
 // Temporary, until we can use C'99 features:
 #define BLACK_COLOR_INIT \
 		BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x00, 0x00), 0x00)
