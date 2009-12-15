@@ -60,6 +60,18 @@ static void DrawInnerSystem (void);
 static void DrawOuterSystem (void);
 static void ValidateOrbits (void);
 
+// SolarSysMenu() items
+enum SolarSysMenuMenuItems
+{
+	// XXX: Must match the enum in menustat.h
+	STARMAP = 1,
+	EQUIP_DEVICE,
+	CARGO,
+	ROSTER,
+	GAME_MENU,
+	NAVIGATION,
+};
+
 
 SOLARSYS_STATE *pSolarSysState;
 FRAME SISIPFrame;

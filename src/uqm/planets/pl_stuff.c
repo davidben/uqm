@@ -242,19 +242,19 @@ RotatePlanetSphere (BOOLEAN keepRate)
 	PrepareNextRotationFrame ();
 }
 
-// rgb.a is ignored
+// tintColor.a is ignored
 void
-DrawPlanet (int x, int y, int dy, Color rgb)
+DrawPlanet (int dy, Color tintColor)
 {
 	STAMP s;
 	UBYTE a = 128;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
-	s.origin.x = x;
-	s.origin.y = y;
+	s.origin.x = 0;
+	s.origin.y = 0;
 	s.frame = pSolarSysState->TopoFrame;
 	BatchGraphics ();
-	if (sameColor (rgb, BLACK_COLOR))
+	if (sameColor (tintColor, BLACK_COLOR))
 	{	// no tint -- just draw the surface
 		DrawStamp (&s);
 	}
@@ -265,20 +265,21 @@ DrawPlanet (int x, int y, int dy, Color rgb)
 		COUNT framew, frameh;
 		RECT srect, drect, *psrect = NULL, *pdrect = NULL;
 		FRAME tintFrame[2];
+
 		tintFrame[0] = SetAbsFrameIndex (Orbit->TintFrame, 0);
 		tintFrame[1] = SetAbsFrameIndex (Orbit->TintFrame, 1);
 
 		framew = GetFrameWidth (tintFrame[0]);
 		frameh = GetFrameHeight (tintFrame[0]);
 
-		if (!sameColor (rgb, pSolarSysState->Tint_rgb))
+		if (!sameColor (tintColor, Orbit->TintColor))
 		{
-			pSolarSysState->Tint_rgb = rgb;
+			Orbit->TintColor = tintColor;
 			// Buffer the topoMap to the tintFrame;
 			arith_frame_blit (s.frame, NULL, tintFrame[0], NULL, 0, 0);
-			r = rgb.r / 2;
-			g = rgb.g / 2;
-			b = rgb.b / 2;
+			r = tintColor.r / 2;
+			g = tintColor.g / 2;
+			b = tintColor.b / 2;
 #ifdef USE_ADDITIVE_SCAN_BLIT
 			a = 255;
 #endif

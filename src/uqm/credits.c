@@ -39,7 +39,7 @@
 
 #define CREDITS_TIMEOUT   (ONE_SECOND * 5)
 
-#define TRANS_COLOR   BLUE_COLOR
+#define TRANS_COLOR   BRIGHT_BLUE_COLOR
 
 // Positive or negative scroll rate in pixel lines per second
 static int CreditsRate;

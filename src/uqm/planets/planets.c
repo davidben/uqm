@@ -35,6 +35,20 @@
 #include "libs/graphics/gfx_common.h"
 
 
+// PlanetOrbitMenu() items
+enum PlanetMenuItems
+{
+	// XXX: Must match the enum in menustat.h
+	SCAN = 0,
+	STARMAP,
+	EQUIP_DEVICE,
+	CARGO,
+	ROSTER,
+	GAME_MENU,
+	NAVIGATION,
+};
+
+
 void
 DrawScannedObjects (BOOLEAN Reversed)
 {
@@ -138,8 +152,10 @@ typedef enum
 static void
 DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 {
-	RECT r = { { SIS_ORG_X, SIS_ORG_Y }, 
-				{ SIS_SCREEN_WIDTH, SIS_SCREEN_HEIGHT } };
+	RECT r;
+
+	SetContext (SpaceContext);
+	GetContextClipRect (&r);
 
 	BatchGraphics ();
 	
@@ -154,16 +170,14 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 		DrawPlanetSurfaceBorder ();
 	}
 
-	SetContext (SpaceContext);
-	
 	if (Mode == DRAW_ORBITAL_WAIT)
 	{
 		STAMP s;
 
-		s.frame = CaptureDrawable (
-				LoadGraphic (ORBENTER_PMAP_ANIM));
+		SetContext (GetScanContext (NULL));
+		s.frame = CaptureDrawable (LoadGraphic (ORBENTER_PMAP_ANIM));
 		s.origin.x = -SAFE_X;
-		s.origin.y = SIS_SCREEN_HEIGHT - MAP_HEIGHT;
+		s.origin.y = 0;
 		DrawStamp (&s);
 		DestroyDrawable (ReleaseDrawable (s.frame));
 	}
@@ -174,8 +188,8 @@ DrawOrbitalDisplay (DRAW_ORBITAL_MODE Mode)
 
 	if (Mode != DRAW_ORBITAL_WAIT)
 	{
-		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH,
-				SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, BLACK_COLOR);
+		SetContext (GetScanContext (NULL));
+		DrawPlanet (0, BLACK_COLOR);
 	}
 
 	if (Mode != DRAW_ORBITAL_UPDATE)
@@ -277,7 +291,7 @@ FreePlanet (void)
 
 	DestroyDrawable (ReleaseDrawable (Orbit->TintFrame));
 	Orbit->TintFrame = 0;
-	pSolarSysState->Tint_rgb = BLACK_COLOR;
+	Orbit->TintColor = BLACK_COLOR;
 
 	DestroyDrawable (ReleaseDrawable (Orbit->ObjectFrame));
 	Orbit->ObjectFrame = 0;
@@ -347,6 +361,10 @@ DoPlanetOrbit (MENU_STATE *pMS)
 	{
 		case SCAN:
 			ScanSystem ();
+			if (GLOBAL (CurrentActivity) & START_ENCOUNTER)
+			{	// Found Fwiffo on Pluto
+				return FALSE;
+			}
 			break;
 		case EQUIP_DEVICE:
 			select = DevicesMenu ();
@@ -447,6 +465,10 @@ PlanetOrbitMenu (void)
 
 	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
+	// Need to make sure ScanContext is not active because we will destroy it
+	SetContext (SpaceContext);
 	UnlockMutex (GraphicsLock);
 	DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
+
+	DestroyScanContext ();
 }

@@ -270,7 +270,7 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 	SetContext (OldContext);
 	// TODO: Make CONTEXT ref-counted
 	if (ownContext)
-		DestroyContext (context);
+		DestroyScanContext ();
 
 	DestroyDrawable (ReleaseDrawable (saveStamp.frame));
 

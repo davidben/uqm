@@ -70,7 +70,7 @@ DrawPCMenuFrame (RECT *r)
 }
 
 #define ALT_MANIFEST 0x80
-#define ALT_EXIT_MENU0 0x81
+#define ALT_EXIT_MANIFEST 0x81
 
 static UNICODE pm_crew_str[128];
 static UNICODE pm_fuel_str[128];
@@ -151,29 +151,29 @@ GetEndMenuState (BYTE BaseState)
 			return PM_LAUNCH_LANDER;
 			break;
 		case PM_SAVE_GAME:
-			return PM_EXIT_MENU1;
+			return PM_EXIT_GAME_MENU;
 			break;
 		case PM_CONVERSE:
-			return PM_SAVE_LOAD1;
+			return PM_ENCOUNTER_GAME_MENU;
 			break;
 		case PM_FUEL:
-			return PM_EXIT_MENU2;
+			return PM_EXIT_OUTFIT;
 			break;
 		case PM_CREW:
-			return PM_EXIT_MENU3;
+			return PM_EXIT_SHIPYARD;
 			break;
 		case PM_SOUND_ON:
-			return PM_EXIT_MENU4;
+			return PM_EXIT_SETTINGS;
 			break;
 		case PM_ALT_SCAN:
 		case PM_ALT_STARMAP:
 			return PM_ALT_NAVIGATE;
 			break;
 		case PM_ALT_CARGO:
-			return PM_ALT_EXITMENU0;
+			return PM_ALT_EXIT_MANIFEST;
 			break;
 		case PM_ALT_MSCAN:
-			return PM_ALT_EXITMENU1;
+			return PM_ALT_EXIT_SCAN;
 			break;
 	}
 	return BaseState;
@@ -256,7 +256,7 @@ PreviousMenuState (BYTE BaseState, BYTE CurState)
 	switch (AdjBase + CurState)
 	{
 		case PM_SOUND_OFF:
-			NextState = PM_EXIT_MENU4;
+			NextState = PM_EXIT_SETTINGS;
 			break;
 		case PM_MUSIC_ON:
 		case PM_MUSIC_OFF:
@@ -299,9 +299,9 @@ GetAlternateMenu (BYTE *BaseState, BYTE *CurState)
 				*BaseState = PM_ALT_SCAN + adj;
 				*CurState = PM_ALT_MANIFEST - PM_ALT_SCAN - adj;
 				return TRUE;
-			case ALT_EXIT_MENU0:
+			case ALT_EXIT_MANIFEST:
 				*BaseState = PM_ALT_CARGO;
-				*CurState = PM_ALT_EXITMENU0 - PM_ALT_CARGO;
+				*CurState = PM_ALT_EXIT_MANIFEST - PM_ALT_CARGO;
 				return TRUE;
 		}
 		log_add (log_Error, "Unknown state combination: %d, %d",
@@ -332,9 +332,9 @@ GetAlternateMenu (BYTE *BaseState, BYTE *CurState)
 				*BaseState = PM_ALT_CARGO;
 				*CurState = PM_ALT_ROSTER - PM_ALT_CARGO;
 				return TRUE;
-			case PM_SAVE_LOAD0:
+			case PM_GAME_MENU:
 				*BaseState = PM_ALT_SCAN + adj;
-				*CurState = PM_ALT_SAVE0 - PM_ALT_SCAN - adj;
+				*CurState = PM_ALT_GAME_MENU - PM_ALT_SCAN - adj;
 				return TRUE;
 			case PM_NAVIGATE:
 				*BaseState = PM_ALT_SCAN + adj;
@@ -352,9 +352,9 @@ GetAlternateMenu (BYTE *BaseState, BYTE *CurState)
 				*BaseState = PM_ALT_MSCAN;
 				*CurState = PM_ALT_BSCAN - PM_ALT_MSCAN;
 				return TRUE;
-			case PM_EXIT_MENU0:
+			case PM_EXIT_SCAN:
 				*BaseState = PM_ALT_MSCAN;
-				*CurState = PM_ALT_EXITMENU1 - PM_ALT_MSCAN;
+				*CurState = PM_ALT_EXIT_SCAN - PM_ALT_MSCAN;
 				return TRUE;
 			case PM_AUTO_SCAN:
 				*BaseState = PM_ALT_MSCAN;
@@ -381,8 +381,8 @@ ConvertAlternateMenu (BYTE BaseState, BYTE NewState)
 			return (PM_STARMAP - PM_SCAN);
 		case PM_ALT_MANIFEST:
 			return (ALT_MANIFEST);
-		case PM_ALT_SAVE0:
-			return (PM_SAVE_LOAD0 - PM_SCAN);
+		case PM_ALT_GAME_MENU:
+			return (PM_GAME_MENU - PM_SCAN);
 		case PM_ALT_NAVIGATE:
 			return (PM_NAVIGATE - PM_SCAN);
 		case PM_ALT_CARGO:
@@ -391,8 +391,8 @@ ConvertAlternateMenu (BYTE BaseState, BYTE NewState)
 			return (PM_DEVICES - PM_SCAN);
 		case PM_ALT_ROSTER:
 			return (PM_ROSTER - PM_SCAN);
-		case PM_ALT_EXITMENU0:
-			return (ALT_EXIT_MENU0);
+		case PM_ALT_EXIT_MANIFEST:
+			return (ALT_EXIT_MANIFEST);
 		case PM_ALT_MSCAN:
 			return (PM_MIN_SCAN - PM_MIN_SCAN);
 		case PM_ALT_ESCAN:
@@ -403,8 +403,8 @@ ConvertAlternateMenu (BYTE BaseState, BYTE NewState)
 			return (PM_AUTO_SCAN - PM_MIN_SCAN);
 		case PM_ALT_DISPATCH:
 			return (PM_LAUNCH_LANDER - PM_MIN_SCAN);
-		case PM_ALT_EXITMENU1:
-			return (PM_EXIT_MENU0 - PM_MIN_SCAN);
+		case PM_ALT_EXIT_SCAN:
+			return (PM_EXIT_SCAN - PM_MIN_SCAN);
 	}
 	return (NewState);
 }
@@ -432,7 +432,7 @@ DoMenuChooser (MENU_STATE *pMS, BYTE BaseState)
 			pMS->CurState = PM_CARGO - PM_SCAN;
 			return TRUE;
 		}
-		if (NewState == ALT_EXIT_MENU0)
+		if (NewState == ALT_EXIT_MANIFEST)
 		{
 			if (OrigBase == PM_SCAN)
 				DrawMenuStateStrings (PM_ALT_SCAN,
@@ -546,7 +546,7 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 				case PM_CHANGE_SHIP:
 					NewState = 4;
 					break;
-				case PM_EXIT_MENU4:
+				case PM_EXIT_SETTINGS:
 					NewState = 5;
 					break;
 			}

@@ -50,6 +50,19 @@ static COLORMAP hypercmaps[2];
 static BYTE fuel_ticks;
 static COUNT hyper_dx, hyper_dy, hyper_extra;
 
+// HyperspaceMenu() items
+enum HyperMenuItems
+{
+	// XXX: Must match the enum in menustat.h
+	STARMAP = 1,
+	EQUIP_DEVICE,
+	CARGO,
+	ROSTER,
+	GAME_MENU,
+	NAVIGATION,
+};
+
+
 void
 MoveSIS (SIZE *pdx, SIZE *pdy)
 {

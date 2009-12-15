@@ -57,6 +57,15 @@ static POINT planetLoc;
 static RECT cursorRect;
 static FRAME eraseFrame;
 
+// ScanSystem() menu items
+// The first three are from enum PlanetScanTypes in planets.h
+enum ScanMenuItems
+{
+	EXIT_SCAN = NUM_SCAN_TYPES,
+	AUTO_SCAN,
+	DISPATCH_SHUTTLE,
+};
+
 
 void
 RepairBackRect (RECT *pRect)
@@ -100,15 +109,13 @@ static void
 PrintScanTitlePC (TEXT *t, RECT *r, const char *txt, int xpos)
 {
 	t->baseline.x = xpos;
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x3B));
+	SetContextForeGroundColor (SCAN_PC_TITLE_COLOR);
 	t->pStr = txt;
 	t->CharCount = (COUNT)~0;
 	font_DrawText (t);
 	TextRect (t, r, NULL);
 	t->baseline.x += r->extent.width;
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x19), 0x3B));
+	SetContextForeGroundColor (SCAN_INFO_COLOR);
 }
 
 static void
@@ -171,8 +178,7 @@ PrintCoarseScanPC (void)
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x15), 0x3B));
+	SetContextForeGroundColor (SCAN_PC_TITLE_COLOR);
 	SetContextFont (MicroFont);
 	font_DrawText (&t);
 
@@ -357,8 +363,7 @@ PrintCoarseScan3DO (void)
 	t.pStr = buf;
 	t.CharCount = (COUNT)~0;
 
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x19), 0x3B));
+	SetContextForeGroundColor (SCAN_INFO_COLOR);
 	SetContextFont (MicroFont);
 	font_DrawText (&t);
 
@@ -616,7 +621,7 @@ RedrawSurfaceScan (const POINT *newLoc)
 	OldContext = SetContext (ScanContext);
 
 	BatchGraphics ();
-	DrawPlanet (0, 0, 0, BLACK_COLOR);
+	DrawPlanet (0, BLACK_COLOR);
 	DrawScannedObjects (TRUE);
 	if (newLoc)
 	{
@@ -628,11 +633,98 @@ RedrawSurfaceScan (const POINT *newLoc)
 	SetContext (OldContext);
 }
 
-static BOOLEAN DoScan (MENU_STATE *pMS);
+static COUNT
+getLandingFuelNeeded (void)
+{
+	COUNT fuel;
+
+	fuel = pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity << 1;
+	if (fuel > 3 * FUEL_TANK_SCALE)
+		fuel = 3 * FUEL_TANK_SCALE;
+
+	return fuel;
+}
+
+static void
+spawnFwiffo (void)
+{
+	HSHIPFRAG hStarShip;
+
+	EncounterGroup = 0;
+	PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
+	ReinitQueue (&GLOBAL (ip_group_q));
+	assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
+
+	hStarShip = CloneShipFragment (SPATHI_SHIP,
+			&GLOBAL (npc_built_ship_q), 1);
+	if (hStarShip)
+	{
+		SHIP_FRAGMENT *StarShipPtr;
+
+		StarShipPtr = LockShipFrag (&GLOBAL (npc_built_ship_q),
+				hStarShip);
+		// Name Fwiffo
+		StarShipPtr->captains_name_index = NAME_OFFSET +
+				NUM_CAPTAINS_NAMES;
+		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+	}
+}
+
+// Returns TRUE if the parent menu should remain
+static BOOLEAN
+DispatchLander (void)
+{
+	InputFrameCallback *oldCallback;
+	SIZE landingFuel = getLandingFuelNeeded ();
+
+	EraseCoarseScan ();
+
+	// Deactivate planet rotation callback
+	oldCallback = SetInputCallback (NULL);
+
+	LockMutex (GraphicsLock);
+	DeltaSISGauges (0, -landingFuel, 0);
+	SetContext (ScanContext);
+	drawPlanetCursor (FALSE);
+	UnlockMutex (GraphicsLock);
+
+	PlanetSide (planetLoc);
+	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
+		return FALSE;
+
+	if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
+	{
+		/* Create Fwiffo group and go into comm with it */
+		spawnFwiffo ();
+
+		NextActivity |= CHECK_LOAD; /* fake a load game */
+		GLOBAL (CurrentActivity) |= START_ENCOUNTER;
+		SaveSolarSysLocation ();
+
+		return FALSE;
+	}
+
+	if (optWhichCoarseScan == OPT_PC)
+		PrintCoarseScanPC ();
+	else
+		PrintCoarseScan3DO ();
+
+	// Reactivate planet rotation callback
+	SetInputCallback (oldCallback);
+
+	return TRUE;
+}
+
+typedef struct
+{
+	bool success;
+			// true when player selected a location
+} PICK_PLANET_STATE;
 
 static BOOLEAN
-PickPlanetSide (MENU_STATE *pMS)
+DoPickPlanetSide (MENU_STATE *pMS)
 {
+	PICK_PLANET_STATE *pickState = pMS->privData;
 	DWORD TimeIn = GetTimeCounter ();
 	BOOLEAN select, cancel;
 
@@ -641,118 +733,19 @@ PickPlanetSide (MENU_STATE *pMS)
 	
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
-		goto ExitPlanetSide;
+		pickState->success = false;
+		return FALSE;
 	}
 
-	if (!pMS->Initialized)
+	if (cancel)
 	{
-		pMS->InputFunc = PickPlanetSide;
-		SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
-		if (!select)
-		{
-			pMS->Initialized = TRUE;
-
-			LockMutex (GraphicsLock);
-			SetContext (ScanContext);
-			// Set the current flash location
-			setPlanetCursorLoc (planetLoc);
-			savePlanetLocationImage ();
-			UnlockMutex (GraphicsLock);
-
-			InitLander (0);
-		}
+		pickState->success = false;
+		return FALSE;
 	}
-	else if (select || cancel)
+	else if (select)
 	{
-		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-
-		LockMutex (GraphicsLock);
-		DrawStatusMessage (NULL);
-		UnlockMutex (GraphicsLock);
-
-		FlushInput ();
-
-		if (!select)
-		{	// Bailing out
-			LockMutex (GraphicsLock);
-			restorePlanetLocationImage ();
-			UnlockMutex (GraphicsLock);
-		}
-		else
-		{
-			InputFrameCallback *oldCallback;
-			COUNT fuel_required;
-
-			fuel_required = (COUNT)(
-					pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity << 1);
-			if (fuel_required > 3 * FUEL_TANK_SCALE)
-				fuel_required = 3 * FUEL_TANK_SCALE;
-
-			EraseCoarseScan ();
-
-			// Deactivate planet rotation callback
-			oldCallback = SetInputCallback (NULL);
-
-			LockMutex (GraphicsLock);
-			DeltaSISGauges (0, -(SIZE)fuel_required, 0);
-			SetContext (ScanContext);
-			drawPlanetCursor (FALSE);
-			UnlockMutex (GraphicsLock);
-
-			PlanetSide (planetLoc);
-			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-				goto ExitPlanetSide;
-
-			if (GET_GAME_STATE (FOUND_PLUTO_SPATHI) == 1)
-			{
-				/* Create Fwiffo group and go into comm with it */
-				HSHIPFRAG hStarShip;
-
-				NextActivity |= CHECK_LOAD; /* fake a load game */
-				GLOBAL (CurrentActivity) |= START_ENCOUNTER;
-
-				EncounterGroup = 0;
-				PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
-				ReinitQueue (&GLOBAL (ip_group_q));
-				assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
-
-				hStarShip = CloneShipFragment (SPATHI_SHIP,
-						&GLOBAL (npc_built_ship_q), 1);
-				if (hStarShip)
-				{
-					SHIP_FRAGMENT *StarShipPtr;
-
-					StarShipPtr = LockShipFrag (&GLOBAL (npc_built_ship_q),
-							hStarShip);
-					// Name Fwiffo
-					StarShipPtr->captains_name_index = NAME_OFFSET +
-							NUM_CAPTAINS_NAMES;
-					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
-				}
-
-				SaveSolarSysLocation ();
-				return (FALSE);
-			}
-
-			if (optWhichCoarseScan == OPT_PC)
-				PrintCoarseScanPC ();
-			else
-				PrintCoarseScan3DO ();
-
-			// Reactivate planet rotation callback
-			SetInputCallback (oldCallback);
-		}
-
-		DrawMenuStateStrings (PM_MIN_SCAN, DISPATCH_SHUTTLE);
-		LockMutex (GraphicsLock);
-		SetFlashRect (SFR_MENU_3DO);
-		UnlockMutex (GraphicsLock);
-
-ExitPlanetSide:
-		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-
-		pMS->InputFunc = DoScan;
-		pMS->CurState = DISPATCH_SHUTTLE;
+		pickState->success = true;
+		return FALSE;
 	}
 	else
 	{
@@ -791,8 +784,7 @@ ExitPlanetSide:
 				new_pt.y = planetLoc.y;
 		}
 
-		if (new_pt.x != planetLoc.x
-				|| new_pt.y != planetLoc.y)
+		if (!pointsEqual (new_pt, planetLoc))
 		{
 			setPlanetLoc (new_pt, TRUE);
 		}
@@ -805,13 +797,82 @@ ExitPlanetSide:
 		SleepThreadUntil (TimeIn + ONE_SECOND / 40);
 	}
 
-	return (TRUE);
+	return TRUE;
+}
+
+static void
+drawLandingFuelUsage (COUNT fuel)
+{
+	UNICODE buf[100];
+
+	sprintf (buf, "%s%1.1f",
+			GAME_STRING (NAVIGATION_STRING_BASE + 5),
+			(float) fuel / FUEL_TANK_SCALE);
+	DrawStatusMessage (buf);
+}
+
+static void
+eraseLandingFuelUsage (void)
+{
+	LockMutex (GraphicsLock);
+	DrawStatusMessage (NULL);
+	UnlockMutex (GraphicsLock);
+}
+
+static BOOLEAN
+PickPlanetSide (void)
+{
+	MENU_STATE MenuState;
+	PICK_PLANET_STATE PickState;
+	COUNT fuel = getLandingFuelNeeded ();
+	BOOLEAN retval = TRUE;
+
+	memset (&MenuState, 0, sizeof MenuState);
+	MenuState.privData = &PickState;
+
+	LockMutex (GraphicsLock);
+	ClearSISRect (CLEAR_SIS_RADAR);
+	SetContext (ScanContext);
+	BatchGraphics ();
+	DrawPlanet (0, BLACK_COLOR);
+	DrawScannedObjects (FALSE);
+	UnbatchGraphics ();
+
+	drawLandingFuelUsage (fuel);
+	// Set the current flash location
+	setPlanetCursorLoc (planetLoc);
+	savePlanetLocationImage ();
+	UnlockMutex (GraphicsLock);
+
+	InitLander (0);
+
+	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_SELECT);
+
+	PickState.success = false;
+	MenuState.InputFunc = DoPickPlanetSide;
+	DoInput (&MenuState, TRUE);
+
+	eraseLandingFuelUsage ();
+	if (PickState.success)
+	{	// player chose a location
+		retval = DispatchLander ();
+	}
+	else
+	{	// player bailed out
+		LockMutex (GraphicsLock);
+		restorePlanetLocationImage ();
+		UnlockMutex (GraphicsLock);
+	}
+
+	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
+	return retval;
 }
 
 #define NUM_FLASH_COLORS 8
 
 static void
-DrawScannedStuff (COUNT y, BYTE CurState)
+DrawScannedStuff (COUNT y, COUNT scan)
 {
 	HELEMENT hElement, hNextElement;
 	Color OldColor;
@@ -821,76 +882,65 @@ DrawScannedStuff (COUNT y, BYTE CurState)
 	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
 	{
 		ELEMENT *ElementPtr;
-		//Color OldColor;
 		SIZE dy;
+		STAMP s;
 		
 		LockElement (hElement, &ElementPtr);
 		hNextElement = GetSuccElement (ElementPtr);
 
 		dy = y - ElementPtr->current.location.y;
-		if (LOBYTE (ElementPtr->scan_node) == CurState
-				&& dy >= 0)// && dy <= 3)
+		if (LOBYTE (ElementPtr->scan_node) != scan || dy < 0)
+		{	// node of wrong type, or not time for it yet
+			UnlockElement (hElement);
+			continue;
+		}
+
+		// XXX: flag this as 'found' scanned object
+		ElementPtr->state_flags |= APPEARING;
+
+		s.origin = ElementPtr->current.location;
+		
+		if (dy >= NUM_FLASH_COLORS)
+		{	// flashing done for this node, draw normal
+			s.frame = ElementPtr->next.image.frame;
+			DrawStamp (&s);
+		}
+		else
 		{
-			COUNT i;
-			//DWORD Time;
-			STAMP s;
-
-			// XXX: Hack: flag this as a scanned object
-			ElementPtr->state_flags |= APPEARING;
-
-			s.origin = ElementPtr->current.location;
-			s.frame = ElementPtr->current.image.frame;
+			BYTE grad;
+			Color c = WHITE_COLOR;
+			COUNT nodeSize;
 			
-			if (dy >= NUM_FLASH_COLORS)
+			// mineral -- white --> turquoise?? (contrasts with red)
+			// energy -- white --> red (contrasts with white)
+			// bio -- white --> violet (contrasts with green)
+			grad = 0xff - 0xff * dy / (NUM_FLASH_COLORS - 1);
+			switch (scan)
 			{
-				i = (COUNT)(GetFrameIndex (ElementPtr->next.image.frame)
-						- GetFrameIndex (ElementPtr->current.image.frame)
-						+ 1);
-				do
-				{
-					DrawStamp (&s);
-					s.frame = IncFrameIndex (s.frame);
-				} while (--i);
+				case MINERAL_SCAN:
+					c.r = grad;
+					break;
+				case ENERGY_SCAN:
+					c.g = grad;
+					c.b = grad;
+					break;
+				case BIOLOGICAL_SCAN:
+					c.g = grad;
+					break;
 			}
-			else
-			{
-				BYTE r, g, b;
-				Color c;
-				
-				// mineral -- white --> turquoise?? (contrasts with red)
-				// energy -- white --> red (contrasts with white)
-				// bio -- white --> violet (contrasts with green)
-				b = (BYTE)(0x1f - 0x1f * dy / (NUM_FLASH_COLORS - 1));
-				switch (CurState)
-				{
-					case (MINERAL_SCAN):
-						r = b;
-						g = 0x1f;
-						b = 0x1f;
-						break;
-					case (ENERGY_SCAN):
-						r = 0x1f;
-						g = b;
-						break;
-					case (BIOLOGICAL_SCAN):
-						r = 0x1f;
-						g = b;
-						b = 0x1f;
-						break;
-				}
-				
-				c = BUILD_COLOR (MAKE_RGB15 (r, g, b), 0);
-								
-				SetContextForeGroundColor (c);
-				i = (COUNT)(GetFrameIndex (ElementPtr->next.image.frame)
-						- GetFrameIndex (ElementPtr->current.image.frame)
-						+ 1);
-				do
-				{
-					DrawFilledStamp (&s);
-					s.frame = IncFrameIndex (s.frame);
-				} while (--i);
-			}
+			
+			SetContextForeGroundColor (c);
+			
+			// flash the node from the smallest size to node size
+			// Get the node size for mineral, or number of transitions
+			// for other scan types (was set by GeneratePlanetSide())
+			nodeSize = GetFrameIndex (ElementPtr->next.image.frame)
+					- GetFrameIndex (ElementPtr->current.image.frame);
+			if (dy > nodeSize)
+				dy = nodeSize;
+			
+			s.frame = SetRelFrameIndex (ElementPtr->current.image.frame, dy);
+			DrawFilledStamp (&s);
 		}
 
 		UnlockElement (hElement);
@@ -920,248 +970,215 @@ callGenerateForScanType (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 	return false;
 }
 
-static BOOLEAN
-DoScan (MENU_STATE *pMS)
+static void
+ScanPlanet (COUNT scanType)
 {
 #define SCAN_DURATION   (ONE_SECOND * 7 / 4)
 // NUM_FLASH_COLORS for flashing blips; 1 for the final frame
 #define SCAN_LINES      (MAP_HEIGHT + NUM_FLASH_COLORS + 1)
 #define SCAN_LINE_WAIT  (SCAN_DURATION / SCAN_LINES)
+
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
+	COUNT startScan, endScan;
+	COUNT scan;
+	RECT r;
+	static const Color textColors[] =
+	{
+		SCAN_MINERAL_TEXT_COLOR,
+		SCAN_ENERGY_TEXT_COLOR,
+		SCAN_BIOLOGICAL_TEXT_COLOR,
+	};
+	static const Color tintColors[] =
+	{
+		SCAN_MINERAL_TINT_COLOR,
+		SCAN_ENERGY_TINT_COLOR,
+		SCAN_BIOLOGICAL_TINT_COLOR,
+	};
+
+	if (scanType == AUTO_SCAN)
+	{
+		startScan = MINERAL_SCAN;
+		endScan = BIOLOGICAL_SCAN;
+	}
+	else
+	{
+		startScan = scanType;
+		endScan = scanType;
+	}
+
+	for (scan = startScan; scan <= endScan; ++scan)
+	{
+		TEXT t;
+		SWORD i;
+		Color tintColor;
+				// Alpha value will be ignored.
+		TimeCount TimeOut;
+
+		t.baseline.x = SIS_SCREEN_WIDTH >> 1;
+		t.baseline.y = SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7;
+		t.align = ALIGN_CENTER;
+		t.CharCount = (COUNT)~0;
+
+		pSolarSysState->CurNode = (COUNT)~0;
+		callGenerateForScanType (pSolarSysState,
+				pSolarSysState->pOrbitalDesc, &pSolarSysState->CurNode,
+				scan);
+		t.pStr = GAME_STRING (SCAN_STRING_BASE + scan);
+
+		LockMutex (GraphicsLock);
+		SetContext (SpaceContext);
+		r.corner.x = 0;
+		r.corner.y = t.baseline.y - 10;
+		r.extent.width = SIS_SCREEN_WIDTH;
+		r.extent.height = t.baseline.y - r.corner.y + 1;
+		RepairBackRect (&r);
+
+		SetContextFont (MicroFont);
+		SetContextForeGroundColor (textColors[scan]);
+		font_DrawText (&t);
+
+		SetContext (ScanContext);
+		UnlockMutex (GraphicsLock);
+
+		// Draw a virgin surface
+		LockMutex (GraphicsLock);
+		BatchGraphics ();
+		DrawPlanet (0, BLACK_COLOR);
+		UnbatchGraphics ();
+		UnlockMutex (GraphicsLock);
+
+		tintColor = tintColors[scan];
+
+		// Draw the scan slowly line by line
+		TimeOut = GetTimeCounter ();
+		for (i = 0; i < SCAN_LINES; i++)
+		{
+			TimeOut += SCAN_LINE_WAIT;
+			if (WaitForAnyButtonUntil (TRUE, TimeOut, FALSE))
+				break;
+
+			LockMutex (GraphicsLock);
+			BatchGraphics ();
+			DrawPlanet (i, tintColor);
+			DrawScannedStuff (i, scan);
+			UnbatchGraphics ();
+#ifdef SPIN_ON_SCAN
+			RotatePlanetSphere (TRUE);
+#endif
+			UnlockMutex (GraphicsLock);
+		}
+
+		if (i < SCAN_LINES)
+		{	// Aborted by a keypress; draw in finished state
+			LockMutex (GraphicsLock);
+			BatchGraphics ();
+			// dy < 0 means "from dy to the end"
+			DrawPlanet (-i, tintColor);
+			DrawScannedStuff (SCAN_LINES - 1, scan);
+			UnbatchGraphics ();
+			UnlockMutex (GraphicsLock);
+		}
+
+		// Reset the last used tint color
+		Orbit->TintColor = BLACK_COLOR;
+	}
+
+	LockMutex (GraphicsLock);
+	SetContext (SpaceContext);
+	r.corner.x = 0;
+	r.corner.y = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7) - 10;
+	r.extent.width = SIS_SCREEN_WIDTH;
+	r.extent.height = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7)
+			- r.corner.y + 1;
+	RepairBackRect (&r);
+
+	SetContext (ScanContext);
+	if (scanType == AUTO_SCAN)
+	{	// clear the last scan
+		DrawPlanet (0, BLACK_COLOR);
+		DrawScannedObjects (FALSE);
+	}
+
+	UnlockMutex (GraphicsLock);
+	FlushInput ();
+}
+
+static BOOLEAN
+DoScan (MENU_STATE *pMS)
+{
 	BOOLEAN select, cancel;
 
 	select = PulsedInputState.menu[KEY_MENU_SELECT];
 	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
+	
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
+		return FALSE;
 
-	if (!pMS->Initialized)
+	if (cancel || (select && pMS->CurState == EXIT_SCAN))
 	{
-		pMS->Initialized = TRUE;
-		pMS->InputFunc = DoScan;
-	}
-	else if (cancel || (select && pMS->CurState == EXIT_SCAN))
-	{
-		LockMutex (GraphicsLock);
-		SetContext (SpaceContext);
-		BatchGraphics ();
-		DrawPlanet (SIS_SCREEN_WIDTH - MAP_WIDTH,
-				SIS_SCREEN_HEIGHT - MAP_HEIGHT, 0, BLACK_COLOR);
-		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
-
-		EraseCoarseScan ();
-// DrawMenuStateStrings (PM_SCAN, SCAN);
-
-		return (FALSE);
+		return FALSE;
 	}
 	else if (select)
 	{
-		BYTE min_scan, max_scan;
-		RECT r;
-
 		if (pMS->CurState == DISPATCH_SHUTTLE)
 		{
 			COUNT fuel_required;
-			UNICODE buf[100];
 
 			if ((pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 					|| (pSolarSysState->SysInfo.PlanetInfo.AtmoDensity ==
 						GAS_GIANT_ATMOSPHERE))
 			{	// cannot dispatch to shielded planets or gas giants
 				PlayMenuSound (MENU_SOUND_FAILURE);
-				return (TRUE);
+				return TRUE;
 			}
 
-			fuel_required = (COUNT)(
-					pSolarSysState->SysInfo.PlanetInfo.SurfaceGravity << 1
-					);
-			if (fuel_required > 3 * FUEL_TANK_SCALE)
-				fuel_required = 3 * FUEL_TANK_SCALE;
-
-			if (GLOBAL_SIS (FuelOnBoard) < (DWORD)fuel_required
+			fuel_required = getLandingFuelNeeded ();
+			if (GLOBAL_SIS (FuelOnBoard) < fuel_required
 					|| GLOBAL_SIS (NumLanders) == 0
 					|| GLOBAL_SIS (CrewEnlisted) == 0)
 			{
 				PlayMenuSound (MENU_SOUND_FAILURE);
-				return (TRUE);
+				return TRUE;
 			}
-
-			sprintf (buf, "%s%1.1f",
-					GAME_STRING (NAVIGATION_STRING_BASE + 5),
-					(float) fuel_required / FUEL_TANK_SCALE);
-			LockMutex (GraphicsLock);
-			ClearSISRect (CLEAR_SIS_RADAR);
-			DrawStatusMessage (buf);
-			UnlockMutex (GraphicsLock);
 
 			LockMutex (GraphicsLock);
 			SetFlashRect (NULL);
-			SetContext (ScanContext);
-			BatchGraphics ();
-			DrawPlanet (0, 0, 0, BLACK_COLOR);
-			DrawScannedObjects (FALSE);
-			UnbatchGraphics ();
 			UnlockMutex (GraphicsLock);
 
-			pMS->Initialized = FALSE;
-			pMS->CurFrame = 0;
-			// XXX: PickPlanetSide() will take over the InputFunc
-			//   and later restore it when its done
-			return PickPlanetSide (pMS);
+			if (!PickPlanetSide ())
+				return FALSE;
+
+			DrawMenuStateStrings (PM_MIN_SCAN, pMS->CurState);
+			LockMutex (GraphicsLock);
+			SetFlashRect (SFR_MENU_3DO);
+			UnlockMutex (GraphicsLock);
+
+			return TRUE;
 		}
 
 		// Various scans
 		if (pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 		{	// cannot scan shielded planets
 			PlayMenuSound (MENU_SOUND_FAILURE);
-			return (TRUE);
+			return TRUE;
 		}
 
-		min_scan = pMS->CurState;
-		if (min_scan != AUTO_SCAN)
-			max_scan = min_scan;
-		else
-		{
-			min_scan = MINERAL_SCAN;
-			max_scan = BIOLOGICAL_SCAN;
-		}
-
-		for ( ; min_scan <= max_scan; ++min_scan)
-		{
-			TEXT t;
-			SWORD i;
-
-			t.baseline.x = SIS_SCREEN_WIDTH >> 1;
-			t.baseline.y = SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7;
-			t.align = ALIGN_CENTER;
-			t.CharCount = (COUNT)~0;
-
-			pSolarSysState->CurNode = (COUNT)~0;
-			callGenerateForScanType (pSolarSysState,
-					pSolarSysState->pOrbitalDesc, &pSolarSysState->CurNode,
-					min_scan);
-			pMS->delta_item = (SIZE)pSolarSysState->CurNode;
-			t.pStr = GAME_STRING (SCAN_STRING_BASE + min_scan);
-
-			LockMutex (GraphicsLock);
-			SetContext (SpaceContext);
-			r.corner.x = 0;
-			r.corner.y = t.baseline.y - 10;
-			r.extent.width = SIS_SCREEN_WIDTH;
-			r.extent.height = t.baseline.y - r.corner.y + 1;
-			RepairBackRect (&r);
-
-			SetContextFont (MicroFont);
-			switch (min_scan)
-			{
-				case MINERAL_SCAN:
-					SetContextForeGroundColor (
-							BUILD_COLOR (MAKE_RGB15 (0x13, 0x00, 0x00), 0x2C));
-					break;
-				case ENERGY_SCAN:
-					SetContextForeGroundColor (
-							BUILD_COLOR (MAKE_RGB15 (0x0C, 0x0C, 0x0C), 0x1C));
-					break;
-				case BIOLOGICAL_SCAN:
-					SetContextForeGroundColor (
-							BUILD_COLOR (MAKE_RGB15 (0x00, 0x0E, 0x00), 0x6C));
-					break;
-			}
-			font_DrawText (&t);
-
-			SetContext (ScanContext);
-			UnlockMutex (GraphicsLock);
-
-			{
-				Color rgb;
-						// Alpha value will be ignored.
-				TimeCount TimeOut;
-				
-				switch (min_scan)
-				{
-					case MINERAL_SCAN:
-						rgb = BUILD_COLOR (MAKE_RGB15 (0x1f, 0x00, 0x00), 0x00);
-						break;
-					case ENERGY_SCAN:
-						rgb = BUILD_COLOR (MAKE_RGB15 (0x1f, 0x1f, 0x1f), 0x00);
-						break;
-					case BIOLOGICAL_SCAN:
-						rgb = BUILD_COLOR (MAKE_RGB15 (0x00, 0x1f, 0x00), 0x00);
-						break;
-				}
-
-				// Draw a virgin surface
-				LockMutex (GraphicsLock);
-				BatchGraphics ();
-				DrawPlanet (0, 0, 0, BLACK_COLOR);
-				UnbatchGraphics ();
-				UnlockMutex (GraphicsLock);
-
-				// Draw the scan slowly line by line
-				TimeOut = GetTimeCounter ();
-				for (i = 0; i < SCAN_LINES; i++)
-				{
-					TimeOut += SCAN_LINE_WAIT;
-					if (WaitForAnyButtonUntil (TRUE, TimeOut, FALSE))
-						break;
-
-					LockMutex (GraphicsLock);
-					BatchGraphics ();
-					DrawPlanet (0, 0, i, rgb);
-					DrawScannedStuff (i, min_scan);
-					UnbatchGraphics ();
-#ifdef SPIN_ON_SCAN
-					RotatePlanetSphere (TRUE);
-#endif
-					UnlockMutex (GraphicsLock);
-				}
-
-				if (i < SCAN_LINES)
-				{	// Aborted by a keypress; draw in finished state
-					LockMutex (GraphicsLock);
-					BatchGraphics ();
-					// dy < 0 means "from dy to the end"
-					DrawPlanet (0, 0, -i, rgb);
-					DrawScannedStuff (SCAN_LINES - 1, min_scan);
-					UnbatchGraphics ();
-					UnlockMutex (GraphicsLock);
-				}
-
-				pSolarSysState->Tint_rgb = BLACK_COLOR;
-			}
-		}
-
-		LockMutex (GraphicsLock);
-		SetContext (SpaceContext);
-		r.corner.x = 0;
-		r.corner.y = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7) - 10;
-		r.extent.width = SIS_SCREEN_WIDTH;
-		r.extent.height = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7)
-				- r.corner.y + 1;
-		RepairBackRect (&r);
-
-		SetContext (ScanContext);
+		ScanPlanet (pMS->CurState);
 		if (pMS->CurState == AUTO_SCAN)
 		{
-			DrawPlanet (0, 0, 0, BLACK_COLOR);
-			DrawScannedObjects (FALSE);
-			UnlockMutex (GraphicsLock);
-
 			pMS->CurState = DISPATCH_SHUTTLE;
 			DrawMenuStateStrings (PM_MIN_SCAN, pMS->CurState);
 		}
-		else
-			UnlockMutex (GraphicsLock);
-			
-		FlushInput ();
 	}
 	else if (optWhichMenu == OPT_PC ||
 			(!(pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
 			&& pSolarSysState->SysInfo.PlanetInfo.AtmoDensity !=
 				GAS_GIANT_ATMOSPHERE))
+	{
 		DoMenuChooser (pMS, PM_MIN_SCAN);
+	}
 
-	return (TRUE);
+	return TRUE;
 }
 
 static CONTEXT
@@ -1192,13 +1209,25 @@ GetScanContext (BOOLEAN *owner)
 	// TODO: Make CONTEXT ref-counted
 	if (ScanContext)
 	{
-		*owner = FALSE;
-		return ScanContext;
+		if (owner)
+			*owner = FALSE;
 	}
 	else
 	{
-		*owner = TRUE;
-		return CreateScanContext ();
+		if (owner)
+			*owner = TRUE;
+		ScanContext = CreateScanContext ();
+	}
+	return ScanContext;
+}
+
+void
+DestroyScanContext (void)
+{
+	if (ScanContext)
+	{
+		DestroyContext (ScanContext);
+		ScanContext = NULL;
 	}
 }
 
@@ -1209,7 +1238,7 @@ ScanSystem (void)
 
 	memset (&MenuState, 0, sizeof MenuState);
 
-	MenuState.InputFunc = DoScan;
+	GetScanContext (NULL);
 
 	if (optWhichMenu == OPT_3DO &&
 			((pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
@@ -1217,7 +1246,6 @@ ScanSystem (void)
 				GAS_GIANT_ATMOSPHERE))
 	{
 		MenuState.CurState = EXIT_SCAN;
-		ScanContext = NULL;
 	}
 	else
 	{
@@ -1227,7 +1255,6 @@ ScanSystem (void)
 
 		LockMutex (GraphicsLock);
 		initPlanetLocationImage ();
-		ScanContext = CreateScanContext ();
 		SetContext (ScanContext);
 		DrawScannedObjects (FALSE);
 		UnlockMutex (GraphicsLock);
@@ -1244,22 +1271,26 @@ ScanSystem (void)
 		PrintCoarseScan3DO ();
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+
+	MenuState.InputFunc = DoScan;
 	DoInput (&MenuState, FALSE);
 
 	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
 	UnlockMutex (GraphicsLock);
 
-	if (ScanContext)
-	{
-		LockMutex (GraphicsLock);
-		SetContext (SpaceContext);
-		DestroyDrawable (ReleaseDrawable (eraseFrame));
-		eraseFrame = NULL;
-		DestroyContext (ScanContext);
-		ScanContext = NULL;
-		UnlockMutex (GraphicsLock);
-	}
+	// cleanup scan graphics
+	LockMutex (GraphicsLock);
+	BatchGraphics ();
+	SetContext (ScanContext);
+	DrawPlanet (0, BLACK_COLOR);
+	SetContext (SpaceContext);
+	EraseCoarseScan ();
+	UnbatchGraphics ();
+	UnlockMutex (GraphicsLock);
+
+	DestroyDrawable (ReleaseDrawable (eraseFrame));
+	eraseFrame = NULL;
 }
 
 static void
@@ -1371,7 +1402,7 @@ GeneratePlanetSide (void)
 				NodeElementPtr->mass_points = HIBYTE (
 						pSolarSysState->SysInfo.PlanetInfo.CurDensity);
 				NodeElementPtr->current.image.frame = SetAbsFrameIndex (
-						MiscDataFrame, (NUM_SCANDOT_TRANSITIONS << 1)
+						MiscDataFrame, (NUM_SCANDOT_TRANSITIONS * 2)
 						+ ElementCategory (EType) * 5);
 				NodeElementPtr->next.image.frame = SetRelFrameIndex (
 						NodeElementPtr->current.image.frame, LOBYTE (
