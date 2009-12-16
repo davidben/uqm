@@ -26,14 +26,6 @@
 #define NUMBER_OF_PLUTVALS      256
 #define PLUT_BYTE_SIZE          (PLUTVAL_BYTE_SIZE * NUMBER_OF_PLUTVALS)
 
-#define BUILD_FRAME    (1 << 0)
-#define FIND_PAGE      (1 << 1)
-#define FIRST_BATCH    (1 << 2)
-#define GRAB_OTHER     (1 << 3)
-#define COLOR_CYCLE    (1 << 4)
-#define CYCLE_PENDING  (1 << 5)
-#define ENABLE_CYCLE   (1 << 6)
-
 #define FADE_NO_INTENSITY      0
 #define FADE_NORMAL_INTENSITY  255
 #define FADE_FULL_INTENSITY    510
