@@ -257,3 +257,9 @@ SetFrameTransparentColor (FRAME Frame, Color color)
 			FALSE);
 }
 
+Color
+GetFramePixel (FRAME frame, POINT pixelPt)
+{
+	return TFB_DrawCanvas_GetPixel (frame->image->NormalImg,
+			pixelPt.x, pixelPt.y);
+}

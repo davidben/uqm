@@ -1608,20 +1608,24 @@ TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line)
 	return (uint8 *)surf->pixels + surf->pitch * line;
 }
 
-void
-TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y, Color *color)
+Color
+TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y)
 {
 	SDL_Surface* surf = (SDL_Surface *)canvas;
-	Uint8 ur, ug, ub;
 	Uint32 pixel;
 	GetPixelFn getpixel;
+	Color c = {0, 0, 0, 0};
+
+	if (x < 0 || x >= surf->w || y < 0 || y >= surf->h)
+	{	// outside bounds, return 0
+		return c;
+	}
 
 	getpixel = getpixel_for(surf);
 	pixel = (*getpixel)(surf, x, y);
-	SDL_GetRGB (pixel, surf->format, &ur, &ug, &ub);
-	color->r = ur;
-	color->g = ug;
-	color->b = ub;
+	SDL_GetRGBA (pixel, surf->format, &c.r, &c.g, &c.b, &c.a);
+
+	return c;
 }
 
 void

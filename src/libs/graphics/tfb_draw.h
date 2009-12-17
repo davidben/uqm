@@ -169,7 +169,7 @@ void TFB_DrawCanvas_Unlock (TFB_Canvas canvas);
 void TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt);
 int TFB_DrawCanvas_GetStride (TFB_Canvas canvas);
 void *TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line);
-void TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y, Color *color);
+Color TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y);
 
 TFB_Canvas TFB_GetScreenCanvas (SCREEN screen);
 

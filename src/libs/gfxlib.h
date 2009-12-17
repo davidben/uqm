@@ -347,7 +347,11 @@ extern FRAME SetEquFrameIndex (FRAME DstFrame, FRAME SrcFrame);
 extern FRAME IncFrameIndex (FRAME Frame);
 extern FRAME DecFrameIndex (FRAME Frame);
 extern DRAWABLE RotateFrame (FRAME Frame, int angle_deg);
-extern void SetFrameTransparentColor (FRAME Frame, Color c32k);
+extern void SetFrameTransparentColor (FRAME, Color);
+
+// If the frame is an active SCREEN_DRAWABLE, this call must be
+// preceeded by FlushGraphics() for draw commands to have taken effect
+extern Color GetFramePixel (FRAME, POINT pixelPt);
 
 extern FRAME CaptureDrawable (DRAWABLE Drawable);
 extern DRAWABLE ReleaseDrawable (FRAME Frame);

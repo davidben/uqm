@@ -21,6 +21,8 @@
 // XXX: we should not refer to units.h here because we should not be
 //   using RADAR_WIDTH constants!
 #include "units.h"
+#include "setup.h"
+		// for OffScreenContext
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawable.h"
 #include "libs/sound/sound.h"
@@ -29,9 +31,8 @@
 
 static FRAME scope_frame;
 static int scope_init = 0;
-static TFB_Image *scope_bg = NULL;
-static TFB_Image *scope_surf = NULL;
-static UBYTE scope_data[RADAR_WIDTH - 2];
+static FRAME scopeWork;
+static Color scopeColor;
 BOOLEAN oscillDisabled = FALSE;
 
 void
@@ -40,26 +41,16 @@ InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME f)
 	scope_frame = f;
 	if (!scope_init)
 	{
-		TFB_Canvas scope_bg_canvas, scope_surf_canvas;
-		// TODO: this scope image copying does not properly account for
-		//   the loaded colormaps. This should use regular primitives.
-		if (TFB_DrawCanvas_IsPaletted (scope_frame->image->NormalImg))
-		{
-			scope_bg_canvas = TFB_DrawCanvas_New_Paletted (width, height,
-					scope_frame->image->Palette, -1);
-			scope_surf_canvas = TFB_DrawCanvas_New_Paletted (width, height,
-					scope_frame->image->Palette, -1);
-		}
-		else
-		{
-			scope_bg_canvas = TFB_DrawCanvas_New_ForScreen (width, height,
-					FALSE);
-			scope_surf_canvas = TFB_DrawCanvas_New_ForScreen (width, height,
-					FALSE);
-		}
-		scope_bg = TFB_DrawImage_New (scope_bg_canvas);
-		scope_surf = TFB_DrawImage_New (scope_surf_canvas);
-		TFB_DrawImage_Image (scope_frame->image, 0, 0, 0, NULL, scope_bg);
+		EXTENT size = GetFrameBounds (scope_frame);
+		POINT midPt = {size.width / 2, size.height / 2};
+
+		// mid-image pixel defines the color of scope lines
+		scopeColor = GetFramePixel (scope_frame, midPt);
+		
+		scopeWork = CaptureDrawable (CreateDrawable (
+				WANT_PIXMAP | MAPPED_TO_DISPLAY,
+				size.width, size.height, 1));
+
 		scope_init = 1;
 	}
 	/* remove compiler warnings */
@@ -71,16 +62,8 @@ void
 UninitOscilloscope (void)
 {
 	// XXX: Is never called (BUG?)
-	if (scope_bg)
-	{
-		TFB_DrawImage_Delete (scope_bg);
-		scope_bg = NULL;
-	}
-	if (scope_surf)
-	{
-		TFB_DrawImage_Delete (scope_surf);
-		scope_surf = NULL;
-	}
+	DestroyDrawable (ReleaseDrawable (scopeWork));
+	scopeWork = NULL;
 	scope_init = 0;
 }
 
@@ -89,26 +72,49 @@ void
 DrawOscilloscope (void)
 {
 	STAMP s;
+	BYTE scope_data[RADAR_WIDTH - 2];
 
 	if (oscillDisabled)
 		return;
 
-	TFB_DrawImage_Image (scope_bg, 0, 0, 0, NULL, scope_surf);
 	if (GraphForegroundStream (scope_data, RADAR_WIDTH - 2, RADAR_HEIGHT - 2)) 
 	{
 		int i;
-		Color color;
+		CONTEXT oldContext;
 
-		TFB_DrawCanvas_GetPixel (scope_bg->NormalImg,
-				scope_bg->extent.width / 2, scope_bg->extent.height / 2,
-				&color);
+		oldContext = SetContext (OffScreenContext);
+		SetContextFGFrame (scopeWork);
+		SetContextClipRect (NULL);
+		
+		// draw the background image
+		s.origin.x = 0;
+		s.origin.y = 0;
+		s.frame = scope_frame;
+		DrawStamp (&s);
+
+		// draw the scope lines
+		SetContextForeGroundColor (scopeColor);
 		for (i = 0; i < RADAR_WIDTH - 3; ++i)
-			TFB_DrawImage_Line (i + 1, scope_data[i] + 1, i + 2,
-					scope_data[i + 1] + 1, color, scope_surf);
-	}
-	TFB_DrawImage_Image (scope_surf, 0, 0, 0, NULL, scope_frame->image);
+		{
+			LINE line;
 
-	s.frame = scope_frame;
+			line.first.x = i + 1;
+			line.first.y = scope_data[i] + 1;
+			line.second.x = i + 2;
+			line.second.y = scope_data[i + 1] + 1;
+			DrawLine (&line);
+		}
+
+		SetContext (oldContext);
+
+		s.frame = scopeWork;
+	}
+	else
+	{	// no data -- draw blank scope background
+		s.frame = scope_frame;
+	}
+
+	// draw the final scope image to screen
 	s.origin.x = 0;
 	s.origin.y = 0;
 	DrawStamp (&s);
