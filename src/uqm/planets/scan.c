@@ -1072,15 +1072,11 @@ ScanPlanet (COUNT scanType)
 		{	// Aborted by a keypress; draw in finished state
 			LockMutex (GraphicsLock);
 			BatchGraphics ();
-			// dy < 0 means "from dy to the end"
-			DrawPlanet (-i, tintColor);
+			DrawPlanet (SCAN_LINES - 1, tintColor);
 			DrawScannedStuff (SCAN_LINES - 1, scan);
 			UnbatchGraphics ();
 			UnlockMutex (GraphicsLock);
 		}
-
-		// Reset the last used tint color
-		Orbit->TintColor = BLACK_COLOR;
 	}
 
 	LockMutex (GraphicsLock);

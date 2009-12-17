@@ -242,9 +242,38 @@ RotatePlanetSphere (BOOLEAN keepRate)
 	PrepareNextRotationFrame ();
 }
 
+static void
+renderTintFrame (Color tintColor)
+{
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
+	DWORD pix;
+	int denom;
+	FRAME topoFrame = SetAbsFrameIndex (Orbit->TintFrame, 0);
+	FRAME tintFrame = SetAbsFrameIndex (Orbit->TintFrame, 1);
+
+	// render a solid color frame we will use for tinting
+#ifdef USE_ADDITIVE_SCAN_BLIT
+	tintColor.r /= 2;
+	tintColor.g /= 2;
+	tintColor.b /= 2;
+	denom = -1;
+#else
+	tintColor.a = 128;
+	denom = 0;
+#endif
+	pix = frame_mapRGBA (tintFrame, tintColor.r, tintColor.g, tintColor.b,
+			tintColor.a);
+	fill_frame_rgb (tintFrame, pix, 0, 0, 0, 0);
+
+	// copy topoFrame
+	arith_frame_blit (pSolarSysState->TopoFrame, NULL, topoFrame, NULL, 0, 0);
+	// apply the tint
+	arith_frame_blit (tintFrame, NULL, topoFrame, NULL, 0, denom);
+}
+
 // tintColor.a is ignored
 void
-DrawPlanet (int dy, Color tintColor)
+DrawPlanet (int tintY, Color tintColor)
 {
 	STAMP s;
 	UBYTE a = 128;
@@ -252,73 +281,44 @@ DrawPlanet (int dy, Color tintColor)
 
 	s.origin.x = 0;
 	s.origin.y = 0;
-	s.frame = pSolarSysState->TopoFrame;
+	
 	BatchGraphics ();
 	if (sameColor (tintColor, BLACK_COLOR))
 	{	// no tint -- just draw the surface
+		s.frame = pSolarSysState->TopoFrame;
 		DrawStamp (&s);
 	}
 	else
 	{	// apply different scan type tints
-		UBYTE r, g, b;
-		DWORD p;
-		COUNT framew, frameh;
-		RECT srect, drect, *psrect = NULL, *pdrect = NULL;
-		FRAME tintFrame[2];
-
-		tintFrame[0] = SetAbsFrameIndex (Orbit->TintFrame, 0);
-		tintFrame[1] = SetAbsFrameIndex (Orbit->TintFrame, 1);
-
-		framew = GetFrameWidth (tintFrame[0]);
-		frameh = GetFrameHeight (tintFrame[0]);
+		FRAME tintFrame = SetAbsFrameIndex (Orbit->TintFrame, 0);
+		int height = GetFrameHeight (tintFrame);
 
 		if (!sameColor (tintColor, Orbit->TintColor))
 		{
+			renderTintFrame (tintColor);
 			Orbit->TintColor = tintColor;
-			// Buffer the topoMap to the tintFrame;
-			arith_frame_blit (s.frame, NULL, tintFrame[0], NULL, 0, 0);
-			r = tintColor.r / 2;
-			g = tintColor.g / 2;
-			b = tintColor.b / 2;
-#ifdef USE_ADDITIVE_SCAN_BLIT
-			a = 255;
-#endif
-			p = frame_mapRGBA (tintFrame[1], r, g, b, a);
-			fill_frame_rgb (tintFrame[1], p, 0, 0, 0, 0);
 		}
 		
-		drect.corner.x = 0;
-		drect.extent.width = framew;
-		srect.corner.x = 0;
-		srect.corner.y = 0;
-		srect.extent.width = framew;
-		if (dy >= 0 && dy <= frameh)
-		{
-			drect.corner.y = dy;
-			drect.extent.height = 1;
-			pdrect = &drect;
-			srect.extent.height = 1;
-			psrect = &srect;
-		}
-		if (dy < 0)
-		{
-			drect.corner.y = -dy;
-			drect.extent.height = frameh + dy;
-			pdrect = &drect;
-			srect.extent.height = frameh + dy;
-			psrect = &srect;
+		if (tintY < height - 1)
+		{	// untinted piece showing, draw regular topo
+			s.frame = pSolarSysState->TopoFrame;
+			DrawStamp (&s);
 		}
 
-		if (dy <= frameh)
-		{
-#ifdef USE_ADDITIVE_SCAN_BLIT
-			arith_frame_blit (tintFrame[1], psrect, tintFrame[0], pdrect, 0, -1);
-#else
-			arith_frame_blit (tintFrame[1], psrect, tintFrame[0], pdrect, 0, 0);
-#endif
+		if (tintY >= 0)
+		{	// tinted piece showing, draw tinted piece
+			RECT oldClipRect;
+			RECT clipRect;
+
+			// adjust cliprect to confine the tint
+			GetContextClipRect (&oldClipRect);
+			clipRect = oldClipRect;
+			clipRect.extent.height = tintY + 1;
+			SetContextClipRect (&clipRect);
+			s.frame = tintFrame;
+			DrawStamp (&s);
+			SetContextClipRect (&oldClipRect);
 		}
-		s.frame = tintFrame[0];
-		DrawStamp (&s);
 	}
 	UnbatchGraphics ();
 }
