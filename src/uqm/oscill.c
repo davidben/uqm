@@ -41,6 +41,8 @@ InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME f)
 	if (!scope_init)
 	{
 		TFB_Canvas scope_bg_canvas, scope_surf_canvas;
+		// TODO: this scope image copying does not properly account for
+		//   the loaded colormaps. This should use regular primitives.
 		if (TFB_DrawCanvas_IsPaletted (scope_frame->image->NormalImg))
 		{
 			scope_bg_canvas = TFB_DrawCanvas_New_Paletted (width, height,

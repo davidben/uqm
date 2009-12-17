@@ -38,8 +38,6 @@ typedef struct _tfb_graphics_backend {
 
 extern TFB_GRAPHICS_BACKEND *graphics_backend;
 
-// constants for TFB_InitGraphics
-
 extern SDL_Surface *SDL_Video;
 extern SDL_Surface *SDL_Screen;
 extern SDL_Surface *TransitionScreen;

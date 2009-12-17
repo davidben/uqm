@@ -28,6 +28,7 @@
 
 #include <stdarg.h>
 #include "libs/graphics/gfx_common.h"
+#include "libs/graphics/cmap.h"
 #include "libs/sound/sound.h"
 #include "libs/input/input_common.h"
 #include "libs/inplib.h"

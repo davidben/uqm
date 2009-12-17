@@ -16,7 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "gfx_common.h"
+#include "libs/graphics/cmap.h"
+#include "libs/threadlib.h"
 #include "libs/timelib.h"
 #include "libs/inplib.h"
 #include "libs/log.h"
@@ -48,10 +49,11 @@ static TimeCount fadeStartTime;
 static sint32 fadeInterval;
 
 #define SPARE_COLORMAPS  20
-#define MAP_POOL_SIZE    (MAX_COLORMAPS + SPARE_COLORMAPS)
 
-static TFB_ColorMap mappool[MAP_POOL_SIZE];
+// Colormaps are rapidly replaced in some parts of the game, so
+// it pays to have some spares on hand
 static TFB_ColorMap *poolhead;
+static int poolcount;
 
 static TFB_ColorMap * colormaps[MAX_COLORMAPS];
 static int mapcount;
@@ -65,11 +67,6 @@ InitColorMaps (void)
 
 	// init colormaps
 	maplock = CreateMutex ("Colormaps Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
-	// init static pool
-	for (i = 0; i < MAP_POOL_SIZE - 1; ++i)
-		mappool[i].next = mappool + i + 1;
-	mappool[i].next = NULL;
-	poolhead = mappool;
 
 	// init xform control
 	XFormControl.Highest = -1;
@@ -81,6 +78,15 @@ InitColorMaps (void)
 void
 UninitColorMaps (void)
 {
+	TFB_ColorMap *next;
+
+	// free spares
+	for ( ; poolhead; poolhead = next)
+	{
+		next = poolhead->next;
+		HFree (poolhead);
+	}
+
 	// uninit xform control
 	DestroyMutex (XFormControl.Lock);
 	
@@ -94,12 +100,22 @@ alloc_colormap (void)
 {
 	TFB_ColorMap *map;
 
-	if (!poolhead)
-		return NULL;
-
-	map = poolhead;
-	poolhead = map->next;
-	
+	if (poolhead)
+	{	// have some spares
+		map = poolhead;
+		poolhead = map->next;
+		--poolcount;
+	}
+	else
+	{	// no spares, need a new one
+		map = HMalloc (sizeof (*map));
+		map->palette = AllocNativePalette ();
+		if (!map->palette)
+		{
+			HFree (map);
+			return NULL;
+		}
+	}
 	map->next = NULL;
 	map->index = -1;
 	map->refcount = 1;
@@ -117,26 +133,9 @@ clone_colormap (TFB_ColorMap *from, int index)
 	map = alloc_colormap ();
 	if (!map)
 	{
-		static DWORD NextTime = 0;
-		DWORD Now;
-
-		if (!from)
-		{
-			log_add (log_Warning, "FATAL: clone_colormap(): "
-					"no maps available");
-			exit (EXIT_FAILURE);
-		}
-		
-		Now = GetTimeCounter ();
-		if (Now >= NextTime)
-		{
-			log_add (log_Warning, "clone_colormap(): static pool exhausted");
-			NextTime = Now + ONE_SECOND;
-		}	
-		
-		// just overwrite the current one -- better than aborting
-		map = from;
-		from->refcount++;
+		log_add (log_Warning, "FATAL: clone_colormap(): "
+					"could not allocate a map");
+		exit (EXIT_FAILURE);
 	}
 	else
 	{	// fresh new map
@@ -158,8 +157,17 @@ free_colormap (TFB_ColorMap *map)
 		return;
 	}
 
-	map->next = poolhead;
-	poolhead = map;
+	if (poolcount < SPARE_COLORMAPS)
+	{	// return to the spare pool
+		map->next = poolhead;
+		poolhead = map;
+		++poolcount;
+	}
+	else
+	{	// don't need any more spares
+		FreeNativePalette (map->palette);
+		HFree (map);
+	}
 }
 
 static inline TFB_ColorMap *
@@ -216,21 +224,15 @@ TFB_GetColorMap (int index)
 }
 
 void
-TFB_ColorMapToRGB (Color *pal, int index)
+GetColorMapColors (Color *colors, TFB_ColorMap *map)
 {
-	TFB_ColorMap *map = NULL;
-
-	if (index < mapcount)
-		map = colormaps[index];
+	int i;
 
 	if (!map)
-	{
-		log_add (log_Warning, "TFB_ColorMapToRGB(): "
-				"requested non-present colormap %d", index);
 		return;
-	}
 
-	memcpy (pal, map->colors, sizeof map->colors);
+	for (i = 0; i < NUMBER_OF_PLUTVALS; ++i)
+		colors[i] = GetNativePaletteColor (map->palette, i);
 }
 
 BOOLEAN
@@ -279,18 +281,21 @@ SetColorMap (COLORMAPPTR map)
 	for (mpp = colormaps + start; start <= end; ++start, ++mpp)
 	{
 		int i;
-		Color *pal;
 		TFB_ColorMap *newmap;
 		TFB_ColorMap *oldmap;
 
 		oldmap = *mpp;
 		newmap = clone_colormap (oldmap, start);
 		
-		for (i = 0, pal = newmap->colors; i < NUMBER_OF_PLUTVALS; ++i, ++pal)
+		for (i = 0; i < NUMBER_OF_PLUTVALS; ++i, colors += PLUTVAL_BYTE_SIZE)
 		{
-			pal->r = *colors++;
-			pal->g = *colors++;
-			pal->b = *colors++;
+			Color color;
+
+			color.a = 0xff;
+			color.r = colors[PLUTVAL_RED];
+			color.g = colors[PLUTVAL_GREEN];
+			color.b = colors[PLUTVAL_BLUE];
+			SetNativePaletteColor (newmap->palette, i, color);
 		}
 
 		*mpp = newmap;
@@ -418,6 +423,11 @@ finish_colormap_xform (int which)
 	}
 }
 
+static inline BYTE
+blendChan (BYTE c1, BYTE c2, int weight, int scale)
+{
+	return c1 + ((int)c2 - c1) * weight / scale;
+}
 
 /* This gives the XFormColorMap task a timeslice to do its thing
  * Only one thread should ever be allowed to be calling this at any time
@@ -456,34 +466,32 @@ XFormColorMap_step (void)
 		{
 #define XFORM_SCALE 0x10000
 			TFB_ColorMap *newmap = NULL;
-			UBYTE *pNewCMap;
-			Color *pCurCMap, *pOldCMap;
+			UBYTE *newClr;
+			Color *oldClr;
 			int frac;
 			int i;
 
 			newmap = clone_colormap (curmap, index);
 
-			pCurCMap = newmap->colors;
-			pOldCMap = control->OldCMap;
-			pNewCMap = (UBYTE*)control->CMapPtr + 2;
+			oldClr = control->OldCMap;
+			newClr = (UBYTE*)control->CMapPtr + 2;
 
 			frac = (int)(control->Ticks - TicksLeft) * XFORM_SCALE
 					/ control->Ticks;
 
-			for (i = 0; i < NUMBER_OF_PLUTVALS; i++, ++pCurCMap, ++pOldCMap)
+			for (i = 0; i < NUMBER_OF_PLUTVALS; ++i, ++oldClr,
+					newClr += PLUTVAL_BYTE_SIZE)
 			{
-				
-				pCurCMap->r = (UBYTE)(pOldCMap->r +
-						((int)*pNewCMap - pOldCMap->r) * frac / XFORM_SCALE);
-				pNewCMap++;
+				Color color;
 
-				pCurCMap->g = (UBYTE)(pOldCMap->g +
-						((int)*pNewCMap - pOldCMap->g) * frac / XFORM_SCALE);
-				pNewCMap++;
-				
-				pCurCMap->b = (UBYTE)(pOldCMap->b +
-						((int)*pNewCMap - pOldCMap->b) * frac / XFORM_SCALE);
-				pNewCMap++;
+				color.a = 0xff;
+				color.r = blendChan (oldClr->r, newClr[PLUTVAL_RED],
+						frac, XFORM_SCALE);
+				color.g = blendChan (oldClr->g, newClr[PLUTVAL_GREEN],
+						frac, XFORM_SCALE);
+				color.b = blendChan (oldClr->b, newClr[PLUTVAL_BLUE],
+						frac, XFORM_SCALE);
+				SetNativePaletteColor (newmap->palette, i, color);
 			}
 
 			colormaps[index] = newmap;
@@ -575,7 +583,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 		log_add (log_Warning, "BUG: XFormPLUT(): no current map");
 		return (0);
 	}
-	memcpy (control->OldCMap, map->colors, sizeof (map->colors));
+	GetColorMapColors (control->OldCMap, map);
 	UnlockMutex (maplock);
 
 	control->CMapIndex = index;

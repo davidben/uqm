@@ -33,7 +33,7 @@ typedef enum {
 } SCREEN;
 
 #include "libs/graphics/gfx_common.h"
-#include "cmap.h"
+#include "libs/graphics/cmap.h"
 
 typedef struct tfb_image
 {
@@ -119,7 +119,7 @@ void TFB_DrawImage_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
 
 TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha);
 TFB_Canvas TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha);
-TFB_Canvas TFB_DrawCanvas_New_Paletted (int w, int h, Color *palette,
+TFB_Canvas TFB_DrawCanvas_New_Paletted (int w, int h, Color palette[256],
 		int transparent_index);
 TFB_Canvas TFB_DrawCanvas_New_ScaleTarget (TFB_Canvas canvas,
 		TFB_Canvas oldcanvas, int type, int last_type);
@@ -154,7 +154,7 @@ void TFB_DrawCanvas_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
 		TFB_Canvas target);
 
 Color *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
-void TFB_DrawCanvas_SetPalette (TFB_Canvas target, Color *palette);
+void TFB_DrawCanvas_SetPalette (TFB_Canvas target, Color palette[256]);
 int TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int i,
 		BOOLEAN rleaccel);

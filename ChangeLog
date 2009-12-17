@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Split off SDL-specific colormap bits into SDL domain - Alex
 - Fixed planet blinking when exiting scan (bug #799) - Alex
 - Restore menu sounds after editing a control set name (bug #1066) - Alex
 - Use an own 'UniChar' rather than 'wchar_t', which may not be large

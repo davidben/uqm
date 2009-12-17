@@ -23,7 +23,7 @@
 #include "element.h"
 #include "setup.h"
 #include "libs/compiler.h"
-#include "libs/graphics/gfx_common.h"
+#include "libs/graphics/cmap.h"
 #include "libs/mathlib.h"
 
 

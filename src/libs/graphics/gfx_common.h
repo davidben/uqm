@@ -99,6 +99,4 @@ extern int ScreenHeightActual;
 extern int ScreenColorDepth;
 extern int GraphicsDriver;
 
-#include "cmap.h"
-
 #endif

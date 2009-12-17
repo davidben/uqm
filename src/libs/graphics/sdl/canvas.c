@@ -18,10 +18,12 @@
 #include SDL_INCLUDE(SDL.h)
 #include "sdl_common.h"
 #include "libs/graphics/gfx_common.h"
-#include "libs/graphics/sdl/primitives.h"
 #include "libs/graphics/tfb_draw.h"
+#include "libs/graphics/cmap.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
+#include "primitives.h"
+#include "palette.h"
 #include "rotozoom.h"
 #include "options.h"
 #include "types.h"
@@ -80,13 +82,15 @@ TFB_DrawCanvas_Rect (RECT *rect, Color color, TFB_Canvas target)
 	SDL_FillRect (dst, &sr, sdlColor);
 }
 
+// XXX: If a colormap is passed in, it has to have been acquired via
+// TFB_GetColorMap(). We release the colormap at the end.
 void
 TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 		TFB_ColorMap *cmap, TFB_Canvas target)
 {
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
-	Color *palette;
+	SDL_Palette *NormalPal;
 
 	if (img == 0)
 	{
@@ -97,15 +101,10 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 
 	LockMutex (img->mutex);
 
-	if (cmap)
-		palette = cmap->colors;
-	else
-		palette = img->Palette;
-
+	NormalPal = ((SDL_Surface *)img->NormalImg)->format->palette;
 	// only set the new palette if it changed
-	if (((SDL_Surface *)img->NormalImg)->format->palette
-			&& cmap && img->colormap_version != cmap->version)
-		SDL_SetColors (img->NormalImg, (SDL_Color*)palette, 0, 256);
+	if (NormalPal && cmap && img->colormap_version != cmap->version)
+		SDL_SetColors (img->NormalImg, cmap->palette->colors, 0, 256);
 
 	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
@@ -114,9 +113,9 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 		if (type == TFB_SCALE_TRILINEAR && img->MipmapImg)
 		{
 			// only set the new palette if it changed
-			if (((SDL_Surface *)img->MipmapImg)->format->palette
+			if (TFB_DrawCanvas_IsPaletted (img->MipmapImg)
 					&& cmap && img->colormap_version != cmap->version)
-				SDL_SetColors (img->MipmapImg, (SDL_Color*)palette, 0, 256);
+				SDL_SetColors (img->MipmapImg, cmap->palette->colors, 0, 256);
 		}
 		else if (type == TFB_SCALE_TRILINEAR && !img->MipmapImg)
 		{
@@ -125,8 +124,13 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 
 		TFB_DrawImage_FixScaling (img, scale, type);
 		surf = img->ScaledImg;
-		if (surf->format->palette)
-			SDL_SetColors (surf, (SDL_Color*)palette, 0, 256);
+		if (TFB_DrawCanvas_IsPaletted (surf))
+		{
+			// We may only get a paletted scaled image if the source is
+			// paletted. Currently, all scaling targets are truecolor.
+			assert (NormalPal && NormalPal->colors);
+			SDL_SetColors (surf, NormalPal->colors, 0, NormalPal->ncolors);
+		}
 
 		srcRect.x = 0;
 		srcRect.y = 0;
@@ -149,6 +153,9 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 	if (cmap)
 	{
 		img->colormap_version = cmap->version;
+		// TODO: Technically, this is not a proper place to release a
+		//   colormap. As it stands now, the colormap must have been
+		//   addrefed when passed to us.
 		TFB_ReturnColorMap (cmap);
 	}
 	
@@ -248,6 +255,7 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 {
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
+	SDL_Palette *palette;
 	int i;
 	bool force_fill = false;
 
@@ -299,7 +307,8 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 		targetRect.y = y - img->NormalHs.y;
 	}
 
-	if (surf->format->palette)
+	palette = surf->format->palette;
+	if (palette)
 	{	// set palette for fill-stamp
 		// Calling SDL_SetColors() results in an expensive src -> dst
 		// color-mapping operation for an SDL blit, following the call.
@@ -307,15 +316,13 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 		
 		// TODO: generate a 32bpp filled image?
 
-		SDL_Color pal[256];
+		SDL_Color colors[256];
 
-		for (i = 0; i < 256; i++)
-		{
-			pal[i].r = color.r;
-			pal[i].g = color.g;
-			pal[i].b = color.b;
-		}
-		SDL_SetColors (surf, pal, 0, 256);
+		colors[0] = ColorToNative (color);
+		for (i = 1; i < palette->ncolors; i++)
+			colors[i] = colors[0];
+
+		SDL_SetColors (surf, colors, 0, palette->ncolors);
 		// reflect the change in *actual* image palette
 		img->colormap_version--;
 	}
@@ -488,7 +495,7 @@ TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha)
 }
 
 TFB_Canvas
-TFB_DrawCanvas_New_Paletted (int w, int h, Color *palette,
+TFB_DrawCanvas_New_Paletted (int w, int h, Color palette[256],
 		int transparent_index)
 {
 	SDL_Surface *new_surf;
@@ -501,7 +508,7 @@ TFB_DrawCanvas_New_Paletted (int w, int h, Color *palette,
 	}
 	if (palette != NULL)
 	{
-		SDL_SetColors(new_surf, (SDL_Color *)palette, 0, 256);
+		TFB_DrawCanvas_SetPalette (new_surf, palette);
 	}
 	if (transparent_index >= 0)
 	{
@@ -608,21 +615,18 @@ TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas)
 {
 	int i;		
 	Color *result;
-
 	SDL_Surface *surf = (SDL_Surface *)canvas;
+	SDL_Palette *palette = surf->format->palette;
 
-	if (!surf->format->palette)
-	{
+	if (!palette)
 		return NULL;
-	}
 
-	result = (Color *) HMalloc (sizeof (Color) * 256);
-	for (i = 0; i < 256; ++i)
-	{
-		result[i].r = surf->format->palette->colors[i].r;
-		result[i].g = surf->format->palette->colors[i].g;
-		result[i].b = surf->format->palette->colors[i].b;
-	}
+	// There may be less colors in the surface than 256. Init to 0 first.
+	result = HCalloc (sizeof (Color) * 256);
+	assert (palette->ncolors <= 256);
+	for (i = 0; i < palette->ncolors; ++i)
+		result[i] = NativeToColor (palette->colors[i]);
+		
 	return result;
 }
 
@@ -656,9 +660,15 @@ TFB_DrawCanvas_IsPaletted (TFB_Canvas canvas)
 }
 
 void
-TFB_DrawCanvas_SetPalette (TFB_Canvas target, Color *palette)
+TFB_DrawCanvas_SetPalette (TFB_Canvas target, Color palette[256])
 {
-	SDL_SetColors ((SDL_Surface *)target, (SDL_Color *)palette, 0, 256);
+	SDL_Color colors[256];
+	int i;
+
+	for (i = 0; i < 256; ++i)
+		colors[i] = ColorToNative (palette[i]);
+
+	SDL_SetColors ((SDL_Surface *)target, colors, 0, 256);
 }
 
 int

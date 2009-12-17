@@ -26,6 +26,7 @@
 #include "options.h"
 #include "uqmversion.h"
 #include "libs/graphics/drawcmd.h"
+#include "libs/graphics/cmap.h"
 #include "libs/input/sdl/input.h"
 		// for ProcessInputEvent()
 #include "bbox.h"
