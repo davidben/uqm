@@ -18,9 +18,6 @@
 
 #include "oscill.h"
 
-// XXX: we should not refer to units.h here because we should not be
-//   using RADAR_WIDTH constants!
-#include "units.h"
 #include "setup.h"
 		// for OffScreenContext
 #include "libs/graphics/gfx_common.h"
@@ -33,12 +30,13 @@ static FRAME scope_frame;
 static int scope_init = 0;
 static FRAME scopeWork;
 static Color scopeColor;
+static EXTENT scopeSize;
 BOOLEAN oscillDisabled = FALSE;
 
 void
-InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME f)
+InitOscilloscope (FRAME scopeBg)
 {
-	scope_frame = f;
+	scope_frame = scopeBg;
 	if (!scope_init)
 	{
 		EXTENT size = GetFrameBounds (scope_frame);
@@ -51,11 +49,12 @@ InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height, FRAME f)
 				WANT_PIXMAP | MAPPED_TO_DISPLAY,
 				size.width, size.height, 1));
 
+		// assume and subtract the borders
+		scopeSize.width = size.width - 2;
+		scopeSize.height = size.height - 2;
+
 		scope_init = 1;
 	}
-	/* remove compiler warnings */
-	(void) x;
-	(void) y;
 }
 
 void
@@ -72,12 +71,15 @@ void
 DrawOscilloscope (void)
 {
 	STAMP s;
-	BYTE scope_data[RADAR_WIDTH - 2];
+	BYTE scope_data[128];
 
 	if (oscillDisabled)
 		return;
 
-	if (GraphForegroundStream (scope_data, RADAR_WIDTH - 2, RADAR_HEIGHT - 2)) 
+	assert (scopeSize.width <= sizeof scope_data);
+	assert (scopeSize.height < 256);
+
+	if (GraphForegroundStream (scope_data, scopeSize.width, scopeSize.height))
 	{
 		int i;
 		CONTEXT oldContext;
@@ -94,7 +96,7 @@ DrawOscilloscope (void)
 
 		// draw the scope lines
 		SetContextForeGroundColor (scopeColor);
-		for (i = 0; i < RADAR_WIDTH - 3; ++i)
+		for (i = 0; i < scopeSize.width - 1; ++i)
 		{
 			LINE line;
 
@@ -139,15 +141,20 @@ BOOLEAN sliderDisabled = FALSE;
  */                        
 
 void
-InitSlider (int x, int y, int width, int height,
-		int bwidth, int bheight, FRAME f)
+InitSlider (int x, int y, int width, FRAME sliderFrame, FRAME buttonFrame)
 {
+	EXTENT sliderSize = GetFrameBounds (sliderFrame);
+	EXTENT buttonSize = GetFrameBounds (buttonFrame);
+
 	sliderStamp.origin.x = x;
 	sliderStamp.origin.y = y;
-	sliderStamp.frame = f;
+	sliderStamp.frame = sliderFrame;
+	
 	buttonStamp.origin.x = x;
-	buttonStamp.origin.y = y - ((bheight - height) >> 1);
-	sliderSpace = width - bwidth;
+	buttonStamp.origin.y = y - ((buttonSize.height - sliderSize.height) / 2);
+	buttonStamp.frame = buttonFrame;
+
+	sliderSpace = width - buttonSize.width;
 }
 
 void

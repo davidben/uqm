@@ -491,20 +491,11 @@ FeedbackPlayerPhrase (UNICODE *pStr)
 static void
 InitSpeechGraphics (void)
 {
-	RECT r;
-	RECT sr;
-	FRAME f;
+	InitOscilloscope (SetAbsFrameIndex (ActivityFrame, 9));
 
-	InitOscilloscope (0, 0, RADAR_WIDTH, RADAR_HEIGHT,
-			SetAbsFrameIndex (ActivityFrame, 9));
-
-	f = SetAbsFrameIndex (ActivityFrame, 2);
-	GetFrameRect (f, &r);
-	SetSliderImage (f);
-	f = SetAbsFrameIndex (ActivityFrame, 5);
-	GetFrameRect (f, &sr);
-	InitSlider (0, SLIDER_Y, SIS_SCREEN_WIDTH, sr.extent.height,
-			r.extent.width, r.extent.height, f);
+	InitSlider (0, SLIDER_Y, SIS_SCREEN_WIDTH,
+			SetAbsFrameIndex (ActivityFrame, 5),
+			SetAbsFrameIndex (ActivityFrame, 2));
 }
 
 static void

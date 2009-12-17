@@ -23,13 +23,12 @@
 extern BOOLEAN sliderDisabled;
 extern BOOLEAN oscillDisabled;
 
-extern void InitOscilloscope (DWORD x, DWORD y, DWORD width, DWORD height,
-		FRAME f);
+extern void InitOscilloscope (FRAME scopeBg);
 extern void DrawOscilloscope (void);
 extern void UninitOscilloscope (void);
 
-extern void InitSlider (int x, int y, int width, int height,
-		int bwidth, int bheight, FRAME f);
+extern void InitSlider (int x, int y, int width, FRAME sliderFrame,
+		FRAME buttonFrame);
 extern void SetSliderImage (FRAME f);
 void DrawSlider (void);
 
