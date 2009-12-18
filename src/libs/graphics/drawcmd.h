@@ -101,12 +101,6 @@ typedef struct tfb_dc_scissor
 	int x, y, w, h;
 } TFB_DrawCommand_Scissor;
 
-typedef struct tfb_dc_setpal
-{
-	int index;
-	Color color;
-} TFB_DrawCommand_SetPalette;
-
 typedef struct tfb_dc_setmip
 {
 	TFB_Image *image;
@@ -153,7 +147,6 @@ typedef struct tfb_drawcommand
 		TFB_DrawCommand_Copy copy;
 		TFB_DrawCommand_CopyToImage copytoimage;
 		TFB_DrawCommand_Scissor scissor;
-		TFB_DrawCommand_SetPalette setpalette;
 		TFB_DrawCommand_SetMipmap setmipmap;
 		TFB_DrawCommand_DeleteImage deleteimage;
 		TFB_DrawCommand_DeleteData deletedata;
