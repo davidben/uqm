@@ -372,10 +372,6 @@ SOURCE=..\..\src\libs\graphics\sdl\pure.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\libs\graphics\sdl\rndzoom.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\libs\graphics\sdl\rotozoom.c
 # End Source File
 # Begin Source File
