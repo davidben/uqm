@@ -299,9 +299,7 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	img->last_scale = 0;
 	TFB_DrawCanvas_GetExtent (canvas, &img->extent);
 
-	img->Palette = TFB_DrawCanvas_ExtractPalette (canvas);
-	
-	if (img->Palette)
+	if (TFB_DrawCanvas_IsPaletted (canvas))
 	{
 		img->NormalImg = canvas;
 	}
@@ -328,7 +326,6 @@ TFB_DrawImage_CreateForScreen (int w, int h, BOOLEAN withalpha)
 	img->last_scale_hs = NullHs;
 	img->last_scale_type = -1;
 	img->last_scale = 0;
-	img->Palette = NULL;
 	img->extent.width = w;
 	img->extent.height = h;
 
@@ -416,9 +413,6 @@ TFB_DrawImage_Delete (TFB_Image *image)
 	if (image->ScaledImg) {
 		TFB_DrawCanvas_Delete (image->ScaledImg);
 	}
-
-	if (image->Palette)
-		HFree (image->Palette);
 
 	UnlockMutex (image->mutex);
 	DestroyMutex (image->mutex);

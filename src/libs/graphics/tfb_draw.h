@@ -41,7 +41,6 @@ typedef struct tfb_image
 	TFB_Canvas ScaledImg;
 	TFB_Canvas MipmapImg;
 	TFB_Canvas FilledImg;
-	Color *Palette;
 	int colormap_index;
 	int colormap_version;
 	HOT_SPOT NormalHs;
