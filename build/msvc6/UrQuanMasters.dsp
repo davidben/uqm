@@ -348,6 +348,14 @@ SOURCE=..\..\src\libs\graphics\sdl\opengl.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\libs\graphics\sdl\palette.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\graphics\sdl\palette.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\libs\graphics\sdl\primitives.c
 # End Source File
 # Begin Source File
