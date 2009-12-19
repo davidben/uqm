@@ -47,6 +47,8 @@
 #	pragma warning( 3 : 4057 )
 	// "unreferenced formal parameter"
 #	pragma warning( 3 : 4100 )
+	// "'function' : unreferenced local function has been removed"
+#	pragma warning( 3 : 4505 )
 	// "local variable 'name' may be used without having been initialized"
 #	pragma warning( 3 : 4701 )
 
