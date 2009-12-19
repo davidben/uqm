@@ -22,6 +22,7 @@
 #include "libs/inplib.h"
 #include "libs/log.h"
 #include <string.h>
+#include <stdlib.h>
 
 
 typedef struct xform_control
