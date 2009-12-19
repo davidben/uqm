@@ -1,5 +1,3 @@
-//Copyright Paul Reiche, Fred Ford. 1992-2002
-
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,14 +14,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef GFXMODULE_SDL
-
 #include "port.h"
-#include "sdl_common.h"
 #include "libs/threadlib.h"
-#include SDL_INCLUDE(SDL_thread.h)
 #include "libs/graphics/drawcmd.h"
-#include "libs/graphics/sdl/dcqueue.h"
+#include "libs/graphics/drawable.h"
+#include "libs/graphics/context.h"
+#include "libs/graphics/dcqueue.h"
 #include "libs/log.h"
 #include "libs/misc.h"
 		// for TFB_DEBUG_HALT
@@ -251,7 +247,4 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 
 	TFB_DrawCommandQueue_Push (DrawCommand);
 }
-
-#endif
-
 

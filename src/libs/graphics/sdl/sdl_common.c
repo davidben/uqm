@@ -22,10 +22,10 @@
 #include "opengl.h"
 #include "pure.h"
 #include "primitives.h"
-#include "dcqueue.h"
 #include "options.h"
 #include "uqmversion.h"
 #include "libs/graphics/drawcmd.h"
+#include "libs/graphics/dcqueue.h"
 #include "libs/graphics/cmap.h"
 #include "libs/input/sdl/input.h"
 		// for ProcessInputEvent()
