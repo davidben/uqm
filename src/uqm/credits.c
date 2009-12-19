@@ -142,7 +142,7 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 	CONTEXT OldContext;
 	FRAME OldFrame;
 	TEXT TextLines[MAX_TEXT_LINES];
-	STRINGPTR pStr = NULL;
+	char *pStr = NULL;
 	int size;
 	char salign[32];
 	char *scol;

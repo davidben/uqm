@@ -16,11 +16,13 @@
 
 #include "port.h"
 
+#define UNICODE_INTERNAL
+#include "libs/unicode.h"
+
 #include <ctype.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include "libs/strlib.h"
 #include "libs/log.h"
 
 

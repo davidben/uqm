@@ -27,10 +27,14 @@
 #include "resinst.h"
 #include "nameref.h"
 
+
+// TODO: This may be better done with UniChar at the cost of a tiny bit
+//   of overhead to convert UniChar back to UTF8 string. This overhead
+//   will probably be offset by removal of looped string-compare overhead ;)
 struct joy_char
 {
 	unsigned char len;
-	unsigned char enc[7];
+	char enc[7];
 		// 1+7 is a nice round number
 };
 

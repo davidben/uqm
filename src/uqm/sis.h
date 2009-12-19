@@ -198,7 +198,7 @@ extern BOOLEAN DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos,
 		SIZE ExPos, COUNT flags);
 
 extern void DrawSISMessage (const UNICODE *pStr);
-extern void DateToString (unsigned char *buf, size_t bufLen,
+extern void DateToString (char *buf, size_t bufLen,
 		BYTE month_index, BYTE day_index, COUNT year_index);
 
 // Returned RECT is relative to the StatusContext

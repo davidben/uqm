@@ -18,38 +18,47 @@
 #define UNICODE_H
 
 #include "port.h"
+#include "types.h"
+		// for uint32
 #include <sys/types.h>
 		// For size_t
 
 typedef uint32 UniChar;
 
-UniChar getCharFromString(const unsigned char **ptr);
-UniChar getCharFromStringN(const unsigned char **ptr,
-		const unsigned char *end);
-unsigned char *getLineFromString(const unsigned char *start,
-		const unsigned char **end, const unsigned char **startNext);
-size_t utf8StringCount(const unsigned char *start);
-size_t utf8StringCountN(const unsigned char *start,
-		const unsigned char *end);
-int utf8StringPos (const unsigned char *pStr, UniChar ch);
-unsigned char *utf8StringCopy (unsigned char *dst, size_t size,
-		const unsigned char *src);
-int utf8StringCompare (const unsigned char *str1, const unsigned char *str2);
-unsigned char *skipUTF8Chars(const unsigned char *ptr, size_t num);
+#ifdef UNICODE_INTERNAL
+#	define UNICODE_CHAR  unsigned char
+#else
+#	define UNICODE_CHAR  char
+#endif
+
+UniChar getCharFromString(const UNICODE_CHAR **ptr);
+UniChar getCharFromStringN(const UNICODE_CHAR **ptr,
+		const UNICODE_CHAR *end);
+unsigned char *getLineFromString(const UNICODE_CHAR *start,
+		const UNICODE_CHAR **end, const UNICODE_CHAR **startNext);
+size_t utf8StringCount(const UNICODE_CHAR *start);
+size_t utf8StringCountN(const UNICODE_CHAR *start,
+		const UNICODE_CHAR *end);
+int utf8StringPos (const UNICODE_CHAR *pStr, UniChar ch);
+unsigned char *utf8StringCopy (UNICODE_CHAR *dst, size_t size,
+		const UNICODE_CHAR *src);
+int utf8StringCompare (const UNICODE_CHAR *str1, const UNICODE_CHAR *str2);
+UNICODE_CHAR *skipUTF8Chars(const UNICODE_CHAR *ptr, size_t num);
 size_t getUniCharFromString(UniChar *wstr, size_t maxcount,
-		const unsigned char *start);
+		const UNICODE_CHAR *start);
 size_t getUniCharFromStringN(UniChar *wstr, size_t maxcount,
-		const unsigned char *start, const unsigned char *end);
-int getStringFromChar(unsigned char *ptr, size_t size, UniChar ch);
-size_t getStringFromWideN(unsigned char *ptr, size_t size,
+		const UNICODE_CHAR *start, const UNICODE_CHAR *end);
+int getStringFromChar(UNICODE_CHAR *ptr, size_t size, UniChar ch);
+size_t getStringFromWideN(UNICODE_CHAR *ptr, size_t size,
 		const UniChar *wstr, size_t count);
-size_t getStringFromWide(unsigned char *ptr, size_t size,
+size_t getStringFromWide(UNICODE_CHAR *ptr, size_t size,
 		const UniChar *wstr);
 int UniChar_isGraph(UniChar ch);
 int UniChar_isPrint(UniChar ch);
 UniChar UniChar_toUpper(UniChar ch);
 UniChar UniChar_toLower(UniChar ch);
 
+#undef UNICODE_CHAR
 
 #endif  /* UNICODE_H */
 

@@ -32,7 +32,7 @@ typedef sint32           SDWORD;
 typedef UWORD             COUNT;
 typedef SWORD              SIZE;
 
-typedef unsigned char   UNICODE;
+typedef char            UNICODE;
 
 
 typedef enum

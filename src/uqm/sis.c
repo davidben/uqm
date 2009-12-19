@@ -345,7 +345,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 }
 
 void
-DateToString (unsigned char *buf, size_t bufLen,
+DateToString (char *buf, size_t bufLen,
 		BYTE month_index, BYTE day_index, COUNT year_index)
 {
 	snprintf (buf, bufLen, "%s %02d" STR_MIDDLE_DOT "%04d",

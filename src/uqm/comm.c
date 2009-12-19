@@ -121,7 +121,7 @@ static int
 _count_lines (TEXT *pText)
 {
 	SIZE text_width;
-	const unsigned char *pStr;
+	const char *pStr;
 	int numLines = 0;
 	BOOLEAN eol;
 
@@ -151,7 +151,7 @@ add_text (int status, TEXT *pTextIn)
 	TEXT locText;
 	TEXT *pText;
 	SIZE leading;
-	const unsigned char *pStr;
+	const char *pStr;
 	SIZE text_width;
 	int num_lines = 0;
 	static COORD last_baseline;
@@ -311,7 +311,7 @@ add_text (int status, TEXT *pTextIn)
 // TRUE is returned if a complete line fitted
 // FALSE otherwise
 BOOLEAN
-getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
+getLineWithinWidth(TEXT *pText, const char **startNext,
 		SIZE maxWidth, COUNT maxChars)
 {
 	BOOLEAN eol;
@@ -320,8 +320,8 @@ getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
 			// We cannot add any more words.
 	RECT rect;
 	COUNT oldCount;
-	const unsigned char *ptr;
-	const unsigned char *wordStart;
+	const char *ptr;
+	const char *wordStart;
 	UniChar ch;
 	COUNT charCount;
 
@@ -861,7 +861,7 @@ DoConvSummary (SUMMARY_STATE *pSS)
 		for (row = 0; row < MAX_SUMM_ROWS && pSS->NextSub;
 				++row, pSS->NextSub = GetNextTrackSubtitle (pSS->NextSub))
 		{
-			const unsigned char *next = NULL;
+			const char *next = NULL;
 
 			if (pSS->LeftOver)
 			{	// some text left from last subtitle

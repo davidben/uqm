@@ -113,7 +113,7 @@ extern void RaceCommunication (void);
 
 #define WAIT_TRACK_ALL  ((COUNT)~0)
 extern void AlienTalkSegue (COUNT wait_track);
-BOOLEAN getLineWithinWidth(TEXT *pText, const unsigned char **startNext,
+BOOLEAN getLineWithinWidth(TEXT *pText, const char **startNext,
 		SIZE maxWidth, COUNT maxChars);
 
 extern RECT CommWndRect; /* comm window rect */

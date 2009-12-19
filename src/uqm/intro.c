@@ -338,8 +338,8 @@ DoPresentation (void *pIS)
 	while (pPIS->OperIndex < GetStringTableCount (pPIS->SlideShow))
 	{
 		char Opcode[16];
+		char *pStr = GetStringAddress (pPIS->SlideShow);
 
-		STRINGPTR pStr = GetStringAddress (pPIS->SlideShow);
 		pPIS->OperIndex++;
 		pPIS->SlideShow = SetRelStringTableIndex (pPIS->SlideShow, 1);
 

@@ -130,7 +130,7 @@ TextRect (TEXT *lpText, RECT *pRect, BYTE *pdelta)
 		COORD top_y, bot_y;
 		SIZE width;
 		UniChar next_ch = 0;
-		const unsigned char *pStr;
+		const char *pStr;
 		COUNT num_chars;
 	
 		num_chars = lpText->CharCount;
@@ -240,7 +240,7 @@ _text_blt (RECT *pClipRect, TEXT *TextPtr, POINT ctxOrigin)
 	FONT FontPtr;
 	COUNT num_chars;
 	UniChar next_ch;
-	const unsigned char *pStr;
+	const char *pStr;
 	POINT origin;
 	TFB_Image *backing;
 
