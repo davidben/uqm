@@ -71,7 +71,8 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 	DWORD opos,
 		slen[MAX_STRINGS], StringOffs, tot_string_size,
 		clen[MAX_STRINGS], ClipOffs, tot_clip_size,
-		tslen[MAX_STRINGS], TSOffs, tot_ts_size;
+		tslen[MAX_STRINGS], TSOffs;
+	DWORD tot_ts_size = 0;
 	char CurrentLine[1024], paths[1024], *clip_path, *ts_path,
 		*strdata, *clipdata, *ts_data;
 	uio_Stream *timestamp_fp = NULL;

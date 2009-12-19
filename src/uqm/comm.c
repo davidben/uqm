@@ -156,7 +156,7 @@ add_text (int status, TEXT *pTextIn)
 	int num_lines = 0;
 	static COORD last_baseline;
 	BOOLEAN eol;
-	CONTEXT OldContext;
+	CONTEXT OldContext = NULL;
 	
 	BatchGraphics ();
 
@@ -861,7 +861,7 @@ DoConvSummary (SUMMARY_STATE *pSS)
 		for (row = 0; row < MAX_SUMM_ROWS && pSS->NextSub;
 				++row, pSS->NextSub = GetNextTrackSubtitle (pSS->NextSub))
 		{
-			const unsigned char *next;
+			const unsigned char *next = NULL;
 
 			if (pSS->LeftOver)
 			{	// some text left from last subtitle

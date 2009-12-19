@@ -414,7 +414,7 @@ StripShip (COUNT fuel_required)
 			{
 				if (module_count[i])
 				{
-					RESPONSE_REF pStr;
+					RESPONSE_REF pStr = 0;
 
 					switch (i)
 					{
@@ -454,6 +454,8 @@ StripShip (COUNT fuel_required)
 						case ANTIMISSILE_DEFENSE:
 							pStr = DEFENSES;
 							break;
+						default:
+							assert (0 && "Unknown module");
 					}
 
 					if (i == end_mod && i != beg_mod)
@@ -868,7 +870,7 @@ TryFuelAgain:
 		}
 		else
 		{
-			RESPONSE_REF pStr;
+			RESPONSE_REF pStr = 0;
 
 			stack = GET_GAME_STATE (MELNORME_TECH_STACK);
 			switch (stack)
@@ -925,6 +927,8 @@ TryFuelAgain:
 					pStr = OK_BUY_NEW_TECH_13;
 					needed_credit = 75 * BIO_CREDIT_VALUE;
 					break;
+				default:
+					assert (0 && "Unknown tech");
 			}
 			if ((int)needed_credit > (int)credit)
 			{

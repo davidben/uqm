@@ -86,7 +86,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 	BYTE ButtonState;
 	int end_page_len;
 	UNICODE end_page_buf[200];
-	UniChar last_c;
+	UniChar last_c = 0;
 	COUNT row_cells;
 	BOOLEAN Sleepy;
 	RECT r;

@@ -136,7 +136,7 @@ static LOCDATA thradd_desc =
 static int
 GetCultureName (void)
 {
-	int culture;
+	int culture = 0;
 
 	switch (GET_GAME_STATE (THRADD_CULTURE))
 	{
@@ -149,6 +149,8 @@ GetCultureName (void)
 		case 3:
 			culture = SLAVE_EMPIRE;
 			break;
+		default:
+			assert (0 && "Unknown culture");
 	}
 	
 	return (culture);

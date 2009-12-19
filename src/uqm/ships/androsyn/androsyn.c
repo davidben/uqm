@@ -249,7 +249,7 @@ androsynth_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 	}
 	else
 	{
-		STARSHIP *pEnemyStarShip;
+		STARSHIP *pEnemyStarShip = NULL;
 
 		lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 		if (lpEvalDesc->ObjectPtr)

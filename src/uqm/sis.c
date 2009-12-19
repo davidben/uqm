@@ -1597,7 +1597,7 @@ flash_rect_func (void *data)
 	DWORD TimeIn;
 	const DWORD WaitTime = ONE_SECOND / 16;
 	SIZE strength;
-	RECT cached_rect;
+	RECT cached_rect = {{0, 0}, {0, 0}};
 	FRAME cached_screen_frame = 0;
 	Task task = (Task)data;
 	bool cached[CACHE_SIZE];
@@ -1716,7 +1716,8 @@ flash_rect_func (void *data)
 void
 SetFlashRect (RECT *pRect)
 {
-	RECT clip_r, temp_r, flash_rect1, old_r;
+	RECT clip_r = {{0, 0}, {0, 0}};
+	RECT temp_r, flash_rect1, old_r;
 	CONTEXT OldContext;
 	int create_flash = 0;
 

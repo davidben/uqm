@@ -129,7 +129,7 @@ TextRect (TEXT *lpText, RECT *pRect, BYTE *pdelta)
 	{
 		COORD top_y, bot_y;
 		SIZE width;
-		UniChar next_ch;
+		UniChar next_ch = 0;
 		const unsigned char *pStr;
 		COUNT num_chars;
 	

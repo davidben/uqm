@@ -36,7 +36,8 @@ PlotIntercept (ELEMENT *ElementPtr0, ELEMENT *ElementPtr1,
 	SIZE dy;
 	SIZE time_y_0, time_y_1;
 	POINT dst[2];
-	RECT r0, r1;
+	RECT r0 = {{0, 0}, {0, 0}};
+	RECT r1 = {{0, 0}, {0, 0}};
 	SIZE dx_0, dy_0, dx_1, dy_1;
 
 	if ((ElementPtr0->state_flags | ElementPtr1->state_flags) & FINITE_LIFE)
@@ -78,12 +79,8 @@ PlotIntercept (ELEMENT *ElementPtr0, ELEMENT *ElementPtr1,
 	}
 	else
 	{
-		GetFrameRect (
-				ElementPtr0->IntersectControl.IntersectStamp.frame,
-				&r0);
-		GetFrameRect (
-				ElementPtr1->IntersectControl.IntersectStamp.frame,
-				&r1);
+		GetFrameRect (ElementPtr0->IntersectControl.IntersectStamp.frame, &r0);
+		GetFrameRect (ElementPtr1->IntersectControl.IntersectStamp.frame, &r1);
 
 		dst[0].y += DISPLAY_TO_WORLD (r0.corner.y);
 		dst[1].y += DISPLAY_TO_WORLD (r1.corner.y);
@@ -1076,6 +1073,8 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 			hElement != 0; hElement = hNextElement)
 	{
 		EVALUATE_DESC ed;
+
+		ed.MoveState = NO_MOVEMENT;
 
 		LockElement (hElement, &ed.ObjectPtr);
 		hNextElement = GetSuccElement (ed.ObjectPtr);

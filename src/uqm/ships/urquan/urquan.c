@@ -487,7 +487,7 @@ urquan_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 	{
-		STARSHIP *EnemyStarShipPtr;
+		STARSHIP *EnemyStarShipPtr = NULL;
 
 		if (lpEvalDesc->ObjectPtr)
 			GetElementStarShip (lpEvalDesc->ObjectPtr, &EnemyStarShipPtr);

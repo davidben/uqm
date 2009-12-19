@@ -140,6 +140,7 @@ DrawShipPiece (FRAME ModuleFrame, COUNT which_piece, COUNT which_slot,
 	}
 
 	Side.origin.x += which_slot * SHIP_PIECE_OFFSET;
+	Side.frame = NULL;
 	if (RepairSlot < 0)
 	{
 		Side.frame = SetAbsFrameIndex (ModuleFrame,

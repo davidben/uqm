@@ -340,8 +340,10 @@ TFB_GL_DrawQuad (SDL_Rect *r)
 {
 	BOOLEAN keep_aspect_ratio = optKeepAspectRatio;
 	int x1 = 0, y1 = 0, x2 = ScreenWidthActual, y2 = ScreenHeightActual;
-	int sx, sy, sw, sh;
-	float sx_multiplier, sy_multiplier;
+	int sx = 0, sy = 0;
+	int sw, sh;
+	float sx_multiplier = 1;
+	float sy_multiplier = 1;
 
 	if (keep_aspect_ratio)
 	{

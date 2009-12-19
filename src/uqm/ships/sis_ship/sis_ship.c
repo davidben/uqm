@@ -141,7 +141,8 @@ void uninit_sis (RACE_DESC *pRaceDesc);
 static void
 sis_hyper_preprocess (ELEMENT *ElementPtr)
 {
-	SIZE udx, udy, dx, dy;
+	SIZE udx = 0, udy = 0;
+	SIZE dx = 0, dy = 0;
 	SIZE AccelerateDirection;
 	STARSHIP *StarShipPtr;
 

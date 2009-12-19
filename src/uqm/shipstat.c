@@ -140,7 +140,7 @@ InitShipStatus (SHIP_INFO *SIPtr, STARSHIP *StarShipPtr, RECT *pClipRect)
 	STAMP Stamp;
 	CONTEXT OldContext;
 	RECT oldClipRect;
-	POINT oldOrigin;
+	POINT oldOrigin = {0, 0};
 
 	if (StarShipPtr) // set during battle
 	{

@@ -147,7 +147,7 @@ mixer_MixChannels (void *userdata, uint8 *stream, sint32 len)
 		for (i = 0; i < MAX_SOURCES; i++)
 		{
 			mixer_Source *src;
-			float samp;
+			float samp = 0;
 			
 			/* find next source */
 			for (; i < MAX_SOURCES && (

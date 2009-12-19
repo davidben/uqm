@@ -192,14 +192,13 @@ static void
 druuge_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 		COUNT ConcernCounter)
 {
-	UWORD ship_flags;
+	UWORD ship_flags = 0;
 	STARSHIP *StarShipPtr;
-	STARSHIP *EnemyStarShipPtr;
+	STARSHIP *EnemyStarShipPtr = NULL;
 	EVALUATE_DESC *lpEvalDesc;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 
-	ship_flags = 0;
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_SHIP_INDEX];
 	if (StarShipPtr->cur_status_flags & SHIP_BEYOND_MAX_SPEED)
 		lpEvalDesc->MoveState = ENTICE;
@@ -216,7 +215,7 @@ druuge_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 			++ShipPtr->thrust_wait;
 	}
 	ship_intelligence (ShipPtr, ObjectsOfConcern, ConcernCounter);
-	if (ship_flags)
+	if (EnemyStarShipPtr)
 	{
 		EnemyStarShipPtr->RaceDescPtr->ship_info.ship_flags = ship_flags;
 	}

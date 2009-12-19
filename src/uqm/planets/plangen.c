@@ -837,7 +837,7 @@ DitherMap (SBYTE *DepthArray)
 #define DITHER_VARIANCE  (1 << (RANGE_SHIFT - 3))
 	COUNT i;
 	SBYTE *elev;
-	DWORD rand_val;
+	DWORD rand_val = 0;
 
 	for (i = 0, elev = DepthArray; i < MAP_WIDTH * MAP_HEIGHT; ++i, ++elev)
 	{

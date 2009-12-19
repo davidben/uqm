@@ -236,7 +236,7 @@ Flash_continue (FlashContext *context)
 static void
 Flash_fixState (FlashContext *context)
 {
-	TimeCount stateTime;
+	TimeCount stateTime = 0;
 	
 	for (;;) {
 		switch (context->state) {

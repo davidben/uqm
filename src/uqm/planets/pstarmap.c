@@ -287,7 +287,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 	COUNT which_space;
 	long diameter;
 	RECT r, old_r;
-	POINT oldOrigin;
+	POINT oldOrigin = {0, 0};
 	STAMP s;
 	FRAME star_frame;
 	STAR_DESC *SDPtr;
@@ -878,7 +878,7 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 {
 	UNICODE *buf = pSS->Buffer;
 	UNICODE *next;
-	UNICODE *sep;
+	UNICODE *sep = NULL;
 
 	pSS->Prefix = 0;
 	pSS->PrefixLen = 0;

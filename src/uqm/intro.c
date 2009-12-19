@@ -585,7 +585,10 @@ DoPresentation (void *pIS)
 #define PRES_DRAW_SIS   1
 			int cargs;
 			int draw_what;
-			int index, x, y, scale, angle;
+			int index = 0;
+			int x, y;
+			int scale;
+			int angle;
 			int scale_mode;
 			char ImgName[16];
 			int old_scale, old_mode;
@@ -622,6 +625,7 @@ DoPresentation (void *pIS)
 				y = 0;
 			}
 
+			s.frame = NULL;
 			if (draw_what == PRES_DRAW_INDEX)
 			{	/* draw stamp by index */
 				s.frame = SetAbsFrameIndex (pPIS->Frame, (COUNT)index);

@@ -540,7 +540,7 @@ marine_preprocess (ELEMENT *ElementPtr)
 		--ElementPtr->turn_wait;
 	else
 	{
-		COUNT facing, pfacing;
+		COUNT facing, pfacing = 0;
 		SIZE delta_x, delta_y, delta_facing;
 		HELEMENT hObject, hNextObject, hTarget;
 		ELEMENT *ObjectPtr;

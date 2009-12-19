@@ -531,7 +531,7 @@ static void
 SaveProblemMessage (STAMP *MsgStamp)
 {
 #define MAX_MSG_LINES 1
-	RECT r;
+	RECT r = {{0, 0}, {0, 0}};
 	COUNT i;
 	TEXT t;
 	UNICODE *ppStr[MAX_MSG_LINES];

@@ -174,7 +174,8 @@ ByeBye (RESPONSE_REF R)
 		NPCPhrase (GOOD_LUCK_AGAIN);
 	else
 	{
-		RESPONSE_REF pStr0, pStr1;
+		RESPONSE_REF pStr0 = 0;
+		RESPONSE_REF pStr1 = 0;
 		
 		switch ((BYTE)TFB_Random () & 7)
 		{
@@ -1663,7 +1664,8 @@ NormalStarbase (RESPONSE_REF R)
 		}
 		else
 		{
-			RESPONSE_REF pStr0, pStr1;
+			RESPONSE_REF pStr0 = 0;
+			RESPONSE_REF pStr1 = 0;
 
 			switch ((BYTE)TFB_Random () & 7)
 			{
@@ -1728,14 +1730,15 @@ SellMinerals (RESPONSE_REF R)
 {
 	COUNT i, total;
 	BOOLEAN Sleepy;
-	RESPONSE_REF pStr1, pStr2;
+	RESPONSE_REF pStr1 = 0;
+	RESPONSE_REF pStr2 = 0;
 
 	total = 0;
 	Sleepy = TRUE;
 	for (i = 0; i < NUM_ELEMENT_CATEGORIES; ++i)
 	{
 		COUNT amount;
-		DWORD TimeIn;
+		DWORD TimeIn = 0;
 
 		if (i == 0)
 		{

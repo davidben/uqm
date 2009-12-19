@@ -420,7 +420,7 @@ event2gesture (SDL_Event *e, VCONTROL_GESTURE *g)
 int
 VControl_AddGestureBinding (VCONTROL_GESTURE *g, int *target)
 {
-	int result;
+	int result = -1;
 	switch (g->type)
 	{
 	case VCONTROL_KEY:

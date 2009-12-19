@@ -439,7 +439,8 @@ UninitEncounter (void)
 		SIZE VictoryState;
 		COUNT RecycleAmount = 0;
 		SIZE i;
-		RECT r, scavenge_r;
+		RECT r;
+		RECT scavenge_r = {{0, 0}, {0, 0}};
 		TEXT t;
 		STAMP ship_s;
 		const UNICODE *str1 = NULL;
@@ -489,6 +490,8 @@ UninitEncounter (void)
 		UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
 
 		prevMsgMode = SetStatusMessageMode (SMM_RES_UNITS);
+		ship_s.origin.x = 0;
+		ship_s.origin.y = 0;
 		Sleepy = TRUE;
 		for (i = 0; i < NUM_SIDES; ++i)
 		{
@@ -721,7 +724,7 @@ EncounterBattle (void)
 {
 	ACTIVITY OldActivity;
 	extern UWORD nth_frame;
-	InputContext *savedPlayerInput;
+	InputContext *savedPlayerInput = NULL;
 
 	LockMutex (GraphicsLock);
 

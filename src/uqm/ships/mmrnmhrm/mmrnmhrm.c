@@ -155,7 +155,7 @@ mmrnmhrm_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 	BOOLEAN CanTransform;
 	EVALUATE_DESC *lpEvalDesc;
 	STARSHIP *StarShipPtr;
-	STARSHIP *EnemyStarShipPtr;
+	STARSHIP *EnemyStarShipPtr = NULL;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
 	CanTransform = (BOOLEAN)(StarShipPtr->special_counter == 0

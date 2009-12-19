@@ -144,7 +144,7 @@ initialize_lance (ELEMENT *ShipPtr, HELEMENT WeaponArray[])
 	for (i = 0; i < 3; ++i)
 	{
 		COUNT angle;
-		SIZE sin0, cos0;
+		SIZE sin0 = 0, cos0 = 0;
 		SIZE sin1sin0, cos1sin0, cos1cos0, sin1cos0;
 
 		switch (i)
