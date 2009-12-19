@@ -978,7 +978,6 @@ ScanPlanet (COUNT scanType)
 #define SCAN_LINES      (MAP_HEIGHT + NUM_FLASH_COLORS + 1)
 #define SCAN_LINE_WAIT  (SCAN_DURATION / SCAN_LINES)
 
-	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 	COUNT startScan, endScan;
 	COUNT scan;
 	RECT r;

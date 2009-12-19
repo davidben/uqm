@@ -276,7 +276,6 @@ void
 DrawPlanet (int tintY, Color tintColor)
 {
 	STAMP s;
-	UBYTE a = 128;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 
 	s.origin.x = 0;
