@@ -33,13 +33,28 @@
 #	endif
 #endif
 
+
 // Compilation warnings:
-// UQM uses a lot of functions that can be used unsafely, but it uses them
-// in a safe way. The warnings about these functions however may drown out
-// serious warnings, so we turn them off.
 #ifdef _MSC_VER
+	// UQM uses a lot of functions that can be used unsafely, but it uses them
+	// in a safe way. The warnings about these functions however may drown out
+	// serious warnings, so we turn them off.
 #	define _CRT_SECURE_NO_DEPRECATE
+
+	// Escalate some warnings we consider important
+	// "'operator' : 'identifier1' indirection to slightly different base
+	//   types from 'identifier2'
+#	pragma warning( 3 : 4057 )
+	// "unreferenced formal parameter"
+#	pragma warning( 3 : 4100 )
+	// "local variable 'name' may be used without having been initialized"
+#	pragma warning( 3 : 4701 )
+
+	// Downgrade some warnings we consider unimportant
+	// "'operator' conversion from 'type1' to 'type2', possible loss of data"
+#	pragma warning( 4 : 4244)
 #endif
+
 
 #ifdef _MSC_VER
 #	include <io.h>
