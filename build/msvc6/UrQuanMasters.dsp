@@ -324,14 +324,6 @@ SOURCE=..\..\src\libs\graphics\sdl\canvas.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\libs\graphics\sdl\dcqueue.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\libs\graphics\sdl\dcqueue.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\libs\graphics\sdl\hq2x.c
 # End Source File
 # Begin Source File
@@ -438,6 +430,14 @@ SOURCE=..\..\src\libs\graphics\context.c
 # Begin Source File
 
 SOURCE=..\..\src\libs\graphics\context.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\graphics\dcqueue.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\graphics\dcqueue.h
 # End Source File
 # Begin Source File
 
