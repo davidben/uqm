@@ -78,7 +78,7 @@ typedef struct
 	uint16 channels;       /* number of channels */
 	uint32 sampleFrames;   /* number of sample frames */
 	uint16 sampleSize;     /* number of bits per sample */
-	uint32 sampleRate;     /* number of frames per second */
+	sint32 sampleRate;     /* number of frames per second */
 			/* this is actually stored as IEEE-754 80bit in files */
 } aiff_CommonChunk;
 
@@ -89,7 +89,7 @@ typedef struct
 	uint16 channels;      /* number of channels */
 	uint32 sampleFrames;  /* number of sample frames */
 	uint16 sampleSize;    /* number of bits per sample */
-	uint32 sampleRate;    /* number of frames per second */
+	sint32 sampleRate;    /* number of frames per second */
 	aiff_ID extTypeID;    /* compression type ID */
 	char extName[32];     /* compression type name */
 } aiff_ExtCommonChunk;
@@ -595,7 +595,7 @@ aifa_DecodeSDX2 (TFB_AiffSoundDecoder* aifa, void* buf, sint32 bufsize)
 	if (dec_pcm > aifa->max_pcm - aifa->cur_pcm)
 		dec_pcm = aifa->max_pcm - aifa->cur_pcm;
 
-	src = (uint8*)buf + bufsize - (dec_pcm * aifa->file_block);
+	src = (sint8*)buf + bufsize - (dec_pcm * aifa->file_block);
 	dec_pcm = uio_fread (src, aifa->file_block, dec_pcm, aifa->fp);
 	aifa->cur_pcm += dec_pcm;
 

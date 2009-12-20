@@ -38,7 +38,7 @@
 typedef struct
 {
 	uint32 id;
-	sint32 size;
+	uint32 size;
 	uint32 type;
 } wave_FileHeader;
 
@@ -225,6 +225,7 @@ wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	TFB_WaveSoundDecoder* wava = (TFB_WaveSoundDecoder*) This;
 	wave_FileHeader fileHdr;
 	wave_ChunkHeader chunkHdr;
+	long dataLeft; 
 
 	wava->fp = uio_fopen (dir, filename, "rb");
 	if (!wava->fp)
@@ -252,8 +253,8 @@ wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 		return false;
 	}
 
-	for (fileHdr.size = ((fileHdr.size + 1) & ~1) - 4; fileHdr.size != 0;
-			fileHdr.size -= (((chunkHdr.size + 1) & ~1) + 8))
+	for (dataLeft = ((fileHdr.size + 1) & ~1) - 4; dataLeft > 0;
+			dataLeft -= (((chunkHdr.size + 1) & ~1) + 8))
 	{
 		if (!wava_readChunkHeader (wava, &chunkHdr))
 		{
@@ -308,6 +309,10 @@ wava_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 		wava_Close (This);
 		return false;
 	}
+
+	if (dataLeft != 0)
+		log_add (log_Warning, "wava_Open(): bad or unsupported wave file, "
+				"size in header does not match read chunks");
 
 	This->format = (wava->fmtHdr.channels == 1 ?
 			(wava->fmtHdr.bitsPerSample == 8 ?
