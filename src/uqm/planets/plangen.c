@@ -102,7 +102,7 @@ typedef struct
 } POINT3;
 
 static void
-RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
+RenderTopography (FRAME DstFrame, SBYTE *pTopoData, int w, int h)
 {
 	FRAME OldFrame;
 
@@ -123,7 +123,7 @@ RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 		const PlanetFrame *PlanDataPtr;
 		PRIMITIVE BatchArray[NUM_BATCH_POINTS];
 		PRIMITIVE *pBatch;
-		BYTE *pSrc;
+		SBYTE *pSrc;
 		BYTE *xlat_tab;
 		BYTE *cbase;
 		POINT oldOrigin;
@@ -158,9 +158,9 @@ RenderTopography (FRAME DstFrame, BYTE *pTopoData, int w, int h)
 			{
 				BYTE *ctab;
 
-				d = (SBYTE)*pSrc;
+				d = *pSrc;
 				if (AlgoType == GAS_GIANT_ALGO)
-				{
+				{	// make elevation value non-negative
 					d &= 255;
 				}
 				else
@@ -1341,7 +1341,7 @@ TopoVarianceCalc (int factor)
 }
 
 static void
-TopoScale4x (BYTE *pDstTopo, BYTE *pSrcTopo, int num_faults, int fault_var)
+TopoScale4x (SBYTE *pDstTopo, SBYTE *pSrcTopo, int num_faults, int fault_var)
 {
 		// Interpolate the topographical data by connecting the elevations
 		// to their nearest neighboors using straight lines (in random
@@ -1731,7 +1731,6 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 	CONTEXT OldContext;
 	CONTEXT TopoContext;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
-	BYTE *pScaledTopo = 0;
 	BOOLEAN shielded = (pPlanetDesc->data_index & PLANET_SHIELDED) != 0;
 
 	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);
@@ -1764,7 +1763,7 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 		if (GetFrameCount (SurfDefFrame) > 1)
 		{	// 2nd frame is elevation data 
 			int i;
-			BYTE* elev;
+			SBYTE* elev;
 
 			ElevFrame = SetAbsFrameIndex (SurfDefFrame, 1);
 			if (GetFrameWidth (ElevFrame) != MAP_WIDTH
@@ -1782,7 +1781,7 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 					i < MAP_WIDTH * MAP_HEIGHT;
 					++i, ++elev)
 			{
-				*elev -= 128;
+				*elev = *(BYTE *)elev - 128;
 			}
 		}
 		else
@@ -1884,14 +1883,14 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 		}
 		pSolarSysState->XlatPtr = GetStringAddress (pSolarSysState->XlatRef);
 		RenderTopography (pSolarSysState->TopoFrame,
-				pSolarSysState->Orbit.lpTopoData, MAP_WIDTH, MAP_HEIGHT);
+				Orbit->lpTopoData, MAP_WIDTH, MAP_HEIGHT);
 
 	}
 
 	if (!shielded && PlanetInfo->AtmoDensity != GAS_GIANT_ATMOSPHERE)
 	{	// produce 4x scaled topo image for Planetside
 		// for the planets that we can land on
-		pScaledTopo = HMalloc (MAP_WIDTH * 4 * MAP_HEIGHT * 4);
+		SBYTE *pScaledTopo = HMalloc (MAP_WIDTH * 4 * MAP_HEIGHT * 4);
 		if (pScaledTopo)
 		{
 			TopoScale4x (pScaledTopo, Orbit->lpTopoData,

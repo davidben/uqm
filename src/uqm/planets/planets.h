@@ -130,7 +130,7 @@ struct planet_orbit
 {
 	FRAME TopoZoomFrame;
 			// 4x scaled topo image for planet-side
-	BYTE  *lpTopoData;
+	SBYTE  *lpTopoData;
 			// normal topo data; expressed in elevation levels
 			// data is signed for planets other than gas giants
 			// transformed to light variance map for 3d planet
