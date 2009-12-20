@@ -312,7 +312,8 @@ PacketHandler_TeamName(NetConnection *conn, const Packet_TeamName *packet) {
 			- sizeof (Packet_TeamName) - 1;
 			// The -1 is for not counting the terminating '\0'.
 
-	updateTeamName(battleStateData->meleeState, side, packet->name, nameLen);
+	updateTeamName(battleStateData->meleeState, side,
+			(const char *) packet->name, nameLen);
 
 	// Padding data may follow; it is ignored.
 	return 0;
