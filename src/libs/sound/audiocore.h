@@ -39,7 +39,7 @@ enum
 
 
 /* Interface Types */
-typedef intptr_t audio_Object;
+typedef uintptr_t audio_Object;
 typedef intptr_t audio_IntVal;
 typedef const sint32 audio_SourceProp;
 typedef const sint32 audio_BufferProp;
