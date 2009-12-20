@@ -93,6 +93,18 @@ sread_16 (void *fp, UWORD *v)
 }
 
 static inline COUNT
+sread_16s (void *fp, SWORD *v)
+{
+	UWORD t;
+	COUNT ret;
+	ret = sread_16 (fp, &t);
+	// unsigned to signed conversion
+	if (v)
+		*v = t;
+	return ret;
+}
+
+static inline COUNT
 sread_32 (void *fp, DWORD *v)
 {
 	DWORD t;

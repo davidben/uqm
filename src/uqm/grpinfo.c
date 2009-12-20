@@ -153,8 +153,8 @@ ReadIpGroup (void *fp, IP_GROUP *GroupPtr)
 	GroupPtr->dest_loc = LONIBBLE (tmpb);
 	GroupPtr->orbit_pos = HINIBBLE (tmpb);
 	sread_8  (fp, &GroupPtr->group_id); /* was max_energy */
-	sread_16 (fp, &GroupPtr->loc.x);
-	sread_16 (fp, &GroupPtr->loc.y);
+	sread_16s(fp, &GroupPtr->loc.x);
+	sread_16s(fp, &GroupPtr->loc.y);
 }
 
 static void
