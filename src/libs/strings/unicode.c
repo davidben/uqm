@@ -263,13 +263,15 @@ utf8StringPos (const unsigned char *pStr, UniChar ch)
 // Safe version of strcpy(), somewhat analogous to strncpy()
 // except it guarantees a 0-term when size > 0
 // when size == 0, returns NULL
+// BUG: this may result in the last character being only partially in the
+// buffer
 unsigned char *
 utf8StringCopy (unsigned char *dst, size_t size, const unsigned char *src)
 {
 	if (size == 0)
 		return 0;
 
-	strncpy (dst, src, size);
+	strncpy ((char *) dst, (char *) src, size);
 	dst[size - 1] = '\0';
 	
 	return dst;
@@ -317,7 +319,7 @@ utf8StringCompare (const unsigned char *str1, const unsigned char *str2)
 	return 0;
 #else
 	// this will do for now
-	return strcmp (str1, str2);
+	return strcmp ((char *) str1, (char *) str2);
 #endif
 }
 
