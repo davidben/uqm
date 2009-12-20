@@ -19,7 +19,10 @@
 #include "sndintrn.h"
 #include "libs/reslib.h"
 #include "libs/log.h"
+#include "libs/strlib.h"
+		// for GetStringAddress()
 #include "libs/strings/strintrn.h"
+		// for AllocStringTable(), FreeStringTable()
 #include "libs/memlib.h"
 #include <math.h>
 
@@ -31,7 +34,7 @@ void
 PlayChannel (COUNT channel, SOUND snd, SoundPosition pos,
 		void *positional_object, unsigned char priority)
 {
-	void *snd_ptr = GetSoundAddress (snd);
+	SOUNDPTR snd_ptr = GetSoundAddress (snd);
 	TFB_SoundSample *sample;
 
 	StopSource (channel);
@@ -292,4 +295,12 @@ BOOLEAN
 DestroySound(SOUND_REF target)
 {
 	return _ReleaseSoundBankData (target);
+}
+
+// The type conversions are implicit and will generate errors
+// or warnings if types change imcompatibly
+SOUNDPTR
+GetSoundAddress (SOUND sound)
+{
+	return GetStringAddress (sound);
 }

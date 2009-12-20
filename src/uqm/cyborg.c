@@ -299,10 +299,11 @@ InitCyborg (STARSHIP *StarShipPtr)
 		Index >>= 1;
 #ifdef PRINT_MI
 	{
-		char buf[40];
+		char *shipName;
 
-		GetStringContents (StarShipPtr->RaceDescPtr->ship_data.race_strings, buf, FALSE);
-		log_add (log_Debug, "MI(%s) -- <%u:%u> = %u", buf,
+		shipName = GetStringAddress (
+				StarShipPtr->RaceDescPtr->ship_data.race_strings);
+		log_add (log_Debug, "MI(%s) -- <%u:%u> = %u", shipName,
 				StarShipPtr->RaceDescPtr->characteristics.max_thrust *
 				StarShipPtr->RaceDescPtr->characteristics.thrust_increment,
 				Divisor, Index);

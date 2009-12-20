@@ -19,6 +19,7 @@
 #ifndef _GFXLIB_H
 #define _GFXLIB_H
 
+#include "port.h"
 #include "libs/compiler.h"
 
 typedef struct Color Color;
@@ -220,11 +221,13 @@ typedef struct text
 	COUNT CharCount;
 } TEXT;
 
-#include "strlib.h"
+#include "libs/strlib.h"
 
 typedef STRING_TABLE COLORMAP_REF;
 typedef STRING COLORMAP;
-typedef STRINGPTR COLORMAPPTR;
+// COLORMAPPTR is really a pointer to colortable entry structure
+// which is documented in doc/devel/strtab, .ct files section
+typedef void *COLORMAPPTR;
 
 #include "graphics/prim.h"
 
@@ -374,8 +377,8 @@ extern void FlushColorXForms (void);
 #define SetAbsColorMapIndex SetAbsStringTableIndex
 #define SetRelColorMapIndex SetRelStringTableIndex
 #define GetColorMapLength GetStringLengthBin
-#define GetColorMapAddress GetStringAddress
-#define GetColorMapContents GetStringContents
+
+extern COLORMAPPTR GetColorMapAddress (COLORMAP);
 
 void SetSystemRect (const RECT *pRect);
 void ClearSystemRect (void);

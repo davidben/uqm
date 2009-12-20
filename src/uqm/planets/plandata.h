@@ -194,6 +194,9 @@ enum
 #define NUMBER_OF_ROCKY_WORLDS (NUMBER_OF_SMALL_ROCKY_WORLDS + NUMBER_OF_LARGE_ROCKY_WORLDS)
 #define NUMBER_OF_GAS_GIANTS (LAST_GAS_GIANT - FIRST_GAS_GIANT + 1)
 
+// TODO: This struct is highly alignment and padding dependent and
+//   should not be used! The data is loaded as binary from files and
+//   cast to this struct.
 typedef struct
 {
 	const SIZE level_tab[3];

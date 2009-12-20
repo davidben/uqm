@@ -285,25 +285,3 @@ GetStringAddress (STRING String)
 	}
 	return String->data;
 }
-
-BOOLEAN
-GetStringContents (STRING String, STRINGPTR StringBuf, BOOLEAN
-		AppendSpace)
-{
-	STRINGPTR StringAddr;
-	COUNT StringLength;
-
-	if ((StringAddr = GetStringAddress (String)) != 0 &&
-			(StringLength = GetStringLengthBin (String)) != 0)
-	{
-		memcpy (StringBuf, StringAddr, StringLength);
-		if (AppendSpace)
-			StringBuf[StringLength++] = ' ';
-		StringBuf[StringLength] = '\0';
-
-		return (TRUE);
-	}
-
-	*StringBuf = '\0';
-	return (FALSE);
-}

@@ -20,6 +20,8 @@
 #include "libs/threadlib.h"
 #include "libs/timelib.h"
 #include "libs/inplib.h"
+#include "libs/strlib.h"
+		// for GetStringAddress()
 #include "libs/log.h"
 #include <string.h>
 #include <stdlib.h>
@@ -543,7 +545,7 @@ XFormPLUT (COLORMAPPTR ColorMapPtr, SIZE TimeInterval)
 	DWORD Now;
 
 	Now = GetTimeCounter ();
-	index = *ColorMapPtr;
+	index = *(UBYTE*)ColorMapPtr;
 
 	LockMutex (XFormControl.Lock);
 	// Find an available slot, or reuse if required
@@ -618,4 +620,12 @@ FlushColorXForms (void)
 {
 	FlushFadeXForms ();
 	FlushPLUTXForms ();
+}
+
+// The type conversions are implicit and will generate errors
+// or warnings if types change imcompatibly
+COLORMAPPTR
+GetColorMapAddress (COLORMAP colormap)
+{
+	return GetStringAddress (colormap);
 }

@@ -36,7 +36,7 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 	while (num_entries--)
 	{
 		HMASTERSHIP hBuiltShip;
-		char built_buf[30];
+		char *builtName;
 		HMASTERSHIP hStarShip, hNextShip;
 		MASTER_SHIP_INFO *BuiltPtr;
 		RACE_DESC *RDPtr;
@@ -65,9 +65,8 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 		BuiltPtr->Fleet = RDPtr->fleet;
 		free_ship (RDPtr, FALSE, FALSE);
 
-		GetStringContents (SetAbsStringTableIndex (
-				BuiltPtr->ShipInfo.race_strings, 2
-				), (STRINGPTR)built_buf, FALSE);
+		builtName = GetStringAddress (SetAbsStringTableIndex (
+				BuiltPtr->ShipInfo.race_strings, 2));
 		UnlockMasterShip (&master_q, hBuiltShip);
 
 		// Insert the ship in the master queue in the right location
@@ -75,17 +74,16 @@ LoadMasterShipList (void (* YieldProcessing)(void))
 		for (hStarShip = GetHeadLink (&master_q);
 				hStarShip; hStarShip = hNextShip)
 		{
-			char ship_buf[30];
+			char *curName;
 			MASTER_SHIP_INFO *MasterPtr;
 
 			MasterPtr = LockMasterShip (&master_q, hStarShip);
 			hNextShip = _GetSuccLink (MasterPtr);
-			GetStringContents (SetAbsStringTableIndex (
-					MasterPtr->ShipInfo.race_strings, 2
-					), (STRINGPTR)ship_buf, FALSE);
+			curName = GetStringAddress (SetAbsStringTableIndex (
+					MasterPtr->ShipInfo.race_strings, 2));
 			UnlockMasterShip (&master_q, hStarShip);
 
-			if (strcmp (built_buf, ship_buf) < 0)
+			if (strcmp (builtName, curName) < 0)
 				break;
 		}
 		InsertQueue (&master_q, hBuiltShip, hStarShip);

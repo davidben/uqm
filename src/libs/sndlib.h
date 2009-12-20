@@ -19,11 +19,13 @@
 #ifndef _SNDLIB_H
 #define _SNDLIB_H
 
+#include "port.h"
 #include "libs/strlib.h"
 
 typedef STRING_TABLE SOUND_REF;
 typedef STRING SOUND;
-typedef STRINGPTR SOUNDPTR;
+// SOUNDPTR is really a TFB_SoundSample**
+typedef void *SOUNDPTR;
 
 typedef struct soundposition
 {
@@ -39,8 +41,8 @@ typedef struct soundposition
 #define GetSoundIndex GetStringTableIndex
 #define SetAbsSoundIndex SetAbsStringTableIndex
 #define SetRelSoundIndex SetRelStringTableIndex
-#define GetSoundAddress GetStringAddress
-#define GetSoundContents GetStringContents
+
+extern SOUNDPTR GetSoundAddress (SOUND sound);
 
 typedef struct tfb_soundsample TFB_SoundSample;
 typedef TFB_SoundSample **MUSIC_REF;

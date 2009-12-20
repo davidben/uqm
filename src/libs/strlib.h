@@ -31,10 +31,10 @@ typedef struct string_table STRING_TABLE_DESC;
 
 typedef STRING_TABLE_DESC *STRING_TABLE;
 typedef STRING_TABLE_ENTRY_DESC *STRING;
-typedef BYTE *STRINGPTR;
+typedef char *STRINGPTR;
 
 /* This has to go here because reslib requires the above typedefs. */
-#include "reslib.h"
+#include "libs/reslib.h"
 
 extern BOOLEAN InstallStringTableResType (void);
 extern STRING_TABLE LoadStringTableInstance (RESOURCE res);
@@ -55,8 +55,6 @@ extern COUNT GetStringLengthBin (STRING String);
 extern STRINGPTR GetStringAddress (STRING String);
 extern STRINGPTR GetStringSoundClip (STRING String);
 extern STRINGPTR GetStringTimeStamp (STRING String);
-extern BOOLEAN GetStringContents (STRING String, STRINGPTR StringBuf,
-		BOOLEAN AppendSpace);
 
 #define UNICHAR_DEGREE_SIGN   0x00b0
 #define STR_DEGREE_SIGN     "\xC2\xB0"

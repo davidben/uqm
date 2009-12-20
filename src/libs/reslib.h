@@ -78,13 +78,12 @@ void *GetResourceData (uio_Stream *fp, DWORD length);
 #define AllocResourceData HMalloc
 BOOLEAN FreeResourceData (void *);
 
-#include "strlib.h"
-#include "gfxlib.h"
+#include "libs/strlib.h"
+#include "libs/gfxlib.h"
 		// For Color
 
 typedef STRING_TABLE DIRENTRY_REF;
 typedef STRING DIRENTRY;
-typedef STRINGPTR DIRENTRYPTR;
 
 extern DIRENTRY_REF LoadDirEntryTable (uio_DirHandle *dirHandle,
 		const char *path, const char *pattern, match_MatchType matchType);
@@ -98,7 +97,6 @@ extern DIRENTRY_REF LoadDirEntryTable (uio_DirHandle *dirHandle,
 #define SetRelDirEntryTableIndex SetRelStringTableIndex
 #define GetDirEntryLength GetStringLengthBin
 #define GetDirEntryAddress GetStringAddress
-#define GetDirEntryContents GetStringContents
 
 /* Key-Value resources */
 

@@ -470,7 +470,7 @@ _GetBinaryTableData (uio_Stream *fp, DWORD length)
 			stringptr = (BYTE *)(fileData + 2 + size + fileData[1]);
 			for (i = 0; i < size; i++)
 			{
-				set_strtab_entry (lpST, i, stringptr, fileData[2+i]);
+				set_strtab_entry (lpST, i, (char *)stringptr, fileData[2+i]);
 				stringptr += fileData[2+i];
 			}
 		}

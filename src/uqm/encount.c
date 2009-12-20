@@ -555,8 +555,8 @@ UninitEncounter (void)
 										BUILD_COLOR (MAKE_RGB15 (0x08, 0x08, 0x08), 0x1F));
 								SetContextFont (TinyFont);
 
-								GetStringContents (FragPtr->race_strings,
-										(STRINGPTR)buf, FALSE);
+								utf8StringCopy (buf, sizeof buf,
+										GetStringAddress (FragPtr->race_strings));
 								// XXX: this will not work with UTF-8 strings
 								strupr (buf);
 
