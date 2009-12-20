@@ -703,7 +703,7 @@ _GetFontData (uio_Stream *fp, DWORD length)
 
 	{
 		size_t startBCD = 0;
-		int pageStart;
+		UniChar pageStart;
 		FONT_PAGE **pageEndPtr = &fontPtr->fontPages;
 		while (startBCD < numBCDs)
 		{
