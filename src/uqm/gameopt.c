@@ -943,8 +943,12 @@ SaveLoadGame (PICK_GAME_STATE *pickState, COUNT gameIndex)
 	STAMP saveStamp;
 	BOOLEAN success;
 
+	saveStamp.frame = NULL;
+
+	// TODO: fix ConfirmSaveLoad() interface so it does not rely on
+	//   MsgStamp != NULL parameter.
 	LockMutex (GraphicsLock);
-	ConfirmSaveLoad (&saveStamp);
+	ConfirmSaveLoad (pickState->saving ? &saveStamp : NULL);
 	UnlockMutex (GraphicsLock);
 
 	if (pickState->saving)
@@ -952,10 +956,14 @@ SaveLoadGame (PICK_GAME_STATE *pickState, COUNT gameIndex)
 	else
 		success = LoadGame (gameIndex, NULL);
 
-	// restore the screen under "Saving..." message
-	LockMutex (GraphicsLock);
-	DrawStamp (&saveStamp);
-	UnlockMutex (GraphicsLock);
+	// TODO: the same should be done for both save and load if we also
+	//   display a load problem message
+	if (pickState->saving)
+	{	// restore the screen under "SAVING..." message
+		LockMutex (GraphicsLock);
+		DrawStamp (&saveStamp);
+		UnlockMutex (GraphicsLock);
+	}
 
 	DestroyDrawable (ReleaseDrawable (saveStamp.frame));
 
