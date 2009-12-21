@@ -61,6 +61,7 @@ extern BYTE PlayerControl[];
 BOOLEAN InitContexts (void);
 void UninitPlayerInput (void);
 BOOLEAN InitGameKernel (void);
+void UninitGameKernel (void);
 
 extern BOOLEAN LoadKernel (int argc, char *argv[]);
 extern void FreeKernel (void);

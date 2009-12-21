@@ -16,7 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "master.h"
 #include "nameref.h"
 #include "libs/reslib.h"
 #include "gamestr.h"
@@ -34,20 +33,13 @@
 //  should be something like solarsys.h
 extern void FreeIPData (void);
 
-static void UninitContexts (void);
-static void UninitKernel (BOOLEAN ships);
-static void UninitGameKernel (void);
-
 
 void
 FreeKernel (void)
 {
-	UninitKernel (TRUE);
-	UninitContexts ();
+	UninitPlayerInput ();
 
 	UninitResourceSystem ();
-
-	UninitPlayerInput ();
 
 	DestroyDrawable (ReleaseDrawable (Screen));
 	DestroyContext (ScreenContext);
@@ -68,7 +60,7 @@ UninitContexts (void)
 }
 
 static void
-UninitKernel (BOOLEAN ships)
+UninitKernel (void)
 {
 	UninitSpace ();
 
@@ -83,9 +75,6 @@ UninitKernel (BOOLEAN ships)
 	UninitQueue (&race_q[0]);
 	UninitQueue (&race_q[1]);
 
-	if (ships)
-		FreeMasterShipList ();
-	
 	ActivityFrame = 0;
 }
 
@@ -98,17 +87,15 @@ FreeGameData (void)
 	FreeHyperData ();
 }
 
-static void
+void
 UninitGameKernel (void)
 {
-	// XXX: this function is never called. Why not? (BUG?)
 	if (ActivityFrame)
 	{
 		FreeGameData ();
 
-		UninitKernel (FALSE);
+		UninitKernel ();
 		UninitContexts ();
 	}
 }
-
 

@@ -296,7 +296,8 @@ while (--ac > 0)
 	}
 //	CloseJournal ();
 
-	FreeGameData ();
+	UninitGameKernel ();
+	FreeMasterShipList ();
 	FreeKernel ();
 
 	MainExited = TRUE;
