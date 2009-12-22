@@ -14,12 +14,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef BBOX_H_INCL__
+#define BBOX_H_INCL__
+
 #include "libs/gfxlib.h"
 #include "libs/graphics/tfb_draw.h"
-#include "libs/graphics/gfx_common.h"
-
-#ifndef _BBOX_H_
-#define _BBOX_H_
 
 /* Bounding Box operations.  These operations are NOT synchronized.
  * However, they should only be accessed by TFB_FlushGraphics and
@@ -37,10 +36,11 @@ typedef struct {
 extern TFB_BoundingBox TFB_BBox;
 
 void TFB_BBox_RegisterPoint (int x, int y);
-void TFB_BBox_RegisterRect (RECT *r);
+void TFB_BBox_RegisterRect (const RECT *r);
 void TFB_BBox_RegisterCanvas (TFB_Canvas c, int x, int y);
 
+void TFB_BBox_Init (int width, int height);
 void TFB_BBox_Reset (void);
-void TFB_BBox_GetClipRect (TFB_Canvas c);
+void TFB_BBox_SetClipRect (const RECT *r);
 
-#endif
+#endif /* BBOX_H_INCL__ */

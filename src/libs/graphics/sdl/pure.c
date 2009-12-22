@@ -18,7 +18,7 @@
 #ifdef GFXMODULE_SDL
 
 #include "pure.h"
-#include "bbox.h"
+#include "libs/graphics/bbox.h"
 #include "scalers.h"
 #include "libs/log.h"
 

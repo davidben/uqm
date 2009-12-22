@@ -100,7 +100,7 @@ typedef struct tfb_dc_copyimg
 
 typedef struct tfb_dc_scissor
 {
-	int x, y, w, h;
+	RECT rect;
 } TFB_DrawCommand_Scissor;
 
 typedef struct tfb_dc_setmip

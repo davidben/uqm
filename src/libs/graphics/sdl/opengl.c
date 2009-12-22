@@ -19,7 +19,7 @@
 #if defined (GFXMODULE_SDL) && defined (HAVE_OPENGL)
 
 #include "libs/graphics/sdl/opengl.h"
-#include "bbox.h"
+#include "libs/graphics/bbox.h"
 #include "scalers.h"
 #include "options.h"
 #include "libs/log.h"

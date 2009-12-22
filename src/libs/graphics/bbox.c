@@ -15,30 +15,53 @@
  */
 
 #include "port.h"
-#include SDL_INCLUDE(SDL.h)
-#include "bbox.h"
+#include "libs/graphics/bbox.h"
 
 TFB_BoundingBox TFB_BBox;
+int maxWidth;
+int maxHeight;
+
+void
+TFB_BBox_Init (int width, int height)
+{
+	maxWidth = width;
+	maxHeight = height;
+	TFB_BBox.clip.extent.width = width;
+	TFB_BBox.clip.extent.height = height;
+}
 
 void
 TFB_BBox_Reset (void)
 {
 	TFB_BBox.valid = 0;
-	TFB_BBox.clip.corner.x = 0;
-	TFB_BBox.clip.corner.y = 0;
-	TFB_BBox.clip.extent.width = ScreenWidth;
-	TFB_BBox.clip.extent.height = ScreenHeight;
 }
 
 void
-TFB_BBox_GetClipRect (TFB_Canvas c)
+TFB_BBox_SetClipRect (const RECT *r)
 {
-	SDL_Rect r;
-	SDL_GetClipRect ((SDL_Surface *)c, &r);
-	TFB_BBox.clip.corner.x = r.x;
-	TFB_BBox.clip.corner.y = r.y;
-	TFB_BBox.clip.extent.width = r.w;
-	TFB_BBox.clip.extent.height = r.h;
+	if (!r)
+	{	/* No clipping -- full rect */
+		TFB_BBox.clip.corner.x = 0;
+		TFB_BBox.clip.corner.y = 0;
+		TFB_BBox.clip.extent.width = maxWidth;
+		TFB_BBox.clip.extent.height = maxHeight;
+		return;
+	}
+
+	TFB_BBox.clip = *r;
+
+	/* Make sure the cliprect is sane */
+	if (TFB_BBox.clip.corner.x < 0)
+		TFB_BBox.clip.corner.x = 0;
+
+	if (TFB_BBox.clip.corner.y < 0)
+		TFB_BBox.clip.corner.y = 0;
+
+	if (TFB_BBox.clip.corner.x + TFB_BBox.clip.extent.width > maxWidth)
+		TFB_BBox.clip.extent.width = maxWidth - TFB_BBox.clip.corner.x;
+	
+	if (TFB_BBox.clip.corner.y + TFB_BBox.clip.extent.height > maxHeight)
+		TFB_BBox.clip.extent.height = maxHeight - TFB_BBox.clip.corner.y;
 }
 
 void
@@ -48,22 +71,6 @@ TFB_BBox_RegisterPoint (int x, int y)
 	int y1 = TFB_BBox.clip.corner.y;
 	int x2 = TFB_BBox.clip.corner.x + TFB_BBox.clip.extent.width - 1;
 	int y2 = TFB_BBox.clip.corner.y + TFB_BBox.clip.extent.height - 1;
-
-	/* Make sure the cliprect is sane */
-
-	if (x1 < 0) x1 = TFB_BBox.clip.corner.x = 0;
-	if (y1 < 0) y1 = TFB_BBox.clip.corner.y = 0;
-	if (x2 >= ScreenWidth)
-	{
-		TFB_BBox.clip.extent.width = ScreenWidth - x1;
-		x2 = ScreenWidth - 1;
-	}
-	if (y2 >= ScreenHeight)
-	{
-		TFB_BBox.clip.extent.height = ScreenHeight - y1;
-		y2 = ScreenHeight - 1;
-	}
-
 
 	/* Constrain coordinates */
 	if (x < x1) x = x1;
@@ -105,16 +112,22 @@ TFB_BBox_RegisterPoint (int x, int y)
 }
 
 void
-TFB_BBox_RegisterRect (RECT *r)
+TFB_BBox_RegisterRect (const RECT *r)
 {
+	/* RECT will still register as a corner point of the cliprect even
+	 * if it does not intersect with the cliprect at all. This is not
+	 * a problem, as more is not less. */
 	TFB_BBox_RegisterPoint (r->corner.x, r->corner.y);
-	TFB_BBox_RegisterPoint (r->corner.x + r->extent.width, r->corner.y + r->extent.height);
+	TFB_BBox_RegisterPoint (r->corner.x + r->extent.width - 1,
+			r->corner.y + r->extent.height - 1);
 }
 
 void
 TFB_BBox_RegisterCanvas (TFB_Canvas c, int x, int y)
 {
-	SDL_Surface *s = (SDL_Surface *)c;
-	TFB_BBox_RegisterPoint (x, y);
-	TFB_BBox_RegisterPoint (x + s->w, y + s->h);
+	RECT r;
+	r.corner.x = x;
+	r.corner.y = y;
+	TFB_DrawCanvas_GetExtent (c, &r.extent);
+	TFB_BBox_RegisterRect (&r);
 }

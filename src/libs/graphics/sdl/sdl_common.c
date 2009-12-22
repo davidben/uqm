@@ -29,7 +29,7 @@
 #include "libs/graphics/cmap.h"
 #include "libs/input/sdl/input.h"
 		// for ProcessInputEvent()
-#include "bbox.h"
+#include "libs/graphics/bbox.h"
 #include "port.h"
 #include "libs/uio.h"
 #include "libs/log.h"
@@ -174,6 +174,7 @@ TFB_InitGraphics (int driver, int flags, int width, int height)
 	Init_DrawCommandQueue ();
 
 	TFB_DrawCanvas_Initialize ();
+	TFB_BBox_Init (ScreenWidth, ScreenHeight);
 
 	RenderingCond = CreateCondVar ("DCQ empty",
 			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
@@ -660,7 +661,6 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 	}
 
 	TFB_BBox_Reset ();
-	TFB_BBox_GetClipRect (SDL_Screens[0]);
 
 	done = FALSE;
 	while (!done)
@@ -794,19 +794,17 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 		case TFB_DRAWCOMMANDTYPE_SCISSORENABLE:
 			{
 				SDL_Rect r;
-				r.x = TFB_BBox.clip.corner.x = DC.data.scissor.x;
-				r.y = TFB_BBox.clip.corner.y = DC.data.scissor.y;
-				r.w = TFB_BBox.clip.extent.width = DC.data.scissor.w;
-				r.h = TFB_BBox.clip.extent.height = DC.data.scissor.h;
+				r.x = DC.data.scissor.rect.corner.x;
+				r.y = DC.data.scissor.rect.corner.y;
+				r.w = DC.data.scissor.rect.extent.width;
+				r.h = DC.data.scissor.rect.extent.height;
 				SDL_SetClipRect (SDL_Screens[0], &r);
+				TFB_BBox_SetClipRect (&DC.data.scissor.rect);
 				break;
 			}
 		case TFB_DRAWCOMMANDTYPE_SCISSORDISABLE:
 			SDL_SetClipRect (SDL_Screens[0], NULL);
-			TFB_BBox.clip.corner.x = 0;
-			TFB_BBox.clip.corner.y = 0;
-			TFB_BBox.clip.extent.width = ScreenWidth;
-			TFB_BBox.clip.extent.height = ScreenHeight;
+			TFB_BBox_SetClipRect (NULL);
 			break;
 		case TFB_DRAWCOMMANDTYPE_COPYTOIMAGE:
 			{

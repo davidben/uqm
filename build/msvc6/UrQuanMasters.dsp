@@ -302,14 +302,6 @@ SOURCE=..\..\src\libs\graphics\sdl\3do_getbody.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\libs\graphics\sdl\bbox.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\libs\graphics\sdl\bbox.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\libs\graphics\sdl\biadv2x.c
 # End Source File
 # Begin Source File
@@ -405,6 +397,14 @@ SOURCE=..\..\src\libs\graphics\sdl\sdluio.h
 SOURCE=..\..\src\libs\graphics\sdl\triscan2x.c
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\src\libs\graphics\bbox.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\graphics\bbox.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\libs\graphics\boxint.c

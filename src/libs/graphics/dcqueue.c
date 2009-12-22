@@ -231,10 +231,7 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 			if (scissor_rect.extent.width)
 			{
 				DC.Type = TFB_DRAWCOMMANDTYPE_SCISSORENABLE;
-				DC.data.scissor.x = scissor_rect.corner.x;
-				DC.data.scissor.y = scissor_rect.corner.y;
-				DC.data.scissor.w = scissor_rect.extent.width;
-				DC.data.scissor.h = scissor_rect.extent.height;
+				DC.data.scissor.rect = scissor_rect;
 			}
 			else
 			{
