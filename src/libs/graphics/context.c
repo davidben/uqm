@@ -306,7 +306,7 @@ FixContextFontEffect (void)
 		
 		TFB_DrawImage_Image (EffectFrame->image,
 				-EffectFrame->HotSpot.x, -EffectFrame->HotSpot.y,
-				0, NULL, img);
+				0, 0, NULL, img);
 	}
 	else
 	{	// solid color backing

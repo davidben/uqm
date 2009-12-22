@@ -82,10 +82,10 @@ void TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, Color color,
 		SCREEN dest);
 void TFB_DrawScreen_Rect (RECT *rect, Color color, SCREEN dest);
 void TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
-		TFB_ColorMap *cmap, SCREEN dest);
+		int scaleMode, TFB_ColorMap *cmap, SCREEN dest);
 void TFB_DrawScreen_Copy (RECT *r, SCREEN src, SCREEN dest);
 void TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale,
-		Color color, SCREEN dest);
+		int scaleMode, Color color, SCREEN dest);
 void TFB_DrawScreen_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
 		SCREEN dest);
 
@@ -110,9 +110,9 @@ void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, Color color,
 		TFB_Image *dest);
 void TFB_DrawImage_Rect (RECT *rect, Color color, TFB_Image *image);
 void TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale,
-		TFB_ColorMap *cmap, TFB_Image *target);
+		int scaleMode, TFB_ColorMap *cmap, TFB_Image *target);
 void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale,
-		Color color, TFB_Image *target);
+		int scaleMode, Color color, TFB_Image *target);
 void TFB_DrawImage_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
 		TFB_Image *target);
 
@@ -146,9 +146,9 @@ void TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, Color color,
 		TFB_Canvas dest);
 void TFB_DrawCanvas_Rect (RECT *rect, Color color, TFB_Canvas image);
 void TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
-		TFB_ColorMap *cmap, TFB_Canvas target);
+		int scaleMode, TFB_ColorMap *cmap, TFB_Canvas target);
 void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
-		Color color, TFB_Canvas target);
+		int scaleMode, Color color, TFB_Canvas target);
 void TFB_DrawCanvas_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
 		TFB_Canvas target);
 

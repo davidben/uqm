@@ -63,7 +63,7 @@ TFB_DrawScreen_Rect (RECT *rect, Color color, SCREEN dest)
 
 void
 TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
-		TFB_ColorMap *cmap, SCREEN dest)
+		int scaleMode, TFB_ColorMap *cmap, SCREEN dest)
 {
 	TFB_DrawCommand DC;
 	
@@ -73,6 +73,7 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
 	DC.data.image.x = x;
 	DC.data.image.y = y;
 	DC.data.image.scale = (scale == GSCALE_IDENTITY) ? 0 : scale;
+	DC.data.image.scaleMode = scaleMode;
 	DC.data.image.destBuffer = dest;
 
 	TFB_EnqueueDrawCommand (&DC);
@@ -80,7 +81,7 @@ TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
 
 void
 TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale,
-		Color color, SCREEN dest)
+		int scaleMode, Color color, SCREEN dest)
 {
 	TFB_DrawCommand DC;
 	
@@ -89,6 +90,7 @@ TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale,
 	DC.data.filledimage.x = x;
 	DC.data.filledimage.y = y;
 	DC.data.filledimage.scale = (scale == GSCALE_IDENTITY) ? 0 : scale;
+	DC.data.filledimage.scaleMode = scaleMode;
 	DC.data.filledimage.color = color;
 	DC.data.filledimage.destBuffer = dest;
 
@@ -253,20 +255,22 @@ TFB_DrawImage_Rect (RECT *rect, Color color, TFB_Image *image)
 
 void
 TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale,
-		TFB_ColorMap *cmap, TFB_Image *target)
+		int scaleMode, TFB_ColorMap *cmap, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_Image (img, x, y, scale, cmap, target->NormalImg);
+	TFB_DrawCanvas_Image (img, x, y, scale, scaleMode, cmap,
+			target->NormalImg);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }
 
 void
 TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale,
-		Color color, TFB_Image *target)
+		int scaleMode, Color color, TFB_Image *target)
 {
 	LockMutex (target->mutex);
-	TFB_DrawCanvas_FilledImage (img, x, y, scale, color, target->NormalImg);
+	TFB_DrawCanvas_FilledImage (img, x, y, scale, scaleMode, color,
+			target->NormalImg);
 	target->dirty = TRUE;
 	UnlockMutex (target->mutex);
 }

@@ -692,16 +692,16 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 			break;
 		case TFB_DRAWCOMMANDTYPE_IMAGE:
 			{
-				TFB_Image *DC_image = DC.data.image.image;
-				TFB_ColorMap *cmap = DC.data.image.colormap;
-				int x = DC.data.image.x;
-				int y = DC.data.image.y;
+				TFB_DrawCommand_Image *cmd = &DC.data.image;
+				TFB_Image *DC_image = cmd->image;
+				int x = cmd->x;
+				int y = cmd->y;
 
 				TFB_DrawCanvas_Image (DC_image, x, y,
-						DC.data.image.scale, cmap,
-						SDL_Screens[DC.data.image.destBuffer]);
+						cmd->scale, cmd->scaleMode, cmd->colormap,
+						SDL_Screens[cmd->destBuffer]);
 
-				if (DC.data.image.destBuffer == 0)
+				if (cmd->destBuffer == 0)
 				{
 					LockMutex (DC_image->mutex);
 					if (DC.data.image.scale)
@@ -719,16 +719,16 @@ TFB_FlushGraphics (void) // Only call from main thread!!
 			}
 		case TFB_DRAWCOMMANDTYPE_FILLEDIMAGE:
 			{
-				TFB_Image *DC_image = DC.data.filledimage.image;
-				int x = DC.data.filledimage.x;
-				int y = DC.data.filledimage.y;
+				TFB_DrawCommand_FilledImage *cmd = &DC.data.filledimage;
+				TFB_Image *DC_image = cmd->image;
+				int x = cmd->x;
+				int y = cmd->y;
 
-				TFB_DrawCanvas_FilledImage (DC.data.filledimage.image,
-						DC.data.filledimage.x, DC.data.filledimage.y,
-						DC.data.filledimage.scale, DC.data.filledimage.color,
-						SDL_Screens[DC.data.filledimage.destBuffer]);
+				TFB_DrawCanvas_FilledImage (DC_image, x, y,
+						cmd->scale, cmd->scaleMode, cmd->color,
+						SDL_Screens[cmd->destBuffer]);
 
-				if (DC.data.filledimage.destBuffer == 0)
+				if (cmd->destBuffer == 0)
 				{
 					LockMutex (DC_image->mutex);
 					if (DC.data.filledimage.scale)

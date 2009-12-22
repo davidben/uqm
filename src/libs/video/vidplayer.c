@@ -148,7 +148,7 @@ processAudioSyncedFrame (VIDEO_REF vid)
 	oldContext = SetContext (NULL);
 	TFB_DrawScreen_Image (vid->frame,
 			vid->dst_rect.corner.x, vid->dst_rect.corner.y,
-			GSCALE_IDENTITY, NULL, TFB_SCREEN_MAIN);
+			0, 0, NULL, TFB_SCREEN_MAIN);
 	SetContext (oldContext);
 	UnlockMutex (GraphicsLock);
 	FlushGraphics (); // needed to prevent half-frame updates
@@ -200,7 +200,7 @@ processMuteFrame (VIDEO_REF vid)
 		oldContext = SetContext (NULL);
 		TFB_DrawScreen_Image (vid->frame,
 				vid->dst_rect.corner.x, vid->dst_rect.corner.y,
-				GSCALE_IDENTITY, NULL, TFB_SCREEN_MAIN);
+				0, 0, NULL, TFB_SCREEN_MAIN);
 		SetContext (oldContext);
 		UnlockMutex (GraphicsLock);
 		FlushGraphics (); // needed to prevent half-frame updates

@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Fixed black pixel gaps between the planet and shield when entering the
+  orbit of a shielded planet (bug #32) - Alex
 - Split off SDL-specific colormap bits into SDL domain - Alex
 - Fixed planet blinking when exiting scan (bug #799) - Alex
 - Restore menu sounds after editing a control set name (bug #1066) - Alex

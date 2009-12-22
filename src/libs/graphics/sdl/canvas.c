@@ -86,7 +86,7 @@ TFB_DrawCanvas_Rect (RECT *rect, Color color, TFB_Canvas target)
 // TFB_GetColorMap(). We release the colormap at the end.
 void
 TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
-		TFB_ColorMap *cmap, TFB_Canvas target)
+		int scaleMode, TFB_ColorMap *cmap, TFB_Canvas target)
 {
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
@@ -108,21 +108,19 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 
 	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
-		int type = GetGraphicScaleMode ();
-
-		if (type == TFB_SCALE_TRILINEAR && img->MipmapImg)
+		if (scaleMode == TFB_SCALE_TRILINEAR && img->MipmapImg)
 		{
 			// only set the new palette if it changed
 			if (TFB_DrawCanvas_IsPaletted (img->MipmapImg)
 					&& cmap && img->colormap_version != cmap->version)
 				SDL_SetColors (img->MipmapImg, cmap->palette->colors, 0, 256);
 		}
-		else if (type == TFB_SCALE_TRILINEAR && !img->MipmapImg)
-		{
-			type = TFB_SCALE_BILINEAR;
+		else if (scaleMode == TFB_SCALE_TRILINEAR && !img->MipmapImg)
+		{	// Do bilinear scaling instead when mipmap is unavailable
+			scaleMode = TFB_SCALE_BILINEAR;
 		}
 
-		TFB_DrawImage_FixScaling (img, scale, type);
+		TFB_DrawImage_FixScaling (img, scale, scaleMode);
 		surf = img->ScaledImg;
 		if (TFB_DrawCanvas_IsPaletted (surf))
 		{
@@ -251,7 +249,7 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 
 void
 TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
-		Color color, TFB_Canvas target)
+		int scaleMode, Color color, TFB_Canvas target)
 {
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
@@ -270,16 +268,14 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 
 	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
-		int type = GetGraphicScaleMode ();
-
-		if (type == TFB_SCALE_TRILINEAR)
-			type = TFB_SCALE_BILINEAR;
+		if (scaleMode == TFB_SCALE_TRILINEAR)
+			scaleMode = TFB_SCALE_BILINEAR;
 					// no point in trilinear for filled images
 
-		if (scale != img->last_scale || type != img->last_scale_type)
+		if (scale != img->last_scale || scaleMode != img->last_scale_type)
 			force_fill = true;
 
-		TFB_DrawImage_FixScaling (img, scale, type);
+		TFB_DrawImage_FixScaling (img, scale, scaleMode);
 		surf = img->ScaledImg;
 		srcRect.x = 0;
 		srcRect.y = 0;

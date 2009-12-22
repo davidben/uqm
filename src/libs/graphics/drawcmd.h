@@ -64,6 +64,7 @@ typedef struct tfb_dc_img
 	SCREEN destBuffer;
 	TFB_ColorMap *colormap;
 	int scale;
+	int scaleMode;
 } TFB_DrawCommand_Image;
 
 typedef struct tfb_dc_filledimg
@@ -73,6 +74,7 @@ typedef struct tfb_dc_filledimg
 	Color color;
 	SCREEN destBuffer;
 	int scale;
+	int scaleMode;
 } TFB_DrawCommand_FilledImage;
 
 typedef struct tfb_dc_fontchar

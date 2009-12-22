@@ -126,7 +126,6 @@ TFB_Prim_Stamp (STAMP *stmp, POINT ctxOrigin)
 	FRAME SrcFramePtr;
 	TFB_Image *img;
 	TFB_ColorMap *cmap = NULL;
-	int gscale;
 
 	SrcFramePtr = stmp->frame;
 	if (!SrcFramePtr)
@@ -136,7 +135,6 @@ TFB_Prim_Stamp (STAMP *stmp, POINT ctxOrigin)
 		return;
 	}
 	img = SrcFramePtr->image;
-	gscale = GetGraphicScale ();
 	
 	if (!img)
 	{
@@ -161,11 +159,13 @@ TFB_Prim_Stamp (STAMP *stmp, POINT ctxOrigin)
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
-		TFB_DrawScreen_Image (img, x, y, gscale, cmap, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Image (img, x, y, GetGraphicScale (),
+				GetGraphicScaleMode (), cmap, TFB_SCREEN_MAIN);
 	}
 	else
 	{
-		TFB_DrawImage_Image (img, x, y, gscale, cmap, _CurFramePtr->image);
+		TFB_DrawImage_Image (img, x, y, GetGraphicScale (),
+				GetGraphicScaleMode (), cmap, _CurFramePtr->image);
 	}
 }
 
@@ -175,7 +175,6 @@ TFB_Prim_StampFill (STAMP *stmp, Color color, POINT ctxOrigin)
 	int x, y;
 	FRAME SrcFramePtr;
 	TFB_Image *img;
-	int gscale;
 
 	SrcFramePtr = stmp->frame;
 	if (!SrcFramePtr)
@@ -185,7 +184,6 @@ TFB_Prim_StampFill (STAMP *stmp, Color color, POINT ctxOrigin)
 		return;
 	}
 	img = SrcFramePtr->image;
-	gscale = GetGraphicScale ();
 
 	if (!img)
 	{
@@ -204,12 +202,13 @@ TFB_Prim_StampFill (STAMP *stmp, Color color, POINT ctxOrigin)
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
-		TFB_DrawScreen_FilledImage (img, x, y, gscale, color, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_FilledImage (img, x, y, GetGraphicScale (),
+				GetGraphicScaleMode (), color, TFB_SCREEN_MAIN);
 	}
 	else
 	{
-		TFB_DrawImage_FilledImage (img, x, y, gscale, color,
-				_CurFramePtr->image);
+		TFB_DrawImage_FilledImage (img, x, y, GetGraphicScale (),
+				GetGraphicScaleMode (), color, _CurFramePtr->image);
 	}
 }
 
