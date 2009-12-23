@@ -19,6 +19,7 @@
 #include "gfxintrn.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/drawcmd.h"
+#include "libs/timelib.h"
 #include "libs/misc.h"
 		// for TFB_DEBUG_HALT
 
@@ -34,6 +35,9 @@ int ScreenHeightActual;
 int ScreenColorDepth;
 int GraphicsDriver;
 int TFB_DEBUG_HALT = 0;
+
+volatile int TransitionAmount = 255;
+RECT TransitionClipRect;
 
 static int gscale = GSCALE_IDENTITY;
 static int gscale_mode = TFB_SCALE_NEAREST;
@@ -77,4 +81,120 @@ int
 GetGraphicScaleMode (void)
 {
 	return gscale_mode;
+}
+
+/* Batching and Unbatching functions.  A "Batch" is a collection of
+   DrawCommands that will never be flipped to the screen half-rendered.
+   BatchGraphics and UnbatchGraphics function vaguely like a non-blocking
+   recursive lock to do this respect. */
+void
+BatchGraphics (void)
+{
+	TFB_BatchGraphics ();
+}
+
+void
+UnbatchGraphics (void)
+{
+	TFB_UnbatchGraphics ();
+}
+
+/* Sleeps this thread until all Draw Commands queued by that thread have
+   been processed. */
+
+void
+FlushGraphics ()
+{
+	TFB_DrawScreen_WaitForSignal ();
+}
+
+static void
+ExpandRect (RECT *rect, int expansion)
+{
+	if (rect->corner.x - expansion >= 0)
+	{
+		rect->extent.width += expansion;
+		rect->corner.x -= expansion;
+	}
+	else
+	{
+		rect->extent.width += rect->corner.x;
+		rect->corner.x = 0;
+	}
+
+	if (rect->corner.y - expansion >= 0)
+	{
+		rect->extent.height += expansion;
+		rect->corner.y -= expansion;
+	}
+	else
+	{
+		rect->extent.height += rect->corner.y;
+		rect->corner.y = 0;
+	}
+
+	if (rect->corner.x + rect->extent.width + expansion <= ScreenWidth)
+		rect->extent.width += expansion;
+	else
+		rect->extent.width = ScreenWidth - rect->corner.x;
+
+	if (rect->corner.y + rect->extent.height + expansion <= ScreenHeight)
+		rect->extent.height += expansion;
+	else
+		rect->extent.height = ScreenHeight - rect->corner.y;
+}
+
+void
+SetTransitionSource (const RECT *pRect)
+{
+	RECT ActualRect;
+
+	if (pRect)
+	{	/* expand the rect to accomodate scalers in OpenGL mode */
+		ActualRect = *pRect;
+		pRect = &ActualRect;
+		ExpandRect (&ActualRect, 2);
+	}
+	TFB_DrawScreen_Copy (pRect, TFB_SCREEN_MAIN, TFB_SCREEN_TRANSITION);
+}
+
+// ScreenTransition() is synchronous (does not return until transition done)
+void
+ScreenTransition (int TransType, const RECT *pRect)
+{
+	const TimePeriod DURATION = ONE_SECOND * 31 / 60;
+	TimeCount startTime;
+	(void) TransType;  /* dodge compiler warning */
+
+	if (pRect)
+	{
+		TransitionClipRect = *pRect;
+	}
+	else
+	{
+		TransitionClipRect.corner.x = 0;
+		TransitionClipRect.corner.y = 0;
+		TransitionClipRect.extent.width = ScreenWidth;
+		TransitionClipRect.extent.height = ScreenHeight;
+	}
+
+	TFB_UploadTransitionScreen ();
+	
+	TransitionAmount = 0;
+	FlushGraphics ();
+	startTime = GetTimeCounter ();
+	while (TransitionAmount < 255)
+	{
+		TimePeriod deltaT;
+		int newAmount;
+
+		SleepThread (ONE_SECOND / 100);
+
+		deltaT = GetTimeCounter () - startTime;
+		newAmount = deltaT * 255 / DURATION;
+		if (newAmount > 255)
+			newAmount = 255;
+
+		TransitionAmount = newAmount;
+	}
 }

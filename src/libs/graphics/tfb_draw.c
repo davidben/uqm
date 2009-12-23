@@ -114,15 +114,12 @@ TFB_DrawScreen_FontChar (TFB_Char *fontChar, TFB_Image *backing,
 }
 
 void
-TFB_DrawScreen_CopyToImage (TFB_Image *img, RECT *lpRect, SCREEN src)
+TFB_DrawScreen_CopyToImage (TFB_Image *img, const RECT *r, SCREEN src)
 {
 	TFB_DrawCommand DC;
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_COPYTOIMAGE;
-	DC.data.copytoimage.x = lpRect->corner.x;
-	DC.data.copytoimage.y = lpRect->corner.y;
-	DC.data.copytoimage.w = lpRect->extent.width;
-	DC.data.copytoimage.h = lpRect->extent.height;
+	DC.data.copytoimage.rect = *r;
 	DC.data.copytoimage.image = img;
 	DC.data.copytoimage.srcBuffer = src;
 	
@@ -130,7 +127,7 @@ TFB_DrawScreen_CopyToImage (TFB_Image *img, RECT *lpRect, SCREEN src)
 }
 
 void
-TFB_DrawScreen_Copy (RECT *r, SCREEN src, SCREEN dest)
+TFB_DrawScreen_Copy (const RECT *r, SCREEN src, SCREEN dest)
 {
 	RECT locRect;
 	TFB_DrawCommand DC;
@@ -144,10 +141,7 @@ TFB_DrawScreen_Copy (RECT *r, SCREEN src, SCREEN dest)
 	}
 
 	DC.Type = TFB_DRAWCOMMANDTYPE_COPY;
-	DC.data.copy.x = r->corner.x;
-	DC.data.copy.y = r->corner.y;
-	DC.data.copy.w = r->extent.width;
-	DC.data.copy.h = r->extent.height;
+	DC.data.copy.rect = *r;
 	DC.data.copy.srcBuffer = src;
 	DC.data.copy.destBuffer = dest;
 

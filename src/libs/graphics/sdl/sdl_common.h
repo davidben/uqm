@@ -46,13 +46,9 @@ extern SDL_Surface *SDL_Screens[TFB_GFX_NUMSCREENS];
 
 extern SDL_Surface *format_conv_surf;
 
-extern volatile int TransitionAmount;
-extern SDL_Rect TransitionClipRect;
-
 void ScreenOrigin (FRAME Display, COORD sx, COORD sy);
 void LoadDisplay (DISPLAY_INTERFACE **pDisplay);
 
-void TFB_SwapBuffers (int force_full_redraw);
 SDL_Surface* TFB_DisplayFormatAlpha (SDL_Surface *surface);
 void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 					  SDL_Rect *dstrect, int blend_numer, int blend_denom);

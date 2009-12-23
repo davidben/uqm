@@ -87,14 +87,14 @@ typedef struct tfb_dc_fontchar
 
 typedef struct tfb_dc_copy
 {
-	int x, y, w, h;
+	RECT rect;
 	SCREEN srcBuffer, destBuffer;
 } TFB_DrawCommand_Copy;
 
 typedef struct tfb_dc_copyimg
 {
 	TFB_Image *image;
-	int x, y, w, h;
+	RECT rect;
 	SCREEN srcBuffer;
 } TFB_DrawCommand_CopyToImage;
 

@@ -1669,3 +1669,55 @@ TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src_canvas, int angle, EXTENT *size)
 	size->width = dstw;
 }
 
+void
+TFB_DrawCanvas_CopyRect (TFB_Canvas source, const RECT *srcRect,
+		TFB_Canvas target, POINT dstPt)
+{
+	SDL_Rect sourceRect, targetRect;
+
+	if (source == 0 || target == 0)
+	{
+		log_add (log_Warning,
+				"ERROR: TFB_DrawCanvas_CopyRect passed null canvas ptr");
+		return;
+	}
+
+	sourceRect.x = srcRect->corner.x;
+	sourceRect.y = srcRect->corner.y;
+	sourceRect.w = srcRect->extent.width;
+	sourceRect.h = srcRect->extent.height;
+
+	targetRect.x = dstPt.x;
+	targetRect.y = dstPt.y;
+	// According to SDL docs, width and height are ignored, but
+	// we'll set them anyway, just in case.
+	targetRect.w = srcRect->extent.width;
+	targetRect.h = srcRect->extent.height;
+	
+	SDL_BlitSurface (source, &sourceRect, target, &targetRect);
+}
+
+void
+TFB_DrawCanvas_SetClipRect (TFB_Canvas canvas, const RECT *clipRect)
+{
+	if (canvas == 0)
+	{
+		log_add (log_Warning,
+				"ERROR: TFB_DrawCanvas_SetClipRect passed null canvas ptr");
+		return;
+	}
+
+	if (!clipRect)
+	{	// clipping disabled
+		SDL_SetClipRect (canvas, NULL);
+	}
+	else
+	{
+		SDL_Rect r;
+		r.x = clipRect->corner.x;
+		r.y = clipRect->corner.y;
+		r.w = clipRect->extent.width;
+		r.h = clipRect->extent.height;
+		SDL_SetClipRect (canvas, &r);
+	}
+}

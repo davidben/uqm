@@ -20,6 +20,9 @@
 #include "libs/graphics/drawable.h"
 #include "libs/graphics/context.h"
 #include "libs/graphics/dcqueue.h"
+#include "libs/graphics/gfx_common.h"
+#include "libs/graphics/bbox.h"
+#include "libs/timelib.h"
 #include "libs/log.h"
 #include "libs/misc.h"
 		// for TFB_DEBUG_HALT
@@ -32,6 +35,10 @@ CondVar RenderingCond;
 TFB_DrawCommand DCQ[DCQ_MAX];
 
 TFB_DrawCommandQueue DrawCommandQueue;
+
+#define FPS_PERIOD  (ONE_SECOND / 100)
+int RenderedFrames = 0;
+
 
 // Wait for the queue to be emptied.
 static void
@@ -137,12 +144,19 @@ Init_DrawCommandQueue (void)
 	DrawCommandQueue.FullSize = 0;
 	DrawCommandQueue.Size = 0;
 
-	DCQ_Mutex = CreateRecursiveMutex ("DCQ", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+	TFB_BBox_Init (ScreenWidth, ScreenHeight);
+
+	DCQ_Mutex = CreateRecursiveMutex ("DCQ",
+			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
+
+	RenderingCond = CreateCondVar ("DCQ empty",
+			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 }
 
 void
 Uninit_DrawCommandQueue (void)
 {
+	DestroyCondVar (RenderingCond);
 	DestroyRecursiveMutex (DCQ_Mutex);
 }
 
@@ -245,3 +259,328 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 	TFB_DrawCommandQueue_Push (DrawCommand);
 }
 
+static void
+computeFPS (void)
+{
+	static TimeCount last_time;
+	static TimePeriod fps_counter;
+	TimeCount current_time;
+	TimePeriod delta_time;
+
+	current_time = GetTimeCounter ();
+	delta_time = current_time - last_time;
+	last_time = current_time;
+	
+	fps_counter += delta_time;
+	if (fps_counter > FPS_PERIOD)
+	{
+		log_add (log_User, "fps %.2f, effective %.2f",
+				(float)ONE_SECOND / delta_time,
+				(float)ONE_SECOND * RenderedFrames / fps_counter);
+
+		fps_counter = 0;
+		RenderedFrames = 0;
+	}
+}
+
+// Only call from main() thread!!
+void
+TFB_FlushGraphics (void)
+{
+	int commands_handled;
+	BOOLEAN livelock_deterrence;
+
+	// This is technically a locking violation on DrawCommandQueue.Size,
+	// but it is likely to not be very destructive.
+	if (DrawCommandQueue.Size == 0)
+	{
+		static int last_fade = 255;
+		static int last_transition = 255;
+		int current_fade = GetFadeAmount ();
+		int current_transition = TransitionAmount;
+		
+		if ((current_fade != 255 && current_fade != last_fade) ||
+			(current_transition != 255 &&
+			current_transition != last_transition) ||
+			(current_fade == 255 && last_fade != 255) ||
+			(current_transition == 255 && last_transition != 255))
+		{
+			TFB_SwapBuffers (TFB_REDRAW_FADING);
+					// if fading, redraw every frame
+		}
+		else
+		{
+			TaskSwitch ();
+		}
+		
+		last_fade = current_fade;
+		last_transition = current_transition;
+		BroadcastCondVar (RenderingCond);
+		return;
+	}
+
+	if (GfxFlags & TFB_GFXFLAGS_SHOWFPS)
+		computeFPS ();
+
+	commands_handled = 0;
+	livelock_deterrence = FALSE;
+
+	if (DrawCommandQueue.FullSize > DCQ_FORCE_BREAK_SIZE)
+	{
+		TFB_BatchReset ();
+	}
+
+	if (DrawCommandQueue.Size > DCQ_FORCE_SLOWDOWN_SIZE)
+	{
+		Lock_DCQ (-1);
+		livelock_deterrence = TRUE;
+	}
+
+	TFB_BBox_Reset ();
+
+	for (;;)
+	{
+		TFB_DrawCommand DC;
+
+		if (!TFB_DrawCommandQueue_Pop (&DC))
+		{
+			// the Queue is now empty.
+			break;
+		}
+
+		++commands_handled;
+		if (!livelock_deterrence && commands_handled + DrawCommandQueue.Size
+				> DCQ_LIVELOCK_MAX)
+		{
+			// log_add (log_Debug, "Initiating livelock deterrence!");
+			livelock_deterrence = TRUE;
+			
+			Lock_DCQ (-1);
+		}
+
+		switch (DC.Type)
+		{
+			case TFB_DRAWCOMMANDTYPE_SETMIPMAP:
+			{
+				TFB_DrawCommand_SetMipmap *cmd = &DC.data.setmipmap;
+				TFB_DrawImage_SetMipmap (cmd->image, cmd->mipmap,
+						cmd->hotx, cmd->hoty);
+				break;
+			}
+
+			case TFB_DRAWCOMMANDTYPE_IMAGE:
+			{
+				TFB_DrawCommand_Image *cmd = &DC.data.image;
+				TFB_Image *DC_image = cmd->image;
+				const int x = cmd->x;
+				const int y = cmd->y;
+
+				TFB_DrawCanvas_Image (DC_image, x, y,
+						cmd->scale, cmd->scaleMode, cmd->colormap,
+						TFB_GetScreenCanvas (cmd->destBuffer));
+
+				if (cmd->destBuffer == TFB_SCREEN_MAIN)
+				{
+					LockMutex (DC_image->mutex);
+					if (cmd->scale)
+						TFB_BBox_RegisterCanvas (DC_image->ScaledImg,
+								x - DC_image->last_scale_hs.x,
+								y - DC_image->last_scale_hs.y);
+					else
+						TFB_BBox_RegisterCanvas (DC_image->NormalImg,
+								x - DC_image->NormalHs.x,
+								y - DC_image->NormalHs.y);
+					UnlockMutex (DC_image->mutex);
+				}
+
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_FILLEDIMAGE:
+			{
+				TFB_DrawCommand_FilledImage *cmd = &DC.data.filledimage;
+				TFB_Image *DC_image = cmd->image;
+				const int x = cmd->x;
+				const int y = cmd->y;
+
+				TFB_DrawCanvas_FilledImage (DC_image, x, y,
+						cmd->scale, cmd->scaleMode, cmd->color,
+						TFB_GetScreenCanvas (cmd->destBuffer));
+
+				if (cmd->destBuffer == TFB_SCREEN_MAIN)
+				{
+					LockMutex (DC_image->mutex);
+					if (cmd->scale)
+						TFB_BBox_RegisterCanvas (DC_image->ScaledImg,
+								x - DC_image->last_scale_hs.x,
+								y - DC_image->last_scale_hs.y);
+					else
+						TFB_BBox_RegisterCanvas (DC_image->NormalImg,
+								x - DC_image->NormalHs.x,
+								y - DC_image->NormalHs.y);
+					UnlockMutex (DC_image->mutex);
+				}
+
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_FONTCHAR:
+			{
+				TFB_DrawCommand_FontChar *cmd = &DC.data.fontchar;
+				TFB_Char *DC_char = cmd->fontchar;
+				const int x = cmd->x;
+				const int y = cmd->y;
+
+				TFB_DrawCanvas_FontChar (DC_char, cmd->backing, x, y,
+						TFB_GetScreenCanvas (cmd->destBuffer));
+
+				if (cmd->destBuffer == TFB_SCREEN_MAIN)
+				{
+					RECT r;
+					
+					r.corner.x = x - DC_char->HotSpot.x;
+					r.corner.y = y - DC_char->HotSpot.y;
+					r.extent.width = DC_char->extent.width;
+					r.extent.height = DC_char->extent.height;
+
+					TFB_BBox_RegisterRect (&r);
+				}
+
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_LINE:
+			{
+				TFB_DrawCommand_Line *cmd = &DC.data.line;
+
+				if (cmd->destBuffer == TFB_SCREEN_MAIN)
+				{
+					TFB_BBox_RegisterPoint (cmd->x1, cmd->y1);
+					TFB_BBox_RegisterPoint (cmd->x2, cmd->y2);
+				}
+				TFB_DrawCanvas_Line (cmd->x1, cmd->y1, cmd->x2, cmd->y2,
+						cmd->color, TFB_GetScreenCanvas (cmd->destBuffer));
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_RECTANGLE:
+			{
+				TFB_DrawCommand_Rect *cmd = &DC.data.rect;
+
+				if (cmd->destBuffer == TFB_SCREEN_MAIN)
+					TFB_BBox_RegisterRect (&cmd->rect);
+				TFB_DrawCanvas_Rect (&cmd->rect, cmd->color,
+						TFB_GetScreenCanvas (cmd->destBuffer));
+
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_SCISSORENABLE:
+			{
+				TFB_DrawCommand_Scissor *cmd = &DC.data.scissor;
+
+				TFB_DrawCanvas_SetClipRect (
+						TFB_GetScreenCanvas (TFB_SCREEN_MAIN), &cmd->rect);
+				TFB_BBox_SetClipRect (&DC.data.scissor.rect);
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_SCISSORDISABLE:
+				TFB_DrawCanvas_SetClipRect (
+						TFB_GetScreenCanvas (TFB_SCREEN_MAIN), NULL);
+				TFB_BBox_SetClipRect (NULL);
+				break;
+			
+			case TFB_DRAWCOMMANDTYPE_COPYTOIMAGE:
+			{
+				TFB_DrawCommand_CopyToImage *cmd = &DC.data.copytoimage;
+				TFB_Image *DC_image = cmd->image;
+				const POINT dstPt = {0, 0};
+
+				if (DC_image == 0)
+				{
+					log_add (log_Debug, "DCQ ERROR: COPYTOIMAGE passed null "
+							"image ptr");
+					break;
+				}
+				LockMutex (DC_image->mutex);
+				TFB_DrawCanvas_CopyRect (
+						TFB_GetScreenCanvas (cmd->srcBuffer), &cmd->rect,
+						DC_image->NormalImg, dstPt);
+				UnlockMutex (DC_image->mutex);
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_COPY:
+			{
+				TFB_DrawCommand_Copy *cmd = &DC.data.copy;
+				const RECT r = cmd->rect;
+
+				if (cmd->destBuffer == TFB_SCREEN_MAIN)
+					TFB_BBox_RegisterRect (&cmd->rect);
+
+				TFB_DrawCanvas_CopyRect	(
+						TFB_GetScreenCanvas (cmd->srcBuffer), &r,
+						TFB_GetScreenCanvas (cmd->destBuffer), r.corner);
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:
+			{
+				TFB_Image *DC_image = DC.data.deleteimage.image;
+				TFB_DrawImage_Delete (DC_image);
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_DELETEDATA:
+			{
+				void *data = DC.data.deletedata.data;
+				HFree (data);
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:
+				ClearSemaphore (DC.data.sendsignal.sem);
+				break;
+			
+			case TFB_DRAWCOMMANDTYPE_REINITVIDEO:
+			{
+				TFB_DrawCommand_ReinitVideo *cmd = &DC.data.reinitvideo;
+				int oldDriver = GraphicsDriver;
+				int oldFlags = GfxFlags;
+				int oldWidth = ScreenWidthActual;
+				int oldHeight = ScreenHeightActual;
+				if (TFB_ReInitGraphics (cmd->driver, cmd->flags,
+						cmd->width, cmd->height))
+				{
+					log_add (log_Error, "Could not provide requested mode: "
+							"reverting to last known driver.");
+					// We don't know what exactly failed, so roll it all back
+					if (TFB_ReInitGraphics (oldDriver, oldFlags,
+							oldWidth, oldHeight))
+					{
+						log_add (log_Fatal,
+								"Couldn't reinit at that point either. "
+								"Your video has been somehow tied in knots.");
+						exit (EXIT_FAILURE);
+					}
+				}
+				TFB_SwapBuffers (TFB_REDRAW_YES);
+				break;
+			}
+			
+			case TFB_DRAWCOMMANDTYPE_CALLBACK:
+			{
+				DC.data.callback.callback (DC.data.callback.arg);
+				break;
+			}
+		}
+	}
+	
+	if (livelock_deterrence)
+		Unlock_DCQ ();
+
+	TFB_SwapBuffers (TFB_REDRAW_NO);
+	RenderedFrames++;
+	BroadcastCondVar (RenderingCond);
+}

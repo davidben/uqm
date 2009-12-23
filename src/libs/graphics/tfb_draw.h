@@ -83,13 +83,13 @@ void TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, Color color,
 void TFB_DrawScreen_Rect (RECT *rect, Color color, SCREEN dest);
 void TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
 		int scaleMode, TFB_ColorMap *cmap, SCREEN dest);
-void TFB_DrawScreen_Copy (RECT *r, SCREEN src, SCREEN dest);
+void TFB_DrawScreen_Copy (const RECT *r, SCREEN src, SCREEN dest);
 void TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale,
 		int scaleMode, Color color, SCREEN dest);
 void TFB_DrawScreen_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
 		SCREEN dest);
 
-void TFB_DrawScreen_CopyToImage (TFB_Image *img, RECT *lpRect, SCREEN src);
+void TFB_DrawScreen_CopyToImage (TFB_Image *img, const RECT *r, SCREEN src);
 void TFB_DrawScreen_SetMipmap (TFB_Image *img, TFB_Image *mmimg, int hotx,
 		int hoty);
 void TFB_DrawScreen_DeleteImage (TFB_Image *img);
@@ -139,6 +139,7 @@ void TFB_DrawCanvas_Rotate (TFB_Canvas src, TFB_Canvas dst, int angle,
 		EXTENT size);
 void TFB_DrawCanvas_GetRotatedExtent (TFB_Canvas src, int angle, EXTENT *size);
 void TFB_DrawCanvas_GetExtent (TFB_Canvas canvas, EXTENT *size);
+void TFB_DrawCanvas_SetClipRect (TFB_Canvas canvas, const RECT *clipRect);
 
 void TFB_DrawCanvas_Delete (TFB_Canvas canvas);
 
@@ -151,6 +152,8 @@ void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 		int scaleMode, Color color, TFB_Canvas target);
 void TFB_DrawCanvas_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
 		TFB_Canvas target);
+void TFB_DrawCanvas_CopyRect (TFB_Canvas source, const RECT *srcRect,
+		TFB_Canvas target, POINT dstPt);
 
 Color *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetPalette (TFB_Canvas target, Color palette[256]);
