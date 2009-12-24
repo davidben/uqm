@@ -117,15 +117,11 @@ extern GRAPHICS_STATUS _GraphicsStatusFlags;
 #define GRAPHICS_VISIBLE (GRAPHICS_STATUS)(1 << 1)
 #define CONTEXT_ACTIVE (GRAPHICS_STATUS)(1 << 2)
 #define DRAWABLE_ACTIVE (GRAPHICS_STATUS)(1 << 3)
-#define DISPLAY_ACTIVE (GRAPHICS_STATUS)(1 << 5)
 #define DeactivateGraphics() (_GraphicsStatusFlags &= ~GRAPHICS_ACTIVE)
 #define ActivateGraphics() (_GraphicsStatusFlags |= GRAPHICS_ACTIVE)
 #define GraphicsActive() (_GraphicsStatusFlags & GRAPHICS_ACTIVE)
 #define DeactivateVisible() (_GraphicsStatusFlags &= ~GRAPHICS_VISIBLE)
 #define ActivateVisible() (_GraphicsStatusFlags |= GRAPHICS_VISIBLE)
-#define DeactivateDisplay() (_GraphicsStatusFlags &= ~DISPLAY_ACTIVE)
-#define ActivateDisplay() (_GraphicsStatusFlags |= DISPLAY_ACTIVE)
-#define DisplayActive() (_GraphicsStatusFlags & DISPLAY_ACTIVE)
 #define DeactivateContext() (_GraphicsStatusFlags &= ~CONTEXT_ACTIVE)
 #define ActivateContext() (_GraphicsStatusFlags |= CONTEXT_ACTIVE)
 #define ContextActive() (_GraphicsStatusFlags & CONTEXT_ACTIVE)
@@ -133,10 +129,8 @@ extern GRAPHICS_STATUS _GraphicsStatusFlags;
 #define ActivateDrawable() (_GraphicsStatusFlags |= DRAWABLE_ACTIVE)
 #define DrawableActive() (_GraphicsStatusFlags & DRAWABLE_ACTIVE)
 
-#define SYSTEM_ACTIVE (GRAPHICS_STATUS)( \
-		DISPLAY_ACTIVE | CONTEXT_ACTIVE | \
-		DRAWABLE_ACTIVE \
-		)
+#define SYSTEM_ACTIVE (GRAPHICS_STATUS)(CONTEXT_ACTIVE | DRAWABLE_ACTIVE)
+
 #define GraphicsSystemActive() \
 		((_GraphicsStatusFlags & SYSTEM_ACTIVE) == SYSTEM_ACTIVE)
 #define GraphicsStatus() \

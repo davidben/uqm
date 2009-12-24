@@ -835,9 +835,7 @@ _request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 {
 	DRAWABLE Drawable;
 
-	Drawable = AllocDrawableImage (
-			NumFrames, DrawableType, flags, width, height
-			);
+	Drawable = AllocDrawable (NumFrames);
 	if (Drawable)
 	{
 		int imgw, imgh;

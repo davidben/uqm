@@ -1,4 +1,4 @@
-uqm_CFILES="3do_blt.c 3do_funcs.c 3do_getbody.c opengl.c
+uqm_CFILES="3do_funcs.c 3do_getbody.c opengl.c
 		palette.c
 		primitives.c pure.c sdl_common.c
 		scalers.c 2xscalers.c

@@ -27,7 +27,6 @@
 #include "context.h"
 #include "drawable.h"
 #include "font.h"
-#include "display.h"
 
 #endif /* _GFXINTRN_H */
 

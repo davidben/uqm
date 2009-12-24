@@ -290,10 +290,6 @@ SOURCE=..\..\src\libs\graphics\sdl\2xscalers_sse.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\libs\graphics\sdl\3do_blt.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\libs\graphics\sdl\3do_funcs.c
 # End Source File
 # Begin Source File
@@ -436,10 +432,6 @@ SOURCE=..\..\src\libs\graphics\dcqueue.c
 # Begin Source File
 
 SOURCE=..\..\src\libs\graphics\dcqueue.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\libs\graphics\display.h
 # End Source File
 # Begin Source File
 

@@ -133,8 +133,14 @@ buildColorRgba (BYTE r, BYTE g, BYTE b, BYTE a)
 
 
 typedef BYTE CREATE_FLAGS;
+// WANT_MASK is deprecated (and non-functional). It used to generate a bitmap
+// of changed pixels for a target DRAWABLE, so that DRAW_SUBTRACTIVE could
+// paint background pixels over them, i.e. a revert draw. The backgrounds
+// are fully erased now instead.
 #define WANT_MASK (CREATE_FLAGS)(1 << 0)
 #define WANT_PIXMAP (CREATE_FLAGS)(1 << 1)
+// MAPPED_TO_DISPLAY is deprecated but still checked by LoadDisplayPixmap().
+// Its former use was to indicate a pre-scaled graphic for the display.
 #define MAPPED_TO_DISPLAY (CREATE_FLAGS)(1 << 2)
 #define WANT_ALPHA (CREATE_FLAGS)(1 << 3)
 
@@ -334,7 +340,7 @@ extern BOOLEAN InstallGraphicResTypes (void);
 extern DRAWABLE LoadGraphicFile (const char *pStr);
 extern FONT LoadFontFile (const char *pStr);
 extern void *LoadGraphicInstance (RESOURCE res);
-extern DRAWABLE LoadDisplayPixmap (RECT *area, FRAME frame);
+extern DRAWABLE LoadDisplayPixmap (const RECT *area, FRAME frame);
 extern FRAME SetContextFontEffect (FRAME EffectFrame);
 extern FONT SetContextFont (FONT Font);
 extern BOOLEAN DestroyFont (FONT FontRef);

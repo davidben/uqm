@@ -26,23 +26,17 @@
 #include "libs/graphics/tfb_draw.h"
 
 
-//Status: Not entirely unimplemented!
+// Status: Ignored
 BOOLEAN
 InitGraphics (int argc, char* argv[], COUNT KbytesRequired)
 		// Kbytes should only matter if we wanted to port Starcon2 to the
 		// hand-helds...
 {
-	BOOLEAN ret;
-
-	LoadDisplay (&_pCurDisplay);
-	ActivateDisplay ();
-
 	(void) argc;             /* lint */
 	(void) argv;             /* lint */
 	(void) KbytesRequired;   /* lint */
 
-	ret = TRUE;
-	return (ret);
+	return TRUE;
 }
 
 // Status: Unimplemented

@@ -16,42 +16,50 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "gfxintrn.h"
+#include "libs/gfxlib.h"
+#include "libs/graphics/drawable.h"
+#include "libs/log.h"
 
 
-/*
-		LoadDisplay---Drawable
-
-		Allocate a chunk of memory and read from the display into that
-		chunk of memory.
-
-
-		LoadDisplayPixmapDrawable()
-		LoadDisplayMaskDrawable()
-		LoadDisplayPixmapMaskDrawable()
-
-*/
-
-
+// Reads a piece of screen into a passed FRAME or a newly created one
 DRAWABLE
-LoadDisplayPixmap (RECT *area, FRAME frame)
+LoadDisplayPixmap (const RECT *area, FRAME frame)
 {
+	// TODO: This should just return a FRAME instead of DRAWABLE
 	DRAWABLE buffer = GetFrameParentDrawable (frame);
-	COUNT index = GetFrameIndex (frame);
+	COUNT index;
 
-	if (buffer || (buffer = CreateDrawable (
-			WANT_PIXMAP | MAPPED_TO_DISPLAY,
-			area->extent.width,
-			area->extent.height,
-			1))
-		)
+	if (!buffer)
+	{	// asked to create a new DRAWABLE instead
+		buffer = CreateDrawable (WANT_PIXMAP | MAPPED_TO_DISPLAY,
+				area->extent.width, area->extent.height, 1);
+		if (!buffer)
+			return NULL;
+
+		index = 0;
+	}
+	else
 	{
-		frame = SetAbsFrameIndex (CaptureDrawable (buffer), index);
-		ReadDisplay (area, frame);
-		ReleaseDrawable (frame);
+		index = GetFrameIndex (frame);
 	}
 
-	return (buffer);
-}
+	frame = SetAbsFrameIndex (CaptureDrawable (buffer), index);
 
+	if (_CurFramePtr->Type != SCREEN_DRAWABLE
+			|| frame->Type == SCREEN_DRAWABLE
+			|| !(GetFrameParentDrawable (frame)->Flags & MAPPED_TO_DISPLAY))
+	{
+		log_add (log_Warning, "Unimplemented function activated: "
+				"LoadDisplayPixmap()");
+	}
+	else
+	{
+		TFB_Image *img = frame->image;
+		TFB_DrawScreen_CopyToImage (img, area, TFB_SCREEN_MAIN);
+	}
+
+	ReleaseDrawable (frame);
+
+	return buffer;
+}
 

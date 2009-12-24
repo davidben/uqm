@@ -16,7 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "gfxintrn.h"
+#include "libs/gfxlib.h"
+#include "libs/graphics/context.h"
+#include "libs/graphics/drawable.h"
 #include "libs/memlib.h"
 #include "tfb_draw.h"
 #include <math.h>
@@ -61,17 +63,17 @@ CreateDisplay (CREATE_FLAGS CreateFlags, SIZE *pwidth, SIZE *pheight)
 {
 	DRAWABLE Drawable;
 
-	if (!DisplayActive ())
-		return (0);
-
+	// TODO: ScreenWidth and ScreenHeight should be passed in
+	//   instead of returned.
 	Drawable = _request_drawable (1, SCREEN_DRAWABLE,
-			(CreateFlags & (WANT_PIXMAP | (GetDisplayFlags () & WANT_MASK))),
-			GetDisplayWidth (), GetDisplayHeight ());
+			(CreateFlags & (WANT_PIXMAP | WANT_MASK)),
+			ScreenWidth, ScreenHeight);
 	if (Drawable)
 	{
 		FRAME F;
 
-		if ((F = CaptureDrawable (Drawable)) == 0)
+		F = CaptureDrawable (Drawable);
+		if (F == 0)
 			DestroyDrawable (Drawable);
 		else
 		{
@@ -125,9 +127,6 @@ CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width, SIZE height, COUNT
 		num_frames)
 {
 	DRAWABLE Drawable;
-
-	if (!DisplayActive ())
-		return (0);
 
 	Drawable = _request_drawable (num_frames, RAM_DRAWABLE,
 			(CreateFlags & (WANT_MASK | WANT_PIXMAP

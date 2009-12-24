@@ -23,10 +23,6 @@
 #include "libs/misc.h"
 		// for TFB_DEBUG_HALT
 
-DISPLAY_INTERFACE *_pCurDisplay; //Not a function. Probably has to be initialized...
-
-void (*mask_func_array[]) (RECT *pClipRect, PRIMITIVE *PrimPtr)
-		= { 0 };
 
 int ScreenWidth;
 int ScreenHeight;
