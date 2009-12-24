@@ -290,10 +290,6 @@ SOURCE=..\..\src\libs\graphics\sdl\2xscalers_sse.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\libs\graphics\sdl\3do_funcs.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\libs\graphics\sdl\3do_getbody.c
 # End Source File
 # Begin Source File

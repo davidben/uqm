@@ -105,6 +105,8 @@ void TFB_DrawImage_SetMipmap (TFB_Image *img, TFB_Image *mmimg, int hotx,
 		int hoty);
 void TFB_DrawImage_Delete (TFB_Image *image);
 void TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type);
+BOOLEAN TFB_DrawImage_Intersect (TFB_Image *img1, POINT img1org,
+		TFB_Image *img2, POINT img2org, const RECT *interRect);
 
 void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, Color color,
 		TFB_Image *dest);
@@ -172,6 +174,8 @@ void TFB_DrawCanvas_GetScreenFormat (TFB_PixelFormat *fmt);
 int TFB_DrawCanvas_GetStride (TFB_Canvas canvas);
 void *TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line);
 Color TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y);
+BOOLEAN TFB_DrawCanvas_Intersect (TFB_Canvas canvas1, POINT c1org,
+		TFB_Canvas canvas2, POINT c2org, const RECT *interRect);
 
 TFB_Canvas TFB_GetScreenCanvas (SCREEN screen);
 

@@ -1721,3 +1721,63 @@ TFB_DrawCanvas_SetClipRect (TFB_Canvas canvas, const RECT *clipRect)
 		SDL_SetClipRect (canvas, &r);
 	}
 }
+
+BOOLEAN
+TFB_DrawCanvas_Intersect (TFB_Canvas canvas1, POINT c1org,
+		TFB_Canvas canvas2, POINT c2org, const RECT *interRect)
+{
+	SDL_Surface *surf1 = canvas1;
+	SDL_Surface *surf2 = canvas2;
+	int x, y;
+	Uint32 s1key, s2key;
+	Uint32 s1mask, s2mask;
+	GetPixelFn getpixel1, getpixel2;
+
+	getpixel1 = getpixel_for (surf1);
+	getpixel2 = getpixel_for (surf2);
+
+	if (surf1->format->Amask)
+	{	// use alpha transparency info
+		s1mask = surf1->format->Amask;
+		// consider any not fully transparent pixel collidable
+		s1key = 0;
+	}
+	else
+	{	// colorkey transparency
+		s1mask = ~surf1->format->Amask;
+		s1key = surf1->format->colorkey & s1mask;
+	}
+
+	if (surf2->format->Amask)
+	{	// use alpha transparency info
+		s2mask = surf2->format->Amask;
+		// consider any not fully transparent pixel collidable
+		s2key = 0;
+	}
+	else
+	{	// colorkey transparency
+		s2mask = ~surf2->format->Amask;
+		s2key = surf2->format->colorkey & s2mask;
+	}
+
+	// convert surface origins to pixel offsets within
+	c1org.x = interRect->corner.x - c1org.x;
+	c1org.y = interRect->corner.y - c1org.y;
+	c2org.x = interRect->corner.x - c2org.x;
+	c2org.y = interRect->corner.y - c2org.y;
+
+	for (y = 0; y < interRect->extent.height; ++y)
+	{
+		for (x = 0; x < interRect->extent.width; ++x)
+		{
+			Uint32 p1 = getpixel1 (surf1, x + c1org.x, y + c1org.y) & s1mask;
+			Uint32 p2 = getpixel2 (surf2, x + c2org.x, y + c2org.y) & s2mask;
+			
+			if (p1 != s1key && p2 != s2key)
+				return TRUE; // pixel collision
+		}
+	}
+
+	// no pixel collision
+	return FALSE;
+}

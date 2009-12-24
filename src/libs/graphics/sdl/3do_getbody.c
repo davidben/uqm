@@ -827,46 +827,4 @@ _ReleaseFontData (void *handle)
 	return TRUE;
 }
 
-// _request_drawable was in libs/graphics/drawable.c before modularization
-
-DRAWABLE
-_request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
-		CREATE_FLAGS flags, SIZE width, SIZE height)
-{
-	DRAWABLE Drawable;
-
-	Drawable = AllocDrawable (NumFrames);
-	if (Drawable)
-	{
-		int imgw, imgh;
-		FRAME FramePtr;
-
-		Drawable->Flags = flags;
-		Drawable->MaxIndex = NumFrames - 1;
-
-		imgw = width;
-		imgh = height;
-			
-		FramePtr = &Drawable->Frame[NumFrames - 1];
-		while (NumFrames--)
-		{
-			TFB_Image *Image;
-
-			if (DrawableType == RAM_DRAWABLE && imgw > 0 && imgh > 0
-					&& (Image = TFB_DrawImage_New (TFB_DrawCanvas_New_TrueColor (
-						imgw, imgh, (flags & WANT_ALPHA) ? TRUE : FALSE))))
-			{
-				FramePtr->image = Image;
-			}
-
-			FramePtr->Type = DrawableType;
-			FramePtr->Index = NumFrames;
-			SetFrameBounds (FramePtr, width, height);
-			--FramePtr;
-		}
-	}
-
-	return (Drawable);
-}
-
 #endif

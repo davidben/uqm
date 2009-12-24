@@ -16,10 +16,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "gfxintrn.h"
+#include "libs/graphics/context.h"
+#include "libs/graphics/drawable.h"
+#include "libs/graphics/tfb_draw.h"
 #include "libs/log.h"
 
 //#define DEBUG_INTERSEC
+
+static inline BOOLEAN
+images_intersect (IMAGE_BOX *box1, IMAGE_BOX *box2, const RECT *rect)
+{
+	return TFB_DrawImage_Intersect (box1->FramePtr->image, box1->Box.corner,
+			box2->FramePtr->image, box2->Box.corner, rect);
+}
 
 static TIME_VALUE
 frame_intersect (INTERSECT_CONTROL *pControl0, RECT *pr0,
@@ -201,12 +210,9 @@ frame_intersect (INTERSECT_CONTROL *pControl0, RECT *pr0,
 						 * separated by a pixel, the shapes wouldn't be touching
 						 * each other.
 						 */
-			extern BOOLEAN _image_intersect (IMAGE_BOX *pImageBox0,
-					IMAGE_BOX *pImageBox1, RECT *pIRect);
-
 CheckFirstIntersection:
 			if (BoxIntersect (&IB0.Box, &IB1.Box, &r_intersect)
-					&& _image_intersect (&IB0, &IB1, &r_intersect))
+					&& images_intersect (&IB0, &IB1, &r_intersect))
 				return (t0);
 			
 			if (check0)

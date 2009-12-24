@@ -67,19 +67,12 @@ struct drawable_desc
 extern DRAWABLE AllocDrawable (COUNT num_frames);
 #define FreeDrawable(D) _ReleaseCelData (D)
 
-#define TYPE_GET(f) ((f) & FTYPE_MASK)
-#define INDEX_GET(f) ((f) & FINDEX_MASK)
-#define TYPE_SET(f,t) ((f)|=t)
-#define INDEX_SET(f,i) ((f)|=i)
-
 typedef struct
 {
 	RECT Box;
 	FRAME FramePtr;
 } IMAGE_BOX;
 
-extern DRAWABLE _request_drawable (COUNT NumFrames, DRAWABLE_TYPE
-		DrawableType, CREATE_FLAGS flags, SIZE width, SIZE height);
 extern INTERSECT_CODE _clip_line (const RECT *pClipRect,
 		BRESENHAM_LINE *pLine);
 

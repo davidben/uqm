@@ -448,3 +448,10 @@ TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type)
 	}
 }
 
+BOOLEAN
+TFB_DrawImage_Intersect (TFB_Image *img1, POINT img1org,
+		TFB_Image *img2, POINT img2org, const RECT *interRect)
+{
+	return TFB_DrawCanvas_Intersect (img1->NormalImg, img1org,
+			img2->NormalImg, img2org, interRect);
+}

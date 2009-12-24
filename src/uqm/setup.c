@@ -89,9 +89,6 @@ UninitPlayerInput (void)
 BOOLEAN
 LoadKernel (int argc, char *argv[])
 {
-#define MIN_K_REQUIRED (580000L / 1024)
-	if (!InitGraphics (argc, argv, MIN_K_REQUIRED))
-		return FALSE;
 	InitSound (argc, argv);
 	InitVideoPlayer (TRUE);
 

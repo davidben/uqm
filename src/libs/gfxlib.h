@@ -277,10 +277,6 @@ typedef enum
 	FadeSomeToColor
 } ScreenFadeType;
 
-extern BOOLEAN InitGraphics (int argc, char *argv[], COUNT
-		KbytesRequired);
-extern void UninitGraphics (void);
-
 extern CONTEXT SetContext (CONTEXT Context);
 extern Color SetContextForeGroundColor (Color Color);
 extern Color GetContextForeGroundColor (void);

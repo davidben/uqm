@@ -46,7 +46,6 @@ FreeKernel (void)
 
 	UninitVideoPlayer ();
 	UninitSound ();
-	UninitGraphics ();
 }
 
 static void

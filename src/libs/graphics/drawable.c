@@ -19,6 +19,7 @@
 #include "libs/gfxlib.h"
 #include "libs/graphics/context.h"
 #include "libs/graphics/drawable.h"
+#include "libs/graphics/tfb_draw.h"
 #include "libs/memlib.h"
 #include "tfb_draw.h"
 #include <math.h>
@@ -58,6 +59,38 @@ GetContextFGFrame (void)
 	return _CurFramePtr;
 }
 
+static DRAWABLE
+request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
+		CREATE_FLAGS flags, SIZE width, SIZE height)
+{
+	DRAWABLE Drawable;
+	COUNT i;
+
+	Drawable = AllocDrawable (NumFrames);
+	if (!Drawable)
+		return NULL;
+
+	Drawable->Flags = flags;
+	Drawable->MaxIndex = NumFrames - 1;
+
+	for (i = 0; i < NumFrames; ++i)
+	{
+		FRAME FramePtr = &Drawable->Frame[i];
+
+		if (DrawableType == RAM_DRAWABLE && width > 0 && height > 0)
+		{
+			FramePtr->image = TFB_DrawImage_New (TFB_DrawCanvas_New_TrueColor (
+					width, height, (flags & WANT_ALPHA) ? TRUE : FALSE));
+		}
+
+		FramePtr->Type = DrawableType;
+		FramePtr->Index = NumFrames;
+		SetFrameBounds (FramePtr, width, height);
+	}
+
+	return Drawable;
+}
+
 DRAWABLE
 CreateDisplay (CREATE_FLAGS CreateFlags, SIZE *pwidth, SIZE *pheight)
 {
@@ -65,7 +98,7 @@ CreateDisplay (CREATE_FLAGS CreateFlags, SIZE *pwidth, SIZE *pheight)
 
 	// TODO: ScreenWidth and ScreenHeight should be passed in
 	//   instead of returned.
-	Drawable = _request_drawable (1, SCREEN_DRAWABLE,
+	Drawable = request_drawable (1, SCREEN_DRAWABLE,
 			(CreateFlags & (WANT_PIXMAP | WANT_MASK)),
 			ScreenWidth, ScreenHeight);
 	if (Drawable)
@@ -128,7 +161,7 @@ CreateDrawable (CREATE_FLAGS CreateFlags, SIZE width, SIZE height, COUNT
 {
 	DRAWABLE Drawable;
 
-	Drawable = _request_drawable (num_frames, RAM_DRAWABLE,
+	Drawable = request_drawable (num_frames, RAM_DRAWABLE,
 			(CreateFlags & (WANT_MASK | WANT_PIXMAP
 				| WANT_ALPHA | MAPPED_TO_DISPLAY)),
 			width, height);
@@ -215,7 +248,7 @@ RotateFrame (FRAME Frame, int angle_deg)
 	double d;
 	double angle = angle_deg * M_PI / 180;
 
-	Drawable = _request_drawable (1, RAM_DRAWABLE, WANT_PIXMAP, 0, 0);
+	Drawable = request_drawable (1, RAM_DRAWABLE, WANT_PIXMAP, 0, 0);
 	if (!Drawable)
 		return 0;
 	RotFramePtr = CaptureDrawable (Drawable);
@@ -262,3 +295,4 @@ GetFramePixel (FRAME frame, POINT pixelPt)
 	return TFB_DrawCanvas_GetPixel (frame->image->NormalImg,
 			pixelPt.x, pixelPt.y);
 }
+
