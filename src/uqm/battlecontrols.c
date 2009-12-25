@@ -20,6 +20,8 @@
 		// For computer_intelligence()
 #include "tactrans.h"
 		// For battleEndReady*
+#include "init.h"
+		// For NUM_PLAYERS
 #include "libs/memlib.h"
 		// For HMalloc(), HFree()
 #ifdef NETPLAY
