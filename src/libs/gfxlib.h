@@ -27,7 +27,7 @@ struct Color {
 	BYTE r;
 	BYTE g;
 	BYTE b;
-	BYTE a;  // Currently unused
+	BYTE a;
 };
 
 #include "libs/reslib.h"
@@ -353,7 +353,16 @@ extern FRAME IncFrameIndex (FRAME Frame);
 extern FRAME DecFrameIndex (FRAME Frame);
 extern DRAWABLE RotateFrame (FRAME Frame, int angle_deg);
 extern DRAWABLE RescaleFrame (FRAME, int width, int height);
-
+// This pair works for both paletted and trucolor frames
+extern BOOLEAN ReadFramePixelColors (FRAME frame, Color *pixels,
+		int width, int height);
+extern BOOLEAN WriteFramePixelColors (FRAME frame, const Color *pixels,
+		int width, int height);
+// This pair only works for paletted frames
+extern BOOLEAN ReadFramePixelIndexes (FRAME frame, BYTE *pixels,
+		int width, int height);
+extern BOOLEAN WriteFramePixelIndexes (FRAME frame, const BYTE *pixels,
+		int width, int height);
 extern void SetFrameTransparentColor (FRAME, Color);
 
 // If the frame is an active SCREEN_DRAWABLE, this call must be

@@ -298,16 +298,10 @@ FreePlanet (void)
 	DestroyDrawable (ReleaseDrawable (Orbit->WorkFrame));
 	Orbit->WorkFrame = 0;
 
-	if (Orbit->lpTopoMap != 0)
-	{
-		HFree (Orbit->lpTopoMap);
-		Orbit->lpTopoMap = 0;
-	}
-	if (Orbit->ScratchArray != 0)
-	{
-		HFree (Orbit->ScratchArray);
-		Orbit->ScratchArray = 0;
-	}
+	HFree (Orbit->TopoColors);
+	Orbit->TopoColors = NULL;
+	HFree (Orbit->ScratchArray);
+	Orbit->ScratchArray = NULL;
 
 	DestroyStringTable (ReleaseStringTable (
 			pSolarSysState->SysInfo.PlanetInfo.DiscoveryString

@@ -15,6 +15,9 @@
  */
 
 #include "port.h"
+#include <string.h>
+		// for memcpy()
+
 #include SDL_INCLUDE(SDL.h)
 #include "sdl_common.h"
 #include "libs/graphics/gfx_common.h"
@@ -1864,4 +1867,154 @@ TFB_DrawCanvas_Intersect (TFB_Canvas canvas1, POINT c1org,
 	SDL_UnlockSurface (surf1);
 
 	return ret;
+}
+
+// Read/write the canvas pixels in a Color format understood by the core.
+// The pixels array is assumed to be at least width * height large.
+// The pixels array can be wider/narrower or taller/shorter than the canvas,
+// and in that case, only the relevant pixels will be transfered.
+static BOOLEAN
+TFB_DrawCanvas_TransferColors (TFB_Canvas canvas, BOOLEAN write,
+		Color *pixels, int width, int height)
+{
+	SDL_Surface *surf = canvas;
+	SDL_PixelFormat *fmt;
+	GetPixelFn getpix;
+	PutPixelFn putpix;
+	int x, y, w, h;
+
+	if (canvas == 0)
+	{
+		log_add (log_Warning, "ERROR: TFB_DrawCanvas_TransferColors "
+				"passed null canvas");
+		return FALSE;
+	}
+
+	fmt = surf->format;
+	getpix = getpixel_for (surf);
+	putpix = putpixel_for (surf);
+
+	w = width < surf->w ? width : surf->w;
+	h = height < surf->h ? height : surf->h;
+	
+	SDL_LockSurface (surf);
+
+	// This could be done faster if we assumed 32bpp surfaces
+	for (y = 0; y < h; ++y)
+	{
+		// pixels array pitch is width so as not to violate the interface
+		Color *c = pixels + y * width;
+
+		for (x = 0; x < w; ++x, ++c)
+		{
+			if (write)
+			{	// writing from data to surface
+				Uint32 p = SDL_MapRGBA (fmt, c->r, c->g, c->b, c->a);
+				putpix (surf, x, y, p);
+			}
+			else
+			{	// reading from surface to data
+				Uint32 p = getpix (surf, x, y);
+				SDL_GetRGBA (p, fmt, &c->r, &c->g, &c->b, &c->a);
+			}
+		}
+	}
+
+	SDL_UnlockSurface (surf);
+
+	return TRUE;
+}
+
+// Read the canvas pixels in a Color format understood by the core.
+// See TFB_DrawCanvas_TransferColors() for pixels array info
+BOOLEAN
+TFB_DrawCanvas_GetPixelColors (TFB_Canvas canvas, Color *pixels,
+		int width, int height)
+{
+	return TFB_DrawCanvas_TransferColors (canvas, FALSE, pixels,
+			width, height);
+}
+
+// Write the canvas pixels from a Color format understood by the core.
+// See TFB_DrawCanvas_TransferColors() for pixels array info
+BOOLEAN
+TFB_DrawCanvas_SetPixelColors (TFB_Canvas canvas, const Color *pixels,
+		int width, int height)
+{
+	// unconst pixels, but it is safe -- it will not be written to
+	return TFB_DrawCanvas_TransferColors (canvas, TRUE, (Color *)pixels,
+			width, height);
+}
+
+// Read/write the indexed canvas pixels as palette indexes.
+// The data array is assumed to be at least width * height large.
+// The data array can be wider/narrower or taller/shorter than the canvas,
+// and in that case, only the relevant pixels will be transfered.
+static BOOLEAN
+TFB_DrawCanvas_TransferIndexes (TFB_Canvas canvas, BOOLEAN write,
+		BYTE *data, int width, int height)
+{
+	SDL_Surface *surf = canvas;
+	const SDL_PixelFormat *fmt;
+	int y, w, h;
+
+	if (canvas == 0)
+	{
+		log_add (log_Warning, "ERROR: TFB_DrawCanvas_TransferIndexes "
+				"passed null canvas");
+		return FALSE;
+	}
+	fmt = surf->format;
+	if (!TFB_DrawCanvas_IsPaletted (canvas) || fmt->BitsPerPixel != 8)
+	{
+		log_add (log_Warning, "ERROR: TFB_DrawCanvas_TransferIndexes "
+				"unimplemeted function: not an 8bpp indexed canvas");
+		return FALSE;
+	}
+
+	w = width < surf->w ? width : surf->w;
+	h = height < surf->h ? height : surf->h;
+
+	SDL_LockSurface (surf);
+
+	for (y = 0; y < h; ++y)
+	{
+		Uint8 *surf_p = (Uint8 *)surf->pixels + y * surf->pitch;
+		// pixels array pitch is width so as not to violate the interface
+		BYTE *data_p = data + y * width;
+
+		if (write)
+		{	// writing from data to surface
+			memcpy (surf_p, data_p, w * sizeof (BYTE));
+		}
+		else
+		{	// reading from surface to data
+			memcpy (data_p, surf_p, w * sizeof (BYTE));
+		}
+	}
+
+	SDL_UnlockSurface (surf);
+
+	return TRUE;
+}
+
+// Read the indexed canvas pixels as palette indexes.
+// See TFB_DrawCanvas_TransferIndexes() for data array info.
+BOOLEAN
+TFB_DrawCanvas_GetPixelIndexes (TFB_Canvas canvas, BYTE *data,
+		int width, int height)
+{
+	return TFB_DrawCanvas_TransferIndexes (canvas, FALSE, data,
+			width, height);
+}
+
+// Write the indexed canvas pixels as palette indexes.
+// See TFB_DrawCanvas_TransferIndexes() for data array info.
+BOOLEAN
+TFB_DrawCanvas_SetPixelIndexes (TFB_Canvas canvas, const BYTE *data,
+		int width, int height)
+{
+	// unconst data, but it is safe -- it will not be written to
+	return TFB_DrawCanvas_TransferIndexes (canvas, TRUE, (BYTE *)data,
+			width, height);
 }

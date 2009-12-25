@@ -180,6 +180,15 @@ Color TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y);
 BOOLEAN TFB_DrawCanvas_Intersect (TFB_Canvas canvas1, POINT c1org,
 		TFB_Canvas canvas2, POINT c2org, const RECT *interRect);
 
+BOOLEAN TFB_DrawCanvas_GetPixelColors (TFB_Canvas, Color *pixels,
+		int width, int height);
+BOOLEAN TFB_DrawCanvas_SetPixelColors (TFB_Canvas, const Color *pixels,
+		int width, int height);
+BOOLEAN TFB_DrawCanvas_GetPixelIndexes (TFB_Canvas, BYTE *data,
+		int width, int height);
+BOOLEAN TFB_DrawCanvas_SetPixelIndexes (TFB_Canvas, const BYTE *data,
+		int width, int height);
+
 const char *TFB_DrawCanvas_GetError (void);
 
 TFB_Canvas TFB_GetScreenCanvas (SCREEN screen);

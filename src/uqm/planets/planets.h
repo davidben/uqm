@@ -143,9 +143,9 @@ struct planet_orbit
 			// tinted topo images for current scan type (dynamic)
 	Color TintColor;
 			// the color of the last used tint
-	DWORD *lpTopoMap;
+	Color *TopoColors;
 			// RGBA version of topo image; for 3d planet
-	DWORD *ScratchArray;
+	Color *ScratchArray;
 			// temp RGBA data for whatever transforms (nuked often)
 	FRAME WorkFrame;
 			// any extra frame workspace (for dynamic objects)

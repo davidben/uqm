@@ -338,3 +338,61 @@ RescaleFrame (FRAME frame, int width, int height)
 
 	return drawable;
 }
+
+BOOLEAN
+ReadFramePixelColors (FRAME frame, Color *pixels, int width, int height)
+{
+	TFB_Image *img;
+
+	if (!frame)
+		return FALSE;
+
+	// TODO: Do we need to lock the img->mutex here?
+	img = frame->image;
+	return TFB_DrawCanvas_GetPixelColors (img->NormalImg, pixels,
+			width, height);
+}
+
+// Warning: this functions bypasses DCQ, which is why it is not a DrawXXX
+BOOLEAN
+WriteFramePixelColors (FRAME frame, const Color *pixels, int width, int height)
+{
+	TFB_Image *img;
+
+	if (!frame)
+		return FALSE;
+
+	// TODO: Do we need to lock the img->mutex here?
+	img = frame->image;
+	return TFB_DrawCanvas_SetPixelColors (img->NormalImg, pixels,
+			width, height);
+}
+
+BOOLEAN
+ReadFramePixelIndexes (FRAME frame, BYTE *pixels, int width, int height)
+{
+	TFB_Image *img;
+
+	if (!frame)
+		return FALSE;
+
+	// TODO: Do we need to lock the img->mutex here?
+	img = frame->image;
+	return TFB_DrawCanvas_GetPixelIndexes (img->NormalImg, pixels,
+			width, height);
+}
+
+// Warning: this functions bypasses DCQ, which is why it is not a DrawXXX
+BOOLEAN
+WriteFramePixelIndexes (FRAME frame, const BYTE *pixels, int width, int height)
+{
+	TFB_Image *img;
+
+	if (!frame)
+		return FALSE;
+
+	// TODO: Do we need to lock the img->mutex here?
+	img = frame->image;
+	return TFB_DrawCanvas_SetPixelIndexes (img->NormalImg, pixels,
+			width, height);
+}

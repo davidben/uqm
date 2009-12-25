@@ -41,13 +41,10 @@
 //  they should be sorted out and cleaned up at some point
 extern DWORD frame_mapRGBA (FRAME FramePtr, UBYTE r, UBYTE g,
 		UBYTE b, UBYTE a);
-extern void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
 extern void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
 		int x, int y);
 extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
 		FRAME dstFrame, const RECT *rdst, int num, int denom);
-extern void getpixelarray (void *map, int Bpp, FRAME FramePtr,
-		int width, int height);
 
 
 #define SHIELD_GLOW_COMP    120
@@ -406,21 +403,35 @@ create_aa_points (MAP3D_POINT *ppt, double x, double y)
 		ppt->m[i] = (DWORD)(m[i] * (1 << AA_WEIGHT_BITS) + 0.5);
 }
 
-//get_avg_rgb creates either a red, green, or blue value by
-//computing the  weightd averages of the 4 points in p1
-static UBYTE 
-get_avg_rgb (DWORD p1[4], DWORD mult[4], COUNT offset)
+static inline BYTE
+get_color_channel (Color c, int channel)
 {
-	COUNT i, j;
-	UBYTE c;
+	switch (channel)
+	{
+		case 0:
+			return c.r;
+		case 1:
+			return c.g;
+		case 2:
+			return c.b;
+		default:
+			return 0;
+	}
+}
+
+// Creates either a red, green, or blue value by
+// computing the weighted averages of the 4 points in p
+static BYTE
+get_avg_channel (Color p[4], DWORD mult[4], int channel)
+{
+	COUNT j;
 	DWORD ci = 0;
 	
-	i = offset << 3;
 	//sum(mult[])==65536
 	//c is the red/green/blue value of this pixel
 	for (j = 0; j < 4; j++)
 	{
-		c = p1[j] >> i;
+		BYTE c = get_color_channel (p[j], channel);
 		ci += c * mult[j];
 	}
 	ci >>= AA_WEIGHT_BITS;
@@ -509,7 +520,8 @@ CreateSphereTiltMap (int angle)
 static FRAME
 CreateShieldMask (void)
 {
-	DWORD clear, *rgba, *p_rgba;
+	Color clear;
+	Color *pix;
 	int x, y;
 	FRAME ShieldFrame;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
@@ -518,14 +530,13 @@ CreateShieldMask (void)
 			CreateDrawable (WANT_PIXMAP | WANT_ALPHA,
 				SHIELD_DIAM, SHIELD_DIAM, 1));
 
-	rgba = Orbit->ScratchArray;
-	p_rgba = rgba;
+	pix = Orbit->ScratchArray;
 	//  This is 100% transparent.
-	clear = frame_mapRGBA (ShieldFrame, 0, 0, 0, 0);
+	clear = BUILD_COLOR_RGBA (0, 0, 0, 0);
 
 	for (y = -SHIELD_RADIUS; y <= SHIELD_RADIUS; y++)
 	{
-		for (x = -SHIELD_RADIUS; x <= SHIELD_RADIUS; x++, p_rgba++)
+		for (x = -SHIELD_RADIUS; x <= SHIELD_RADIUS; ++x, ++pix)
 		{
 			int rad_2 = x * x + y * y;
 			// This is a non-transparent red for the halo
@@ -535,13 +546,13 @@ CreateShieldMask (void)
 			
 			if (rad_2 >= SHIELD_RADIUS_THRES)
 			{	// outside all bounds
-				*p_rgba = clear;
+				*pix = clear;
 				continue;
 			}
 			// Inside the halo
 			if (rad_2 <= RADIUS_2)
 			{	// planet's pixels, ours transparent
-				*p_rgba = clear;
+				*pix = clear;
 				continue;
 			}
 			
@@ -562,11 +573,12 @@ CreateShieldMask (void)
 					red = 0;
 			}
 			
-			*p_rgba = frame_mapRGBA (ShieldFrame, red, 0, 0, alpha);
+			*pix = BUILD_COLOR_RGBA (red, 0, 0, alpha);
 		}
 	}
 	
-	process_rgb_bmp (ShieldFrame, rgba, SHIELD_DIAM, SHIELD_DIAM);
+	WriteFramePixelColors (ShieldFrame, Orbit->ScratchArray,
+			SHIELD_DIAM, SHIELD_DIAM);
 	SetFrameHot (ShieldFrame, MAKE_HOT_SPOT (SHIELD_RADIUS + 1,
 				SHIELD_RADIUS + 1));
 	
@@ -604,40 +616,34 @@ SetShieldThrobEffect (FRAME ShieldFrame, int offset, FRAME ThrobFrame)
 	int i;
 	int width, height;
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
-	DWORD *rgba;
+	Color *pix;
 	int level;
 
 	level = shield_level (offset);
 
 	width = GetFrameWidth (ShieldFrame);
 	height = GetFrameHeight (ShieldFrame);
-	getpixelarray (Orbit->ScratchArray, 4, ShieldFrame, width, height);
+	ReadFramePixelColors (ShieldFrame, Orbit->ScratchArray, width, height);
 	
-	for (i = 0, rgba = Orbit->ScratchArray; i < width * height; ++i, ++rgba)
+	for (i = 0, pix = Orbit->ScratchArray; i < width * height; ++i, ++pix)
 	{
-		DWORD p = *rgba;
-		int r, g, b, a;
+		Color p = *pix;
 
-		r = (UBYTE)(p >> 24);
-		g = (UBYTE)(p >> 16);
-		b = (UBYTE)(p >> 8);
-		a = (UBYTE)(p);
-
-		if (a == 255)
+		if (p.a == 255)
 		{	// adjust color data for full-alpha pixels
-			r = r * level / THROB_MAX_LEVEL;
-			g = g * level / THROB_MAX_LEVEL;
-			b = b * level / THROB_MAX_LEVEL;
+			p.r = p.r * level / THROB_MAX_LEVEL;
+			p.g = p.g * level / THROB_MAX_LEVEL;
+			p.b = p.b * level / THROB_MAX_LEVEL;
 		}
-		else if (a > 0)
+		else if (p.a > 0)
 		{	// adjust alpha for translucent pixels
-			a = a * level / THROB_MAX_LEVEL;
+			p.a = p.a * level / THROB_MAX_LEVEL;
 		}
 
-		*rgba = frame_mapRGBA (ThrobFrame, r, g, b, a);
+		*pix = p;
 	}
 	
-	process_rgb_bmp (ThrobFrame, Orbit->ScratchArray, width, height);
+	WriteFramePixelColors (ThrobFrame, Orbit->ScratchArray, width, height);
 	SetFrameHot (ThrobFrame, GetFrameHot (ShieldFrame));
 }
 
@@ -682,8 +688,8 @@ calc_map_light (UBYTE val, DWORD dif, int lvf)
 	return ((UBYTE)i);
 }
 
-static inline DWORD
-get_map_pixel (DWORD *pixels, int x, int y)
+static inline Color
+get_map_pixel (Color *pixels, int x, int y)
 {
 	return pixels[y * (MAP_WIDTH + SPHERE_SPAN_X) + x];
 }
@@ -700,11 +706,12 @@ get_map_elev (SBYTE *elevs, int x, int y, int offset)
 void
 RenderPlanetSphere (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 {
+	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
 	POINT pt;
-	DWORD *rgba, *p_rgba;
-	DWORD clear;
+	Color *pix;
+	Color clear;
 	int x, y;
-	DWORD *pixels;
+	Color *pixels;
 	SBYTE *elevs;
 	int shLevel;
 
@@ -718,17 +725,16 @@ RenderPlanetSphere (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 
 	shLevel = shield_level (offset);
 
-	rgba = pSolarSysState->Orbit.ScratchArray;
-	p_rgba = rgba;
-	clear = frame_mapRGBA (MaskFrame, 0, 0, 0, 0);
-	pixels = pSolarSysState->Orbit.lpTopoMap + offset;
-	elevs = pSolarSysState->Orbit.lpTopoData;
+	pix = Orbit->ScratchArray;
+	clear = BUILD_COLOR_RGBA (0, 0, 0, 0);
+	pixels = Orbit->TopoColors + offset;
+	elevs = Orbit->lpTopoData;
 	
 	for (pt.y = 0, y = -RADIUS; pt.y <= TWORADIUS; ++pt.y, ++y)
 	{
-		for (pt.x = 0, x = -RADIUS; pt.x <= TWORADIUS; ++pt.x, ++x, ++p_rgba)
+		for (pt.x = 0, x = -RADIUS; pt.x <= TWORADIUS; ++pt.x, ++x, ++pix)
 		{
-			UBYTE c[3];
+			Color c;
 			DWORD diffus = light_diff[pt.y][pt.x];
 			int i;
 			MAP3D_POINT *ppt = &map_rotate[pt.y][pt.x];
@@ -736,30 +742,28 @@ RenderPlanetSphere (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 	
 			if (diffus == 0)
 			{	// full diffusion
-				*p_rgba = clear;
+				*pix = clear;
 				continue;
 			}
 
 			// get pixel from topo map and factor from light variance map
 			if (ppt->m[0] == 0) 
 			{	// exact pixel from the topo map
-				DWORD p = get_map_pixel (pixels, ppt->p[0].x, ppt->p[0].y);
-				c[0] = (UBYTE)(p >> 8);
-				c[1] = (UBYTE)(p >> 16);
-				c[2] = (UBYTE)(p >> 24);
-
+				c = get_map_pixel (pixels, ppt->p[0].x, ppt->p[0].y);
 				lvf = get_map_elev (elevs, ppt->p[0].x, ppt->p[0].y, offset);
 			}
 			else
 			{	// fractional pixel -- blend from 4
-				DWORD p[4];
+				Color p[4];
 				int lvsum;
 
 				// compute 'ideal' pixel
 				for (i = 0; i < 4; i++)
 					p[i] = get_map_pixel (pixels, ppt->p[i].x, ppt->p[i].y);
-				for (i = 1; i < 4; i++)
-					c[i - 1] = get_avg_rgb (p, ppt->m, i);
+				
+				c.r = get_avg_channel (p, ppt->m, 0);
+				c.g = get_avg_channel (p, ppt->m, 1);
+				c.b = get_avg_channel (p, ppt->m, 2);
 
 				// compute 'ideal' light variance
 				for (i = 0, lvsum = 0; i < 4; i++)
@@ -775,12 +779,12 @@ RenderPlanetSphere (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 				int r;
 				
 				// add lite red filter (3/4) component
-				c[1] = (c[1] >> 1) + (c[1] >> 2);
-				c[0] = (c[0] >> 1) + (c[0] >> 2);
+				c.g = (c.g >> 1) + (c.g >> 2);
+				c.b = (c.b >> 1) + (c.b >> 2);
 
-				c[2] = calc_map_light (c[2], diffus, lvf);
-				c[1] = calc_map_light (c[1], diffus, lvf);
-				c[0] = calc_map_light (c[0], diffus, lvf);
+				c.r = calc_map_light (c.r, diffus, lvf);
+				c.g = calc_map_light (c.g, diffus, lvf);
+				c.b = calc_map_light (c.b, diffus, lvf);
 
 				// The shield is glow + reflect (+ filter for others)
 				r = calc_map_light (SHIELD_REFLECT_COMP, diffus, 0);
@@ -791,24 +795,24 @@ RenderPlanetSphere (FRAME MaskFrame, int offset, BOOLEAN doThrob)
 					r = r * shLevel / THROB_MAX_LEVEL;
 				}
 
-				r += c[2];
+				r += c.r;
 				if (r > 255)
 					r = 255;
-				c[2] = r;
+				c.r = r;
 			} 
 			else
 			{
-				c[2] = calc_map_light (c[2], diffus, lvf);
-				c[1] = calc_map_light (c[1], diffus, lvf);
-				c[0] = calc_map_light (c[0], diffus, lvf);
+				c.r = calc_map_light (c.r, diffus, lvf);
+				c.g = calc_map_light (c.g, diffus, lvf);
+				c.b = calc_map_light (c.b, diffus, lvf);
 			}
 
-			*p_rgba = frame_mapRGBA (MaskFrame, c[2], c[1], c[0], 255);
+			c.a = 0xff;
+			*pix = c;
 		}
 	}
 	
-	// Map the rgb bitmap onto the SDL_Surface
-	process_rgb_bmp (MaskFrame, rgba, DIAMETER, DIAMETER);
+	WriteFramePixelColors (MaskFrame, Orbit->ScratchArray, DIAMETER, DIAMETER);
 	SetFrameHot (MaskFrame, MAKE_HOT_SPOT (RADIUS + 1, RADIUS + 1));
 
 #if PROFILE_ROTATION
@@ -1301,13 +1305,13 @@ planet_orbit_init (void)
 			WANT_PIXMAP | WANT_ALPHA, MAP_WIDTH, MAP_HEIGHT, 2));
 	Orbit->ObjectFrame = 0;
 	Orbit->WorkFrame = 0;
-	Orbit->lpTopoData = HMalloc (MAP_WIDTH * MAP_HEIGHT);
+	Orbit->lpTopoData = HCalloc (MAP_WIDTH * MAP_HEIGHT);
 	Orbit->TopoZoomFrame = CaptureDrawable (CreateDrawable (
 			WANT_PIXMAP, MAP_WIDTH << 2, MAP_HEIGHT << 2, 1));
-	Orbit->lpTopoMap = HMalloc (sizeof (DWORD)
+	Orbit->TopoColors = HMalloc (sizeof (Orbit->TopoColors[0])
 			* (MAP_HEIGHT * (MAP_WIDTH + SPHERE_SPAN_X)));
 	// always allocate the scratch array to largest needed size
-	Orbit->ScratchArray = HMalloc (sizeof (DWORD)
+	Orbit->ScratchArray = HMalloc (sizeof (Orbit->ScratchArray[0])
 			* (SHIELD_DIAM) * (SHIELD_DIAM));
 }
 
@@ -1773,7 +1777,7 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 			}
 
 			// grab the elevation data in 1 byte per pixel format
-			getpixelarray (Orbit->lpTopoData, 1, ElevFrame,
+			ReadFramePixelIndexes (ElevFrame, (BYTE *)Orbit->lpTopoData,
 					MAP_WIDTH, MAP_HEIGHT);
 			// the supplied data is in unsigned format, must convert
 			for (i = 0, elev = Orbit->lpTopoData;
@@ -1907,13 +1911,13 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 	// WAP_WIDTH+SPHERE_SPAN_X wide and we need this method for Earth anyway.
 	// It may be more efficient to build it from lpTopoData instead of the
 	// FRAMPTR though.
-	getpixelarray (Orbit->lpTopoMap, 4, pSolarSysState->TopoFrame,
+	ReadFramePixelColors (pSolarSysState->TopoFrame, Orbit->TopoColors,
 			MAP_WIDTH + SPHERE_SPAN_X, MAP_HEIGHT);
 	// Extend the width from MAP_WIDTH to MAP_WIDTH+SPHERE_SPAN_X
 	for (y = 0; y < MAP_HEIGHT * (MAP_WIDTH + SPHERE_SPAN_X);
 			y += MAP_WIDTH + SPHERE_SPAN_X)
-		memcpy (Orbit->lpTopoMap + y + MAP_WIDTH, Orbit->lpTopoMap + y,
-				SPHERE_SPAN_X * sizeof (Orbit->lpTopoMap[0]));
+		memcpy (Orbit->TopoColors + y + MAP_WIDTH, Orbit->TopoColors + y,
+				SPHERE_SPAN_X * sizeof (Orbit->TopoColors[0]));
 
 	if (PLANALGO (PlanDataPtr->Type) != GAS_GIANT_ALGO)
 	{	// convert topo data to a light map, based on relative
