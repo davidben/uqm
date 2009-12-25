@@ -24,6 +24,7 @@
 #include "libs/memlib.h"
 #include "primitives.h"
 #include "palette.h"
+#include "sdluio.h"
 #include "rotozoom.h"
 #include "options.h"
 #include "types.h"
@@ -41,6 +42,15 @@ TFB_DrawCanvas_Initialize (void)
 		for (j = 0; j < 256; ++j)
 			btable[j][i] = (j * i + 0x80) >> 8;
 				// need error correction here
+}
+
+const char *
+TFB_DrawCanvas_GetError (void)
+{
+	const char *err = SDL_GetError ();
+	// TODO: Should we call SDL_ClearError() here so that it is not
+	//   returned again later?
+	return err;
 }
 
 void
@@ -590,6 +600,23 @@ TFB_DrawCanvas_New_RotationTarget (TFB_Canvas src_canvas, int angle)
 	return newsurf;
 }
 
+TFB_Canvas
+TFB_DrawCanvas_LoadFromFile (void *dir, const char *fileName)
+{
+	SDL_Surface *surf = sdluio_loadImage (dir, fileName);
+	if (!surf)
+		return NULL;
+	
+	if (surf->format->BitsPerPixel < 8)
+	{
+		SDL_SetError ("unsupported image format (min 8bpp)");
+		SDL_FreeSurface (surf);
+		surf = NULL;
+	}
+
+	return surf;
+}
+
 void
 TFB_DrawCanvas_Delete (TFB_Canvas canvas)
 {
@@ -603,7 +630,51 @@ TFB_DrawCanvas_Delete (TFB_Canvas canvas)
 	{
 		SDL_FreeSurface (canvas);
 	}
+}
 
+BOOLEAN
+TFB_DrawCanvas_GetFontCharData (TFB_Canvas canvas, BYTE *outData,
+		unsigned dataPitch)
+{
+	SDL_Surface *surf = canvas;
+	int x, y;
+	Uint8 r, g, b, a;
+	Uint32 p;
+	SDL_PixelFormat *fmt = surf->format;
+	GetPixelFn getpix;
+
+	if (!surf || !outData)
+		return FALSE;
+
+	SDL_LockSurface (surf);
+
+	getpix = getpixel_for (surf);
+
+	// produce an alpha-only image in internal BYTE[] format
+	//  from the SDL surface
+	for (y = 0; y < surf->h; ++y)
+	{
+		BYTE *dst = outData + dataPitch * y;
+
+		for (x = 0; x < surf->w; ++x, ++dst)
+		{
+			p = getpix (surf, x, y);
+			SDL_GetRGBA (p, fmt, &r, &g, &b, &a);
+
+			if (!fmt->Amask)
+			{	// produce alpha from intensity (Y component)
+				// using a fast approximation
+				// contributions to Y are: R=2, G=4, B=1
+				a = ((r * 2) + (g * 4) + b) / 7;
+			}
+			
+			*dst = a;
+		}
+	}
+
+	SDL_UnlockSurface (surf);
+
+	return TRUE;
 }
 
 Color *
@@ -1617,9 +1688,13 @@ TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y)
 		return c;
 	}
 
+	SDL_LockSurface (surf);
+
 	getpixel = getpixel_for(surf);
 	pixel = (*getpixel)(surf, x, y);
 	SDL_GetRGBA (pixel, surf->format, &c.r, &c.g, &c.b, &c.a);
+
+	SDL_UnlockSurface (surf);
 
 	return c;
 }
@@ -1726,12 +1801,16 @@ BOOLEAN
 TFB_DrawCanvas_Intersect (TFB_Canvas canvas1, POINT c1org,
 		TFB_Canvas canvas2, POINT c2org, const RECT *interRect)
 {
+	BOOLEAN ret = FALSE;
 	SDL_Surface *surf1 = canvas1;
 	SDL_Surface *surf2 = canvas2;
 	int x, y;
 	Uint32 s1key, s2key;
 	Uint32 s1mask, s2mask;
 	GetPixelFn getpixel1, getpixel2;
+
+	SDL_LockSurface (surf1);
+	SDL_LockSurface (surf2);
 
 	getpixel1 = getpixel_for (surf1);
 	getpixel2 = getpixel_for (surf2);
@@ -1774,10 +1853,15 @@ TFB_DrawCanvas_Intersect (TFB_Canvas canvas1, POINT c1org,
 			Uint32 p2 = getpixel2 (surf2, x + c2org.x, y + c2org.y) & s2mask;
 			
 			if (p1 != s1key && p2 != s2key)
-				return TRUE; // pixel collision
+			{	// pixel collision
+				ret = TRUE;
+				break;
+			}
 		}
 	}
 
-	// no pixel collision
-	return FALSE;
+	SDL_UnlockSurface (surf2);
+	SDL_UnlockSurface (surf1);
+
+	return ret;
 }

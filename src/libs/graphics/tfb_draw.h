@@ -118,6 +118,7 @@ void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale,
 void TFB_DrawImage_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
 		TFB_Image *target);
 
+TFB_Canvas TFB_DrawCanvas_LoadFromFile (void *dir, const char *fileName);
 TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha);
 TFB_Canvas TFB_DrawCanvas_New_ForScreen (int w, int h, BOOLEAN withalpha);
 TFB_Canvas TFB_DrawCanvas_New_Paletted (int w, int h, Color palette[256],
@@ -157,6 +158,8 @@ void TFB_DrawCanvas_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
 void TFB_DrawCanvas_CopyRect (TFB_Canvas source, const RECT *srcRect,
 		TFB_Canvas target, POINT dstPt);
 
+BOOLEAN TFB_DrawCanvas_GetFontCharData (TFB_Canvas canvas, BYTE *outData,
+		unsigned dataPitch);
 Color *TFB_DrawCanvas_ExtractPalette (TFB_Canvas canvas);
 void TFB_DrawCanvas_SetPalette (TFB_Canvas target, Color palette[256]);
 int TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas);
@@ -176,6 +179,8 @@ void *TFB_DrawCanvas_GetLine (TFB_Canvas canvas, int line);
 Color TFB_DrawCanvas_GetPixel (TFB_Canvas canvas, int x, int y);
 BOOLEAN TFB_DrawCanvas_Intersect (TFB_Canvas canvas1, POINT c1org,
 		TFB_Canvas canvas2, POINT c2org, const RECT *interRect);
+
+const char *TFB_DrawCanvas_GetError (void);
 
 TFB_Canvas TFB_GetScreenCanvas (SCREEN screen);
 
