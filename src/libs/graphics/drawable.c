@@ -84,7 +84,7 @@ request_drawable (COUNT NumFrames, DRAWABLE_TYPE DrawableType,
 		}
 
 		FramePtr->Type = DrawableType;
-		FramePtr->Index = NumFrames;
+		FramePtr->Index = i;
 		SetFrameBounds (FramePtr, width, height);
 	}
 
