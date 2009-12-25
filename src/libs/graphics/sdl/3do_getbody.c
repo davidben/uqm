@@ -25,31 +25,6 @@
 #include "primitives.h"
 
 
-// stretch_frame
-// create a new frame of size neww x newh, and blit a scaled version FramePtr
-// into it.
-// destroy the old frame if 'destroy' is 1
-FRAME stretch_frame (FRAME FramePtr, int neww, int newh, int destroy)
-{
-	FRAME NewFrame;
-	CREATE_FLAGS flags;
-	TFB_Image *tfbImg;
-	TFB_Canvas src, dst;
-
-	flags = GetFrameParentDrawable (FramePtr)->Flags;
-	NewFrame = CaptureDrawable (
-				CreateDrawable (flags, (SIZE)neww, (SIZE)newh, 1));
-	tfbImg = FramePtr->image;
-	LockMutex (tfbImg->mutex);
-	src = tfbImg->NormalImg;
-	dst = NewFrame->image->NormalImg;
-	TFB_DrawCanvas_Rescale_Nearest (src, dst, -1, NULL, NULL, NULL);
-	UnlockMutex (tfbImg->mutex);
-	if (destroy)
-		DestroyDrawable (ReleaseDrawable (FramePtr));
-	return (NewFrame);
-}
-
 void process_rgb_bmp (FRAME FramePtr, Uint32 *rgba, int maxx, int maxy)
 {
 	int x, y;

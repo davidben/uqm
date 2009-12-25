@@ -352,6 +352,8 @@ extern FRAME SetEquFrameIndex (FRAME DstFrame, FRAME SrcFrame);
 extern FRAME IncFrameIndex (FRAME Frame);
 extern FRAME DecFrameIndex (FRAME Frame);
 extern DRAWABLE RotateFrame (FRAME Frame, int angle_deg);
+extern DRAWABLE RescaleFrame (FRAME, int width, int height);
+
 extern void SetFrameTransparentColor (FRAME, Color);
 
 // If the frame is an active SCREEN_DRAWABLE, this call must be

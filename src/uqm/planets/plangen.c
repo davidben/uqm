@@ -42,7 +42,6 @@
 extern DWORD frame_mapRGBA (FRAME FramePtr, UBYTE r, UBYTE g,
 		UBYTE b, UBYTE a);
 extern void process_rgb_bmp (FRAME FramePtr, DWORD *rgba, int maxx, int maxy);
-extern FRAME stretch_frame (FRAME FramePtr, int neww, int newh, int destroy);
 extern void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
 		int x, int y);
 extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
@@ -1752,8 +1751,8 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 		if (GetFrameWidth (SurfDefFrame) != MAP_WIDTH
 				|| GetFrameHeight (SurfDefFrame) != MAP_HEIGHT)
 		{
-			pSolarSysState->TopoFrame = stretch_frame (SurfDefFrame,
-				MAP_WIDTH, MAP_HEIGHT, 0);
+			pSolarSysState->TopoFrame = CaptureDrawable (RescaleFrame (
+					SurfDefFrame, MAP_WIDTH, MAP_HEIGHT));
 			// will not need the passed FRAME anymore
 			DeleteDef = TRUE;
 		}
@@ -1769,8 +1768,8 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 			if (GetFrameWidth (ElevFrame) != MAP_WIDTH
 					|| GetFrameHeight (ElevFrame) != MAP_HEIGHT)
 			{
-				ElevFrame = stretch_frame (ElevFrame, MAP_WIDTH,
-						MAP_HEIGHT, 0);
+				ElevFrame = CaptureDrawable (RescaleFrame (ElevFrame,
+						MAP_WIDTH, MAP_HEIGHT));
 			}
 
 			// grab the elevation data in 1 byte per pixel format

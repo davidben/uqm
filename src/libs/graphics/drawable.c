@@ -296,3 +296,45 @@ GetFramePixel (FRAME frame, POINT pixelPt)
 			pixelPt.x, pixelPt.y);
 }
 
+// Creates a new DRAWABLE of specified size and scales the passed
+// frame onto it. The aspect ratio is not preserved.
+DRAWABLE
+RescaleFrame (FRAME frame, int width, int height)
+{
+	DRAWABLE drawable;
+	FRAME newFrame;
+	CREATE_FLAGS flags;
+	TFB_Image *img;
+	TFB_Canvas src, dst;
+
+	if (!frame)
+		return NULL;
+
+	flags = GetFrameParentDrawable (frame)->Flags;
+	drawable = CreateDrawable (flags, width, height, 1);
+	if (!drawable)
+		return NULL;
+	newFrame = CaptureDrawable (drawable);
+	if (!newFrame)
+	{
+		FreeDrawable (drawable);
+		return NULL;
+	}
+
+	// scale the hot-spot
+	newFrame->HotSpot.x = frame->HotSpot.x * width / frame->Bounds.width;
+	newFrame->HotSpot.y = frame->HotSpot.y * height / frame->Bounds.height;
+
+	img = frame->image;
+	LockMutex (img->mutex);
+	
+	src = img->NormalImg;
+	dst = newFrame->image->NormalImg;
+	TFB_DrawCanvas_Rescale_Nearest (src, dst, -1, NULL, NULL, NULL);
+	
+	UnlockMutex (img->mutex);
+
+	ReleaseDrawable (newFrame);
+
+	return drawable;
+}
