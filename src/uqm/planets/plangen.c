@@ -1296,7 +1296,7 @@ planet_orbit_init (void)
 	Orbit->SphereFrame = CaptureDrawable (CreateDrawable (
 			WANT_PIXMAP | WANT_ALPHA, DIAMETER, DIAMETER, 2));
 	Orbit->TintFrame = CaptureDrawable (CreateDrawable (
-			WANT_PIXMAP | WANT_ALPHA, MAP_WIDTH, MAP_HEIGHT, 2));
+			WANT_PIXMAP, MAP_WIDTH, MAP_HEIGHT, 1));
 	Orbit->ObjectFrame = 0;
 	Orbit->WorkFrame = 0;
 	Orbit->lpTopoData = HCalloc (MAP_WIDTH * MAP_HEIGHT);

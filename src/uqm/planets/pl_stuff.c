@@ -33,16 +33,6 @@
 // It still doesn't look right though (it is too bright)
 #define USE_ADDITIVE_SCAN_BLIT
 
-
-// XXX: these are currently defined in libs/graphics/sdl/3do_getbody.c
-//  they should be sorted out and cleaned up at some point
-extern DWORD frame_mapRGBA (FRAME FramePtr, UBYTE r, UBYTE g,
-		UBYTE b, UBYTE a);
-extern void fill_frame_rgb (FRAME FramePtr, DWORD color, int x0, int y0,
-		int x, int y);
-extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
-		FRAME dstFrame, const RECT *rdst, int num, int denom);
-
 static int rotFrameIndex;
 static int rotDirection;
 static bool throbShield;
@@ -246,29 +236,35 @@ static void
 renderTintFrame (Color tintColor)
 {
 	PLANET_ORBIT *Orbit = &pSolarSysState->Orbit;
-	DWORD pix;
-	int denom;
-	FRAME topoFrame = SetAbsFrameIndex (Orbit->TintFrame, 0);
-	FRAME tintFrame = SetAbsFrameIndex (Orbit->TintFrame, 1);
+	CONTEXT oldContext;
+	DrawMode mode, oldMode;
+	STAMP s;
+	RECT r;
 
-	// render a solid color frame we will use for tinting
-#ifdef USE_ADDITIVE_SCAN_BLIT
-	tintColor.r /= 2;
-	tintColor.g /= 2;
-	tintColor.b /= 2;
-	denom = -1;
-#else
-	tintColor.a = 128;
-	denom = 0;
-#endif
-	pix = frame_mapRGBA (tintFrame, tintColor.r, tintColor.g, tintColor.b,
-			tintColor.a);
-	fill_frame_rgb (tintFrame, pix, 0, 0, 0, 0);
+	oldContext = SetContext (OffScreenContext);
+	SetContextFGFrame (Orbit->TintFrame);
+	SetContextClipRect (NULL);
+	// get the rect of the whole context (or our frame really)
+	GetContextClipRect (&r);
 
-	// copy topoFrame
-	arith_frame_blit (pSolarSysState->TopoFrame, NULL, topoFrame, NULL, 0, 0);
+	// copy the topo frame to the tint frame
+	s.origin.x = 0;
+	s.origin.y = 0;
+	s.frame = pSolarSysState->TopoFrame;
+	DrawStamp (&s);
+
 	// apply the tint
-	arith_frame_blit (tintFrame, NULL, topoFrame, NULL, 0, denom);
+#ifdef USE_ADDITIVE_SCAN_BLIT
+	mode = MAKE_DRAW_MODE (DRAW_ADDITIVE, DRAW_FACTOR_1 / 2);
+#else
+	mode = MAKE_DRAW_MODE (DRAW_ALPHA, DRAW_FACTOR_1 / 2);	
+#endif
+	oldMode = SetContextDrawMode (mode);
+	SetContextForeGroundColor (tintColor);
+	DrawFilledRectangle (&r);
+	SetContextDrawMode (oldMode);
+
+	SetContext (oldContext);
 }
 
 // tintColor.a is ignored
@@ -289,7 +285,7 @@ DrawPlanet (int tintY, Color tintColor)
 	}
 	else
 	{	// apply different scan type tints
-		FRAME tintFrame = SetAbsFrameIndex (Orbit->TintFrame, 0);
+		FRAME tintFrame = Orbit->TintFrame;
 		int height = GetFrameHeight (tintFrame);
 
 		if (!sameColor (tintColor, Orbit->TintColor))
