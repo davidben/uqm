@@ -227,7 +227,8 @@ static inline RECT
 _get_context_fg_rect (void)
 {
 	RECT r = { {0, 0}, {0, 0} };
-	r.extent = GetFrameBounds (_CurFramePtr);
+	if (_CurFramePtr)
+		r.extent = GetFrameBounds (_CurFramePtr);
 	return r;
 }
 
