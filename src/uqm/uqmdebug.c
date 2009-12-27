@@ -1662,59 +1662,6 @@ hsvaToRgba (double hue, double sat, double val, BYTE alpha)
 	return BUILD_COLOR_RGBA (0, 0, 0, alpha);
 }
 
-// Workaround. DrawFilledRectangle() doesn't handle transparency.
-// We use a temporary frame to achieve the same thing.
-static void
-DrawFilledRectangleTransparent (RECT *rect, BYTE alpha)
-{
-	extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
-			FRAME dstFrame, const RECT *rdst, int num, int denom);
-
-	RECT absRect;
-	FRAME orgRectFrame;
-	Color fillColor;
-
-	// Create a rectangle from 'rect', but with (0, 0) as origin.
-	absRect.corner.x = 0;
-	absRect.corner.y = 0;
-	absRect.extent = rect->extent;
-	
-	// Create a new temporary FRAME to store the contents of the original
-	// rectangle in.
-	orgRectFrame = CaptureDrawable (CreateDrawable (
-			WANT_PIXMAP, rect->extent.width, rect->extent.height, 1));
-
-	// Copy the original rectangle, faded.
-	arith_frame_blit (GetContextFGFrame (), rect, orgRectFrame, &absRect,
-			255 - alpha, 255);
-
-	// Apply the transparency to the colour.
-	fillColor = GetContextForeGroundColor ();
-	fillColor.r = (fillColor.r * alpha + 127) / 255;
-	fillColor.g = (fillColor.g * alpha + 127) / 255;
-	fillColor.b = (fillColor.b * alpha + 127) / 255;
-
-	// Fill the frame with fillColor
-	{
-		Color oldFgColor = SetContextForeGroundColor (fillColor);
-		DrawFilledRectangle (rect);
-		SetContextForeGroundColor (oldFgColor);
-		FlushGraphics ();
-				// Not really necessary for the Context for which this
-				// function is called, but if this function is ever used
-				// to draw directly to the screen, this will be needed
-				// to make sure the rectangle is drawn before the
-				// arith_frame_blit() call, which is immediate.
-	}
-
-	// Blend in the original rectangle.
-	arith_frame_blit (orgRectFrame, &absRect, GetContextFGFrame (), rect,
-			1, -1);
-	
-	// Destroy the temporary frame
-	DestroyDrawable (ReleaseDrawable (orgRectFrame));
-}
-
 // Returns true iff this context has a visible FRAME.
 static bool
 isContextVisible (CONTEXT context)
@@ -1758,6 +1705,7 @@ drawContext (CONTEXT context, double hue /* no pun intended */)
 	FRAME drawFrame;
 	CONTEXT oldContext;
 	FONT oldFont;
+	DrawMode oldMode;
 	Color oldFgCol;
 	Color rectCol;
 	Color lineCol;
@@ -1769,8 +1717,8 @@ drawContext (CONTEXT context, double hue /* no pun intended */)
 	POINT p1, p2, p3, p4;
 
 	drawFrame = GetContextFGFrame ();
-	rectCol = hsvaToRgba (hue, 1.0, 0.5, 127);
-	lineCol = hsvaToRgba (hue, 1.0, 1.0, 0);
+	rectCol = hsvaToRgba (hue, 1.0, 0.5, 100);
+	lineCol = hsvaToRgba (hue, 1.0, 1.0, 90);
 	textCol = lineCol;
 
 	// Save the original context.
@@ -1791,7 +1739,7 @@ drawContext (CONTEXT context, double hue /* no pun intended */)
 	p4.y = rect.corner.y + rect.extent.height - 1;
 
 	oldFgCol = SetContextForeGroundColor (rectCol);
-	DrawFilledRectangleTransparent (&rect, 63);
+	DrawFilledRectangle (&rect);
 
 	SetContextForeGroundColor (lineCol);
 	line.first = p1; line.second = p2; DrawLine (&line);
@@ -1805,12 +1753,15 @@ drawContext (CONTEXT context, double hue /* no pun intended */)
 
 	oldFont = SetContextFont (TinyFont);
 	SetContextForeGroundColor (textCol);
+	// Text prim does not yet support alpha via Color.a
+	oldMode = SetContextDrawMode (MAKE_DRAW_MODE (DRAW_ALPHA, textCol.a));
 	text.baseline.x = (p1.x + (p2.x + 1)) / 2;
 	text.baseline.y = p1.y + 8;
 	text.pStr = GetContextName (context);
 	text.align = ALIGN_CENTER;
 	text.CharCount = (COUNT) ~0;
 	font_DrawText (&text);
+	(void) SetContextDrawMode (oldMode);
 
 	(void) SetContextForeGroundColor (oldFgCol);
 	(void) SetContextFont (oldFont);
@@ -1891,8 +1842,6 @@ putScreen (FRAME savedFrame) {
 void
 debugContexts (void)
 {
-	extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
-			FRAME dstFrame, const RECT *rdst, int num, int denom);
 	static volatile bool inDebugContexts = false;
 			// Prevent this function from being called from within itself.
 	
@@ -1927,13 +1876,10 @@ debugContexts (void)
 
 	// Create a new frame to draw on.
 	debugDrawContext = CreateContext ("debugDrawContext");
-	debugDrawFrame = CaptureDrawable (CreateDrawable (
-			WANT_PIXMAP /*| WANT_ALPHA*/, ScreenWidth, ScreenHeight, 1));
+	// New work frame is a copy of the original.
+	debugDrawFrame = CaptureDrawable (CloneFrame (savedScreen));
 	orgContext = SetContext (debugDrawContext);
 	SetContextFGFrame (debugDrawFrame);
-
-	// Fill the new frame with a copy of the original.
-	arith_frame_blit (savedScreen, NULL, debugDrawFrame, NULL, 1, 1);
 
 	hueIncrement = 360.0 / contextCount;
 
