@@ -296,19 +296,12 @@ GetFramePixel (FRAME frame, POINT pixelPt)
 			pixelPt.x, pixelPt.y);
 }
 
-// Creates a new DRAWABLE of specified size and scales the passed
-// frame onto it. The aspect ratio is not preserved.
-DRAWABLE
-RescaleFrame (FRAME frame, int width, int height)
+static FRAME
+makeMatchingFrame (FRAME frame, int width, int height)
 {
 	DRAWABLE drawable;
 	FRAME newFrame;
 	CREATE_FLAGS flags;
-	TFB_Image *img;
-	TFB_Canvas src, dst;
-
-	if (!frame)
-		return NULL;
 
 	flags = GetFrameParentDrawable (frame)->Flags;
 	drawable = CreateDrawable (flags, width, height, 1);
@@ -320,6 +313,61 @@ RescaleFrame (FRAME frame, int width, int height)
 		FreeDrawable (drawable);
 		return NULL;
 	}
+
+	return newFrame;
+}
+
+// Creates an new DRAWABLE mostly identical to specified FRAME
+DRAWABLE
+CloneFrame (FRAME frame)
+{
+	FRAME newFrame;
+	TFB_Image *img;
+	TFB_Canvas src, dst;
+	RECT r;
+
+	if (!frame)
+		return NULL;
+
+	GetFrameRect (frame, &r);
+	r.corner.x = 0;
+	r.corner.y = 0;
+
+	newFrame = makeMatchingFrame (frame, r.extent.width, r.extent.height);
+	if (!newFrame)
+		return NULL;
+
+	// copy the hot-spot
+	newFrame->HotSpot = frame->HotSpot;
+
+	img = frame->image;
+	LockMutex (img->mutex);
+	
+	// copy the pixels
+	src = img->NormalImg;
+	dst = newFrame->image->NormalImg;
+	TFB_DrawCanvas_CopyRect (src, &r, dst, MAKE_POINT (0, 0));
+	
+	UnlockMutex (img->mutex);
+
+	return ReleaseDrawable (newFrame);
+}
+
+// Creates a new DRAWABLE of specified size and scales the passed
+// frame onto it. The aspect ratio is not preserved.
+DRAWABLE
+RescaleFrame (FRAME frame, int width, int height)
+{
+	FRAME newFrame;
+	TFB_Image *img;
+	TFB_Canvas src, dst;
+
+	if (!frame)
+		return NULL;
+
+	newFrame = makeMatchingFrame (frame, width, height);
+	if (!newFrame)
+		return NULL;
 
 	// scale the hot-spot
 	newFrame->HotSpot.x = frame->HotSpot.x * width / frame->Bounds.width;
@@ -334,9 +382,7 @@ RescaleFrame (FRAME frame, int width, int height)
 	
 	UnlockMutex (img->mutex);
 
-	ReleaseDrawable (newFrame);
-
-	return drawable;
+	return ReleaseDrawable (newFrame);
 }
 
 BOOLEAN

@@ -1583,10 +1583,6 @@ static FRAME flash_screen_frame = 0;
 		// The original contents of the flash rectangle.
 static int flash_changed;
 Mutex flash_mutex = 0;
-// XXX: these are currently defined in libs/graphics/sdl/3do_getbody.c
-//  they should be sorted out and cleaned up at some point
-extern void arith_frame_blit (FRAME srcFrame, const RECT *rsrc,
-		FRAME dstFrame, const RECT *rdst, int num, int denom);
 
 static int
 flash_rect_func (void *data)
@@ -1620,21 +1616,14 @@ flash_rect_func (void *data)
 		LockMutex (flash_mutex);
 		if (flash_changed)
 		{
-			RECT screen_rect;
 			cached_rect = flash_rect;
 			if (cached_screen_frame)
 				DestroyDrawable (ReleaseDrawable (cached_screen_frame));
 			flash_changed = 0;
 			//  Wait for the  flash_screen_frame to get initialized
 			FlushGraphics ();
-			GetFrameRect (flash_screen_frame, &screen_rect);
-			cached_screen_frame = CaptureDrawable (CreateDrawable (
-					WANT_PIXMAP, screen_rect.extent.width,
-					screen_rect.extent.height, 1));
-			screen_rect.corner.x = 0;
-			screen_rect.corner.y = 0;
-			arith_frame_blit (flash_screen_frame, &screen_rect,
-					cached_screen_frame, NULL, 0, 0);
+			cached_screen_frame = CaptureDrawable (
+					CloneFrame (flash_screen_frame));
 			UnlockMutex (flash_mutex);
 
 			// Clear the cache.
@@ -1652,6 +1641,7 @@ flash_rect_func (void *data)
 		if (cached_rect.extent.width)
 		{
 			STAMP *pStamp;
+
 #define MIN_STRENGTH 4
 #define MAX_STRENGTH 6
 			strength += 2;
@@ -1661,22 +1651,36 @@ flash_rect_func (void *data)
 				pStamp = &cached_stamp[strength - MIN_STRENGTH];
 			else
 			{
-				RECT tmp_rect = cached_rect;
 				pStamp = &cached_stamp[strength - MIN_STRENGTH];
 				cached[strength - MIN_STRENGTH] = true;
-				pStamp->frame = CaptureDrawable (CreateDrawable (WANT_PIXMAP,
-						cached_rect.extent.width, cached_rect.extent.height,
-						1));
+				pStamp->frame = CaptureDrawable (
+						CloneFrame (cached_screen_frame));
 				pStamp->origin.x = 0;
 				pStamp->origin.y = 0;
-				tmp_rect.corner.x = 0;
-				tmp_rect.corner.y = 0;
 
-				arith_frame_blit (cached_screen_frame, &tmp_rect,
-						pStamp->frame, &tmp_rect, 4, 4);
 				if (strength != 4)
-					arith_frame_blit (cached_screen_frame, &tmp_rect,
-							pStamp->frame, &tmp_rect, strength, 4);
+				{	// brighten the frame with an additive
+					DrawMode oldMode;
+					STAMP s;
+					int factor;
+
+					s.origin.x = 0;
+					s.origin.y = 0;
+					s.frame = cached_screen_frame;
+
+					factor = (strength - MIN_STRENGTH) * DRAW_FACTOR_1 / 4;
+
+					LockMutex (GraphicsLock);
+					OldContext = SetContext (OffScreenContext);
+					SetContextFGFrame (pStamp->frame);
+					SetContextClipRect (NULL);
+					oldMode	= SetContextDrawMode (MAKE_DRAW_MODE (
+							DRAW_ADDITIVE, factor));
+					DrawStamp (&s);
+					SetContextDrawMode (oldMode);
+					SetContext (OldContext);
+					UnlockMutex (GraphicsLock);
+				}
 			}
 
 			LockMutex (GraphicsLock);
@@ -1685,7 +1689,8 @@ flash_rect_func (void *data)
 			// flash changed_can't be modified while GraphicSem is held
 			if (!flash_changed)
 				DrawStamp (pStamp);
-			SetContextClipRect (NULL); // this will flush whatever
+			// XXX: Shouldn't we save and restore the original cliprect?
+			SetContextClipRect (NULL);
 			SetContext (OldContext);
 			UnlockMutex (GraphicsLock);
 		}
