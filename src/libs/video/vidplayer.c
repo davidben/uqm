@@ -147,8 +147,8 @@ processAudioSyncedFrame (VIDEO_REF vid)
 	// We have the cliprect precalculated and don't need the rest
 	oldContext = SetContext (NULL);
 	TFB_DrawScreen_Image (vid->frame,
-			vid->dst_rect.corner.x, vid->dst_rect.corner.y,
-			0, 0, NULL, TFB_SCREEN_MAIN);
+			vid->dst_rect.corner.x, vid->dst_rect.corner.y, 0, 0,
+			NULL, DRAW_REPLACE_MODE, TFB_SCREEN_MAIN);
 	SetContext (oldContext);
 	UnlockMutex (GraphicsLock);
 	FlushGraphics (); // needed to prevent half-frame updates
@@ -199,8 +199,8 @@ processMuteFrame (VIDEO_REF vid)
 		// We have the cliprect precalculated and don't need the rest
 		oldContext = SetContext (NULL);
 		TFB_DrawScreen_Image (vid->frame,
-				vid->dst_rect.corner.x, vid->dst_rect.corner.y,
-				0, 0, NULL, TFB_SCREEN_MAIN);
+				vid->dst_rect.corner.x, vid->dst_rect.corner.y, 0, 0,
+				NULL, DRAW_REPLACE_MODE, TFB_SCREEN_MAIN);
 		SetContext (oldContext);
 		UnlockMutex (GraphicsLock);
 		FlushGraphics (); // needed to prevent half-frame updates

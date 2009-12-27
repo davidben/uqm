@@ -92,7 +92,8 @@ ClearBackGround (RECT *pClipRect)
 	clearRect.corner.x = 0;
 	clearRect.corner.y = 0;
 	clearRect.extent = pClipRect->extent;
-	TFB_Prim_FillRect (&clearRect, color, pClipRect->corner);
+	TFB_Prim_FillRect (&clearRect, color, DRAW_REPLACE_MODE,
+			pClipRect->corner);
 }
 
 void
@@ -106,6 +107,7 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 	{
 		COUNT CurIndex;
 		PRIMITIVE *lpPrim;
+		DrawMode mode = _get_context_draw_mode ();
 
 		BatchGraphics ();
 
@@ -135,19 +137,21 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 			{
 				case POINT_PRIM:
 					color = GetPrimColor (lpWorkPrim);
-					TFB_Prim_Point (&lpWorkPrim->Object.Point, color, origin);
+					TFB_Prim_Point (&lpWorkPrim->Object.Point, color,
+							mode, origin);
 					break;
 				case STAMP_PRIM:
-					TFB_Prim_Stamp (&lpWorkPrim->Object.Stamp, origin);
+					TFB_Prim_Stamp (&lpWorkPrim->Object.Stamp, mode, origin);
 					break;
 				case STAMPFILL_PRIM:
 					color = GetPrimColor (lpWorkPrim);
 					TFB_Prim_StampFill (&lpWorkPrim->Object.Stamp, color,
-							origin);
+							mode, origin);
 					break;
 				case LINE_PRIM:
 					color = GetPrimColor (lpWorkPrim);
-					TFB_Prim_Line (&lpWorkPrim->Object.Line, color, origin);
+					TFB_Prim_Line (&lpWorkPrim->Object.Line, color,
+							mode, origin);
 					break;
 				case TEXT_PRIM:
 					if (!TextRect (&lpWorkPrim->Object.Text, &ClipRect, NULL))
@@ -157,11 +161,13 @@ DrawBatch (PRIMITIVE *lpBasePrim, PRIM_LINKS PrimLinks,
 					break;
 				case RECT_PRIM:
 					color = GetPrimColor (lpWorkPrim);
-					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, color, origin);
+					TFB_Prim_Rect (&lpWorkPrim->Object.Rect, color,
+							mode, origin);
 					break;
 				case RECTFILL_PRIM:
 					color = GetPrimColor (lpWorkPrim);
-					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, color, origin);
+					TFB_Prim_FillRect (&lpWorkPrim->Object.Rect, color,
+							mode, origin);
 					break;
 			}
 		}
@@ -189,7 +195,8 @@ DrawPoint (POINT *lpPoint)
 	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_Point (lpPoint, color, origin);
+		DrawMode mode = _get_context_draw_mode ();
+		TFB_Prim_Point (lpPoint, color, mode, origin);
 	}
 }
 
@@ -201,7 +208,8 @@ DrawRectangle (RECT *lpRect)
 	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_Rect (lpRect, color, origin);
+		DrawMode mode = _get_context_draw_mode ();
+		TFB_Prim_Rect (lpRect, color, mode, origin);
 	}
 }
 
@@ -213,7 +221,8 @@ DrawFilledRectangle (RECT *lpRect)
 	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_FillRect (lpRect, color, origin);
+		DrawMode mode = _get_context_draw_mode ();
+		TFB_Prim_FillRect (lpRect, color, mode, origin);
 	}
 }
 
@@ -225,7 +234,8 @@ DrawLine (LINE *lpLine)
 	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_Line (lpLine, color, origin);
+		DrawMode mode = _get_context_draw_mode ();
+		TFB_Prim_Line (lpLine, color, mode, origin);
 	}
 }
 
@@ -236,7 +246,8 @@ DrawStamp (STAMP *stmp)
 
 	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
-		TFB_Prim_Stamp (stmp, origin);
+		DrawMode mode = _get_context_draw_mode ();
+		TFB_Prim_Stamp (stmp, mode, origin);
 	}
 }
 
@@ -248,7 +259,8 @@ DrawFilledStamp (STAMP *stmp)
 	if (GraphicsSystemActive () && GetContextValidRect (NULL, &origin))
 	{
 		Color color = GetPrimColor (&_locPrim);
-		TFB_Prim_StampFill (stmp, color, origin);
+		DrawMode mode = _get_context_draw_mode ();
+		TFB_Prim_StampFill (stmp, color, mode, origin);
 	}
 }
 

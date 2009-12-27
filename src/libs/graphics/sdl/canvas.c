@@ -57,23 +57,46 @@ TFB_DrawCanvas_GetError (void)
 }
 
 void
-TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, Color color,
-		TFB_Canvas target)
+checkPrimitiveMode (SDL_Surface *surf, Color *color, DrawMode *mode)
 {
-	Uint32 sdlColor;
-	PutPixelFn screen_plot;
-	
-	screen_plot = putpixel_for (target);
-	sdlColor = SDL_MapRGB (((NativeCanvas) target)->format,
-			color.r, color.g, color.b);
-
-	SDL_LockSurface (target);
-	line (x1, y1, x2, y2, sdlColor, screen_plot, target);
-	SDL_UnlockSurface (target);
+	const SDL_PixelFormat *fmt = surf->format;
+	// Special case: We support DRAW_ALPHA mode to non-alpha surfaces
+	// for primitives via Color.a
+	if (mode->kind == DRAW_REPLACE && fmt->Amask == 0 && color->a != 0xff)
+	{
+		mode->kind = DRAW_ALPHA;
+		mode->factor = color->a;
+		color->a = 0xff;
+	}
 }
 
 void
-TFB_DrawCanvas_Rect (RECT *rect, Color color, TFB_Canvas target)
+TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, Color color,
+		DrawMode mode, TFB_Canvas target)
+{
+	SDL_Surface *dst = target;
+	SDL_PixelFormat *fmt = dst->format;
+	Uint32 sdlColor;
+	RenderPixelFn plotFn;
+
+	checkPrimitiveMode (dst, &color, &mode);
+	sdlColor = SDL_MapRGBA (fmt, color.r, color.g, color.b, color.a);
+
+	plotFn = renderpixel_for (target, mode.kind);
+	if (!plotFn)
+	{
+		log_add (log_Warning, "ERROR: TFB_DrawCanvas_Line "
+				"unsupported draw mode (%d)", (int)mode.kind);
+		return;
+	}
+
+	SDL_LockSurface (dst);
+	line_prim (x1, y1, x2, y2, sdlColor, plotFn, mode.factor, dst);
+	SDL_UnlockSurface (dst);
+}
+
+void
+TFB_DrawCanvas_Rect (RECT *rect, Color color, DrawMode mode, TFB_Canvas target)
 {
 	SDL_Surface *dst = target;
 	SDL_PixelFormat *fmt = dst->format;
@@ -84,22 +107,95 @@ TFB_DrawCanvas_Rect (RECT *rect, Color color, TFB_Canvas target)
 	sr.w = rect->extent.width;
 	sr.h = rect->extent.height;
 
-	sdlColor = SDL_MapRGB (fmt, color.r, color.g, color.b);
-	if (fmt->Amask && (dst->flags & SDL_SRCCOLORKEY))
-	{	// special case -- alpha surface with colorkey
-		// colorkey rects are transparent
-		if ((sdlColor & ~fmt->Amask) == (fmt->colorkey & ~fmt->Amask))
-			sdlColor &= ~fmt->Amask; // make transparent
+	checkPrimitiveMode (dst, &color, &mode);
+	sdlColor = SDL_MapRGBA (fmt, color.r, color.g, color.b, color.a);
+
+	if (mode.kind == DRAW_REPLACE)
+	{	// Standard SDL fillrect rendering
+		if (fmt->Amask && (dst->flags & SDL_SRCCOLORKEY))
+		{	// special case -- alpha surface with colorkey
+			// colorkey rects are transparent
+			if ((sdlColor & ~fmt->Amask) == (fmt->colorkey & ~fmt->Amask))
+				sdlColor &= ~fmt->Amask; // make transparent
+		}
+		SDL_FillRect (dst, &sr, sdlColor);
 	}
-	
-	SDL_FillRect (dst, &sr, sdlColor);
+	else
+	{	// Custom fillrect rendering
+		RenderPixelFn plotFn = renderpixel_for (target, mode.kind);
+		if (!plotFn)
+		{
+			log_add (log_Warning, "ERROR: TFB_DrawCanvas_Rect "
+					"unsupported draw mode (%d)", (int)mode.kind);
+			return;
+		}
+
+		SDL_LockSurface (dst);
+		fillrect_prim (sr, sdlColor, plotFn, mode.factor, dst);
+		SDL_UnlockSurface (dst);
+	}
+}
+
+static void
+TFB_DrawCanvas_Blit (SDL_Surface *src, SDL_Rect *src_r,
+		SDL_Surface *dst, SDL_Rect *dst_r, DrawMode mode)
+{
+	SDL_PixelFormat *srcfmt = src->format;
+
+	if (mode.kind == DRAW_REPLACE)
+	{	// Standard SDL simple blit
+		SDL_BlitSurface (src, src_r, dst, dst_r);
+	}
+	else if (mode.kind == DRAW_ALPHA && srcfmt->Amask == 0)
+	{	// Standard SDL surface-alpha blit
+		// Note that surface alpha and per-pixel alpha cannot work
+		// at the same time, which is why the Amask test
+		assert (!(src->flags & SDL_SRCALPHA));
+		// Set surface alpha temporarily
+		SDL_SetAlpha (src, SDL_SRCALPHA, mode.factor);
+		SDL_BlitSurface (src, src_r, dst, dst_r);
+		SDL_SetAlpha (src, 0, 255);
+	}
+	else
+	{	// Custom blit
+		SDL_Rect loc_src_r, loc_dst_r;
+		RenderPixelFn plotFn = renderpixel_for (dst, mode.kind);
+		if (!plotFn)
+		{
+			log_add (log_Warning, "ERROR: TFB_DrawCanvas_Blit "
+					"unsupported draw mode (%d)", (int)mode.kind);
+			return;
+		}
+
+		if (!src_r)
+		{	// blit whole image; generate rect
+			loc_src_r.x = 0;
+			loc_src_r.y = 0;
+			loc_src_r.w = src->w;
+			loc_src_r.h = src->h;
+			src_r = &loc_src_r;
+		}
+
+		if (!dst_r)
+		{	// blit to 0,0; generate rect
+			loc_dst_r.x = 0;
+			loc_dst_r.y = 0;
+			loc_dst_r.w = dst->w;
+			loc_dst_r.h = dst->h;
+			dst_r = &loc_dst_r;
+		}
+
+		SDL_LockSurface (dst);
+		blt_prim (src, *src_r, plotFn, mode.factor, dst, *dst_r);
+		SDL_UnlockSurface (dst);
+	}
 }
 
 // XXX: If a colormap is passed in, it has to have been acquired via
 // TFB_GetColorMap(). We release the colormap at the end.
 void
 TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
-		int scaleMode, TFB_ColorMap *cmap, TFB_Canvas target)
+		int scaleMode, TFB_ColorMap *cmap, DrawMode mode, TFB_Canvas target)
 {
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
@@ -170,18 +266,18 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 		TFB_ReturnColorMap (cmap);
 	}
 	
-	SDL_BlitSurface (surf, pSrcRect, target, &targetRect);
+	TFB_DrawCanvas_Blit (surf, pSrcRect, target, &targetRect, mode);
 	UnlockMutex (img->mutex);
 }
 
-void
-TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
-					Uint32 fillcolor, TFB_Canvas target)
+// Assumes the source and destination surfaces are in the same format
+static void
+TFB_DrawCanvas_Fill (SDL_Surface *src, Uint32 fillcolor, SDL_Surface *dst)
 {
-	SDL_Surface *src = source;
-	SDL_Surface *dst = target;
 	const SDL_PixelFormat *srcfmt = src->format;
 	SDL_PixelFormat *dstfmt = dst->format;
+	const int width = src->w;
+	const int height = src->h;
 	const int bpp = dstfmt->BytesPerPixel;
 	const int sp = src->pitch, dp = dst->pitch;
 	const int slen = sp / bpp, dlen = dp / bpp;
@@ -190,6 +286,8 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 	Uint32 *dst_p;
 	int x, y;
 	Uint32 dstkey = 0; // 0 means alpha=0 too
+	Uint32 amask = srcfmt->Amask;
+	int alpha = (fillcolor & amask) >> srcfmt->Ashift;
 
 	if (srcfmt->BytesPerPixel != 4 || dstfmt->BytesPerPixel != 4)
 	{
@@ -198,6 +296,10 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 				(int)srcfmt->BytesPerPixel, (int)dstfmt->BytesPerPixel);
 		return;
 	}
+
+	// Strip the alpha channel from fillcolor because we process the
+	// alpha separately
+	fillcolor &= ~amask;
 
 	SDL_LockSurface(src);
 	SDL_LockSurface(dst);
@@ -213,35 +315,42 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 
 	if (srcfmt->Amask)
 	{	// alpha-based fill
-		Uint32 amask = srcfmt->Amask;
-
-		for (y = 0; y < height; ++y)
+		for (y = 0; y < height; ++y, dst_p += ddst, src_p += dsrc)
 		{
 			for (x = 0; x < width; ++x, ++src_p, ++dst_p)
 			{
 				Uint32 p = *src_p & amask;
-				
-				*dst_p = (p == 0) ? dstkey : (p | fillcolor);
+
+				if (p == 0)
+				{	// fully transparent pixel
+					*dst_p = dstkey;
+				}
+				else if (alpha == 0xff)
+				{	// not for DRAW_ALPHA; use alpha chan directly
+					*dst_p = p | fillcolor;
+				}
+				else
+				{	// for DRAW_ALPHA; modulate the alpha channel
+					p >>= srcfmt->Ashift;
+					p = (p * alpha) >> 8;
+					p <<= srcfmt->Ashift;
+					*dst_p = p | fillcolor;
+				}
 			}
-			dst_p += ddst;
-			src_p += dsrc;
 		}
 	}
 	else if (src->flags & SDL_SRCCOLORKEY)
 	{	// colorkey-based fill
 		Uint32 srckey = srcfmt->colorkey;
-		Uint32 notmask = ~srcfmt->Amask;
 
-		for (y = 0; y < height; ++y)
+		for (y = 0; y < height; ++y, dst_p += ddst, src_p += dsrc)
 		{
 			for (x = 0; x < width; ++x, ++src_p, ++dst_p)
 			{
-				Uint32 p = *src_p & notmask;
+				Uint32 p = *src_p;
 
 				*dst_p = (p == srckey) ? dstkey : fillcolor;
 			}
-			dst_p += ddst;
-			src_p += dsrc;
 		}
 	}
 	else
@@ -262,8 +371,9 @@ TFB_DrawCanvas_Fill (TFB_Canvas source, int width, int height,
 
 void
 TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
-		int scaleMode, Color color, TFB_Canvas target)
+		int scaleMode, Color color, DrawMode mode, TFB_Canvas target)
 {
+	SDL_Surface *dst = target;
 	SDL_Rect srcRect, targetRect, *pSrcRect;
 	SDL_Surface *surf;
 	SDL_Palette *palette;
@@ -276,6 +386,8 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 				"ERROR: TFB_DrawCanvas_FilledImage passed null image ptr");
 		return;
 	}
+
+	checkPrimitiveMode (dst, &color, &mode);
 
 	LockMutex (img->mutex);
 
@@ -338,6 +450,7 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 	else
 	{	// fill the non-transparent parts of the image with fillcolor
 		SDL_Surface *newfill = img->FilledImg;
+		SDL_PixelFormat *fillfmt;
 
 		if (newfill && (newfill->w < surf->w || newfill->h < surf->h))
 		{
@@ -357,35 +470,43 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 						surf->format->Amask);
 			force_fill = true;
 		}
+		fillfmt = newfill->format;
 
-		if (force_fill ||
-				img->last_fill.r != color.r ||
-				img->last_fill.g != color.g ||
-				img->last_fill.b != color.b)
+		if (force_fill || !sameColor (img->last_fill, color))
 		{	// image or fillcolor changed - regenerate
-			TFB_DrawCanvas_Fill (surf, surf->w, surf->h, SDL_MapRGBA (
-					newfill->format, color.r, color.g, color.b, 0), newfill);
-					// important to keep alpha=0 in fillcolor
-					// -- we process alpha ourselves
+			Uint32 fillColor;
 
+			if (mode.kind == DRAW_ALPHA && fillfmt->Amask)
+			{	// Per-pixel alpha and surface alpha will not work together
+				// We have to handle DRAW_ALPHA differently by modulating
+				// the surface alpha channel ourselves.
+				color.a = mode.factor;
+				mode.kind = DRAW_REPLACE;
+			}
+			else
+			{	// Make sure we do not modulate the alpha channel
+				color.a = 0xff;
+			}
+			fillColor = SDL_MapRGBA (newfill->format, color.r, color.g,
+					color.b, color.a);
+			TFB_DrawCanvas_Fill (surf, fillColor, newfill);
 			// cache filled image if possible
-			img->last_fill.r = color.r;
-			img->last_fill.g = color.g;
-			img->last_fill.b = color.b;
+			img->last_fill = color;
 		}
 
 		img->FilledImg = newfill;
 		surf = newfill;
 	}
 
-	SDL_BlitSurface (surf, pSrcRect, target, &targetRect);
+	TFB_DrawCanvas_Blit (surf, pSrcRect, dst, &targetRect, mode);
 	UnlockMutex (img->mutex);
 }
 
 void
 TFB_DrawCanvas_FontChar (TFB_Char *fontChar, TFB_Image *backing,
-		int x, int y, TFB_Canvas target)
+		int x, int y, DrawMode mode, TFB_Canvas target)
 {
+	SDL_Surface *dst = target;
 	SDL_Rect srcRect, targetRect;
 	SDL_Surface *surf;
 	int w, h;
@@ -439,17 +560,46 @@ TFB_DrawCanvas_FontChar (TFB_Char *fontChar, TFB_Image *backing,
 		Uint8 *src_p = fontChar->data;
 		Uint32 *dst_p = (Uint32 *)surf->pixels;
 
-		for (y = 0; y < h; ++y, src_p += sskip, dst_p += dskip)
-		{
-			for (x = 0; x < w; ++x, ++src_p, ++dst_p)
+		if (mode.kind == DRAW_ALPHA)
+		{	// Per-pixel alpha and surface alpha will not work together
+			// We have to handle DRAW_ALPHA differently by modulating
+			// the backing surface alpha channel ourselves.
+			// The existing backing surface alpha channel is ignored.
+			int alpha = mode.factor;
+			mode.kind = DRAW_REPLACE;
+
+			for (y = 0; y < h; ++y, src_p += sskip, dst_p += dskip)
 			{
-				*dst_p = (*dst_p & dmask) | (((Uint32)*src_p) << ashift);
+				for (x = 0; x < w; ++x, ++src_p, ++dst_p)
+				{
+					Uint32 p = *dst_p & dmask;
+					Uint32 a = *src_p;
+					
+					// we use >> 8 instead of / 255, and it does not handle
+					// alpha == 255 correctly
+					if (alpha != 0xff)
+					{	// modulate the alpha channel
+						a = (a * alpha) >> 8;
+					}
+					*dst_p = p | (a << ashift);
+				}
+			}
+		}
+		else /* if (mode.kind != DRAW_ALPHA) */
+		{	// Transfer the alpha channel to the backing surface
+			// DRAW_REPLACE + Color.a is NOT supported right now
+			for (y = 0; y < h; ++y, src_p += sskip, dst_p += dskip)
+			{
+				for (x = 0; x < w; ++x, ++src_p, ++dst_p)
+				{
+					*dst_p = (*dst_p & dmask) | ((Uint32)*src_p << ashift);
+				}
 			}
 		}
 	}
 	SDL_UnlockSurface (surf);
 
-	SDL_BlitSurface (surf, &srcRect, target, &targetRect);
+	TFB_DrawCanvas_Blit (surf, &srcRect, dst, &targetRect, mode);
 	UnlockMutex (backing->mutex);
 }
 
@@ -1090,6 +1240,7 @@ scale_read_pixel (void* ppix, SDL_PixelFormat *fmt, SDL_Color *pal,
 #if 0
 			SDL_GetRGBA (c, fmt, &p.c.r, &p.c.g, &p.c.b, &p.c.a);
 #else
+			// Assume 8 bits/channel; a safe assumption with 32bpp surfaces
 			p.c.r = (c >> fmt->Rshift) & 0xff;
 			p.c.g = (c >> fmt->Gshift) & 0xff;
 			p.c.b = (c >> fmt->Bshift) & 0xff;

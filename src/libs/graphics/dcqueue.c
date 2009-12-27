@@ -377,6 +377,7 @@ TFB_FlushGraphics (void)
 
 				TFB_DrawCanvas_Image (DC_image, x, y,
 						cmd->scale, cmd->scaleMode, cmd->colormap,
+						cmd->drawMode,
 						TFB_GetScreenCanvas (cmd->destBuffer));
 
 				if (cmd->destBuffer == TFB_SCREEN_MAIN)
@@ -405,6 +406,7 @@ TFB_FlushGraphics (void)
 
 				TFB_DrawCanvas_FilledImage (DC_image, x, y,
 						cmd->scale, cmd->scaleMode, cmd->color,
+						cmd->drawMode,
 						TFB_GetScreenCanvas (cmd->destBuffer));
 
 				if (cmd->destBuffer == TFB_SCREEN_MAIN)
@@ -432,7 +434,7 @@ TFB_FlushGraphics (void)
 				const int y = cmd->y;
 
 				TFB_DrawCanvas_FontChar (DC_char, cmd->backing, x, y,
-						TFB_GetScreenCanvas (cmd->destBuffer));
+						cmd->drawMode, TFB_GetScreenCanvas (cmd->destBuffer));
 
 				if (cmd->destBuffer == TFB_SCREEN_MAIN)
 				{
@@ -459,7 +461,8 @@ TFB_FlushGraphics (void)
 					TFB_BBox_RegisterPoint (cmd->x2, cmd->y2);
 				}
 				TFB_DrawCanvas_Line (cmd->x1, cmd->y1, cmd->x2, cmd->y2,
-						cmd->color, TFB_GetScreenCanvas (cmd->destBuffer));
+						cmd->color, cmd->drawMode,
+						TFB_GetScreenCanvas (cmd->destBuffer));
 				break;
 			}
 			
@@ -469,7 +472,7 @@ TFB_FlushGraphics (void)
 
 				if (cmd->destBuffer == TFB_SCREEN_MAIN)
 					TFB_BBox_RegisterRect (&cmd->rect);
-				TFB_DrawCanvas_Rect (&cmd->rect, cmd->color,
+				TFB_DrawCanvas_Rect (&cmd->rect, cmd->color, cmd->drawMode,
 						TFB_GetScreenCanvas (cmd->destBuffer));
 
 				break;

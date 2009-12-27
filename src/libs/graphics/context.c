@@ -33,6 +33,11 @@ PRIMITIVE _locPrim;
 
 FONT _CurFontPtr;
 
+#define DEFAULT_FORE_COLOR  BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
+#define DEFAULT_BACK_COLOR  BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00)
+
+#define DEFAULT_DRAW_MODE   MAKE_DRAW_MODE (DRAW_DEFAULT, 255)
+
 CONTEXT
 SetContext (CONTEXT Context)
 {
@@ -84,8 +89,6 @@ CreateContextAux (void)
 	if (NewContext)
 	{
 		/* initialize context */
-		CONTEXT OldContext;
-
 #ifdef DEBUG
 		NewContext->name = name;
 		NewContext->next = NULL;
@@ -93,12 +96,9 @@ CreateContextAux (void)
 		contextEnd = &NewContext->next;
 #endif  /* DEBUG */
 
-		OldContext = SetContext (NewContext);
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
-		SetContextBackGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
-		SetContext (OldContext);
+		NewContext->Mode = DEFAULT_DRAW_MODE;
+		NewContext->ForeGroundColor = DEFAULT_FORE_COLOR;
+		NewContext->BackGroundColor = DEFAULT_BACK_COLOR;
 	}
 
 	return NewContext;
@@ -149,7 +149,7 @@ SetContextForeGroundColor (Color color)
 	Color oldColor;
 
 	if (!ContextActive ())
-		return (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+		return DEFAULT_FORE_COLOR;
 
 	oldColor = _get_context_fg_color ();
 	if (!sameColor(oldColor, color))
@@ -170,7 +170,7 @@ Color
 GetContextForeGroundColor (void)
 {
 	if (!ContextActive ())
-		return (BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+		return DEFAULT_FORE_COLOR;
 
 	return _get_context_fg_color ();
 }
@@ -181,7 +181,7 @@ SetContextBackGroundColor (Color color)
 	Color oldColor;
 
 	if (!ContextActive ())
-		return (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+		return DEFAULT_BACK_COLOR;
 
 	oldColor = _get_context_bg_color ();
 	if (!sameColor(oldColor, color))
@@ -194,9 +194,32 @@ Color
 GetContextBackGroundColor (void)
 {
 	if (!ContextActive ())
-		return (BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+		return DEFAULT_BACK_COLOR;
 
 	return _get_context_bg_color ();
+}
+
+DrawMode
+SetContextDrawMode (DrawMode mode)
+{
+	DrawMode oldMode;
+
+	if (!ContextActive ())
+		return DEFAULT_DRAW_MODE;
+
+	oldMode = _get_context_draw_mode ();
+	SwitchContextDrawMode (mode);
+
+	return oldMode;
+}
+
+DrawMode
+GetContextDrawMode (void)
+{
+	if (!ContextActive ())
+		return DEFAULT_DRAW_MODE;
+
+	return _get_context_draw_mode ();
 }
 
 // Returns a rect based at 0,0 and the size of context foreground frame
@@ -306,14 +329,14 @@ FixContextFontEffect (void)
 		
 		TFB_DrawImage_Image (EffectFrame->image,
 				-EffectFrame->HotSpot.x, -EffectFrame->HotSpot.y,
-				0, 0, NULL, img);
+				0, 0, NULL, DRAW_REPLACE_MODE, img);
 	}
 	else
 	{	// solid color backing
 		RECT r = { {0, 0}, {w, h} };
 		Color color = _get_context_fg_color ();
 
-		TFB_DrawImage_Rect (&r, color, img);
+		TFB_DrawImage_Rect (&r, color, DRAW_REPLACE_MODE, img);
 	}
 	
 	_pCurContext->FontBacking = img;

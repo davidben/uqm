@@ -277,6 +277,56 @@ typedef enum
 	FadeSomeToColor
 } ScreenFadeType;
 
+typedef enum
+{
+	DRAW_REPLACE = 0,
+			// Pixels in the target FRAME are replaced entirely.
+			// Non-stamp primitives with Color.a < 255 to RGB targets are
+			// equivalent to DRAW_ALPHA with (DrawMode.factor = Color.a),
+			// except the Text primitives.
+			// DrawMode.factor: ignored
+			// Text: supported (except DRAW_ALPHA via Color.a)
+			// RGBA sources (WANT_ALPHA): per-pixel alpha blending performed
+			// RGBA targets (WANT_ALPHA): replace directly supported
+	DRAW_ADDITIVE,
+			// Pixel channels of the source FRAME or Color channels of
+			// a primitive are modulated by (DrawMode.factor / 255) and added
+			// to the pixel channels of the target FRAME.
+			// DrawMode.factor range: -32767..32767 (negative values make
+			//    draw subtractive); 255 = 1:1 ratio
+			// Text: not yet supported
+			// RGBA sources (WANT_ALPHA): alpha channel ignored
+			// RGBA targets (WANT_ALPHA): not yet supported
+	DRAW_ALPHA,
+			// Pixel channels of the source FRAME or Color channels of
+			// a primitive are modulated by (DrawMode.factor / 255) and added
+			// to the pixel channels of the target FRAME, modulated by
+			// (1 - DrawMode.factor / 255)
+			// DrawMode.factor range: 0..255; 255 = fully opaque
+			// Text: supported
+			// RGBA sources (WANT_ALPHA): alpha channel ignored
+			// RGBA targets (WANT_ALPHA): not yet supported
+
+	DRAW_DEFAULT = DRAW_REPLACE,
+} DrawKind;
+
+typedef struct
+{
+	BYTE kind;
+	SWORD factor;
+} DrawMode;
+
+#define DRAW_REPLACE_MODE   MAKE_DRAW_MODE (DRAW_REPLACE, 0)
+
+static inline DrawMode
+MAKE_DRAW_MODE (DrawKind kind, SWORD factor)
+{
+	DrawMode mode;
+	mode.kind = kind;
+	mode.factor = factor;
+	return mode;
+}
+
 extern CONTEXT SetContext (CONTEXT Context);
 extern Color SetContextForeGroundColor (Color Color);
 extern Color GetContextForeGroundColor (void);
@@ -292,6 +342,8 @@ extern BOOLEAN SetContextClipRect (RECT *pRect);
 extern BOOLEAN GetContextClipRect (RECT *pRect);
 // The actual origin will be orgOffset + context ClipRect.corner
 extern POINT SetContextOrigin (POINT orgOffset);
+extern DrawMode SetContextDrawMode (DrawMode);
+extern DrawMode GetContextDrawMode (void);
 
 extern TIME_VALUE DrawablesIntersect (INTERSECT_CONTROL *pControl0,
 		INTERSECT_CONTROL *pControl1, TIME_VALUE max_time_val);

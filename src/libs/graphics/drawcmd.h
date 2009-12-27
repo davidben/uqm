@@ -47,6 +47,7 @@ typedef struct tfb_dc_line
 {
 	int x1, y1, x2, y2;
 	Color color;
+	DrawMode drawMode;
 	SCREEN destBuffer;
 } TFB_DrawCommand_Line;
 
@@ -54,6 +55,7 @@ typedef struct tfb_dc_rect
 {
 	RECT rect;
 	Color color;
+	DrawMode drawMode;
 	SCREEN destBuffer;
 } TFB_DrawCommand_Rect;
 
@@ -63,6 +65,7 @@ typedef struct tfb_dc_img
 	int x, y;
 	SCREEN destBuffer;
 	TFB_ColorMap *colormap;
+	DrawMode drawMode;
 	int scale;
 	int scaleMode;
 } TFB_DrawCommand_Image;
@@ -73,6 +76,7 @@ typedef struct tfb_dc_filledimg
 	int x, y;
 	Color color;
 	SCREEN destBuffer;
+	DrawMode drawMode;
 	int scale;
 	int scaleMode;
 } TFB_DrawCommand_FilledImage;
@@ -82,6 +86,7 @@ typedef struct tfb_dc_fontchar
 	TFB_Char *fontchar;
 	TFB_Image *backing;
 	int x, y;
+	DrawMode drawMode;
 	SCREEN destBuffer;
 } TFB_DrawCommand_FontChar;
 

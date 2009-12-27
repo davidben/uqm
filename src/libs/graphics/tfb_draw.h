@@ -79,15 +79,15 @@ typedef struct tfb_pixelformat
 // Drawing commands
 
 void TFB_DrawScreen_Line (int x1, int y1, int x2, int y2, Color color,
-		SCREEN dest);
-void TFB_DrawScreen_Rect (RECT *rect, Color color, SCREEN dest);
+		DrawMode, SCREEN dest);
+void TFB_DrawScreen_Rect (RECT *rect, Color, DrawMode, SCREEN dest);
 void TFB_DrawScreen_Image (TFB_Image *img, int x, int y, int scale,
-		int scaleMode, TFB_ColorMap *cmap, SCREEN dest);
+		int scaleMode, TFB_ColorMap *, DrawMode, SCREEN dest);
 void TFB_DrawScreen_Copy (const RECT *r, SCREEN src, SCREEN dest);
 void TFB_DrawScreen_FilledImage (TFB_Image *img, int x, int y, int scale,
-		int scaleMode, Color color, SCREEN dest);
+		int scaleMode, Color, DrawMode, SCREEN dest);
 void TFB_DrawScreen_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
-		SCREEN dest);
+		DrawMode, SCREEN dest);
 
 void TFB_DrawScreen_CopyToImage (TFB_Image *img, const RECT *r, SCREEN src);
 void TFB_DrawScreen_SetMipmap (TFB_Image *img, TFB_Image *mmimg, int hotx,
@@ -109,14 +109,14 @@ BOOLEAN TFB_DrawImage_Intersect (TFB_Image *img1, POINT img1org,
 		TFB_Image *img2, POINT img2org, const RECT *interRect);
 
 void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, Color color,
-		TFB_Image *dest);
-void TFB_DrawImage_Rect (RECT *rect, Color color, TFB_Image *image);
+		DrawMode, TFB_Image *target);
+void TFB_DrawImage_Rect (RECT *rect, Color, DrawMode, TFB_Image *target);
 void TFB_DrawImage_Image (TFB_Image *img, int x, int y, int scale,
-		int scaleMode, TFB_ColorMap *cmap, TFB_Image *target);
+		int scaleMode, TFB_ColorMap *, DrawMode, TFB_Image *target);
 void TFB_DrawImage_FilledImage (TFB_Image *img, int x, int y, int scale,
-		int scaleMode, Color color, TFB_Image *target);
+		int scaleMode, Color, DrawMode, TFB_Image *target);
 void TFB_DrawImage_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
-		TFB_Image *target);
+		DrawMode, TFB_Image *target);
 
 TFB_Canvas TFB_DrawCanvas_LoadFromFile (void *dir, const char *fileName);
 TFB_Canvas TFB_DrawCanvas_New_TrueColor (int w, int h, BOOLEAN hasalpha);
@@ -147,14 +147,14 @@ void TFB_DrawCanvas_SetClipRect (TFB_Canvas canvas, const RECT *clipRect);
 void TFB_DrawCanvas_Delete (TFB_Canvas canvas);
 
 void TFB_DrawCanvas_Line (int x1, int y1, int x2, int y2, Color color,
-		TFB_Canvas dest);
-void TFB_DrawCanvas_Rect (RECT *rect, Color color, TFB_Canvas image);
+		DrawMode, TFB_Canvas target);
+void TFB_DrawCanvas_Rect (RECT *rect, Color, DrawMode, TFB_Canvas target);
 void TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
-		int scaleMode, TFB_ColorMap *cmap, TFB_Canvas target);
+		int scaleMode, TFB_ColorMap *, DrawMode, TFB_Canvas target);
 void TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
-		int scaleMode, Color color, TFB_Canvas target);
+		int scaleMode, Color, DrawMode, TFB_Canvas target);
 void TFB_DrawCanvas_FontChar (TFB_Char *, TFB_Image *backing, int x, int y,
-		TFB_Canvas target);
+		DrawMode, TFB_Canvas target);
 void TFB_DrawCanvas_CopyRect (TFB_Canvas source, const RECT *srcRect,
 		TFB_Canvas target, POINT dstPt);
 

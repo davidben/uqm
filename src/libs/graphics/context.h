@@ -33,6 +33,7 @@ struct context_desc
 			// High nibble contains GRAPHICS_STATUS
 
 	Color ForeGroundColor, BackGroundColor;
+	DrawMode Mode;
 	FRAME ForeGroundFrame;
 	FONT Font;
 
@@ -62,10 +63,11 @@ extern PRIMITIVE _locPrim;
 #define _get_context_fbk_flags() (_pCurContext->BackingFlags)
 #define _get_context_fonteff() (_pCurContext->FontEffect)
 #define _get_context_font_backing() (_pCurContext->FontBacking)
+#define _get_context_draw_mode() (_pCurContext->Mode)
 
-#define SwitchContextDrawState(s) \
+#define SwitchContextDrawMode(m) \
 { \
-	_pCurContext->DrawState = (s); \
+	_pCurContext->Mode = (m); \
 }
 #define SwitchContextForeGroundColor(c) \
 { \

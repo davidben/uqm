@@ -29,7 +29,7 @@
 #include "libs/log.h"
 
 void
-TFB_Prim_Point (POINT *p, Color color, POINT ctxOrigin)
+TFB_Prim_Point (POINT *p, Color color, DrawMode mode, POINT ctxOrigin)
 {
 	RECT r;
 
@@ -39,13 +39,13 @@ TFB_Prim_Point (POINT *p, Color color, POINT ctxOrigin)
 	r.extent.width = r.extent.height = 1;
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
-		TFB_DrawScreen_Rect (&r, color, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Rect (&r, color, mode, TFB_SCREEN_MAIN);
 	else
-		TFB_DrawImage_Rect (&r, color, _CurFramePtr->image);
+		TFB_DrawImage_Rect (&r, color, mode, _CurFramePtr->image);
 }
 
 void
-TFB_Prim_Rect (RECT *r, Color color, POINT ctxOrigin)
+TFB_Prim_Rect (RECT *r, Color color, DrawMode mode, POINT ctxOrigin)
 {
 	RECT arm;
 	int gscale;
@@ -57,24 +57,24 @@ TFB_Prim_Rect (RECT *r, Color color, POINT ctxOrigin)
 	arm = *r;
 	arm.extent.width = r->extent.width;
 	arm.extent.height = 1;
-	TFB_Prim_FillRect (&arm, color, ctxOrigin);
+	TFB_Prim_FillRect (&arm, color, mode, ctxOrigin);
 	arm.extent.height = r->extent.height;
 	arm.extent.width = 1;
-	TFB_Prim_FillRect (&arm, color, ctxOrigin);
+	TFB_Prim_FillRect (&arm, color, mode, ctxOrigin);
 	// rounding error correction here
 	arm.corner.x += ((r->extent.width * gscale + (GSCALE_IDENTITY >> 1))
 			/ GSCALE_IDENTITY) - 1;
-	TFB_Prim_FillRect (&arm, color, ctxOrigin);
+	TFB_Prim_FillRect (&arm, color, mode, ctxOrigin);
 	arm.corner.x = r->corner.x;
 	arm.corner.y += ((r->extent.height * gscale + (GSCALE_IDENTITY >> 1))
 			/ GSCALE_IDENTITY) - 1;
 	arm.extent.width = r->extent.width;
 	arm.extent.height = 1;
-	TFB_Prim_FillRect (&arm, color, ctxOrigin);
+	TFB_Prim_FillRect (&arm, color, mode, ctxOrigin);
 }
 
 void
-TFB_Prim_FillRect (RECT *r, Color color, POINT ctxOrigin)
+TFB_Prim_FillRect (RECT *r, Color color, DrawMode mode, POINT ctxOrigin)
 {
 	RECT rect;
 	int gscale;
@@ -97,13 +97,13 @@ TFB_Prim_FillRect (RECT *r, Color color, POINT ctxOrigin)
 	}
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
-		TFB_DrawScreen_Rect (&rect, color, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Rect (&rect, color, mode, TFB_SCREEN_MAIN);
 	else
-		TFB_DrawImage_Rect (&rect, color, _CurFramePtr->image);
+		TFB_DrawImage_Rect (&rect, color, mode, _CurFramePtr->image);
 }
 
 void
-TFB_Prim_Line (LINE *line, Color color, POINT ctxOrigin)
+TFB_Prim_Line (LINE *line, Color color, DrawMode mode, POINT ctxOrigin)
 {
 	int x1, y1, x2, y2;
 
@@ -114,13 +114,13 @@ TFB_Prim_Line (LINE *line, Color color, POINT ctxOrigin)
 	y2=line->second.y + ctxOrigin.y;
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
-		TFB_DrawScreen_Line (x1, y1, x2, y2, color, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_Line (x1, y1, x2, y2, color, mode, TFB_SCREEN_MAIN);
 	else
-		TFB_DrawImage_Line (x1, y1, x2, y2, color, _CurFramePtr->image);		
+		TFB_DrawImage_Line (x1, y1, x2, y2, color, mode, _CurFramePtr->image);
 }
 
 void
-TFB_Prim_Stamp (STAMP *stmp, POINT ctxOrigin)
+TFB_Prim_Stamp (STAMP *stmp, DrawMode mode, POINT ctxOrigin)
 {
 	int x, y;
 	FRAME SrcFramePtr;
@@ -160,17 +160,17 @@ TFB_Prim_Stamp (STAMP *stmp, POINT ctxOrigin)
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
 		TFB_DrawScreen_Image (img, x, y, GetGraphicScale (),
-				GetGraphicScaleMode (), cmap, TFB_SCREEN_MAIN);
+				GetGraphicScaleMode (), cmap, mode, TFB_SCREEN_MAIN);
 	}
 	else
 	{
 		TFB_DrawImage_Image (img, x, y, GetGraphicScale (),
-				GetGraphicScaleMode (), cmap, _CurFramePtr->image);
+				GetGraphicScaleMode (), cmap, mode, _CurFramePtr->image);
 	}
 }
 
 void
-TFB_Prim_StampFill (STAMP *stmp, Color color, POINT ctxOrigin)
+TFB_Prim_StampFill (STAMP *stmp, Color color, DrawMode mode, POINT ctxOrigin)
 {
 	int x, y;
 	FRAME SrcFramePtr;
@@ -203,18 +203,18 @@ TFB_Prim_StampFill (STAMP *stmp, Color color, POINT ctxOrigin)
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
 		TFB_DrawScreen_FilledImage (img, x, y, GetGraphicScale (),
-				GetGraphicScaleMode (), color, TFB_SCREEN_MAIN);
+				GetGraphicScaleMode (), color, mode, TFB_SCREEN_MAIN);
 	}
 	else
 	{
 		TFB_DrawImage_FilledImage (img, x, y, GetGraphicScale (),
-				GetGraphicScaleMode (), color, _CurFramePtr->image);
+				GetGraphicScaleMode (), color, mode, _CurFramePtr->image);
 	}
 }
 
 void
 TFB_Prim_FontChar (POINT charOrigin, TFB_Char *fontChar, TFB_Image *backing,
-		POINT ctxOrigin)
+		DrawMode mode, POINT ctxOrigin)
 {
 	int x, y;
 
@@ -224,11 +224,13 @@ TFB_Prim_FontChar (POINT charOrigin, TFB_Char *fontChar, TFB_Image *backing,
 
 	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
 	{
-		TFB_DrawScreen_FontChar (fontChar, backing, x, y, TFB_SCREEN_MAIN);
+		TFB_DrawScreen_FontChar (fontChar, backing, x, y, mode,
+				TFB_SCREEN_MAIN);
 	}
 	else
 	{
-		TFB_DrawImage_FontChar (fontChar, backing, x, y, _CurFramePtr->image);
+		TFB_DrawImage_FontChar (fontChar, backing, x, y, mode,
+				_CurFramePtr->image);
 	}
 }
 

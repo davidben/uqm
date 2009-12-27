@@ -243,6 +243,7 @@ _text_blt (RECT *pClipRect, TEXT *TextPtr, POINT ctxOrigin)
 	const char *pStr;
 	POINT origin;
 	TFB_Image *backing;
+	DrawMode mode = _get_context_draw_mode ();
 
 	FontPtr = _CurFontPtr;
 	if (FontPtr == NULL)
@@ -286,7 +287,8 @@ _text_blt (RECT *pClipRect, TEXT *TextPtr, POINT ctxOrigin)
 			r.extent.height = fontChar->disp.height;
 			if (BoxIntersect (&r, pClipRect, &r))
 			{
-				TFB_Prim_FontChar (origin, fontChar, backing, ctxOrigin);
+				TFB_Prim_FontChar (origin, fontChar, backing, mode,
+						ctxOrigin);
 			}
 
 			origin.x += fontChar->disp.width;
