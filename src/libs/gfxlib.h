@@ -317,6 +317,7 @@ typedef struct
 } DrawMode;
 
 #define DRAW_REPLACE_MODE   MAKE_DRAW_MODE (DRAW_REPLACE, 0)
+#define DRAW_FACTOR_1       0xff
 
 static inline DrawMode
 MAKE_DRAW_MODE (DrawKind kind, SWORD factor)
