@@ -3897,27 +3897,27 @@ SOURCE=..\..\src\uqm\ships\ship.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\loadmele.c
+SOURCE=..\..\src\uqm\supermelee\loadmele.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\loadmele.h
+SOURCE=..\..\src\uqm\supermelee\loadmele.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\melee.c
+SOURCE=..\..\src\uqm\supermelee\melee.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\melee.h
+SOURCE=..\..\src\uqm\supermelee\melee.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\pickmele.c
+SOURCE=..\..\src\uqm\supermelee\pickmele.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\pickmele.h
+SOURCE=..\..\src\uqm\supermelee\pickmele.h
 # End Source File
 # End Group
 # Begin Source File
