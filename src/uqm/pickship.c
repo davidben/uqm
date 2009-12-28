@@ -22,7 +22,7 @@
 #include "colors.h"
 #include "controls.h"
 #include "menustat.h"
-#include "pickmele.h"
+#include "supermelee/pickmele.h"
 #include "battle.h"
 #include "races.h"
 #include "resinst.h"

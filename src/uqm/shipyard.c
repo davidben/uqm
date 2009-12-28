@@ -23,7 +23,7 @@
 #include "fmv.h"
 #include "gameopt.h"
 #include "gamestr.h"
-#include "melee.h"
+#include "supermelee/melee.h"
 #include "master.h"
 #include "options.h"
 #include "races.h"

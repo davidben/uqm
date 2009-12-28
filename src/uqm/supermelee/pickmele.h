@@ -19,8 +19,8 @@
 
 typedef struct getmelee_struct GETMELEE_STATE;
 
-#include "races.h"
-#include "battlecontrols.h"
+#include "../races.h"
+#include "../battlecontrols.h"
 #include "libs/compiler.h"
 
 BOOLEAN MeleeShipDeath (STARSHIP *ship, COUNT which_player);
@@ -39,9 +39,9 @@ BOOLEAN selectShipNetwork (NetworkInputContext *context, GETMELEE_STATE *gms);
 
 #ifdef PICKMELE_INTERNAL
 
-#include "flash.h"
+#include "../flash.h"
 #include "libs/timelib.h"
-#include "init.h"
+#include "../init.h"
 
 struct getmelee_struct {
 	BOOLEAN (*InputFunc) (struct getmelee_struct *pInputState);

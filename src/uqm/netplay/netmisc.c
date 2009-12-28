@@ -23,7 +23,7 @@
 #include "packetsenders.h"
 #include "proto/ready.h"
 
-#include "../melee.h"
+#include "../supermelee/melee.h"
 		// For feedback functions.
 
 #include <stdlib.h>

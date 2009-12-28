@@ -28,7 +28,7 @@
 #include "gamestr.h"
 #include "globdata.h"
 #include "intel.h"
-#include "melee.h"
+#include "supermelee/melee.h"
 #include "resinst.h"
 #include "nameref.h"
 #include "settings.h"

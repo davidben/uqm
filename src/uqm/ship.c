@@ -29,7 +29,7 @@
 #include "intel.h"
 #include "init.h"
 #include "battle.h"
-#include "pickmele.h"
+#include "supermelee/pickmele.h"
 #include "races.h"
 #include "setup.h"
 #include "sounds.h"

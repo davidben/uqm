@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Put SuperMelee source files in separate subdirectory - SvdB
 - Added additive and alpha drawing modes to graphics lib - Alex
 - Fixed black pixel gaps between the planet and shield when entering the
   orbit of a shielded planet (bug #32) - Alex

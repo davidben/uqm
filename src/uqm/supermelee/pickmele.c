@@ -19,20 +19,20 @@
 #define PICKMELE_INTERNAL
 #include "pickmele.h"
 
-#include "battlecontrols.h"
-#include "controls.h"
-#include "flash.h"
-#include "intel.h"
-#include "battle.h"
+#include "../battlecontrols.h"
+#include "../controls.h"
+#include "../flash.h"
+#include "../intel.h"
+#include "../battle.h"
 #include "melee.h"
 #ifdef NETPLAY
-#	include "netplay/netmelee.h"
-#	include "netplay/netmisc.h"
-#	include "netplay/notify.h"
+#	include "../netplay/netmelee.h"
+#	include "../netplay/netmisc.h"
+#	include "../netplay/notify.h"
 #endif
-#include "races.h"
-#include "setup.h"
-#include "sounds.h"
+#include "../races.h"
+#include "../setup.h"
+#include "../sounds.h"
 #include "libs/log.h"
 #include "libs/mathlib.h"
 

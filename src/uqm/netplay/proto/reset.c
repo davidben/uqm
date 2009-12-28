@@ -24,7 +24,7 @@
 
 #include "types.h"
 #include "../packetsenders.h"
-#include "../../melee.h"
+#include "../../supermelee/melee.h"
 		// For resetFeedback.
 
 #include <assert.h>

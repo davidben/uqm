@@ -26,7 +26,7 @@ typedef struct NetworkInputContext NetworkInputContext;
 #endif  /* NETPLAY */
 
 #include "controls.h"
-#include "pickmele.h"
+#include "supermelee/pickmele.h"
 #include "races.h"
 #include "libs/compiler.h"
 

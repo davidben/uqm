@@ -37,9 +37,9 @@
 		// for NUM_PLAYERS
 #include "../globdata.h"
 		// for GLOBAL
-#include "../melee.h"
+#include "../supermelee/melee.h"
 		// for various update functions.
-#include "../pickmele.h"
+#include "../supermelee/pickmele.h"
 		// for various update functions.
 #include "libs/mathlib.h"
 		// for TFB_SeedRandom

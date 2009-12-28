@@ -19,13 +19,13 @@
 #ifndef _MELEE_H
 #define _MELEE_H
 
-#include "init.h"
+#include "../init.h"
 #include "libs/gfxlib.h"
 #include "libs/mathlib.h"
 #include "libs/sndlib.h"
 #include "libs/timelib.h"
 #include "libs/reslib.h"
-#include "netplay/packet.h"
+#include "../netplay/packet.h"
 		// for NetplayAbortReason and NetplayResetReason.
 
 typedef struct melee_state MELEE_STATE;

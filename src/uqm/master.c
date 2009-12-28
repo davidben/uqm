@@ -21,7 +21,7 @@
 #include "build.h"
 #include "resinst.h"
 #include "displist.h"
-#include "melee.h"
+#include "supermelee/melee.h"
 
 
 QUEUE master_q;
