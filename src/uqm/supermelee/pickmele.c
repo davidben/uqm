@@ -580,7 +580,7 @@ GetMeleeStarShips (COUNT playerMask, HSTARSHIP *ships)
 #endif
 
 		gmstate.player[playerI].flashContext =
-				Flash_createHighlight (ScreenContext, (FRAME) 0, NULL);
+				Flash_createHighlight (ScreenContext, NULL);
 		Flash_setMergeFactors (gmstate.player[playerI].flashContext,
 				2, 3, 2);
 		Flash_setFrameTime (gmstate.player[playerI].flashContext,

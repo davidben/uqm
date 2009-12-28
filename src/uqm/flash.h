@@ -76,6 +76,20 @@
  * You can use Flash_nextTime() to determine when the next update is needed,
  * or just call Flash_process() to try (it does no updates if not needed).
  *
+ * Limitations:
+ *
+ * 1) Highlight and overlay flashing modes read the original gfxContext
+ * contents, but they do so with LoadDisplayPixmap(). This means that these
+ * modes can currently only be used with on-screen CONTEXTs (i.e. CONTEXTs
+ * that have Screen as foreground FRAME);
+ *
+ * 2) Functions that draw to the gfxContext or read the original gfxContext
+ * contents, which is most of them, must be called with gfxContext having
+ * the same clip-rect as it did when other drawing functions were called.
+ * Otherwise, original contents restoration may draw to the wrong area, or
+ * the wrong area may be read.
+ * There may be cases where one would *want* that to happen, and such
+ * cases are not covered by this limitation.
  */
 
 #include "libs/gfxlib.h"
@@ -104,8 +118,6 @@ typedef enum {
 struct FlashContext {
 	CONTEXT gfxContext;
 			// The graphics context used for drawing.
-	FRAME parent;
-			// The frame that contains the flash rectangle.
 
 	RECT rect;
 			// The rectangle to flash.
@@ -175,11 +187,10 @@ struct FlashContext {
 #endif  /* FLASH_INTERNAL */
 
 
-FlashContext *Flash_createHighlight (CONTEXT gfxContext, FRAME parent,
-		const RECT *rect);
-FlashContext *Flash_createTransition (CONTEXT gfxContext, FRAME parent,
+FlashContext *Flash_createHighlight (CONTEXT gfxContext, const RECT *rect);
+FlashContext *Flash_createTransition (CONTEXT gfxContext,
 		const POINT *origin, FRAME first, FRAME final);
-FlashContext *Flash_createOverlay (CONTEXT gfxContext, FRAME parent,
+FlashContext *Flash_createOverlay (CONTEXT gfxContext,
 		const POINT *origin, FRAME overlay);
 
 void Flash_setState (FlashContext *context, FlashState state,

@@ -128,7 +128,7 @@ DoRestart (MENU_STATE *pMS)
 		pMS->hMusic = LoadMusic (MAINMENU_MUSIC);
 		InactTimeOut = (pMS->hMusic ? 120 : 20) * ONE_SECOND;
 		pMS->flashContext = Flash_createOverlay (ScreenContext,
-				NULL, NULL, NULL);
+				NULL, NULL);
 		Flash_setMergeFactors (pMS->flashContext, -3, 3, 16);
 		Flash_setSpeed (pMS->flashContext, (6 * ONE_SECOND) / 16, 0,
 				(6 * ONE_SECOND) / 16, 0);
