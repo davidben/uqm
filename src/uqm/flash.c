@@ -453,7 +453,7 @@ Flash_getRect (FlashContext *context, RECT *rect)
 void
 Flash_setOverlay (FlashContext *context, const POINT *origin,
 		FRAME overlay) {
-	assert(context->type = FlashType_overlay);
+	assert(context->type == FlashType_overlay);
 
 	if (context->started)
 	{
