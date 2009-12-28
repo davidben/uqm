@@ -76,7 +76,7 @@ DrawOscilloscope (void)
 	if (oscillDisabled)
 		return;
 
-	assert (scopeSize.width <= sizeof scope_data);
+	assert ((size_t)scopeSize.width <= sizeof scope_data);
 	assert (scopeSize.height < 256);
 
 	if (GraphForegroundStream (scope_data, scopeSize.width, scopeSize.height))
