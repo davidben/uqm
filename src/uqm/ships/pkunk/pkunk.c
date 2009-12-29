@@ -503,6 +503,8 @@ pkunk_preprocess (ELEMENT *ElementPtr)
 		}
 	}
 }
+		
+static COUNT LastSound = 0;
 
 static void
 pkunk_postprocess (ELEMENT *ElementPtr)
@@ -517,7 +519,6 @@ pkunk_postprocess (ELEMENT *ElementPtr)
 			StarShipPtr->RaceDescPtr->ship_info.max_energy)
 	{
 		COUNT CurSound;
-		static COUNT LastSound = 0;
 
 		do
 		{
@@ -547,6 +548,11 @@ init_pkunk (void)
 	pkunk_desc.cyborg_control.intelligence_func = pkunk_intelligence;
 
 	RaceDescPtr = &pkunk_desc;
+
+	LastSound = 0;
+			// We need to reinitialise it at least each battle, to ensure
+			// that NetPlay is synchronised if one player played another
+			// game before playing against a networked opponent.
 
 	return (RaceDescPtr);
 }
