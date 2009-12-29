@@ -203,22 +203,18 @@ destruct_preprocess (ELEMENT *ElementPtr)
 			DestructPtr->playerNr = NEUTRAL_PLAYER_NUM;
 			DestructPtr->state_flags = APPEARING | FINITE_LIFE | NONSOLID;
 			DestructPtr->life_span = (NUM_EXPLOSION_FRAMES - 3) - 1;
-			SetPrimType (
-					&(GLOBAL (DisplayArray))[DestructPtr->PrimIndex],
-					STAMPFILL_PRIM
-					);
-			SetPrimColor (
-					&(GLOBAL (DisplayArray))[DestructPtr->PrimIndex],
-					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F)
-					);
-			DestructPtr->current.image.farray = StarShipPtr->RaceDescPtr->ship_data.special;
-			DestructPtr->current.image.frame = StarShipPtr->RaceDescPtr->ship_data.special[0];
+			SetPrimType (&(GLOBAL (DisplayArray))[DestructPtr->PrimIndex],
+					STAMPFILL_PRIM);
+			SetPrimColor (&(GLOBAL (DisplayArray))[DestructPtr->PrimIndex],
+					BUILD_COLOR (MAKE_RGB15 (0x1F, 0x1F, 0x1F), 0x0F));
+			DestructPtr->current.image.farray =
+					StarShipPtr->RaceDescPtr->ship_data.special;
+			DestructPtr->current.image.frame =
+					StarShipPtr->RaceDescPtr->ship_data.special[0];
 			DestructPtr->current.location = ElementPtr->current.location;
-			{
-				DestructPtr->preprocess_func = destruct_preprocess;
-			}
-			DestructPtr->postprocess_func =
-					DestructPtr->death_func = NULL;
+			DestructPtr->preprocess_func = destruct_preprocess;
+			DestructPtr->postprocess_func = NULL;
+			DestructPtr->death_func = NULL;
 			ZeroVelocityComponents (&DestructPtr->velocity);
 			UnlockElement (hDestruct);
 		}
