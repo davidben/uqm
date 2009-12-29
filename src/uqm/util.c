@@ -112,18 +112,12 @@ SeedRandomNumbers (void)
 }
 
 STAMP
-SaveContextFrame (RECT *saveRect)
+SaveContextFrame (const RECT *saveRect)
 {
 	STAMP s;
-	RECT r;
 
-	GetContextClipRect (&r);
 	if (saveRect)
 	{	// a portion of the context
-		r.corner.x += saveRect->corner.x;
-		r.corner.y += saveRect->corner.y;
-		r.extent = saveRect->extent;
-
 		s.origin = saveRect->corner;
 	}
 	else
@@ -132,7 +126,7 @@ SaveContextFrame (RECT *saveRect)
 		s.origin.y = 0;
 	}
 
-	s.frame = CaptureDrawable (LoadDisplayPixmap (&r, NULL));
+	s.frame = CaptureDrawable (CopyContextRect (saveRect));
 
 	return s;
 }

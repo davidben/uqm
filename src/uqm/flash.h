@@ -78,11 +78,6 @@
  *
  * Limitations:
  *
- * 1) Highlight and overlay flashing modes read the original gfxContext
- * contents, but they do so with LoadDisplayPixmap(). This means that these
- * modes can currently only be used with on-screen CONTEXTs (i.e. CONTEXTs
- * that have Screen as foreground FRAME);
- *
  * 2) Functions that draw to the gfxContext or read the original gfxContext
  * contents, which is most of them, must be called with gfxContext having
  * the same clip-rect as it did when other drawing functions were called.

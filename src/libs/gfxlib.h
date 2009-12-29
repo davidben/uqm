@@ -345,6 +345,9 @@ extern BOOLEAN GetContextClipRect (RECT *pRect);
 extern POINT SetContextOrigin (POINT orgOffset);
 extern DrawMode SetContextDrawMode (DrawMode);
 extern DrawMode GetContextDrawMode (void);
+// 'area' may be NULL to copy the entire CONTEXT cliprect
+// 'area' is relative to the CONTEXT cliprect
+extern DRAWABLE CopyContextRect (const RECT* area);
 
 extern TIME_VALUE DrawablesIntersect (INTERSECT_CONTROL *pControl0,
 		INTERSECT_CONTROL *pControl1, TIME_VALUE max_time_val);

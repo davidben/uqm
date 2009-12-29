@@ -533,32 +533,19 @@ static void
 Flash_grabOriginal (FlashContext *context)
 {
 	CONTEXT oldGfxContext;
-	RECT clipRect;
-	RECT grabRect;
 
 	if (context->original != (FRAME) 0)
 		DestroyDrawable (ReleaseDrawable (context->original));
 
-	// XXX: This assumes that FlashContext.gfxContext is an on-screen CONTEXT
-	//   (i.e. it's foreground frame is Screen). LoadDisplayPixmap() would
-	//   not work with an off-screen context.
-	// TODO: Get rid of LoadDisplayPixmap(). It does not take CONTEXT
-	//   clip-rect into account.
 	LockMutex (GraphicsLock);
 	oldGfxContext = SetContext (context->gfxContext);
-	// FlashContext.rect is relative to the CONTEXT clip-rect
-	grabRect = context->rect;
-	GetContextClipRect (&clipRect);
-	grabRect.corner.x += clipRect.corner.x;
-	grabRect.corner.y += clipRect.corner.y;
-	context->original = CaptureDrawable (LoadDisplayPixmap (
-			&grabRect, (FRAME) 0));
+	context->original = CaptureDrawable (CopyContextRect (&context->rect));
 	SetContext (oldGfxContext);
-	UnlockMutex (GraphicsLock);
 	FlushGraphics ();
-			// LoadDisplayPixmap only queues the command to read
+			// CopyContextRect() may have queued the command to read
 			// a rectangle from the screen; a FlushGraphics()
 			// is necessary to ensure that it can actually be used.
+	UnlockMutex (GraphicsLock);
 }
 
 static inline void

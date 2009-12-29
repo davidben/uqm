@@ -344,6 +344,38 @@ FixContextFontEffect (void)
 	UnsetContextFBkFlags (FBK_DIRTY);
 }
 
+// 'area' may be NULL to copy the entire CONTEXT cliprect
+// 'area' is relative to the CONTEXT cliprect
+DRAWABLE
+CopyContextRect (const RECT* area)
+{
+	RECT clipRect;
+	RECT fgRect;
+	RECT r;
+	
+	if (!ContextActive () || !_CurFramePtr)
+		return NULL;
+
+	fgRect = _get_context_fg_rect ();
+	GetContextClipRect (&clipRect);
+	r = clipRect;
+	if (area)
+	{	// a portion of the context
+		r.corner.x += area->corner.x;
+		r.corner.y += area->corner.y;
+		r.extent = area->extent;
+	}
+	// TODO: Should this take CONTEXT origin into account too?
+	// validate the rect
+	if (!BoxIntersect (&r, &fgRect, &r))
+		return NULL;
+	
+	if (_CurFramePtr->Type == SCREEN_DRAWABLE)
+		return LoadDisplayPixmap (&r, NULL);
+	else
+		return CopyFrameRect (_CurFramePtr, &r);
+}
+
 #ifdef DEBUG
 const char *
 GetContextName (CONTEXT context)
