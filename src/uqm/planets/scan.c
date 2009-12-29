@@ -499,33 +499,27 @@ PrintCoarseScan3DO (void)
 static void
 initPlanetLocationImage (void)
 {
-	EXTENT size;
 	FRAME cursorFrame;
 
 	// Get the cursor image
 	cursorFrame = SetAbsFrameIndex (MiscDataFrame, FLASH_INDEX);
-	size.width = GetFrameWidth (cursorFrame);
-	size.height = GetFrameHeight (cursorFrame);
-	cursorRect.extent = size;
-
-	eraseFrame = CaptureDrawable (CreateDrawable (
-			WANT_PIXMAP | MAPPED_TO_DISPLAY,
-			size.width, size.height, 1));
-	// copy the hotspot
-	SetFrameHot (eraseFrame, GetFrameHot (cursorFrame));
+	cursorRect.extent = GetFrameBounds (cursorFrame);
 }
 
 static void
 savePlanetLocationImage (void)
 {
 	RECT r;
-	HOT_SPOT hs = GetFrameHot (eraseFrame);
+	FRAME cursorFrame = SetAbsFrameIndex (MiscDataFrame, FLASH_INDEX);
+	HOT_SPOT hs = GetFrameHot (cursorFrame);
 
-	GetContextClipRect (&r);
-	r.corner.x += cursorRect.corner.x - hs.x;
-	r.corner.y += cursorRect.corner.y - hs.y;
-	r.extent = cursorRect.extent;
-	LoadDisplayPixmap (&r, eraseFrame);
+	DestroyDrawable (ReleaseDrawable (eraseFrame));
+
+	r = cursorRect;
+	r.corner.x -= hs.x;
+	r.corner.y -= hs.y;
+	eraseFrame = CaptureDrawable (CopyContextRect (&r));
+	SetFrameHot (eraseFrame, hs);
 }
 
 static void
