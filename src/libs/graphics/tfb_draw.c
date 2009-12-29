@@ -458,6 +458,27 @@ BOOLEAN
 TFB_DrawImage_Intersect (TFB_Image *img1, POINT img1org,
 		TFB_Image *img2, POINT img2org, const RECT *interRect)
 {
-	return TFB_DrawCanvas_Intersect (img1->NormalImg, img1org,
+	BOOLEAN ret;
+
+	LockMutex (img1->mutex);
+	LockMutex (img2->mutex);
+	ret = TFB_DrawCanvas_Intersect (img1->NormalImg, img1org,
 			img2->NormalImg, img2org, interRect);
+	UnlockMutex (img2->mutex);
+	UnlockMutex (img1->mutex);
+
+	return ret;
+}
+
+void
+TFB_DrawImage_CopyRect (TFB_Image *source, const RECT *srcRect,
+		TFB_Image *target, POINT dstPt)
+{
+	LockMutex (source->mutex);
+	LockMutex (target->mutex);
+	TFB_DrawCanvas_CopyRect (source->NormalImg, srcRect,
+			target->NormalImg, dstPt);
+	target->dirty = TRUE;
+	UnlockMutex (target->mutex);
+	UnlockMutex (source->mutex);
 }

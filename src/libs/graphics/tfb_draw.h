@@ -107,6 +107,8 @@ void TFB_DrawImage_Delete (TFB_Image *image);
 void TFB_DrawImage_FixScaling (TFB_Image *image, int target, int type);
 BOOLEAN TFB_DrawImage_Intersect (TFB_Image *img1, POINT img1org,
 		TFB_Image *img2, POINT img2org, const RECT *interRect);
+void TFB_DrawImage_CopyRect (TFB_Image *source, const RECT *srcRect,
+		TFB_Image *target, POINT dstPt);
 
 void TFB_DrawImage_Line (int x1, int y1, int x2, int y2, Color color,
 		DrawMode, TFB_Image *target);

@@ -248,6 +248,11 @@ RotateFrame (FRAME Frame, int angle_deg)
 	double d;
 	double angle = angle_deg * M_PI / 180;
 
+	if (!Frame)
+		return NULL;
+
+	assert (Frame->Type != SCREEN_DRAWABLE);
+
 	Drawable = request_drawable (1, RAM_DRAWABLE, WANT_PIXMAP, 0, 0);
 	if (!Drawable)
 		return 0;
@@ -283,17 +288,44 @@ RotateFrame (FRAME Frame, int angle_deg)
 
 // color.a is ignored
 void
-SetFrameTransparentColor (FRAME Frame, Color color)
+SetFrameTransparentColor (FRAME frame, Color color)
 {
-	TFB_DrawCanvas_SetTransparentColor (Frame->image->NormalImg, color,
-			FALSE);
+	TFB_Image *img;
+
+	if (!frame)
+		return;
+
+	assert (frame->Type != SCREEN_DRAWABLE);
+
+	img = frame->image;
+	LockMutex (img->mutex);
+
+	// TODO: This should defer to TFB_DrawImage instead
+	TFB_DrawCanvas_SetTransparentColor (img->NormalImg, color, FALSE);
+	
+	UnlockMutex (img->mutex);
 }
 
 Color
 GetFramePixel (FRAME frame, POINT pixelPt)
 {
-	return TFB_DrawCanvas_GetPixel (frame->image->NormalImg,
-			pixelPt.x, pixelPt.y);
+	TFB_Image *img;
+	Color ret;
+
+	if (!frame)
+		return BUILD_COLOR_RGBA (0, 0, 0, 0);
+
+	assert (frame->Type != SCREEN_DRAWABLE);
+
+	img = frame->image;
+	LockMutex (img->mutex);
+
+	// TODO: This should defer to TFB_DrawImage instead
+	ret = TFB_DrawCanvas_GetPixel (img->NormalImg, pixelPt.x, pixelPt.y);
+
+	UnlockMutex (img->mutex);
+
+	return ret;
 }
 
 static FRAME
@@ -317,38 +349,52 @@ makeMatchingFrame (FRAME frame, int width, int height)
 	return newFrame;
 }
 
+// Creates an new DRAWABLE containing a copy of specified FRAME's rect
+// Source FRAME must not be a SCREEN_DRAWABLE
+DRAWABLE
+CopyFrameRect (FRAME frame, const RECT *area)
+{
+	FRAME newFrame;
+	POINT nullPt = MAKE_POINT (0, 0);
+
+	if (!frame)
+		return NULL;
+
+	assert (frame->Type != SCREEN_DRAWABLE);
+
+	newFrame = makeMatchingFrame (frame, area->extent.width,
+			area->extent.height);
+	if (!newFrame)
+		return NULL;
+
+	TFB_DrawImage_CopyRect (frame->image, area, newFrame->image, nullPt);
+
+	return ReleaseDrawable (newFrame);
+}
+
 // Creates an new DRAWABLE mostly identical to specified FRAME
+// Source FRAME must not be a SCREEN_DRAWABLE
 DRAWABLE
 CloneFrame (FRAME frame)
 {
 	FRAME newFrame;
-	TFB_Image *img;
-	TFB_Canvas src, dst;
 	RECT r;
 
 	if (!frame)
 		return NULL;
 
+	assert (frame->Type != SCREEN_DRAWABLE);
+
 	GetFrameRect (frame, &r);
 	r.corner.x = 0;
 	r.corner.y = 0;
 
-	newFrame = makeMatchingFrame (frame, r.extent.width, r.extent.height);
+	newFrame = CaptureDrawable (CopyFrameRect (frame, &r));
 	if (!newFrame)
 		return NULL;
 
 	// copy the hot-spot
 	newFrame->HotSpot = frame->HotSpot;
-
-	img = frame->image;
-	LockMutex (img->mutex);
-	
-	// copy the pixels
-	src = img->NormalImg;
-	dst = newFrame->image->NormalImg;
-	TFB_DrawCanvas_CopyRect (src, &r, dst, MAKE_POINT (0, 0));
-	
-	UnlockMutex (img->mutex);
 
 	return ReleaseDrawable (newFrame);
 }
@@ -365,6 +411,8 @@ RescaleFrame (FRAME frame, int width, int height)
 	if (!frame)
 		return NULL;
 
+	assert (frame->Type != SCREEN_DRAWABLE);
+
 	newFrame = makeMatchingFrame (frame, width, height);
 	if (!newFrame)
 		return NULL;
@@ -375,7 +423,8 @@ RescaleFrame (FRAME frame, int width, int height)
 
 	img = frame->image;
 	LockMutex (img->mutex);
-	
+	// NOTE: We do not lock the target image because nothing has a
+	//   reference to it yet!
 	src = img->NormalImg;
 	dst = newFrame->image->NormalImg;
 	TFB_DrawCanvas_Rescale_Nearest (src, dst, -1, NULL, NULL, NULL);
@@ -393,6 +442,8 @@ ReadFramePixelColors (FRAME frame, Color *pixels, int width, int height)
 	if (!frame)
 		return FALSE;
 
+	assert (frame->Type != SCREEN_DRAWABLE);
+
 	// TODO: Do we need to lock the img->mutex here?
 	img = frame->image;
 	return TFB_DrawCanvas_GetPixelColors (img->NormalImg, pixels,
@@ -408,6 +459,8 @@ WriteFramePixelColors (FRAME frame, const Color *pixels, int width, int height)
 	if (!frame)
 		return FALSE;
 
+	assert (frame->Type != SCREEN_DRAWABLE);
+
 	// TODO: Do we need to lock the img->mutex here?
 	img = frame->image;
 	return TFB_DrawCanvas_SetPixelColors (img->NormalImg, pixels,
@@ -421,6 +474,8 @@ ReadFramePixelIndexes (FRAME frame, BYTE *pixels, int width, int height)
 
 	if (!frame)
 		return FALSE;
+
+	assert (frame->Type != SCREEN_DRAWABLE);
 
 	// TODO: Do we need to lock the img->mutex here?
 	img = frame->image;
@@ -436,6 +491,8 @@ WriteFramePixelIndexes (FRAME frame, const BYTE *pixels, int width, int height)
 
 	if (!frame)
 		return FALSE;
+
+	assert (frame->Type != SCREEN_DRAWABLE);
 
 	// TODO: Do we need to lock the img->mutex here?
 	img = frame->image;

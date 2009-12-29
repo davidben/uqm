@@ -404,6 +404,7 @@ extern FRAME SetRelFrameIndex (FRAME Frame, SIZE FrameOffs);
 extern FRAME SetEquFrameIndex (FRAME DstFrame, FRAME SrcFrame);
 extern FRAME IncFrameIndex (FRAME Frame);
 extern FRAME DecFrameIndex (FRAME Frame);
+extern DRAWABLE CopyFrameRect (FRAME Frame, const RECT *area);
 extern DRAWABLE CloneFrame (FRAME Frame);
 extern DRAWABLE RotateFrame (FRAME Frame, int angle_deg);
 extern DRAWABLE RescaleFrame (FRAME, int width, int height);
