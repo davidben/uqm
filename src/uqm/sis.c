@@ -1542,7 +1542,7 @@ DrawAutoPilotMessage (BOOLEAN Reset)
 	if (OnAutoPilot || LastPilot)
 	{
 		if (!OnAutoPilot)
-		{	// AutiPilot aborted -- clear the AUTO-PILOT message
+		{	// AutoPilot aborted -- clear the AUTO-PILOT message
 			DrawSISMessage (NULL);
 			cycle_index = 0;
 		}
