@@ -1,6 +1,0 @@
-enum
-{
-	DRUUGE_CODE_PACKAGE = 1,
-	DRUUGE_PACKAGE
-};
-

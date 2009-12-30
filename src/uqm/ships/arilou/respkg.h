@@ -1,6 +1,0 @@
-enum
-{
-	ARILOU_CODE_PACKAGE = 1,
-	ARILOU_PACKAGE
-};
-

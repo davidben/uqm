@@ -1,6 +1,0 @@
-enum
-{
-	PKUNK_CODE_PACKAGE = 1,
-	PKUNK_PACKAGE
-};
-

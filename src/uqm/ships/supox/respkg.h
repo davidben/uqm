@@ -1,6 +1,0 @@
-enum
-{
-	SUPOX_CODE_PACKAGE = 1,
-	SUPOX_PACKAGE
-};
-

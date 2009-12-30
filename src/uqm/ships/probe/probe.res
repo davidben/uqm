@@ -1,8 +1,0 @@
-INCLUDE	../star3do.typ
-
-PATH	probe
-
-PACKAGE	PROBE_CODE_PACKAGE	probe.sc2
-	CODE		PROBE_CODE			probe.cod
-	GFXRES		PROBE_MICON_MASK_PMAP_ANIM	promicon.ani
-

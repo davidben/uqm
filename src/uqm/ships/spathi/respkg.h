@@ -1,6 +1,0 @@
-enum
-{
-	SPATHI_CODE_PACKAGE = 1,
-	SPATHI_PACKAGE
-};
-

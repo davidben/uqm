@@ -1,6 +1,0 @@
-enum
-{
-	YEHAT_CODE_PACKAGE = 1,
-	YEHAT_PACKAGE
-};
-

@@ -1,6 +1,0 @@
-enum
-{
-	UMGAH_CODE_PACKAGE = 1,
-	UMGAH_PACKAGE
-};
-

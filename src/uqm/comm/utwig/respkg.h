@@ -1,6 +1,0 @@
-enum
-{
-	UTWIG_PACKAGE = 1,
-	UTWIG_ULTRON_MUSIC_PACKAGE,
-};
-
