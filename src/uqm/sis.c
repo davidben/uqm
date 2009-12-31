@@ -1810,9 +1810,9 @@ SetFlashRect (RECT *pRect)
 	}
 	flash_changed = 1;
 	UnlockMutex (flash_mutex);
-	// we create the thread after the LoadIntoExtraScreen
+	// we create the thread after the LoadDisplayPixmap()
 	// so there is no race between the FlushGraphics in flash_task
-	// and the Enqueue in LoadIntoExtraScreen
+	// and the Enqueue in LoadDisplayPixmap()
 	if (create_flash && flash_task == 0)
 	{
 		flash_task = AssignTask (flash_rect_func, 2048,
