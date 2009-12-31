@@ -85,23 +85,14 @@ RepairBackRect (RECT *pRect)
 static void
 EraseCoarseScan (void)
 {
-	RECT oldClipRect;
-	RECT clipRect;
-
 	LockMutex (GraphicsLock);
-	SetContext (SpaceContext);
-	// TODO: Give coarse scan an own context
-	GetContextClipRect (&oldClipRect);
-	clipRect = oldClipRect;
-	clipRect.extent.height = SCAN_SCREEN_HEIGHT;
-	SetContextClipRect (&clipRect);
+	SetContext (PlanetContext);
 	
 	BatchGraphics ();
 	DrawStarBackGround ();
 	DrawDefaultPlanetSphere ();
 	UnbatchGraphics ();
 	
-	SetContextClipRect (&oldClipRect);
 	UnlockMutex (GraphicsLock);
 }
 
@@ -170,7 +161,7 @@ PrintCoarseScanPC (void)
 	GetPlanetTitle (buf, sizeof (buf));
 
 	LockMutex (GraphicsLock);
-	SetContext (SpaceContext);
+	SetContext (PlanetContext);
 
 	t.align = ALIGN_CENTER;
 	t.baseline.x = SIS_SCREEN_WIDTH >> 1;
@@ -355,7 +346,7 @@ PrintCoarseScan3DO (void)
 	GetPlanetTitle (buf, sizeof (buf));
 
 	LockMutex (GraphicsLock);
-	SetContext (SpaceContext);
+	SetContext (PlanetContext);
 
 	t.align = ALIGN_CENTER;
 	t.baseline.x = SIS_SCREEN_WIDTH >> 1;
@@ -1019,11 +1010,13 @@ ScanPlanet (COUNT scanType)
 		t.pStr = GAME_STRING (SCAN_STRING_BASE + scan);
 
 		LockMutex (GraphicsLock);
-		SetContext (SpaceContext);
+		SetContext (PlanetContext);
 		r.corner.x = 0;
 		r.corner.y = t.baseline.y - 10;
 		r.extent.width = SIS_SCREEN_WIDTH;
 		r.extent.height = t.baseline.y - r.corner.y + 1;
+		// XXX: I do not know why we are repairing it here, as there
+		//   should not be anything drawn over the stars at the moment
 		RepairBackRect (&r);
 
 		SetContextFont (MicroFont);
@@ -1073,12 +1066,7 @@ ScanPlanet (COUNT scanType)
 	}
 
 	LockMutex (GraphicsLock);
-	SetContext (SpaceContext);
-	r.corner.x = 0;
-	r.corner.y = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7) - 10;
-	r.extent.width = SIS_SCREEN_WIDTH;
-	r.extent.height = (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 7)
-			- r.corner.y + 1;
+	SetContext (PlanetContext);
 	RepairBackRect (&r);
 
 	SetContext (ScanContext);
@@ -1177,12 +1165,15 @@ CreateScanContext (void)
 	CONTEXT context;
 	RECT r;
 
+	// ScanContext rect is relative to SpaceContext
+	oldContext = SetContext (SpaceContext);
+	GetContextClipRect (&r);
+
 	context = CreateContext ("ScanContext");
-	oldContext = SetContext (context);
-	
+	SetContext (context);
 	SetContextFGFrame (Screen);
-	r.corner.x = (SIS_ORG_X + SIS_SCREEN_WIDTH) - MAP_WIDTH;
-	r.corner.y = (SIS_ORG_Y + SIS_SCREEN_HEIGHT) - MAP_HEIGHT;
+	r.corner.x += r.extent.width - MAP_WIDTH;
+	r.corner.y += r.extent.height - MAP_HEIGHT;
 	r.extent.width = MAP_WIDTH;
 	r.extent.height = MAP_HEIGHT;
 	SetContextClipRect (&r);
@@ -1227,7 +1218,9 @@ ScanSystem (void)
 
 	memset (&MenuState, 0, sizeof MenuState);
 
+	LockMutex (GraphicsLock);
 	GetScanContext (NULL);
+	UnlockMutex (GraphicsLock);
 
 	if (optWhichMenu == OPT_3DO &&
 			((pSolarSysState->pOrbitalDesc->data_index & PLANET_SHIELDED)
@@ -1273,7 +1266,6 @@ ScanSystem (void)
 	BatchGraphics ();
 	SetContext (ScanContext);
 	DrawPlanet (0, BLACK_COLOR);
-	SetContext (SpaceContext);
 	EraseCoarseScan ();
 	UnbatchGraphics ();
 	UnlockMutex (GraphicsLock);

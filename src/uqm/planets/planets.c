@@ -48,6 +48,42 @@ enum PlanetMenuItems
 	NAVIGATION,
 };
 
+CONTEXT PlanetContext;
+		// Context for rotating planet view and lander surface view
+
+static void
+CreatePlanetContext (void)
+{
+	CONTEXT oldContext;
+	RECT r;
+
+	assert (PlanetContext == NULL);
+
+	LockMutex (GraphicsLock);
+
+	// PlanetContext rect is relative to SpaceContext
+	oldContext = SetContext (SpaceContext);
+	GetContextClipRect (&r);
+
+	PlanetContext = CreateContext ("PlanetContext");
+	SetContext (PlanetContext);
+	SetContextFGFrame (Screen);
+	r.extent.height -= MAP_HEIGHT + MAP_BORDER_HEIGHT;
+	SetContextClipRect (&r);
+
+	SetContext (oldContext);
+	UnlockMutex (GraphicsLock);
+}
+
+void
+DestroyPlanetContext (void)
+{
+	if (PlanetContext)
+	{
+		DestroyContext (PlanetContext);
+		PlanetContext = NULL;
+	}
+}
 
 void
 DrawScannedObjects (BOOLEAN Reversed)
@@ -223,6 +259,8 @@ LoadPlanet (FRAME SurfDefFrame)
 
 	assert (pSolarSysState->InOrbit && !pSolarSysState->TopoFrame);
 
+	CreatePlanetContext ();
+
 	if (WaitMode)
 	{
 		LockMutex (GraphicsLock);
@@ -308,6 +346,12 @@ FreePlanet (void)
 			));
 	pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
 	FreeLanderFont (&pSolarSysState->SysInfo.PlanetInfo);
+
+	// Need to make sure our own CONTEXTs are not active because
+	// we will destroy them now
+	SetContext (SpaceContext);
+	DestroyPlanetContext ();
+	DestroyScanContext ();
 
 	UnlockMutex (GraphicsLock);
 }
@@ -459,10 +503,6 @@ PlanetOrbitMenu (void)
 
 	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
-	// Need to make sure ScanContext is not active because we will destroy it
-	SetContext (SpaceContext);
 	UnlockMutex (GraphicsLock);
 	DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
-
-	DestroyScanContext ();
 }

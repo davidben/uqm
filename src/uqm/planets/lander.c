@@ -141,10 +141,9 @@ extern PRIM_LINKS DisplayLinks;
 
 #define DEATH_EXPLOSION 0
 
-#define SURFACE_X SIS_ORG_X
-#define SURFACE_Y SIS_ORG_Y
+// TODO: redefine these in terms of CONTEXT width/height
 #define SURFACE_WIDTH SIS_SCREEN_WIDTH
-#define SURFACE_HEIGHT (SIS_SCREEN_HEIGHT - MAP_HEIGHT - 5)
+#define SURFACE_HEIGHT (SIS_SCREEN_HEIGHT - MAP_HEIGHT - MAP_BORDER_HEIGHT)
 
 #define REPAIR_LANDER (1 << 7)
 #define REPAIR_TRANSITION (1 << 6)
@@ -1198,7 +1197,7 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 	curLanderLoc = new_pt;
 
 	LockMutex (GraphicsLock);
-	OldContext = SetContext (SpaceContext);
+	OldContext = SetContext (PlanetContext);
 
 	BatchGraphics ();
 
@@ -1335,7 +1334,7 @@ AnimateLaunch (FRAME farray)
 	TimeCount NextTime;
 
 	LockMutex (GraphicsLock);
-	SetContext (SpaceContext);
+	SetContext (PlanetContext);
 
 	r.corner.x = 0;
 	r.corner.y = 0;
@@ -1474,17 +1473,13 @@ InitPlanetSide (POINT pt)
 	curLanderLoc = pt;
 
 	LockMutex (GraphicsLock);
-	SetContext (SpaceContext);
+	SetContext (PlanetContext);
 	SetContextFont (TinyFont);
 
 	{
 		RECT r;
 
-		r.corner.x = SURFACE_X;
-		r.corner.y = SURFACE_Y;
-		r.extent.width = SURFACE_WIDTH;
-		r.extent.height = SURFACE_HEIGHT;
-		SetContextClipRect (&r);
+		GetContextClipRect (&r);
 
 		SetTransitionSource (&r);
 		BatchGraphics ();
@@ -1802,20 +1797,21 @@ SetPlanetMusic (BYTE planet_type)
 }
 
 static void
-ReturnToOrbit (RECT *pRect)
+ReturnToOrbit (void)
 {
 	CONTEXT OldContext;
-	
-	LockMutex (GraphicsLock);
-	OldContext = SetContext (SpaceContext);
-	SetContextClipRect (pRect);
+	RECT r;
 
-	SetTransitionSource (pRect);
+	LockMutex (GraphicsLock);
+	OldContext = SetContext (PlanetContext);
+	GetContextClipRect (&r);
+
+	SetTransitionSource (&r);
 	BatchGraphics ();
 	DrawStarBackGround ();
 	DrawPlanetSurfaceBorder ();
 	RedrawSurfaceScan (NULL);
-	ScreenTransition (3, pRect);
+	ScreenTransition (3, &r);
 	UnbatchGraphics ();
 
 	SetContext (OldContext);
@@ -1983,13 +1979,6 @@ PlanetSide (POINT planetLoc)
 
 	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
-		RECT r;
-		//CONTEXT OldContext;
-
-		r.corner.x = SIS_ORG_X;
-		r.corner.y = SIS_ORG_Y;
-		r.extent.width = SIS_SCREEN_WIDTH;
-		r.extent.height = SIS_SCREEN_HEIGHT;
 		if (crew_left == 0)
 		{
 			--GLOBAL_SIS (NumLanders);
@@ -1997,7 +1986,7 @@ PlanetSide (POINT planetLoc)
 			DrawLanders ();
 			UnlockMutex (GraphicsLock);
 
-			ReturnToOrbit (&r);
+			ReturnToOrbit ();
 		}
 		else
 		{
@@ -2006,7 +1995,7 @@ PlanetSide (POINT planetLoc)
 					NotPositional (), NULL, GAME_SOUND_PRIORITY + 1);
 
 			LandingTakeoffSequence (&landerInputState, FALSE);
-			ReturnToOrbit (&r);
+			ReturnToOrbit ();
 			AnimateLaunch (LanderFrame[6]);
 			
 			LockMutex (GraphicsLock);

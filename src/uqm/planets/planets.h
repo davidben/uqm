@@ -227,6 +227,7 @@ struct solarsys_state
 
 extern SOLARSYS_STATE *pSolarSysState;
 extern MUSIC_REF SpaceMusic;
+extern CONTEXT PlanetContext;
 
 bool playerInSolarSystem (void);
 bool playerInPlanetOrbit (void);
