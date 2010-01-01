@@ -105,8 +105,8 @@ static __inline__ uint64 UQM_Swap64(uint64 val)
 #endif /* UQM_INT64 */
 
 
-/* Byteswap item from the specified endianness from or to the native
- * endianness.
+/* Byteswap item from the specified endianness to the native endianness
+ * or vice versa.
  */
 #ifndef WORDS_BIGENDIAN
 #define UQM_SwapLE16(X)	(X)
