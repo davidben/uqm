@@ -347,14 +347,20 @@ GetFadeAmount (void)
 }
 
 static void
-FlushFadeXForms (void)
+finishPendingFade (void)
 {
-	LockMutex (XFormControl.Lock);
 	if (fadeInterval)
 	{	// end the fade immediately
 		fadeAmount += fadeDelta;
 		fadeInterval = 0;
 	}
+}
+
+static void
+FlushFadeXForms (void)
+{
+	LockMutex (XFormControl.Lock);
+	finishPendingFade ();
 	UnlockMutex (XFormControl.Lock);
 }
 
@@ -387,6 +393,8 @@ FadeScreen (ScreenFadeType fadeType, SIZE TimeInterval)
 		TimeInterval = 0;
 
 	LockMutex (XFormControl.Lock);
+
+	finishPendingFade ();
 
 	if (TimeInterval <= 0)
 	{	// end the fade immediately
