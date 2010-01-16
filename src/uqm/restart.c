@@ -302,6 +302,8 @@ RestartMenu (MENU_STATE *pMS)
 	LastActivity = 0;
 	NextActivity = 0;
 
+	// TODO: This fade is not always necessary, especially after a splash
+	//   screen. It only makes a user wait.
 	SleepThreadUntil (FadeScreen (FadeAllToBlack, TimeOut));
 	if (TimeOut == ONE_SECOND / 8)
 		SleepThread (ONE_SECOND * 3);
