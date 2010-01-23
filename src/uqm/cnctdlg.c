@@ -172,7 +172,7 @@ MCD_DrawSlider (WIDGET *_self, int x, int y)
 	SetContextForeGroundColor (oldtext);
 }
 
-void
+static void
 MCD_DrawTextEntry (WIDGET *_self, int x, int y)
 {
 	WIDGET_TEXTENTRY *self = (WIDGET_TEXTENTRY *)_self;

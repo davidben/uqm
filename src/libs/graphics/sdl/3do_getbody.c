@@ -24,7 +24,8 @@
 #include "sdl_common.h"
 #include "primitives.h"
 
-
+#if 0
+/* Unused */
 void process_rgb_bmp (FRAME FramePtr, Uint32 *rgba, int maxx, int maxy)
 {
 	int x, y;
@@ -45,7 +46,10 @@ void process_rgb_bmp (FRAME FramePtr, Uint32 *rgba, int maxx, int maxy)
 	SDL_UnlockSurface (img);
 	UnlockMutex (tfbImg->mutex);
 }
+#endif
 
+#if 0
+/* Unused */
 void fill_frame_rgb (FRAME FramePtr, Uint32 color, int x0, int y0,
 		int x, int y)
 {
@@ -70,8 +74,12 @@ void fill_frame_rgb (FRAME FramePtr, Uint32 color, int x0, int y0,
 	SDL_UnlockSurface (img);
 	UnlockMutex (tfbImg->mutex);
 }
+#endif
 
-void arith_frame_blit (FRAME srcFrame, const RECT *rsrc, FRAME dstFrame,
+#if 0
+/* Unused */
+void
+arith_frame_blit (FRAME srcFrame, const RECT *rsrc, FRAME dstFrame,
 		const RECT *rdst, int num, int denom)
 {
 	TFB_Image *srcImg, *dstImg;
@@ -120,7 +128,10 @@ void arith_frame_blit (FRAME srcFrame, const RECT *rsrc, FRAME dstFrame,
 	UnlockMutex (srcImg->mutex);
 	UnlockMutex (dstImg->mutex);
 }
+#endif
 
+#if 0
+/* Unused */
 // Generate an array of all pixels in FramePtr
 // The 32bpp pixel format is :
 //  bits 24-31 : red
@@ -128,8 +139,8 @@ void arith_frame_blit (FRAME srcFrame, const RECT *rsrc, FRAME dstFrame,
 //  bits 8-15  : blue
 //  bits 0-7   : alpha
 // The 8bpp pixel format is 1 index per pixel
-void getpixelarray (void *map, int Bpp, FRAME FramePtr,
-		int width, int height)
+void
+getpixelarray (void *map, int Bpp, FRAME FramePtr, int width, int height)
 {
 	Uint8 r,g,b,a;
 	Uint32 p, pos, row;
@@ -179,8 +190,10 @@ void getpixelarray (void *map, int Bpp, FRAME FramePtr,
 	SDL_UnlockSurface (img);
 	UnlockMutex (tfbImg->mutex);
 }
+#endif
 
-
+#if 0
+/* Unused */
 // Generate a pixel (in the correct format to be applied to FramePtr) from the
 // r,g,b,a values supplied
 Uint32 frame_mapRGBA (FRAME FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
@@ -188,5 +201,7 @@ Uint32 frame_mapRGBA (FRAME FramePtr,Uint8 r, Uint8 g,  Uint8 b, Uint8 a)
 	SDL_Surface *img= (SDL_Surface *)FramePtr->image->NormalImg;
 	return (SDL_MapRGBA (img->format, r, g, b, a));
 }
+#endif
 
 #endif
+

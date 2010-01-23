@@ -231,9 +231,11 @@ extern COUNT GetModuleCrewCapacity (BYTE moduleType);
 extern COUNT GetCrewPodCapacity (void);
 extern COUNT GetCPodCapacity (POINT *ppt);
 
+extern COUNT GetModuleStorageCapacity (BYTE moduleType);
 extern COUNT GetStorageBayCapacity (void);
 extern COUNT GetSBayCapacity (POINT *ppt);
 
+extern DWORD GetModuleFuelCapacity (BYTE moduleType);
 extern DWORD GetFuelTankCapacity (void);
 extern DWORD GetFTankCapacity (POINT *ppt);
 

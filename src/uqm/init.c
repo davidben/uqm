@@ -156,7 +156,7 @@ UninitSpace (void)
 	}
 }
 
-HSTARSHIP
+static HSTARSHIP
 BuildSIS (void)
 {
 	HSTARSHIP hStarShip;

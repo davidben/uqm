@@ -20,7 +20,6 @@
 #include "tfb_prim.h"
 #include "libs/log.h"
 
-extern void FixContextFontEffect (void);
 static inline TFB_Char *getCharFrame (FONT_DESC *fontPtr, UniChar ch);
 
 

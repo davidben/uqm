@@ -1076,7 +1076,7 @@ next_token (parse_state *state)
 }
 
 static void
-expected_error (parse_state *state, char *expected)
+expected_error (parse_state *state, const char *expected)
 {
 	log_add (log_Warning, "VControl: Expected '%s' on config file line %d",
 			expected, state->linenum);
@@ -1084,7 +1084,7 @@ expected_error (parse_state *state, char *expected)
 }
 
 static void
-consume (parse_state *state, char *expected)
+consume (parse_state *state, const char *expected)
 {
 	if (strcasecmp (expected, state->token))
 	{

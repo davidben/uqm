@@ -41,5 +41,18 @@ static inline void explode (void)
 #endif
 }
 
+/* Sometimes you just have to remove a 'const'.
+ * (for instance, when implementing a function like strchr)
+ */
+static inline void *
+unconst(const void *arg) {
+	union {
+		char *c;
+		const char *cc;
+	} u;
+	u.cc = arg;
+	return u.c;
+}
+
 #endif
 

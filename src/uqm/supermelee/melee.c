@@ -1923,7 +1923,7 @@ DoMelee (MELEE_STATE *pMS)
 	return TRUE;
 }
 
-int
+static int
 LoadMeleeConfig (MELEE_STATE *pMS)
 {
 	uio_Stream *stream;
@@ -1968,7 +1968,7 @@ err:
 	return -1;
 }
 
-int
+static int
 WriteMeleeConfig (MELEE_STATE *pMS)
 {
 	uio_Stream *stream;
@@ -2125,7 +2125,7 @@ connectedFeedback (NetConnection *conn) {
 	PlayMenuSound (MENU_SOUND_INVOKED);
 }
 
-const char *
+static const char *
 abortReasonString (NetplayAbortReason reason)
 {
 	switch (reason)
@@ -2160,7 +2160,7 @@ abortFeedback (NetConnection *conn, NetplayAbortReason reason)
 		connectionFeedback (conn, msg, true);
 }
 
-const char *
+static const char *
 resetReasonString (NetplayResetReason reason)
 {
 	switch (reason)

@@ -199,7 +199,7 @@ struct solarsys_state
 	BYTE max_ship_speed;
 
 	STRING XlatRef;
-	void *XlatPtr;
+	const void *XlatPtr;
 	COLORMAP OrbitalCMap;
 
 	SYSTEM_INFO SysInfo;

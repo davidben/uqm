@@ -27,6 +27,7 @@
 #include "filintrn.h"
 #include "libs/compiler.h"
 #include "libs/memlib.h"
+#include "libs/misc.h"
 #include "libs/log.h"
 
 #ifdef HAVE_DRIVE_LETTERS
@@ -788,7 +789,7 @@ strrchr2(const char *start, int c, const char *end) {
 		if (end < start)
 			return (char *) NULL;
 		if (*end == c)
-			return (char *) end;
+			return (char *) unconst(end);
 	}
 }
 

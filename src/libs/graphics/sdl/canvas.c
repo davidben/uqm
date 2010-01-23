@@ -56,7 +56,7 @@ TFB_DrawCanvas_GetError (void)
 	return err;
 }
 
-void
+static void
 checkPrimitiveMode (SDL_Surface *surf, Color *color, DrawMode *mode)
 {
 	const SDL_PixelFormat *fmt = surf->format;

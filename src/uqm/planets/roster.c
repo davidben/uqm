@@ -375,8 +375,8 @@ DoModifyRoster (MENU_STATE *pMS)
 static int
 compShipPos (const void *ptr1, const void *ptr2)
 {
-	POINT *pt1 = (POINT *) ptr1;
-	POINT *pt2 = (POINT *) ptr2;
+	const POINT *pt1 = (const POINT *) ptr1;
+	const POINT *pt2 = (const POINT *) ptr2;
 
 	// Ships on the left in the lower half
 	if (pt1->x < pt2->x)

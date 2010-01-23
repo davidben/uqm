@@ -314,8 +314,8 @@ GetTimeStamps (UNICODE *TimeStamps, sint32 *time_stamps)
 }
 
 #define TEXT_SPEED 80
-// Returns number of parsed pages 
-int
+// Returns number of parsed pages
+static int
 SplitSubPages (UNICODE *text, UNICODE *pages[], sint32 timestamp[], int size)
 {
 	int lead_ellips = 0;

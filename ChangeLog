@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Got rid of many warnings - SvdB
 - Clean up and some refactoring of the SuperMelee code - SvdB
 - Fixed concurrent screen fades regression (bug #1079) - Alex
 - Removed some legacy source code files related to resources - SvdB

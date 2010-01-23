@@ -338,8 +338,9 @@ TFB_GetScreenCanvas (SCREEN screen)
 	return SDL_Screens[screen];
 }
 
-void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
-					  SDL_Rect *dstrect, int blend_numer, int blend_denom)
+void
+TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
+		SDL_Rect *dstrect, int blend_numer, int blend_denom)
 {
 	BOOLEAN has_colorkey;
 	int x, y, x1, y1, x2, y2, dst_x2, dst_y2, nr, ng, nb;
@@ -369,7 +370,7 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 	}
 
 	// clip the source rectangle to the source surface
-	if (srcrect) 
+	if (srcrect)
 	{
 		int maxw, maxh;
 
@@ -452,6 +453,7 @@ void TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
 	else
 	{
 		has_colorkey = FALSE;
+		colorkey = 0;  /* Satisfying compiler */
 	}
 
 	src_getpix = getpixel_for (src);

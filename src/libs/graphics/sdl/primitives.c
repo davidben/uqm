@@ -25,42 +25,48 @@
 
 // Pixel drawing routines
 
-Uint32 getpixel_8(SDL_Surface *surface, int x, int y)
+static Uint32
+getpixel_8(SDL_Surface *surface, int x, int y)
 {
     /* Here p is the address to the pixel we want to retrieve */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x;
 	return *p;
 }
 
-void putpixel_8(SDL_Surface *surface, int x, int y, Uint32 pixel)
+static void
+putpixel_8(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
     /* Here p is the address to the pixel we want to set */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * 1;
 	*p = pixel;
 }
 
-Uint32 getpixel_16(SDL_Surface *surface, int x, int y)
+static Uint32
+getpixel_16(SDL_Surface *surface, int x, int y)
 {
     /* Here p is the address to the pixel we want to retrieve */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * 2;
 	return *(Uint16 *)p;
 }
 
-void putpixel_16(SDL_Surface *surface, int x, int y, Uint32 pixel)
+static void
+putpixel_16(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
     /* Here p is the address to the pixel we want to set */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * 2;
 	*(Uint16 *)p = pixel;
 }
 
-Uint32 getpixel_24_be(SDL_Surface *surface, int x, int y)
+static Uint32
+getpixel_24_be(SDL_Surface *surface, int x, int y)
 {
     /* Here p is the address to the pixel we want to retrieve */
 	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * 3;
 	return p[0] << 16 | p[1] << 8 | p[2];
 }
 
-void putpixel_24_be(SDL_Surface *surface, int x, int y, Uint32 pixel)
+static void
+putpixel_24_be(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
     /* Here p is the address to the pixel we want to set */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * 3;
@@ -69,14 +75,16 @@ void putpixel_24_be(SDL_Surface *surface, int x, int y, Uint32 pixel)
 	p[2] = pixel & 0xff;
 }
 
-Uint32 getpixel_24_le(SDL_Surface *surface, int x, int y)
+static Uint32
+getpixel_24_le(SDL_Surface *surface, int x, int y)
 {
     /* Here p is the address to the pixel we want to retrieve */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * 3;
 	return p[0] | p[1] << 8 | p[2] << 16;
 }
 
-void putpixel_24_le(SDL_Surface *surface, int x, int y, Uint32 pixel)
+static void
+putpixel_24_le(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
     /* Here p is the address to the pixel we want to set */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * 3;
@@ -85,21 +93,24 @@ void putpixel_24_le(SDL_Surface *surface, int x, int y, Uint32 pixel)
 	p[2] = (pixel >> 16) & 0xff;
 }
 
-Uint32 getpixel_32(SDL_Surface *surface, int x, int y)
+static Uint32
+getpixel_32(SDL_Surface *surface, int x, int y)
 {
     /* Here p is the address to the pixel we want to retrieve */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * 4;
 	return *(Uint32 *)p;
 }
 
-void putpixel_32(SDL_Surface *surface, int x, int y, Uint32 pixel)
+static void
+putpixel_32(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
     /* Here p is the address to the pixel we want to set */
     Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * 4;
 	*(Uint32 *)p = pixel;
 }
 
-GetPixelFn getpixel_for(SDL_Surface *surface)
+GetPixelFn
+getpixel_for(SDL_Surface *surface)
 {
 	int bpp = surface->format->BytesPerPixel;
 	switch (bpp) {
@@ -119,7 +130,8 @@ GetPixelFn getpixel_for(SDL_Surface *surface)
 	return NULL;
 }
 
-PutPixelFn putpixel_for(SDL_Surface *surface)
+PutPixelFn
+putpixel_for(SDL_Surface *surface)
 {
 	int bpp = surface->format->BytesPerPixel;
 	switch (bpp) {
@@ -139,14 +151,16 @@ PutPixelFn putpixel_for(SDL_Surface *surface)
 	return NULL;
 }
 
-static void renderpixel_replace(SDL_Surface *surface, int x, int y,
-		Uint32 pixel, int factor)
+static void
+renderpixel_replace(SDL_Surface *surface, int x, int y, Uint32 pixel,
+		int factor)
 {
 	(void) factor; // ignored
 	putpixel_32(surface, x, y, pixel);
 }
 
-static inline Uint8 clip_channel(int c)
+static inline Uint8
+clip_channel(int c)
 {
 	if (c < 0)
 		c = 0;
@@ -155,7 +169,8 @@ static inline Uint8 clip_channel(int c)
 	return c;
 }
 
-static inline Uint8 modulated_sum(Uint8 dc, Uint8 sc, int factor)
+static inline Uint8
+modulated_sum(Uint8 dc, Uint8 sc, int factor)
 {
 	// We use >> 8 instead of / 255 because it is faster, but it does
 	// not work 100% correctly. It should be safe because this should
@@ -164,7 +179,8 @@ static inline Uint8 modulated_sum(Uint8 dc, Uint8 sc, int factor)
 	return clip_channel(b);
 }
 
-static inline Uint8 alpha_blend(Uint8 dc, Uint8 sc, int alpha)
+static inline Uint8
+alpha_blend(Uint8 dc, Uint8 sc, int alpha)
 {
 	// We use >> 8 instead of / 255 because it is faster, but it does
 	// not work 100% correctly. It should be safe because this should
@@ -183,15 +199,17 @@ static inline Uint8 alpha_blend(Uint8 dc, Uint8 sc, int alpha)
 	} while (0)
 
 // Assumes the channels already clipped to 8 bits
-static inline Uint32 PACK_PIXEL_32(const SDL_PixelFormat *fmt,
+static inline Uint32
+PACK_PIXEL_32(const SDL_PixelFormat *fmt,
 		Uint8 r, Uint8 g, Uint8 b)
 {
 	return ((Uint32)r << fmt->Rshift) | ((Uint32)g << fmt->Gshift)
 			| ((Uint32)b << fmt->Bshift);
 }
 
-static void renderpixel_additive(SDL_Surface *surface, int x, int y,
-		Uint32 pixel, int factor)
+static void
+renderpixel_additive(SDL_Surface *surface, int x, int y, Uint32 pixel,
+		int factor)
 {
 	const SDL_PixelFormat *fmt = surface->format;
 	Uint32 *p;
@@ -223,8 +241,9 @@ static void renderpixel_additive(SDL_Surface *surface, int x, int y,
 	*p = PACK_PIXEL_32(fmt, sr, sg, sb);
 }
 
-static void renderpixel_alpha(SDL_Surface *surface, int x, int y,
-		Uint32 pixel, int factor)
+static void
+renderpixel_alpha(SDL_Surface *surface, int x, int y, Uint32 pixel,
+		int factor)
 {
 	const SDL_PixelFormat *fmt = surface->format;
 	Uint32 *p;
@@ -249,7 +268,8 @@ static void renderpixel_alpha(SDL_Surface *surface, int x, int y,
 	*p = PACK_PIXEL_32(fmt, sr, sg, sb);
 }
 
-RenderPixelFn renderpixel_for(SDL_Surface *surface, RenderKind kind)
+RenderPixelFn
+renderpixel_for(SDL_Surface *surface, RenderKind kind)
 {
 	const SDL_PixelFormat *fmt = surface->format;
 
@@ -278,8 +298,9 @@ RenderPixelFn renderpixel_for(SDL_Surface *surface, RenderKind kind)
  * Adapted from Paul Heckbert's implementation of Bresenham's algorithm,
  * 3 Sep 85; taken from Graphics Gems I */
 
-void line_prim(int x1, int y1, int x2, int y2, Uint32 color,
-		RenderPixelFn plot, int factor, SDL_Surface *dst)
+void
+line_prim(int x1, int y1, int x2, int y2, Uint32 color, RenderPixelFn plot,
+		int factor, SDL_Surface *dst)
 {
 	int d, x, y, ax, ay, sx, sy, dx, dy;
 	SDL_Rect clip_r;
@@ -417,8 +438,9 @@ clip_line (int *lx1, int *ly1, int *lx2, int *ly2, const SDL_Rect *r)
 	}
 }
 
-void fillrect_prim(SDL_Rect r, Uint32 color,
-		RenderPixelFn plot, int factor, SDL_Surface *dst)
+void
+fillrect_prim(SDL_Rect r, Uint32 color, RenderPixelFn plot, int factor,
+		SDL_Surface *dst)
 {
 	int x, y;
 	int x1, y1;
@@ -440,7 +462,8 @@ void fillrect_prim(SDL_Rect r, Uint32 color,
 }
 
 // clip the rectangle against the clip rectangle
-int clip_rect(SDL_Rect *r, const SDL_Rect *clip_r)
+int
+clip_rect(SDL_Rect *r, const SDL_Rect *clip_r)
 {
 	// NOTE: the following clipping code is copied in part
 	//   from SDL-1.2.4 sources
@@ -475,7 +498,8 @@ int clip_rect(SDL_Rect *r, const SDL_Rect *clip_r)
 	return 1;
 }
 
-void blt_prim(SDL_Surface *src, SDL_Rect src_r, RenderPixelFn plot, int factor,
+void
+blt_prim(SDL_Surface *src, SDL_Rect src_r, RenderPixelFn plot, int factor,
 		SDL_Surface *dst, SDL_Rect dst_r)
 {
 	SDL_PixelFormat *srcfmt = src->format;
@@ -544,7 +568,8 @@ void blt_prim(SDL_Surface *src, SDL_Rect src_r, RenderPixelFn plot, int factor,
 }
 
 // clip the source and destination rectangles against the clip rectangle
-int clip_blt_rects(SDL_Rect *src_r, SDL_Rect *dst_r, const SDL_Rect *clip_r)
+int
+clip_blt_rects(SDL_Rect *src_r, SDL_Rect *dst_r, const SDL_Rect *clip_r)
 {
 	// NOTE: the following clipping code is copied in part
 	//   from SDL-1.2.4 sources

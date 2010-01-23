@@ -356,9 +356,12 @@ typedef struct BuildCharDesc
 	UniChar index;
 } BuildCharDesc;
 
-int
-compareBCDIndex (const BuildCharDesc *bcd1, const BuildCharDesc *bcd2)
+static int
+compareBCDIndex (const void *arg1, const void *arg2)
 {
+	const BuildCharDesc *bcd1 = (const BuildCharDesc *) arg1;
+	const BuildCharDesc *bcd2 = (const BuildCharDesc *) arg2;
+
 	return (int) bcd1->index - (int) bcd2->index;
 }
 
@@ -466,8 +469,7 @@ _GetFontData (uio_Stream *fp, DWORD length)
 #endif
 
 	// sort on the character index
-	qsort (bcds, numBCDs, sizeof (BuildCharDesc),
-			(int (*)(const void *, const void *)) compareBCDIndex);
+	qsort (bcds, numBCDs, sizeof (BuildCharDesc), compareBCDIndex);
 
 	fontPtr = AllocFont (0);
 	if (fontPtr == NULL)

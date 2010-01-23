@@ -282,7 +282,7 @@ Present_DrawMovieFrame (PRESENTATION_INPUT_STATE* pPIS)
 	UnlockMutex (GraphicsLock);
 }
 
-BOOLEAN
+static BOOLEAN
 ShowPresentationFile (const char *name)
 {
 	STRING pres = CaptureStringTable (LoadStringTableFile (contentDir, name));

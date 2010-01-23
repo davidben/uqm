@@ -1274,7 +1274,7 @@ GetCPodCapacity (POINT *ppt)
 ////////////////////////////////////////////////////////////////////////////
 
 // Get the total amount of minerals aboard the SIS.
-COUNT
+static COUNT
 GetElementMass (void)
 {
 	return GLOBAL_SIS (TotalElementMass);
@@ -1379,7 +1379,7 @@ GetSBayCapacity (POINT *ppt)
 ////////////////////////////////////////////////////////////////////////////
 
 // Get the total amount of fuel aboard the SIS.
-DWORD
+static DWORD
 GetFuelTotal (void)
 {
 	return GLOBAL_SIS (FuelOnBoard);

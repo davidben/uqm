@@ -318,7 +318,7 @@ FlushInput (void)
 	_clear_menu_state ();
 }
 
-MENU_SOUND_FLAGS
+static MENU_SOUND_FLAGS
 MenuKeysToSoundFlags (const CONTROLLER_INPUT_STATE *state)
 {
 	MENU_SOUND_FLAGS soundFlags;

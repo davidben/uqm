@@ -102,6 +102,9 @@ int uio_close(uio_Handle *handle);
 int uio_rename(uio_DirHandle *oldDir, const char *oldPath,
 		uio_DirHandle *newDir, const char *newPath);
 
+// Test permissions on a file or directory.
+int uio_access(uio_DirHandle *dir, const char *path, int mode);
+
 // Fstat a file descriptor
 int uio_fstat(uio_Handle *handle, struct stat *statBuf);
 

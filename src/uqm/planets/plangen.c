@@ -105,12 +105,13 @@ RenderTopography (FRAME DstFrame, SBYTE *pTopoData, int w, int h)
 		COUNT i;
 		BYTE AlgoType;
 		SIZE base, d;
+		const XLAT_DESC *xlatDesc;
 		POINT pt;
 		const PlanetFrame *PlanDataPtr;
 		PRIMITIVE BatchArray[NUM_BATCH_POINTS];
 		PRIMITIVE *pBatch;
 		SBYTE *pSrc;
-		BYTE *xlat_tab;
+		const BYTE *xlat_tab;
 		BYTE *cbase;
 		POINT oldOrigin;
 		RECT ClipRect;
@@ -132,7 +133,8 @@ RenderTopography (FRAME DstFrame, SBYTE *pTopoData, int w, int h)
 				];
 		AlgoType = PLANALGO (PlanDataPtr->Type);
 		base = PlanDataPtr->base_elevation;
-		xlat_tab = (BYTE*)((XLAT_DESC*)pSolarSysState->XlatPtr)->xlat_tab;
+		xlatDesc = (const XLAT_DESC *) pSolarSysState->XlatPtr;
+		xlat_tab = (const BYTE *) xlatDesc->xlat_tab;
 		cbase = GetColorMapAddress (pSolarSysState->OrbitalCMap);
 
 		i = NUM_BATCH_POINTS;

@@ -40,12 +40,12 @@
 #include <fcntl.h>
 
 
-Socket *
+static Socket *
 Socket_alloc(void) {
 	return malloc(sizeof (Socket));
 }
 
-void
+static void
 Socket_free(Socket *sock) {
 	free(sock);
 }

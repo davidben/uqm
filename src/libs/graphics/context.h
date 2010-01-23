@@ -141,6 +141,7 @@ extern GRAPHICS_STATUS _GraphicsStatusFlags;
 
 // pValidRect or origin may be NULL
 BOOLEAN GetContextValidRect (RECT *pValidRect, POINT *origin);
+extern void FixContextFontEffect (void);
 
 #endif /* _CONTEXT_H */
 

@@ -84,6 +84,8 @@ ssize_t Socket_recv(Socket *sock, void *buf, size_t len, int flags);
 
 int Socket_setNonBlocking(Socket *sock);
 int Socket_setReuseAddr(Socket *sock);
+int Socket_setNodelay(Socket *sock);
+int Socket_setTOS(Socket *sock, int tos);
 int Socket_setInteractive(Socket *sock);
 int Socket_setInlineOOB(Socket *sock);
 int Socket_setKeepAlive(Socket *sock);

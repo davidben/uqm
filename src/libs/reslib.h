@@ -64,7 +64,7 @@ void UninitResourceSystem (void);
 BOOLEAN InstallResTypeVectors (const char *res_type, ResourceLoadFun *loadFun, ResourceFreeFun *freeFun, ResourceStringFun *stringFun);
 void *res_GetResource (RESOURCE res);
 void *res_DetachResource (RESOURCE res);
-BOOLEAN FreeResource (RESOURCE res);
+void res_FreeResource (RESOURCE res);
 COUNT CountResourceTypes (void);
 DWORD res_GetIntResource (RESOURCE res);
 BOOLEAN res_GetBooleanResource (RESOURCE res);

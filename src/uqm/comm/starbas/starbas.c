@@ -227,10 +227,10 @@ static void NeedInfo (RESPONSE_REF R);
 static void TellHistory (RESPONSE_REF R);
 static void AlienRaces (RESPONSE_REF R);
 
-static BYTE stack0,
-			stack1,
-			stack2,
-			stack3;
+static BYTE stack0;
+static BYTE stack1;
+static BYTE stack2;
+static BYTE stack3;
 
 static void
 AllianceInfo (RESPONSE_REF R)
@@ -492,7 +492,9 @@ TellHistory (RESPONSE_REF R)
 	if (PLAYER_SAID (R, history))
 	{
 		NPCPhrase (WHICH_HISTORY);
-		stack0 = stack1 = stack2 = 0;
+		stack0 = 0;
+		stack1 = 0;
+		stack2 = 0;
 	}
 	else if (PLAYER_SAID (R, enough_aliens))
 	{
@@ -518,7 +520,7 @@ TellHistory (RESPONSE_REF R)
 		case 0:
 			pstack[0] = alien_races;
 			break;
-		case 1:
+		default:
 			pstack[0] = 0;
 			break;
 	}
@@ -527,7 +529,7 @@ TellHistory (RESPONSE_REF R)
 		case 0:
 			pstack[1] = the_war;
 			break;
-		case 1:
+		default:
 			pstack[1] = 0;
 			break;
 	}
@@ -536,7 +538,7 @@ TellHistory (RESPONSE_REF R)
 		case 0:
 			pstack[2] = ancient_history;
 			break;
-		case 1:
+		default:
 			pstack[2] = 0;
 			break;
 	}
@@ -782,7 +784,10 @@ TellMission (RESPONSE_REF R)
 	if (PLAYER_SAID (R, our_mission))
 	{
 		NPCPhrase (WHICH_MISSION);
-		stack0 = stack1 = stack2 = stack3 = 0;
+		stack0 = 0;
+		stack1 = 0;
+		stack2 = 0;
+		stack3 = 0;
 	}
 	else if (PLAYER_SAID (R, where_get_minerals))
 	{
@@ -881,7 +886,10 @@ TellStarBase (RESPONSE_REF R)
 	if (PLAYER_SAID (R, starbase_functions))
 	{
 		NPCPhrase (WHICH_FUNCTION);
-		stack0 = stack1 = stack2 = stack3 = 0;
+		stack0 = 0;
+		stack1 = 0;
+		stack2 = 0;
+		stack3 = 0;
 	}
 	else if (PLAYER_SAID (R, tell_me_about_fuel0))
 	{

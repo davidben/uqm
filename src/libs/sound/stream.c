@@ -578,7 +578,7 @@ StreamDecoderTaskFunc (void *data)
 	return 0;
 }
 
-inline sint32
+static inline sint32
 readSoundSample (void *ptr, int sample_size)
 {
 	if (sample_size == sizeof (uint8))

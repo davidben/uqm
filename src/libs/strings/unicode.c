@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "libs/log.h"
+#include "libs/misc.h"
 
 
 // Resynchronise (skip everything starting with 0x10xxxxxx):
@@ -176,7 +177,7 @@ getLineFromString(const unsigned char *start, const unsigned char **end,
 		if (*ptr == '\0') {
 			*end = ptr;
 			*startNext = ptr;
-			return (unsigned char *) start;
+			return (unsigned char *) unconst(start);
 		}
 		lastPtr = ptr;
 		ch = getCharFromString(&ptr);
@@ -191,7 +192,7 @@ getLineFromString(const unsigned char *start, const unsigned char **end,
 			if (*ptr == '\0'){
 				// LF at the end of the string.
 				*startNext = ptr;
-				return (unsigned char *) start;
+				return (unsigned char *) unconst(start);
 			}
 			ch = getCharFromString(&ptr);
 			if (ch == '\0') {
@@ -205,11 +206,11 @@ getLineFromString(const unsigned char *start, const unsigned char **end,
 				// LF
 				*startNext = *end;
 			}
-			return (unsigned char *) start;
+			return (unsigned char *) unconst(start);
 		} else if (ch == '\r') {
 			*end = lastPtr;
 			*startNext = ptr;
-			return (unsigned char *) start;
+			return (unsigned char *) unconst(start);
 		} // else: a normal character
 	}
 }
@@ -271,7 +272,7 @@ utf8StringCopy (unsigned char *dst, size_t size, const unsigned char *src)
 	if (size == 0)
 		return 0;
 
-	strncpy ((char *) dst, (char *) src, size);
+	strncpy ((char *) dst, (const char *) src, size);
 	dst[size - 1] = '\0';
 	
 	return dst;
@@ -319,7 +320,7 @@ utf8StringCompare (const unsigned char *str1, const unsigned char *str2)
 	return 0;
 #else
 	// this will do for now
-	return strcmp ((char *) str1, (char *) str2);
+	return strcmp ((const char *) str1, (const char *) str2);
 #endif
 }
 
@@ -332,9 +333,9 @@ skipUTF8Chars(const unsigned char *ptr, size_t num) {
 		oldPtr = ptr;
 		ch = getCharFromString(&ptr);
 		if (ch == '\0')
-			return (unsigned char *) oldPtr;
+			return (unsigned char *) unconst(oldPtr);
 	}
-	return (unsigned char *) ptr;
+	return (unsigned char *) unconst(ptr);
 }
 
 // Decodes a UTF-8 string (start) into a unicode character string (wstr)
