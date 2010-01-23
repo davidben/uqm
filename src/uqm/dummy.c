@@ -21,6 +21,8 @@
  * much.
  */
 
+#include "dummy.h"
+
 #include "coderes.h"
 #include "globdata.h"
 #include "races.h"
@@ -38,10 +40,7 @@ typedef struct
 	RACE_DESC data _ALIGNED_ANY;
 } CODERES_STRUCT;
 
-static void
-GetCodeResData (const char *ship_id, RESOURCE_DATA *resdata)
-{
-enum
+typedef enum
 {
 	ANDROSYN_CODE_RES,
 	ARILOU_CODE_RES,
@@ -72,8 +71,54 @@ enum
 	SAMATRA_CODE_RES,
 	SIS_CODE_RES,
 	PROBE_CODE_RES
-};
+} ShipCodeRes;
 
+typedef RACE_DESC *(*RaceDescInitFunc)(void);
+
+static RaceDescInitFunc
+CodeResToInitFunc(ShipCodeRes res)
+{
+	switch (res)
+	{
+		case ANDROSYN_CODE_RES: return init_androsynth;
+		case ARILOU_CODE_RES: return init_arilou;
+		case BLACKURQ_CODE_RES: return init_black_urquan;
+		case CHENJESU_CODE_RES: return init_chenjesu;
+		case CHMMR_CODE_RES: return init_chmmr;
+		case DRUUGE_CODE_RES: return init_druuge;
+		case HUMAN_CODE_RES: return init_human;
+		case ILWRATH_CODE_RES: return init_ilwrath;
+		case MELNORME_CODE_RES: return init_melnorme;
+		case MMRNMHRM_CODE_RES: return init_mmrnmhrm;
+		case MYCON_CODE_RES: return init_mycon;
+		case ORZ_CODE_RES: return init_orz;
+		case PKUNK_CODE_RES: return init_pkunk;
+		case SHOFIXTI_CODE_RES: return init_shofixti;
+		case SLYLANDR_CODE_RES: return init_slylandro;
+		case SPATHI_CODE_RES: return init_spathi;
+		case SUPOX_CODE_RES: return init_supox;
+		case SYREEN_CODE_RES: return init_syreen;
+		case THRADD_CODE_RES: return init_thraddash;
+		case UMGAH_CODE_RES: return init_umgah;
+		case URQUAN_CODE_RES: return init_urquan;
+		case UTWIG_CODE_RES: return init_utwig;
+		case VUX_CODE_RES: return init_vux;
+		case YEHAT_CODE_RES: return init_yehat;
+		case ZOQFOT_CODE_RES: return init_zoqfotpik;
+		case SAMATRA_CODE_RES: return init_samatra;
+		case SIS_CODE_RES: return init_sis;
+		case PROBE_CODE_RES: return init_probe;
+		default:
+		{
+			log_add (log_Warning, "Unknown SHIP identifier '%d'", res);
+			return NULL;
+		}
+	}
+}
+
+static void
+GetCodeResData (const char *ship_id, RESOURCE_DATA *resdata)
+{
 	BYTE which_res;
 	void *hData;
 
@@ -81,218 +126,8 @@ enum
 	hData = HMalloc (sizeof (CODERES_STRUCT));
 	if (hData)
 	{
-		RACE_DESC *RDPtr;
-
-		RDPtr = NULL;
-		switch (which_res)
-		{
-			case ANDROSYN_CODE_RES:
-			{
-				extern RACE_DESC* init_androsynth (void);
-
-				RDPtr = init_androsynth ();
-				break;
-			}
-			case ARILOU_CODE_RES:
-			{
-				extern RACE_DESC* init_arilou (void);
-
-				RDPtr = init_arilou ();
-				break;
-			}
-			case BLACKURQ_CODE_RES:
-			{
-				extern RACE_DESC* init_black_urquan (void);
-
-				RDPtr = init_black_urquan ();
-				break;
-			}
-			case CHENJESU_CODE_RES:
-			{
-				extern RACE_DESC* init_chenjesu (void);
-
-				RDPtr = init_chenjesu ();
-				break;
-			}
-			case CHMMR_CODE_RES:
-			{
-				extern RACE_DESC* init_chmmr (void);
-
-				RDPtr = init_chmmr ();
-				break;
-			}
-			case DRUUGE_CODE_RES:
-			{
-				extern RACE_DESC* init_druuge (void);
-
-				RDPtr = init_druuge ();
-				break;
-			}
-			case HUMAN_CODE_RES:
-			{
-				extern RACE_DESC* init_human (void);
-
-				RDPtr = init_human ();
-				break;
-			}
-			case ILWRATH_CODE_RES:
-			{
-				
-				extern RACE_DESC* init_ilwrath (void);
-
-				RDPtr = init_ilwrath ();
-				break;
-			}
-			case MELNORME_CODE_RES:
-			{
-				extern RACE_DESC* init_melnorme (void);
-
-				RDPtr = init_melnorme ();
-				break;
-			}
-			case MMRNMHRM_CODE_RES:
-			{
-				extern RACE_DESC* init_mmrnmhrm (void);
-
-				RDPtr = init_mmrnmhrm ();
-				break;
-			}
-			case MYCON_CODE_RES:
-			{
-				extern RACE_DESC* init_mycon (void);
-
-				RDPtr = init_mycon ();
-				break;
-			}
-			case ORZ_CODE_RES:
-			{
-				extern RACE_DESC* init_orz (void);
-
-				RDPtr = init_orz ();
-				break;
-			}
-			case PKUNK_CODE_RES:
-			{
-				extern RACE_DESC* init_pkunk (void);
-
-				RDPtr = init_pkunk ();
-				break;
-			}
-			case SHOFIXTI_CODE_RES:
-			{
-				extern RACE_DESC* init_shofixti (void);
-
-				RDPtr = init_shofixti ();
-				break;
-			}
-			case SLYLANDR_CODE_RES:
-			{
-				
-				extern RACE_DESC* init_slylandro (void);
-
-				RDPtr = init_slylandro ();
-				break;
-			}
-			case SPATHI_CODE_RES:
-			{
-				extern RACE_DESC* init_spathi (void);
-
-				RDPtr = init_spathi ();
-				break;
-			}
-			case SUPOX_CODE_RES:
-			{
-				extern RACE_DESC* init_supox (void);
-
-				RDPtr = init_supox ();
-				break;
-			}
-			case SYREEN_CODE_RES:
-			{
-				extern RACE_DESC* init_syreen (void);
-
-				RDPtr = init_syreen ();
-				break;
-			}
-			case THRADD_CODE_RES:
-			{
-				extern RACE_DESC* init_thraddash (void);
-
-				RDPtr = init_thraddash ();
-				break;
-			}
-			case UMGAH_CODE_RES:
-			{
-				extern RACE_DESC* init_umgah (void);
-
-				RDPtr = init_umgah ();
-				break;
-			}
-			case URQUAN_CODE_RES:
-			{
-				extern RACE_DESC* init_urquan (void);
-
-				RDPtr = init_urquan ();
-				break;
-			}
-			case UTWIG_CODE_RES:
-			{
-				extern RACE_DESC* init_utwig (void);
-
-				RDPtr = init_utwig ();
-				break;
-			}
-			case VUX_CODE_RES:
-			{
-				
-				extern RACE_DESC* init_vux (void);
-
-				RDPtr = init_vux ();
-				break;
-			}
-			case YEHAT_CODE_RES:
-			{
-				extern RACE_DESC* init_yehat (void);
-
-				RDPtr = init_yehat ();
-				break;
-			}
-			case ZOQFOT_CODE_RES:
-			{
-				extern RACE_DESC* init_zoqfotpik (void);
-
-				RDPtr = init_zoqfotpik ();
-				break;
-			}
-			case SAMATRA_CODE_RES:
-			{
-				extern RACE_DESC* init_samatra (void);
-
-				RDPtr = init_samatra ();
-				break;
-			}
-			case SIS_CODE_RES:
-			{
-				extern RACE_DESC* init_sis (void);
-
-				RDPtr = init_sis ();
-				break;
-			}
-			case PROBE_CODE_RES:
-			{
-				extern RACE_DESC* init_probe (void);
-
-				RDPtr = init_probe ();
-				break;
-			}
-			default:
-			{
-				log_add (log_Warning, "Unknown SHIP identifier '%d'", which_res);
-				RDPtr = NULL;
-				break;
-			}
-		}
-
+		RaceDescInitFunc initFunc = CodeResToInitFunc (which_res);
+		RACE_DESC *RDPtr = (initFunc == NULL) ? NULL : (*initFunc)();
 		if (RDPtr == 0)
 		{
 			HFree (hData);
@@ -306,10 +141,10 @@ enum
 			cs->data = *RDPtr;  // Structure assignment.
 		}
 	}
-	resdata->ptr = (hData);
+	resdata->ptr = hData;
 }
 
-BOOLEAN
+static BOOLEAN
 _ReleaseCodeResData (void *data)
 {
 	HFree (data);
@@ -333,7 +168,7 @@ LoadCodeResInstance (RESOURCE res)
 	if (hData)
 		res_DetachResource (res);
 
-	return (hData);
+	return hData;
 }
 
 
@@ -341,7 +176,7 @@ BOOLEAN
 DestroyCodeRes (void *hCode)
 {
 	HFree (hCode);
-	return (TRUE);
+	return TRUE;
 }
 
 

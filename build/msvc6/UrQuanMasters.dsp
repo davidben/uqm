@@ -3146,6 +3146,10 @@ SOURCE=..\..\src\uqm\dummy.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\uqm\dummy.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\uqm\element.h
 # End Source File
 # Begin Source File
