@@ -24,7 +24,7 @@
 #include "packetsenders.h"
 #include "proto/ready.h"
 
-#include "../supermelee/melee.h"
+#include "../melee.h"
 		// For feedback functions.
 
 #include <stdlib.h>

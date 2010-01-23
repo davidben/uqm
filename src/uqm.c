@@ -49,8 +49,8 @@
 #	include "libs/callback.h"
 #	include "libs/alarm.h"
 #	include "libs/net.h"
-#	include "uqm/netplay/netoptions.h"
-#	include "uqm/netplay/netplay.h"
+#	include "uqm/supermelee/netplay/netoptions.h"
+#	include "uqm/supermelee/netplay/netplay.h"
 #endif
 #include "uqm/setup.h"
 #include "uqm/starcon.h"

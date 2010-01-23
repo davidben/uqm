@@ -22,9 +22,9 @@
 #include "netplay.h"
 #include "netinput.h"
 
-#include "../intel.h"
+#include "../../intel.h"
 		// for NETWORK_CONTROL
-#include "../setup.h"
+#include "../../setup.h"
 		// For PlayerControl
 #include "libs/log.h"
 

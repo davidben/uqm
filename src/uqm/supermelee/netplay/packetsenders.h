@@ -24,11 +24,11 @@
 #include "netconnection.h"
 #include "packet.h"
 
-#include "../controls.h"
+#include "../../controls.h"
 		// for BATTLE_INPUT_STATE
-#include "../supermelee/meleeship.h"
+#include "../meleeship.h"
 		// for MeleeShip
-#include "../supermelee/meleesetup.h"
+#include "../meleesetup.h"
 		// for FleetShipIndex
 
 void sendInit(NetConnection *conn);

@@ -25,7 +25,7 @@
 #include "libs/memlib.h"
 		// For HMalloc(), HFree()
 #ifdef NETPLAY
-#	include "netplay/netmelee.h"
+#	include "supermelee/netplay/netmelee.h"
 #endif  /* NETPLAY */
 
 InputContext *PlayerInput[NUM_PLAYERS];

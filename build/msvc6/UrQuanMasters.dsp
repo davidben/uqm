@@ -2096,174 +2096,6 @@ SOURCE=..\..\src\uqm\comm\zoqfot\zoqfotc.c
 SOURCE=..\..\src\uqm\comm\commall.h
 # End Source File
 # End Group
-# Begin Group "netplay"
-
-# PROP Default_Filter ""
-# Begin Group "proto"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\proto\npconfirm.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\proto\npconfirm.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\proto\ready.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\proto\ready.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\proto\reset.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\proto\reset.h
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\checkbuf.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\checkbuf.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\checksum.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\checksum.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\crc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\crc.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\nc_connect.ci
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netconnection.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netconnection.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netinput.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netinput.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netmelee.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netmelee.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netmisc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netmisc.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netoptions.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netoptions.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netplay.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netrcv.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netrcv.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netsend.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netsend.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netstate.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\netstate.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\notify.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\notify.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\packet.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\packet.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\packethandlers.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\packethandlers.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\packetq.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\packetq.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\packetsenders.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\netplay\packetsenders.h
-# End Source File
-# End Group
 # Begin Group "planets"
 
 # PROP Default_Filter ""
@@ -2971,6 +2803,174 @@ SOURCE=..\..\src\uqm\ships\ship.h
 # Begin Group "supermelee"
 
 # PROP Default_Filter ""
+# Begin Group "netplay"
+
+# PROP Default_Filter ""
+# Begin Group "proto"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\proto\npconfirm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\proto\npconfirm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\proto\ready.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\proto\ready.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\proto\reset.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\proto\reset.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\checkbuf.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\checkbuf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\checksum.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\checksum.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\crc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\crc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\nc_connect.ci
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netconnection.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netconnection.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netinput.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netinput.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netmelee.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netmelee.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netmisc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netoptions.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netoptions.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netplay.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netrcv.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netrcv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netsend.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netsend.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netstate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\netstate.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\notify.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\notify.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\packet.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\packet.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\packethandlers.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\packethandlers.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\packetq.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\packetq.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\packetsenders.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\packetsenders.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\..\src\uqm\supermelee\buildpick.c

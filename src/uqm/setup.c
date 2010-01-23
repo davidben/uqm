@@ -23,7 +23,7 @@
 #include "options.h"
 #include "nameref.h"
 #ifdef NETPLAY
-#	include "netplay/netmelee.h"
+#	include "supermelee/netplay/netmelee.h"
 #endif
 #include "init.h"
 #include "intel.h"

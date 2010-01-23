@@ -31,17 +31,17 @@
 #include "proto/reset.h"
 #include "libs/log.h"
 
-#include "../controls.h"
+#include "../../controls.h"
 		// for BATTLE_INPUT_STATE
-#include "../init.h"
+#include "../../init.h"
 		// for NUM_PLAYERS
-#include "../globdata.h"
+#include "../../globdata.h"
 		// for GLOBAL
-#include "../supermelee/melee.h"
+#include "../melee.h"
 		// for various update functions.
-#include "../supermelee/meleeship.h"
+#include "../meleeship.h"
 		// for MeleeShip
-#include "../supermelee/pickmele.h"
+#include "../pickmele.h"
 		// for various update functions.
 #include "libs/mathlib.h"
 		// for TFB_SeedRandom

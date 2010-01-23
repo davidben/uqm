@@ -30,9 +30,9 @@
 #include "../nameref.h"
 #include "melee.h"
 #ifdef NETPLAY
-#	include "../netplay/netmelee.h"
-#	include "../netplay/netmisc.h"
-#	include "../netplay/notify.h"
+#	include "netplay/netmelee.h"
+#	include "netplay/netmisc.h"
+#	include "netplay/notify.h"
 #endif
 #include "../races.h"
 #include "../setup.h"

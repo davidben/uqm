@@ -19,9 +19,9 @@
 #ifndef _NETINPUT_H
 #define _NETINPUT_H
 
-#include "../controls.h"
+#include "../../controls.h"
 		// for BATTLE_INPUT_STATE
-#include "../init.h"
+#include "../../init.h"
 		// for NUM_PLAYERS
 
 typedef struct BattleInputBuffer {

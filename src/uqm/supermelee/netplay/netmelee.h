@@ -24,11 +24,11 @@
 #include "netconnection.h"
 #include "packetsenders.h"
 
-#include "../battlecontrols.h"
+#include "../../battlecontrols.h"
 		// for NetworkInputContext
-#include "../controls.h"
+#include "../../controls.h"
 		// for BATTLE_INPUT_STATE
-#include "../races.h"
+#include "../../races.h"
 		// for STARSHIP
 
 

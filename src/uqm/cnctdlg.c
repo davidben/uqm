@@ -27,7 +27,7 @@
 #include "resinst.h"
 #include "nameref.h"
 #include "libs/graphics/widgets.h"
-#include "netplay/netoptions.h"
+#include "supermelee/netplay/netoptions.h"
 
 #define MCD_WIDTH 260
 #define MCD_HEIGHT 110

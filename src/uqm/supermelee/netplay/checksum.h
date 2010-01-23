@@ -28,7 +28,7 @@ typedef uint32 Checksum;
 #include "netplay.h"
 #include "crc.h"
 
-#include "../element.h"
+#include "../../element.h"
 #include "libs/gfxlib.h"
 
 #include "netconnection.h"

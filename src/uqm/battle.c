@@ -28,11 +28,11 @@
 		// for flee_preprocess()
 #include "intel.h"
 #ifdef NETPLAY
-#	include "netplay/netmelee.h"
+#	include "supermelee/netplay/netmelee.h"
 #	ifdef NETPLAY_CHECKSUM
-#		include "netplay/checksum.h"
+#		include "supermelee/netplay/checksum.h"
 #	endif
-#	include "netplay/notifyall.h"
+#	include "supermelee/netplay/notifyall.h"
 #endif
 #include "supermelee/pickmele.h"
 #include "resinst.h"

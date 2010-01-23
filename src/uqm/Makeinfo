@@ -9,7 +9,4 @@ uqm_CFILES="battle.c battlecontrols.c border.c build.c cleanup.c clock.c
 		ship.c shipstat.c shipyard.c sis.c sounds.c starbase.c starcon.c
 		starmap.c state.c status.c tactrans.c trans.c uqmdebug.c util.c
 		velocity.c weapon.c"
-if [ -n "$uqm_NETPLAY" ]; then
-	uqm_SUBDIRS="$uqm_SUBDIRS netplay"
-fi
 

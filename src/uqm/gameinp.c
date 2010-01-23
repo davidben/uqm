@@ -22,7 +22,7 @@
 #include "intel.h"
 		// For computer_intelligence
 #ifdef NETPLAY
-#	include "netplay/netmelee.h"
+#	include "supermelee/netplay/netmelee.h"
 #endif
 #include "settings.h"
 #include "sounds.h"

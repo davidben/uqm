@@ -23,7 +23,7 @@
 #include "checkbuf.h"
 #include "libs/log.h"
 
-#include "../battle.h"
+#include "../../battle.h"
 		// for battleFrameCount
 
 

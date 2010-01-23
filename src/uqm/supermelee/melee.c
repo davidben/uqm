@@ -36,10 +36,10 @@
 #include "../master.h"
 #include "../nameref.h"
 #ifdef NETPLAY
-#	include "../netplay/netconnection.h"
-#	include "../netplay/netmelee.h"
-#	include "../netplay/notify.h"
-#	include "../netplay/notifyall.h"
+#	include "netplay/netconnection.h"
+#	include "netplay/netmelee.h"
+#	include "netplay/notify.h"
+#	include "netplay/notifyall.h"
 #	include "libs/graphics/widgets.h"
 		// for DrawShadowedBox()
 #	include "../cnctdlg.h"

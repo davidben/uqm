@@ -30,13 +30,13 @@
 #include "proto/ready.h"
 #include "proto/reset.h"
 
-#include "../battlecontrols.h"
+#include "../../battlecontrols.h"
 		// for NetworkInputContext
-#include "../controls.h"
+#include "../../controls.h"
 		// for BATTLE_INPUT_STATE
-#include "../init.h"
+#include "../../init.h"
 		// for NUM_PLAYERS
-#include "../globdata.h"
+#include "../../globdata.h"
 		// for GLOBAL
 
 #include <errno.h>

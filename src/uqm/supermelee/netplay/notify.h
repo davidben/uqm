@@ -22,14 +22,14 @@
 #include "netplay.h"
 		// for NETPLAY_CHECKSUM
 #include "netconnection.h"
-#include "../controls.h"
+#include "../../controls.h"
 		// for BATTLE_INPUT_STATE
 #ifdef NETPLAY_CHECKSUM
 #	include "checksum.h"
 #endif
-#include "../supermelee/meleeship.h"
+#include "../meleeship.h"
 		// for MeleeShip
-#include "../supermelee/meleesetup.h"
+#include "../meleesetup.h"
 		// for FleetShipIndex
 
 void Netplay_Notify_shipSelected(NetConnection *conn, FleetShipIndex index);

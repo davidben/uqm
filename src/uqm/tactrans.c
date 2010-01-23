@@ -28,12 +28,12 @@
 #include "battle.h"
 #include "init.h"
 #ifdef NETPLAY
-#	include "netplay/netmelee.h"
-#	include "netplay/netmisc.h"
-#	include "netplay/notify.h"
-#	include "netplay/proto/ready.h"
-#	include "netplay/packet.h"
-#	include "netplay/packetq.h"
+#	include "supermelee/netplay/netmelee.h"
+#	include "supermelee/netplay/netmisc.h"
+#	include "supermelee/netplay/notify.h"
+#	include "supermelee/netplay/proto/ready.h"
+#	include "supermelee/netplay/packet.h"
+#	include "supermelee/netplay/packetq.h"
 #endif
 #include "races.h"
 #include "settings.h"

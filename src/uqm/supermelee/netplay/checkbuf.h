@@ -22,7 +22,7 @@
 typedef struct ChecksumEntry ChecksumEntry;
 typedef struct ChecksumBuffer ChecksumBuffer;
 
-#include "../battle.h"
+#include "../../battle.h"
 		// for BattleFrameCounter
 #include "checksum.h"
 

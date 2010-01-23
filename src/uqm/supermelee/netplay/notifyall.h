@@ -17,9 +17,9 @@
 #ifndef NOTIFYALL_H
 #define NOTIFYALL_H
 
-#include "../battle.h"
-#include "../battlecontrols.h"
-#include "../supermelee/melee.h"
+#include "../../battle.h"
+#include "../../battlecontrols.h"
+#include "../melee.h"
 #ifdef NETPLAY_CHECKSUM
 #	include "checksum.h"
 #endif  /* NETPLAY_CHECKSUM */
