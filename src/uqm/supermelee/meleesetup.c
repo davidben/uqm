@@ -66,7 +66,8 @@ MeleeTeam_serialize (const MeleeTeam *team, uio_Stream *stream)
 		if (uio_putc ((int) team->ships[slotI], stream) == EOF)
 			return -1;
 	}
-	if (uio_fwrite ((char *) team->name, sizeof team->name, 1, stream) != 1)
+	if (uio_fwrite ((const char *) team->name, sizeof team->name, 1,
+			stream) != 1)
 		return -1;
 
 	return 0;
