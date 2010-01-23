@@ -55,7 +55,6 @@ LoadTeamImage (DIRENTRY DirEntry, MeleeTeam *team)
 {
 	const char *fileName;
 	uio_Stream *stream;
-	bool status;
 
 	fileName = GetDirEntryAddress (DirEntry);
 
@@ -68,7 +67,7 @@ LoadTeamImage (DIRENTRY DirEntry, MeleeTeam *team)
 
 	uio_fclose (stream);
 
-	return status;
+	return true;
 }
 
 #if 0  /* Not used */
