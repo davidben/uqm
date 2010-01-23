@@ -425,7 +425,7 @@ new_ship (ELEMENT *DeadShipPtr)
 	}
 }
 
-void
+static void
 explosion_preprocess (ELEMENT *ShipPtr)
 {
 	BYTE i;
@@ -580,7 +580,7 @@ ship_death (ELEMENT *ShipPtr)
 
 // Called from the death_func of an element for an ion trail pixel, or a
 // ship shadow (when warping in/out).
-void
+static void
 cycle_ion_trail (ELEMENT *ElementPtr)
 {
 	static const Color colorTab[] =

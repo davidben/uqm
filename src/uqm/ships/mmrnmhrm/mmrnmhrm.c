@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "mmrnmhrm.h"
 #include "resinst.h"
 
 

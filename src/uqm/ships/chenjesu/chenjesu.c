@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "chenjesu.h"
 #include "resinst.h"
 
 #include "uqm/globdata.h"

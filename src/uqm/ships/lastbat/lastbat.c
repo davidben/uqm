@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "lastbat.h"
 #include "resinst.h"
 
 #include "uqm/colors.h"

@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "shofixti.h"
 #include "resinst.h"
 
 #include "uqm/globdata.h"
@@ -222,9 +223,8 @@ destruct_preprocess (ELEMENT *ElementPtr)
 }
 
 /* In order to detect any Orz Marines that have boarded the ship
-   when it self-destructs, we'll need to see these Orz functions */
-extern void intruder_preprocess (ELEMENT*);
-extern void marine_collision (ELEMENT*, POINT*, ELEMENT*, POINT*);
+   when it self-destructs, we'll need to see some Orz functions */
+#include "../orz/orz.h"
 #define ORZ_MARINE(ptr) (ptr->preprocess_func == intruder_preprocess && \
 		ptr->collision_func == marine_collision)
 

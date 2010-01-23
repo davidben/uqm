@@ -19,34 +19,34 @@
 
 #include "races.h"
 
-RACE_DESC *init_androsynth (void);
-RACE_DESC *init_arilou (void);
-RACE_DESC *init_black_urquan (void);
-RACE_DESC *init_chenjesu (void);
-RACE_DESC *init_chmmr (void);
-RACE_DESC *init_druuge (void);
-RACE_DESC *init_human (void);
-RACE_DESC *init_ilwrath (void);
-RACE_DESC *init_melnorme (void);
-RACE_DESC *init_mmrnmhrm (void);
-RACE_DESC *init_mycon (void);
-RACE_DESC *init_orz (void);
-RACE_DESC *init_pkunk (void);
-RACE_DESC *init_shofixti (void);
-RACE_DESC *init_slylandro (void);
-RACE_DESC *init_spathi (void);
-RACE_DESC *init_supox (void);
-RACE_DESC *init_syreen (void);
-RACE_DESC *init_thraddash (void);
-RACE_DESC *init_umgah (void);
-RACE_DESC *init_urquan (void);
-RACE_DESC *init_utwig (void);
-RACE_DESC *init_vux (void);
-RACE_DESC *init_yehat (void);
-RACE_DESC *init_zoqfotpik (void);
-RACE_DESC *init_samatra (void);
-RACE_DESC *init_sis (void);
-RACE_DESC *init_probe (void);
+#include "ships/androsyn/androsyn.h"
+#include "ships/arilou/arilou.h"
+#include "ships/blackurq/blackurq.h"
+#include "ships/chenjesu/chenjesu.h"
+#include "ships/chmmr/chmmr.h"
+#include "ships/druuge/druuge.h"
+#include "ships/human/human.h"
+#include "ships/ilwrath/ilwrath.h"
+#include "ships/melnorme/melnorme.h"
+#include "ships/mmrnmhrm/mmrnmhrm.h"
+#include "ships/mycon/mycon.h"
+#include "ships/orz/orz.h"
+#include "ships/pkunk/pkunk.h"
+#include "ships/shofixti/shofixti.h"
+#include "ships/slylandr/slylandr.h"
+#include "ships/spathi/spathi.h"
+#include "ships/supox/supox.h"
+#include "ships/syreen/syreen.h"
+#include "ships/thradd/thradd.h"
+#include "ships/umgah/umgah.h"
+#include "ships/urquan/urquan.h"
+#include "ships/utwig/utwig.h"
+#include "ships/vux/vux.h"
+#include "ships/yehat/yehat.h"
+#include "ships/zoqfot/zoqfot.h"
+#include "ships/lastbat/lastbat.h"
+#include "ships/sis_ship/sis_ship.h"
+#include "ships/probe/probe.h"
 
 #endif  /* DUMMY_H */
 

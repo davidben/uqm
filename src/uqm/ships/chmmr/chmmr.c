@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "chmmr.h"
 #include "resinst.h"
 
 #include "uqm/colors.h"

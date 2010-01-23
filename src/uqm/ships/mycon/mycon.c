@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "mycon.h"
 #include "resinst.h"
 
 #define MAX_CREW 20

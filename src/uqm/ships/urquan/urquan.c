@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "urquan.h"
 #include "resinst.h"
 
 #include "uqm/globdata.h"

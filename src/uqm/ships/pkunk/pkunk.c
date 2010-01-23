@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "pkunk.h"
 #include "resinst.h"
 
 #include "uqm/globdata.h"
@@ -314,7 +315,7 @@ intercept_pkunk_death (ELEMENT *ElementPtr)
 #define START_PHOENIX_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A)
 #define TRANSITION_LIFE 1
 
-void
+static void
 spawn_phoenix_trail (ELEMENT *ElementPtr)
 {
 	static const Color colorTable[] =
@@ -349,7 +350,7 @@ spawn_phoenix_trail (ELEMENT *ElementPtr)
 
 #define PHOENIX_LIFE 12
 
-void
+static void
 phoenix_transition (ELEMENT *ElementPtr)
 {
 	HELEMENT hShipImage;

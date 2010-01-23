@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "syreen.h"
 #include "resinst.h"
 
 #include "libs/mathlib.h"

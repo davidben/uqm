@@ -17,6 +17,7 @@
  */
 
 #include "../ship.h"
+#include "utwig.h"
 #include "resinst.h"
 
 #include "uqm/globdata.h"
