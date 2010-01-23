@@ -24,17 +24,18 @@
 struct melee_load_state;
 
 #include "melee.h"
+#include "meleesetup.h"
 
 struct melee_load_state
 {
-	TEAM_IMAGE *preBuiltList;
+	MeleeTeam **preBuiltList;
 	COUNT preBuiltCount;
 	
 	DIRENTRY dirEntries;
 	COUNT *entryIndices;
 	COUNT numIndices;
 
-	TEAM_IMAGE view[LOAD_TEAM_VIEW_SIZE];
+	MeleeTeam *view[LOAD_TEAM_VIEW_SIZE];
 	COUNT top;
 			// Index of the first entry for the view.
 	COUNT bot;
@@ -51,8 +52,8 @@ void UninitMeleeLoadState (MELEE_STATE *pMS);
 
 BOOLEAN DoLoadTeam (MELEE_STATE *pMS);
 BOOLEAN DoSaveTeam (MELEE_STATE *pMS);
-bool ReadTeamImage (TEAM_IMAGE *pTI, uio_Stream *load_fp);
-int WriteTeamImage (TEAM_IMAGE *pTI, uio_Stream *save_fp);
+bool ReadTeamImage (MeleeTeam *pTI, uio_Stream *load_fp);
+int WriteTeamImage (const MeleeTeam *pTI, uio_Stream *save_fp);
 void LoadTeamList (MELEE_STATE *pMS);
 
 #endif /* _LOADMELE_H */

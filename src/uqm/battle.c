@@ -32,6 +32,7 @@
 #	ifdef NETPLAY_CHECKSUM
 #		include "netplay/checksum.h"
 #	endif
+#	include "netplay/notifyall.h"
 #endif
 #include "supermelee/pickmele.h"
 #include "resinst.h"
@@ -187,7 +188,7 @@ ProcessInput (void)
 				if (!(PlayerControl[cur_player] & NETWORK_CONTROL))
 				{
 					BattleInputBuffer *bib = getBattleInputBuffer(cur_player);
-					sendBattleInputConnections (InputState);
+					Netplay_NotifyAll_battleInput (InputState);
 					flushPacketQueues ();
 
 					BattleInputBuffer_push (bib, InputState);
@@ -279,7 +280,7 @@ DoBattle (BATTLE_STATE *bs)
 		crc_processState (&state);
 		checksum = (Checksum) crc_finish (&state);
 
-		sendChecksumConnections ((uint32) battleFrameCount,
+		Netplay_NotifyAll_checksum ((uint32) battleFrameCount,
 				(uint32) checksum);
 		flushPacketQueues ();
 		addLocalChecksum (battleFrameCount, checksum);

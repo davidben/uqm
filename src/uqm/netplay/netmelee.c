@@ -61,6 +61,33 @@ removeNetConnection(int playerNr) {
 	numNetConnections--;
 }
 
+size_t
+getNumNetConnections(void) {
+	return numNetConnections;
+}
+
+// If the callback function returns 'false', the function will immediately
+// return with 'false'. Otherwise it will return 'true' after calling
+// the callback function for each connected player.
+bool
+forEachConnectedPlayer(ForEachConnectionCallback callback, void *arg) {
+	COUNT player;
+	
+	for (player = 0; player < NUM_PLAYERS; player++)
+	{
+		NetConnection *conn = netConnections[player];
+		if (conn == NULL)
+			continue;
+
+		if (!NetConnection_isConnected(conn))
+			continue;
+
+		if (!(*callback)(conn, arg))
+			return false;
+	}
+	return true;
+}
+
 void
 closeAllConnections(void) {
 	COUNT player;
@@ -86,12 +113,6 @@ closeDisconnectedConnections(void) {
 			closePlayerNetworkConnection(player);
 	}
 }
-
-size_t
-getNumNetConnections(void) {
-	return numNetConnections;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -120,8 +141,7 @@ NetMelee_getBattleState(NetConnection *conn) {
 
 ////////////////////////////////////////////////////////////////////////////
 
-static inline
-void
+static inline void
 netInputAux(uint32 timeoutMs) {
 	NetManager_process(&timeoutMs);
 			// This may cause more packets to be queued, hence the
@@ -248,42 +268,6 @@ allConnected(void) {
 	}
 	return true;
 }
-
-void
-sendBattleInputConnections(BATTLE_INPUT_STATE input) {
-	COUNT player;
-
-	for (player = 0; player < NUM_PLAYERS; player++)
-	{
-		NetConnection *conn = netConnections[player];
-		if (conn == NULL)
-			continue;
-
-		if (!NetConnection_isConnected(conn))
-			continue;
-
-		Netplay_battleInput(conn, input);
-	}
-}
-
-#ifdef NETPLAY_CHECKSUM
-void
-sendChecksumConnections(uint32 frameNr, uint32 checksum) {
-	COUNT player;
-
-	for (player = 0; player < NUM_PLAYERS; player++)
-	{
-		NetConnection *conn = netConnections[player];
-		if (conn == NULL)
-			continue;
-
-		if (!NetConnection_isConnected(conn))
-			continue;
-
-		Netplay_sendChecksum(conn, frameNr, checksum);
-	}
-}
-#endif  /* NETPLAY_CHECKSUM */
 
 void
 initBattleStateDataConnections(void) {
@@ -415,28 +399,6 @@ closePlayerNetworkConnection(COUNT player) {
 	NetConnection_close(netConnections[player]);
 }
 
-// If the callback function returns 'false', the function will immediately
-// return with 'false'. Otherwise it will return 'true' after calling
-// the callback function for each connected player.
-bool
-forAllConnectedPlayers(ForAllCallback callback, void *arg) {
-	COUNT player;
-	
-	for (player = 0; player < NUM_PLAYERS; player++)
-	{
-		NetConnection *conn = netConnections[player];
-		if (conn == NULL)
-			continue;
-
-		if (!NetConnection_isConnected(conn))
-			continue;
-
-		if (!(*callback)(conn, arg))
-			return false;
-	}
-	return true;
-}
-
 bool
 setupInputDelay(size_t localInputDelay) {
 	COUNT player;
@@ -466,51 +428,39 @@ setupInputDelay(size_t localInputDelay) {
 }
 
 static bool
-sendInputDelayConnection(NetConnection *conn, const size_t *delay) {
-	Netplay_sendInputDelay(conn, *delay);
-	return true;
-}
-
-bool
-sendInputDelayConnections(size_t delay) {
-	return forAllConnectedPlayers(
-			(ForAllCallback) sendInputDelayConnection, &delay);
-}
-
-static bool
-setStateConnection(NetConnection *conn, const NetState *state) {
+setStateConnection(NetConnection *conn, void *arg) {
+	const NetState *state = (NetState *) arg;
 	NetConnection_setState(conn, *state);
 	return true;
 }
 
 bool
 setStateConnections(NetState state) {
-	return forAllConnectedPlayers(
-			(bool(*)(NetConnection *, void *)) setStateConnection, &state);
+	return forEachConnectedPlayer(setStateConnection, &state);
 }
 
 static bool
-sendAbortConnection(NetConnection *conn, const NetplayAbortReason *reason) {
+sendAbortConnection(NetConnection *conn, void *arg) {
+	const NetplayAbortReason *reason = (NetplayAbortReason *) arg;
 	sendAbort(conn, *reason);
 	return true;
 }
 
 bool
 sendAbortConnections(NetplayAbortReason reason) {
-	return forAllConnectedPlayers(
-			(bool(*)(NetConnection *, void *)) sendAbortConnection, &reason);
+	return forEachConnectedPlayer(sendAbortConnection, &reason);
 }
 
 static bool
-resetConnection(NetConnection *conn, const NetplayResetReason *reason) {
+resetConnection(NetConnection *conn, void *arg) {
+	const NetplayResetReason *reason = (NetplayResetReason *) arg;
 	Netplay_localReset(conn, *reason);
 	return true;
 }
 
 bool
 resetConnections(NetplayResetReason reason) {
-	return forAllConnectedPlayers(
-			(bool(*)(NetConnection *, void *)) resetConnection, &reason);
+	return forEachConnectedPlayer(resetConnection, &reason);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -522,9 +472,10 @@ typedef struct {
 } LocalReadyConnectionArg;
 
 static bool
-localReadyConnection(NetConnection *conn, LocalReadyConnectionArg *arg) {
-	Netplay_localReady(conn, arg->readyCallback, arg->readyCallbackArg,
-			arg->notifyRemote);
+localReadyConnection(NetConnection *conn, void *arg) {
+	LocalReadyConnectionArg *readyArg = (LocalReadyConnectionArg *) arg;
+	Netplay_localReady(conn, readyArg->readyCallback,
+			readyArg->readyCallbackArg, readyArg->notifyRemote);
 	return true;
 }
 
@@ -536,8 +487,7 @@ localReadyConnections(NetConnection_ReadyCallback readyCallback,
 	arg.readyCallbackArg = readyArg;
 	arg.notifyRemote = notifyRemote;
 
-	return forAllConnectedPlayers(
-			(bool(*)(NetConnection *, void *)) localReadyConnection, &arg);
+	return forEachConnectedPlayer(localReadyConnection, &arg);
 }
 
 
@@ -636,7 +586,7 @@ typedef struct WaitReadyState WaitReadyState;
 struct WaitReadyState {
 	// Common fields of INPUT_STATE_DESC, from which this structure
 	// "inherits".
-	BOOLEAN(*InputFunc)(void *pInputState);
+	BOOLEAN (*InputFunc)(void *pInputState);
 
 	NetConnection *conn;
 	NetConnection_ReadyCallback readyCallback;
@@ -760,7 +710,7 @@ out:
 	return NetConnection_isConnected(conn);
 }
 
-// Wait until we have received a reset packet to all connections. If we
+// Wait until we have received a reset packet from all connections. If we
 // ourselves have not sent a reset packet, one is sent, with reason
 // 'manualReset'.
 // XXX: Right now all connections are handled one by one. Handling them all

@@ -40,6 +40,8 @@ void removeNetConnection(int playerNr);
 void closeAllConnections(void);
 void closeDisconnectedConnections(void);
 size_t getNumNetConnections(void);
+typedef bool(*ForEachConnectionCallback)(NetConnection *conn, void *arg);
+bool forEachConnectedPlayer(ForEachConnectionCallback callback, void *arg);
 
 struct melee_state *NetMelee_getMeleeState(NetConnection *conn);
 struct battlestate_struct *NetMelee_getBattleState(NetConnection *conn);
@@ -54,8 +56,6 @@ void connectionsLocalReady(NetConnection_ReadyCallback callback, void *arg);
 
 bool allConnected(void);
 
-void sendBattleInputConnections(BATTLE_INPUT_STATE input);
-void sendChecksumConnections(uint32 frameNr, uint32 checksum);
 void initBattleStateDataConnections(void);
 void setBattleStateConnections(struct battlestate_struct *bs);
 
@@ -65,11 +65,7 @@ BATTLE_INPUT_STATE networkBattleInput(NetworkInputContext *context,
 NetConnection *openPlayerNetworkConnection(COUNT player, void *extra);
 void closePlayerNetworkConnection(COUNT player);
 
-typedef bool(*ForAllCallback)(NetConnection *conn, void *arg);
-bool forAllConnectedPlayers(ForAllCallback callback, void *arg);
-
 bool setupInputDelay(size_t localInputDelay);
-bool sendInputDelayConnections(size_t delay);
 bool setStateConnections(NetState state);
 bool sendAbortConnections(NetplayAbortReason reason);
 bool resetConnections(NetplayResetReason reason);

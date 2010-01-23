@@ -39,6 +39,8 @@
 		// for GLOBAL
 #include "../supermelee/melee.h"
 		// for various update functions.
+#include "../supermelee/meleeship.h"
+		// for MeleeShip
 #include "../supermelee/pickmele.h"
 		// for various update functions.
 #include "libs/mathlib.h"
@@ -263,16 +265,26 @@ PacketHandler_Fleet(NetConnection *conn, const Packet_Fleet *packet) {
 	}
 
 	for (i = 0; i < numShips; i++) {
-		int ship = packet->ships[i].ship;
-		int index = packet->ships[i].index;
+		MeleeShip ship = (MeleeShip) packet->ships[i].ship;
+		FleetShipIndex index = (FleetShipIndex) packet->ships[i].index;
 		
-		bool updateResult = updateFleetShip(
-				battleStateData->meleeState, player, index, ship);
-		if (!updateResult)
-		{
+		if (!MeleeShip_valid(ship)) {
+			log_add (log_Warning, "Invalid ship type number %d (max = %d).\n",
+					ship, NUM_MELEE_SHIPS - 1);
 			errno = EBADMSG;
 			return -1;
 		}
+	
+		if (index >= MELEE_FLEET_SIZE)
+		{
+			log_add (log_Warning, "Invalid ship position number %d "
+					"(max = %d).\n", index, MELEE_FLEET_SIZE - 1);
+			errno = EBADMSG;
+			return -1;
+		}
+	
+		Melee_RemoteChange_ship (battleStateData->meleeState, conn,
+				player, index, ship);
 	}
 
 	// Padding data may follow; it is ignored.
@@ -312,8 +324,17 @@ PacketHandler_TeamName(NetConnection *conn, const Packet_TeamName *packet) {
 			- sizeof (Packet_TeamName) - 1;
 			// The -1 is for not counting the terminating '\0'.
 
-	updateTeamName(battleStateData->meleeState, side,
-			(const char *) packet->name, nameLen);
+	{
+		char buf[MAX_TEAM_CHARS + 1];
+
+		if (nameLen > MAX_TEAM_CHARS)
+			nameLen = MAX_TEAM_CHARS;
+		memcpy (buf, (const char *) packet->name, nameLen);
+		buf[nameLen] = '\0';
+		
+		Melee_RemoteChange_teamName(battleStateData->meleeState, conn,
+				side, buf);
+	}
 
 	// Padding data may follow; it is ignored.
 	return 0;

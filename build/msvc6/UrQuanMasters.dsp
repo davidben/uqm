@@ -2973,6 +2973,14 @@ SOURCE=..\..\src\uqm\ships\ship.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\src\uqm\supermelee\buildpick.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\buildpick.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\uqm\supermelee\loadmele.c
 # End Source File
 # Begin Source File
@@ -2986,6 +2994,14 @@ SOURCE=..\..\src\uqm\supermelee\melee.c
 # Begin Source File
 
 SOURCE=..\..\src\uqm\supermelee\melee.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\meleesetup.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\meleesetup.h
 # End Source File
 # Begin Source File
 

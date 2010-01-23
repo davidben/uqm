@@ -18,6 +18,7 @@
 
 // This file handles loading of teams, but the UI and the actual loading.
 
+#define MELEESETUP_INTERNAL
 #include "melee.h"
 
 #include "../controls.h"
@@ -25,10 +26,11 @@
 #include "../gamestr.h"
 #include "../globdata.h"
 #include "../master.h"
+#include "meleesetup.h"
 #include "../save.h"
 #include "../setup.h"
 #include "../sounds.h"
-#include "../../options.h"
+#include "options.h"
 #include "libs/log.h"
 #include "libs/memlib.h"
 
@@ -48,53 +50,23 @@ static void DrawFileStrings (MELEE_STATE *pMS);
 static bool FillFileView (MELEE_STATE *pMS);
 
 
-bool
-ReadTeamImage (TEAM_IMAGE *pTI, uio_Stream *load_fp)
-{
-	int status;
-	FleetShipIndex i;
-	
-	status = ReadResFile (pTI, sizeof (*pTI), 1, load_fp);
-	if (status != 1)
-		return false;
-
-	// Sanity check on the entries.
-	for (i = 0; i < MELEE_FLEET_SIZE; i++)
-	{
-		BYTE StarShip = pTI->ShipList[i];
-
-		if (StarShip == MELEE_NONE)
-			continue;
-
-		if (StarShip >= NUM_MELEE_SHIPS)
-		{
-			log_add (log_Warning, "Invalid ship type in loaded team (index "
-					"%d, ship type is %d, max valid is %d).",
-					i, StarShip, NUM_MELEE_SHIPS - 1);
-			pTI->ShipList[i] = MELEE_NONE;
-		}
-	}
-
-	return true;
-}
-
 static bool
-LoadTeamImage (DIRENTRY DirEntry, TEAM_IMAGE *pTI)
+LoadTeamImage (DIRENTRY DirEntry, MeleeTeam *team)
 {
-	const BYTE *fileName;
-	uio_Stream *load_fp;
+	const char *fileName;
+	uio_Stream *stream;
 	bool status;
 
 	fileName = GetDirEntryAddress (DirEntry);
-	load_fp = res_OpenResFile (meleeDir, (const char *) fileName, "rb");
-	if (load_fp == 0)
+
+	stream = uio_fopen (meleeDir, fileName, "rb");
+	if (stream == NULL)
 		return false;
 
-	if (LengthResFile (load_fp) != sizeof (*pTI))
-		status = false;
-	else
-		status = ReadTeamImage (pTI, load_fp);
-	res_CloseResFile (load_fp);
+	if (MeleeTeam_deserialize (team, stream) == -1)
+		return false;
+
+	uio_fclose (stream);
 
 	return status;
 }
@@ -123,13 +95,13 @@ UnindexFleets (MELEE_STATE *pMS, COUNT index, COUNT count)
 }
 
 static bool
-GetFleetByIndex (MELEE_STATE *pMS, COUNT index, TEAM_IMAGE *result)
+GetFleetByIndex (MELEE_STATE *pMS, COUNT index, MeleeTeam *result)
 {
 	COUNT firstIndex;
 
 	if (index < pMS->load.preBuiltCount)
 	{
-		*result = pMS->load.preBuiltList[index];
+		MeleeTeam_copy (result, pMS->load.preBuiltList[index]);
 		return true;
 	}
 
@@ -144,7 +116,7 @@ GetFleetByIndex (MELEE_STATE *pMS, COUNT index, TEAM_IMAGE *result)
 			break;  // Success
 
 		{
-			const BYTE *fileName;
+			const char *fileName;
 			fileName = GetDirEntryAddress (entry);
 			log_add (log_Warning, "Warning: File '%s' is not a valid "
 					"SuperMelee team.", fileName);
@@ -167,7 +139,7 @@ GetFleetIndexByFileName (MELEE_STATE *pMS, const char *fileName)
 	{
 		DIRENTRY entry = SetAbsDirEntryTableIndex (pMS->load.dirEntries,
 				pMS->load.entryIndices[index]);
-		const BYTE *entryName = GetDirEntryAddress (entry);
+		const char *entryName = GetDirEntryAddress (entry);
 
 		if (strcasecmp ((const char *) entryName, fileName) == 0)
 			return pMS->load.preBuiltCount + index;
@@ -181,8 +153,8 @@ GetFleetIndexByFileName (MELEE_STATE *pMS, const char *fileName)
 // fleet name and value; if not, only the fleet name and value are drawn.
 // If highlite is set the text is drawn in the color used for highlighting.
 static void
-DrawFileString (TEAM_IMAGE *pTI, POINT *origin, BOOLEAN drawShips,
-		BOOLEAN highlite)
+DrawFileString (const MeleeTeam *team, const POINT *origin,
+		BOOLEAN drawShips, BOOLEAN highlite)
 {
 	SetContextForeGroundColor (highlite ?
 			LOAD_TEAM_NAME_TEXT_COLOR_HILITE : LOAD_TEAM_NAME_TEXT_COLOR);
@@ -193,7 +165,7 @@ DrawFileString (TEAM_IMAGE *pTI, POINT *origin, BOOLEAN drawShips,
 
 		Text.baseline = *origin;
 		Text.align = ALIGN_LEFT;
-		Text.pStr = pTI->TeamName;
+		Text.pStr = MeleeTeam_getTeamName(team);
 		Text.CharCount = (COUNT)~0;
 		font_DrawText (&Text);
 	}
@@ -203,7 +175,7 @@ DrawFileString (TEAM_IMAGE *pTI, POINT *origin, BOOLEAN drawShips,
 		TEXT Text;
 		UNICODE buf[60];
 
-		sprintf (buf, "%u", GetTeamValue (pTI));
+		sprintf (buf, "%u", MeleeTeam_getValue (team));
 		Text.baseline = *origin;
 		Text.baseline.x += NUM_MELEE_COLUMNS *
 				(LOAD_MELEE_BOX_WIDTH + LOAD_MELEE_BOX_SPACE) - 1;
@@ -217,15 +189,15 @@ DrawFileString (TEAM_IMAGE *pTI, POINT *origin, BOOLEAN drawShips,
 	if (drawShips)
 	{
 		STAMP s;
-		FleetShipIndex index;
+		FleetShipIndex slotI;
 
 		s.origin.x = origin->x + 1;
 		s.origin.y = origin->y + 4;
-		for (index = 0; index < MELEE_FLEET_SIZE; index++)
+		for (slotI = 0; slotI < MELEE_FLEET_SIZE; slotI++)
 		{
 			BYTE StarShip;
 				
-			StarShip = pTI->ShipList[index];
+			StarShip = team->ships[slotI];
 			if (StarShip != MELEE_NONE)
 			{
 				s.frame = GetShipIconsFromIndex (StarShip);
@@ -247,7 +219,7 @@ FillFileView (MELEE_STATE *pMS)
 	for (viewI = 0; viewI < LOAD_TEAM_VIEW_SIZE; viewI++)
 	{
 		bool success = GetFleetByIndex (pMS, pMS->load.top + viewI,
-				&pMS->load.view[viewI]);
+				pMS->load.view[viewI]);
 		if (!success)
 			break;
 	}
@@ -278,7 +250,7 @@ SelectFileString (MELEE_STATE *pMS, bool hilite)
 
 	origin.x = FILE_STRING_ORIGIN_X;
 	origin.y = FILE_STRING_ORIGIN_Y + viewI * ENTRY_HEIGHT;
-	DrawFileString (&pMS->load.view[viewI], &origin, FALSE, hilite);
+	DrawFileString (pMS->load.view[viewI], &origin, FALSE, hilite);
 
 	UnbatchGraphics ();
 	SetContext (OldContext);
@@ -303,7 +275,7 @@ DrawFileStrings (MELEE_STATE *pMS)
 	{
 		COUNT i;
 		for (i = pMS->load.top; i < pMS->load.bot; i++) {
-			DrawFileString (&pMS->load.view[i - pMS->load.top], &origin,
+			DrawFileString (pMS->load.view[i - pMS->load.top], &origin,
 					TRUE, FALSE);
 			origin.y += ENTRY_HEIGHT;
 		}
@@ -379,12 +351,8 @@ DoLoadTeam (MELEE_STATE *pMS)
 		if (PulsedInputState.menu[KEY_MENU_SELECT])
 		{
 			// Copy the selected fleet to the player.
-			pMS->SideState[pMS->side].TeamImage =
-					pMS->load.view[pMS->load.cur - pMS->load.top];
-			pMS->SideState[pMS->side].star_bucks =
-					GetTeamValue (&pMS->SideState[pMS->side].TeamImage);
-			entireFleetChanged (pMS, pMS->side);
-			teamStringChanged (pMS, pMS->side);
+			Melee_Change_team (pMS, pMS->side,
+					pMS->load.view[pMS->load.cur - pMS->load.top]);
 		}
 
 		pMS->InputFunc = DoMelee;
@@ -470,12 +438,6 @@ DoLoadTeam (MELEE_STATE *pMS)
 	return TRUE;
 }
 
-int
-WriteTeamImage (TEAM_IMAGE *pTI, uio_Stream *save_fp)
-{
-	return WriteResFile (pTI, sizeof (*pTI), 1, save_fp);
-}
-
 void
 SelectTeamByFileName (MELEE_STATE *pMS, const char *fileName)
 {
@@ -509,73 +471,67 @@ DoSaveTeam (MELEE_STATE *pMS)
 {
 	STAMP MsgStamp;
 	char file[NAME_MAX];
-	uio_Stream *save_fp;
+	uio_Stream *stream;
 	CONTEXT OldContext;
+	bool saveOk = false;
 
-	sprintf (file, "%s.mle", pMS->SideState[pMS->side].TeamImage.TeamName);
+	snprintf (file, sizeof file, "%s.mle",
+			MeleeSetup_getTeamName (pMS->meleeSetup, pMS->side));
 
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (ScreenContext);
 	ConfirmSaveLoad (&MsgStamp);
-	save_fp = res_OpenResFile (meleeDir, file, "wb");
-	if (save_fp)
-	{
-		BOOLEAN err;
+			// Show the "Saving . . ." message.
+	UnlockMutex (GraphicsLock);
 
-		err = (BOOLEAN)(WriteTeamImage (
-				&pMS->SideState[pMS->side].TeamImage, save_fp) == 0);
-		if (res_CloseResFile (save_fp) == 0)
-			err = TRUE;
-		if (err)
-			save_fp = 0;
+	stream = uio_fopen (meleeDir, file, "wb");
+	if (stream != NULL)
+	{
+		saveOk = (MeleeTeam_serialize (&pMS->meleeSetup->teams[pMS->side],
+				stream) == 0);
+		uio_fclose (stream);
+
+		if (!saveOk)
+			uio_unlink (meleeDir, file);
 	}
 
 	pMS->load.top = 0;
 	pMS->load.cur = 0;
 
-	if (save_fp == 0)
-	{
-		DrawStamp (&MsgStamp);
-		DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
-		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
+	// Undo the screen damage done by the "Saving . . ." message.
+	LockMutex (GraphicsLock);
+	DrawStamp (&MsgStamp);
+	DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
+	SetContext (OldContext);
+	UnlockMutex (GraphicsLock);
 
-		DeleteResFile (meleeDir, file);
+	if (!saveOk)
 		SaveProblem ();
-	}
 
+	// Update the team list; a previously existing team may have been
+	// deleted when save failed.
 	LoadTeamList (pMS);
 	SelectTeamByFileName (pMS, file);
-
-	if (save_fp != 0)
-	{
-		DrawStamp (&MsgStamp);
-		DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
-		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
-	}
 	
-	return (save_fp != 0);
+	return (stream != 0);
 }
 
 static void
 InitPreBuilt (MELEE_STATE *pMS)
 {
-	TEAM_IMAGE *list;
+	MeleeTeam **list;
 
 #define PREBUILT_COUNT 15
 	pMS->load.preBuiltList =
-			HMalloc (PREBUILT_COUNT * sizeof pMS->load.preBuiltList[0]);
+			HMalloc (PREBUILT_COUNT * sizeof (MeleeTeam *));
 	pMS->load.preBuiltCount = PREBUILT_COUNT;
 #undef PREBUILT_COUNT
 
 	{
-		FleetShipIndex shipI = 0;
-		int fleetI;
+		size_t fleetI;
 
 		for (fleetI = 0; fleetI < pMS->load.preBuiltCount; fleetI++)
-			for (shipI = 0; shipI < MELEE_FLEET_SIZE; shipI++)
-				pMS->load.preBuiltList[fleetI].ShipList[shipI] = MELEE_NONE;
+			pMS->load.preBuiltList[fleetI] = MeleeTeam_new ();
 	}
 
 	list = pMS->load.preBuiltList;
@@ -583,260 +539,245 @@ InitPreBuilt (MELEE_STATE *pMS)
 	{
 		/* "Balanced Team 1" */
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				GAME_STRING (MELEE_STRING_BASE + 4));
-		list->ShipList[i++] = MELEE_ANDROSYNTH;
-		list->ShipList[i++] = MELEE_CHMMR;
-		list->ShipList[i++] = MELEE_DRUUGE;
-		list->ShipList[i++] = MELEE_URQUAN;
-		list->ShipList[i++] = MELEE_MELNORME;
-		list->ShipList[i++] = MELEE_ORZ;
-		list->ShipList[i++] = MELEE_SPATHI;
-		list->ShipList[i++] = MELEE_SYREEN;
-		list->ShipList[i++] = MELEE_UTWIG;
+		MeleeTeam_setName (*list, GAME_STRING (MELEE_STRING_BASE + 4));
+		MeleeTeam_setShip (*list, i++, MELEE_ANDROSYNTH);
+		MeleeTeam_setShip (*list, i++, MELEE_CHMMR);
+		MeleeTeam_setShip (*list, i++, MELEE_DRUUGE);
+		MeleeTeam_setShip (*list, i++, MELEE_URQUAN);
+		MeleeTeam_setShip (*list, i++, MELEE_MELNORME);
+		MeleeTeam_setShip (*list, i++, MELEE_ORZ);
+		MeleeTeam_setShip (*list, i++, MELEE_SPATHI);
+		MeleeTeam_setShip (*list, i++, MELEE_SYREEN);
+		MeleeTeam_setShip (*list, i++, MELEE_UTWIG);
 		list++;
 	}
 
 	{
 		/* "Balanced Team 2" */
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				GAME_STRING (MELEE_STRING_BASE + 5));
-		list->ShipList[i++] = MELEE_ARILOU;
-		list->ShipList[i++] = MELEE_CHENJESU;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_KOHR_AH;
-		list->ShipList[i++] = MELEE_MYCON;
-		list->ShipList[i++] = MELEE_YEHAT;
-		list->ShipList[i++] = MELEE_PKUNK;
-		list->ShipList[i++] = MELEE_SUPOX;
-		list->ShipList[i++] = MELEE_THRADDASH;
-		list->ShipList[i++] = MELEE_ZOQFOTPIK;
-		list->ShipList[i++] = MELEE_SHOFIXTI;
+		MeleeTeam_setName (*list, GAME_STRING (MELEE_STRING_BASE + 5));
+		MeleeTeam_setShip (*list, i++, MELEE_ARILOU);
+		MeleeTeam_setShip (*list, i++, MELEE_CHENJESU);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_KOHR_AH);
+		MeleeTeam_setShip (*list, i++, MELEE_MYCON);
+		MeleeTeam_setShip (*list, i++, MELEE_YEHAT);
+		MeleeTeam_setShip (*list, i++, MELEE_PKUNK);
+		MeleeTeam_setShip (*list, i++, MELEE_SUPOX);
+		MeleeTeam_setShip (*list, i++, MELEE_THRADDASH);
+		MeleeTeam_setShip (*list, i++, MELEE_ZOQFOTPIK);
+		MeleeTeam_setShip (*list, i++, MELEE_SHOFIXTI);
 		list++;
 	}
 
 	{
 		/* "200 points" */
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				GAME_STRING (MELEE_STRING_BASE + 6));
-		list->ShipList[i++] = MELEE_ANDROSYNTH;
-		list->ShipList[i++] = MELEE_CHMMR;
-		list->ShipList[i++] = MELEE_DRUUGE;
-		list->ShipList[i++] = MELEE_MELNORME;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_KOHR_AH;
-		list->ShipList[i++] = MELEE_SUPOX;
-		list->ShipList[i++] = MELEE_ORZ;
-		list->ShipList[i++] = MELEE_SPATHI;
-		list->ShipList[i++] = MELEE_ILWRATH;
-		list->ShipList[i++] = MELEE_VUX;
+		MeleeTeam_setName (*list, GAME_STRING (MELEE_STRING_BASE + 6));
+		MeleeTeam_setShip (*list, i++, MELEE_ANDROSYNTH);
+		MeleeTeam_setShip (*list, i++, MELEE_CHMMR);
+		MeleeTeam_setShip (*list, i++, MELEE_DRUUGE);
+		MeleeTeam_setShip (*list, i++, MELEE_MELNORME);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_KOHR_AH);
+		MeleeTeam_setShip (*list, i++, MELEE_SUPOX);
+		MeleeTeam_setShip (*list, i++, MELEE_ORZ);
+		MeleeTeam_setShip (*list, i++, MELEE_SPATHI);
+		MeleeTeam_setShip (*list, i++, MELEE_ILWRATH);
+		MeleeTeam_setShip (*list, i++, MELEE_VUX);
 		list++;
 	}
 
 	{
 		/* "Behemoth Zenith" */
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				GAME_STRING (MELEE_STRING_BASE + 7));
-		list->ShipList[i++] = MELEE_CHENJESU;
-		list->ShipList[i++] = MELEE_CHENJESU;
-		list->ShipList[i++] = MELEE_CHMMR;
-		list->ShipList[i++] = MELEE_CHMMR;
-		list->ShipList[i++] = MELEE_KOHR_AH;
-		list->ShipList[i++] = MELEE_KOHR_AH;
-		list->ShipList[i++] = MELEE_URQUAN;
-		list->ShipList[i++] = MELEE_URQUAN;
-		list->ShipList[i++] = MELEE_UTWIG;
-		list->ShipList[i++] = MELEE_UTWIG;
+		MeleeTeam_setName (*list, GAME_STRING (MELEE_STRING_BASE + 7));
+		MeleeTeam_setShip (*list, i++, MELEE_CHENJESU);
+		MeleeTeam_setShip (*list, i++, MELEE_CHENJESU);
+		MeleeTeam_setShip (*list, i++, MELEE_CHMMR);
+		MeleeTeam_setShip (*list, i++, MELEE_CHMMR);
+		MeleeTeam_setShip (*list, i++, MELEE_KOHR_AH);
+		MeleeTeam_setShip (*list, i++, MELEE_KOHR_AH);
+		MeleeTeam_setShip (*list, i++, MELEE_URQUAN);
+		MeleeTeam_setShip (*list, i++, MELEE_URQUAN);
+		MeleeTeam_setShip (*list, i++, MELEE_UTWIG);
+		MeleeTeam_setShip (*list, i++, MELEE_UTWIG);
 		list++;
 	}
 
 	{
 		/* "The Peeled Eyes" */
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				GAME_STRING (MELEE_STRING_BASE + 8));
-		list->ShipList[i++] = MELEE_URQUAN;
-		list->ShipList[i++] = MELEE_CHENJESU;
-		list->ShipList[i++] = MELEE_MYCON;
-		list->ShipList[i++] = MELEE_SYREEN;
-		list->ShipList[i++] = MELEE_ZOQFOTPIK;
-		list->ShipList[i++] = MELEE_SHOFIXTI;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_KOHR_AH;
-		list->ShipList[i++] = MELEE_MELNORME;
-		list->ShipList[i++] = MELEE_DRUUGE;
-		list->ShipList[i++] = MELEE_PKUNK;
-		list->ShipList[i++] = MELEE_ORZ;
+		MeleeTeam_setName (*list, GAME_STRING (MELEE_STRING_BASE + 8));
+		MeleeTeam_setShip (*list, i++, MELEE_URQUAN);
+		MeleeTeam_setShip (*list, i++, MELEE_CHENJESU);
+		MeleeTeam_setShip (*list, i++, MELEE_MYCON);
+		MeleeTeam_setShip (*list, i++, MELEE_SYREEN);
+		MeleeTeam_setShip (*list, i++, MELEE_ZOQFOTPIK);
+		MeleeTeam_setShip (*list, i++, MELEE_SHOFIXTI);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_KOHR_AH);
+		MeleeTeam_setShip (*list, i++, MELEE_MELNORME);
+		MeleeTeam_setShip (*list, i++, MELEE_DRUUGE);
+		MeleeTeam_setShip (*list, i++, MELEE_PKUNK);
+		MeleeTeam_setShip (*list, i++, MELEE_ORZ);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"Ford's Fighters");
-		list->ShipList[i++] = MELEE_CHMMR;
-		list->ShipList[i++] = MELEE_ZOQFOTPIK;
-		list->ShipList[i++] = MELEE_MELNORME;
-		list->ShipList[i++] = MELEE_SUPOX;
-		list->ShipList[i++] = MELEE_UTWIG;
-		list->ShipList[i++] = MELEE_UMGAH;
+		MeleeTeam_setName (*list, "Ford's Fighters");
+		MeleeTeam_setShip (*list, i++, MELEE_CHMMR);
+		MeleeTeam_setShip (*list, i++, MELEE_ZOQFOTPIK);
+		MeleeTeam_setShip (*list, i++, MELEE_MELNORME);
+		MeleeTeam_setShip (*list, i++, MELEE_SUPOX);
+		MeleeTeam_setShip (*list, i++, MELEE_UTWIG);
+		MeleeTeam_setShip (*list, i++, MELEE_UMGAH);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"Leyland's Lashers");
-		list->ShipList[i++] = MELEE_ANDROSYNTH;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_MYCON;
-		list->ShipList[i++] = MELEE_ORZ;
-		list->ShipList[i++] = MELEE_URQUAN;
+		MeleeTeam_setName (*list, "Leyland's Lashers");
+		MeleeTeam_setShip (*list, i++, MELEE_ANDROSYNTH);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_MYCON);
+		MeleeTeam_setShip (*list, i++, MELEE_ORZ);
+		MeleeTeam_setShip (*list, i++, MELEE_URQUAN);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"The Gregorizers 200");
-		list->ShipList[i++] = MELEE_ANDROSYNTH;
-		list->ShipList[i++] = MELEE_CHMMR;
-		list->ShipList[i++] = MELEE_DRUUGE;
-		list->ShipList[i++] = MELEE_MELNORME;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_KOHR_AH;
-		list->ShipList[i++] = MELEE_SUPOX;
-		list->ShipList[i++] = MELEE_ORZ;
-		list->ShipList[i++] = MELEE_PKUNK;
-		list->ShipList[i++] = MELEE_SPATHI;
+		MeleeTeam_setName (*list, "The Gregorizers 200");
+		MeleeTeam_setShip (*list, i++, MELEE_ANDROSYNTH);
+		MeleeTeam_setShip (*list, i++, MELEE_CHMMR);
+		MeleeTeam_setShip (*list, i++, MELEE_DRUUGE);
+		MeleeTeam_setShip (*list, i++, MELEE_MELNORME);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_KOHR_AH);
+		MeleeTeam_setShip (*list, i++, MELEE_SUPOX);
+		MeleeTeam_setShip (*list, i++, MELEE_ORZ);
+		MeleeTeam_setShip (*list, i++, MELEE_PKUNK);
+		MeleeTeam_setShip (*list, i++, MELEE_SPATHI);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"300 point Armada!");
-		list->ShipList[i++] = MELEE_ANDROSYNTH;
-		list->ShipList[i++] = MELEE_CHMMR;
-		list->ShipList[i++] = MELEE_CHENJESU;
-		list->ShipList[i++] = MELEE_DRUUGE;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_KOHR_AH;
-		list->ShipList[i++] = MELEE_MELNORME;
-		list->ShipList[i++] = MELEE_MYCON;
-		list->ShipList[i++] = MELEE_ORZ;
-		list->ShipList[i++] = MELEE_PKUNK;
-		list->ShipList[i++] = MELEE_SPATHI;
-		list->ShipList[i++] = MELEE_SUPOX;
-		list->ShipList[i++] = MELEE_URQUAN;
-		list->ShipList[i++] = MELEE_YEHAT;
+		MeleeTeam_setName (*list, "300 point Armada!");
+		MeleeTeam_setShip (*list, i++, MELEE_ANDROSYNTH);
+		MeleeTeam_setShip (*list, i++, MELEE_CHMMR);
+		MeleeTeam_setShip (*list, i++, MELEE_CHENJESU);
+		MeleeTeam_setShip (*list, i++, MELEE_DRUUGE);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_KOHR_AH);
+		MeleeTeam_setShip (*list, i++, MELEE_MELNORME);
+		MeleeTeam_setShip (*list, i++, MELEE_MYCON);
+		MeleeTeam_setShip (*list, i++, MELEE_ORZ);
+		MeleeTeam_setShip (*list, i++, MELEE_PKUNK);
+		MeleeTeam_setShip (*list, i++, MELEE_SPATHI);
+		MeleeTeam_setShip (*list, i++, MELEE_SUPOX);
+		MeleeTeam_setShip (*list, i++, MELEE_URQUAN);
+		MeleeTeam_setShip (*list, i++, MELEE_YEHAT);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"Little Dudes with Attitudes");
-		list->ShipList[i++] = MELEE_UMGAH;
-		list->ShipList[i++] = MELEE_THRADDASH;
-		list->ShipList[i++] = MELEE_SHOFIXTI;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_VUX;
-		list->ShipList[i++] = MELEE_ZOQFOTPIK;
+		MeleeTeam_setName (*list, "Little Dudes with Attitudes");
+		MeleeTeam_setShip (*list, i++, MELEE_UMGAH);
+		MeleeTeam_setShip (*list, i++, MELEE_THRADDASH);
+		MeleeTeam_setShip (*list, i++, MELEE_SHOFIXTI);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_VUX);
+		MeleeTeam_setShip (*list, i++, MELEE_ZOQFOTPIK);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"New Alliance Ships");
-		list->ShipList[i++] = MELEE_ARILOU;
-		list->ShipList[i++] = MELEE_CHMMR;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_ORZ;
-		list->ShipList[i++] = MELEE_PKUNK;
-		list->ShipList[i++] = MELEE_SHOFIXTI;
-		list->ShipList[i++] = MELEE_SUPOX;
-		list->ShipList[i++] = MELEE_SYREEN;
-		list->ShipList[i++] = MELEE_UTWIG;
-		list->ShipList[i++] = MELEE_ZOQFOTPIK;
-		list->ShipList[i++] = MELEE_YEHAT;
-		list->ShipList[i++] = MELEE_DRUUGE;
-		list->ShipList[i++] = MELEE_THRADDASH;
-		list->ShipList[i++] = MELEE_SPATHI;
+		MeleeTeam_setName (*list, "New Alliance Ships");
+		MeleeTeam_setShip (*list, i++, MELEE_ARILOU);
+		MeleeTeam_setShip (*list, i++, MELEE_CHMMR);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_ORZ);
+		MeleeTeam_setShip (*list, i++, MELEE_PKUNK);
+		MeleeTeam_setShip (*list, i++, MELEE_SHOFIXTI);
+		MeleeTeam_setShip (*list, i++, MELEE_SUPOX);
+		MeleeTeam_setShip (*list, i++, MELEE_SYREEN);
+		MeleeTeam_setShip (*list, i++, MELEE_UTWIG);
+		MeleeTeam_setShip (*list, i++, MELEE_ZOQFOTPIK);
+		MeleeTeam_setShip (*list, i++, MELEE_YEHAT);
+		MeleeTeam_setShip (*list, i++, MELEE_DRUUGE);
+		MeleeTeam_setShip (*list, i++, MELEE_THRADDASH);
+		MeleeTeam_setShip (*list, i++, MELEE_SPATHI);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"Old Alliance Ships");
-		list->ShipList[i++] = MELEE_ARILOU;
-		list->ShipList[i++] = MELEE_CHENJESU;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_MMRNMHRM;
-		list->ShipList[i++] = MELEE_SHOFIXTI;
-		list->ShipList[i++] = MELEE_SYREEN;
-		list->ShipList[i++] = MELEE_YEHAT;
+		MeleeTeam_setName (*list, "Old Alliance Ships");
+		MeleeTeam_setShip (*list, i++, MELEE_ARILOU);
+		MeleeTeam_setShip (*list, i++, MELEE_CHENJESU);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_MMRNMHRM);
+		MeleeTeam_setShip (*list, i++, MELEE_SHOFIXTI);
+		MeleeTeam_setShip (*list, i++, MELEE_SYREEN);
+		MeleeTeam_setShip (*list, i++, MELEE_YEHAT);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"Old Hierarchy Ships");
-		list->ShipList[i++] = MELEE_ANDROSYNTH;
-		list->ShipList[i++] = MELEE_ILWRATH;
-		list->ShipList[i++] = MELEE_MYCON;
-		list->ShipList[i++] = MELEE_SPATHI;
-		list->ShipList[i++] = MELEE_UMGAH;
-		list->ShipList[i++] = MELEE_URQUAN;
-		list->ShipList[i++] = MELEE_VUX;
+		MeleeTeam_setName (*list, "Old Hierarchy Ships");
+		MeleeTeam_setShip (*list, i++, MELEE_ANDROSYNTH);
+		MeleeTeam_setShip (*list, i++, MELEE_ILWRATH);
+		MeleeTeam_setShip (*list, i++, MELEE_MYCON);
+		MeleeTeam_setShip (*list, i++, MELEE_SPATHI);
+		MeleeTeam_setShip (*list, i++, MELEE_UMGAH);
+		MeleeTeam_setShip (*list, i++, MELEE_URQUAN);
+		MeleeTeam_setShip (*list, i++, MELEE_VUX);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"Star Control 1");
-		list->ShipList[i++] = MELEE_ANDROSYNTH;
-		list->ShipList[i++] = MELEE_ARILOU;
-		list->ShipList[i++] = MELEE_CHENJESU;
-		list->ShipList[i++] = MELEE_EARTHLING;
-		list->ShipList[i++] = MELEE_ILWRATH;
-		list->ShipList[i++] = MELEE_MMRNMHRM;
-		list->ShipList[i++] = MELEE_MYCON;
-		list->ShipList[i++] = MELEE_SHOFIXTI;
-		list->ShipList[i++] = MELEE_SPATHI;
-		list->ShipList[i++] = MELEE_SYREEN;
-		list->ShipList[i++] = MELEE_UMGAH;
-		list->ShipList[i++] = MELEE_URQUAN;
-		list->ShipList[i++] = MELEE_VUX;
-		list->ShipList[i++] = MELEE_YEHAT;
+		MeleeTeam_setName (*list, "Star Control 1");
+		MeleeTeam_setShip (*list, i++, MELEE_ANDROSYNTH);
+		MeleeTeam_setShip (*list, i++, MELEE_ARILOU);
+		MeleeTeam_setShip (*list, i++, MELEE_CHENJESU);
+		MeleeTeam_setShip (*list, i++, MELEE_EARTHLING);
+		MeleeTeam_setShip (*list, i++, MELEE_ILWRATH);
+		MeleeTeam_setShip (*list, i++, MELEE_MMRNMHRM);
+		MeleeTeam_setShip (*list, i++, MELEE_MYCON);
+		MeleeTeam_setShip (*list, i++, MELEE_SHOFIXTI);
+		MeleeTeam_setShip (*list, i++, MELEE_SPATHI);
+		MeleeTeam_setShip (*list, i++, MELEE_SYREEN);
+		MeleeTeam_setShip (*list, i++, MELEE_UMGAH);
+		MeleeTeam_setShip (*list, i++, MELEE_URQUAN);
+		MeleeTeam_setShip (*list, i++, MELEE_VUX);
+		MeleeTeam_setShip (*list, i++, MELEE_YEHAT);
 		list++;
 	}
 
 	{
 		FleetShipIndex i = 0;
-		utf8StringCopy (list->TeamName, sizeof (list->TeamName),
-				"Star Control 2");
-		list->ShipList[i++] = MELEE_CHMMR;
-		list->ShipList[i++] = MELEE_DRUUGE;
-		list->ShipList[i++] = MELEE_KOHR_AH;
-		list->ShipList[i++] = MELEE_MELNORME;
-		list->ShipList[i++] = MELEE_ORZ;
-		list->ShipList[i++] = MELEE_PKUNK;
-		list->ShipList[i++] = MELEE_SLYLANDRO;
-		list->ShipList[i++] = MELEE_SUPOX;
-		list->ShipList[i++] = MELEE_THRADDASH;
-		list->ShipList[i++] = MELEE_UTWIG;
-		list->ShipList[i++] = MELEE_ZOQFOTPIK;
-		list->ShipList[i++] = MELEE_ZOQFOTPIK;
-		list->ShipList[i++] = MELEE_ZOQFOTPIK;
-		list->ShipList[i++] = MELEE_ZOQFOTPIK;
+		MeleeTeam_setName (*list, "Star Control 2");
+		MeleeTeam_setShip (*list, i++, MELEE_CHMMR);
+		MeleeTeam_setShip (*list, i++, MELEE_DRUUGE);
+		MeleeTeam_setShip (*list, i++, MELEE_KOHR_AH);
+		MeleeTeam_setShip (*list, i++, MELEE_MELNORME);
+		MeleeTeam_setShip (*list, i++, MELEE_ORZ);
+		MeleeTeam_setShip (*list, i++, MELEE_PKUNK);
+		MeleeTeam_setShip (*list, i++, MELEE_SLYLANDRO);
+		MeleeTeam_setShip (*list, i++, MELEE_SUPOX);
+		MeleeTeam_setShip (*list, i++, MELEE_THRADDASH);
+		MeleeTeam_setShip (*list, i++, MELEE_UTWIG);
+		MeleeTeam_setShip (*list, i++, MELEE_ZOQFOTPIK);
+		MeleeTeam_setShip (*list, i++, MELEE_ZOQFOTPIK);
+		MeleeTeam_setShip (*list, i++, MELEE_ZOQFOTPIK);
+		MeleeTeam_setShip (*list, i++, MELEE_ZOQFOTPIK);
 		list++;
 	}
 
@@ -844,9 +785,33 @@ InitPreBuilt (MELEE_STATE *pMS)
 }
 
 static void
-UninitPreBuilt (MELEE_STATE *pMS) {
+UninitPreBuilt (MELEE_STATE *pMS)
+{
+	size_t fleetI;
+	for (fleetI = 0; fleetI < pMS->load.preBuiltCount; fleetI++)
+		MeleeTeam_delete (pMS->load.preBuiltList[fleetI]);
 	HFree (pMS->load.preBuiltList);
 	pMS->load.preBuiltCount = 0;
+}
+
+static void
+InitLoadView (MELEE_STATE *pMS)
+{
+	size_t viewI;
+	MeleeTeam **view = pMS->load.view;
+
+	for (viewI = 0; viewI < LOAD_TEAM_VIEW_SIZE; viewI++)
+		view[viewI] = MeleeTeam_new ();
+}
+
+static void
+UninitLoadView (MELEE_STATE *pMS)
+{
+	size_t viewI;
+	MeleeTeam **view = pMS->load.view;
+
+	for (viewI = 0; viewI < LOAD_TEAM_VIEW_SIZE; viewI++)
+		MeleeTeam_delete(view[viewI]);
 }
 
 void
@@ -854,11 +819,13 @@ InitMeleeLoadState (MELEE_STATE *pMS)
 {
 	pMS->load.entryIndices = NULL;
 	InitPreBuilt (pMS);
+	InitLoadView (pMS);
 }
 
 void
 UninitMeleeLoadState (MELEE_STATE *pMS)
 {
+	UninitLoadView (pMS);
 	UninitPreBuilt (pMS);
 	if (pMS->load.entryIndices != NULL)
 		HFree (pMS->load.entryIndices);

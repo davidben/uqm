@@ -37,14 +37,14 @@ netSide(NetConnection *conn, int side) {
 }
 
 void
-Netplay_selectShip(NetConnection *conn, uint16 index) {
+Netplay_Notify_shipSelected(NetConnection *conn, FleetShipIndex index) {
 	assert(NetConnection_getState(conn) == NetState_selectShip);
 
 	sendSelectShip(conn, index);
 }
 
 void
-Netplay_battleInput(NetConnection *conn, BATTLE_INPUT_STATE input) {
+Netplay_Notify_battleInput(NetConnection *conn, BATTLE_INPUT_STATE input) {
 	assert(NetConnection_getState(conn) == NetState_inBattle ||
 			NetConnection_getState(conn) == NetState_endingBattle ||
 			NetConnection_getState(conn) == NetState_endingBattle2);
@@ -53,18 +53,18 @@ Netplay_battleInput(NetConnection *conn, BATTLE_INPUT_STATE input) {
 }
 
 void
-Netplay_teamStringChanged(NetConnection *conn, int player,
+Netplay_Notify_setTeamName(NetConnection *conn, int player,
 		const char *name, size_t len) {
 	assert(NetConnection_getState(conn) == NetState_inSetup);
 	assert(!conn->stateFlags.handshake.localOk);
 	
-	sendTeamString(conn, netSide(conn, player), name, len);
+	sendTeamName(conn, netSide(conn, player), name, len);
 }
 
 // On initialisation, or load.
 void
-Netplay_entireFleetChanged(NetConnection *conn, int player,
-		const BYTE *fleet, size_t fleetSize) {
+Netplay_Notify_setFleet(NetConnection *conn, int player,
+		const MeleeShip *fleet, size_t fleetSize) {
 	assert(NetConnection_getState(conn) == NetState_inSetup);
 	assert(!conn->stateFlags.handshake.localOk);
 
@@ -72,8 +72,8 @@ Netplay_entireFleetChanged(NetConnection *conn, int player,
 }
 
 void
-Netplay_fleetShipChanged(NetConnection *conn, int player,
-		size_t index, BYTE ship) {
+Netplay_Notify_setShip(NetConnection *conn, int player,
+		FleetShipIndex index, MeleeShip ship) {
 	assert(NetConnection_getState(conn) == NetState_inSetup);
 	assert(!conn->stateFlags.handshake.localOk);
 
@@ -81,7 +81,7 @@ Netplay_fleetShipChanged(NetConnection *conn, int player,
 }
 
 void
-Netplay_seedRandom(NetConnection *conn, uint32 seed) {
+Netplay_Notify_seedRandom(NetConnection *conn, uint32 seed) {
 	assert(NetConnection_getState(conn) == NetState_preBattle);
 
 	sendSeedRandom(conn, seed);
@@ -89,14 +89,15 @@ Netplay_seedRandom(NetConnection *conn, uint32 seed) {
 }
 
 void
-Netplay_sendInputDelay(NetConnection *conn, uint32 delay) {
+Netplay_Notify_inputDelay(NetConnection *conn, uint32 delay) {
 	assert(NetConnection_getState(conn) == NetState_preBattle);
 
 	sendInputDelay(conn, delay);
 }
 
 void
-Netplay_sendFrameCount(NetConnection *conn, BattleFrameCounter frameCount) {
+Netplay_Notify_frameCount(NetConnection *conn,
+		BattleFrameCounter frameCount) {
 	assert(NetConnection_getState(conn) == NetState_endingBattle);
 
 	sendFrameCount(conn, frameCount);
@@ -104,7 +105,7 @@ Netplay_sendFrameCount(NetConnection *conn, BattleFrameCounter frameCount) {
 
 #ifdef NETPLAY_CHECKSUM
 void
-Netplay_sendChecksum(NetConnection *conn, BattleFrameCounter frameNr,
+Netplay_Notify_checksum(NetConnection *conn, BattleFrameCounter frameNr,
 		Checksum checksum) {
 	assert(NetState_battleActive(NetConnection_getState(conn)));
 

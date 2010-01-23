@@ -1,1 +1,1 @@
-uqm_CFILES="loadmele.c melee.c pickmele.c"
+uqm_CFILES="buildpick.c loadmele.c melee.c meleesetup.c pickmele.c"

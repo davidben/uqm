@@ -27,21 +27,26 @@
 #ifdef NETPLAY_CHECKSUM
 #	include "checksum.h"
 #endif
+#include "../supermelee/meleeship.h"
+		// for MeleeShip
+#include "../supermelee/meleesetup.h"
+		// for FleetShipIndex
 
-void Netplay_selectShip(NetConnection *conn, uint16 index);
-void Netplay_battleInput(NetConnection *conn, BATTLE_INPUT_STATE input);
-void Netplay_teamStringChanged(NetConnection *conn, int player,
+void Netplay_Notify_shipSelected(NetConnection *conn, FleetShipIndex index);
+void Netplay_Notify_battleInput(NetConnection *conn,
+		BATTLE_INPUT_STATE input);
+void Netplay_Notify_setTeamName(NetConnection *conn, int player,
 		const char *name, size_t len);
-void Netplay_entireFleetChanged(NetConnection *conn, int player,
-		const BYTE *fleet, size_t fleetSize);
-void Netplay_fleetShipChanged(NetConnection *conn, int player,
-		size_t index, BYTE ship);
-void Netplay_seedRandom(NetConnection *conn, uint32 seed);
-void Netplay_sendInputDelay(NetConnection *conn, uint32 delay);
-void Netplay_sendFrameCount(NetConnection *conn,
+void Netplay_Notify_setFleet(NetConnection *conn, int player,
+		const MeleeShip *fleet, size_t fleetSize);
+void Netplay_Notify_setShip(NetConnection *conn, int player,
+		FleetShipIndex index, MeleeShip ship);
+void Netplay_Notify_seedRandom(NetConnection *conn, uint32 seed);
+void Netplay_Notify_inputDelay(NetConnection *conn, uint32 delay);
+void Netplay_Notify_frameCount(NetConnection *conn,
 		BattleFrameCounter frameCount);
 #ifdef NETPLAY_CHECKSUM
-void Netplay_sendChecksum(NetConnection *conn,
+void Netplay_Notify_checksum(NetConnection *conn,
 		BattleFrameCounter frameCount, Checksum checksum);
 #endif
 

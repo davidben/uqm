@@ -174,7 +174,7 @@ typedef enum {
 
 typedef struct {
 	uint8 index;  /* Position in the fleet */
-	uint8 ship;   /* Ship type index */
+	uint8 ship;   /* Ship type index; actually MeleeShip */
 } FleetEntry;
 // Structure describing an update to a player's fleet.
 // TODO: use strings as ship identifiers, instead of numbers,

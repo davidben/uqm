@@ -18,15 +18,18 @@
 
 #include "melee.h"
 
+#include "options.h"
+#include "buildpick.h"
+#include "meleeship.h"
+#include "../battle.h"
 #include "../build.h"
 #include "../status.h"
 #include "../colors.h"
 #include "../comm.h"
-		// for getLineWithinWidth
+		// for getLineWithinWidth()
 #include "../cons_res.h"
+		// for load_gravity_well() and free_gravity_well()
 #include "../controls.h"
-#include "libs/file.h"
-#include "../fmv.h"
 #include "../gamestr.h"
 #include "../globdata.h"
 #include "../intel.h"
@@ -36,33 +39,36 @@
 #	include "../netplay/netconnection.h"
 #	include "../netplay/netmelee.h"
 #	include "../netplay/notify.h"
+#	include "../netplay/notifyall.h"
 #	include "libs/graphics/widgets.h"
+		// for DrawShadowedBox()
 #	include "../cnctdlg.h"
+		// for MeleeConnectDialog()
 #endif
-#include "../../options.h"
-#include "../races.h"
 #include "../resinst.h"
 #include "../settings.h"
 #include "../setup.h"
 #include "../sounds.h"
 #include "../util.h"
+		// for DrawStarConBox()
 #include "../planets/planets.h"
 		// for NUMBER_OF_PLANET_TYPES
-#include "libs/graphics/drawable.h"
 #include "libs/gfxlib.h"
 #include "libs/mathlib.h"
+		// for TFB_Random()
+#include "libs/reslib.h"
 #include "libs/log.h"
+#include "libs/uio.h"
 
 
 #include <assert.h>
-#include <ctype.h>
 #include <string.h>
-#include <errno.h>
 
 
-static void DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip);
 static void StartMelee (MELEE_STATE *pMS);
+#ifdef NETPLAY
 static ssize_t numPlayersReady (void);
+#endif  /* NETPLAY */
 
 enum
 {
@@ -80,7 +86,8 @@ enum
 	NET_BOT,
 #endif
 	QUIT_BOT,
-	EDIT_MELEE
+	EDIT_MELEE, // Editing a fleet or the team name
+	BUILD_PICK  // Selecting a ship to add to a fleet
 };
 
 #ifdef NETPLAY
@@ -96,9 +103,6 @@ enum
 #define MELEE_BOX_SPACE 1
 
 #define MENU_X_OFFS 29
-#define NAME_AREA_HEIGHT 7
-#define MELEE_WIDTH 149
-#define MELEE_HEIGHT (48 + NAME_AREA_HEIGHT)
 
 #define INFO_ORIGIN_X 4
 #define INFO_WIDTH 58
@@ -160,11 +164,6 @@ enum
 #define TEAM_NAME_EDIT_CURS_COLOR \
 		WHITE_COLOR
 
-#define PICKSHIP_TEAM_NAME_TEXT_COLOR \
-		BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09)
-#define PICKSHIP_TEAM_START_VALUE_COLOR \
-		BUILD_COLOR (MAKE_RGB15 (0x04, 0x05, 0x1F), 0x4B)
-
 #define SHIPBOX_TOPLEFT_COLOR_NORMAL \
 		BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x09), 0x56)
 #define SHIPBOX_BOTTOMRIGHT_COLOR_NORMAL \
@@ -183,16 +182,12 @@ enum
 		BUILD_COLOR (MAKE_RGB15 (0x00, 0x14, 0x00), 0x02)
 
 
-FRAME PickMeleeFrame;
 FRAME MeleeFrame;
 		// Loaded from melee/melebkgd.ani
-static FRAME BuildPickFrame;
-		// Constructed.
 MELEE_STATE *pMeleeState;
 
 BOOLEAN DoMelee (MELEE_STATE *pMS);
 static BOOLEAN DoEdit (MELEE_STATE *pMS);
-static BOOLEAN DoPickShip (MELEE_STATE *pMS);
 static BOOLEAN DoConfirmSettings (MELEE_STATE *pMS);
 
 #define DTSHS_NORMAL   0
@@ -200,9 +195,13 @@ static BOOLEAN DoConfirmSettings (MELEE_STATE *pMS);
 #define DTSHS_SELECTED 2
 #define DTSHS_REPAIR   4
 #define DTSHS_BLOCKCUR 8
-
 static BOOLEAN DrawTeamString (MELEE_STATE *pMS, COUNT side,
-		COUNT HiLiteState);
+		COUNT HiLiteState, const char *str);
+
+static void Melee_UpdateView_fleetValue (MELEE_STATE *pMS, COUNT side);
+static void Melee_UpdateView_ship (MELEE_STATE *pMS, COUNT side,
+		FleetShipIndex index);
+static void Melee_UpdateView_teamName (MELEE_STATE *pMS, COUNT side);
 
 
 // These icons come from melee/melebkgd.ani
@@ -215,19 +214,6 @@ DrawMeleeIcon (COUNT which_icon)
 	s.origin.y = 0;
 	s.frame = SetAbsFrameIndex (MeleeFrame, which_icon);
 	DrawStamp (&s);
-}
-
-static void
-GetShipBox (RECT *pRect, COUNT side, COUNT row, COUNT col)
-{
-	pRect->corner.x = MELEE_X_OFFS
-			+ (col * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE));
-	pRect->corner.y = MELEE_Y_OFFS
-			+ (side * (MELEE_Y_OFFS + MELEE_BOX_SPACE
-			+ (NUM_MELEE_ROWS * (MELEE_BOX_HEIGHT + MELEE_BOX_SPACE))))
-			+ (row * (MELEE_BOX_HEIGHT + MELEE_BOX_SPACE));
-	pRect->extent.width = MELEE_BOX_WIDTH;
-	pRect->extent.height = MELEE_BOX_HEIGHT;
 }
 
 static FleetShipIndex
@@ -248,10 +234,28 @@ GetShipColumn (int index)
 	return index % NUM_MELEE_COLUMNS;
 }
 
+// Get the rectangle containing the ship slot for the specified side, row,
+// and column.
+void
+GetShipBox (RECT *pRect, COUNT side, COUNT row, COUNT col)
+{
+	pRect->corner.x = MELEE_X_OFFS
+			+ (col * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE));
+	pRect->corner.y = MELEE_Y_OFFS
+			+ (side * (MELEE_Y_OFFS + MELEE_BOX_SPACE
+			+ (NUM_MELEE_ROWS * (MELEE_BOX_HEIGHT + MELEE_BOX_SPACE))))
+			+ (row * (MELEE_BOX_HEIGHT + MELEE_BOX_SPACE));
+	pRect->extent.width = MELEE_BOX_WIDTH;
+	pRect->extent.height = MELEE_BOX_HEIGHT;
+}
+
+// The caller must hold the GraphicsLock.
 static void
-DrawShipBox (COUNT side, COUNT row, COUNT col, BYTE ship, BOOLEAN HiLite)
+DrawShipBox (COUNT side, FleetShipIndex index, MeleeShip ship, BOOLEAN HiLite)
 {
 	RECT r;
+	BYTE row = GetShipRow (index);
+	BYTE col = GetShipColumn (index);
 
 	GetShipBox (&r, side, row, col);
 
@@ -281,12 +285,24 @@ DrawShipBox (COUNT side, COUNT row, COUNT col, BYTE ship, BOOLEAN HiLite)
 	UnbatchGraphics ();
 }
 
+// The caller must hold the GraphicsLock.
+static void
+ClearShipBox (COUNT side, FleetShipIndex index)
+{
+	RECT rect;
+	BYTE row = GetShipRow (index);
+	BYTE col = GetShipColumn (index);
+
+	GetShipBox (&rect, side, row, col);
+	RepairMeleeFrame (&rect);
+}
+
 static void
 DrawShipBoxCurrent (MELEE_STATE *pMS, BOOLEAN HiLite)
 {
-	FleetShipIndex index = GetShipIndex (pMS->row, pMS->col);
-	BYTE ship = pMS->SideState[pMS->side].TeamImage.ShipList[index];
-	DrawShipBox (pMS->side, pMS->row, pMS->col, ship, HiLite);
+	FleetShipIndex slotI = GetShipIndex (pMS->row, pMS->col);
+	MeleeShip ship = MeleeSetup_getShip (pMS->meleeSetup, pMS->side, slotI);
+	DrawShipBox (pMS->side, slotI, ship, HiLite);
 }
 
 // Draw an image for one of the control method selection buttons.
@@ -329,36 +345,29 @@ DrawControls (COUNT which_side, BOOLEAN HiLite)
 }
 
 static void
-DrawPickFrame (MELEE_STATE *pMS)
+DrawTeams (void)
 {
-	RECT r, r0, r1, ship_r;
-	STAMP s;
-				
-	GetShipBox (&r0, 0, 0, 0),
-	GetShipBox (&r1, 1, NUM_MELEE_ROWS - 1, NUM_MELEE_COLUMNS - 1),
-	BoxUnion (&r0, &r1, &ship_r);
+	COUNT side;
 
-	s.frame = SetAbsFrameIndex (BuildPickFrame, 0);
-	GetFrameRect (s.frame, &r);
-	r.corner.x = -(ship_r.corner.x
-			+ ((ship_r.extent.width - r.extent.width) >> 1));
-	if (pMS->side)
-		r.corner.y = -ship_r.corner.y;
-	else
-		r.corner.y = -(ship_r.corner.y
-				+ (ship_r.extent.height - r.extent.height));
-	SetFrameHot (s.frame, MAKE_HOT_SPOT (r.corner.x, r.corner.y));
-	s.origin.x = 0;
-	s.origin.y = 0;
-	DrawStamp (&s);
+	for (side = 0; side < NUM_SIDES; side++)
+	{
+		FleetShipIndex index;
 
-	UnlockMutex (GraphicsLock);
-	DrawMeleeShipStrings (pMS, (BYTE)pMS->CurIndex);
-	LockMutex (GraphicsLock);
+		DrawControls (side, FALSE);
+
+		for (index = 0; index < MELEE_FLEET_SIZE; index++)
+		{
+			MeleeShip ship = MeleeSetup_getShip(pMeleeState->meleeSetup,
+					side, index);
+			DrawShipBox (side, index, ship, FALSE);
+		}
+
+		DrawTeamString (pMeleeState, side, DTSHS_NORMAL, NULL);
+	}
 }
 
 void
-RepairMeleeFrame (RECT *pRect)
+RepairMeleeFrame (const RECT *pRect)
 {
 	RECT r;
 	CONTEXT OldContext;
@@ -388,30 +397,10 @@ RepairMeleeFrame (RECT *pRect)
 	DrawMeleeIcon (37);  /* "Net..." (bottom, not highlighted) */
 #endif
 	DrawMeleeIcon (26);  /* "Battle!" (highlighted) */
-	{
-		COUNT side;
-		COUNT row;
-		COUNT col;
-	
-		for (side = 0; side < NUM_SIDES; side++)
-		{
-			DrawControls (side, FALSE);
-			for (row = 0; row < NUM_MELEE_ROWS; row++)
-			{
-				for (col = 0; col < NUM_MELEE_COLUMNS; col++)
-				{
-					FleetShipIndex index = GetShipIndex (row, col);
-					BYTE ship = pMeleeState->SideState[side].TeamImage.
-							ShipList[index];
-					DrawShipBox (side, row, col, ship, FALSE);
-				}
-			}
 
-			DrawTeamString (pMeleeState, side, DTSHS_NORMAL);
-		}
-	}
-	
-	if (pMeleeState->InputFunc == DoPickShip)
+	DrawTeams ();
+
+	if (pMeleeState->MeleeOption == BUILD_PICK)
 		DrawPickFrame (pMeleeState);
 		
 	UnbatchGraphics ();
@@ -433,8 +422,10 @@ RedrawMeleeFrame (void)
 	RepairMeleeFrame (&r);
 }
 
+// If teamName == NULL, the team name is taken from pMS->meleeSetup
 static BOOLEAN
-DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState)
+DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState,
+		const char *teamName)
 {
 	RECT r;
 	TEXT lfText;
@@ -447,12 +438,13 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState)
 	if (HiLiteState == DTSHS_REPAIR)
 	{
 		RepairMeleeFrame (&r);
-		return (TRUE);
+		return TRUE;
 	}
 		
 	SetContextFont (MicroFont);
 
-	lfText.pStr = pMS->SideState[side].TeamImage.TeamName;
+	lfText.pStr = (teamName != NULL) ? teamName :
+			MeleeSetup_getTeamName (pMS->meleeSetup, side);
 	lfText.baseline.y = r.corner.y + r.extent.height - 3;
 
 	lfText.baseline.x = r.corner.x + 1;
@@ -465,7 +457,7 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState)
 		TEXT rtText;
 		UNICODE buf[30];
 
-		sprintf (buf, "%u", pMS->SideState[side].star_bucks);
+		sprintf (buf, "%u", MeleeSetup_getFleetValue (pMS->meleeSetup, side));
 		rtText.pStr = buf;
 		rtText.align = ALIGN_RIGHT;
 		rtText.CharCount = (COUNT)~0;
@@ -493,7 +485,7 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState)
 			// will not fit when displayed later
 			UnbatchGraphics ();
 			// disallow the change
-			return (FALSE);
+			return FALSE;
 		}
 
 		text_r = r;
@@ -537,33 +529,7 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState)
 	}
 	UnbatchGraphics ();
 
-	return (TRUE);
-}
-
-// Draw a ship icon in the ship selection popup.
-static void
-DrawPickIcon (COUNT iship, BYTE DrawErase)
-{
-	STAMP s;
-	RECT r;
-
-	GetFrameRect (BuildPickFrame, &r);
-
-	s.origin.x = r.corner.x + 20 + (iship % NUM_PICK_COLS) * 18;
-	s.origin.y = r.corner.y +  5 + (iship / NUM_PICK_COLS) * 18;
-	s.frame = GetShipIconsFromIndex (iship);
-	if (DrawErase)
-	{	// draw icon
-		DrawStamp (&s);
-	}
-	else
-	{	// erase icon
-		Color OldColor;
-
-		OldColor = SetContextForeGroundColor (BLACK_COLOR);
-		DrawFilledStamp (&s);
-		SetContextForeGroundColor (OldColor);
-	}
+	return TRUE;
 }
 
 #ifdef NETPLAY
@@ -741,14 +707,16 @@ Deselect (BYTE opt)
 			{
 				if (pMeleeState->row < NUM_MELEE_ROWS)
 					DrawShipBoxCurrent (pMeleeState, FALSE);
-				else if (pMeleeState->CurIndex == (BYTE)~0)
+				else if (pMeleeState->CurIndex == MELEE_STATE_INDEX_DONE)
+				{
+					// Not currently editing the team name.
 					DrawTeamString (pMeleeState, pMeleeState->side,
-							DTSHS_NORMAL);
+							DTSHS_NORMAL, NULL);
+				}
 			}
-			else if (pMeleeState->InputFunc == DoPickShip)
-			{
-				DrawPickIcon (pMeleeState->CurIndex, 1);
-			}
+			break;
+		case BUILD_PICK:
+			DrawPickIcon (pMeleeState->currentShip, true);
 			break;
 	}
 }
@@ -791,7 +759,7 @@ Select (BYTE opt)
 		{
 			COUNT which_side;
 					
-			which_side = opt == CONTROLS_TOP ? 1 : 0;
+			which_side = (opt == CONTROLS_TOP) ? 1 : 0;
 			DrawControls (which_side, TRUE);
 			break;
 		}
@@ -800,18 +768,22 @@ Select (BYTE opt)
 			{
 				if (pMeleeState->row < NUM_MELEE_ROWS)
 					DrawShipBoxCurrent (pMeleeState, TRUE);
-				else if (pMeleeState->CurIndex == (BYTE)~0)
+				else if (pMeleeState->CurIndex == MELEE_STATE_INDEX_DONE)
+				{
+					// Not currently editing the team name.
 					DrawTeamString (pMeleeState, pMeleeState->side,
-							DTSHS_SELECTED);
+							DTSHS_SELECTED, NULL);
+				}
 			}
-			else if (pMeleeState->InputFunc == DoPickShip)
-				DrawPickIcon (pMeleeState->CurIndex, 0);
+			break;
+		case BUILD_PICK:
+			DrawPickIcon (pMeleeState->currentShip, false);
 			break;
 	}
 }
 
-static void
-flashSelection (MELEE_STATE *pMS)
+void
+Melee_flashSelection (MELEE_STATE *pMS)
 {
 #define FLASH_RATE (ONE_SECOND / 9)
 	static TimeCount NextTime = 0;
@@ -823,7 +795,7 @@ flashSelection (MELEE_STATE *pMS)
 		CONTEXT OldContext;
 
 		NextTime = Now + FLASH_RATE;
-		select ^= true;
+		select = !select;
 
 		LockMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
@@ -858,13 +830,12 @@ InitMelee (MELEE_STATE *pMS)
 	(void) pMS;
 }
 
-static void
-DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
+// Pre: The caller holds the GraphicsLock.
+void
+DrawMeleeShipStrings (MELEE_STATE *pMS, MeleeShip NewStarShip)
 {
 	RECT r, OldRect;
 	CONTEXT OldContext;
-
-	LockMutex (GraphicsLock);
 
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&OldRect);
@@ -893,6 +864,7 @@ DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
 		t.align = ALIGN_CENTER;
 		if (pMS->row < NUM_MELEE_ROWS)
 		{
+			// A ship is selected (or an empty fleet position).
 			t.pStr = GAME_STRING (MELEE_STRING_BASE + 0);  // "Empty"
 			t.CharCount = (COUNT)~0;
 			font_DrawText (&t);
@@ -900,6 +872,7 @@ DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
 		}
 		else
 		{
+			// The team name is selected.
 			t.pStr = GAME_STRING (MELEE_STRING_BASE + 2);  // "Team"
 			t.CharCount = (COUNT)~0;
 			font_DrawText (&t);
@@ -925,25 +898,33 @@ DrawMeleeShipStrings (MELEE_STATE *pMS, BYTE NewStarShip)
 	UnbatchGraphics ();
 	SetContextClipRect (&OldRect);
 	SetContext (OldContext);
-
-	UnlockMutex (GraphicsLock);
 }
 
+// Set the currently displayed ship to the ship for the slot indicated by
+// pMS->row and pMS->col.
 static void
 UpdateCurrentShip (MELEE_STATE *pMS)
 {
-	FleetShipIndex fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
 	if (pMS->row == NUM_MELEE_ROWS)
-		pMS->CurIndex = MELEE_NONE;
+	{
+		// The team name is selected.
+		pMS->currentShip = MELEE_NONE;
+	}
 	else
-		pMS->CurIndex =
-				pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex];
-	DrawMeleeShipStrings (pMS, (BYTE)(pMS->CurIndex));
+	{
+		FleetShipIndex slotNr = GetShipIndex (pMS->row, pMS->col);
+		pMS->currentShip =
+				MeleeSetup_getShip (pMS->meleeSetup, pMS->side, slotNr);
+	}
+
+	LockMutex (GraphicsLock);
+	DrawMeleeShipStrings (pMS, pMS->currentShip);
+	UnlockMutex (GraphicsLock);
 }
 
 // returns (COUNT) ~0 for an invalid ship.
-static COUNT
-GetShipValue (BYTE StarShip)
+COUNT
+GetShipValue (MeleeShip StarShip)
 {
 	COUNT val;
 
@@ -957,43 +938,23 @@ GetShipValue (BYTE StarShip)
 	return val;
 }
 
-COUNT
-GetTeamValue (TEAM_IMAGE *pTI)
-{
-	FleetShipIndex index;
-	COUNT val;
-
-	val = 0;
-	for (index = 0; index < MELEE_FLEET_SIZE; index++)
-	{
-		BYTE StarShip = pTI->ShipList[index];
-		COUNT shipVal = GetShipValue (StarShip);
-		if (shipVal == (COUNT)~0)
-			pTI->ShipList[index] = MELEE_NONE;
-		val += shipVal;
-	}
-	
-	return val;
-}
-
 static void
 DeleteCurrentShip (MELEE_STATE *pMS)
 {
-	RECT r;
-	FleetShipIndex fleetShipIndex;
-	int CurIndex;
+	FleetShipIndex slotI = GetShipIndex (pMS->row, pMS->col);
+	Melee_Change_ship (pMS, pMS->side, slotI, MELEE_NONE);
+}
 
-	fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
-	CurIndex = pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex];
-	pMS->SideState[pMS->side].star_bucks -= GetShipCostFromIndex (CurIndex);
-	pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex] = MELEE_NONE;
+static bool
+isShipSlotSelected (MELEE_STATE *pMS, COUNT side, FleetShipIndex index)
+{
+	if (pMS->MeleeOption != EDIT_MELEE)
+		return false;
 
-	LockMutex (GraphicsLock);
-	GetShipBox (&r, pMS->side, pMS->row, pMS->col);
-	RepairMeleeFrame (&r);
+	if (pMS->side != side)
+		return false;
 
-	DrawTeamString (pMS, pMS->side, DTSHS_REPAIR);
-	UnlockMutex (GraphicsLock);
+	return (index == GetShipIndex (pMS->row, pMS->col));
 }
 
 static void
@@ -1025,10 +986,44 @@ OnTeamNameChange (TEXTENTRY_STATE *pTES)
 		hl |= DTSHS_BLOCKCUR;
 
 	LockMutex (GraphicsLock);
-	ret = DrawTeamString (pMS, pMS->side, hl);
+	ret = DrawTeamString (pMS, pMS->side, hl, pTES->BaseStr);
 	UnlockMutex (GraphicsLock);
 
 	return ret;
+}
+
+static void
+BuildPickShipPopup (MELEE_STATE *pMS)
+{
+	bool buildOk;
+
+	pMS->MeleeOption = BUILD_PICK;
+
+	buildOk = BuildPickShip (pMS);
+	if (buildOk)
+	{
+		// A ship has been selected.
+		// Add the currently selected ship to the fleet.
+		FleetShipIndex index = GetShipIndex (pMS->row, pMS->col);
+		Melee_Change_ship (pMS, pMS->side, index, pMS->currentShip);
+		AdvanceCursor (pMS);
+	}
+	
+	pMS->MeleeOption = EDIT_MELEE;
+			// Must set this before the call to RepairMeleeFrame(), so that
+			// it will not redraw the BuildPickFrame.
+
+	{
+		RECT r;
+			
+		GetBuildPickFrameRect (&r);
+		LockMutex (GraphicsLock);
+		RepairMeleeFrame (&r);
+		UnlockMutex (GraphicsLock);
+	}
+
+	UpdateCurrentShip (pMS);
+	pMS->InputFunc = DoEdit;
 }
 
 static BOOLEAN
@@ -1040,16 +1035,12 @@ DoEdit (MELEE_STATE *pMS)
 	GamePaused = FALSE;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
+		return FALSE;
 	
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT | MENU_SOUND_DELETE);
 	if (!pMS->Initialized)
 	{
-		FleetShipIndex fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
-		pMS->CurIndex =
-				pMS->SideState[pMS->side].TeamImage.ShipList[fleetShipIndex];
-		DrawMeleeShipStrings (pMS, (BYTE)pMS->CurIndex);
-
+		UpdateCurrentShip (pMS);
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoEdit;
 		return TRUE;
@@ -1058,7 +1049,7 @@ DoEdit (MELEE_STATE *pMS)
 #ifdef NETPLAY
 	netInput ();
 #endif
-	if ((pMS->row < NUM_MELEE_ROWS || pMS->CurIndex == (BYTE)~0)
+	if ((pMS->row < NUM_MELEE_ROWS || pMS->currentShip == MELEE_NONE)
 			&& (PulsedInputState.menu[KEY_MENU_CANCEL]
 			|| (PulsedInputState.menu[KEY_MENU_RIGHT]
 			&& (pMS->col == NUM_MELEE_COLUMNS - 1
@@ -1067,7 +1058,7 @@ DoEdit (MELEE_STATE *pMS)
 		// Done editing the teams.
 		LockMutex (GraphicsLock);
 		Deselect (EDIT_MELEE);
-		pMS->CurIndex = (COUNT)~0;
+		pMS->currentShip = MELEE_NONE;
 		pMS->MeleeOption = START_MELEE;
 		pMS->InputFunc = DoMelee;
 		UnlockMutex (GraphicsLock);
@@ -1077,9 +1068,8 @@ DoEdit (MELEE_STATE *pMS)
 			&& PulsedInputState.menu[KEY_MENU_SELECT])
 	{
 		// Show a popup to add a new ship to the current team.
-		pMS->Initialized = 0;
-		FlushInput ();
-		DoPickShip (pMS);
+		Deselect (EDIT_MELEE);
+		BuildPickShipPopup (pMS);
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
 			&& PulsedInputState.menu[KEY_MENU_SPECIAL])
@@ -1087,9 +1077,9 @@ DoEdit (MELEE_STATE *pMS)
 		// TODO: this is a stub; Should we display a ship spin?
 		LockMutex (GraphicsLock);
 		Deselect (EDIT_MELEE);
-		if (pMS->CurIndex != (BYTE)~0)
+		if (pMS->currentShip != MELEE_NONE)
 		{
-			// Do something with pMS->CurIndex here
+			// Do something with pMS->currentShip here
 		}
 		UnlockMutex (GraphicsLock);
 	}
@@ -1097,20 +1087,16 @@ DoEdit (MELEE_STATE *pMS)
 			PulsedInputState.menu[KEY_MENU_DELETE])
 	{
 		// Remove the currently selected ship from the current team.
-		FleetShipIndex fleetShipIndex;
+		Deselect (EDIT_MELEE);
 		DeleteCurrentShip (pMS);
-		fleetShipIndex = GetShipIndex (pMS->row, pMS->col);
-		fleetShipChanged (pMS, pMS->side, fleetShipIndex);
 		AdvanceCursor (pMS);
 		UpdateCurrentShip (pMS);
 	}
 	else
 	{
-		COUNT side, row, col;
-
-		side = pMS->side;
-		row = pMS->row;
-		col = pMS->col;
+		COUNT side = pMS->side;
+		COUNT row = pMS->row;
+		COUNT col = pMS->col;
 
 		if (row == NUM_MELEE_ROWS)
 		{
@@ -1118,17 +1104,20 @@ DoEdit (MELEE_STATE *pMS)
 			if (PulsedInputState.menu[KEY_MENU_SELECT])
 			{
 				TEXTENTRY_STATE tes;
+				char buf[MAX_TEAM_CHARS + 1];
 
 				// going to enter text
-				// XXX: CurIndex is abused here; DrawTeamString expects
-				//   CurIndex to contain the current cursor position
 				pMS->CurIndex = 0;
 				LockMutex (GraphicsLock);
-				DrawTeamString (pMS, pMS->side, DTSHS_EDIT);
+				DrawTeamString (pMS, pMS->side, DTSHS_EDIT, NULL);
 				UnlockMutex (GraphicsLock);
 
+				strncpy (buf, MeleeSetup_getTeamName (
+						pMS->meleeSetup, pMS->side), MAX_TEAM_CHARS);
+				buf[MAX_TEAM_CHARS] = '\0';
+
 				tes.Initialized = FALSE;
-				tes.BaseStr = pMS->SideState[pMS->side].TeamImage.TeamName;
+				tes.BaseStr = buf;
 				tes.CursorPos = 0;
 				tes.MaxSize = MAX_TEAM_CHARS + 1;
 				tes.CbParam = pMS;
@@ -1137,14 +1126,15 @@ DoEdit (MELEE_STATE *pMS)
 				DoTextEntry (&tes);
 				
 				// done entering
-				pMS->CurIndex = (BYTE)~0;
-				LockMutex (GraphicsLock);
-				DrawTeamString (pMS, pMS->side, DTSHS_REPAIR);
-				UnlockMutex (GraphicsLock);
-		
-				teamStringChanged (pMS, pMS->side);
+				pMS->CurIndex = MELEE_STATE_INDEX_DONE;
+				if (!Melee_Change_teamName (pMS, pMS->side, buf)) {
+					// The team name was not changed, so it was not redrawn.
+					// However, because we now leave edit mode, we still
+					// need to redraw.
+					Melee_UpdateView_teamName (pMS, pMS->side);
+				}
 				
-				return (TRUE);
+				return TRUE;
 			}
 		}
 
@@ -1205,133 +1195,14 @@ DoEdit (MELEE_STATE *pMS)
 	flushPacketQueues ();
 #endif
 
-	flashSelection (pMS);
+	Melee_flashSelection (pMS);
 
 	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
 
-	return (TRUE);
+	return TRUE;
 }
 
-// Handle the popup from which a ship to add to the fleet can be chosen.
-static BOOLEAN
-DoPickShip (MELEE_STATE *pMS)
-{
-	DWORD TimeIn = GetTimeCounter ();
-
-	/* Cancel any presses of the Pause key. */
-	GamePaused = FALSE;
-
-	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
-
-	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-
-	if (!pMS->Initialized)
-	{
-		if (pMS->CurIndex == (BYTE)~0)
-			pMS->CurIndex = 0;
-
-		LockMutex (GraphicsLock);
-		Deselect (EDIT_MELEE);
-		pMS->InputFunc = DoPickShip;
-		DrawPickFrame (pMS);
-		pMS->Initialized = TRUE;
-		UnlockMutex (GraphicsLock);
-	}
-	else if (PulsedInputState.menu[KEY_MENU_SELECT] ||
-			PulsedInputState.menu[KEY_MENU_CANCEL])
-	{
-		FleetShipIndex index = GetShipIndex (pMS->row, pMS->col);
-		pMS->InputFunc = 0; /* disable ship flashing */
-
-		if (!PulsedInputState.menu[KEY_MENU_CANCEL])
-		{
-			// Add the currently selected ship to the fleet.
-			pMS->SideState[pMS->side].star_bucks +=
-					GetShipCostFromIndex (pMS->CurIndex);
-			pMS->SideState[pMS->side].TeamImage.ShipList[index] =
-					pMS->CurIndex;
-			LockMutex (GraphicsLock);
-			DrawTeamString (pMS, pMS->side, DTSHS_REPAIR);
-			DrawShipBoxCurrent (pMS, FALSE);
-			UnlockMutex (GraphicsLock);
-			AdvanceCursor (pMS);
-		}
-
-		{
-			RECT r;
-			
-			GetFrameRect (BuildPickFrame, &r);
-			LockMutex (GraphicsLock);
-			RepairMeleeFrame (&r);
-			UnlockMutex (GraphicsLock);
-		}
-
-		fleetShipChanged (pMS, pMS->side, index);
-		UpdateCurrentShip (pMS);
-
-		pMS->InputFunc = DoEdit;
-
-		return (TRUE);
-	}
-	else if (PulsedInputState.menu[KEY_MENU_SPECIAL]
-			&& (pMeleeState->CurIndex != (BYTE)~0))
-	{
-		DoShipSpin (pMS->CurIndex, (MUSIC_REF)0);
-	
-		return (TRUE);
-	}
-
-	{
-		BYTE NewStarShip;
-
-		NewStarShip = pMS->CurIndex;
-
-		if (PulsedInputState.menu[KEY_MENU_LEFT])
-		{
-			if (NewStarShip % NUM_PICK_COLS == 0)
-				NewStarShip += NUM_PICK_COLS;
-			--NewStarShip;
-		}
-		else if (PulsedInputState.menu[KEY_MENU_RIGHT])
-		{
-			++NewStarShip;
-			if (NewStarShip % NUM_PICK_COLS == 0)
-				NewStarShip -= NUM_PICK_COLS;
-		}
-		
-		if (PulsedInputState.menu[KEY_MENU_UP])
-		{
-			if (NewStarShip >= NUM_PICK_COLS)
-				NewStarShip -= NUM_PICK_COLS;
-			else
-				NewStarShip += NUM_PICK_COLS * (NUM_PICK_ROWS - 1);
-		}
-		else if (PulsedInputState.menu[KEY_MENU_DOWN])
-		{
-			if (NewStarShip < NUM_PICK_COLS * (NUM_PICK_ROWS - 1))
-				NewStarShip += NUM_PICK_COLS;
-			else
-				NewStarShip -= NUM_PICK_COLS * (NUM_PICK_ROWS - 1);
-		}
-
-		if (NewStarShip != pMS->CurIndex)
-		{
-			LockMutex (GraphicsLock);
-			Deselect (EDIT_MELEE);
-			pMS->CurIndex = NewStarShip;
-			UnlockMutex (GraphicsLock);
-			DrawMeleeShipStrings (pMS, NewStarShip);
-		}
-	}
-
-	flashSelection (pMS);
-
-	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
-
-	return (TRUE);
-}
-
+#ifdef NETPLAY
 // Returns -1 if a connection has been aborted.
 static ssize_t
 numPlayersReady (void)
@@ -1348,7 +1219,6 @@ numPlayersReady (void)
 			continue;
 		}
 
-#ifdef NETPLAY
 		{
 			NetConnection *conn;
 
@@ -1360,11 +1230,11 @@ numPlayersReady (void)
 			if (NetConnection_getState (conn) > NetState_inSetup)
 				numDone++;
 		}
-#endif
 	}
 
 	return numDone;
 }
+#endif  /* NETPLAY */
 
 // The player has pressed "Start Game", and all Network players are
 // connected. We're now just waiting for the confirmation of the other
@@ -1435,7 +1305,7 @@ DoConfirmSettings (MELEE_STATE *pMS)
 	// All sides have confirmed.
 
 	// Send our own prefered frame delay.
-	sendInputDelayConnections (netplayOptions.inputDelay);
+	Netplay_NotifyAll_inputDelay (netplayOptions.inputDelay);
 
 	// Synchronise the RNGs:
 	{
@@ -1455,7 +1325,7 @@ DoConfirmSettings (MELEE_STATE *pMS)
 				continue;
 
 			if (NetConnection_getDiscriminant (conn))
-				Netplay_seedRandom (conn, SeedRandomNumbers ());
+				Netplay_Notify_seedRandom (conn, SeedRandomNumbers ());
 		}
 		flushPacketQueues ();
 	}
@@ -1491,45 +1361,9 @@ DoConfirmSettings (MELEE_STATE *pMS)
 static void
 LoadMeleeInfo (MELEE_STATE *pMS)
 {
-	STAMP	s;
-	CONTEXT	OldContext;
-	RECT    r;
-	COUNT   i;
-
-	// reverting to original behavior
-	OldContext = SetContext (OffScreenContext);
-
-	if (PickMeleeFrame)
-		DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
-	PickMeleeFrame = CaptureDrawable (CreateDrawable (
-			WANT_PIXMAP, MELEE_WIDTH, MELEE_HEIGHT, 2));
-	s.origin.x = 0;
-	s.origin.y = 0;
-	s.frame = CaptureDrawable (LoadGraphic (MELEE_PICK_MASK_PMAP_ANIM));
-	SetContextFGFrame (PickMeleeFrame);
-	DrawStamp (&s);
-
-	s.frame = IncFrameIndex (s.frame);
-	SetContextFGFrame (IncFrameIndex (PickMeleeFrame));
-	DrawStamp (&s);
-	DestroyDrawable (ReleaseDrawable (s.frame));
-
+	BuildPickMeleeFrame ();
 	MeleeFrame = CaptureDrawable (LoadGraphic (MELEE_SCREEN_PMAP_ANIM));
-
-	// create team building ship selection box
-	s.frame = SetAbsFrameIndex (MeleeFrame, 27);
-			// 5x5 grid of ships to pick from
-	GetFrameRect (s.frame, &r);
-	BuildPickFrame = CaptureDrawable (CreateDrawable (
-			WANT_PIXMAP, r.extent.width, r.extent.height, 1));
-	SetContextFGFrame (BuildPickFrame);
-	SetFrameHot (s.frame, MAKE_HOT_SPOT (0, 0));
-	DrawStamp (&s);
-
-	for (i = 0; i < NUM_PICK_COLS * NUM_PICK_ROWS; ++i)
-		DrawPickIcon (i, 1);
-
-	SetContext (OldContext);
+	BuildBuildPickFrame ();
 
 	InitSpace ();
 
@@ -1549,11 +1383,11 @@ FreeMeleeInfo (MELEE_STATE *pMS)
 	}
 
 	UninitSpace ();
-
+		
+	DestroyPickMeleeFrame ();
 	DestroyDrawable (ReleaseDrawable (MeleeFrame));
 	MeleeFrame = 0;
-	DestroyDrawable (ReleaseDrawable (BuildPickFrame));
-	BuildPickFrame = 0;
+	DestroyBuildPickFrame ();
 
 #ifdef NETPLAY
 	closeAllConnections ();
@@ -1563,114 +1397,9 @@ FreeMeleeInfo (MELEE_STATE *pMS)
 static void
 BuildAndDrawShipList (MELEE_STATE *pMS)
 {
-	COUNT i;
-	CONTEXT OldContext;
-
-	OldContext = SetContext (OffScreenContext);
-
-	for (i = 0; i < NUM_SIDES; ++i)
-	{
-		COUNT side;
-		RECT r;
-		TEXT t;
-		STAMP s;
-		UNICODE buf[30];
-		FleetShipIndex index;
-
-		side = !i;
-
-		s.frame = SetAbsFrameIndex (PickMeleeFrame, side);
-		SetContextFGFrame (s.frame);
-
-		GetFrameRect (s.frame, &r);
-		t.baseline.x = r.extent.width >> 1;
-		t.baseline.y = r.extent.height - NAME_AREA_HEIGHT + 4;
-
-		r.corner.x += 2;
-		r.corner.y += 2;
-		r.extent.width -= (2 * 2) + (ICON_WIDTH + 2) + 1;
-		r.extent.height -= (2 * 2) + NAME_AREA_HEIGHT;
-		SetContextForeGroundColor (PICK_BG_COLOR);
-		DrawFilledRectangle (&r);
-
-		r.corner.x += 2;
-		r.extent.width += (ICON_WIDTH + 2) - (2 * 2);
-		r.corner.y += r.extent.height;
-		r.extent.height = NAME_AREA_HEIGHT;
-		DrawFilledRectangle (&r);
-
-		// Team name at the bottom of the frame:
-		t.align = ALIGN_CENTER;
-		t.pStr = pMS->SideState[i].TeamImage.TeamName;
-		t.CharCount = (COUNT)~0;
-		SetContextFont (TinyFont);
-		SetContextForeGroundColor (PICKSHIP_TEAM_NAME_TEXT_COLOR);
-		font_DrawText (&t);
-
-		// Total team value of the starting team:
-		sprintf (buf, "%u", pMS->SideState[i].star_bucks);
-		t.baseline.x = 4;
-		t.baseline.y = 7;
-		t.align = ALIGN_LEFT;
-		t.pStr = buf;
-		t.CharCount = (COUNT)~0;
-		SetContextForeGroundColor (PICKSHIP_TEAM_START_VALUE_COLOR);
-		font_DrawText (&t);
-
-		assert (CountLinks (&race_q[side]) == 0);
-
-		for (index = 0; index < MELEE_FLEET_SIZE; index++)
-		{
-			BYTE StarShip;
-
-			StarShip = pMS->SideState[i].TeamImage.ShipList[index];
-			if (StarShip == MELEE_NONE)
-				continue;
-
-			{
-				BYTE row, col;
-				BYTE ship_cost;
-				HMASTERSHIP hMasterShip;
-				HSTARSHIP hBuiltShip;
-				MASTER_SHIP_INFO *MasterPtr;
-				STARSHIP *BuiltShipPtr;
-				BYTE captains_name_index;
-
-				hMasterShip = GetStarShipFromIndex (&master_q, StarShip);
-				MasterPtr = LockMasterShip (&master_q, hMasterShip);
-
-				captains_name_index = NameCaptain (&race_q[side],
-						MasterPtr->SpeciesID);
-				hBuiltShip = Build (&race_q[side], MasterPtr->SpeciesID);
-
-				// Draw the icon.
-				row = GetShipRow (index);
-				col = GetShipColumn (index);
-				s.origin.x = 4 + ((ICON_WIDTH + 2) * col);
-				s.origin.y = 10 + ((ICON_HEIGHT + 2) * row);
-				s.frame = MasterPtr->ShipInfo.icons;
-				DrawStamp (&s);
-
-				ship_cost = MasterPtr->ShipInfo.ship_cost;
-				UnlockMasterShip (&master_q, hMasterShip);
-
-				BuiltShipPtr = LockStarShip (&race_q[side], hBuiltShip);
-				BuiltShipPtr->index = index;
-				BuiltShipPtr->ship_cost = ship_cost;
-				BuiltShipPtr->playerNr = side;
-				BuiltShipPtr->captains_name_index = captains_name_index;
-				// The next ones are not used in Melee
-				BuiltShipPtr->crew_level = 0;
-				BuiltShipPtr->max_crew = 0;
-				BuiltShipPtr->race_strings = 0;
-				BuiltShipPtr->icons = 0;
-				BuiltShipPtr->RaceDescPtr = 0;
-				UnlockStarShip (&race_q[side], hBuiltShip);
-			}
-		}
-	}
-
-	SetContext (OldContext);
+	FillPickMeleeFrame (pMS->meleeSetup);
+			// XXX TODO: This also builds the race_q for each player.
+			// This should be split off.
 }
 
 static void
@@ -1722,8 +1451,9 @@ StartMelee (MELEE_STATE *pMS)
 static void
 StartMeleeButtonPressed (MELEE_STATE *pMS)
 {
-	if (pMS->SideState[0].star_bucks == 0 ||
-			pMS->SideState[1].star_bucks == 0)
+	// Either fleet must at least have one ship.
+	if (MeleeSetup_getFleetValue (pMS->meleeSetup, 0) == 0 ||
+			MeleeSetup_getFleetValue (pMS->meleeSetup, 1) == 0)
 	{
 		PlayMenuSound (MENU_SOUND_FAILURE);
 		return;
@@ -1824,7 +1554,7 @@ DoConnectingDialog (MELEE_STATE *pMS)
 	GamePaused = FALSE;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
+		return FALSE;
 
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	if (!pMS->Initialized)
@@ -1928,12 +1658,11 @@ DoConnectingDialog (MELEE_STATE *pMS)
 	return TRUE;
 }
 
-/* Check for disconnections, and revert to human control if so */
+/* Check for disconnects, and revert to human control if there is one */
 static void
-check_for_disconnections (MELEE_STATE *pMS)
+check_for_disconnects (MELEE_STATE *pMS)
 {
 	COUNT player;
-	bool changed = FALSE;
 
 	for (player = 0; player < NUM_PLAYERS; player++)
 	{
@@ -1949,7 +1678,6 @@ check_for_disconnections (MELEE_STATE *pMS)
 			DrawControls (player, FALSE);
 			log_add (log_User, "Player %d has disconnected; shifting "
 					"controls\n", player);
-			changed = TRUE;
 		}
 	}
 
@@ -1964,16 +1692,16 @@ nextControlType (COUNT which_side)
 	switch (PlayerControl[which_side])
 	{
 		case HUMAN_CONTROL | STANDARD_RATING:
-			PlayerControl[which_side] =  COMPUTER_CONTROL | STANDARD_RATING;
+			PlayerControl[which_side] = COMPUTER_CONTROL | STANDARD_RATING;
 			break;
 		case COMPUTER_CONTROL | STANDARD_RATING:
-			PlayerControl[which_side] =  COMPUTER_CONTROL | GOOD_RATING;
+			PlayerControl[which_side] = COMPUTER_CONTROL | GOOD_RATING;
 			break;
 		case COMPUTER_CONTROL | GOOD_RATING:
-			PlayerControl[which_side] =  COMPUTER_CONTROL | AWESOME_RATING;
+			PlayerControl[which_side] = COMPUTER_CONTROL | AWESOME_RATING;
 			break;
 		case COMPUTER_CONTROL | AWESOME_RATING:
-			PlayerControl[which_side] =  HUMAN_CONTROL | STANDARD_RATING;
+			PlayerControl[which_side] = HUMAN_CONTROL | STANDARD_RATING;
 			break;
 
 #ifdef NETPLAY
@@ -2026,7 +1754,7 @@ MeleeOptionSelect (MELEE_STATE *pMS)
 		case SAVE_TOP:
 		case SAVE_BOT:
 			pMS->side = pMS->MeleeOption == SAVE_TOP ? 0 : 1;
-			if (pMS->SideState[pMS->side].star_bucks)
+			if (MeleeSetup_getFleetValue (pMS->meleeSetup, pMS->side) > 0)
 				DoSaveTeam (pMS);
 			else
 				PlayMenuSound (MENU_SOUND_FAILURE);
@@ -2073,7 +1801,7 @@ DoMelee (MELEE_STATE *pMS)
 	GamePaused = FALSE;
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-		return (FALSE);
+		return FALSE;
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	if (!pMS->Initialized)
@@ -2178,45 +1906,52 @@ DoMelee (MELEE_STATE *pMS)
 		{
 			MeleeOptionSelect (pMS);
 			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
-				return (FALSE);
+				return FALSE;
 		}
 	}
 
 #ifdef NETPLAY
 	flushPacketQueues ();
 
-	check_for_disconnections (pMS);
+	check_for_disconnects (pMS);
 #endif
 
-	flashSelection (pMS);
+	Melee_flashSelection (pMS);
 
 	SleepThreadUntil (TimeIn + ONE_SECOND / 30);
 
-	return (TRUE);
+	return TRUE;
 }
 
 int
 LoadMeleeConfig (MELEE_STATE *pMS)
 {
-	uio_Stream *load_fp;
+	uio_Stream *stream;
 	int status;
 	COUNT side;
 
-	load_fp = res_OpenResFile (configDir, "melee.cfg", "rb");
-	if (!load_fp)
+	stream = uio_fopen (configDir, "melee.cfg", "rb");
+	if (stream == NULL)
 		goto err;
+	
+	{
+		struct stat sb;
 
-	if (LengthResFile (load_fp) != (1 + sizeof (TEAM_IMAGE)) * NUM_SIDES)
-		goto err;
+		if (uio_fstat(uio_streamHandle(stream), &sb) == -1)
+			goto err;
+		if ((size_t) sb.st_size != (1 + MeleeTeam_size) * NUM_SIDES)
+			goto err;
+	}
 
 	for (side = 0; side < NUM_SIDES; side++)
 	{
-		status = GetResFileChar (load_fp);
-		if (status == -1)
+		status = uio_getc (stream);
+		if (status == EOF)
 			goto err;
-		PlayerControl[side] = (BYTE)status;
+		PlayerControl[side] = (BYTE) status;
+		// XXX: insert sanity check on PlanetControl here.
 
-		if (!ReadTeamImage (&pMS->SideState[side].TeamImage, load_fp))
+		if (MeleeSetup_deserializeTeam (pMS->meleeSetup, side, stream) == -1)
 			goto err;
 	
 		/* Do not allow netplay mode at the start. */
@@ -2224,43 +1959,43 @@ LoadMeleeConfig (MELEE_STATE *pMS)
 			PlayerControl[side] = HUMAN_CONTROL | STANDARD_RATING;
 	}
 
-	res_CloseResFile (load_fp);
+	uio_fclose (stream);
 	return 0;
 
 err:
-	if (load_fp)
-		res_CloseResFile (load_fp);
+	if (stream)
+		uio_fclose (stream);
 	return -1;
 }
 
 int
 WriteMeleeConfig (MELEE_STATE *pMS)
 {
-	uio_Stream *save_fp;
+	uio_Stream *stream;
 	COUNT side;
 
-	save_fp = res_OpenResFile (configDir, "melee.cfg", "wb");
-	if (!save_fp)
+	stream = res_OpenResFile (configDir, "melee.cfg", "wb");
+	if (stream == NULL)
 		goto err;
 
 	for (side = 0; side < NUM_SIDES; side++)
 	{
-		if (PutResFileChar (PlayerControl[side], save_fp) == -1)
+		if (uio_putc (PlayerControl[side], stream) == EOF)
 			goto err;
 
-		if (WriteTeamImage (&pMS->SideState[side].TeamImage, save_fp) == 0)
+		if (MeleeSetup_serializeTeam (pMS->meleeSetup, side, stream) == -1)
 			goto err;
 	}
 
-	if (!res_CloseResFile (save_fp))
+	if (!res_CloseResFile (stream))
 		goto err;
 
 	return 0;
 
 err:
-	if (save_fp)
+	if (stream)
 	{
-		res_CloseResFile (save_fp);
+		res_CloseResFile (stream);
 		DeleteResFile (configDir, "melee.cfg");
 	}
 	return -1;
@@ -2279,10 +2014,12 @@ Melee (void)
 		MenuState.InputFunc = DoMelee;
 		MenuState.Initialized = FALSE;
 
+		MenuState.meleeSetup = MeleeSetup_new ();
+
 		MenuState.randomContext = RandomContext_New ();
 		RandomContext_SeedRandom (MenuState.randomContext,
 				GetTimeCounter ());
-				// Using the current time still leave the random state a bit
+				// Using the current time still leaves the random state a bit
 				// predictable, but it is good enough.
 
 #ifdef NETPLAY
@@ -2293,7 +2030,8 @@ Melee (void)
 		}
 #endif
 		
-		MenuState.CurIndex = (COUNT)~0;
+		MenuState.currentShip = MELEE_NONE;
+		MenuState.CurIndex = MELEE_STATE_INDEX_DONE;
 		InitMeleeLoadState (&MenuState);
 
 		GLOBAL (CurrentActivity) = SUPER_MELEE;
@@ -2303,20 +2041,12 @@ Melee (void)
 		if (LoadMeleeConfig (&MenuState) == -1)
 		{
 			PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
-			MenuState.SideState[0].TeamImage = MenuState.load.preBuiltList[0];
+			Melee_Change_team (&MenuState, 0, MenuState.load.preBuiltList[0]);
 			PlayerControl[1] = COMPUTER_CONTROL | STANDARD_RATING;
-			MenuState.SideState[1].TeamImage = MenuState.load.preBuiltList[1];
+			Melee_Change_team (&MenuState, 1, MenuState.load.preBuiltList[1]);
 		}
-		teamStringChanged (&MenuState, 0);
-		teamStringChanged (&MenuState, 1);
-		entireFleetChanged (&MenuState, 0);
-		entireFleetChanged (&MenuState, 1);
 
 		MenuState.side = 0;
-		MenuState.SideState[0].star_bucks =
-				GetTeamValue (&MenuState.SideState[0].TeamImage);
-		MenuState.SideState[1].star_bucks =
-				GetTeamValue (&MenuState.SideState[1].TeamImage);
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		DoInput (&MenuState, TRUE);
 
@@ -2328,194 +2058,17 @@ Melee (void)
 		DestroySound (ReleaseSound (GameSounds));
 		GameSounds = 0;
 
-		DestroyDrawable (ReleaseDrawable (PickMeleeFrame));
-		PickMeleeFrame = 0;
-
 		UninitMeleeLoadState (&MenuState);
 
 		RandomContext_Delete (MenuState.randomContext);
+		
+		MeleeSetup_delete (MenuState.meleeSetup);
 
 		FlushInput ();
 	}
 }
 
-// Notify the network connections of a team name change.
-void
-teamStringChanged (MELEE_STATE *pMS, int player)
-{
 #ifdef NETPLAY
-	const char *name;
-	size_t len;
-	size_t playerI;
-
-	name = pMS->SideState[player].TeamImage.TeamName;
-	len = strlen (name);
-	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
-	{
-		NetConnection *conn = netConnections[playerI];
-
-		if (conn == NULL)
-			continue;
-
-		if (!NetConnection_isConnected (conn))
-			continue;
-
-		if (NetConnection_getState (conn) != NetState_inSetup)
-			continue;
-
-		Netplay_teamStringChanged (conn, player, name, len);
-	}
-#else
-	(void) pMS;
-	(void) player;
-#endif
-}
-
-// Notify the network connections of the configuration of a fleet.
-void
-entireFleetChanged (MELEE_STATE *pMS, int player)
-{
-#ifdef NETPLAY
-	size_t playerI;
-	for (playerI = 0; playerI < NUM_PLAYERS; playerI++) {
-		NetConnection *conn = netConnections[playerI];
-
-		if (conn == NULL)
-			continue;
-
-		if (!NetConnection_isConnected (conn))
-			continue;
-
-		if (NetConnection_getState (conn) != NetState_inSetup)
-			continue;
-
-		Netplay_entireFleetChanged (conn, player,
-				pMS->SideState[player].TeamImage.ShipList, MELEE_FLEET_SIZE);
-	}
-#else
-	(void) player;
-#endif
-	(void) pMS;
-}
-
-// Notify the network of a change in the configuration of a fleet.
-void
-fleetShipChanged (MELEE_STATE *pMS, int player, size_t index)
-{
-#ifdef NETPLAY
-	size_t playerI;
-	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
-	{
-		NetConnection *conn = netConnections[playerI];
-
-		if (conn == NULL)
-			continue;
-
-		if (!NetConnection_isConnected (conn))
-			continue;
-
-		if (NetConnection_getState (conn) != NetState_inSetup)
-			continue;
-
-		Netplay_fleetShipChanged (conn, player, index,
-				pMS->SideState[player].TeamImage.ShipList[index]);
-	}
-#else
-	(void) player;
-	(void) index;
-#endif
-	(void) pMS;
-}
-
-#ifdef NETPLAY
-// NB: 'len' does not include the terminating 0.
-//     'len' counts in bytes, not in characters.
-void
-updateTeamName (MELEE_STATE *pMS, COUNT side, const char *name,
-		size_t len)
-{
-	// NB: MAX_TEAM_CHARS is the maximum number of characters,
-	//     without the terminating '\0'.
-	if (len > MAX_TEAM_CHARS)
-		len = MAX_TEAM_CHARS;
-
-	// TeamName has space for at least MAX_TEAM_CHARS + 1 bytes.
-	strncpy (pMS->SideState[side].TeamImage.TeamName, name, len);
-	pMS->SideState[side].TeamImage.TeamName[len] = '\0';
-	
-	LockMutex (GraphicsLock);
-#if 0  /* DTSHS_REPAIR does not combine with other options */
-	if (pMS->MeleeOption == EDIT_MELEE && pMS->side == side
-			&& pMS->row == NUM_MELEE_ROWS)
-		DrawTeamString (pMS, side, DTSHS_REPAIR | DTSHS_SELECTED);
-	else
-#endif
-		DrawTeamString (pMS, side, DTSHS_REPAIR);
-	UnlockMutex (GraphicsLock);
-}
-
-// Update a ship in a fleet as specified by a remote party.
-bool
-updateFleetShip (MELEE_STATE *pMS, COUNT side, COUNT index, BYTE ship)
-{
-	BYTE row = GetShipRow (index);
-	BYTE col = GetShipColumn (index);
-	COUNT val;
-	
-	FleetShipIndex selectedShipIndex;
-	BOOLEAN isSelected;
-
-	if (ship >= NUM_MELEE_SHIPS && ship != MELEE_NONE) {
-		log_add (log_Warning, "Invalid ship type number %d (max = %d).\n",
-				ship, NUM_MELEE_SHIPS - 1);
-		return false;
-	}
-	
-	if (index >= MELEE_FLEET_SIZE)
-	{
-		log_add (log_Warning, "Invalid ship position number %d (max = %d).\n",
-				index, MELEE_FLEET_SIZE - 1);
-		return false;
-	}
-	
-	val = GetShipValue (ship);
-	if (val == (COUNT) ~0)
-		return false;
-
-	pMS->SideState[side].star_bucks -=
-			GetShipValue (pMS->SideState[side].TeamImage.ShipList[index]);
-	pMS->SideState[side].star_bucks += val;
-
-	pMS->SideState[side].TeamImage.ShipList[index] = ship;
-
-	selectedShipIndex = GetShipIndex (pMS->row, pMS->col);
-	isSelected = (pMS->MeleeOption == EDIT_MELEE) &&
-			(pMS->side == side) && (index == selectedShipIndex);
-			// Ship to be updated is the currently selected one.
-
-	LockMutex (GraphicsLock);
-	if (ship == MELEE_NONE)
-	{
-		RECT r;
-		GetShipBox (&r, side, row, col);
-		RepairMeleeFrame (&r);
-	} else
-		DrawShipBox (side, row, col, ship, isSelected);
-
-	if (isSelected)
-	{
-		pMS->CurIndex = ship;
-		DrawMeleeShipStrings (pMS, ship);
-	}
-	
-	// Reprint the team value:
-	//DrawTeamString (pMeleeState, side, DTSHS_NORMAL);
-	DrawTeamString (pMS, side, DTSHS_REPAIR);
-	UnlockMutex (GraphicsLock);
-
-	return true;
-}
-
 void
 updateRandomSeed (MELEE_STATE *pMS, COUNT side, DWORD seed)
 {
@@ -2676,6 +2229,225 @@ closeFeedback (NetConnection *conn)
 				false);
 				// "Top player: connection closed."
 }
+
+#endif  /* NETPLAY */
+
+
+///////////////////////////////////////////////////////////////////////////
+
+// Melee_UpdateView_xxx() functions are called when some value in the
+// supermelee fleet setup screen needs to be updated visually.
+
+static void
+Melee_UpdateView_fleetValue (MELEE_STATE *pMS, COUNT side)
+{
+	LockMutex (GraphicsLock);
+	DrawTeamString (pMS, side, DTSHS_REPAIR, NULL);
+	UnlockMutex (GraphicsLock);
+}
+
+static void
+Melee_UpdateView_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index)
+{
+	MeleeShip ship = MeleeSetup_getShip (pMS->meleeSetup, side, index);
+
+	LockMutex (GraphicsLock);
+	if (ship == MELEE_NONE)
+	{
+		ClearShipBox (side, index);
+	}
+	else
+	{
+		DrawShipBox (side, index, ship, FALSE);
+	}
+	UnlockMutex (GraphicsLock);
+}
+
+static void
+Melee_UpdateView_teamName (MELEE_STATE *pMS, COUNT side)
+{
+	LockMutex (GraphicsLock);
+	DrawTeamString (pMS, side, DTSHS_REPAIR, NULL);
+	UnlockMutex (GraphicsLock);
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+// Melee_Change_xxx() functions are called when some value in the supermelee
+// fleet setup screen has changed, eithed locally, or remotely.
+
+bool
+Melee_Change_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index,
+		MeleeShip ship)
+{
+	if (!MeleeSetup_setShip (pMS->meleeSetup, side, index, ship))
+	{
+		// No change.
+		return false;
+	}
+
+	// Update the view
+	Melee_UpdateView_ship (pMS, side, index);
+	Melee_UpdateView_fleetValue (pMS, side);
+
+	// If the modified slot is currently selected, display the new ship icon
+	// on the right of the screen.
+	if (isShipSlotSelected (pMS, side, index))
+	{
+		pMS->currentShip = ship;
+		LockMutex (GraphicsLock);
+		DrawMeleeShipStrings (pMS, ship);
+		UnlockMutex (GraphicsLock);
+	}
+
+#ifdef NETPLAY
+	// Notify network connections of the change.
+	Netplay_NotifyAll_setShip (pMS, side, index);
+#endif  /* NETPLAY */
+
+	return true;
+}
+
+// Pre: 'name' is '\0'-terminated
+bool
+Melee_Change_teamName (MELEE_STATE *pMS, COUNT side, const char *name)
+{
+	MeleeSetup *setup = pMS->meleeSetup;
+
+	if (!MeleeSetup_setTeamName (setup, side, name))
+	{
+		// No change.
+		return false;
+	}
+
+	if (pMS->row != NUM_MELEE_ROWS || pMS->side != side ||
+				pMeleeState->CurIndex == MELEE_STATE_INDEX_DONE)
+	{
+		// The team name is not currently being edited, so we can
+		// update it on screen. If it was edited, then this function
+		// will be called again after it is done.
+		Melee_UpdateView_teamName (pMS, side);
+	}
+
+#ifdef NETPLAY
+	Netplay_NotifyAll_setTeamName (pMS, side);
+#endif  /* NETPLAY */
+
+	return true;
+}
+
+bool
+Melee_Change_fleet (MELEE_STATE *pMS, size_t teamNr, const MeleeShip *fleet)
+{
+	MeleeSetup *setup = pMS->meleeSetup;
+	FleetShipIndex slotI;
+	bool changed = false;
+
+	for (slotI = 0; slotI < MELEE_FLEET_SIZE; slotI++) {
+		if (MeleeSetup_setShip (setup, teamNr, slotI, fleet[slotI]))
+			changed = true;
+	}
+	return changed;
+}
+
+bool
+Melee_Change_team (MELEE_STATE *pMS, size_t teamNr, const MeleeTeam *team)
+{
+	MeleeSetup *setup = pMS->meleeSetup;
+	const MeleeShip *fleet = MeleeTeam_getFleet (team);
+	bool changed = false;
+
+	if (Melee_Change_fleet (pMS, teamNr, fleet))
+		changed = true;
+	if (MeleeSetup_setTeamName (setup, teamNr, MeleeTeam_getTeamName (team)))
+		changed = true;
+
+	return changed;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+// Melee_RemoteChange_xxx() functions are called when some value in the
+// supermelee fleet setup screen has changed remotely.
+
+#ifdef NETPLAY
+void
+Melee_RemoteChange_ship (MELEE_STATE *pMS, NetConnection *conn, COUNT side,
+		FleetShipIndex index, MeleeShip ship)
+{
+	MeleeSetup *setup = pMS->meleeSetup;
+
+	MeleeShip currentShip = MeleeSetup_getShip (setup, side, index);
+
+	if (ship == currentShip)
+	{
+		// The remote side has confirmed what we want the value to be.
+		// If we had made the same local change before, then an update
+		// has already been sent. If not, then there is nothing to change.
+		// Either way, we do not need to send an update.
+		MeleeSetup_setConfirmedShip (setup, side, index, ship);
+	} else {
+		// The remote side wants to make a change.
+		// We accept the change when we don't have any changes of our own,
+		// or when we do have changes, but we "lose" the tie break.
+		// If we "win" the tie break, we have already sent an update to the
+		// remote side when our local change was made, so we do not need to
+		// send anything. The remote side still needs to confirm this local
+		// change, of which it will become aware shortly, when the already
+		// sent update message arrives.
+		MeleeShip confirmedShip = MeleeSetup_getConfirmedShip (setup, side,
+				index);
+		if (currentShip == confirmedShip ||
+				NetConnection_getDiscriminant(conn))
+		{
+			MeleeSetup_setConfirmedShip (setup, side, index, ship);
+			Melee_Change_ship (pMS, side, index, ship);
+					// This will also cause a notification of the local
+					// change to be sent to the remote side, which will act
+					// as a confirmation.
+		}
+	}
+}
+
+void
+Melee_RemoteChange_teamName (MELEE_STATE *pMS, NetConnection *conn, COUNT side,
+		const char *name)
+{
+	MeleeSetup *setup = pMS->meleeSetup;
+
+	const char *currentName = MeleeSetup_getTeamName (setup, side);
+
+	if (strcmp (name, currentName) == 0)
+	{
+		// The remote side has confirmed what we want the value to be.
+		// If we had made the same local change before, then an update
+		// has already been sent. If not, then there is nothing to change.
+		// Either way, we do not need to send an update.
+		MeleeSetup_setConfirmedTeamName (setup, side, name);
+	} else {
+		// The remote side wants to make a change.
+		// We accept the change when we don't have any changes of our own,
+		// or when we do have changes, but we "lose" the tie break.
+		// If we "win" the tie break, we have already sent an update to the
+		// remote side when our local change was made, so we do not need to
+		// send anything. The remote side still needs to confirm this local
+		// change, of which it will become aware shortly, when the already
+		// sent update message arrives.
+		const char *confirmedName =
+				MeleeSetup_getConfirmedTeamName (setup, side);
+		if (strcmp (currentName, confirmedName) == 0 ||
+				NetConnection_getDiscriminant(conn))
+		{
+			MeleeSetup_setConfirmedTeamName (setup, side, name);
+			Melee_Change_teamName (pMS, side, name);
+					// This will also cause a notification of the local
+					// change to be sent to the remote side, which will act
+					// as a confirmation.
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////
 
 #endif  /* NETPLAY */
 

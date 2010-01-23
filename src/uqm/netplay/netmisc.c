@@ -20,6 +20,7 @@
 #include "netmisc.h"
 
 #include "netmelee.h"
+#include "notifyall.h"
 #include "packetsenders.h"
 #include "proto/ready.h"
 
@@ -118,8 +119,8 @@ NetMelee_enterState_inSetup(NetConnection *conn, void *arg) {
 
 	connectedFeedback(conn);
 
-	entireFleetChanged(meleeState, player);
-	teamStringChanged(meleeState, player);
+	Netplay_NotifyAll_setFleet(meleeState, player);
+	Netplay_NotifyAll_setTeamName(meleeState, player);
 
 	flushPacketQueues();
 
@@ -151,13 +152,10 @@ NetMelee_reenterState_inSetup(NetConnection *conn) {
 
 		for (side = 0; side < NUM_SIDES; side++)
 		{
-			entireFleetChanged(meleeState, side);
-			teamStringChanged(meleeState, side);
+			Netplay_NotifyAll_setFleet(meleeState, side);
+			Netplay_NotifyAll_setTeamName(meleeState, side);
 		}
 		flushPacketQueues();
 	}
 }
-
-
-
 

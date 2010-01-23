@@ -90,7 +90,7 @@ readyToEndCallback (NetConnection *conn, void *arg)
 	NetConnection_setState (conn, NetState_endingBattle);
 	if (battleFrameCount + 1 > battleStateData->endFrameCount)
 		battleStateData->endFrameCount = battleFrameCount + 1;
-	Netplay_sendFrameCount (conn, battleFrameCount + 1);
+	Netplay_Notify_frameCount (conn, battleFrameCount + 1);
 			// The +1 is to ensure that after the remote side receives the
 			// frame count it will still receive one more frame data packet,
 			// so it will know in advance when the last frame data packet

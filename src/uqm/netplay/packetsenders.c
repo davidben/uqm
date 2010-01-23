@@ -107,7 +107,7 @@ sendHandshakeCancelAck(NetConnection *conn) {
 }
 
 void
-sendTeamString(NetConnection *conn, NetplaySide side, const char *name,
+sendTeamName(NetConnection *conn, NetplaySide side, const char *name,
 		size_t len) {
 	Packet_TeamName *packet;
 
@@ -116,30 +116,30 @@ sendTeamString(NetConnection *conn, NetplaySide side, const char *name,
 }
 
 void
-sendFleet(NetConnection *conn, NetplaySide side, const BYTE *ships,
-		size_t numShips) {
+sendFleet(NetConnection *conn, NetplaySide side, const MeleeShip *ships,
+		size_t shipCount) {
 	size_t i;
 	Packet_Fleet *packet;
 	
-	packet = Packet_Fleet_create(side, numShips);
+	packet = Packet_Fleet_create(side, shipCount);
 
-	for (i = 0; i < numShips; i++) {
+	for (i = 0; i < shipCount; i++) {
 		packet->ships[i].index = (uint8) i;
-		packet->ships[i].ship = ships[i];
+		packet->ships[i].ship = (uint8) ships[i];
 	}
 
 	queuePacket(conn, (Packet *) packet, false);
 }
 
 void
-sendFleetShip(NetConnection *conn, NetplaySide side, size_t shipIndex,
-		BYTE ship) {
+sendFleetShip(NetConnection *conn, NetplaySide side,
+		FleetShipIndex shipIndex, MeleeShip ship) {
 	Packet_Fleet *packet;
 	
 	packet = Packet_Fleet_create(side, 1);
 
-	packet->ships[0].index = shipIndex;
-	packet->ships[0].ship = ship;
+	packet->ships[0].index = (uint8) shipIndex;
+	packet->ships[0].ship = (uint8) ship;
 
 	queuePacket(conn, (Packet *) packet, false);
 }
@@ -161,10 +161,10 @@ sendInputDelay(NetConnection *conn, uint32 delay) {
 }
 
 void
-sendSelectShip(NetConnection *conn, COUNT ship) {
+sendSelectShip(NetConnection *conn, FleetShipIndex index) {
 	Packet_SelectShip *packet;
 	
-	packet = Packet_SelectShip_create(ship);
+	packet = Packet_SelectShip_create((uint16) index);
 	queuePacket(conn, (Packet *) packet, false);
 }
 

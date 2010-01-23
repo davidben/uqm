@@ -26,6 +26,10 @@
 
 #include "../controls.h"
 		// for BATTLE_INPUT_STATE
+#include "../supermelee/meleeship.h"
+		// for MeleeShip
+#include "../supermelee/meleesetup.h"
+		// for FleetShipIndex
 
 void sendInit(NetConnection *conn);
 void sendPing(NetConnection *conn, uint32 id);
@@ -37,18 +41,19 @@ void sendHandshake0(NetConnection *conn);
 void sendHandshake1(NetConnection *conn);
 void sendHandshakeCancel(NetConnection *conn);
 void sendHandshakeCancelAck(NetConnection *conn);
-void sendTeamString(NetConnection *conn, NetplaySide side,
+void sendTeamName(NetConnection *conn, NetplaySide side,
 		const char *name, size_t len);
-void sendFleet(NetConnection *conn, NetplaySide side, const BYTE *ships,
-		size_t numShips);
+void sendFleet(NetConnection *conn, NetplaySide side,
+		const MeleeShip *ships, size_t numShips);
 void sendFleetShip(NetConnection *conn, NetplaySide player,
-		size_t shipIndex, BYTE ship);
+		FleetShipIndex shipIndex, MeleeShip ship);
 void sendSeedRandom(NetConnection *conn, uint32 seed);
 void sendInputDelay(NetConnection *conn, uint32 delay);
-void sendSelectShip(NetConnection *conn, COUNT ship);
+void sendSelectShip(NetConnection *conn, FleetShipIndex index);
 void sendBattleInput(NetConnection *conn, BATTLE_INPUT_STATE input);
-void sendFrameCount(NetConnection *conn, uint32 frameCount);
-void sendChecksum(NetConnection *conn, uint32 frameNr, uint32 checksum);
+void sendFrameCount(NetConnection *conn, BattleFrameCounter frameCount);
+void sendChecksum(NetConnection *conn, BattleFrameCounter frameNr,
+		Checksum checksum);
 void sendAbort(NetConnection *conn, NetplayAbortReason reason);
 void sendReset(NetConnection *conn, NetplayResetReason reason);
 

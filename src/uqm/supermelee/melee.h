@@ -30,39 +30,6 @@
 
 typedef struct melee_state MELEE_STATE;
 
-enum
-{
-	MELEE_ANDROSYNTH,
-	MELEE_ARILOU,
-	MELEE_CHENJESU,
-	MELEE_CHMMR,
-	MELEE_DRUUGE,
-	MELEE_EARTHLING,
-	MELEE_ILWRATH,
-	MELEE_KOHR_AH,
-	MELEE_MELNORME,
-	MELEE_MMRNMHRM,
-	MELEE_MYCON,
-	MELEE_ORZ,
-	MELEE_PKUNK,
-	MELEE_SHOFIXTI,
-	MELEE_SLYLANDRO,
-	MELEE_SPATHI,
-	MELEE_SUPOX,
-	MELEE_SYREEN,
-	MELEE_THRADDASH,
-	MELEE_UMGAH,
-	MELEE_URQUAN,
-	MELEE_UTWIG,
-	MELEE_VUX,
-	MELEE_YEHAT,
-	MELEE_ZOQFOTPIK,
-	
-	NUM_MELEE_SHIPS,
-
-	MELEE_NONE = (BYTE) ~0
-};
-
 #define NUM_MELEE_ROWS 2
 #define NUM_MELEE_COLUMNS 7
 //#define NUM_MELEE_COLUMNS 6
@@ -82,23 +49,10 @@ extern FRAME PickMeleeFrame;
 #define NUM_PICK_ROWS 5
 
 typedef BYTE MELEE_OPTIONS;
-typedef COUNT FleetShipIndex;
-
-typedef struct
-{
-	BYTE ShipList[MELEE_FLEET_SIZE];
-	UNICODE TeamName[MAX_TEAM_CHARS + 1 + 24];
-			/* The +1 is for the terminating \0; the +24 is in case some
-			 * default name in starcon.txt is unknowingly mangled. */
-} TEAM_IMAGE;
 
 #include "loadmele.h"
-
-struct melee_side_state
-{
-	TEAM_IMAGE TeamImage;
-	COUNT star_bucks;
-};
+#include "meleesetup.h"
+#include "meleeship.h"
 
 struct melee_state
 {
@@ -106,10 +60,24 @@ struct melee_state
 
 	BOOLEAN Initialized;
 	MELEE_OPTIONS MeleeOption;
-	COUNT side, row, col;
-	struct melee_side_state SideState[NUM_SIDES];
+	COUNT side;
+	COUNT row;
+	COUNT col;
+	MeleeSetup *meleeSetup;
 	struct melee_load_state load;
+	MeleeShip currentShip;
+			// The ship currently displayed. Not really needed.
+			// Also the current ship position when selecting a ship.
 	COUNT CurIndex;
+#define MELEE_STATE_INDEX_DONE ((COUNT) -1)
+			// Current position in the team string when editing it.
+			// Set to MELEE_STATE_INDEX_DONE when done.
+	BOOLEAN buildPickConfirmed;
+			// Used by DoPickShip () to communicate to the calling
+			// function BuildPickShip() whether a ship has been selected
+			// to add to the fleet, or whether the operation has been
+			// cancelled. If a ship was selected, it is set in
+			// currentShip.
 	RandomContext *randomContext;
 			/* RNG state for all local random decisions, i.e. those
 			 * decisions that are not shared among network parties. */
@@ -123,17 +91,14 @@ extern void Melee (void);
 // Some prototypes for use by loadmele.c:
 BOOLEAN DoMelee (MELEE_STATE *pMS);
 void DrawMeleeIcon (COUNT which_icon);
-COUNT GetTeamValue (TEAM_IMAGE *pTI);
-void RepairMeleeFrame (RECT *pRect);
+void GetShipBox (RECT *pRect, COUNT side, COUNT row, COUNT col);
+void RepairMeleeFrame (const RECT *pRect);
+void DrawMeleeShipStrings (MELEE_STATE *pMS, MeleeShip NewStarShip);
 extern FRAME MeleeFrame;
+void Melee_flashSelection (MELEE_STATE *pMS);
 
-void teamStringChanged (MELEE_STATE *pMS, int player);
-void entireFleetChanged (MELEE_STATE *pMS, int player);
-void fleetShipChanged (MELEE_STATE *pMS, int player, size_t index);
+COUNT GetShipValue (MeleeShip StarShip);
 
-void updateTeamName (MELEE_STATE *pMS, COUNT side, const char *name,
-		size_t len);
-bool updateFleetShip (MELEE_STATE *pMS, COUNT side, COUNT index, BYTE ship);
 void updateRandomSeed (MELEE_STATE *pMS, COUNT side, DWORD seed);
 void confirmationCancelled(MELEE_STATE *pMS, COUNT side);
 void connectedFeedback (NetConnection *conn);
@@ -142,6 +107,19 @@ void resetFeedback (NetConnection *conn, NetplayResetReason reason,
 		bool byRemote);
 void errorFeedback (NetConnection *conn);
 void closeFeedback (NetConnection *conn);
+
+bool Melee_Change_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index,
+		MeleeShip ship);
+bool Melee_Change_teamName (MELEE_STATE *pMS, COUNT side, const char *name);
+bool Melee_Change_fleet (MELEE_STATE *pMS, size_t teamNr,
+		const MeleeShip *fleet);
+bool Melee_Change_team (MELEE_STATE *pMS, size_t teamNr,
+		const MeleeTeam *team);
+
+void Melee_RemoteChange_ship (MELEE_STATE *pMS, NetConnection *conn,
+		COUNT side, FleetShipIndex index, MeleeShip ship);
+void Melee_RemoteChange_teamName (MELEE_STATE *pMS, NetConnection *conn,
+		COUNT side, const char *name);
 
 #endif /* _MELEE_H */
 
