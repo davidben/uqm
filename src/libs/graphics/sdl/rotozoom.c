@@ -580,10 +580,8 @@ void rotozoomSurfaceSizeTrig(int width, int height, double angle, double zoom, i
     cy = *canglezoom * y;
     sx = *sanglezoom * x;
     sy = *sanglezoom * y;
-    dstwidthhalf = MAX((int)
-		       ceil(MAX(MAX(MAX(fabs(cx + sy), fabs(cx - sy)), fabs(-cx + sy)), fabs(-cx - sy))), 1);
-    dstheighthalf = MAX((int)
-			ceil(MAX(MAX(MAX(fabs(sx + cy), fabs(sx - cy)), fabs(-sx + cy)), fabs(-sx - cy))), 1);
+    dstwidthhalf = MAX((int) ceil(fabs(cx) + fabs(sy)), 1);
+    dstheighthalf = MAX((int) ceil(fabs(sx) + fabs(cy)), 1);
     *dstwidth = 2 * dstwidthhalf;
     *dstheight = 2 * dstheighthalf;
 }
