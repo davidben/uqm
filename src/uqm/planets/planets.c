@@ -75,7 +75,7 @@ CreatePlanetContext (void)
 	UnlockMutex (GraphicsLock);
 }
 
-void
+static void
 DestroyPlanetContext (void)
 {
 	if (PlanetContext)

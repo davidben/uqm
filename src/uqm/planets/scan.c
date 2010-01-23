@@ -536,7 +536,7 @@ drawPlanetCursor (BOOLEAN filled)
 		DrawStamp (&s);
 }
 
-void
+static void
 setPlanetCursorLoc (POINT new_pt)
 {
 	new_pt.x >>= MAG_SHIFT;
