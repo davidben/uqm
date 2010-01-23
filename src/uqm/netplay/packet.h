@@ -108,7 +108,7 @@ packetLength(const Packet *packet) {
 
 static inline PacketType
 packetType(const Packet *packet) {
-	return (PacketType) ntoh16(packet->header.type);
+	return (PacketType) (int) ntoh16(packet->header.type);
 }
 
 static inline bool
