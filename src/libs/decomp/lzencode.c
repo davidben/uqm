@@ -370,7 +370,7 @@ cwrite (const void *buf, COUNT size, COUNT count, PLZHCODE_DESC lpCodeDesc)
 {
 	UWORD r, s, last_match_length;
 	BYTE *lpBuf;
-	BYTE *lpStr;
+	const BYTE *lpStr;
 
 	if ((_lpCurCodeDesc = lpCodeDesc) == 0
 			|| (size *= count) == 0)
@@ -380,7 +380,7 @@ cwrite (const void *buf, COUNT size, COUNT count, PLZHCODE_DESC lpCodeDesc)
 	_Stream = lpCodeDesc->Stream;
 	_workbuf = lpCodeDesc->workbuf;
 	_workbuflen = lpCodeDesc->workbuflen;
-	lpStr = (BYTE*)buf;
+	lpStr = (const BYTE *) buf;
 	lpBuf = lpCodeDesc->text_buf;
 
 	r = lpCodeDesc->buf_index;
