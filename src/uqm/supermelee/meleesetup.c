@@ -170,6 +170,28 @@ MeleeTeam_copy (MeleeTeam *copy, const MeleeTeam *original)
 	*copy = *original;
 }
 
+bool
+MeleeTeam_isEqual (const MeleeTeam *team1, const MeleeTeam *team2)
+{
+	const MeleeShip *fleet1;
+	const MeleeShip *fleet2;
+	FleetShipIndex slotI;
+
+	if (strcmp (team1->name, team2->name) != 0)
+		return false;
+
+	fleet1 = team1->ships;
+	fleet2 = team2->ships;
+
+	for (slotI = 0; slotI < MELEE_FLEET_SIZE; slotI++)
+	{
+		if (fleet1[slotI] != fleet2[slotI])
+			return false;
+	}
+
+	return true;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
 MeleeSetup *
@@ -318,8 +340,17 @@ MeleeSetup_setConfirmedTeamName (MeleeSetup *setup, size_t teamNr,
 	MeleeTeam_setName (team, name);
 	return true;
 }
-#endif  /* NETPLAY */
 
+bool
+MeleeSetup_isTeamConfirmed (MeleeSetup *setup, size_t teamNr)
+{
+	MeleeTeam *localTeam = &setup->teams[teamNr];
+	MeleeTeam *confirmedTeam = &setup->confirmedTeams[teamNr];
+
+	return MeleeTeam_isEqual (localTeam, confirmedTeam);
+}
+
+#endif  /* NETPLAY */
 
 ///////////////////////////////////////////////////////////////////////////
 

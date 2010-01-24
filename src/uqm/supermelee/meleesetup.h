@@ -98,6 +98,7 @@ const MeleeShip *MeleeTeam_getFleet (const MeleeTeam *team);
 const char *MeleeTeam_getTeamName (const MeleeTeam *team);
 void MeleeTeam_setName (MeleeTeam *team, const UNICODE *name);
 void MeleeTeam_copy (MeleeTeam *copy, const MeleeTeam *original);
+bool MeleeTeam_isEqual (const MeleeTeam *team1, const MeleeTeam *team2);
 
 #ifdef NETPLAY
 MeleeShip MeleeSetup_getConfirmedShip (const MeleeSetup *setup, size_t teamNr,
@@ -108,6 +109,7 @@ bool MeleeSetup_setConfirmedShip (MeleeSetup *setup, size_t teamNr,
 		FleetShipIndex slotNr, MeleeShip ship);
 bool MeleeSetup_setConfirmedTeamName (MeleeSetup *setup, size_t teamNr,
 		const UNICODE *name);
+bool MeleeSetup_isTeamConfirmed (MeleeSetup *setup, size_t teamNr);
 #endif  /* NETPLAY */
 
 MeleeSetup *MeleeSetup_new (void);
