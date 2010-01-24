@@ -437,7 +437,7 @@ DoLoadTeam (MELEE_STATE *pMS)
 	return TRUE;
 }
 
-void
+static void
 SelectTeamByFileName (MELEE_STATE *pMS, const char *fileName)
 {
 	COUNT index = GetFleetIndexByFileName (pMS, fileName);
