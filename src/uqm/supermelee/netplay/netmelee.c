@@ -388,11 +388,6 @@ openPlayerNetworkConnection(COUNT player, void *extra) {
 }
 
 void
-shutdownPlayerNetworkConnection(COUNT player) {
-	NetConnection_close(netConnections[player]);
-}
-
-void
 closePlayerNetworkConnection(COUNT player) {
 	assert(netConnections[player] != NULL);
 
