@@ -9,8 +9,6 @@
 
 */
 
-#ifdef GFXMODULE_SDL
-
 #include <stdlib.h>
 #include <string.h>
 #include "libs/memlib.h"
@@ -1025,4 +1023,3 @@ SDL_Surface *zoomSurface(SDL_Surface * src, double zoomx, double zoomy, int smoo
     return (rz_dst);
 }
 
-#endif

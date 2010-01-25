@@ -21,8 +21,6 @@
 //    When this file is built standalone is produces a plain C version
 //    Also #included by 2xscalers_mmx.c for an MMX version
 
-#ifdef GFXMODULE_SDL
-
 #include "libs/graphics/sdl/sdl_common.h"
 #include "types.h"
 #include "scalers.h"
@@ -532,4 +530,3 @@ SCALE_(BiAdaptAdvFilter) (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	SCALE_(PlatDone) ();
 }
 
-#endif /* GFXMODULE_SDL */

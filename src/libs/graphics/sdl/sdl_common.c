@@ -16,8 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef GFXMODULE_SDL
-
 #include "sdl_common.h"
 #include "opengl.h"
 #include "pure.h"
@@ -606,6 +604,4 @@ TFB_SetGamma (float gamma)
 		log_add (log_Info, "Gamma correction set to %1.4f.", gamma);
 	}
 }
-
-#endif
 

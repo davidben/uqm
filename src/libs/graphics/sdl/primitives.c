@@ -16,8 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef GFXMODULE_SDL
-
 #include "port.h"
 #include "sdl_common.h"
 #include "primitives.h"
@@ -629,4 +627,3 @@ clip_blt_rects(SDL_Rect *src_r, SDL_Rect *dst_r, const SDL_Rect *clip_r)
 	return 1;
 }
 
-#endif

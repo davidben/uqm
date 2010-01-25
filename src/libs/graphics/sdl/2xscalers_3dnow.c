@@ -14,8 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef GFXMODULE_SDL
-
 #include "port.h"
 #include "libs/platform.h"
 
@@ -101,4 +99,4 @@ Scale_3DNow_PrepPlatform (const SDL_PixelFormat* fmt)
 #endif /* NO_IMPROVEMENT */
 
 #endif /* MMX_ASM */
-#endif /* GFXMODULE_SDL */
+

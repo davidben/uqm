@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if defined (GFXMODULE_SDL) && defined (HAVE_OPENGL)
+#ifdef HAVE_OPENGL
 
 #include "libs/graphics/sdl/opengl.h"
 #include "libs/graphics/bbox.h"

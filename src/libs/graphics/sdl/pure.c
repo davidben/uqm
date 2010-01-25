@@ -15,8 +15,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef GFXMODULE_SDL
-
 #include "pure.h"
 #include "libs/graphics/bbox.h"
 #include "scalers.h"
@@ -475,4 +473,3 @@ Scale_PerfTest (void)
 	SDL_UnlockSurface (SDL_Screen);
 }
 
-#endif

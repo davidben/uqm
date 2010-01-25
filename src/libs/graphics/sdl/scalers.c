@@ -14,8 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef GFXMODULE_SDL
-
 #include "types.h"
 #include "libs/graphics/sdl/sdl_common.h"
 #include "libs/platform.h"
@@ -286,4 +284,3 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 	return fdef->func;
 }
 
-#endif

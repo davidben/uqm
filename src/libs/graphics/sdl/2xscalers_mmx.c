@@ -14,8 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef GFXMODULE_SDL
-
 #include "port.h"
 #include "libs/platform.h"
 
@@ -135,4 +133,4 @@ Scale_MMX_PrepPlatform (const SDL_PixelFormat* fmt)
 
 
 #endif /* MMX_ASM */
-#endif /* GFXMODULE_SDL */
+

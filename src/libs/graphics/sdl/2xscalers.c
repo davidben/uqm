@@ -14,8 +14,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef GFXMODULE_SDL
-
 #include "libs/graphics/sdl/sdl_common.h"
 #include "types.h"
 #include "scalers.h"
@@ -260,4 +258,3 @@ SCALE_(BiAdaptFilter) (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	SCALE_(PlatDone) ();
 }
 
-#endif /* GFXMODULE_SDL */
