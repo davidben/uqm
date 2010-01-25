@@ -1,2 +1,5 @@
-uqm_SUBDIRS="sdl"
+if [ "$uqm_GFXMODULE" = "sdl" ]; then
+	uqm_SUBDIRS="sdl"
+fi
+
 uqm_CFILES="input_common.c"
