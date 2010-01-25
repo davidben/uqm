@@ -80,34 +80,34 @@ CodeResToInitFunc(ShipCodeRes res)
 {
 	switch (res)
 	{
-		case ANDROSYN_CODE_RES: return init_androsynth;
-		case ARILOU_CODE_RES: return init_arilou;
-		case BLACKURQ_CODE_RES: return init_black_urquan;
-		case CHENJESU_CODE_RES: return init_chenjesu;
-		case CHMMR_CODE_RES: return init_chmmr;
-		case DRUUGE_CODE_RES: return init_druuge;
-		case HUMAN_CODE_RES: return init_human;
-		case ILWRATH_CODE_RES: return init_ilwrath;
-		case MELNORME_CODE_RES: return init_melnorme;
-		case MMRNMHRM_CODE_RES: return init_mmrnmhrm;
-		case MYCON_CODE_RES: return init_mycon;
-		case ORZ_CODE_RES: return init_orz;
-		case PKUNK_CODE_RES: return init_pkunk;
-		case SHOFIXTI_CODE_RES: return init_shofixti;
-		case SLYLANDR_CODE_RES: return init_slylandro;
-		case SPATHI_CODE_RES: return init_spathi;
-		case SUPOX_CODE_RES: return init_supox;
-		case SYREEN_CODE_RES: return init_syreen;
-		case THRADD_CODE_RES: return init_thraddash;
-		case UMGAH_CODE_RES: return init_umgah;
-		case URQUAN_CODE_RES: return init_urquan;
-		case UTWIG_CODE_RES: return init_utwig;
-		case VUX_CODE_RES: return init_vux;
-		case YEHAT_CODE_RES: return init_yehat;
-		case ZOQFOT_CODE_RES: return init_zoqfotpik;
-		case SAMATRA_CODE_RES: return init_samatra;
-		case SIS_CODE_RES: return init_sis;
-		case PROBE_CODE_RES: return init_probe;
+		case ANDROSYN_CODE_RES: return &init_androsynth;
+		case ARILOU_CODE_RES: return &init_arilou;
+		case BLACKURQ_CODE_RES: return &init_black_urquan;
+		case CHENJESU_CODE_RES: return &init_chenjesu;
+		case CHMMR_CODE_RES: return &init_chmmr;
+		case DRUUGE_CODE_RES: return &init_druuge;
+		case HUMAN_CODE_RES: return &init_human;
+		case ILWRATH_CODE_RES: return &init_ilwrath;
+		case MELNORME_CODE_RES: return &init_melnorme;
+		case MMRNMHRM_CODE_RES: return &init_mmrnmhrm;
+		case MYCON_CODE_RES: return &init_mycon;
+		case ORZ_CODE_RES: return &init_orz;
+		case PKUNK_CODE_RES: return &init_pkunk;
+		case SHOFIXTI_CODE_RES: return &init_shofixti;
+		case SLYLANDR_CODE_RES: return &init_slylandro;
+		case SPATHI_CODE_RES: return &init_spathi;
+		case SUPOX_CODE_RES: return &init_supox;
+		case SYREEN_CODE_RES: return &init_syreen;
+		case THRADD_CODE_RES: return &init_thraddash;
+		case UMGAH_CODE_RES: return &init_umgah;
+		case URQUAN_CODE_RES: return &init_urquan;
+		case UTWIG_CODE_RES: return &init_utwig;
+		case VUX_CODE_RES: return &init_vux;
+		case YEHAT_CODE_RES: return &init_yehat;
+		case ZOQFOT_CODE_RES: return &init_zoqfotpik;
+		case SAMATRA_CODE_RES: return &init_samatra;
+		case SIS_CODE_RES: return &init_sis;
+		case PROBE_CODE_RES: return &init_probe;
 		default:
 		{
 			log_add (log_Warning, "Unknown SHIP identifier '%d'", res);
