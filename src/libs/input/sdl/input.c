@@ -35,7 +35,7 @@
 static int kbdhead=0, kbdtail=0;
 static UniChar kbdbuf[KBDBUFSIZE];
 static UniChar lastchar;
-static int num_keys = 0;
+static unsigned int num_keys = 0;
 static int *kbdstate = NULL;
 		// Holds all SDL keys +1 for holding invalid values
 
@@ -355,7 +355,7 @@ ProcessInputEvent (const SDL_Event *Event)
 		SDLKey k = Event->key.keysym.sym;
 		UniChar map_key = Event->key.keysym.unicode;
 
-		if (k < 0 || k > num_keys)
+		if (k > num_keys)
 			k = num_keys; // for unknown keys
 
 		if (Event->type == SDL_KEYDOWN)
