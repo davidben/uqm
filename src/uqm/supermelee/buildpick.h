@@ -1,7 +1,7 @@
 #ifndef BUILDPICK_H
 #define BUILDPICK_H
 
-#include <stdbool.h>
+#include "types.h"
 #include "melee.h"
 
 void BuildBuildPickFrame (void);

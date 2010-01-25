@@ -1,7 +1,7 @@
 #ifndef MELEESHIP_H
 #define MELEESHIP_H
 
-#include <stdbool.h>
+#include "types.h"
 
 typedef enum MeleeShip {
 	MELEE_ANDROSYNTH,
