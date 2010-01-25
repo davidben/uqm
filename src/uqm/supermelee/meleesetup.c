@@ -170,6 +170,7 @@ MeleeTeam_copy (MeleeTeam *copy, const MeleeTeam *original)
 	*copy = *original;
 }
 
+#if 0
 bool
 MeleeTeam_isEqual (const MeleeTeam *team1, const MeleeTeam *team2)
 {
@@ -191,6 +192,7 @@ MeleeTeam_isEqual (const MeleeTeam *team1, const MeleeTeam *team2)
 
 	return true;
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -341,6 +343,7 @@ MeleeSetup_setConfirmedTeamName (MeleeSetup *setup, size_t teamNr,
 	return true;
 }
 
+#if 0
 bool
 MeleeSetup_isTeamConfirmed (MeleeSetup *setup, size_t teamNr)
 {
@@ -349,6 +352,7 @@ MeleeSetup_isTeamConfirmed (MeleeSetup *setup, size_t teamNr)
 
 	return MeleeTeam_isEqual (localTeam, confirmedTeam);
 }
+#endif
 
 #endif  /* NETPLAY */
 
