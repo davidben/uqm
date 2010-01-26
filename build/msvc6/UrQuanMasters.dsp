@@ -3048,6 +3048,14 @@ SOURCE=..\..\src\uqm\supermelee\netplay\notify.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\uqm\supermelee\netplay\notifyall.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\uqm\supermelee\netplay\notifyall.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\uqm\supermelee\netplay\packet.c
 # End Source File
 # Begin Source File
