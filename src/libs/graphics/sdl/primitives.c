@@ -466,33 +466,39 @@ clip_rect(SDL_Rect *r, const SDL_Rect *clip_r)
 	// NOTE: the following clipping code is copied in part
 	//   from SDL-1.2.4 sources
 	int dx, dy;
+	int w = r->w;
+	int h = r->h;
+			// SDL_Rect.w and .h are unsigned, we need signed
 
 	dx = clip_r->x - r->x;
 	if (dx > 0)
 	{
-		r->w -= dx;
+		w -= dx;
 		r->x += dx;
 	}
-	dx = r->x + r->w - clip_r->x - clip_r->w;
+	dx = r->x + w - clip_r->x - clip_r->w;
 	if (dx > 0)
-		r->w -= dx;
+		w -= dx;
 
 	dy = clip_r->y - r->y;
 	if (dy > 0)
 	{
-		r->h -= dy;
+		h -= dy;
 		r->y += dy;
 	}
-	dy = r->y + r->h - clip_r->y - clip_r->h;
+	dy = r->y + h - clip_r->y - clip_r->h;
 	if (dy > 0)
-		r->h -= dy;
+		h -= dy;
 
-	if (r->w <= 0 || r->h <= 0)
+	if (w <= 0 || h <= 0)
 	{
 		r->w = 0;
 		r->h = 0;
 		return 0;
 	}
+
+	r->w = w;
+	r->h = h;
 	return 1;
 }
 
