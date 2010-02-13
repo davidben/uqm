@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Fixed fuel reserve bounds checks - SvdB
 - Fixed a crash when filling fuel tanks over 10 (bug #1082) - Alex
 - Got rid of many warnings - SvdB
 - Clean up and some refactoring of the SuperMelee code - SvdB
