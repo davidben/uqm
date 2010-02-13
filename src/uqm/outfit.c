@@ -102,7 +102,8 @@ RedistributeFuel (void)
 	DWORD FuelVolume;
 	RECT r;
 
-	if ((FuelVolume = GLOBAL_SIS (FuelOnBoard)) <= FUEL_RESERVE)
+	FuelVolume = GLOBAL_SIS (FuelOnBoard);
+	if (FuelVolume <= FUEL_RESERVE)
 		return;
 
 	GLOBAL_SIS (FuelOnBoard) = 0;
@@ -559,18 +560,17 @@ ChangeFuelQuantity (void)
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		if (GetFTankCapacity (&r.corner) > GLOBAL_SIS (FuelOnBoard)
-			&& GLOBAL_SIS (ResUnits) >=
-			(DWORD)GLOBAL (FuelCost))
+			&& GLOBAL_SIS (ResUnits) >= (DWORD)GLOBAL (FuelCost))
 		{
-			if (GLOBAL_SIS (FuelOnBoard) >=
-				FUEL_RESERVE - FUEL_TANK_SCALE)
+			if (GLOBAL_SIS (FuelOnBoard) >= FUEL_RESERVE)
 			{
 				r.extent.width = 3;
 				DrawPoint (&r.corner);
 				r.corner.x += r.extent.width + 1;
 				DrawPoint (&r.corner);
 				r.corner.x -= r.extent.width;
-				SetContextForeGroundColor (SetContextBackGroundColor (BLACK_COLOR));
+				SetContextForeGroundColor (
+						SetContextBackGroundColor (BLACK_COLOR));
 				DrawFilledRectangle (&r);
 			}
 			DeltaSISGauges (0, FUEL_TANK_SCALE, -GLOBAL (FuelCost));
@@ -590,10 +590,9 @@ ChangeFuelQuantity (void)
 		SetContext (SpaceContext);
 		if (GLOBAL_SIS (FuelOnBoard))
 		{
-			DeltaSISGauges (0, -FUEL_TANK_SCALE,
-				GLOBAL (FuelCost));
-			if (GLOBAL_SIS (FuelOnBoard)
-				% FUEL_VOLUME_PER_ROW == 0)
+			DeltaSISGauges (0, -FUEL_TANK_SCALE, GLOBAL (FuelCost));
+			if (GLOBAL_SIS (FuelOnBoard) % FUEL_VOLUME_PER_ROW == 0 &&
+					GLOBAL_SIS (FuelOnBoard) >= FUEL_RESERVE)
 			{
 				GetFTankCapacity (&r.corner);
 				SetContextForeGroundColor (
