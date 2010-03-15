@@ -24,15 +24,21 @@ Unzip the libogg and libvorbis archives somewhere convenient.
 
 For libogg:
 - Go to the macosx directory, open the xcodeproj.
-- Open Project->Project Settings.  Ensure the Architecture is set to
-  "i386 ppc".
-- Choose the Deployment target and build.
+- Open Project->Project Settings and set the Configuration to
+  "Release".  Ensure the Architecture is set to "i386 ppc".
+- If you are using XCode 3.2.1 (Snow Leopard), you will need to use
+  GCC 4.0 instead of the default 4.2 (which will not work for the 10.4
+  target).  Inside Project Settings, add the following User-Defined
+  Settings via the gear menu at the bottom left:
+  - GCC_VERSION_i386 = 4.0
+  - GCC_VERSION_ppc  = 4.0
+- Choose the "10.4 | Release" target and build.
 - If there are no errors, the Ogg.framework file should have turned
   from red to black.  Control-click it, choose "reveal in finder".
 - Copy Ogg.framework to /Library/Frameworks.
 
 For libvorbis:
-- As above, but you need the "Release" target.
+- Same procedure as libogg.
 
 To build:
 - Run ./build.sh in the sc2/ directory and choose your configuration
