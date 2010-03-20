@@ -488,14 +488,6 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 
 		star_type = SDPtr->Type;
 
-#ifdef NOTYET
-{
-UNICODE buf[256];
-
-GetClusterName (SDPtr, buf);
-printf ("%s\n", buf);
-}
-#endif /* NOTYET */
 		s.origin.x = UNIVERSE_TO_DISPX (SDPtr->star_pt.x);
 		s.origin.y = UNIVERSE_TO_DISPY (SDPtr->star_pt.y);
 		if (which_space <= 1)
