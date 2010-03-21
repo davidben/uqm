@@ -116,11 +116,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 	};
 	
 	log_add (log_Info, "Initializing OpenAL.");
-#ifdef WIN32
-	alcDevice = alcOpenDevice ((ALubyte*)"DirectSound3D");
-#else
 	alcDevice = alcOpenDevice (NULL);
-#endif
 
 	if (!alcDevice)
 	{
