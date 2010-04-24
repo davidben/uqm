@@ -36,31 +36,14 @@ struct PacketQueue {
 	size_t size;
 	PacketQueueLink *first;
 	PacketQueueLink **end;
-	
-	PacketQueueLink *firstUrgent;
-	PacketQueueLink **endUrgent;
 
 	// first points to the first entry in the queue
-	// end points to the location where the next non-urgent message should
-	//     be inserted.
-	// 'firstUrgent' and 'endUrgent' are analogous to 'first' and 'end'.
-
-	// Urgent packets should only be used for packets that may not
-	// be delayed while we wait for some remote confirmation.
-	// As such, these messages themselves should not require a state change
-	// which needs to be remotely confirmed.
-	// For example, the endTurn message can be sent when we want to change
-	// which party is allowed to transmit specific packets. That message
-	// should not be delayed by messages which require that *we* are that
-	// party, as without the endTurn message, it will never become our turn.
-	// Also, ping and ack packets should give some indication of the round
-	// trip time, which they can only do if they aren't delayed by other
-	// packets.
+	// end points to the location where the next message should be inserted.
 };
 
 void PacketQueue_init(PacketQueue *queue);
 void PacketQueue_uninit(PacketQueue *queue);
-void queuePacket(NetConnection *conn, Packet *packet, bool urgent);
+void queuePacket(NetConnection *conn, Packet *packet);
 int flushPacketQueue(NetConnection *conn);
 
 

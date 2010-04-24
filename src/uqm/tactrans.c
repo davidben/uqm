@@ -121,7 +121,7 @@ readyToEndCallback (NetConnection *conn, void *arg)
  * 3. After a player has both sent and received a frame count, the
  *    simulation continues for each party, until the maximum of both
  *    frame counts has been achieved.
- * 4. The Ready protocol is used to let each side signal that the it has
+ * 4. The Ready protocol is used to let each side signal that it has
  *    reached the target frame count.
  * 5. The battle ends.
  */
@@ -132,7 +132,7 @@ readyForBattleEndPlayer (NetConnection *conn)
 	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
 
 	if (NetConnection_getState (conn) == NetState_interBattle ||
-			NetConnection_getState (conn) == NetState_endMelee)
+			NetConnection_getState (conn) == NetState_inSetup)
 	{
 		// This connection is already ready. The entire synchronisation
 		// protocol has already been done for this connection.
@@ -161,7 +161,7 @@ readyForBattleEndPlayer (NetConnection *conn)
 	
 	// Keep the simulation going as long as the target frame count
 	// hasn't been reached yet. Note that if the connection state is
-	// NetState_endingBattle, that we haven't yet received the
+	// NetState_endingBattle, then we haven't yet received the
 	// remote frame count, so the target frame count may still rise.
 	if (battleFrameCount < battleStateData->endFrameCount)
 		return false;

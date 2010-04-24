@@ -38,7 +38,6 @@ NetStateData netStateData[] = {
 	DEFINE_NETSTATEDATA(inBattle),
 	DEFINE_NETSTATEDATA(endingBattle),
 	DEFINE_NETSTATEDATA(endingBattle2),
-	DEFINE_NETSTATEDATA(endMelee),
 };
 
 void

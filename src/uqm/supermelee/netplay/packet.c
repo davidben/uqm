@@ -29,33 +29,31 @@
 #include <string.h>
 
 
-#define DEFINE_PACKETDATA(name, inTurn) \
+#define DEFINE_PACKETDATA(name) \
 	{ \
 		/* .len = */      sizeof (Packet_##name), \
 		/* .handler = */  (PacketHandler) PacketHandler_##name, \
 		/* .name = */     #name, \
-		/* .inTurn = */   (inTurn) \
 	}
 PacketTypeData packetTypeData[PACKET_NUM] = {
-	DEFINE_PACKETDATA(Init, false),
-	DEFINE_PACKETDATA(Ping, false),
-	DEFINE_PACKETDATA(Ack, false),
-	DEFINE_PACKETDATA(EndTurn, false),
-	DEFINE_PACKETDATA(Ready, false),
-	DEFINE_PACKETDATA(Fleet, true),
-	DEFINE_PACKETDATA(TeamName, true),
-	DEFINE_PACKETDATA(Handshake0, false),
-	DEFINE_PACKETDATA(Handshake1, false),
-	DEFINE_PACKETDATA(HandshakeCancel, false),
-	DEFINE_PACKETDATA(HandshakeCancelAck, false),
-	DEFINE_PACKETDATA(SeedRandom, false),
-	DEFINE_PACKETDATA(InputDelay, false),
-	DEFINE_PACKETDATA(SelectShip, false),
-	DEFINE_PACKETDATA(BattleInput, false),
-	DEFINE_PACKETDATA(FrameCount, false),
-	DEFINE_PACKETDATA(Checksum, false),
-	DEFINE_PACKETDATA(Abort, false),
-	DEFINE_PACKETDATA(Reset, false),
+	DEFINE_PACKETDATA(Init),
+	DEFINE_PACKETDATA(Ping),
+	DEFINE_PACKETDATA(Ack),
+	DEFINE_PACKETDATA(Ready),
+	DEFINE_PACKETDATA(Fleet),
+	DEFINE_PACKETDATA(TeamName),
+	DEFINE_PACKETDATA(Handshake0),
+	DEFINE_PACKETDATA(Handshake1),
+	DEFINE_PACKETDATA(HandshakeCancel),
+	DEFINE_PACKETDATA(HandshakeCancelAck),
+	DEFINE_PACKETDATA(SeedRandom),
+	DEFINE_PACKETDATA(InputDelay),
+	DEFINE_PACKETDATA(SelectShip),
+	DEFINE_PACKETDATA(BattleInput),
+	DEFINE_PACKETDATA(FrameCount),
+	DEFINE_PACKETDATA(Checksum),
+	DEFINE_PACKETDATA(Abort),
+	DEFINE_PACKETDATA(Reset),
 };
 
 static inline void *
@@ -110,14 +108,6 @@ Packet_Ack_create(uint32 id) {
 	Packet_Ack *packet = (Packet_Ack *) Packet_create(PACKET_ACK, 0);
 
 	packet->id = hton32(id);
-	return packet;
-}
-
-Packet_EndTurn *
-Packet_EndTurn_create(void) {
-	Packet_EndTurn *packet =
-			(Packet_EndTurn *) Packet_create(PACKET_ENDTURN, 0);
-
 	return packet;
 }
 

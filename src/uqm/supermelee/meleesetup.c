@@ -34,6 +34,8 @@ MeleeTeam_init (MeleeTeam *team)
 
 	for (slotI = 0; slotI < MELEE_FLEET_SIZE; slotI++)
 		team->ships[slotI] = MELEE_NONE;
+
+	team->name[0] = '\0';
 }
 
 void
@@ -158,7 +160,7 @@ MeleeTeam_getTeamName (const MeleeTeam *team)
 
 // Returns true iff the state has actually changed.
 void
-MeleeTeam_setName (MeleeTeam *team, const UNICODE *name)
+MeleeTeam_setName (MeleeTeam *team, const char *name)
 {
 	strncpy (team->name, name, sizeof team->name - 1);
 	team->name[sizeof team->name - 1] = '\0';
@@ -196,6 +198,26 @@ MeleeTeam_isEqual (const MeleeTeam *team1, const MeleeTeam *team2)
 
 ///////////////////////////////////////////////////////////////////////////
 
+#ifdef NETPLAY
+static void
+MeleeSetup_initSentTeam (MeleeSetup *setup, size_t teamNr)
+{
+	MeleeTeam *team = &setup->sentTeams[teamNr];
+	FleetShipIndex slotI;
+
+	for (slotI = 0; slotI < MELEE_FLEET_SIZE; slotI++)
+		MeleeTeam_setShip (team, slotI, MELEE_UNSET);
+
+	setup->haveSentTeamName[teamNr] = false;
+#ifdef DEBUG
+	// The actual team name should be irrelevant if haveSentTeamName is
+	// set to false. In a debug build, we set it to invalid, so that
+	// it is more likely that it will be noticed if it is ever used.
+	MeleeTeam_setName (team, "<INVALID>");
+#endif  /* DEBUG */
+}
+#endif  /* NETPLAY */
+
 MeleeSetup *
 MeleeSetup_new (void)
 {
@@ -209,7 +231,7 @@ MeleeSetup_new (void)
 		MeleeTeam_init (&result->teams[teamI]);
 		result->fleetValue[teamI] = 0;
 #ifdef NETPLAY
-		MeleeTeam_init (&result->confirmedTeams[teamI]);
+		MeleeSetup_initSentTeam (result, teamI);
 #endif  /* NETPLAY */
 	}
 	return result;
@@ -220,6 +242,17 @@ MeleeSetup_delete (MeleeSetup *setup)
 {
 	HFree (setup);
 }
+
+#ifdef NETPLAY
+void
+MeleeSetup_resetSentTeams (MeleeSetup *setup)
+{
+	size_t teamI;
+
+	for (teamI = 0; teamI < NUM_SIDES; teamI++)
+		MeleeSetup_initSentTeam (setup, teamI);
+}
+#endif  /* NETPLAY */
 
 // Returns true iff the state has actually changed.
 bool
@@ -259,10 +292,10 @@ MeleeSetup_getFleet (const MeleeSetup *setup, size_t teamNr)
 // Returns true iff the state has actually changed.
 bool
 MeleeSetup_setTeamName (MeleeSetup *setup, size_t teamNr,
-		const UNICODE *name)
+		const char *name)
 {
 	MeleeTeam *team = &setup->teams[teamNr];
-	const UNICODE *oldName = MeleeTeam_getTeamName (team);
+	const char *oldName = MeleeTeam_getTeamName (team);
 
 	if (strcmp (oldName, name) == 0)
 		return false;
@@ -271,6 +304,8 @@ MeleeSetup_setTeamName (MeleeSetup *setup, size_t teamNr,
 	return true;
 }
 
+// NB. This function returns a pointer to a static buffer, which is
+// overwritten by calls to MeleeSetup_setTeamName().
 const char *
 MeleeSetup_getTeamName (const MeleeSetup *setup, size_t teamNr)
 {
@@ -301,24 +336,31 @@ MeleeSetup_serializeTeam (const MeleeSetup *setup, size_t teamNr,
 
 #ifdef NETPLAY
 MeleeShip
-MeleeSetup_getConfirmedShip (const MeleeSetup *setup, size_t teamNr,
+MeleeSetup_getSentShip (const MeleeSetup *setup, size_t teamNr,
 		FleetShipIndex slotNr)
 {
-	return MeleeTeam_getShip (&setup->confirmedTeams[teamNr], slotNr);
+	return MeleeTeam_getShip (&setup->sentTeams[teamNr], slotNr);
 }
 
+// Returns NULL if there is no team name set. This is not the same
+// as when an empty (zero-length) team name is set.
+// NB. This function returns a pointer to a static buffer, which is
+// overwritten by calls to MeleeSetup_setSentTeamName().
 const char *
-MeleeSetup_getConfirmedTeamName (const MeleeSetup *setup, size_t teamNr)
+MeleeSetup_getSentTeamName (const MeleeSetup *setup, size_t teamNr)
 {
-	return MeleeTeam_getTeamName (&setup->confirmedTeams[teamNr]);
+	if (!setup->haveSentTeamName[teamNr])
+		return NULL;
+
+	return MeleeTeam_getTeamName (&setup->sentTeams[teamNr]);
 }
 
 // Returns true iff the state has actually changed.
 bool
-MeleeSetup_setConfirmedShip (MeleeSetup *setup, size_t teamNr,
+MeleeSetup_setSentShip (MeleeSetup *setup, size_t teamNr,
 		FleetShipIndex slotNr, MeleeShip ship)
 {
-	MeleeTeam *team = &setup->confirmedTeams[teamNr];
+	MeleeTeam *team = &setup->sentTeams[teamNr];
 	MeleeShip oldShip = MeleeTeam_getShip (team, slotNr);
 
 	if (ship == oldShip)
@@ -329,28 +371,62 @@ MeleeSetup_setConfirmedShip (MeleeSetup *setup, size_t teamNr,
 }
 
 // Returns true iff the state has actually changed.
+// 'name' can be NULL to indicate that no team name set. This is not the same
+// as when an empty (zero-length) team name is set.
 bool
-MeleeSetup_setConfirmedTeamName (MeleeSetup *setup, size_t teamNr,
-		const UNICODE *name)
+MeleeSetup_setSentTeamName (MeleeSetup *setup, size_t teamNr,
+		const char *name)
 {
-	MeleeTeam *team = &setup->confirmedTeams[teamNr];
-	const UNICODE *oldName = MeleeTeam_getTeamName (team);
+	bool haveSentName = setup->haveSentTeamName[teamNr];
 
-	if (strcmp (oldName, name) == 0)
-		return false;
+	if (name == NULL)
+	{
+		if (!haveSentName)
+		{
+			// Had not sent a team name, and still haven't.
+			return false;
+		}
 
-	MeleeTeam_setName (team, name);
+#ifdef DEBUG
+		{
+			// The actual team name should be irrelevant if haveSentTeamName
+			// is set to false. In a debug build, we set it to invalid, so
+			// that it is more likely that it will be noticed if it is ever
+			// used.
+			MeleeTeam *team = &setup->sentTeams[teamNr];
+			MeleeTeam_setName (team, "<INVALID>");
+		}
+#endif
+	}
+	else
+	{
+		MeleeTeam *team;
+
+		if (haveSentName)
+		{
+			// Have sent a team name. Check whether it has actually changed.
+			const char *oldName = MeleeTeam_getTeamName (team);
+			if (strcmp (oldName, name) == 0)
+				return false;  // Team name has not changed.
+		}
+
+		team = &setup->sentTeams[teamNr];
+		MeleeTeam_setName (team, name);
+	}
+		
+	setup->haveSentTeamName[teamNr] = (name != NULL);
+
 	return true;
 }
 
 #if 0
 bool
-MeleeSetup_isTeamConfirmed (MeleeSetup *setup, size_t teamNr)
+MeleeSetup_isTeamSent (MeleeSetup *setup, size_t teamNr)
 {
 	MeleeTeam *localTeam = &setup->teams[teamNr];
-	MeleeTeam *confirmedTeam = &setup->confirmedTeams[teamNr];
+	MeleeTeam *sentTeam = &setup->sentTeams[teamNr];
 
-	return MeleeTeam_isEqual (localTeam, confirmedTeam);
+	return MeleeTeam_isEqual (localTeam, sentTeam);
 }
 #endif
 

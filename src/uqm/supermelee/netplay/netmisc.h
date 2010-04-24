@@ -62,8 +62,7 @@ readyFlagsMeaningful(NetState state) {
 			state == NetState_interBattle ||
 			state == NetState_inBattle ||
 			state == NetState_endingBattle ||
-			state == NetState_endingBattle2 ||
-			state == NetState_endMelee;
+			state == NetState_endingBattle2;
 }
 
 

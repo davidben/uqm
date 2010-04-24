@@ -104,20 +104,11 @@ typedef struct {
 			/* This NetConnection has been disconnected. This implies
 			 * !connected. It is only set if the NetConnection was once
 			 * connected, but is no longer. */
-	bool myTurn;
-			/* This party is the only one who may send specific packets
-			 * at the moment. */
-	bool endingTurn;
-			/* Request to change the turn from/to the other party. */
-	bool pendingTurnChange;
-			/* It is our turn and the other party wants our turn,
-			 * but we're not ready to give it up just yet; we will first
-			 * send our pending packets. */
 	bool discriminant;
 			/* If it is true here, it is false on the remote side
 			 * of the same connection. It may be used to break ties.
-			 * Unlike myTurn, this one is guaranteed not to change
-			 * during a connection. Undefined while not connected. */
+			 * It is guaranteed not to change during a connection. Undefined
+			 * while not connected. */
 	HandShakeFlags handshake;
 	ReadyFlags ready;
 	ResetFlags reset;
@@ -204,7 +195,6 @@ bool NetConnection_isConnected(const NetConnection *conn);
 
 void NetConnection_doErrorCallback(NetConnection *nd, int err);
 
-bool NetConnection_isMyTurn(const NetConnection *conn);
 void NetConnection_setStateData(NetConnection *conn,
 		NetConnectionStateData *stateData);
 NetConnectionStateData *NetConnection_getStateData(const NetConnection *conn);

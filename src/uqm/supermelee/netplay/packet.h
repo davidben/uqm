@@ -25,7 +25,6 @@ typedef enum PacketType {
 	PACKET_INIT,
 	PACKET_PING,
 	PACKET_ACK,
-	PACKET_ENDTURN,
 	PACKET_READY,
 	PACKET_FLEET,
 	PACKET_TEAMNAME,
@@ -79,7 +78,6 @@ typedef struct {
 	size_t len;  /* Minimal length of a packet of this type */
 	PacketHandler handler;
 	const char *name;
-	bool inTurn;  /* Can only be sent if it's this party's turn. */
 } PacketTypeData;
 
 extern PacketTypeData packetTypeData[];
@@ -141,12 +139,6 @@ typedef struct {
 	PacketHeader header;
 	uint32 id;
 } Packet_Ack;
-
-// Used to ask or confirm a turn change.
-typedef struct {
-	PacketHeader header;
-	// No contents.
-} Packet_EndTurn;
 
 // Used to signal that a party is ready to continue.
 typedef struct {
@@ -262,7 +254,6 @@ void Packet_delete(Packet *packet);
 Packet_Init *Packet_Init_create(void);
 Packet_Ping *Packet_Ping_create(uint32 id);
 Packet_Ack *Packet_Ack_create(uint32 id);
-Packet_EndTurn *Packet_EndTurn_create(void);
 Packet_Ready *Packet_Ready_create(void);
 Packet_Handshake0 *Packet_Handshake0_create(void);
 Packet_Handshake1 *Packet_Handshake1_create(void);

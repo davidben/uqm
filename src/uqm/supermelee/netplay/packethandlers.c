@@ -142,41 +142,6 @@ PacketHandler_Ack(NetConnection *conn, const Packet_Ack *packet) {
 	return 0;
 }
 
-int
-PacketHandler_EndTurn(NetConnection *conn, const Packet_EndTurn *packet) {
-	if (!testNetState(conn->state > NetState_init &&
-			!conn->stateFlags.pendingTurnChange, PACKET_ENDTURN))
-		return -1;  // errno is set
-
-	if (conn->stateFlags.endingTurn) {
-		// This was the confirmation we were waiting for.
-		// NB. A remote request while we had sent a request serves as
-		// a confirmation.
-		conn->stateFlags.myTurn = !conn->stateFlags.myTurn;
-		conn->stateFlags.endingTurn = false;
-	} else {
-		// The other party wants to change whose turn it is.
-		// If it would become the other party's turn, we wait until
-		// the queue is flushed to actually carry out the turn change,
-		// and send the confirmation. I we wouldn't do that, and we still
-		// had some data to send in our own turn, we would end up asking
-		// for our turn back, and the turn would keep changing without
-		// any progress being made.
-		if (conn->stateFlags.myTurn) {
-			// Schedule the turn change until after the next queue flush.
-			conn->stateFlags.pendingTurnChange = true;
-		} else {
-			conn->stateFlags.myTurn = true;
-			sendEndTurn(conn);
-		}
-	}
-	
-	(void) packet;
-			// Its contents is not interesting.
-
-	return 0;
-}
-
 // Convert the side indication relative to a remote party to
 // a local player number.
 static inline int
@@ -187,17 +152,6 @@ localSide(NetConnection *conn, NetplaySide side) {
 	}
 
 	return 1 - conn->player;
-}
-
-static bool
-checkYourTurn(NetConnection *conn, PacketType type) {
-	if (conn->stateFlags.myTurn) {
-		log_add(log_Warning, "Packet of type '%s' received in an "
-				"inappropriate turn.", packetTypeData[type].name);
-		errno = EBADMSG;
-		return false;
-	}
-	return true;
 }
 
 int
@@ -239,11 +193,6 @@ PacketHandler_Fleet(NetConnection *conn, const Packet_Fleet *packet) {
 	if (!testNetState(conn->state == NetState_inSetup, PACKET_FLEET))
 		return -1;  // errno is set
 
-	if (!checkYourTurn(conn, PACKET_FLEET)) {
-		// errno is set
-		return -1;
-	}
-	
 	player = localSide(conn, (NetplaySide) packet->side);
 
 	len = packetLength((const Packet *) packet);
@@ -304,13 +253,8 @@ PacketHandler_TeamName(NetConnection *conn, const Packet_TeamName *packet) {
 		return -1;
 	}
 
-	if (!testNetState(conn->state == NetState_inSetup, PACKET_TEAMNAME))
+	if (!testNetState(conn->state == NetState_inSetup, PACKET_FLEET))
 		return -1;  // errno is set
-
-	if (!checkYourTurn(conn, PACKET_TEAMNAME)) {
-		// errno is set
-		return -1;
-	}
 
 	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
 
@@ -503,8 +447,7 @@ PacketHandler_InputDelay(NetConnection *conn,
 		return -1;
 	}
 
-	if (!testNetState(conn->state == NetState_preBattle,
-			PACKET_INPUTDELAY))
+	if (!testNetState(conn->state == NetState_preBattle, PACKET_INPUTDELAY))
 		return -1;  // errno is set
 
 	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);

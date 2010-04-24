@@ -181,8 +181,6 @@ NetConnection_connectedServerCallback(ListenState *listenState,
 			// Ignore errors; it's not a big deal. In debug mode, a message
 			// will already have been printed from the function itself.
 
-	conn->stateFlags.myTurn = true;
-			// The "server" may speak first.
 	conn->stateFlags.discriminant = true;
 
 	NetConnection_connected(conn);
@@ -210,8 +208,6 @@ NetConnection_connectedClientCallback(ConnectState *connectState,
 			// Ignore errors; it's not a big deal. In debug mode, a message
 			// will already have been printed from the function itself.
 
-	conn->stateFlags.myTurn = false;
-			// The "server" may speak first.
 	conn->stateFlags.discriminant = false;
 
 	NetConnection_connected(conn);

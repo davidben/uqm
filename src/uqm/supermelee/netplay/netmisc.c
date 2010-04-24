@@ -84,6 +84,9 @@ NetMelee_connectCallback(NetConnection *conn) {
 	NetConnection_setStateData(conn, (void *) battleStateData);
 	NetConnection_setExtra(conn, NULL);
 
+	// We have sent no teams yet. Initialize the state accordingly.
+	MeleeSetup_resetSentTeams (meleeState->meleeSetup);
+
 	sendInit(conn);
 	Netplay_localReady (conn, NetMelee_enterState_inSetup, NULL, false);
 }
@@ -119,43 +122,13 @@ NetMelee_enterState_inSetup(NetConnection *conn, void *arg) {
 
 	connectedFeedback(conn);
 
-	Netplay_NotifyAll_setFleet(meleeState, player);
-	Netplay_NotifyAll_setTeamName(meleeState, player);
+	// Send our team to the remote side.
+	// XXX This only works with 2 players atm.
+	assert (NUM_PLAYERS == 2);
+	Melee_bootstrapSyncTeam (meleeState, player);
 
 	flushPacketQueues();
 
 	(void) arg;
-}
-
-// Callback function for when both sides have confirmed that the battle
-// has ended.
-void
-NetMelee_reenterState_inSetup(NetConnection *conn) {
-	BattleStateData *battleStateData;
-	struct melee_state *meleeState;
-
-	NetConnection_setState(conn, NetState_inSetup);
-	
-	battleStateData = (BattleStateData *) NetConnection_getStateData(conn);
-	meleeState = battleStateData->meleeState;
-
-	// The player who entered the menu first should send his changes over
-	// to the other side when the other player enters setup too.
-	// As myTurn is set when a change is made, and will never be unset
-	// until the other side makes a change, it can be used to determine
-	// which side was first. In the case there were no changes made, myTurn
-	// may be the second player, but in this case it doesn't matter
-	// who sends what to whom.
-	if (NetConnection_isMyTurn(conn))
-	{
-		size_t side;
-
-		for (side = 0; side < NUM_SIDES; side++)
-		{
-			Netplay_NotifyAll_setFleet(meleeState, side);
-			Netplay_NotifyAll_setTeamName(meleeState, side);
-		}
-		flushPacketQueues();
-	}
 }
 

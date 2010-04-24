@@ -21,6 +21,7 @@
 #include "netplay.h"
 #include "port.h"
 
+#include "netsend.h"
 #include "netconnection.h"
 #include "packet.h"
 #include "libs/log.h"

@@ -493,6 +493,7 @@ spawn_ship (STARSHIP *StarShipPtr)
 	return (hShip != 0);
 }
 
+// Select a new ship and spawn it.
 BOOLEAN
 GetNextStarShip (STARSHIP *LastStarShipPtr, COUNT which_side)
 {

@@ -59,6 +59,7 @@ struct melee_state
 	BOOLEAN (*InputFunc) (struct melee_state *pInputState);
 
 	BOOLEAN Initialized;
+	BOOLEAN meleeStarted;
 	MELEE_OPTIONS MeleeOption;
 	COUNT side;
 	COUNT row;
@@ -108,13 +109,16 @@ void resetFeedback (NetConnection *conn, NetplayResetReason reason,
 void errorFeedback (NetConnection *conn);
 void closeFeedback (NetConnection *conn);
 
-bool Melee_Change_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index,
-		MeleeShip ship);
-bool Melee_Change_teamName (MELEE_STATE *pMS, COUNT side, const char *name);
-bool Melee_Change_fleet (MELEE_STATE *pMS, size_t teamNr,
+bool Melee_LocalChange_ship (MELEE_STATE *pMS, COUNT side,
+		FleetShipIndex index, MeleeShip ship);
+bool Melee_LocalChange_teamName (MELEE_STATE *pMS, COUNT side,
+		const char *name);
+bool Melee_LocalChange_fleet (MELEE_STATE *pMS, size_t teamNr,
 		const MeleeShip *fleet);
-bool Melee_Change_team (MELEE_STATE *pMS, size_t teamNr,
+bool Melee_LocalChange_team (MELEE_STATE *pMS, size_t teamNr,
 		const MeleeTeam *team);
+
+void Melee_bootstrapSyncTeam (MELEE_STATE *pMS, size_t teamNr);
 
 void Melee_RemoteChange_ship (MELEE_STATE *pMS, NetConnection *conn,
 		COUNT side, FleetShipIndex index, MeleeShip ship);

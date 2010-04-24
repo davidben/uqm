@@ -384,15 +384,6 @@ aborted:
 	return FALSE;
 }
 
-#ifdef NETPLAY
-static void
-endMeleeCallback (NetConnection *conn, void *arg)
-{
-	NetMelee_reenterState_inSetup (conn);
-	(void) arg;
-}
-#endif
-
 static COUNT
 GetRaceQueueValue (const QUEUE *queue) {
 	COUNT result;
@@ -661,9 +652,14 @@ MeleeGameOver (void)
 	// Show the battle result.
 	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
 		DrawPickMeleeFrame (playerI);
+	
+	UnlockMutex (GraphicsLock);
+
+#ifdef NETPLAY
+	negotiateReadyConnections(true, NetState_inSetup);
+#endif
 
 	TimeOut = GetTimeCounter () + (ONE_SECOND * 4);
-	UnlockMutex (GraphicsLock);
 
 	PressState = PulsedInputState.menu[KEY_MENU_SELECT] ||
 			PulsedInputState.menu[KEY_MENU_CANCEL];
@@ -682,11 +678,6 @@ MeleeGameOver (void)
 	} while (!(GLOBAL (CurrentActivity) & CHECK_ABORT) && (!ButtonState
 			&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
 			|| GetTimeCounter () < TimeOut)));
-
-#ifdef NETPLAY
-	setStateConnections (NetState_endMelee);
-	localReadyConnections (endMeleeCallback, NULL, true);
-#endif
 
 	LockMutex (GraphicsLock);
 }
@@ -898,6 +889,7 @@ GetInitialMeleeStarShips (HSTARSHIP *result)
 	return GetMeleeStarShips (playerMask, result);
 }
 
+// Get the next ship to use in SuperMelee.
 BOOLEAN
 GetNextMeleeStarShip (COUNT which_player, HSTARSHIP *result)
 {

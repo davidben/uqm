@@ -129,9 +129,6 @@ NetConnection_open(int player, const NetplayPeerOptions *options,
 	conn->stateData = NULL;
 	conn->stateFlags.connected = false;
 	conn->stateFlags.disconnected = false;
-	conn->stateFlags.myTurn = false;
-	conn->stateFlags.endingTurn = false;
-	conn->stateFlags.pendingTurnChange = false;
 	conn->stateFlags.discriminant = false;
 	conn->stateFlags.handshake.localOk = false;
 	conn->stateFlags.handshake.remoteOk = false;
@@ -348,11 +345,6 @@ NetConnection_getPeerOptions(const NetConnection *conn) {
 bool
 NetConnection_isConnected(const NetConnection *conn) {
 	return conn->stateFlags.connected;
-}
-
-bool
-NetConnection_isMyTurn(const NetConnection *conn) {
-	return conn->stateFlags.myTurn;
 }
 
 int

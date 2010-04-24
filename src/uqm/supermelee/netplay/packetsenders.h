@@ -34,9 +34,7 @@
 void sendInit(NetConnection *conn);
 void sendPing(NetConnection *conn, uint32 id);
 void sendAck(NetConnection *conn, uint32 id);
-void sendEndTurn(NetConnection *conn);
 void sendReady(NetConnection *conn);
-int sendEndTurnDirect(NetConnection *conn);
 void sendHandshake0(NetConnection *conn);
 void sendHandshake1(NetConnection *conn);
 void sendHandshakeCancel(NetConnection *conn);

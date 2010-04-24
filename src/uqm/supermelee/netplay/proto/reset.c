@@ -82,7 +82,6 @@ Netplay_connectionReset(NetConnection *conn, NetplayResetReason reason,
 		case NetState_inBattle:
 		case NetState_endingBattle:
 		case NetState_endingBattle2:
-		case NetState_endMelee:
 			resetFeedback(conn, reason, byRemote);
 			break;
 	}

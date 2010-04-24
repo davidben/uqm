@@ -302,17 +302,29 @@ SetContext (OldContext);
 	return (hBattleShip);
 }
 
+static QUEUE *
+GetShipQueueForSide (COUNT sideNr)
+{
+	if (sideNr == 0)
+		return &GLOBAL (built_ship_q);
+	else
+		return &GLOBAL (npc_built_ship_q);
+}
+
+// Get the next ship to use.
 HSTARSHIP
 GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 {
 	HSTARSHIP hBattleShip;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	{
 		// Get the next ship from the battle group.
 		hBattleShip = GetHeadLink (&race_q[which_player]);
+	}
 	else if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 	{
-		// Let the player chose his own ship. (May be a computer player).
+		// Let the player chose their own ship. (May be a computer player).
 
 		if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
 		{
@@ -367,10 +379,7 @@ GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 			QUEUE *pQueue;
 			HSHIPFRAG hNextShip;
 
-			if (which_player == 0)
-				pQueue = &GLOBAL (built_ship_q);
-			else
-				pQueue = &GLOBAL (npc_built_ship_q);
+			pQueue = GetShipQueueForSide (which_player);
 
 			hBattleShip = GetHeadLink (&race_q[which_player]);
 			for (hStarShip = GetHeadLink (pQueue);

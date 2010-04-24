@@ -208,7 +208,7 @@ DrawFileString (const MeleeTeam *team, const POINT *origin,
 }
 
 // returns true if there are any entries in the view, in which case
-// pMS->load.bot gets set to the index of the bottom entry in the view.
+// pMS->load.bot gets set to the index just past the bottom entry in the view.
 // returns false if not, in which case, the entire view remains unchanged.
 static bool
 FillFileView (MELEE_STATE *pMS)
@@ -350,7 +350,7 @@ DoLoadTeam (MELEE_STATE *pMS)
 		if (PulsedInputState.menu[KEY_MENU_SELECT])
 		{
 			// Copy the selected fleet to the player.
-			Melee_Change_team (pMS, pMS->side,
+			Melee_LocalChange_team (pMS, pMS->side,
 					pMS->load.view[pMS->load.cur - pMS->load.top]);
 		}
 
@@ -417,11 +417,16 @@ DoLoadTeam (MELEE_STATE *pMS)
 
 		if (newIndex != pMS->load.cur)
 		{
+			// The cursor has been moved.
 			LockMutex (GraphicsLock);
 			if (newTop == pMS->load.top)
+			{
+				// The view itself hasn't changed.
 				SelectFileString (pMS, false);
+			}
 			else
 			{
+				// The view is changed.
 				pMS->load.top = newTop;
 				DrawFileStrings (pMS);
 			}

@@ -197,6 +197,7 @@ static BOOLEAN DoConfirmSettings (MELEE_STATE *pMS);
 #define DTSHS_BLOCKCUR 8
 static BOOLEAN DrawTeamString (MELEE_STATE *pMS, COUNT side,
 		COUNT HiLiteState, const char *str);
+static void DrawFleetValue (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState);
 
 static void Melee_UpdateView_fleetValue (MELEE_STATE *pMS, COUNT side);
 static void Melee_UpdateView_ship (MELEE_STATE *pMS, COUNT side,
@@ -363,6 +364,7 @@ DrawTeams (void)
 		}
 
 		DrawTeamString (pMeleeState, side, DTSHS_NORMAL, NULL);
+		DrawFleetValue (pMeleeState, side, DTSHS_NORMAL);
 	}
 }
 
@@ -422,6 +424,59 @@ RedrawMeleeFrame (void)
 	RepairMeleeFrame (&r);
 }
 
+static void
+GetTeamStringRect (COUNT side, RECT *r)
+{
+	r->corner.x = MELEE_X_OFFS - 1;
+	r->corner.y = (side + 1) * (MELEE_Y_OFFS
+			+ ((MELEE_BOX_HEIGHT + MELEE_BOX_SPACE) * NUM_MELEE_ROWS + 2));
+	r->extent.width = NUM_MELEE_COLUMNS * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE)
+			- 29;
+	r->extent.height = 13;
+}
+
+static void
+GetFleetValueRect (COUNT side, RECT *r)
+{
+	r->corner.x = MELEE_X_OFFS
+			+ NUM_MELEE_COLUMNS * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE) - 30;
+	r->corner.y = (side + 1) * (MELEE_Y_OFFS
+			+ ((MELEE_BOX_HEIGHT + MELEE_BOX_SPACE) * NUM_MELEE_ROWS + 2));
+	r->extent.width = 29;
+	r->extent.height = 13;
+}
+
+static void
+DrawFleetValue (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState)
+{
+	RECT r;
+	TEXT rtText;
+	UNICODE buf[30];
+	COUNT fleetValue;
+
+	GetFleetValueRect (side ,&r);
+
+	if (HiLiteState == DTSHS_REPAIR)
+	{
+		RepairMeleeFrame (&r);
+		return;
+	}
+	
+	SetContextFont (MicroFont);
+
+	fleetValue = MeleeSetup_getFleetValue (pMS->meleeSetup, side);
+	sprintf (buf, "%u", fleetValue);
+	rtText.pStr = buf;
+	rtText.align = ALIGN_RIGHT;
+	rtText.CharCount = (COUNT)~0;
+	rtText.baseline.y = r.corner.y + r.extent.height - 3;
+	rtText.baseline.x = r.corner.x + r.extent.width;
+
+	SetContextForeGroundColor (!(HiLiteState & DTSHS_SELECTED)
+			? TEAM_NAME_TEXT_COLOR : TEAM_NAME_EDIT_TEXT_COLOR);
+	font_DrawText (&rtText);
+}
+
 // If teamName == NULL, the team name is taken from pMS->meleeSetup
 static BOOLEAN
 DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState,
@@ -430,11 +485,7 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState,
 	RECT r;
 	TEXT lfText;
 
-	r.corner.x = MELEE_X_OFFS - 1;
-	r.corner.y = (side + 1) * (MELEE_Y_OFFS
-			+ ((MELEE_BOX_HEIGHT + MELEE_BOX_SPACE) * NUM_MELEE_ROWS + 2));
-	r.extent.width = NUM_MELEE_COLUMNS * (MELEE_BOX_WIDTH + MELEE_BOX_SPACE);
-	r.extent.height = 13;
+	GetTeamStringRect (side, &r);
 	if (HiLiteState == DTSHS_REPAIR)
 	{
 		RepairMeleeFrame (&r);
@@ -446,7 +497,6 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState,
 	lfText.pStr = (teamName != NULL) ? teamName :
 			MeleeSetup_getTeamName (pMS->meleeSetup, side);
 	lfText.baseline.y = r.corner.y + r.extent.height - 3;
-
 	lfText.baseline.x = r.corner.x + 1;
 	lfText.align = ALIGN_LEFT;
 	lfText.CharCount = strlen (lfText.pStr);
@@ -454,20 +504,9 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState,
 	BatchGraphics ();
 	if (!(HiLiteState & DTSHS_EDIT))
 	{	// normal or selected state
-		TEXT rtText;
-		UNICODE buf[30];
-
-		sprintf (buf, "%u", MeleeSetup_getFleetValue (pMS->meleeSetup, side));
-		rtText.pStr = buf;
-		rtText.align = ALIGN_RIGHT;
-		rtText.CharCount = (COUNT)~0;
-		rtText.baseline.y = lfText.baseline.y;
-		rtText.baseline.x = lfText.baseline.x + r.extent.width - 1;
-
 		SetContextForeGroundColor (!(HiLiteState & DTSHS_SELECTED)
 				? TEAM_NAME_TEXT_COLOR : TEAM_NAME_EDIT_TEXT_COLOR);
 		font_DrawText (&lfText);
-		font_DrawText (&rtText);
 	}
 	else
 	{	// editing state
@@ -475,9 +514,6 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState,
 		RECT text_r;
 		BYTE char_deltas[MAX_TEAM_CHARS];
 		BYTE *pchar_deltas;
-
-		// not drawing team bucks
-		r.extent.width -= 29;
 
 		TextRect (&lfText, &text_r, char_deltas);
 		if ((text_r.extent.width + 2) >= r.extent.width)
@@ -712,6 +748,8 @@ Deselect (BYTE opt)
 					// Not currently editing the team name.
 					DrawTeamString (pMeleeState, pMeleeState->side,
 							DTSHS_NORMAL, NULL);
+					DrawFleetValue (pMeleeState, pMeleeState->side,
+							DTSHS_NORMAL);
 				}
 			}
 			break;
@@ -773,6 +811,8 @@ Select (BYTE opt)
 					// Not currently editing the team name.
 					DrawTeamString (pMeleeState, pMeleeState->side,
 							DTSHS_SELECTED, NULL);
+					DrawFleetValue (pMeleeState, pMeleeState->side,
+							DTSHS_SELECTED);
 				}
 			}
 			break;
@@ -942,7 +982,7 @@ static void
 DeleteCurrentShip (MELEE_STATE *pMS)
 {
 	FleetShipIndex slotI = GetShipIndex (pMS->row, pMS->col);
-	Melee_Change_ship (pMS, pMS->side, slotI, MELEE_NONE);
+	Melee_LocalChange_ship (pMS, pMS->side, slotI, MELEE_NONE);
 }
 
 static bool
@@ -992,6 +1032,23 @@ OnTeamNameChange (TEXTENTRY_STATE *pTES)
 	return ret;
 }
 
+static BOOLEAN
+TeamNameFrameCallback (TEXTENTRY_STATE *pTES)
+{
+#ifdef NETPLAY
+	// Process incoming packets, so that remote changes are displayed
+	// while we are editing the team name.
+	// The team name itself isn't modified visually due to remote changes
+	// while it is being edited.
+	netInput ();
+#endif
+
+	(void) pTES;
+
+	return TRUE;
+			// Keep editing
+}
+
 static void
 BuildPickShipPopup (MELEE_STATE *pMS)
 {
@@ -1005,7 +1062,7 @@ BuildPickShipPopup (MELEE_STATE *pMS)
 		// A ship has been selected.
 		// Add the currently selected ship to the fleet.
 		FleetShipIndex index = GetShipIndex (pMS->row, pMS->col);
-		Melee_Change_ship (pMS, pMS->side, index, pMS->currentShip);
+		Melee_LocalChange_ship (pMS, pMS->side, index, pMS->currentShip);
 		AdvanceCursor (pMS);
 	}
 	
@@ -1122,12 +1179,13 @@ DoEdit (MELEE_STATE *pMS)
 				tes.MaxSize = MAX_TEAM_CHARS + 1;
 				tes.CbParam = pMS;
 				tes.ChangeCallback = OnTeamNameChange;
-				tes.FrameCallback = 0;
+				tes.FrameCallback = TeamNameFrameCallback;
 				DoTextEntry (&tes);
-				
+			
 				// done entering
 				pMS->CurIndex = MELEE_STATE_INDEX_DONE;
-				if (!Melee_Change_teamName (pMS, pMS->side, buf)) {
+				if (!tes.Success ||
+						!Melee_LocalChange_teamName (pMS, pMS->side, buf)) {
 					// The team name was not changed, so it was not redrawn.
 					// However, because we now leave edit mode, we still
 					// need to redraw.
@@ -1253,6 +1311,7 @@ DoConfirmSettings (MELEE_STATE *pMS)
 
 	if (PulsedInputState.menu[KEY_MENU_CANCEL])
 	{
+		// The connection is explicitely cancelled, locally.
 		pMS->InputFunc = DoMelee;
 #ifdef NETPLAY
 		cancelConfirmations ();
@@ -1266,6 +1325,7 @@ DoConfirmSettings (MELEE_STATE *pMS)
 			PulsedInputState.menu[KEY_MENU_UP] ||
 			PulsedInputState.menu[KEY_MENU_DOWN])
 	{
+		// The player moves the cursor; cancel the confirmation.
 		pMS->InputFunc = DoMelee;
 #ifdef NETPLAY
 		cancelConfirmations ();
@@ -1278,7 +1338,9 @@ DoConfirmSettings (MELEE_STATE *pMS)
 #ifndef NETPLAY
 	pMS->InputFunc = DoMelee;
 	SeedRandomNumbers ();
+	pMS->meleeStarted = TRUE;
 	StartMelee (pMS);
+	pMS->meleeStarted = FALSE;
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 		return FALSE;
 	return TRUE;
@@ -2041,9 +2103,11 @@ Melee (void)
 		if (LoadMeleeConfig (&MenuState) == -1)
 		{
 			PlayerControl[0] = HUMAN_CONTROL | STANDARD_RATING;
-			Melee_Change_team (&MenuState, 0, MenuState.load.preBuiltList[0]);
+			Melee_LocalChange_team (&MenuState, 0,
+					MenuState.load.preBuiltList[0]);
 			PlayerControl[1] = COMPUTER_CONTROL | STANDARD_RATING;
-			Melee_Change_team (&MenuState, 1, MenuState.load.preBuiltList[1]);
+			Melee_LocalChange_team (&MenuState, 1,
+					MenuState.load.preBuiltList[1]);
 		}
 
 		MenuState.side = 0;
@@ -2186,7 +2250,6 @@ resetFeedback (NetConnection *conn, NetplayResetReason reason,
 {
 	const char *msg;
 
-	GLOBAL (CurrentActivity) |= CHECK_ABORT;
 	flushPacketQueues ();
 			// If the local side queued a reset packet as a result of a
 			// remote reset, that packet will not have been sent yet.
@@ -2202,6 +2265,10 @@ resetFeedback (NetConnection *conn, NetplayResetReason reason,
 	msg = resetReasonString (reason);
 	if (msg != NULL)
 		connectionFeedback (conn, msg, false);
+	
+	// End supermelee. This must not be done before connectionFeedback(),
+	// otherwise the message will immediately disappear.
+	GLOBAL (CurrentActivity) |= CHECK_ABORT;
 }
 
 void
@@ -2241,15 +2308,24 @@ closeFeedback (NetConnection *conn)
 static void
 Melee_UpdateView_fleetValue (MELEE_STATE *pMS, COUNT side)
 {
+	if (pMS->meleeStarted)
+		return;
+
 	LockMutex (GraphicsLock);
-	DrawTeamString (pMS, side, DTSHS_REPAIR, NULL);
+	DrawFleetValue (pMS, side, DTSHS_REPAIR);
+			// BUG: The fleet value is always drawn as deselected.
 	UnlockMutex (GraphicsLock);
 }
 
 static void
 Melee_UpdateView_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index)
 {
-	MeleeShip ship = MeleeSetup_getShip (pMS->meleeSetup, side, index);
+	MeleeShip ship;
+	
+	if (pMS->meleeStarted)
+		return;
+
+	ship = MeleeSetup_getShip (pMS->meleeSetup, side, index);
 
 	LockMutex (GraphicsLock);
 	if (ship == MELEE_NONE)
@@ -2266,6 +2342,9 @@ Melee_UpdateView_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index)
 static void
 Melee_UpdateView_teamName (MELEE_STATE *pMS, COUNT side)
 {
+	if (pMS->meleeStarted)
+		return;
+
 	LockMutex (GraphicsLock);
 	DrawTeamString (pMS, side, DTSHS_REPAIR, NULL);
 	UnlockMutex (GraphicsLock);
@@ -2273,10 +2352,11 @@ Melee_UpdateView_teamName (MELEE_STATE *pMS, COUNT side)
 
 ///////////////////////////////////////////////////////////////////////////
 
-// Melee_Change_xxx() functions are called when some value in the supermelee
-// fleet setup screen has changed, eithed locally, or remotely.
+// Melee_Change_xxx() functions are helper functions, called when some value
+// in the supermelee fleet setup screen has changed, eithed because of a
+// local change, or a remote change.
 
-bool
+static bool
 Melee_Change_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index,
 		MeleeShip ship)
 {
@@ -2300,16 +2380,11 @@ Melee_Change_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index,
 		UnlockMutex (GraphicsLock);
 	}
 
-#ifdef NETPLAY
-	// Notify network connections of the change.
-	Netplay_NotifyAll_setShip (pMS, side, index);
-#endif  /* NETPLAY */
-
 	return true;
 }
 
 // Pre: 'name' is '\0'-terminated
-bool
+static bool
 Melee_Change_teamName (MELEE_STATE *pMS, COUNT side, const char *name)
 {
 	MeleeSetup *setup = pMS->meleeSetup;
@@ -2329,37 +2404,93 @@ Melee_Change_teamName (MELEE_STATE *pMS, COUNT side, const char *name)
 		Melee_UpdateView_teamName (pMS, side);
 	}
 
+	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+// Melee_LocalChange_xxx() functions are called when some value in the
+// supermelee fleet setup screen has changed because of a local action.
+// The behavior of these functions (and the comments therein) follow the
+// description in doc/devel/netplay/protocol.
+
+bool
+Melee_LocalChange_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index,
+		MeleeShip ship)
+{
+	if (!Melee_Change_ship (pMS, side, index, ship))
+		return false;
+
 #ifdef NETPLAY
-	Netplay_NotifyAll_setTeamName (pMS, side);
+	{
+		MeleeSetup *setup = pMS->meleeSetup;
+
+		MeleeShip sentShip = MeleeSetup_getSentShip (setup, side, index);
+		if (sentShip == MELEE_UNSET)
+		{
+			// State 1.
+			// Notify network connections of the change.
+			Netplay_NotifyAll_setShip (pMS, side, index);
+			MeleeSetup_setSentShip (setup, side, index, ship);
+		}
+	}
+#endif  /* NETPLAY */
+
+	return true;
+}
+
+
+// Pre: 'name' is '\0'-terminated
+bool
+Melee_LocalChange_teamName (MELEE_STATE *pMS, COUNT side, const char *name)
+{
+	if (!Melee_Change_teamName (pMS, side, name))
+		return false;
+
+#ifdef NETPLAY
+	{
+		MeleeSetup *setup = pMS->meleeSetup;
+
+		const char *sentName = MeleeSetup_getSentTeamName (setup, side);
+		if (sentName == NULL)
+		{
+			// State 1.
+			// Notify network connections of the change.
+			Netplay_NotifyAll_setTeamName (pMS, side);
+			MeleeSetup_setSentTeamName (setup, side, name);
+		}
+	}
 #endif  /* NETPLAY */
 
 	return true;
 }
 
 bool
-Melee_Change_fleet (MELEE_STATE *pMS, size_t teamNr, const MeleeShip *fleet)
+Melee_LocalChange_fleet (MELEE_STATE *pMS, size_t teamNr,
+		const MeleeShip *fleet)
 {
-	MeleeSetup *setup = pMS->meleeSetup;
 	FleetShipIndex slotI;
 	bool changed = false;
 
-	for (slotI = 0; slotI < MELEE_FLEET_SIZE; slotI++) {
-		if (MeleeSetup_setShip (setup, teamNr, slotI, fleet[slotI]))
+	for (slotI = 0; slotI < MELEE_FLEET_SIZE; slotI++)
+	{
+		if (Melee_LocalChange_ship (pMS, teamNr, slotI, fleet[slotI]))
 			changed = true;
 	}
 	return changed;
 }
 
 bool
-Melee_Change_team (MELEE_STATE *pMS, size_t teamNr, const MeleeTeam *team)
+Melee_LocalChange_team (MELEE_STATE *pMS, size_t teamNr,
+		const MeleeTeam *team)
 {
-	MeleeSetup *setup = pMS->meleeSetup;
 	const MeleeShip *fleet = MeleeTeam_getFleet (team);
+	const char *name = MeleeTeam_getTeamName (team);
 	bool changed = false;
 
-	if (Melee_Change_fleet (pMS, teamNr, fleet))
+	if (Melee_LocalChange_fleet (pMS, teamNr, fleet))
 		changed = true;
-	if (MeleeSetup_setTeamName (setup, teamNr, MeleeTeam_getTeamName (team)))
+	if (Melee_LocalChange_teamName (pMS, teamNr, name))
 		changed = true;
 
 	return changed;
@@ -2367,8 +2498,40 @@ Melee_Change_team (MELEE_STATE *pMS, size_t teamNr, const MeleeTeam *team)
 
 ///////////////////////////////////////////////////////////////////////////
 
+// Send the entire team to the remote side. Used when the connection has
+// just been established, or after the setup menu is reentered after battle.
+void
+Melee_bootstrapSyncTeam (MELEE_STATE *meleeState, size_t teamNr)
+{
+	MeleeSetup *setup = meleeState->meleeSetup;
+	FleetShipIndex slotI;
+	const char *teamName;
+
+	// Send the current fleet.
+	Netplay_NotifyAll_setFleet(meleeState, teamNr);
+
+	// Update the last sent fleet.
+	for (slotI = 0; slotI < MELEE_FLEET_SIZE; slotI++)
+	{
+		MeleeShip ship = MeleeSetup_getShip (setup, teamNr, slotI);
+		assert (MeleeSetup_getSentShip (setup, teamNr, slotI) == MELEE_UNSET);
+		MeleeSetup_setSentShip (setup, teamNr, slotI, ship);
+	}
+
+	// Send the current team name.
+	Netplay_NotifyAll_setTeamName (meleeState, teamNr);
+
+	// Update the last sent team name.
+	teamName = MeleeSetup_getTeamName (setup, teamNr);
+	MeleeSetup_setSentTeamName (setup, teamNr, teamName);
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 // Melee_RemoteChange_xxx() functions are called when some value in the
 // supermelee fleet setup screen has changed remotely.
+// The behavior of these functions (and the comments therein) follow the
+// description in doc/devel/netplay/protocol.
 
 #ifdef NETPLAY
 void
@@ -2377,73 +2540,139 @@ Melee_RemoteChange_ship (MELEE_STATE *pMS, NetConnection *conn, COUNT side,
 {
 	MeleeSetup *setup = pMS->meleeSetup;
 
-	MeleeShip currentShip = MeleeSetup_getShip (setup, side, index);
+	MeleeShip sentShip = MeleeSetup_getSentShip (setup, side, index);
+	MeleeShip currentShip;
 
-	if (ship == currentShip)
+	if (sentShip == MELEE_UNSET)
 	{
-		// The remote side has confirmed what we want the value to be.
-		// If we had made the same local change before, then an update
-		// has already been sent. If not, then there is nothing to change.
-		// Either way, we do not need to send an update.
-		MeleeSetup_setConfirmedShip (setup, side, index, ship);
-	} else {
-		// The remote side wants to make a change.
-		// We accept the change when we don't have any changes of our own,
-		// or when we do have changes, but we "lose" the tie break.
-		// If we "win" the tie break, we have already sent an update to the
-		// remote side when our local change was made, so we do not need to
-		// send anything. The remote side still needs to confirm this local
-		// change, of which it will become aware shortly, when the already
-		// sent update message arrives.
-		MeleeShip confirmedShip = MeleeSetup_getConfirmedShip (setup, side,
-				index);
-		if (currentShip == confirmedShip ||
-				NetConnection_getDiscriminant(conn))
+		// State 1
+
+		// Change the ship locally.
+		Melee_Change_ship (pMS, side, index, ship);
+
+		// Notify the remote side.
+		Netplay_NotifyAll_setShip (pMS, side, index);
+
+		// A packet has now been received and sent. End of turn.
+		return;
+	}
+	
+	// A packet has been sent and received. End of turn.
+	MeleeSetup_setSentShip (setup, side, index, MELEE_UNSET);
+
+	if (ship != sentShip)
+	{
+		// Rule 2c or 3d. The value which we sent is different from the value
+		// which the opponent sent. We need a tie-breaker to determine which
+		// value prevails.
+		if (NetConnection_getPlayerNr (conn) != side)
 		{
-			MeleeSetup_setConfirmedShip (setup, side, index, ship);
-			Melee_Change_ship (pMS, side, index, ship);
-					// This will also cause a notification of the local
-					// change to be sent to the remote side, which will act
-					// as a confirmation.
+			// Rule 2c+ or 3d+
+			// We win the tie-breaker. The value which we sent prevails.
 		}
+		else
+		{
+			// Rule 2c- or 3d-.
+			// We lose the tie-breaker. We adopt the remote value.
+			Melee_Change_ship (pMS, side, index, ship);
+			return;
+		}
+	}
+	/*
+	else
+	{
+		// Rule 2b or 3c. The value which we sent is the value which
+		// the opponent sent. This confirms the value.
+	}
+	*/
+
+	// Rule 2b, 2c+, 3c, or 3d+. The value which we sent is confirmed.
+
+	currentShip = MeleeSetup_getShip (setup, side, index);
+	if (currentShip != sentShip)
+	{
+		// Rule 3c or 3d+. We had a local change which was yet
+		// unreported.
+
+		// Notify the remote side and keep track of what we sent.
+		Netplay_NotifyAll_setShip (pMS, side, index);
+		MeleeSetup_setSentShip (setup, side, index, ship);
 	}
 }
 
 void
-Melee_RemoteChange_teamName (MELEE_STATE *pMS, NetConnection *conn, COUNT side,
-		const char *name)
+Melee_RemoteChange_teamName (MELEE_STATE *pMS, NetConnection *conn,
+		COUNT side, const char *newName)
 {
 	MeleeSetup *setup = pMS->meleeSetup;
 
-	const char *currentName = MeleeSetup_getTeamName (setup, side);
+	const char *sentName = MeleeSetup_getSentTeamName (setup, side);
+	const char *currentName;
 
-	if (strcmp (name, currentName) == 0)
+	if (sentName == NULL)
 	{
-		// The remote side has confirmed what we want the value to be.
-		// If we had made the same local change before, then an update
-		// has already been sent. If not, then there is nothing to change.
-		// Either way, we do not need to send an update.
-		MeleeSetup_setConfirmedTeamName (setup, side, name);
-	} else {
-		// The remote side wants to make a change.
-		// We accept the change when we don't have any changes of our own,
-		// or when we do have changes, but we "lose" the tie break.
-		// If we "win" the tie break, we have already sent an update to the
-		// remote side when our local change was made, so we do not need to
-		// send anything. The remote side still needs to confirm this local
-		// change, of which it will become aware shortly, when the already
-		// sent update message arrives.
-		const char *confirmedName =
-				MeleeSetup_getConfirmedTeamName (setup, side);
-		if (strcmp (currentName, confirmedName) == 0 ||
-				NetConnection_getDiscriminant(conn))
+		// State 1
+
+		// Change the team name locally.
+		Melee_Change_teamName (pMS, side, newName);
+
+		// Notify the remote side.
+		Netplay_NotifyAll_setTeamName (pMS, side);
+
+		// A packet has now been received and sent. End of turn.
+		// The sent team name is still unset, so we don't have to reset it.
+		return;
+	}
+
+	if (strcmp (newName, sentName) == 0)
+	{
+		// Rule 2c or 3d. The value which we sent is different from the value
+		// which the opponent sent. We need a tie-breaker to determine which
+		// value prevails.
+		if (NetConnection_getPlayerNr (conn) != side)
 		{
-			MeleeSetup_setConfirmedTeamName (setup, side, name);
-			Melee_Change_teamName (pMS, side, name);
-					// This will also cause a notification of the local
-					// change to be sent to the remote side, which will act
-					// as a confirmation.
+			// Rule 2c+ or 3d+
+			// We win the tie-breaker. The value which we sent prevails.
 		}
+		else
+		{
+			// Rule 2c- or 3d-.
+			// We lose the tie-breaker. We adopt the remote value.
+			Melee_Change_teamName (pMS, side, newName);
+			MeleeSetup_setSentTeamName (setup, side, NULL);
+			return;
+		}
+	}
+	/*
+	else
+	{
+		// Rule 2b or 3c. The value which we sent is the value which
+		// the opponent sent. This confirms the value.
+	}
+	*/
+
+	// Rule 2b, 2c+, 3c, or 3d+. The value which we sent is confirmed.
+
+	currentName = MeleeSetup_getTeamName (setup, side);
+	if (strcmp (currentName, sentName) != 0)
+	{
+		// Rule 3c or 3d+. We had a local change which was yet
+		// unreported.
+
+		// A packet has been sent and received, which ends the turn.
+		// We don't bother clearing the sent team name, as we're going
+		// to send a new packet immediately.
+
+		// Notify the remote side and keep track of what we sent.
+		Netplay_NotifyAll_setTeamName (pMS, side);
+
+		// Update the last sent message.
+		MeleeSetup_setSentTeamName (setup, side, newName);
+	}
+	else
+	{
+		// A packet has been sent and received. End of turn.
+		MeleeSetup_setSentTeamName (setup, side, NULL);
 	}
 }
 

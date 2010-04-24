@@ -47,9 +47,6 @@ PacketQueue_init(PacketQueue *queue) {
 	queue->size = 0;
 	queue->first = NULL;
 	queue->end = &queue->first;
-	
-	queue->firstUrgent = NULL;
-	queue->endUrgent = &queue->first;
 }
 
 static void
@@ -64,31 +61,23 @@ PacketQueue_deleteLinks(PacketQueueLink *link) {
 
 void
 PacketQueue_uninit(PacketQueue *queue) {
-	PacketQueue_deleteLinks(queue->firstUrgent);
 	PacketQueue_deleteLinks(queue->first);
 }
 
 void
-queuePacket(NetConnection *conn, Packet *packet, bool urgent) {
+queuePacket(NetConnection *conn, Packet *packet) {
 	PacketQueue *queue;
 	PacketQueueLink *link;
 
 	assert(NetConnection_isConnected(conn));
-	assert(!urgent || !packetTypeData[packetType(packet)].inTurn);
-			// Urgent packets should never stall the connection.
 	
 	queue = &conn->queue;
 
 	link = PacketQueueLink_alloc();
 	link->packet = packet;
 	link->next = NULL;
-	if (urgent) {
-		*queue->endUrgent = link;
-		queue->endUrgent = &link->next;
-	} else {
-		*queue->end = link;
-		queue->end = &link->next;
-	}
+	*queue->end = link;
+	queue->end = &link->next;
 
 	queue->size++;
 	// XXX: perhaps check that this queue isn't getting too large?
@@ -124,29 +113,6 @@ flushPacketQueueLinks(NetConnection *conn, PacketQueueLink **first) {
 	PacketQueue *queue = &conn->queue;
 	
 	for (link = *first; link != NULL; link = next) {
-		if (packetTypeData[packetType(link->packet)].inTurn &&
-				(!conn->stateFlags.myTurn || conn->stateFlags.endingTurn)) {
-			// This packet requires it to be 'our turn', and it isn't,
-			// or we've already told the other party we wanted to end our
-			// turn.
-			// This should never happen in the urgent queue.
-			assert(first != &queue->firstUrgent);
-
-			if (!conn->stateFlags.myTurn && !conn->stateFlags.endingTurn) {
-				conn->stateFlags.endingTurn = true;
-				if (sendEndTurnDirect(conn) == -1) {
-					// errno is set
-					*first = link;
-					return -1;
-				}
-			}
-
-			*first = link;
-			errno = EAGAIN;
-					// We need to wait for the reply to the turn change.
-			return -1;
-		}
-		
 		if (sendPacket(conn, link->packet) == -1) {
 			// Errno is set.
 			*first = link;
@@ -170,14 +136,6 @@ flushPacketQueue(NetConnection *conn) {
 	
 	assert(NetConnection_isConnected(conn));
 
-	flushResult = flushPacketQueueLinks(conn, &queue->firstUrgent);
-	if (queue->firstUrgent == NULL)
-		queue->endUrgent = &queue->firstUrgent;
-	if (flushResult == -1) {
-		// errno is set
-		return -1;
-	}
-
 	flushResult = flushPacketQueueLinks(conn, &queue->first);
 	if (queue->first == NULL)
 		queue->end = &queue->first;
@@ -186,23 +144,6 @@ flushPacketQueue(NetConnection *conn) {
 		return -1;
 	}
 	
-	// If a turn change had been requested by the other side while it was
-	// our turn, we first sent everything we still had to send in our turn.
-	// Now that is done, it is the time to actually give up the turn.
-	if (conn->stateFlags.pendingTurnChange) {
-		assert(conn->stateFlags.myTurn);
-		conn->stateFlags.myTurn = false;
-		conn->stateFlags.pendingTurnChange = false;
-
-		// Send the confirmation to the other side:
-		if (sendEndTurnDirect(conn) == -1) {
-			// errno is set
-			return -1;
-		}
-	}
-	
 	return 0;
 }
-
-
 

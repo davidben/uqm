@@ -36,7 +36,6 @@ typedef enum {
 	NetState_inBattle,       /* Battle has started */
 	NetState_endingBattle,   /* Both sides are prepared to end */
 	NetState_endingBattle2,  /* Waiting for the final synchronisation */
-	NetState_endMelee,       /* Melee ended; remote is not yet in setup */
 } NetState;
 
 #include "types.h"
