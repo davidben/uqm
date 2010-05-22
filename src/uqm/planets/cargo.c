@@ -104,6 +104,7 @@ DrawElementAmount (COUNT element, bool selected)
 			CARGO_SELECTED_BACK_COLOR : CARGO_BACK_COLOR);
 	DrawFilledRectangle (&r);
 
+	t.align = ALIGN_RIGHT;
 	t.pStr = buf;
 	t.baseline.y = r.corner.y + TEXT_BASELINE;
 

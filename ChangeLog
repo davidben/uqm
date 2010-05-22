@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Fixed misaligned cargo count (bug #1092) - Coredev
 - Fixed the network SuperMelee team configuration protocol - SvdB
 - Fixed fuel reserve bounds checks - SvdB
 - Fixed a crash when filling fuel tanks over 10 (bug #1082) - Alex
