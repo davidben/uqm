@@ -975,9 +975,13 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 			continue;
 		}
 
-		if (!SDPtr->Prefix || WithinClust)
-			// singular star - prefix not checked
-			// or searching within clusters
+		if (pSS->Prefix && !SDPtr->Prefix)
+			// we were given a prefix but found a singular star;
+			// that is a no match
+			continue;
+
+		if (WithinClust)
+			// searching within clusters; any prefix is a match
 			break;
 
 		if (!pSS->Prefix)
