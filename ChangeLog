@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Preserve character case when editing with joystick (bug #1080) - Alex
 - Fixed misaligned cargo count (bug #1092) - Coredev
 - Fixed the network SuperMelee team configuration protocol - SvdB
 - Fixed fuel reserve bounds checks - SvdB

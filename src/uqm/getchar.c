@@ -313,13 +313,22 @@ DoTextEntry (TEXTENTRY_STATE *pTES)
 		joy_char_t newch;
 		joy_char_t cmpch;
 		int i;
+		BOOLEAN curCharUpper;
 
 		pTES->JoystickMode = TRUE;
 
 		if (len)
+		{	// changing an existing character
 			ReadOneChar (&ch, pStr);
+			curCharUpper = !JoyCharIsLower (&ch, pTES);
+		}
 		else
+		{	// adding a new character
 			ch = pTES->JoyAlpha[0];
+			// new characters will have case determined by the
+			// currently selected register
+			curCharUpper = pTES->UpperRegister;
+		}
 		
 		newch = ch;
 		JoyCharToUpper (&cmpch, &ch, pTES);
@@ -347,7 +356,7 @@ DoTextEntry (TEXTENTRY_STATE *pTES)
 		{
 			if (len)
 			{	// single char change
-				if (JoyCharIsLower (&newch, pTES))
+				if (!curCharUpper)
 					JoyCharToUpper (&newch, &newch, pTES);
 				else
 					JoyCharToLower (&newch, &newch, pTES);
@@ -359,7 +368,7 @@ DoTextEntry (TEXTENTRY_STATE *pTES)
 		}
 		else
 		{	// check register
-			if (pTES->UpperRegister)
+			if (curCharUpper)
 				JoyCharToUpper (&newch, &newch, pTES);
 			else
 				JoyCharToLower (&newch, &newch, pTES);
