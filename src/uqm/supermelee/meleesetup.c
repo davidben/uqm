@@ -400,7 +400,7 @@ MeleeSetup_setSentTeamName (MeleeSetup *setup, size_t teamNr,
 	}
 	else
 	{
-		MeleeTeam *team;
+		MeleeTeam *team = &setup->sentTeams[teamNr];
 
 		if (haveSentName)
 		{
@@ -410,7 +410,6 @@ MeleeSetup_setSentTeamName (MeleeSetup *setup, size_t teamNr,
 				return false;  // Team name has not changed.
 		}
 
-		team = &setup->sentTeams[teamNr];
 		MeleeTeam_setName (team, name);
 	}
 		
