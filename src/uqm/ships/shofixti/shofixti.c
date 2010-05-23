@@ -147,10 +147,14 @@ destruct_preprocess (ELEMENT *ElementPtr)
 #define DESTRUCT_SWITCH ((NUM_EXPLOSION_FRAMES * 3) - 3)
 	PRIMITIVE *lpPrim;
 
+	// ship_death() set the ship element's life_span to
+	// (NUM_EXPLOSION_FRAMES * 3)
 	lpPrim = &(GLOBAL (DisplayArray))[ElementPtr->PrimIndex];
 	ElementPtr->state_flags |= CHANGING;
 	if (ElementPtr->life_span > DESTRUCT_SWITCH)
 	{
+		// First, stamp-fill the ship's own element with changing colors
+		// for 3 frames. No explosion element yet.
 		SetPrimType (lpPrim, STAMPFILL_PRIM);
 		if (ElementPtr->life_span == DESTRUCT_SWITCH + 2)
 			SetPrimColor (lpPrim,
@@ -161,6 +165,8 @@ destruct_preprocess (ELEMENT *ElementPtr)
 	}
 	else if (ElementPtr->life_span < DESTRUCT_SWITCH)
 	{
+		// Stamp-fill the explosion element with cycling colors for the
+		// remainder of the glory explosion frames.
 		Color color = GetPrimColor (lpPrim);
 
 		ElementPtr->next.image.frame =
@@ -187,8 +193,14 @@ destruct_preprocess (ELEMENT *ElementPtr)
 		HELEMENT hDestruct;
 
 		SetPrimType (lpPrim, NO_PRIM);
+		// The ship's own element will not be drawn anymore but will remain
+		// alive all through the glory explosion.
 		ElementPtr->preprocess_func = NULL;
 
+		// Spawn a separate glory explosion element.
+		// XXX: Why? Why not keep using the ship's element?
+		//   Is it because of conflicting state_flags, hit_points or
+		//   mass_points?
 		hDestruct = AllocElement ();
 		if (hDestruct)
 		{
@@ -228,6 +240,7 @@ destruct_preprocess (ELEMENT *ElementPtr)
 #define ORZ_MARINE(ptr) (ptr->preprocess_func == intruder_preprocess && \
 		ptr->collision_func == marine_collision)
 
+// XXX: This function should be split into two
 static void
 self_destruct (ELEMENT *ElementPtr)
 {
@@ -238,6 +251,10 @@ self_destruct (ELEMENT *ElementPtr)
 	{
 		HELEMENT hDestruct;
 		
+		// Spawn a temporary element, which dies in this same frame, in order
+		// to defer the effects of the glory explosion.
+		// It will be the last element (or one of the last) for which the
+		// death_func will be called from PostProcessQueue() in this frame.
 		hDestruct = AllocElement ();
 		if (hDestruct)
 		{
@@ -259,12 +276,17 @@ self_destruct (ELEMENT *ElementPtr)
 		}
 
 		ElementPtr->state_flags |= NONSOLID;
+		// The ship is now dead. It's death_func, i.e. ship_death(), will be
+		// called the next frame.
 		ElementPtr->life_span = 0;
 
 		ElementPtr->preprocess_func = destruct_preprocess;
 	}
 	else
 	{
+		// This is called during PostProcessQueue(), close to or at the end,
+		// for the temporary destruct element to apply the effects of glory
+		// explosion. The effects are not seen until the next frame.
 		HELEMENT hElement, hNextElement;
 
 		for (hElement = GetHeadElement ();
