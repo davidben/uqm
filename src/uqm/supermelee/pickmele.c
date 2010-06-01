@@ -682,24 +682,17 @@ MeleeGameOver (void)
 	LockMutex (GraphicsLock);
 }
 
-BOOLEAN
-MeleeShipDeath (STARSHIP *ship, COUNT which_player) {
+void
+MeleeShipDeath (STARSHIP *ship)
+{
 	FRAME frame;
 
 	// Deactivate fleet position.
 	ship->SpeciesID = NO_ID;
 
-	frame = SetAbsFrameIndex (PickMeleeFrame, which_player);
+	frame = SetAbsFrameIndex (PickMeleeFrame, ship->playerNr);
 	CrossOutShip (frame, ship->index);
-	UpdatePickMeleeFleetValue (frame, which_player);
-	
-	if (battle_counter[0] == 0 || battle_counter[1] == 0)
-	{
-		// One side is out of ships. Game over.
-		return FALSE;
-	}
-
-	return TRUE;
+	UpdatePickMeleeFleetValue (frame, ship->playerNr);
 }
 
 // Post: the NetState for all players is NetState_interBattle

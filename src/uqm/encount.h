@@ -28,6 +28,7 @@ typedef struct encounter ENCOUNTER;
 #include "libs/gfxlib.h"
 #include "planets/planets.h"
 #include "element.h"
+#include "races.h"
 
 
 typedef HLINK HENCOUNTER;
@@ -151,6 +152,8 @@ extern void EncounterBattle (void);
 extern void BuildBattle (COUNT which_player);
 extern COUNT InitEncounter (void);
 extern COUNT UninitEncounter (void);
+extern BOOLEAN FleetIsInfinite (COUNT playerNr);
+extern void UpdateShipFragCrew (STARSHIP *);
 
 // XXX: in comm.h, temporary, until solsys generation code is redone
 extern COUNT InitCommunication (CONVERSATION which_comm);

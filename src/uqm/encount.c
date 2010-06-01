@@ -89,6 +89,15 @@ DoSelectAction (MENU_STATE *pMS)
 	return (TRUE);
 }
 
+static QUEUE *
+GetShipFragQueueForPlayer (COUNT playerNr)
+{
+	if (playerNr == RPG_PLAYER_NUM)
+		return &GLOBAL (built_ship_q);
+	else
+		return &GLOBAL (npc_built_ship_q);
+}
+
 // Called by comm code to intialize battle fleets during encounter
 void
 BuildBattle (COUNT which_player)
@@ -106,10 +115,9 @@ BuildBattle (COUNT which_player)
 		return;
 	}
 
-	if (which_player == RPG_PLAYER_NUM)
-		pQueue = &GLOBAL (built_ship_q);
-	else
-	{
+	if (which_player != RPG_PLAYER_NUM)
+	{	// This function is called first for the NPC character
+		// and this is when a centerpiece is loaded
 		switch (LOBYTE (GLOBAL (CurrentActivity)))
 		{
 			case IN_LAST_BATTLE:
@@ -124,8 +132,8 @@ BuildBattle (COUNT which_player)
 				load_gravity_well (GET_GAME_STATE (BATTLE_PLANET));
 				break;
 		}
-		pQueue = &GLOBAL (npc_built_ship_q);
 	}
+	pQueue = GetShipFragQueueForPlayer (which_player);
 
 	ReinitQueue (&race_q[which_player]);
 	for (hStarShip = GetHeadLink (pQueue);
@@ -178,6 +186,70 @@ BuildBattle (COUNT which_player)
 		BuiltShipPtr->energy_counter = MAX_ENERGY_SIZE;
 		BuiltShipPtr->RaceDescPtr = 0;
 		UnlockStarShip (&race_q[0], hBuiltShip);
+	}
+}
+
+BOOLEAN
+FleetIsInfinite (COUNT playerNr)
+{
+	QUEUE *pQueue;
+	HSHIPFRAG hShipFrag;
+	SHIP_FRAGMENT *FragPtr;
+	BOOLEAN ret;
+
+	pQueue = GetShipFragQueueForPlayer (playerNr);
+	hShipFrag = GetHeadLink (pQueue);
+	if (!hShipFrag)
+	{	// Ship queue is empty in SuperMelee or for RPG player w/o escorts
+		return FALSE;
+	}
+
+	FragPtr = LockShipFrag (pQueue, hShipFrag);
+	ret = (FragPtr->crew_level == INFINITE_FLEET);
+	UnlockShipFrag (pQueue, hShipFrag);
+
+	return ret;
+}
+
+void
+UpdateShipFragCrew (STARSHIP *StarShipPtr)
+{
+	QUEUE *frag_q;
+	HSHIPFRAG hShipFrag, hNextFrag;
+	SHIP_FRAGMENT *frag;
+	QUEUE *ship_q;
+	HSTARSHIP hStarShip, hNextShip;
+	STARSHIP *ship;
+
+	frag_q = GetShipFragQueueForPlayer (StarShipPtr->playerNr);
+	ship_q = &race_q[StarShipPtr->playerNr];
+
+	// Find a SHIP_FRAGMENT that corresponds to the given STARSHIP
+	// The ships and fragments are in the same order in two queues
+	// XXX: It would probably be simpler to keep HSHIPFRAG in STARSHIP struct
+	for (hShipFrag = GetHeadLink (frag_q), hStarShip = GetHeadLink (ship_q);
+			hShipFrag != 0 && hStarShip != 0;
+			hShipFrag = hNextFrag, hStarShip = hNextShip)
+	{
+		ship = LockStarShip (ship_q, hStarShip);
+		hNextShip = _GetSuccLink (ship);
+		frag = LockShipFrag (frag_q, hShipFrag);
+		hNextFrag = _GetSuccLink (frag);
+		
+		if (ship == StarShipPtr)
+		{
+			assert (frag->crew_level != INFINITE_FLEET);
+			
+			// Record crew left after the battle */
+			frag->crew_level = ship->crew_level;
+			
+			UnlockShipFrag (frag_q, hShipFrag);
+			UnlockStarShip (ship_q, hStarShip);
+			break;
+		}
+		
+		UnlockShipFrag (frag_q, hShipFrag);
+		UnlockStarShip (ship_q, hStarShip);
 	}
 }
 

@@ -23,6 +23,7 @@
 #include "controls.h"
 #include "menustat.h"
 #include "supermelee/pickmele.h"
+#include "encount.h"
 #include "battle.h"
 #include "races.h"
 #include "resinst.h"
@@ -290,7 +291,9 @@ OldContext = SetContext (SpaceContext);
 	if (hBattleShip)
 	{
 		if (hBattleShip == GetTailLink (&race_q[0]))
-			battle_counter[0] = 1;
+		{	// Player chose SIS. There will be no more choices.
+			battle_counter[RPG_PLAYER_NUM] = 1;
+		}
 
 		WaitForSoundEnd (0);
 	}
@@ -302,154 +305,89 @@ SetContext (OldContext);
 	return (hBattleShip);
 }
 
-static QUEUE *
-GetShipQueueForSide (COUNT sideNr)
-{
-	if (sideNr == 0)
-		return &GLOBAL (built_ship_q);
-	else
-		return &GLOBAL (npc_built_ship_q);
-}
-
 // Get the next ship to use.
 HSTARSHIP
 GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 {
-	HSTARSHIP hBattleShip;
-
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
 	{
-		// Get the next ship from the battle group.
-		hBattleShip = GetHeadLink (&race_q[which_player]);
+		assert (which_player == RPG_PLAYER_NUM);
+		// SIS for the Hyperspace flight
+		return GetHeadLink (&race_q[which_player]);
 	}
 	else if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 	{
 		// Let the player chose their own ship. (May be a computer player).
+		HSTARSHIP hBattleShip;
 
-		if (!(GLOBAL (CurrentActivity) & IN_BATTLE))
-		{
-			// XXX: This check is needed, because UninitShips() calls
-			//      this function after the battle is over to record
-			//      the crew left in the last ship standing.
-			hBattleShip = 0;
+		if (battle_counter[0] == 0 || battle_counter[1] == 0)
+		{	// One side is out of ships. Game over.
+			return 0;
 		}
-		else if (!MeleeShipDeath (LastStarShipPtr, which_player))
-			hBattleShip = 0;
-					// Game over.
-		else
-		{
-			if (!GetNextMeleeStarShip (which_player, &hBattleShip))
-				hBattleShip = 0;
-		}
+
+		if (!GetNextMeleeStarShip (which_player, &hBattleShip))
+			return 0;
+		
+		return hBattleShip;
 	}
 	else
 	{
 		// Full game.
-		HSHIPFRAG hStarShip;
-		SHIP_FRAGMENT *FragPtr;
-
-		if (LastStarShipPtr == 0)
-		{
-			// First time picking a ship.
-			if (which_player == 0 && battle_counter[0] > 1)
-			{
-				// The player in a full game, still having a ship left.
-				hBattleShip = GetArmadaStarShip ();
+		if (which_player == RPG_PLAYER_NUM)
+		{	// Human player in a full game.
+			if (LastStarShipPtr == 0 && battle_counter[which_player] == 1)
+			{	// First time picking a ship and player has no escorts
+				// SIS is the last ship in queue (though there is only one)
+				return GetTailLink (&race_q[which_player]);
 			}
-			else
-			{
-				hBattleShip = GetHeadLink (&race_q[which_player]);
-				if (which_player == 1)
-				{
-					// Select the next ship for the computer.
-					hStarShip = GetHeadLink (&GLOBAL (npc_built_ship_q));
-					FragPtr = LockShipFrag (&GLOBAL (npc_built_ship_q),
-							hStarShip);
-					if (FragPtr->crew_level == INFINITE_FLEET)
-					{
-						// Infinite number of ships.
-						battle_counter[1]++;
-					}
-					UnlockShipFrag (&GLOBAL (npc_built_ship_q), hStarShip);
+			else if (battle_counter[which_player])
+			{	// Player still has ships left
+				return GetArmadaStarShip ();
+			}
+			else if (LastStarShipPtr != 0)
+			{	// last ship was the flagship
+#define RUN_AWAY_FUEL_COST (5 * FUEL_TANK_SCALE)
+				if (LastStarShipPtr->crew_level == 0)
+				{	// Died in the line of duty
+					GLOBAL_SIS (CrewEnlisted) = (COUNT)~0;
+				}
+				else
+				{	// Player ran away
+					if (GLOBAL_SIS (FuelOnBoard) > RUN_AWAY_FUEL_COST)
+						GLOBAL_SIS (FuelOnBoard) -= RUN_AWAY_FUEL_COST;
+					else
+						GLOBAL_SIS (FuelOnBoard) = 0;
 				}
 			}
+			return 0;
 		}
 		else
-		{
-			QUEUE *pQueue;
-			HSHIPFRAG hNextShip;
-
-			pQueue = GetShipQueueForSide (which_player);
-
-			hBattleShip = GetHeadLink (&race_q[which_player]);
-			for (hStarShip = GetHeadLink (pQueue);
-					hStarShip != 0; hStarShip = hNextShip)
+		{	// NPC player in a full game
+			if (FleetIsInfinite (which_player))
 			{
-				STARSHIP *SPtr;
-
-				SPtr = LockStarShip (&race_q[which_player], hBattleShip);
-				hNextShip = _GetSuccLink (SPtr);
-				UnlockStarShip (&race_q[which_player], hBattleShip);
-				hBattleShip = hNextShip;
-
-				FragPtr = LockShipFrag (pQueue, hStarShip);
-				if (SPtr == LastStarShipPtr)
-				{
-					if (FragPtr->crew_level != INFINITE_FLEET)
-					{
-						/* Record crew left after the battle */
-						FragPtr->crew_level = SPtr->crew_level;
-						if (GLOBAL (CurrentActivity) & IN_BATTLE)
-							SPtr->SpeciesID = NO_ID;
-									// deactivates the ship
-					}
-					else /* if infinite ships */
-					{
-						hBattleShip = GetTailLink (&race_q[which_player]);
-						/* XXX: Note that if Syreen had a homeworld you could
-						 * fight, all Syreen ships there would be crewed to
-						 * the maximum, instead of the normal level */
-						SPtr->crew_level = FragPtr->max_crew;
-						SPtr->playerNr = which_player;
-						SPtr->captains_name_index = PickCaptainName ();
-
-						battle_counter[1]++;
-					}
-					UnlockShipFrag (pQueue, hStarShip);
-					break;
+				if (LastStarShipPtr != 0)
+				{	// The current STARSHIP is reused for the next one;
+					// update with new info
+					// XXX: Note that if Syreen had a homeworld you could
+					//   fight, all Syreen ships there would be crewed to
+					//   the maximum, instead of the normal level
+					LastStarShipPtr->crew_level = LastStarShipPtr->max_crew;
+					LastStarShipPtr->playerNr = which_player;
+					LastStarShipPtr->captains_name_index = PickCaptainName ();
 				}
-				hNextShip = _GetSuccLink (FragPtr);
-				UnlockShipFrag (pQueue, hStarShip);
+				battle_counter[which_player]++;
+				
+				return GetHeadLink (&race_q[which_player]);
 			}
 
-			if (which_player == 0)
-			{
-				// Player in a full game.
-				if (battle_counter[0])
-					hBattleShip = GetArmadaStarShip ();
-				else /* last ship was flagship */
-				{
-#define RUN_AWAY_FUEL_COST (5 * FUEL_TANK_SCALE)
-					hBattleShip = 0;
-					if (LastStarShipPtr->crew_level == 0)
-					{
-						/* Died in the line of duty */
-						GLOBAL_SIS (CrewEnlisted) = (COUNT)~0;
-					}
-					else
-					{
-						// Player ran away.
-						if (GLOBAL_SIS (FuelOnBoard) > RUN_AWAY_FUEL_COST)
-							GLOBAL_SIS (FuelOnBoard) -= RUN_AWAY_FUEL_COST;
-						else
-							GLOBAL_SIS (FuelOnBoard) = 0;
-					}
-				}
-			}
+			// Get the next ship for the computer
+			if (LastStarShipPtr != 0)
+				return _GetSuccLink (LastStarShipPtr);
+
+			// Get the very first ship for the computer
+			return GetHeadLink (&race_q[which_player]);
 		}
 	}
-
-	return (hBattleShip);
 }
 
 void

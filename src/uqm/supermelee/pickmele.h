@@ -24,7 +24,7 @@ typedef struct getmelee_struct GETMELEE_STATE;
 #include "meleesetup.h"
 #include "libs/compiler.h"
 
-BOOLEAN MeleeShipDeath (STARSHIP *ship, COUNT which_player);
+void MeleeShipDeath (STARSHIP *);
 void BuildPickMeleeFrame (void);
 void DestroyPickMeleeFrame (void);
 void FillPickMeleeFrame (MeleeSetup *setup);

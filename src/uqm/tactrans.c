@@ -27,6 +27,7 @@
 #include "status.h"
 #include "battle.h"
 #include "init.h"
+#include "supermelee/pickmele.h"
 #ifdef NETPLAY
 #	include "supermelee/netplay/netmelee.h"
 #	include "supermelee/netplay/netmisc.h"
@@ -36,6 +37,7 @@
 #	include "supermelee/netplay/packetq.h"
 #endif
 #include "races.h"
+#include "encount.h"
 #include "settings.h"
 #include "sounds.h"
 #include "libs/mathlib.h"
@@ -279,7 +281,7 @@ new_ship (ELEMENT *DeadShipPtr)
 		if (DeadStarShipPtr->crew_level)
 		{
 			// We've just warped out. new_ship() will still be called
-			// a few times, to process the trace left behind (I assume).
+			// a few times, as for any "dead" ship.
 			StopMusic ();
 
 			// Even after much investigation, I could find no purpose for
@@ -339,6 +341,8 @@ new_ship (ELEMENT *DeadShipPtr)
 			UnlockElement (hElement);
 		}
 
+		// The ship will be "alive" for at least 2 more frames to make sure
+		// the elements it owns (set up for deletion above) expire first.
 		DeadShipPtr->life_span =
 				MusicStarted ? (ONE_SECOND * 3) / BATTLE_FRAME_RATE : 1;
 		DeadShipPtr->death_func = new_ship;
@@ -390,6 +394,13 @@ new_ship (ELEMENT *DeadShipPtr)
 			}
 		}
 #endif  /* NETPLAY */
+
+		if (!FleetIsInfinite (DeadStarShipPtr->playerNr))
+		{	// This may be a dead ship (crew_level == 0) or a warped out ship
+			UpdateShipFragCrew (DeadStarShipPtr);
+			// Deactivate the ship (cannot be selected)
+			DeadStarShipPtr->SpeciesID = NO_ID;
+		}
 
 		if (GetNextStarShip (DeadStarShipPtr, DeadStarShipPtr->playerNr))
 		{
@@ -574,6 +585,9 @@ ship_death (ELEMENT *ShipPtr)
 		PlaySound (SetAbsSoundIndex (GameSounds, SHIP_EXPLODES),
 				CalcSoundPosition (ShipPtr), ShipPtr, GAME_SOUND_PRIORITY + 1);
 	}
+
+	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
+		MeleeShipDeath (StarShipPtr);
 }
 
 #define START_ION_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A)

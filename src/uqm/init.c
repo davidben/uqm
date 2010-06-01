@@ -25,6 +25,7 @@
 #include "pickship.h"
 #include "process.h"
 #include "globdata.h"
+#include "encount.h"
 #include "hyper.h"
 #include "init.h"
 #include "port.h"
@@ -268,7 +269,7 @@ void
 UninitShips (void)
 {
 	COUNT crew_retrieved;
-	SIZE i;
+	int i;
 	HELEMENT hElement, hNextElement;
 	STARSHIP *SPtr[NUM_PLAYERS];
 
@@ -325,20 +326,17 @@ UninitShips (void)
 
 	GLOBAL (CurrentActivity) &= ~IN_BATTLE;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
-	{
-	}
-	else if (LOBYTE (GLOBAL (CurrentActivity)) <= IN_ENCOUNTER
+	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_ENCOUNTER
 			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
-		// XXX: This has no purpose for SuperMelee
-		//   In full-game, the sole purpose of this is to record the crew
-		//   left in the last ship standing. The crew left is first recorded
-		//   into STARSHIP.crew_level just a few lines above here.
+		// Encounter battle in full game.
+		//   Record the crew left in the last ship standing. The crew left
+		//   is first recorded into STARSHIP.crew_level just a few lines
+		//   above here.
 		for (i = NUM_PLAYERS - 1; i >= 0; --i)
 		{
-			if (SPtr[i])
-				GetEncounterStarShip (SPtr[i], i);
+			if (SPtr[i] && !FleetIsInfinite (i))
+				UpdateShipFragCrew (SPtr[i]);
 		}
 	}
 
