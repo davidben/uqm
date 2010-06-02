@@ -1453,6 +1453,9 @@ FreeMeleeInfo (MELEE_STATE *pMS)
 
 #ifdef NETPLAY
 	closeAllConnections ();
+	// Clear the input delay in case we will go into the full game later.
+	// Must be done after the net connections are closed.
+	setupInputDelay (0);
 #endif
 }
 

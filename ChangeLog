@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Reset input delay upon leaving Supermelee (bug #1022) - Alex
 - Properly account for simultaneous destruction of last ships
   in each fleet in Supermelee (bug #437) - Alex
 - Do not match singular stars when given a prefix in star search
