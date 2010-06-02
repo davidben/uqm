@@ -1740,6 +1740,10 @@ SaveSisHyperState (void)
 
 	// Update 'GLOBAL (ShipFacing)' to the direction the flagship is facing
 	hSisElement = getSisElement ();
+	if (!hSisElement)
+	{	// Happens when saving a game from Hyperspace encounter screen
+		return;
+	}
 	//if (ElementPtr->state_flags & PLAYER_SHIP)
 	LockElement (hSisElement, &ElementPtr);
 	GetElementStarShip (ElementPtr, &StarShipPtr);
