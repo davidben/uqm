@@ -108,9 +108,6 @@ uninitBattleInputBuffers(void)
 	{
 		BattleInputBuffer *bib;
 
-		if (!(PlayerControl[player] & NETWORK_CONTROL))
-			continue;
-
 		bib = &battleInputBuffers[player];
 		BattleInputBuffer_uninit(bib);
 	}
