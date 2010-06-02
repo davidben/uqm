@@ -510,6 +510,7 @@ AbortBattle:
 		setBattleStateConnections (NULL);
 #endif  /* NETPLAY */
 
+		StopDitty ();
 		StopMusic ();
 		StopSound ();
 	}

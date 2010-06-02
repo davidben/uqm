@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Game no longer locks up after quickly escaping melee (bug #1003) - Alex
 - Reset input delay upon leaving Supermelee (bug #1022) - Alex
 - Properly account for simultaneous destruction of last ships
   in each fleet in Supermelee (bug #437) - Alex

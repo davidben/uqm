@@ -43,6 +43,9 @@
 #include "libs/mathlib.h"
 
 
+static BOOLEAN dittyIsPlaying;
+
+
 BOOLEAN
 OpponentAlive (STARSHIP *TestStarShipPtr)
 {
@@ -64,6 +67,31 @@ OpponentAlive (STARSHIP *TestStarShipPtr)
 	}
 
 	return TRUE;
+}
+
+static void
+PlayDitty (STARSHIP *ship)
+{
+	PlayMusic (ship->RaceDescPtr->ship_data.victory_ditty, FALSE, 3);
+	dittyIsPlaying = TRUE;
+}
+
+void
+StopDitty (void)
+{
+	if (dittyIsPlaying)
+		StopMusic ();
+	dittyIsPlaying = FALSE;
+}
+
+static BOOLEAN
+DittyPlaying (void)
+{
+	if (!dittyIsPlaying)
+		return FALSE;
+
+	dittyIsPlaying = PLRPlaying ((MUSIC_REF)~0);
+	return dittyIsPlaying;
 }
 
 #ifdef NETPLAY
@@ -223,12 +251,12 @@ readyForBattleEnd (COUNT side)
 	return true;
 #else  /* !DEMO_MODE */
 	(void) side;
-	return !PLRPlaying ((MUSIC_REF)~0);
+	return !DittyPlaying ();
 #endif  /* !DEMO_MODE */
 #else  /* defined (NETPLAY) */
 	int playerI;
 
-	if (PLRPlaying ((MUSIC_REF)~0))
+	if (DittyPlaying ())
 		return false;
 
 	// We can only handle one dead ship at a time. So 'deadSide' is set
@@ -272,23 +300,14 @@ new_ship (ELEMENT *DeadShipPtr)
 	}
 	else
 	{
+		// Ship explosion has finished, or ship has just warped out
+		// if DeadStarShipPtr->crew_level != 0
 		BOOLEAN MusicStarted;
 		HELEMENT hElement, hSuccElement;
 
 		/* Record crew left after the battle */
 		DeadStarShipPtr->crew_level =
 				DeadStarShipPtr->RaceDescPtr->ship_info.crew_level;
-		if (DeadStarShipPtr->crew_level)
-		{
-			// We've just warped out. new_ship() will still be called
-			// a few times, as for any "dead" ship.
-			StopMusic ();
-
-			// Even after much investigation, I could find no purpose for
-			// the next line, but with the crew management changes I need
-			// it not to be here. - SvdB
-			// DeadStarShipPtr->RaceDescPtr->ship_info.crew_level = 0;
-		}
 
 		MusicStarted = FALSE;
 		// XXX: Set to 0 to be vaguely checksum-compatible with previous
@@ -333,8 +352,7 @@ new_ship (ELEMENT *DeadShipPtr)
 			{
 				// StarShipPtr points to the remaining ship.
 				MusicStarted = TRUE;
-				PlayMusic (StarShipPtr->RaceDescPtr->
-						ship_data.victory_ditty, FALSE, 3);
+				PlayDitty (StarShipPtr);
 				StarShipPtr->cur_status_flags &= ~PLAY_VICTORY_DITTY;
 			}
 
@@ -361,6 +379,7 @@ new_ship (ELEMENT *DeadShipPtr)
 	{
 		BOOLEAN RestartMusic;
 
+		StopDitty ();
 		StopMusic ();
 		StopSound ();
 
@@ -520,6 +539,7 @@ ship_death (ELEMENT *ShipPtr)
 	HELEMENT hElement, hNextElement;
 	ELEMENT *ElementPtr;
 
+	StopDitty ();
 	StopMusic ();
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
