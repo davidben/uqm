@@ -310,10 +310,6 @@ new_ship (ELEMENT *DeadShipPtr)
 				DeadStarShipPtr->RaceDescPtr->ship_info.crew_level;
 
 		MusicStarted = FALSE;
-		// XXX: Set to 0 to be vaguely checksum-compatible with previous
-		//  Netplay builds which abused turn_wait to store the ship's side.
-		//  The value is irrelevant at this point.
-		DeadShipPtr->turn_wait = 0;
 
 		for (hElement = GetHeadElement (); hElement; hElement = hSuccElement)
 		{
