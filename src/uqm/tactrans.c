@@ -43,6 +43,8 @@
 #include "libs/mathlib.h"
 
 
+static void cleanup_dead_ship (ELEMENT *ElementPtr);
+
 static BOOLEAN dittyIsPlaying;
 
 
@@ -285,20 +287,21 @@ readyForBattleEnd (COUNT side)
 #endif  /* defined (NETPLAY) */
 }
 
+static void
+preprocess_dead_ship (ELEMENT *DeadShipPtr)
+{
+	ProcessSound ((SOUND)~0, NULL);
+	(void)DeadShipPtr; // unused argument
+}
+
 void
-new_ship (ELEMENT *DeadShipPtr)
+cleanup_dead_ship (ELEMENT *DeadShipPtr)
 {
 	STARSHIP *DeadStarShipPtr;
 
 	ProcessSound ((SOUND)~0, NULL);
 
 	GetElementStarShip (DeadShipPtr, &DeadStarShipPtr);
-	if (!(DeadShipPtr->state_flags & PLAYER_SHIP))
-	{
-		if (DeadShipPtr->life_span) /* must be pre-processing */
-			return;
-	}
-	else
 	{
 		// Ship explosion has finished, or ship has just warped out
 		// if DeadStarShipPtr->crew_level != 0
@@ -360,12 +363,24 @@ new_ship (ELEMENT *DeadShipPtr)
 		DeadShipPtr->life_span =
 				MusicStarted ? (ONE_SECOND * 3) / BATTLE_FRAME_RATE : 1;
 		DeadShipPtr->death_func = new_ship;
-		DeadShipPtr->preprocess_func = new_ship;
+		DeadShipPtr->preprocess_func = preprocess_dead_ship;
+		DeadShipPtr->state_flags &= ~DISAPPEARING;
+		// XXX: this increment was originally done by another piece of code
+		//   just below this one. I am almost sure it is not needed, but it
+		//   keeps the original framecount.
+		++DeadShipPtr->life_span;
 		SetElementStarShip (DeadShipPtr, DeadStarShipPtr);
 	}
+}
 
-	if (DeadShipPtr->life_span || !readyForBattleEnd (
-			DeadStarShipPtr->playerNr))
+void
+new_ship (ELEMENT *DeadShipPtr)
+{
+	STARSHIP *DeadStarShipPtr;
+
+	GetElementStarShip (DeadShipPtr, &DeadStarShipPtr);
+
+	if (!readyForBattleEnd (DeadStarShipPtr->playerNr))
 	{
 		DeadShipPtr->state_flags &= ~DISAPPEARING;
 		++DeadShipPtr->life_span;
@@ -579,7 +594,7 @@ ship_death (ELEMENT *ShipPtr)
 	ShipPtr->state_flags &= ~DISAPPEARING;
 	ShipPtr->state_flags |= FINITE_LIFE | NONSOLID;
 	ShipPtr->postprocess_func = PostProcessStatus;
-	ShipPtr->death_func = new_ship;
+	ShipPtr->death_func = cleanup_dead_ship;
 	ShipPtr->hTarget = 0;
 	ZeroVelocityComponents (&ShipPtr->velocity);
 	if (ShipPtr->crew_level) /* only happens for shofixti self-destruct */
@@ -871,7 +886,7 @@ flee_preprocess (ELEMENT *ElementPtr)
 		}
 		else
 		{
-			ElementPtr->death_func = new_ship;
+			ElementPtr->death_func = cleanup_dead_ship;
 			ElementPtr->crew_level = 0;
 
 			ElementPtr->life_span = HYPERJUMP_LIFE + 1;
