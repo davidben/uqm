@@ -57,12 +57,6 @@ size_t battleInputOrder[NUM_SIDES];
 #ifdef NETPLAY
 BattleFrameCounter battleFrameCount;
 		// Used for synchronisation purposes during netplay.
-COUNT currentDeadSide;
-		// When a ship has been destroyed, each side of a network
-		// connection waits until the other side is ready.
-		// When two ships die at the same time, this is handled for one
-		// ship after the other. This variable indicate for which player
-		// we're currently doing this.
 #endif
 
 static BOOLEAN
@@ -447,7 +441,7 @@ Battle (BattleFrameCallback *callback)
 		initChecksumBuffers ();
 #endif  /* NETPLAY_CHECKSUM */
 		battleFrameCount = 0;
-		currentDeadSide = (COUNT)~0;
+		ResetWinnerStarShip ();
 		setBattleStateConnections (&bs);
 #endif  /* NETPLAY */
 

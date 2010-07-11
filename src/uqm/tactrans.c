@@ -46,6 +46,7 @@
 static void cleanup_dead_ship (ELEMENT *ElementPtr);
 
 static BOOLEAN dittyIsPlaying;
+static STARSHIP *winnerStarShip;
 
 
 BOOLEAN
@@ -94,6 +95,12 @@ DittyPlaying (void)
 
 	dittyIsPlaying = PLRPlaying ((MUSIC_REF)~0);
 	return dittyIsPlaying;
+}
+
+void
+ResetWinnerStarShip (void)
+{
+	winnerStarShip = NULL;
 }
 
 #ifdef NETPLAY
@@ -243,16 +250,14 @@ battleEndReadyNetwork (NetworkInputContext *context)
 
 // Returns true iff this side is ready to end the battle.
 static inline bool
-readyForBattleEnd (COUNT side)
+readyForBattleEnd (void)
 {
 #ifndef NETPLAY
 #if DEMO_MODE
 	// In Demo mode, the saved journal should be replayed with frame
 	// accuracy. PLRPlaying () isn't consistent enough.
-	(void) side;
 	return true;
 #else  /* !DEMO_MODE */
-	(void) side;
 	return !DittyPlaying ();
 #endif  /* !DEMO_MODE */
 #else  /* defined (NETPLAY) */
@@ -261,27 +266,10 @@ readyForBattleEnd (COUNT side)
 	if (DittyPlaying ())
 		return false;
 
-	// We can only handle one dead ship at a time. So 'deadSide' is set
-	// to the side we're handling now. (COUNT)~0 means we're not handling
-	// any side yet.
-	if (currentDeadSide == (COUNT)~0)
-	{
-		// Not handling any side yet.
-		currentDeadSide = side;
-	}
-	else if (side != currentDeadSide)
-	{
-		// We're handing another side at the moment.
-		return false;
-	}
-
 	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
 		if (!PlayerInput[playerI]->handlers->battleEndReady (
 				PlayerInput[playerI]))
 			return false;
-
-	currentDeadSide = (COUNT)~0;
-			// Another side may be handled.
 
 	return true;
 #endif  /* defined (NETPLAY) */
@@ -358,10 +346,20 @@ cleanup_dead_ship (ELEMENT *DeadShipPtr)
 			UnlockElement (hElement);
 		}
 
+#define MIN_DITTY_FRAME_COUNT  ((ONE_SECOND * 3) / BATTLE_FRAME_RATE)
 		// The ship will be "alive" for at least 2 more frames to make sure
 		// the elements it owns (set up for deletion above) expire first.
-		DeadShipPtr->life_span =
-				MusicStarted ? (ONE_SECOND * 3) / BATTLE_FRAME_RATE : 1;
+		// Ditty does NOT play in the following circumstances:
+		//  * The winning ship dies before the loser finishes exploding
+		//  * At the moment the losing ship dies, the winner has started
+		//    the warp out sequence
+		DeadShipPtr->life_span = MusicStarted ? MIN_DITTY_FRAME_COUNT : 1;
+		if (DeadStarShipPtr == winnerStarShip)
+		{	// This ship died but won the battle. We need to keep it alive
+			// longer than the dead opponent ship so that the winning player
+			// picks last.
+			DeadShipPtr->life_span = MIN_DITTY_FRAME_COUNT + 1;
+		}
 		DeadShipPtr->death_func = new_ship;
 		DeadShipPtr->preprocess_func = preprocess_dead_ship;
 		DeadShipPtr->state_flags &= ~DISAPPEARING;
@@ -373,6 +371,70 @@ cleanup_dead_ship (ELEMENT *DeadShipPtr)
 	}
 }
 
+static void
+setMinShipLifeSpan (ELEMENT *ship, COUNT life_span)
+{
+	if (ship->death_func == new_ship)
+	{	// The ship has finished exploding or warping out, and now
+		// we can work with the remaining element
+		assert (ship->state_flags & FINITE_LIFE);
+		assert (!(ship->state_flags & DISAPPEARING));
+		if (ship->life_span < life_span)
+			ship->life_span = life_span;
+	}
+}
+
+static void
+setMinStarShipLifeSpan (STARSHIP *starShip, COUNT life_span)
+{
+	ELEMENT *ship;
+
+	LockElement (starShip->hShip, &ship);
+	setMinShipLifeSpan (ship, life_span);
+	UnlockElement (starShip->hShip);
+}
+
+static void
+checkOtherShipLifeSpan (ELEMENT *deadShip)
+{
+	STARSHIP *deadStarShip;
+
+	GetElementStarShip (deadShip, &deadStarShip);
+
+	if (winnerStarShip != NULL && deadStarShip != winnerStarShip
+			&& winnerStarShip->RaceDescPtr->ship_info.crew_level == 0)
+	{	// The opponent ship also died but won anyway (e.g. Glory device)
+		// We need to keep the opponent ship alive longer so that the
+		// winning player picks last.
+		setMinStarShipLifeSpan (winnerStarShip, deadShip->life_span + 1);
+	}
+	else if (winnerStarShip == NULL)
+	{	// Both died at the same time, or the loser has already expired
+		HELEMENT hElement, hNextElement;
+
+		// Find the other dead ship(s) and keep them alive for at least as
+		// long as this ship.
+		for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
+		{
+			ELEMENT *element;
+			STARSHIP *starShip;
+
+			LockElement (hElement, &element);
+			hNextElement = GetSuccElement (element);
+			GetElementStarShip (element, &starShip);
+			
+			if (starShip != NULL && element != deadShip
+					&& starShip->RaceDescPtr->ship_info.crew_level == 0)
+			{	// This is another dead ship
+				setMinShipLifeSpan (element, deadShip->life_span);
+			}
+
+			UnlockElement (hElement);
+		}
+	}
+}
+
+// This function is called when dead ship element's life_span reaches 0
 void
 new_ship (ELEMENT *DeadShipPtr)
 {
@@ -380,12 +442,24 @@ new_ship (ELEMENT *DeadShipPtr)
 
 	GetElementStarShip (DeadShipPtr, &DeadStarShipPtr);
 
-	if (!readyForBattleEnd (DeadStarShipPtr->playerNr))
+	if (!readyForBattleEnd ())
 	{
 		DeadShipPtr->state_flags &= ~DISAPPEARING;
 		++DeadShipPtr->life_span;
+
+		// Keep the winner alive longer, or in a simultaneous destruction
+		// tie, keep the other dead ship alive so that readyForBattleEnd()
+		// is called for only one ship at a time.
+		// When a ship has been destroyed, each side of a network
+		// connection waits until the other side is ready.
+		// When two ships die at the same time, this is handled for one
+		// ship after the other.
+		checkOtherShipLifeSpan (DeadShipPtr);
 		return;
 	}
+
+	// Once a ship is being picked, we do not care about the winner anymore
+	winnerStarShip = NULL;
 
 	{
 		BOOLEAN RestartMusic;
@@ -563,7 +637,7 @@ ship_death (ELEMENT *ShipPtr)
 		battle_counter[StarShipPtr->playerNr]--;
 	}
 
-	VictoriousStarShipPtr = 0;
+	VictoriousStarShipPtr = NULL;
 	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
 	{
 		LockElement (hElement, &ElementPtr);
@@ -574,9 +648,7 @@ ship_death (ELEMENT *ShipPtr)
 		{
 			GetElementStarShip (ElementPtr, &VictoriousStarShipPtr);
 			if (VictoriousStarShipPtr->RaceDescPtr->ship_info.crew_level == 0)
-				VictoriousStarShipPtr = 0;
-			else
-				VictoriousStarShipPtr->cur_status_flags |= PLAY_VICTORY_DITTY;
+				VictoriousStarShipPtr = NULL;
 
 			UnlockElement (hElement);
 			break;
@@ -599,15 +671,17 @@ ship_death (ELEMENT *ShipPtr)
 	ZeroVelocityComponents (&ShipPtr->velocity);
 	if (ShipPtr->crew_level) /* only happens for shofixti self-destruct */
 	{
-
 		PlaySound (SetAbsSoundIndex (
 				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1),
 				CalcSoundPosition (ShipPtr), ShipPtr,
 				GAME_SOUND_PRIORITY + 1);
 
 		DeltaCrew (ShipPtr, -(SIZE)ShipPtr->crew_level);
-		if (VictoriousStarShipPtr == 0)
-			StarShipPtr->cur_status_flags |= PLAY_VICTORY_DITTY;
+		if (VictoriousStarShipPtr == NULL)
+		{	// No ships left alive after a Shofixti Glory device,
+			// thus Shofixti wins
+			VictoriousStarShipPtr = StarShipPtr;
+		}
 	}
 	else
 	{
@@ -616,6 +690,15 @@ ship_death (ELEMENT *ShipPtr)
 		PlaySound (SetAbsSoundIndex (GameSounds, SHIP_EXPLODES),
 				CalcSoundPosition (ShipPtr), ShipPtr, GAME_SOUND_PRIORITY + 1);
 	}
+
+	if (VictoriousStarShipPtr != NULL)
+		VictoriousStarShipPtr->cur_status_flags |= PLAY_VICTORY_DITTY;
+
+	// The winner is set once per battle. If both ships die, this function is
+	// called twice, once for each ship. We need to preserve the winner
+	// determined on the first call.
+	if (winnerStarShip == NULL)
+		winnerStarShip = VictoriousStarShipPtr;
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
 		MeleeShipDeath (StarShipPtr);

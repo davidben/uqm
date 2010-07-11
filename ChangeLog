@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Fixed ship picking order after a simultaneous destruction, e.g.
+  Shofixti picks last after Glory device (bugs #1087, #1088) - Alex
 - Game no longer locks up after quickly escaping melee (bug #1003) - Alex
 - Reset input delay upon leaving Supermelee (bug #1022) - Alex
 - Properly account for simultaneous destruction of last ships

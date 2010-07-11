@@ -38,6 +38,7 @@ extern void spawn_ion_trail (ELEMENT *ElementPtr);
 extern void flee_preprocess (ELEMENT *ElementPtr);
 
 extern void StopDitty (void);
+extern void ResetWinnerStarShip (void);
 
 #endif  /* _TACTRANS_H */
 

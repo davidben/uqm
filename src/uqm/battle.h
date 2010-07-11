@@ -44,7 +44,6 @@ extern BOOLEAN instantVictory;
 extern BattleFrameCounter battleFrameCount;
 #endif
 #ifdef NETPLAY
-extern COUNT currentDeadSide;
 COUNT GetPlayerOrder (COUNT i);
 #else
 #	define GetPlayerOrder(i) (i)
