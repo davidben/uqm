@@ -3,7 +3,7 @@
  * config_unix.h is generated from config_unix.h.in by build.sh
  * When building on MS Windows using build.sh (MinGW, Cygwin),
  * config_win.h is generated from src/config_win.h.in.
- * When using MSVC on MS Windows, you'll have to edit src/msvc++/config.h
+ * When using MSVC on MS Windows, you'll have to edit src/config_vc6.h
  * manually if you want anything else than the defaults.
  */
 
