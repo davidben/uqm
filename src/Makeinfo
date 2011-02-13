@@ -16,5 +16,3 @@ fi
 
 uqm_CFILES="options.c port.c uqm.c"
 
-test_CFILES=test.c
-
