@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Update download paths for the new SourceForge File Release system - Michael
+- Fix UAC issues with installer for cleaner Vista/Win7 installs - Michael
 - Fixed compilation with Netplay disabled (bug #1091), from Sze Howe Koh
 - Fixed ship picking order after a simultaneous destruction, e.g.
   Shofixti picks last after Glory device (bugs #1087, #1088) - Alex

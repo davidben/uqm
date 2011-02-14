@@ -26,6 +26,9 @@ Var UQMUSERDATA
 !define MUI_HEADERIMAGE_BITMAP "ultron.bmp"
 !define MUI_HEADERIMAGE_RIGHT
 
+; UAC support
+RequestExecutionLevel admin
+
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
@@ -234,7 +237,7 @@ AttemptDownload:
   GetTempFileName $DOWNLOADTARGET
   Delete $DOWNLOADTARGET
   CreateDirectory $DOWNLOADTARGET
-  NSISdl::download "http://$2.dl.sourceforge.net/sourceforge/sc2/$1" "$DOWNLOADTARGET\$1"
+  NSISdl::download "http://$2.dl.sourceforge.net/sourceforge/sc2/UQM/0.6.0/$1" "$DOWNLOADTARGET\$1"
   Pop $2
   StrCmp $2 "success" DownloadSuccessful
   StrCmp $2 "cancel" DownloadCanceled
