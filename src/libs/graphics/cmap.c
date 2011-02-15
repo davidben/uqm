@@ -50,6 +50,7 @@ static int fadeAmount = FADE_NORMAL_INTENSITY;
 static int fadeDelta;
 static TimeCount fadeStartTime;
 static sint32 fadeInterval;
+static Mutex fadeLock;
 
 #define SPARE_COLORMAPS  20
 
@@ -60,7 +61,7 @@ static int poolcount;
 
 static TFB_ColorMap * colormaps[MAX_COLORMAPS];
 static int mapcount;
-Mutex maplock;
+static Mutex maplock;
 
 
 void
@@ -76,6 +77,8 @@ InitColorMaps (void)
 	XFormControl.Lock = CreateMutex ("Transform Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 	for (i = 0; i < MAX_XFORMS; ++i)
 		XFormControl.TaskControl[i].CMapIndex = -1;
+
+	fadeLock = CreateMutex ("Fade Lock", SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 }
 
 void
@@ -90,6 +93,7 @@ UninitColorMaps (void)
 		HFree (poolhead);
 	}
 
+	DestroyMutex (fadeLock);
 	// uninit xform control
 	DestroyMutex (XFormControl.Lock);
 	
@@ -317,7 +321,7 @@ GetFadeAmount (void)
 {
 	int newAmount;
 
-	LockMutex (XFormControl.Lock);
+	LockMutex (fadeLock);
 
 	if (fadeInterval)
 	{	// have a pending fade
@@ -341,7 +345,7 @@ GetFadeAmount (void)
 		newAmount = fadeAmount;
 	}
 
-	UnlockMutex (XFormControl.Lock);
+	UnlockMutex (fadeLock);
 
 	return newAmount;
 }
@@ -359,9 +363,9 @@ finishPendingFade (void)
 static void
 FlushFadeXForms (void)
 {
-	LockMutex (XFormControl.Lock);
+	LockMutex (fadeLock);
 	finishPendingFade ();
-	UnlockMutex (XFormControl.Lock);
+	UnlockMutex (fadeLock);
 }
 
 DWORD
@@ -392,7 +396,7 @@ FadeScreen (ScreenFadeType fadeType, SIZE TimeInterval)
 	if (QuitPosted)
 		TimeInterval = 0;
 
-	LockMutex (XFormControl.Lock);
+	LockMutex (fadeLock);
 
 	finishPendingFade ();
 
@@ -411,7 +415,7 @@ FadeScreen (ScreenFadeType fadeType, SIZE TimeInterval)
 		TimeOut = fadeStartTime + TimeInterval + 1;
 	}
 
-	UnlockMutex (XFormControl.Lock);
+	UnlockMutex (fadeLock);
 
 	return TimeOut;
 }
