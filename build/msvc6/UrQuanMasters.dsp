@@ -3655,7 +3655,7 @@ SOURCE=..\..\src\uqm\weapon.h
 # End Group
 # Begin Source File
 
-SOURCE=config.h
+SOURCE=..\..\src\config_vc6.h
 # End Source File
 # Begin Source File
 
