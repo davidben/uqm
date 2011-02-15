@@ -7,8 +7,8 @@
  * config_win.h is generated from src/config_win.h.in.
  */
 
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#ifndef _CONFIG_VC6_H
+#define _CONFIG_VC6_H
 
 /* Directory where the UQM game data is located */
 #define CONTENTDIR "../content/"
@@ -57,5 +57,5 @@
 /* Defined if your system has wint_t of its own */
 #define HAVE_WINT_T
 
-#endif /* _CONFIG_H */
+#endif /* _CONFIG_VC6_H */
 
