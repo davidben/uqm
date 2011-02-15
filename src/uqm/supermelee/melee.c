@@ -2004,7 +2004,7 @@ LoadMeleeConfig (MELEE_STATE *pMS)
 
 		if (uio_fstat(uio_streamHandle(stream), &sb) == -1)
 			goto err;
-		if ((size_t) sb.st_size != (1 + MeleeTeam_size) * NUM_SIDES)
+		if ((size_t) sb.st_size != (1 + MeleeTeam_serialSize) * NUM_SIDES)
 			goto err;
 	}
 

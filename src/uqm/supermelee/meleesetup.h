@@ -64,7 +64,7 @@ struct MeleeSetup
 
 #endif  /* MELEESETUP_INTERNAL */
 
-extern const size_t MeleeTeam_size;
+extern const size_t MeleeTeam_serialSize;
 
 void MeleeTeam_init (MeleeTeam *team);
 void MeleeTeam_uninit (MeleeTeam *team);

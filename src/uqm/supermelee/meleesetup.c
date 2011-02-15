@@ -25,7 +25,8 @@
 ///////////////////////////////////////////////////////////////////////////
 
 // Temporary
-const size_t MeleeTeam_size = sizeof (MeleeTeam);
+const size_t MeleeTeam_serialSize = MELEE_FLEET_SIZE +
+		sizeof (((MeleeTeam*)0)->name);
 
 void
 MeleeTeam_init (MeleeTeam *team)
@@ -323,7 +324,10 @@ MeleeSetup_deserializeTeam (MeleeSetup *setup, size_t teamNr,
 		uio_Stream *stream)
 {
 	MeleeTeam *team = &setup->teams[teamNr];
-	return MeleeTeam_deserialize (team, stream);
+	int ret = MeleeTeam_deserialize (team, stream);
+	if (ret == 0)
+		setup->fleetValue[teamNr] = MeleeTeam_getValue (team);
+	return ret;
 }
 
 int

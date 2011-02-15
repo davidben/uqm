@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Fixed loading of melee.cfg (bug #1099) - Alex
 - Fixed the 64KB size limitation on key-value files (bug #1112) - Alex
 - Update download paths for the new SourceForge File Release system - Michael
 - Fix UAC issues with installer for cleaner Vista/Win7 installs - Michael
