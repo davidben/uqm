@@ -43,7 +43,7 @@ void *
 LoadResourceFromPath (const char *path, ResourceLoadFileFun *loadFun)
 {
 	uio_Stream *stream;
-	long dataLen;
+	unsigned long dataLen;
 	void *resdata;
 
 	stream = res_OpenResFile (contentDir, path, "rb");

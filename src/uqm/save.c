@@ -74,44 +74,44 @@ cwrite_a8 (DECODE_REF fh, const BYTE *ar, COUNT count)
 	return cwrite (ar, 1, count, fh) == count;
 }
 
-static inline COUNT
+static inline size_t
 write_8 (void *fp, BYTE v)
 {
 	return WriteResFile (&v, 1, 1, fp);
 }
 
-static inline COUNT
+static inline size_t
 write_16 (void *fp, UWORD v)
 {
 	return WriteResFile (&v, 2, 1, fp);
 }
 
-static inline COUNT
+static inline size_t
 write_32 (void *fp, DWORD v)
 {
 	return WriteResFile (&v, 4, 1, fp);
 }
 
-static inline COUNT
+static inline size_t
 write_ptr (void *fp)
 {
 	return write_32 (fp, 0); /* ptrs are useless in saves */
 }
 
-static inline COUNT
+static inline size_t
 write_a8 (void *fp, const BYTE *ar, COUNT count)
 {
 	return WriteResFile (ar, 1, count, fp) == count;
 }
 
-static inline COUNT
+static inline size_t
 write_str (void *fp, const char *str, COUNT count)
 {
 	// no type conversion needed for strings
 	return write_a8 (fp, (const BYTE *)str, count);
 }
 
-static inline COUNT
+static inline size_t
 write_a16 (void *fp, const UWORD *ar, COUNT count)
 {
 	for ( ; count > 0; --count, ++ar)
@@ -838,8 +838,7 @@ RetrySave:
 
 			success = SaveSummary (SummPtr, out_fp);
 			// Then write the rest of the data.
-			if (success && WriteResFile (h, (COUNT)flen, 1,
-						out_fp) == 0)
+			if (success && WriteResFile (h, flen, 1, out_fp) != 1)
 				success = FALSE;
 
 			if (res_CloseResFile ((uio_Stream *)out_fp) == 0)

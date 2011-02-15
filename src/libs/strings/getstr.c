@@ -65,7 +65,7 @@ void
 _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 {
 	uio_Stream *fp;
-	long dataLen;
+	unsigned long dataLen;
 	void *result;
 	int n, path_len, num_data_sets;
 	DWORD opos,

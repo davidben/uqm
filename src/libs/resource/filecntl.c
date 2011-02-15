@@ -60,8 +60,8 @@ DeleteResFile (uio_DirHandle *dir, const char *filename)
 	return (uio_unlink (dir, filename) == 0);
 }
 
-int
-ReadResFile (void *lpBuf, COUNT size, COUNT count, uio_Stream *fp)
+size_t
+ReadResFile (void *lpBuf, size_t size, size_t count, uio_Stream *fp)
 {
 	int retval;
 
@@ -70,8 +70,8 @@ ReadResFile (void *lpBuf, COUNT size, COUNT count, uio_Stream *fp)
 	return (retval);
 }
 
-int
-WriteResFile (const void *lpBuf, COUNT size, COUNT count, uio_Stream *fp)
+size_t
+WriteResFile (const void *lpBuf, size_t size, size_t count, uio_Stream *fp)
 {
 	int retval;
 
@@ -131,7 +131,7 @@ TellResFile (uio_Stream *fp)
 	return (retval);
 }
 
-long
+size_t
 LengthResFile (uio_Stream *fp)
 {
 	struct stat sb;

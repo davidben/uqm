@@ -98,7 +98,7 @@ PropFile_from_string (char *d, PROPERTY_HANDLER handler, const char *prefix)
 void
 PropFile_from_file (uio_Stream *f, PROPERTY_HANDLER handler, const char *prefix)
 {
-	long flen;
+	size_t flen;
 	char *data;
 
 	flen = LengthResFile (f);
@@ -108,6 +108,8 @@ PropFile_from_file (uio_Stream *f, PROPERTY_HANDLER handler, const char *prefix)
 		return;
 	}
 
+	// We may end up with less bytes than we asked for due to the
+	// DOS->Unix newline conversion
 	flen = ReadResFile (data, 1, flen, f);
 	data[flen] = '\0';
 

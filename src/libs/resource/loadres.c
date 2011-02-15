@@ -17,56 +17,38 @@
  */
 
 #include "resintrn.h"
-#include "libs/declib.h"
 #include "libs/memlib.h"
+#include "libs/log.h"
 
 
 void *
 GetResourceData (uio_Stream *fp, DWORD length)
 {
-	BYTE *RDPtr;
 	void *result;
-	DECODE_REF fh = 0;
+	DWORD compLen;
 
-	if (length == ~(DWORD)0)
-		length = LengthResFile (fp);
-	else if ((fh = copen (fp, FILE_STREAM, STREAM_READ)))
-		cfilelength (fh, &length);
-	else
-		length -= sizeof (DWORD);
+	// Resource data used to be prefixed by its length in package files.
+	// A valid length prefix indicated compressed data, and
+	// a length prefix ~0 meant uncompressed.
+	// Currently, .ct and .xlt files still carry a ~0 length prefix.
+	if (ReadResFile (&compLen, sizeof (compLen), 1, fp) != 1)
+		return NULL;
+	if (compLen != ~(DWORD)0)
+	{
+		log_add (log_Warning, "LZ-compressed binary data not supported");
+		return NULL;
+	}
+	length -= sizeof (DWORD);
 
 	result = AllocResourceData (length);
-	RDPtr = result;
-	if (RDPtr)
+	if (!result)
+		return NULL;
+
+	if (ReadResFile (result, 1, length, fp) != length)
 	{
-		COUNT num_read;
-
-		do
-		{
-#define READ_LENGTH 0x00007FFFL
-			num_read = length >= READ_LENGTH ?
-					(COUNT)READ_LENGTH : (COUNT)length;
-			if (fh)
-			{
-				if (cread (RDPtr, 1, num_read, fh) != num_read)
-					break;
-			}
-			else
-			{
-				if ((int)(ReadResFile (RDPtr, 1, num_read, fp)) != (int)num_read)
-					break;
-			}
-			RDPtr += num_read;
-		} while (length -= num_read);
-
-		if (length > 0)
-		{
-			FreeResourceData (result);
-			result = NULL;
-		}
+		FreeResourceData (result);
+		result = NULL;
 	}
-
-	cclose (fh);
 
 	return result;
 }

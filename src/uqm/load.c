@@ -107,7 +107,7 @@ cread_a8 (DECODE_REF fh, BYTE *ar, COUNT count)
 	return cread (ar, 1, count, fh) == count;
 }
 
-static inline COUNT
+static inline size_t
 read_8 (void *fp, BYTE *v)
 {
 	BYTE t;
@@ -116,7 +116,7 @@ read_8 (void *fp, BYTE *v)
 	return ReadResFile (v, 1, 1, fp);
 }
 
-static inline COUNT
+static inline size_t
 read_16 (void *fp, UWORD *v)
 {
 	UWORD t;
@@ -125,7 +125,7 @@ read_16 (void *fp, UWORD *v)
 	return ReadResFile (v, 2, 1, fp);
 }
 
-static inline COUNT
+static inline size_t
 read_32 (void *fp, DWORD *v)
 {
 	DWORD t;
@@ -134,7 +134,7 @@ read_32 (void *fp, DWORD *v)
 	return ReadResFile (v, 4, 1, fp);
 }
 
-static inline COUNT
+static inline size_t
 read_32s (void *fp, SDWORD *v)
 {
 	DWORD t;
@@ -147,28 +147,28 @@ read_32s (void *fp, SDWORD *v)
 	return ret;
 }
 
-static inline COUNT
+static inline size_t
 read_ptr (void *fp)
 {
 	DWORD t;
 	return read_32 (fp, &t); /* ptrs are useless in saves */
 }
 
-static inline COUNT
+static inline size_t
 read_a8 (void *fp, BYTE *ar, COUNT count)
 {
 	assert (ar != NULL);
 	return ReadResFile (ar, 1, count, fp) == count;
 }
 
-static inline COUNT
+static inline size_t
 read_str (void *fp, char *str, COUNT count)
 {
 	// no type conversion needed for strings
 	return read_a8 (fp, (BYTE *)str, count);
 }
 
-static inline COUNT
+static inline size_t
 read_a16 (void *fp, UWORD *ar, COUNT count)
 {
 	assert (ar != NULL);
