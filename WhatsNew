@@ -12,6 +12,91 @@ Changes are broadly classified into the following categories:
   unlikely to be of interest to you unless you plan on coding
   extensions.
 
+			     Version 0.7
+			    -------------
+
+NEW FEATURES
+
+- Remixes are now selectable from the setup menu
+- "Safe mode", which will ignore settings. Useful if you've somehow
+  wrecked your configuration files.
+- Added --addondir commandline option - Mika
+- Added --keepaspectratio to keep correct aspect ratio when using
+  custom resolutions in OpenGL mode - Mika
+- New addon machanism allows greater flexibility for selecting which
+  resource goes with which game element.
+- Joystick text input improved
+- Unicode strings now could theoretically support UCS-4 on all platforms
+- Experimental support for Symbian S60 3rd edition - Mika & SvdB
+- Support for Windows CE. - SvdB with Pavel Chernikov
+- Added fullscreen/windowed toggle key F11 (bug #578) - Mika
+- Support for 3do "ship spin" videos
+  
+BALANCE/GAME FLOW CHANGES
+- Do not match singular stars when given a prefix in star search
+- Properly account for simultaneous destruction in SuperMelee.
+- Druuge no longer turn hostile after attempting a salvage
+- Canceling load from the main menu returns to main menu
+- Better location description in savegame summaries
+- Fixed Mmrnmhrm's X-Form transformation without energy use (bug #1004) - Alex
+- 999.9:999.9 is now reachable in HyperSpace
+- Fuel and distance estimates are now more accurate
+- Analog joysticks less sensitive to jitter
+- Gas giants can no longer have negative masses
+- Fixed enemy ships getting recrewed between encounters in HyperSpace
+- Fixed wrong Sa-Matra guards icons after Kohr-Ah win (bug #1001) - Alex
+- Cancel key will now quit out of the Manifest Menu (Bug #838) - Michael
+- Error boxes on MacOSX are now actually native to the OS - no need to check
+  Console.app anymore.
+  
+BUGFIXES
+
+- Old Windows installer was horribly obsolete; fixed now.
+- Fixed rendering error when entering the orbit of a shielded planet
+- Fixed planet blinking when exiting scan
+- Menu sounds restored after editing a control set name.
+- Fixed a freeze when quickly escaping melee.
+- Fixed misaligned cargo count
+- Fixed a crash when filling fuel tanks over 10
+- Comm code rewrite, fixing a lot of minor annoyances
+- Team configuration in netplay no longer desyncs
+- Fixed Melee menu timeout when both sides are Cyborgs
+- Fixed AI ship not moving on warp in
+- Revert gfx settings entirely when a mode switch fails
+- Fix for weird colors problem on MacOSX w/ SDL 1.2.14
+- Lander will no longer hang when killed on planets with a lot of
+  natural disasters
+- Fixed crash when saving a game into the last slot while having
+  too many devices on board
+- Fixed crashes and potential weirdness when loading savegames from
+  a Homeworld encounter screen
+- Fixed a crash when conversing with music disabled
+- Extremely busy battle sequences (Orz vs. Orz with many space marines
+  out, for instance) no longer introduces graphical glitches
+- Fixed rendering bug that would occasionally make a ship just be solid
+  blue all the time
+- Objects in melee made of multiple "parts" no longer jitter during zoom
+- Ending a battle with a simultaneous death no longer triggers an
+  assertion
+- Fixed a crash on startup if uqm.cfg did not exist
+- Extremely rapid will no longer be lost at low framerates
+- 3DO videos now work after a resolution change
+- OpenGL texture loading uses surface pitch instead of screen width,
+  improving compatibility across older graphics cards.
+- Miscellaneous conversational typo and timing fixes
+  
+INTERNAL CHANGES
+
+- Code cleanup; many warnings removed
+- Massive changes to the way the resource system works. This is
+  mostly interesting in that 3DO voices, 3DO videos, and 3DO music
+  are now addon packs like any other.
+- Code reorganization; old stuff removed, new stuff better set-up
+- 32-bit graphics everywhere internally.
+- Refactored universe generation
+- Pthread support - Mika
+- Removed the 256-frame limit on .ani files - Michael
+
 			     Version 0.6
 			    -------------
 
