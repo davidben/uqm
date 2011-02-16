@@ -40,16 +40,16 @@ Create a folder "Build" in "C:\"; this is where we will put our dependency
 packages.
 
 3.2 Install the SDL SDK:
-- Download SDL-devel-1.2.11-VC6.zip from
+- Download SDL-devel-1.2.14-VC6.zip from
   http://www.libsdl.org/download-1.2.php
 - Use WinZip to Extract the .zip file in "C:\Build"
-  A folder "SDL-1.2.11" will be created.
+  A folder "SDL-1.2.14" will be created.
 
 3.3 Install the SDL_image SDK:
-- Download SDL_image-devel-1.2.5-VC6.zip from
+- Download SDL_image-devel-1.2.10-VC.zip from
   http://www.libsdl.org/projects/SDL_image/
 - Use WinZip to Extract the .zip file in "C:\Build"
-  A folder "SDL_image-1.2.5" will be created.
+  A folder "SDL_image-1.2.10" will be created.
 
 3.4 Install the Ogg Vorbis SDK
 - Download
@@ -64,10 +64,10 @@ packages.
 - Extract "zlib123-dll.zip" in C:\Build\zlib-1.2.3\"
 
 3.6 Install OpenAL
-- Download http://developer.creative.com/articles/article.asp?aid=45&file=OpenAL11CoreSDK.exe
-- Run the installer and follow the instructions
+- Download http://connect.creativelabs.com/openal/Downloads/OpenAL11CoreSDK.zip
+- Unzip and run the installer and follow the instructions
 - Create a directory "AL" in "C:\Program Files\OpenAL 1.1 SDK\include"
-- Move all the .h files from "C:\Program Files\OpenAL 1.1 SDK\include"
+- Copy all the .h files from "C:\Program Files\OpenAL 1.1 SDK\include"
   into the newly created "AL" directory.
 
 
@@ -86,12 +86,12 @@ packages.
 4.2. Copy the runtime libraries where they can be found by UQM when run
      from MSVC++.
 - Copy the following files to "C:\Build\sc2\":
-  - "C:\Build\SDL-1.2.11\lib\SDL.dll"
-  - "C:\Build\SDL_image-1.2.5\lib\jpeg.dll"
-  - "C:\Build\SDL_image-1.2.5\lib\libpng12.dll"
-  - "C:\Build\SDL_image-1.2.5\lib\libtiff.dll"
-  - "C:\Build\SDL_image-1.2.5\lib\SDL_image.dll"
-  - "C:\Build\SDL_image-1.2.5\lib\zlib1.dll"
+  - "C:\Build\SDL-1.2.14\lib\SDL.dll"
+  - "C:\Build\SDL_image-1.2.10\lib\jpeg.dll"
+  - "C:\Build\SDL_image-1.2.10\lib\libpng12-0.dll"
+  - "C:\Build\SDL_image-1.2.10\lib\libtiff-3.dll"
+  - "C:\Build\SDL_image-1.2.10\lib\SDL_image.dll"
+  - "C:\Build\SDL_image-1.2.10\lib\zlib1.dll"
   - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\ogg.dll"
   - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\ogg_d.dll"
   - "C:\Build\oggvorbis-win32sdk-1.0.1\bin\vorbis.dll"
@@ -119,8 +119,8 @@ packages.
 - Add the paths to the "include" folders of all of the dependency
   libraries:
   - "C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Include"
-  - "C:\Build\SDL-1.2.11\include"
-  - "C:\Build\SDL_image-1.2.5\include"
+  - "C:\Build\SDL-1.2.14\include"
+  - "C:\Build\SDL_image-1.2.10\include"
   - "C:\Build\oggvorbis-win32sdk-1.0.1\include"
   - "C:\Program Files\OpenAL 1.1 SDK\include"
   - "C:\Build\zlib-1.2.3\include"
@@ -133,8 +133,8 @@ packages.
 - Add the paths to the "lib" folders of all of the dependency
   libraries:
   - "C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib"
-  - "C:\Build\SDL-1.2.11\lib"
-  - "C:\Build\SDL_image-1.2.5\lib"
+  - "C:\Build\SDL-1.2.14\lib"
+  - "C:\Build\SDL_image-1.2.10\lib"
   - "C:\Build\oggvorbis-win32sdk-1.0.1\lib"
   - "C:\Program Files\OpenAL 1.1 SDK\libs\Win32"
   - "C:\Build\zlib-1.2.3\lib"
