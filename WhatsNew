@@ -79,7 +79,7 @@ BUGFIXES
 - Ending a battle with a simultaneous death no longer triggers an
   assertion
 - Fixed a crash on startup if uqm.cfg did not exist
-- Extremely rapid will no longer be lost at low framerates
+- Extremely rapid key presses will no longer be lost at low framerates
 - 3DO videos now work after a resolution change
 - OpenGL texture loading uses surface pitch instead of screen width,
   improving compatibility across older graphics cards.
