@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Same captain names are used on both net sides (bug #989) - Alex
+- Fixed sync loss in netplay games having duplicate ships (bug #1081) - Alex
 - Fixed loading of melee.cfg (bug #1099) - Alex
 - Fixed the 64KB size limitation on key-value files (bug #1112) - Alex
 - Update download paths for the new SourceForge File Release system - Michael

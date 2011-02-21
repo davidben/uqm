@@ -507,20 +507,22 @@ BuildPickMeleeFrame (void)
 void
 FillPickMeleeFrame (MeleeSetup *setup)
 {
-	COUNT sideI;
+	COUNT i;
 	CONTEXT OldContext;
 
 	OldContext = SetContext (OffScreenContext);
 
-	for (sideI = 0; sideI < NUM_SIDES; ++sideI)
+	for (i = 0; i < NUM_SIDES; ++i)
 	{
 		COUNT side;
+		COUNT sideI;
 		RECT r;
 		TEXT t;
 		STAMP s;
 		UNICODE buf[30];
 		FleetShipIndex index;
 
+		sideI = GetPlayerOrder (i);
 		side = !sideI;
 
 		s.frame = SetAbsFrameIndex (PickMeleeFrame, side);
