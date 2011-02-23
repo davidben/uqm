@@ -77,7 +77,7 @@ var ICONS_GROUP
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "uqm-0.6.2-installer.exe"
+OutFile "uqm-0.7.0-installer.exe"
 InstallDir "$PROGRAMFILES\The Ur-Quan Masters\"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -283,7 +283,7 @@ SectionGroup "!UQM" SECGRP01
     SetOverwrite try
     File "AUTHORS.txt"
     File "COPYING.txt"
-    File "libpng12.dll"
+    File "libpng12-0.dll"
     File "Manual.txt"
     File "ogg.dll"
     File "OpenAL32.dll"
@@ -299,19 +299,12 @@ SectionGroup "!UQM" SECGRP01
     File "zlib1.dll"
     SetOverwrite off
     SetOutPath $UQMUSERDATA
-    File "keys.cfg" 
     File "uqm.cfg"
     SetOverwrite try
     File "uqm-pc.cfg"
     File "uqm-3do.cfg"
     
-    IfFileExists "$INSTDIR\content\packages\uqm-0.5.0-3domusic.uqm" 0 DelOldContent
-      StrCpy $MD5SUM "a20cacc8e66f5ff1fdf5e1d3a3b93fd2"
-      md5dll::GetFileMD5 "$INSTDIR\content\packages\uqm-0.5.0-3domusic.uqm"
-      Pop $0
-      StrCmp $MD5SUM $0 0 DelOldContent
-      CopyFiles "$INSTDIR\content\packages\uqm-0.5.0-3domusic.uqm" "$INSTDIR\content\packages\uqm-0.6.0-3domusic.uqm"
-DelOldContent:
+    # Delete old content
     Delete "$INSTDIR\content\packages\uqm-0.3-3domusic.zip"
     Delete "$INSTDIR\content\packages\uqm-0.3-voice.zip"
     Delete "$INSTDIR\content\packages\uqm-0.3-content.zip"
@@ -321,6 +314,9 @@ DelOldContent:
     Delete "$INSTDIR\content\packages\uqm-0.5.0-3domusic.uqm"
     Delete "$INSTDIR\content\packages\uqm-0.5.0-voice.uqm"
     Delete "$INSTDIR\content\packages\uqm-0.5.0-content.uqm"
+    Delete "$INSTDIR\content\packages\uqm-0.6.0-3domusic.uqm"
+    Delete "$INSTDIR\content\packages\uqm-0.6.0-voice.uqm"
+    Delete "$INSTDIR\content\packages\uqm-0.6.0-content.uqm"
 
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -334,9 +330,9 @@ DelOldContent:
     SetOverwrite ifnewer
     AddSize 12261
     StrCpy $MANDATORY 1
-    StrCpy $MD5SUM "7e8f0ed8490e24231431420ea2ba6a03"
+    StrCpy $MD5SUM "5c9114112ed84bd372755f881e235f61"
     File "content\version"
-    Push "uqm-0.6.0-content.uqm"
+    Push "uqm-0.7.0-content.uqm"
     Push "$INSTDIR\content\packages"
     Call HandlePackage
 
@@ -356,9 +352,9 @@ SectionGroup /e "3DO Content" SECGRP02
     SectionIn 1 4 6
     AddSize 18536
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "a20cacc8e66f5ff1fdf5e1d3a3b93fd2"
-    Push "uqm-0.6.0-3domusic.uqm"
-    Push "$INSTDIR\content\packages"
+    StrCpy $MD5SUM "86a5e376d9b76888add1d10818f0ab9f"
+    Push "uqm-0.7.0-3domusic.uqm"
+    Push "$INSTDIR\content\addons"
     Call HandlePackage
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -369,9 +365,9 @@ SectionGroup /e "3DO Content" SECGRP02
     SectionIn 1 4 6
     AddSize 112291
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "d31577b896be935cc2238afd07299b8b"
-    Push "uqm-0.6.0-voice.uqm"
-    Push "$INSTDIR\content\packages"
+    StrCpy $MD5SUM "320bd2f278ea06c443048b9fa1e40dbf"
+    Push "uqm-0.7.0-voice.uqm"
+    Push "$INSTDIR\content\addons"
     Call HandlePackage
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -384,11 +380,10 @@ SectionGroup "Modern Remixes" SECGRP03
     SectionIn 6
     AddSize 49012
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "2df402b2951c0187604a81c3997fbb9d"
-    Push "uqm-remix-pack1.zip"
-    Push "$INSTDIR\content\packages\addons\remix\"
+    StrCpy $MD5SUM "09f242d8d72166d1d5ccbd3d99c93e7d"
+    Push "uqm-remix-disc1.uqm"
+    Push "$INSTDIR\content\addons\"
     Call HandlePackage
-    StrCpy $UQMARGS "--addon remix"
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -398,11 +393,10 @@ SectionGroup "Modern Remixes" SECGRP03
     SectionIn 6
     AddSize 58869
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "d5a9fb72b369bf5a5dbca3db9f1e1ea3"
-    Push "uqm-remix-pack2.zip"
-    Push "$INSTDIR\content\packages\addons\remix\"
+    StrCpy $MD5SUM "fbc8bdcb709939d559d8c7216ad15cc2"
+    Push "uqm-remix-disc2.uqm"
+    Push "$INSTDIR\content\addons\"
     Call HandlePackage
-    StrCpy $UQMARGS "--addon remix"
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -412,11 +406,10 @@ SectionGroup "Modern Remixes" SECGRP03
     SectionIn 6
     AddSize 38989
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "567bc2d9e3ca067d21170c5ac5538441"
-    Push "uqm-remix-pack3.zip"
-    Push "$INSTDIR\content\packages\addons\remix\"
+    StrCpy $MD5SUM "5ccc6d4ac301ae98e172ac6835dcdead"
+    Push "uqm-remix-disc3.uqm"
+    Push "$INSTDIR\content\addons\"
     Call HandlePackage
-    StrCpy $UQMARGS "--addon remix"
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -427,9 +420,8 @@ SectionGroup "Modern Remixes" SECGRP03
 #    AddSize 50000  # ESTIMATE: Update later
 #    StrCpy $MANDATORY 0
 #    Push "uqm-remix-pack4.zip"
-#    Push "$INSTDIR\content\packages\addons\remix\"
+#    Push "$INSTDIR\content\addons"
 #    Call HandlePackage
-#    StrCpy $UQMARGS "--addon remix"
 #  ; Shortcuts
 #    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 #    !insertmacro MUI_STARTMENU_WRITE_END
@@ -522,9 +514,13 @@ Section Uninstall
   Delete "$INSTDIR\content\packages\addons\remix\uqm-remix-pack3.zip"
   Delete "$INSTDIR\content\packages\addons\remix\uqm-remix-pack2.zip"
   Delete "$INSTDIR\content\packages\addons\remix\uqm-remix-pack1.zip"
-  Delete "$INSTDIR\content\packages\uqm-0.6.0-voice.uqm"
-  Delete "$INSTDIR\content\packages\uqm-0.6.0-3domusic.uqm"
-  Delete "$INSTDIR\content\packages\uqm-0.6.0-content.uqm"
+  Delete "$INSTDIR\content\addons\uqm-remix-disc4.uqm"
+  Delete "$INSTDIR\content\addons\uqm-remix-disc3.uqm"
+  Delete "$INSTDIR\content\addons\uqm-remix-disc2.uqm"
+  Delete "$INSTDIR\content\addons\uqm-remix-disc1.uqm"
+  Delete "$INSTDIR\content\addons\uqm-0.7.0-voice.uqm"
+  Delete "$INSTDIR\content\addons\uqm-0.7.0-3domusic.uqm"
+  Delete "$INSTDIR\content\packages\uqm-0.7.0-content.uqm"
   Delete "$INSTDIR\content\version"
   Delete "$INSTDIR\zlib.dll"
   Delete "$INSTDIR\zlib1.dll"
@@ -542,6 +538,7 @@ Section Uninstall
   Delete "$INSTDIR\Manual.txt"
   Delete "$INSTDIR\libpng13.dll"
   Delete "$INSTDIR\libpng12.dll"
+  Delete "$INSTDIR\libpng12-0.dll"
   Delete "$INSTDIR\COPYING.txt"
   Delete "$INSTDIR\AUTHORS.txt"
   Delete "$INSTDIR\stderr.txt"
@@ -563,6 +560,7 @@ Section Uninstall
   
   RMDir "$SMPROGRAMS\$ICONS_GROUP\Documentation"
   RMDir "$SMPROGRAMS\$ICONS_GROUP"
+  RMDir "$INSTDIR\content\addons"
   RMDir "$INSTDIR\content\packages\addons\remix"
   RMDir "$INSTDIR\content\packages\addons"
   RMDir "$INSTDIR\content\packages"
