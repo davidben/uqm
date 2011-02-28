@@ -110,7 +110,8 @@ LoadKernel (int argc, char *argv[])
 		return FALSE;
 	
 	/* Load base content. */
-	loadIndices (contentDir);
+	if (loadIndices (contentDir) == 0)
+		return FALSE; // Must have at least one index in content dir
 
 	/* Load addons demanded by the current configuration. */
 	if (opt3doMusic)
@@ -139,6 +140,8 @@ LoadKernel (int argc, char *argv[])
 		COLORMAP ColorMapTab;
 
 		ColorMapTab = CaptureColorMap (LoadColorMap (STARCON_COLOR_MAP));
+		if (ColorMapTab == NULL)
+			return FALSE; // The most basic resource is missing
 		SetColorMap (GetColorMapAddress (ColorMapTab));
 		DestroyColorMap (ReleaseColorMap (ColorMapTab));
 	}

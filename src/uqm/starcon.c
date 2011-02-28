@@ -177,10 +177,13 @@ while (--ac > 0)
 	if (!LoadKernel (0,0))
 	{
 		log_add (log_Fatal, "\n  *** FATAL ERROR: Could not load basic content ***\n\nUQM requires at least the base content pack to run properly.");
-		log_add (log_Fatal, "This file is typically called uqm-%d.%d.0.uqm.  UQM was expecting it", UQM_MAJOR_VERSION, UQM_MINOR_VERSION);
-		log_add (log_Fatal, "in the %s/packages directory.", baseContentPath);
+		log_add (log_Fatal, "This file is typically called uqm-%d.%d.0-content.uqm.  UQM was expecting", UQM_MAJOR_VERSION, UQM_MINOR_VERSION);
+		log_add (log_Fatal, "it in the %s/packages directory.", baseContentPath);
 		log_add (log_Fatal, "Either your installation did not install the content pack at all, or it\ninstalled it in a different directory.\n\nFix your installation and rerun UQM.\n\n  *******************\n");
-		exit (EXIT_FAILURE);
+		log_showBox (true, true);
+
+		MainExited = TRUE;
+		return EXIT_FAILURE;
 	}
 	log_add (log_Info, "We've loaded the Kernel");
 
@@ -300,6 +303,7 @@ while (--ac > 0)
 	FreeMasterShipList ();
 	FreeKernel ();
 
+	log_showBox (false, false);
 	MainExited = TRUE;
 
 	(void) threadArg;  /* Satisfying compiler (unused parameter) */

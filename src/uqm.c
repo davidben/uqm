@@ -476,8 +476,6 @@ main (int argc, char *argv[])
 		UnInitThreadSystem ();
 		mem_uninit ();
 	}
-
-	log_showBox (false, false);
 	
 	return EXIT_SUCCESS;
 }
