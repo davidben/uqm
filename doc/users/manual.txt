@@ -1,4 +1,4 @@
-THE UR-QUAN MASTERS v0.6 -- homepage: http://sc2.sf.net/
+THE UR-QUAN MASTERS v0.7 -- homepage: http://sc2.sf.net/
 
 Welcome to the sixth release of the Ur-Quan Masters port.  This
 document will tell you everything you need to play, even if you've
@@ -224,6 +224,13 @@ Default.
 
 Use 3DO style throbbing slave shield graphic. This somewhat increases the
 load on CPU while in orbit. Do not use if your CPU cannot handle that.
+
+	--safe             (no short version)
+
+Start the game in safe mode. Safe mode will ignore stored user settings,
+like resolution, fullscreen mode, sound driver, etc. This is useful if
+you have somehow wrecked your configuration files and cannot get to the
+in-game setup menu to change the settings.
 
 
 NOT OFFICIALLY SUPPORTED OPTIONS
@@ -675,6 +682,7 @@ SPACE or RIGHT SHIFT:        Main menu
 Arrow Keys:                  Scroll through selections
 ENTER or RIGHT CTRL:         Make selection
 SPACE or RIGHT SHIFT:        Up one level
+      or ESCAPE
 
 	Conversations
 
@@ -768,18 +776,24 @@ Intel savegames may be safely transferred.
 
 As of version 0.3, The Ur-Quan Masters has basic support for add-on
 packages.  Though it is not very elaborate yet, you can install some
-content add-ons.
+content add-ons. Add-ons created for UQM releases prior to v0.7 are not
+compatible with this release. To continue using your current add-ons,
+you will have to obtain or create new add-on packages.
 
-Inside the directory where the content is installed, in the content/packages/
+Inside the directory where the content is installed, in the content/
 directory, there is a directory 'addons/'. In this directory, you can
+place add-on packages, like 3domusic, 3dovoice, remix and others, or
 create new directories with .zip files to be used in addition to the
-standard content .zip files.
+standard content .zip files. Each add-on must contain at least one .rmp
+file to tell the game which resources the add-on provides.
 When you specify the command-line option '--addon <addon>', the .zip files
-inside the directory content/packages/addons/<addon> will be included
+inside the directory content/addons/<addon> will be included
 in the game. '--addon' may be specified more than once to enable multiple
 add-ons.
 
-The Precursors UQM Remix project is intended to be used as an addon.
-If you installed UQM 0.6 from the Windows installer, the remix packs
-are available as options.  Installing any of them will cause the
-default shortcuts to include the "remix" addon by default.
+Formerly standard packages, 3domusic and 3dovoice are now standard add-ons,
+and can be turned on and off from the in-game setup menu.
+The Precursors UQM Remix project is intended to be used as an add-on.
+If you install UQM 0.7 from the Windows installer, the remix packs
+are available as options. The remix add-on can also be turned on and off
+from the in-game setup menu.
