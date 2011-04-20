@@ -31,6 +31,7 @@
 #include "gendef.h"
 #include "globdata.h"
 #include "planets/lifeform.h"
+#include "planets/scan.h"
 #include "races.h"
 #include "setup.h"
 #include "state.h"
@@ -1054,17 +1055,16 @@ calculateBioValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 
 	assert (system->pOrbitalDesc == world);
 	
-	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
-	(*system->genFuncs->generateLife) ((SOLARSYS_STATE *) system,
-			(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
-	numBio = system->CurNode;
+	numBio = (COUNT)~0;
+	callGenerateForScanType ((SOLARSYS_STATE *) system, (PLANET_DESC *) world,
+			&numBio, BIOLOGICAL_SCAN);
 
 	result = 0;
 	for (i = 0; i < numBio; i++)
 	{
-		((SOLARSYS_STATE *) system)->CurNode = i;
-		(*system->genFuncs->generateLife) ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
+		COUNT whichNode = i;
+		callGenerateForScanType ((SOLARSYS_STATE *) system,
+				(PLANET_DESC *) world, &whichNode, BIOLOGICAL_SCAN);
 		result += BIO_CREDIT_VALUE * LONIBBLE (CreatureData[
 				system->SysInfo.PlanetInfo.CurType].ValueAndHitPoints);
 	}
@@ -1080,19 +1080,18 @@ generateBioIndex(const SOLARSYS_STATE *system, const PLANET_DESC *world,
 
 	assert (system->pOrbitalDesc == world);
 	
-	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
-	(*system->genFuncs->generateLife) ((SOLARSYS_STATE *) system,
-			(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
-	numBio = system->CurNode;
+	numBio = (COUNT)~0;
+	callGenerateForScanType ((SOLARSYS_STATE *) system, (PLANET_DESC *) world,
+			&numBio, BIOLOGICAL_SCAN);
 
 	for (i = 0; i < NUM_CREATURE_TYPES + NUM_SPECIAL_CREATURE_TYPES; i++)
 		bio[i] = 0;
 	
 	for (i = 0; i < numBio; i++)
 	{
-		((SOLARSYS_STATE *) system)->CurNode = i;
-		(*system->genFuncs->generateLife) ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
+		COUNT whichNode = i;
+		callGenerateForScanType ((SOLARSYS_STATE *) system,
+				(PLANET_DESC *) world, &whichNode, BIOLOGICAL_SCAN);
 		bio[system->SysInfo.PlanetInfo.CurType]++;
 	}
 }
@@ -1106,17 +1105,16 @@ calculateMineralValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 
 	assert (system->pOrbitalDesc == world);
 	
-	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
-	(*system->genFuncs->generateMinerals) ((SOLARSYS_STATE *) system,
-			(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
-	numDeposits = system->CurNode;
+	numDeposits = (COUNT)~0;
+	callGenerateForScanType ((SOLARSYS_STATE *) system, (PLANET_DESC *) world,
+			&numDeposits, MINERAL_SCAN);
 
 	result = 0;
 	for (i = 0; i < numDeposits; i++)
 	{
-		((SOLARSYS_STATE *) system)->CurNode = i;
-		(*system->genFuncs->generateMinerals) ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
+		COUNT whichNode = i;
+		callGenerateForScanType ((SOLARSYS_STATE *) system,
+				(PLANET_DESC *) world, &whichNode, MINERAL_SCAN);
 		result += HIBYTE (system->SysInfo.PlanetInfo.CurDensity) *
 				GLOBAL (ElementWorth[ElementCategory (
 				system->SysInfo.PlanetInfo.CurType)]);
@@ -1133,19 +1131,18 @@ generateMineralIndex(const SOLARSYS_STATE *system, const PLANET_DESC *world,
 
 	assert (system->pOrbitalDesc == world);
 	
-	((SOLARSYS_STATE *) system)->CurNode = (COUNT)~0;
-	(*system->genFuncs->generateMinerals) ((SOLARSYS_STATE *) system,
-			(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
-	numDeposits = system->CurNode;
+	numDeposits = (COUNT)~0;
+	callGenerateForScanType ((SOLARSYS_STATE *) system, (PLANET_DESC *) world,
+			&numDeposits, MINERAL_SCAN);
 
 	for (i = 0; i < NUM_ELEMENT_CATEGORIES; i++)
 		minerals[i] = 0;
 	
 	for (i = 0; i < numDeposits; i++)
 	{
-		((SOLARSYS_STATE *) system)->CurNode = i;
-		(*system->genFuncs->generateMinerals) ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, &((SOLARSYS_STATE *) system)->CurNode);
+		COUNT whichNode = i;
+		callGenerateForScanType ((SOLARSYS_STATE *) system,
+				(PLANET_DESC *) world, &whichNode, MINERAL_SCAN);
 		minerals[ElementCategory(system->SysInfo.PlanetInfo.CurType)] +=
 				HIBYTE (system->SysInfo.PlanetInfo.CurDensity);
 	}

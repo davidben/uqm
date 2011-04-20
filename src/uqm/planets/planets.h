@@ -204,7 +204,6 @@ struct solarsys_state
 
 	SYSTEM_INFO SysInfo;
 
-	COUNT CurNode;
 	const GenerateFunctions *genFuncs;
 			// Functions to call to fill in various parts of this structure.
 			// See generate.h, doc/devel/generate

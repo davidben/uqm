@@ -718,6 +718,7 @@ CheckObjectCollision (COUNT index)
 			{
 				COUNT scan, NumRetrieved;
 				SIZE which_node;
+				COUNT allNodes;
 
 				scan = LOBYTE (ElementPtr->scan_node);
 				if (pLanderPrim == 0)
@@ -859,10 +860,10 @@ CheckObjectCollision (COUNT index)
 				which_node = HIBYTE (ElementPtr->scan_node) - 1;
 				pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] |=
 						(1L << which_node);
-				pSolarSysState->CurNode = (COUNT)~0;
+				allNodes = (COUNT)~0;
 				callGenerateForScanType (pSolarSysState,
 						pSolarSysState->pOrbitalDesc,
-						&pSolarSysState->CurNode, scan);
+						&allNodes, scan);
 
 				if (!(pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] &
 						(1L << which_node)))

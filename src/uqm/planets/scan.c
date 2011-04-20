@@ -1337,15 +1337,15 @@ GeneratePlanetSide (void)
 		f = SetAbsFrameIndex (MiscDataFrame,
 				NUM_SCANDOT_TRANSITIONS * (scan - ENERGY_SCAN));
 
-		pSolarSysState->CurNode = (COUNT)~0;
+		num_nodes = (COUNT)~0;
 		callGenerateForScanType (pSolarSysState,
-				pSolarSysState->pOrbitalDesc, &pSolarSysState->CurNode, scan);
+				pSolarSysState->pOrbitalDesc, &num_nodes, scan);
 
-		num_nodes = pSolarSysState->CurNode;
 		while (num_nodes--)
 		{
 			HELEMENT hNodeElement;
 			ELEMENT *NodeElementPtr;
+			COUNT whichNode;
 
 			if (isNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo,
 					scan, num_nodes))
@@ -1357,9 +1357,9 @@ GeneratePlanetSide (void)
 
 			LockElement (hNodeElement, &NodeElementPtr);
 
-			pSolarSysState->CurNode = num_nodes;
+			whichNode = num_nodes;
 			callGenerateForScanType (pSolarSysState,
-					pSolarSysState->pOrbitalDesc, &pSolarSysState->CurNode,
+					pSolarSysState->pOrbitalDesc, &whichNode,
 					scan);
 
 			NodeElementPtr->scan_node = MAKE_WORD (scan, num_nodes + 1);
