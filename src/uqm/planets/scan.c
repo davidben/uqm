@@ -1003,10 +1003,6 @@ ScanPlanet (COUNT scanType)
 		t.align = ALIGN_CENTER;
 		t.CharCount = (COUNT)~0;
 
-		pSolarSysState->CurNode = (COUNT)~0;
-		callGenerateForScanType (pSolarSysState,
-				pSolarSysState->pOrbitalDesc, &pSolarSysState->CurNode,
-				scan);
 		t.pStr = GAME_STRING (SCAN_STRING_BASE + scan);
 
 		LockMutex (GraphicsLock);
