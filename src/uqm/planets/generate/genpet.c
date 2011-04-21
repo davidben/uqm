@@ -161,16 +161,13 @@ GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
 		COUNT i;
-		COUNT nodeI;
 		DWORD rand_val;
 		COUNT old_rand;
 
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
 
-		nodeI = 0;
-		i = 0;
-		do
+		for (i = 0; i < 16; ++i)
 		{
 			rand_val = TFB_Random ();
 			solarSys->SysInfo.PlanetInfo.CurPt.x =
@@ -179,11 +176,10 @@ GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
 			solarSys->SysInfo.PlanetInfo.CurType = 1;
 			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-			if (nodeI >= *whichNode)
+			if (i >= *whichNode)
 				break;
-			++nodeI;
-		} while (++i < 16);
-		*whichNode = nodeI;
+		}
+		*whichNode = i;
 
 		TFB_SeedRandom (old_rand);
 		return true;

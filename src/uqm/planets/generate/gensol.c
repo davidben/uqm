@@ -576,16 +576,13 @@ GenerateSol_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 	else /* Earth Moon */
 	{
 		COUNT i;
-		COUNT nodeI;
 		DWORD old_rand;
 		DWORD rand_val;
 
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
-		nodeI = 0;
-		i = 0;
-		do
+		for (i = 0; i < 10; ++i)
 		{
 			rand_val = TFB_Random ();
 			solarSys->SysInfo.PlanetInfo.CurPt.x =
@@ -593,11 +590,10 @@ GenerateSol_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			solarSys->SysInfo.PlanetInfo.CurPt.y =
 					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
 			solarSys->SysInfo.PlanetInfo.CurType = NUM_CREATURE_TYPES + 1;
-			if (nodeI >= *whichNode)
+			if (i >= *whichNode)
 				break;
-			++nodeI;
-		} while (++i < 10);
-		*whichNode = nodeI;
+		}
+		*whichNode = i;
 
 		TFB_SeedRandom (old_rand);
 	}

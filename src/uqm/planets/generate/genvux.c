@@ -238,16 +238,13 @@ GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		if (CurStarDescPtr->Index == VUX_DEFINED)
 		{
 			COUNT i;
-			COUNT nodeI;
 			DWORD rand_val;
 			DWORD old_rand;
 
 			old_rand = TFB_SeedRandom (
 					solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
 
-			nodeI = 0;
-			i = 0;
-			do
+			for (i = 0; i < 16; ++i)
 			{
 				rand_val = TFB_Random ();
 				solarSys->SysInfo.PlanetInfo.CurPt.x =
@@ -256,11 +253,10 @@ GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 						(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
 				solarSys->SysInfo.PlanetInfo.CurType = 1;
 				solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-				if (nodeI >= *whichNode)
+				if (i >= *whichNode)
 					break;
-				++nodeI;
-			} while (++i < 16);
-			*whichNode = nodeI;
+			}
+			*whichNode = i;
 
 			TFB_SeedRandom (old_rand);
 			return true;
@@ -284,8 +280,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
-		i = 0;
-		do
+		for (i = 0; i < 12; ++i)
 		{
 			DWORD rand_val = TFB_Random ();
 			solarSys->SysInfo.PlanetInfo.CurPt.x =
@@ -300,7 +295,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				solarSys->SysInfo.PlanetInfo.CurType = 18;
 			if (i >= *whichNode)
 				break;
-		} while (++i < 12);
+		}
 		*whichNode = i;
 
 		TFB_SeedRandom (old_rand);
@@ -316,8 +311,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
-		i = 0;
-		do
+		for (i = 0; i < 11; ++i)
 		{
 			DWORD rand_val = TFB_Random ();
 			solarSys->SysInfo.PlanetInfo.CurPt.x =
@@ -347,7 +341,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			}
 			if (i >= *whichNode)
 				break;
-		} while (++i < 11);
+		}
 		*whichNode = i;
 
 		TFB_SeedRandom (old_rand);
