@@ -19,6 +19,7 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
+#include "../scan.h"
 #include "../../globdata.h"
 #include "../../nameref.h"
 #include "../../resinst.h"
@@ -71,7 +72,8 @@ GenerateAndrosynth_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 {
 	if (matchWorld (solarSys, world, 1, MATCH_PLANET))
 	{
-		UWORD retval;
+		COUNT i;
+		COUNT visits = 0;
 
 		LoadStdLanderFont (&solarSys->SysInfo.PlanetInfo);
 		solarSys->PlanetSideFrame[1] =
@@ -79,25 +81,28 @@ GenerateAndrosynth_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 		solarSys->SysInfo.PlanetInfo.DiscoveryString =
 				CaptureStringTable (
 				LoadStringTable (ANDROSYNTH_RUINS_STRTAB));
-		retval = HIWORD (
-				solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]);
-		while (retval)
+		// Androsynth ruins are a special case. The DiscoveryString contains
+		// several lander reports which form a story. Each report is given
+		// when the player collides with a new city ruin. Ruins previously
+		// visited are marked in the upper 16 bits of ScanRetrieveMask, and
+		// the lower bits are cleared to keep the ruin nodes on the map.
+		for (i = 16; i < 32; ++i)
 		{
-			if (retval & 1)
-			{
-				solarSys->SysInfo.PlanetInfo.DiscoveryString =
-						SetRelStringTableIndex (
-						solarSys->SysInfo.PlanetInfo.DiscoveryString, 1);
-				if (GetStringTableIndex (
-						solarSys->SysInfo.PlanetInfo.DiscoveryString) == 0)
-				{
-					DestroyStringTable (ReleaseStringTable (
-							solarSys->SysInfo.PlanetInfo.DiscoveryString));
-					solarSys->SysInfo.PlanetInfo.DiscoveryString = 0;
-				}
-			}
-
-			retval >>= 1;
+			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i))
+				++visits;
+		}
+		if (visits >= GetStringTableCount (
+				solarSys->SysInfo.PlanetInfo.DiscoveryString))
+		{	// All the reports were already given
+			DestroyStringTable (ReleaseStringTable (
+					solarSys->SysInfo.PlanetInfo.DiscoveryString));
+			solarSys->SysInfo.PlanetInfo.DiscoveryString = 0;
+		}
+		else
+		{	// Advance the report sequence to the first unread
+			solarSys->SysInfo.PlanetInfo.DiscoveryString =
+					SetRelStringTableIndex (
+					solarSys->SysInfo.PlanetInfo.DiscoveryString, visits);
 		}
 	}
 
@@ -139,23 +144,24 @@ GenerateAndrosynth_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			solarSys->SysInfo.PlanetInfo.CurType = 0;
 			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 
-			if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << i))
+			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i))
 			{
-				solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-						&= ~(1L << i);
-				if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-						& (1L << (i + 16))))
+				// Retrieval status is cleared to keep the node on the map
+				setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i);
+				// Ruins previously visited are marked in the upper 16 bits
+				if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN,
+						i + 16))
 				{
 					SET_GAME_STATE (PLANETARY_CHANGE, 1);
 
-					solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-							|= (1L << (i + 16));
+					setNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN,
+							i + 16);
 					if (solarSys->SysInfo.PlanetInfo.DiscoveryString)
 					{
 						UnbatchGraphics ();
 						DoDiscoveryReport (MenuSounds);
 						BatchGraphics ();
+						// Advance to the next report
 						solarSys->SysInfo.PlanetInfo.DiscoveryString =
 								SetRelStringTableIndex (
 								solarSys->SysInfo.PlanetInfo.DiscoveryString,

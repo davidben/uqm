@@ -19,6 +19,7 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
+#include "../scan.h"
 #include "../../globdata.h"
 #include "../../nameref.h"
 #include "../../resinst.h"
@@ -89,12 +90,16 @@ GenerateWreck_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			solarSys->SysInfo.PlanetInfo.CurType = 0;
 		else
 			solarSys->SysInfo.PlanetInfo.CurType = 1;
+		// XXX: This node is always present, even after it is "picked up".
+		//   Other similar pieces return the current node index when called
+		//   by GeneratePlanetSide() to get the node info, and in that
+		//   case the returned value is ignored AFAICT.
 		*whichNode = 1;
-		if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-				& (1L << 0))
+
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
-			solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					&= ~(1L << 0);
+			// Retrieval status is cleared to keep the node on the map
+			setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0);
 
 			if (!GET_GAME_STATE (PORTAL_KEY))
 			{

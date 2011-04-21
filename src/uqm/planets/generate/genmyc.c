@@ -18,6 +18,7 @@
 
 #include "genall.h"
 #include "../planets.h"
+#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../encount.h"
@@ -161,8 +162,8 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				if (GET_GAME_STATE (KNOW_ABOUT_SHATTERED) == 0)
 					SET_GAME_STATE (KNOW_ABOUT_SHATTERED, 1);
 
-				if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-						& (1L << 0)))
+				if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo,
+						ENERGY_SCAN, 0))
 				{
 					LoadStdLanderFont (&solarSys->SysInfo.PlanetInfo);
 					solarSys->PlanetSideFrame[1] =
@@ -202,8 +203,7 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		solarSys->SysInfo.PlanetInfo.CurType = 0;
 		if (CurStarDescPtr->Index == SUN_DEVICE_DEFINED)
 		{
-			if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << 0))
+			if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
 					&& *whichNode == (COUNT)~0)
 			{
 				*whichNode = 1;
@@ -211,8 +211,7 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			else
 			{
 				*whichNode = 0;
-				if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-						& (1L << 0))
+				if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 				{
 					SET_GAME_STATE (SUN_DEVICE, 1);
 					SET_GAME_STATE (SUN_DEVICE_ON_SHIP, 1);
@@ -222,8 +221,7 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		}
 		else
 		{
-			if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << 0))
+			if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
 					&& *whichNode == (COUNT)~0)
 			{
 				*whichNode = 1;
@@ -233,8 +231,7 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				*whichNode = 0;
 				// XXX: Why does this also test the PlanetInfo.DiscoveryString?
 				//   No other similar code ever tests the DiscoveryString.
-				if ((solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-						& (1L << 0))
+				if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
 						&& solarSys->SysInfo.PlanetInfo.DiscoveryString)
 				{
 					switch (CurStarDescPtr->Index)

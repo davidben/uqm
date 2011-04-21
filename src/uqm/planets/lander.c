@@ -858,15 +858,15 @@ CheckObjectCollision (COUNT index)
 				}
 
 				which_node = HIBYTE (ElementPtr->scan_node) - 1;
-				pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] |=
-						(1L << which_node);
+				setNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo, scan,
+						which_node);
 				allNodes = (COUNT)~0;
 				callGenerateForScanType (pSolarSysState,
 						pSolarSysState->pOrbitalDesc,
 						&allNodes, scan);
 
-				if (!(pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[scan] &
-						(1L << which_node)))
+				if (!isNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo, scan,
+						which_node))
 				{
 					/* If our discovery strings have cycled, we're done */
 					if (GetStringTableIndex (

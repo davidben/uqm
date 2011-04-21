@@ -18,6 +18,7 @@
 
 #include "genall.h"
 #include "../planets.h"
+#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../encount.h"
@@ -251,8 +252,7 @@ GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
 		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 		solarSys->SysInfo.PlanetInfo.CurType = 0;
-		if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-				& (1L << 0))
+		if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
 				&& *whichNode == (COUNT)~0)
 		{
 			*whichNode = 1;
@@ -260,8 +260,7 @@ GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		else
 		{
 			*whichNode = 0;
-			if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << 0))
+			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 			{
 				SET_GAME_STATE (UTWIG_BOMB, 1);
 				SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 1);

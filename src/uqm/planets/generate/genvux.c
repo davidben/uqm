@@ -20,6 +20,7 @@
 #include "../lander.h"
 #include "../lifeform.h"
 #include "../planets.h"
+#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../encount.h"
@@ -216,8 +217,7 @@ GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 5 / 8;
 			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 			solarSys->SysInfo.PlanetInfo.CurType = 0;
-			if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << 0))
+			if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
 					&& *whichNode == (COUNT)~0)
 			{
 				*whichNode = 1;
@@ -225,8 +225,7 @@ GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			else
 			{
 				*whichNode = 0;
-				if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-						& (1L << 0))
+				if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 				{
 					SET_GAME_STATE (SHOFIXTI_MAIDENS, 1);
 					SET_GAME_STATE (MAIDENS_ON_SHIP, 1);
@@ -326,9 +325,12 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			else /* if (i <= 10) */
 					/* {BEHAVIOR_UNPREDICTABLE | SPEED_SLOW | DANGER_NORMAL, MAKE_BYTE (3, 8)}, */
 				solarSys->SysInfo.PlanetInfo.CurType = 8;
+
+			// XXX: This currently does not need to be done in a loop. When a
+			//   node is retrieved, the func is called with *whichNode==~0
 			if (i == 0
-					&& (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN]
-					& (1L << i))
+					&& isNodeRetrieved (&solarSys->SysInfo.PlanetInfo,
+						BIOLOGICAL_SCAN, 0)
 					&& !GET_GAME_STATE (VUX_BEAST))
 			{
 				UnbatchGraphics ();
@@ -339,6 +341,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				SET_GAME_STATE (VUX_BEAST, 1);
 				SET_GAME_STATE (VUX_BEAST_ON_SHIP, 1);
 			}
+			
 			if (i >= *whichNode)
 				break;
 		}

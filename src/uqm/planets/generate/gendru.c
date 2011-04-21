@@ -19,6 +19,7 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
+#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../globdata.h"
@@ -149,11 +150,11 @@ GenerateDruuge_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			else
 				solarSys->SysInfo.PlanetInfo.CurType = 1;
 			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-			if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << i))
+
+			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i))
 			{
-				solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-						&= ~(1L << i);
+				// Retrieval status is cleared to keep the node on the map
+				setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i);
 
 				if (!GET_GAME_STATE (ROSY_SPHERE))
 				{
@@ -163,6 +164,7 @@ GenerateDruuge_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 					SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);
 				}
 			}
+
 			if (i >= *whichNode)
 				break;
 		}

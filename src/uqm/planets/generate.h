@@ -43,8 +43,6 @@ typedef struct GenerateFunctions GenerateFunctions;
  *   solarSys->genFuncs->..., but use a function for this, which first
  *   checks for solar system dependent handlers, and if this does not exist,
  *   or returns false, calls the default function.
- * - use isNodeRetrieved, setNodeRetrieved, and setNodeNotRetrieved instead
- *   of manually messing with bit shifts, etc.
  */
 
 // Any of these functions returning true means that the action has been

@@ -20,6 +20,7 @@
 #include "../lander.h"
 #include "../lifeform.h"
 #include "../planets.h"
+#include "../scan.h"
 #include "../../build.h"
 #include "../../encount.h"
 #include "../../globdata.h"
@@ -521,13 +522,17 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT - 8;
 			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 			solarSys->SysInfo.PlanetInfo.CurType = 2;
-			if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << 0))
+			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 			{
 				SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
-				solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-						&= ~(1L << 0);
+				// Retrieval status is cleared to keep the node on the map
+				// while the lander is taking off. FOUND_PLUTO_SPATHI bit
+				// will keep the node from showing up on subsequent visits.
+				setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0);
 				SetLanderTakeoff ();
+				// XXX: This does NOT set *whichNode when the node is
+				//   retrieved. Other similar pieces of code return the node
+				//   count. See just below. AFAICT, the returned value is ignored.
 			}
 			else if (*whichNode == (COUNT)~0)
 				*whichNode = 1;
@@ -542,8 +547,7 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 1 / 4;
 		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 		solarSys->SysInfo.PlanetInfo.CurType = 0;
-		if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-				& (1L << 0))
+		if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
 				&& *whichNode == (COUNT)~0)
 		{
 			*whichNode = 1;
@@ -551,8 +555,7 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		else
 		{
 			*whichNode = 0;
-			if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << 0))
+			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 			{
 				SET_GAME_STATE (MOONBASE_DESTROYED, 1);
 				SET_GAME_STATE (MOONBASE_ON_SHIP, 1);
