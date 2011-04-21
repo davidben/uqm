@@ -593,9 +593,7 @@ GenerateSol_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			solarSys->SysInfo.PlanetInfo.CurPt.y =
 					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
 			solarSys->SysInfo.PlanetInfo.CurType = NUM_CREATURE_TYPES + 1;
-			if (nodeI >= *whichNode
-					&& !(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN]
-					& (1L << i)))
+			if (nodeI >= *whichNode)
 				break;
 			++nodeI;
 		} while (++i < 10);

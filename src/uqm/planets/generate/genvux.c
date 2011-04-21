@@ -219,7 +219,9 @@ GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 					& (1L << 0))
 					&& *whichNode == (COUNT)~0)
+			{
 				*whichNode = 1;
+			}
 			else
 			{
 				*whichNode = 0;
@@ -254,9 +256,7 @@ GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 						(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
 				solarSys->SysInfo.PlanetInfo.CurType = 1;
 				solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-				if (nodeI >= *whichNode
-						&& !(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-						& (1L << i)))
+				if (nodeI >= *whichNode)
 					break;
 				++nodeI;
 			} while (++i < 16);
@@ -298,9 +298,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				solarSys->SysInfo.PlanetInfo.CurType = 14;
 			else /* if (i < 12) */
 				solarSys->SysInfo.PlanetInfo.CurType = 18;
-			if (i >= *whichNode
-					&& !(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN]
-					& (1L << i)))
+			if (i >= *whichNode)
 				break;
 		} while (++i < 12);
 		*whichNode = i;
@@ -334,11 +332,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			else /* if (i <= 10) */
 					/* {BEHAVIOR_UNPREDICTABLE | SPEED_SLOW | DANGER_NORMAL, MAKE_BYTE (3, 8)}, */
 				solarSys->SysInfo.PlanetInfo.CurType = 8;
-			if (i >= *whichNode
-					&& !(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN]
-					& (1L << i)))
-				break;
-			else if (i == 0
+			if (i == 0
 					&& (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN]
 					& (1L << i))
 					&& !GET_GAME_STATE (VUX_BEAST))
@@ -351,6 +345,8 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				SET_GAME_STATE (VUX_BEAST, 1);
 				SET_GAME_STATE (VUX_BEAST_ON_SHIP, 1);
 			}
+			if (i >= *whichNode)
+				break;
 		} while (++i < 11);
 		*whichNode = i;
 

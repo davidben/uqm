@@ -82,9 +82,7 @@ CalcMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT which_deposit)
 					SysInfoPtr->PlanetInfo.CurDensity,
 					Elements[eptr->ElementType].name);
 #endif /* DEBUG_SURFACE */
-			if ((num_deposits >= which_deposit
-					&& !(SysInfoPtr->PlanetInfo.ScanRetrieveMask[MINERAL_SCAN]
-					& (1L << num_deposits)))
+			if (num_deposits >= which_deposit
 					|| ++num_deposits == sizeof (DWORD) * 8)
 				goto ExitCalcMinerals;
 		}
@@ -228,9 +226,7 @@ CalcLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT which_life)
 							(HIBYTE (rand_val) % (MAP_HEIGHT - (8 << 1))) + 8;
 					SysInfoPtr->PlanetInfo.CurType = index;
 
-					if ((num_life_forms >= which_life
-							&& !(SysInfoPtr->PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN]
-							& (1L << num_life_forms)))
+					if (num_life_forms >= which_life
 							|| ++num_life_forms == sizeof (DWORD) * 8)
 					{
 						num_types = 1;

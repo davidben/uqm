@@ -132,9 +132,7 @@ GenerateYehat_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
 			solarSys->SysInfo.PlanetInfo.CurType = 1;
 			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-			if (nodeI >= *whichNode
-					&& !(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << i)))
+			if (nodeI >= *whichNode)
 				break;
 			++nodeI;
 		} while (++i < 16);

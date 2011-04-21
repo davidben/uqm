@@ -205,7 +205,9 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 					& (1L << 0))
 					&& *whichNode == (COUNT)~0)
+			{
 				*whichNode = 1;
+			}
 			else
 			{
 				*whichNode = 0;
@@ -223,10 +225,14 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 					& (1L << 0))
 					&& *whichNode == (COUNT)~0)
+			{
 				*whichNode = 1;
+			}
 			else
 			{
 				*whichNode = 0;
+				// XXX: Why does this also test the PlanetInfo.DiscoveryString?
+				//   No other similar code ever tests the DiscoveryString.
 				if ((solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 						& (1L << 0))
 						&& solarSys->SysInfo.PlanetInfo.DiscoveryString)

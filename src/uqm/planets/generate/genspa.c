@@ -212,7 +212,9 @@ GenerateSpathi_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		if (!(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
 				& (1L << 0))
 				&& *whichNode == (COUNT)~0)
+		{
 			*whichNode = 1;
+		}
 		else
 		{
 			*whichNode = 0;
@@ -256,9 +258,7 @@ GenerateSpathi_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			solarSys->SysInfo.PlanetInfo.CurPt.y =
 					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
 			solarSys->SysInfo.PlanetInfo.CurType = NUM_CREATURE_TYPES;
-			if (nodeI >= *whichNode
-					&& !(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN]
-					& (1L << i)))
+			if (nodeI >= *whichNode)
 				break;
 			++nodeI;
 		} while (++i < 32);

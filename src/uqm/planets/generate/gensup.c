@@ -158,9 +158,7 @@ GenerateSupox_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 					SET_GAME_STATE (ULTRON_CONDITION, 1);
 				}
 			}
-			if (nodeI >= *whichNode
-					&& !(solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[ENERGY_SCAN]
-					& (1L << i)))
+			if (nodeI >= *whichNode)
 				break;
 			++nodeI;
 		} while (++i < 16);
