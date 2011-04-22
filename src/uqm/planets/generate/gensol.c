@@ -516,51 +516,54 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 	if (matchWorld (solarSys, world, 8, MATCH_PLANET))
 	{
 		/* Pluto */
-		if (!GET_GAME_STATE (FOUND_PLUTO_SPATHI))
-		{
-			solarSys->SysInfo.PlanetInfo.CurPt.x = 20;
-			solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT - 8;
-			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-			solarSys->SysInfo.PlanetInfo.CurType = 2;
-			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-			{
-				SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
-				// Retrieval status is cleared to keep the node on the map
-				// while the lander is taking off. FOUND_PLUTO_SPATHI bit
-				// will keep the node from showing up on subsequent visits.
-				setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0);
-				SetLanderTakeoff ();
-				// XXX: This does NOT set *whichNode when the node is
-				//   retrieved. Other similar pieces of code return the node
-				//   count. See just below. AFAICT, the returned value is ignored.
-			}
-			else if (*whichNode == (COUNT)~0)
-				*whichNode = 1;
+		if (GET_GAME_STATE (FOUND_PLUTO_SPATHI))
+		{	// already picked up
+			*whichNode = 0;
 			return true;
 		}
+
+		solarSys->SysInfo.PlanetInfo.CurPt.x = 20;
+		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT - 8;
+		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
+		solarSys->SysInfo.PlanetInfo.CurType = 2;
+
+		*whichNode = 1; // only matters when count is requested
+		
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
+		{
+			SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
+			// Retrieval status is cleared to keep the node on the map
+			// while the lander is taking off. FOUND_PLUTO_SPATHI bit
+			// will keep the node from showing up on subsequent visits.
+			setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0);
+			SetLanderTakeoff ();
+		}
+
+		return true;
 	}
-	else if (matchWorld (solarSys, world, 2, 1)
-			&& !GET_GAME_STATE (MOONBASE_DESTROYED))
+	
+	if (matchWorld (solarSys, world, 2, 1))
 	{
 		/* Earth Moon */
+		if (GET_GAME_STATE (MOONBASE_DESTROYED))
+		{	// already picked up
+			*whichNode = 0;
+			return true;
+		}
+
 		solarSys->SysInfo.PlanetInfo.CurPt.x = MAP_WIDTH * 3 / 4;
 		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 1 / 4;
 		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 		solarSys->SysInfo.PlanetInfo.CurType = 0;
-		if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
-				&& *whichNode == (COUNT)~0)
+
+		*whichNode = 1; // only matters when count is requested
+
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
-			*whichNode = 1;
+			SET_GAME_STATE (MOONBASE_DESTROYED, 1);
+			SET_GAME_STATE (MOONBASE_ON_SHIP, 1);
 		}
-		else
-		{
-			*whichNode = 0;
-			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-			{
-				SET_GAME_STATE (MOONBASE_DESTROYED, 1);
-				SET_GAME_STATE (MOONBASE_ON_SHIP, 1);
-			}
-		}
+
 		return true;
 	}
 
@@ -572,35 +575,15 @@ static bool
 GenerateSol_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
-	if (!matchWorld (solarSys, world, 2, 1))
+	if (matchWorld (solarSys, world, 2, 1))
 	{
-		*whichNode = 0;
-	}
-	else /* Earth Moon */
-	{
-		COUNT i;
-		DWORD old_rand;
-		DWORD rand_val;
-
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
-
-		for (i = 0; i < 10; ++i)
-		{
-			rand_val = TFB_Random ();
-			solarSys->SysInfo.PlanetInfo.CurPt.x =
-					(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurPt.y =
-					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurType = NUM_CREATURE_TYPES + 1;
-			if (i >= *whichNode)
-				break;
-		}
-		*whichNode = i;
-
-		TFB_SeedRandom (old_rand);
+		/* Earth Moon */
+		GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, 10,
+				NUM_CREATURE_TYPES + 1, whichNode);
+		return true;
 	}
 
+	*whichNode = 0;
 	return true;
 }
 

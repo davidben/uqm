@@ -209,65 +209,40 @@ static bool
 GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
-	DWORD rand_val;
 	DWORD old_rand;
 
 	if (CurStarDescPtr->Index == UTWIG_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		COUNT i;
-
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-		for (i = 0; i < 16; ++i)
-		{
-			rand_val = TFB_Random ();
-			solarSys->SysInfo.PlanetInfo.CurPt.x =
-					(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurPt.y =
-					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurType = 1;
-			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-			if (i >= *whichNode)
-				break;
-		}
-		*whichNode = i;
-
-		TFB_SeedRandom (old_rand);
+		GenerateRandomRuins (&solarSys->SysInfo, 1, whichNode);
 		return true;
 	}
 
 	if (CurStarDescPtr->Index == BOMB_DEFINED
-			&& matchWorld (solarSys, world, 5, 1)
-			&& !GET_GAME_STATE (UTWIG_BOMB))
+			&& matchWorld (solarSys, world, 5, 1))
 	{
+		if (GET_GAME_STATE (UTWIG_BOMB))
+		{	// already picked up
+			*whichNode = 0;
+			return true;
+		}
+
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
 
-		rand_val = TFB_Random ();
-		solarSys->SysInfo.PlanetInfo.CurPt.x =
-				(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-		solarSys->SysInfo.PlanetInfo.CurPt.y =
-				(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
+		GenerateRandomLocation (&solarSys->SysInfo);
 		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 		solarSys->SysInfo.PlanetInfo.CurType = 0;
-		if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
-				&& *whichNode == (COUNT)~0)
+
+		*whichNode = 1; // only matters when count is requested
+
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
-			*whichNode = 1;
-		}
-		else
-		{
-			*whichNode = 0;
-			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-			{
-				SET_GAME_STATE (UTWIG_BOMB, 1);
-				SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 1);
-				SET_GAME_STATE (DRUUGE_MANNER, 1);
-				SET_GAME_STATE (DRUUGE_VISITS, 0);
-				SET_GAME_STATE (DRUUGE_HOME_VISITS, 0);
-			}
+			SET_GAME_STATE (UTWIG_BOMB, 1);
+			SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 1);
+			SET_GAME_STATE (DRUUGE_MANNER, 1);
+			SET_GAME_STATE (DRUUGE_VISITS, 0);
+			SET_GAME_STATE (DRUUGE_HOME_VISITS, 0);
 		}
 
 		TFB_SeedRandom (old_rand);

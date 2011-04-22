@@ -124,26 +124,14 @@ static bool
 GenerateAndrosynth_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
-	DWORD rand_val;
-	DWORD old_rand;
-
 	if (matchWorld (solarSys, world, 1, MATCH_PLANET))
 	{
 		COUNT i;
 
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
+		GenerateRandomRuins (&solarSys->SysInfo, 0, whichNode);
 
 		for (i = 0; i < 16; ++i)
 		{
-			rand_val = TFB_Random ();
-			solarSys->SysInfo.PlanetInfo.CurPt.x =
-					(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurPt.y =
-					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurType = 0;
-			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-
 			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i))
 			{
 				// Retrieval status is cleared to keep the node on the map
@@ -169,13 +157,8 @@ GenerateAndrosynth_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 					}
 				}
 			}
-
-			if (i >= *whichNode)
-				break;
 		}
-		*whichNode = i;
-
-		TFB_SeedRandom (old_rand);
+		
 		return true;
 	}
 

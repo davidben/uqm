@@ -43,6 +43,10 @@ typedef struct
 extern DWORD GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr,
 		COUNT *pwhich_deposit);
 extern DWORD GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT *pwhich_life);
+extern void GenerateRandomLocation (SYSTEM_INFO *);
+extern DWORD GenerateRandomNodes (SYSTEM_INFO *, COUNT scan, COUNT numNodes,
+		COUNT type, COUNT *whichNode);
+extern DWORD GenerateRandomRuins (SYSTEM_INFO *, COUNT type, COUNT *whichNode);
 
 #define DWARF_ELEMENT_DENSITY  1
 #define GIANT_ELEMENT_DENSITY 3

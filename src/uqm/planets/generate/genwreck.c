@@ -74,27 +74,20 @@ GenerateWreck_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 {
 	if (matchWorld (solarSys, world, 6, MATCH_PLANET))
 	{
-		DWORD rand_val;
 		DWORD old_rand;
 
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
 
-		rand_val = TFB_Random ();
-		solarSys->SysInfo.PlanetInfo.CurPt.x =
-				(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-		solarSys->SysInfo.PlanetInfo.CurPt.y =
-				(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
+		GenerateRandomLocation (&solarSys->SysInfo);
 		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 		if (!GET_GAME_STATE (PORTAL_KEY))
 			solarSys->SysInfo.PlanetInfo.CurType = 0;
 		else
 			solarSys->SysInfo.PlanetInfo.CurType = 1;
-		// XXX: This node is always present, even after it is "picked up".
-		//   Other similar pieces return the current node index when called
-		//   by GeneratePlanetSide() to get the node info, and in that
-		//   case the returned value is ignored AFAICT.
-		*whichNode = 1;
+
+		// This node is always present, even after it is "picked up".
+		*whichNode = 1; // only matters when count is requested
 
 		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{

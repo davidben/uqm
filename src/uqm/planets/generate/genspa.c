@@ -194,35 +194,29 @@ static bool
 GenerateSpathi_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
-	if (matchWorld (solarSys, world, 0, 0)
-			&& !GET_GAME_STATE (UMGAH_BROADCASTERS))
+	if (matchWorld (solarSys, world, 0, 0))
 	{
-		DWORD rand_val;
 		DWORD old_rand;
+
+		if (GET_GAME_STATE (UMGAH_BROADCASTERS))
+		{	// already picked up
+			*whichNode = 0;
+			return true;
+		}
 
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
 
-		rand_val = TFB_Random ();
-		solarSys->SysInfo.PlanetInfo.CurPt.x =
-				(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-		solarSys->SysInfo.PlanetInfo.CurPt.y =
-				(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
+		GenerateRandomLocation (&solarSys->SysInfo);
 		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 		solarSys->SysInfo.PlanetInfo.CurType = 0;
-		if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
-				&& *whichNode == (COUNT)~0)
+		
+		*whichNode = 1; // only matters when count is requested
+
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
-			*whichNode = 1;
-		}
-		else
-		{
-			*whichNode = 0;
-			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-			{
-				SET_GAME_STATE (UMGAH_BROADCASTERS, 1);
-				SET_GAME_STATE (UMGAH_BROADCASTERS_ON_SHIP, 1);
-			}
+			SET_GAME_STATE (UMGAH_BROADCASTERS, 1);
+			SET_GAME_STATE (UMGAH_BROADCASTERS_ON_SHIP, 1);
 		}
 
 		TFB_SeedRandom (old_rand);
@@ -237,27 +231,17 @@ static bool
 GenerateSpathi_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
-	if (matchWorld (solarSys, world, 0, MATCH_PLANET)
-			&& !GET_GAME_STATE (SPATHI_SHIELDED_SELVES))
+	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		COUNT i;
-		DWORD old_rand;
-
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
-
-		for (i = 0; i < 32; ++i)
-		{
-			DWORD rand_val = TFB_Random ();
-			solarSys->SysInfo.PlanetInfo.CurPt.x =
-					(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurPt.y =
-					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurType = NUM_CREATURE_TYPES;
-			if (i >= *whichNode)
-				break;
+		if (GET_GAME_STATE (SPATHI_CREATURES_ELIMINATED)
+				|| GET_GAME_STATE (SPATHI_SHIELDED_SELVES))
+		{	// no creatures left
+			*whichNode = 0;
+			return true;
 		}
-		*whichNode = i;
+
+		GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, 32,
+				NUM_CREATURE_TYPES, whichNode);
 
 		if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN])
 		{
@@ -267,7 +251,6 @@ GenerateSpathi_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				SET_GAME_STATE (SPATHI_CREATURES_ELIMINATED, 1);
 		}
 
-		TFB_SeedRandom (old_rand);
 		return true;
 	}
 

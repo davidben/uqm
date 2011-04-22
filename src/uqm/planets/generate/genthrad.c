@@ -158,68 +158,43 @@ static bool
 GenerateThraddash_generateEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT *whichNode)
 {
-	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
+	DWORD old_rand;
+
+	if (CurStarDescPtr->Index == THRADD_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		DWORD rand_val;
-		DWORD old_rand;
+		GenerateRandomRuins (&solarSys->SysInfo, 1, whichNode);
+		return true;
+	}
 
-		if (CurStarDescPtr->Index != AQUA_HELIX_DEFINED)
-		{
-			COUNT i;
-
-			old_rand = TFB_SeedRandom (
-					solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-			for (i = 0; i < 16; ++i)
-			{
-				rand_val = TFB_Random ();
-				solarSys->SysInfo.PlanetInfo.CurPt.x =
-						(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-				solarSys->SysInfo.PlanetInfo.CurPt.y =
-						(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
-				solarSys->SysInfo.PlanetInfo.CurType = 1;
-				solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-				if (i >= *whichNode)
-					break;
-			}
-			*whichNode = i;
-
-			TFB_SeedRandom (old_rand);
+	if (CurStarDescPtr->Index == AQUA_HELIX_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		if (GET_GAME_STATE (AQUA_HELIX))
+		{	// already picked up
+			*whichNode = 0;
 			return true;
 		}
 
-		if (!GET_GAME_STATE (AQUA_HELIX))
+		old_rand = TFB_SeedRandom (
+				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
+
+		GenerateRandomLocation (&solarSys->SysInfo);
+		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
+		solarSys->SysInfo.PlanetInfo.CurType = 0;
+
+		*whichNode = 1; // only matters when count is requested
+
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
-			old_rand = TFB_SeedRandom (
-					solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-			rand_val = TFB_Random ();
-			solarSys->SysInfo.PlanetInfo.CurPt.x =
-					(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurPt.y =
-					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-			solarSys->SysInfo.PlanetInfo.CurType = 0;
-			if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
-					&& *whichNode == (COUNT)~0)
-			{
-				*whichNode = 1;
-			}
-			else
-			{
-				*whichNode = 0;
-				if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-				{
-					SET_GAME_STATE (HELIX_VISITS, 0);
-					SET_GAME_STATE (AQUA_HELIX, 1);
-					SET_GAME_STATE (AQUA_HELIX_ON_SHIP, 1);
-					SET_GAME_STATE (HELIX_UNPROTECTED, 1);
-				}
-			}
-
-			TFB_SeedRandom (old_rand);
-			return true;
+			SET_GAME_STATE (HELIX_VISITS, 0);
+			SET_GAME_STATE (AQUA_HELIX, 1);
+			SET_GAME_STATE (AQUA_HELIX_ON_SHIP, 1);
+			SET_GAME_STATE (HELIX_UNPROTECTED, 1);
 		}
+
+		TFB_SeedRandom (old_rand);
+		return true;
 	}
 
 	*whichNode = 0;

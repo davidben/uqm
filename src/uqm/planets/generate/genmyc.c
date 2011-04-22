@@ -185,68 +185,73 @@ static bool
 GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
-	if (CurStarDescPtr->Index != MYCON_DEFINED
-		&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	DWORD old_rand;
+
+	if (CurStarDescPtr->Index == SUN_DEVICE_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		DWORD rand_val;
-		DWORD old_rand;
+		if (GET_GAME_STATE (SUN_DEVICE))
+		{	// already picked up
+			*whichNode = 0;
+			return true;
+		}
 
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
 
-		rand_val = TFB_Random ();
-		solarSys->SysInfo.PlanetInfo.CurPt.x =
-				(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-		solarSys->SysInfo.PlanetInfo.CurPt.y =
-				(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
+		GenerateRandomLocation (&solarSys->SysInfo);
 		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
 		solarSys->SysInfo.PlanetInfo.CurType = 0;
-		if (CurStarDescPtr->Index == SUN_DEVICE_DEFINED)
+
+		*whichNode = 1; // only matters when count is requested
+
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
-			if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
-					&& *whichNode == (COUNT)~0)
-			{
-				*whichNode = 1;
-			}
-			else
-			{
-				*whichNode = 0;
-				if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-				{
-					SET_GAME_STATE (SUN_DEVICE, 1);
-					SET_GAME_STATE (SUN_DEVICE_ON_SHIP, 1);
-					SET_GAME_STATE (MYCON_VISITS, 0);
-				}
-			}
+			SET_GAME_STATE (SUN_DEVICE, 1);
+			SET_GAME_STATE (SUN_DEVICE_ON_SHIP, 1);
+			SET_GAME_STATE (MYCON_VISITS, 0);
 		}
-		else
+
+		TFB_SeedRandom (old_rand);
+		return true;
+	}
+
+	if ((CurStarDescPtr->Index == EGG_CASE0_DEFINED
+			|| CurStarDescPtr->Index == EGG_CASE1_DEFINED
+			|| CurStarDescPtr->Index == EGG_CASE2_DEFINED)
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		// XXX: DiscoveryString is set by generateOrbital() only when the
+		//   node has not been picked up yet
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
+				&& !solarSys->SysInfo.PlanetInfo.DiscoveryString)
+		{	// already picked up
+			*whichNode = 0;
+			return true;
+		}
+		
+		old_rand = TFB_SeedRandom (
+				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
+
+		GenerateRandomLocation (&solarSys->SysInfo);
+		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
+		solarSys->SysInfo.PlanetInfo.CurType = 0;
+
+		*whichNode = 1; // only matters when count is requested
+		
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
-			if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
-					&& *whichNode == (COUNT)~0)
+			switch (CurStarDescPtr->Index)
 			{
-				*whichNode = 1;
-			}
-			else
-			{
-				*whichNode = 0;
-				// XXX: Why does this also test the PlanetInfo.DiscoveryString?
-				//   No other similar code ever tests the DiscoveryString.
-				if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
-						&& solarSys->SysInfo.PlanetInfo.DiscoveryString)
-				{
-					switch (CurStarDescPtr->Index)
-					{
-						case EGG_CASE0_DEFINED:
-							SET_GAME_STATE (EGG_CASE0_ON_SHIP, 1);
-							break;
-						case EGG_CASE1_DEFINED:
-							SET_GAME_STATE (EGG_CASE1_ON_SHIP, 1);
-							break;
-						case EGG_CASE2_DEFINED:
-							SET_GAME_STATE (EGG_CASE2_ON_SHIP, 1);
-							break;
-					}
-				}
+				case EGG_CASE0_DEFINED:
+					SET_GAME_STATE (EGG_CASE0_ON_SHIP, 1);
+					break;
+				case EGG_CASE1_DEFINED:
+					SET_GAME_STATE (EGG_CASE1_ON_SHIP, 1);
+					break;
+				case EGG_CASE2_DEFINED:
+					SET_GAME_STATE (EGG_CASE2_ON_SHIP, 1);
+					break;
 			}
 		}
 

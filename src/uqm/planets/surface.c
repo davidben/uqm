@@ -47,8 +47,6 @@ CalcMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT which_deposit)
 		{
 #define MEDIUM_DEPOSIT_THRESHOLD 150
 #define LARGE_DEPOSIT_THRESHOLD 225
-			DWORD rand_val;
-			UWORD loword, hiword;
 			COUNT deposit_quality_fine,
 						deposit_quality_gross;
 
@@ -64,13 +62,7 @@ CalcMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT which_deposit)
 			else
 				deposit_quality_gross = 2;
 
-			rand_val = TFB_Random ();
-			loword = LOWORD (rand_val);
-			hiword = HIWORD (rand_val);
-			SysInfoPtr->PlanetInfo.CurPt.x =
-					(LOBYTE (loword) % (MAP_WIDTH - (8 << 1))) + 8;
-			SysInfoPtr->PlanetInfo.CurPt.y =
-					(HIBYTE (loword) % (MAP_HEIGHT - (8 << 1))) + 8;
+			GenerateRandomLocation (SysInfoPtr);
 
 			SysInfoPtr->PlanetInfo.CurDensity =
 					MAKE_WORD (
@@ -219,11 +211,7 @@ CalcLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT which_life)
 				num_creatures = (BYTE)((HIBYTE (rand_val) % 10) + 1);
 				do
 				{
-					rand_val = (UWORD)TFB_Random ();
-					SysInfoPtr->PlanetInfo.CurPt.x =
-							(LOBYTE (rand_val) % (MAP_WIDTH - (8 << 1))) + 8;
-					SysInfoPtr->PlanetInfo.CurPt.y =
-							(HIBYTE (rand_val) % (MAP_HEIGHT - (8 << 1))) + 8;
+					GenerateRandomLocation (SysInfoPtr);
 					SysInfoPtr->PlanetInfo.CurType = index;
 
 					if (num_life_forms >= which_life
@@ -256,5 +244,44 @@ GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT *pwhich_life)
 	return (TFB_SeedRandom (old_rand));
 }
 
+void
+GenerateRandomLocation (SYSTEM_INFO *SysInfoPtr)
+{
+	UWORD rand_val;
 
+	rand_val = (UWORD)TFB_Random ();
+	SysInfoPtr->PlanetInfo.CurPt.x =
+			(LOBYTE (rand_val) % (MAP_WIDTH - (8 << 1))) + 8;
+	SysInfoPtr->PlanetInfo.CurPt.y =
+			(HIBYTE (rand_val) % (MAP_HEIGHT - (8 << 1))) + 8;
+}
 
+DWORD
+GenerateRandomNodes (SYSTEM_INFO *SysInfoPtr, COUNT scan, COUNT numNodes,
+		COUNT type, COUNT *whichNode)
+{
+	DWORD old_rand;
+	COUNT i;
+
+	old_rand = TFB_SeedRandom (SysInfoPtr->PlanetInfo.ScanSeed[scan]);
+
+	for (i = 0; i < numNodes; ++i)
+	{
+		GenerateRandomLocation (SysInfoPtr);
+		SysInfoPtr->PlanetInfo.CurType = type;
+		SysInfoPtr->PlanetInfo.CurDensity = 0;
+
+		if (i >= *whichNode)
+			break;
+	}
+	
+	*whichNode = i; // only matters when count is requested
+
+	return (TFB_SeedRandom (old_rand));
+}
+
+DWORD
+GenerateRandomRuins (SYSTEM_INFO *SysInfoPtr, COUNT type, COUNT *whichNode)
+{
+	return GenerateRandomNodes (SysInfoPtr, ENERGY_SCAN, 16, type, whichNode);
+}

@@ -207,59 +207,36 @@ static bool
 GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
-	if (matchWorld (solarSys, world, 0, MATCH_PLANET)
-			&& CurStarDescPtr->Index != VUX_BEAST_DEFINED)
+	if (CurStarDescPtr->Index == MAIDENS_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		if (CurStarDescPtr->Index == MAIDENS_DEFINED
-				&& !GET_GAME_STATE (SHOFIXTI_MAIDENS))
-		{
-			solarSys->SysInfo.PlanetInfo.CurPt.x = MAP_WIDTH / 3;
-			solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 5 / 8;
-			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-			solarSys->SysInfo.PlanetInfo.CurType = 0;
-			if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
-					&& *whichNode == (COUNT)~0)
-			{
-				*whichNode = 1;
-			}
-			else
-			{
-				*whichNode = 0;
-				if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-				{
-					SET_GAME_STATE (SHOFIXTI_MAIDENS, 1);
-					SET_GAME_STATE (MAIDENS_ON_SHIP, 1);
-				}
-			}
+		if (GET_GAME_STATE (SHOFIXTI_MAIDENS))
+		{	// already picked up
+			*whichNode = 0;
 			return true;
 		}
 
-		if (CurStarDescPtr->Index == VUX_DEFINED)
+		solarSys->SysInfo.PlanetInfo.CurPt.x = MAP_WIDTH / 3;
+		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 5 / 8;
+		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
+		solarSys->SysInfo.PlanetInfo.CurType = 0;
+		
+		*whichNode = 1; // only matters when count is requested
+
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
-			COUNT i;
-			DWORD rand_val;
-			DWORD old_rand;
-
-			old_rand = TFB_SeedRandom (
-					solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-			for (i = 0; i < 16; ++i)
-			{
-				rand_val = TFB_Random ();
-				solarSys->SysInfo.PlanetInfo.CurPt.x =
-						(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-				solarSys->SysInfo.PlanetInfo.CurPt.y =
-						(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
-				solarSys->SysInfo.PlanetInfo.CurType = 1;
-				solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-				if (i >= *whichNode)
-					break;
-			}
-			*whichNode = i;
-
-			TFB_SeedRandom (old_rand);
-			return true;
+			SET_GAME_STATE (SHOFIXTI_MAIDENS, 1);
+			SET_GAME_STATE (MAIDENS_ON_SHIP, 1);
 		}
+		
+		return true;
+	}
+
+	if (CurStarDescPtr->Index == VUX_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		GenerateRandomRuins (&solarSys->SysInfo, 1, whichNode);
+		return true;
 	}
 
 	*whichNode = 0;
@@ -279,23 +256,18 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
-		for (i = 0; i < 12; ++i)
+		for (i = 0; i <= *whichNode && i < 12; ++i)
 		{
-			DWORD rand_val = TFB_Random ();
-			solarSys->SysInfo.PlanetInfo.CurPt.x =
-					(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurPt.y =
-					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
+			GenerateRandomLocation (&solarSys->SysInfo);
 			if (i < 4)
 				solarSys->SysInfo.PlanetInfo.CurType = 9;
 			else if (i < 8)
 				solarSys->SysInfo.PlanetInfo.CurType = 14;
 			else /* if (i < 12) */
 				solarSys->SysInfo.PlanetInfo.CurType = 18;
-			if (i >= *whichNode)
-				break;
 		}
-		*whichNode = i;
+		
+		*whichNode = 12; // only matters when count is requested
 
 		TFB_SeedRandom (old_rand);
 		return true;
@@ -310,14 +282,10 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
-		for (i = 0; i < 11; ++i)
+		for (i = 0; i <= *whichNode && i < 11; ++i)
 		{
-			DWORD rand_val = TFB_Random ();
-			solarSys->SysInfo.PlanetInfo.CurPt.x =
-					(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurPt.y =
-					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
-			if (i == 0)
+			GenerateRandomLocation (&solarSys->SysInfo);
+			if (i == 0) /* VUX Beast */
 				solarSys->SysInfo.PlanetInfo.CurType = NUM_CREATURE_TYPES + 2;
 			else if (i <= 5)
 					/* {SPEED_MOTIONLESS | DANGER_NORMAL, MAKE_BYTE (5, 3)}, */
@@ -325,27 +293,21 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			else /* if (i <= 10) */
 					/* {BEHAVIOR_UNPREDICTABLE | SPEED_SLOW | DANGER_NORMAL, MAKE_BYTE (3, 8)}, */
 				solarSys->SysInfo.PlanetInfo.CurType = 8;
-
-			// XXX: This currently does not need to be done in a loop. When a
-			//   node is retrieved, the func is called with *whichNode==~0
-			if (i == 0
-					&& isNodeRetrieved (&solarSys->SysInfo.PlanetInfo,
-						BIOLOGICAL_SCAN, 0)
-					&& !GET_GAME_STATE (VUX_BEAST))
-			{
-				UnbatchGraphics ();
-				DoDiscoveryReport (MenuSounds);
-				BatchGraphics ();
-				SetLanderTakeoff ();
-
-				SET_GAME_STATE (VUX_BEAST, 1);
-				SET_GAME_STATE (VUX_BEAST_ON_SHIP, 1);
-			}
-			
-			if (i >= *whichNode)
-				break;
 		}
-		*whichNode = i;
+		
+		*whichNode = 11; // only matters when count is requested
+
+		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, BIOLOGICAL_SCAN, 0)
+				&& !GET_GAME_STATE (VUX_BEAST))
+		{	// Picked up Zex' Beauty
+			UnbatchGraphics ();
+			DoDiscoveryReport (MenuSounds);
+			BatchGraphics ();
+			SetLanderTakeoff ();
+
+			SET_GAME_STATE (VUX_BEAST, 1);
+			SET_GAME_STATE (VUX_BEAST_ON_SHIP, 1);
+		}
 
 		TFB_SeedRandom (old_rand);
 		return true;

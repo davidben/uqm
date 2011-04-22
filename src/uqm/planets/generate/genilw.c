@@ -123,28 +123,7 @@ GenerateIlwrath_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		COUNT i;
-		DWORD rand_val;
-		DWORD old_rand;
-
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-		for (i = 0; i < 16; ++i)
-		{
-			rand_val = TFB_Random ();
-			solarSys->SysInfo.PlanetInfo.CurPt.x =
-					(LOBYTE (LOWORD (rand_val)) % (MAP_WIDTH - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurPt.y =
-					(HIBYTE (LOWORD (rand_val)) % (MAP_HEIGHT - (8 << 1))) + 8;
-			solarSys->SysInfo.PlanetInfo.CurType = 1;
-			solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-			if (i >= *whichNode)
-				break;
-		}
-		*whichNode = i;
-
-		TFB_SeedRandom (old_rand);
+		GenerateRandomRuins (&solarSys->SysInfo, 1, whichNode);
 		return true;
 	}
 
