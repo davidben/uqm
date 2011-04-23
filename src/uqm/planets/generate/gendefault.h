@@ -38,6 +38,17 @@ bool GenerateDefault_generateEnergy (SOLARSYS_STATE *solarSys,
 bool GenerateDefault_generateLife (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT *whichNode);
 
+// Ruin callback returns 'true' if a lander report should be given
+typedef bool (*PickupRuinCallback)(SOLARSYS_STATE *solarSys,
+		COUNT whichNode);
+
+bool GenerateDefault_generateArtifact (SOLARSYS_STATE *, COUNT *whichNode);
+bool GenerateDefault_generateRuins (SOLARSYS_STATE *, COUNT *whichNode);
+bool GenerateDefault_pickupRuins (SOLARSYS_STATE *, PickupRuinCallback);
+bool GenerateDefault_landerReport (SOLARSYS_STATE *);
+bool GenerateDefault_landerReportCycle (SOLARSYS_STATE *);
+
+
 extern const GenerateFunctions generateDefaultFunctions;
 
 #endif  /* GENDEFAULT_H */

@@ -218,13 +218,14 @@ GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 
 		solarSys->SysInfo.PlanetInfo.CurPt.x = MAP_WIDTH / 3;
 		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 5 / 8;
-		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-		solarSys->SysInfo.PlanetInfo.CurType = 0;
 		
 		*whichNode = 1; // only matters when count is requested
 
 		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
+			GenerateDefault_landerReport (solarSys);
+			SetLanderTakeoff ();
+
 			SET_GAME_STATE (SHOFIXTI_MAIDENS, 1);
 			SET_GAME_STATE (MAIDENS_ON_SHIP, 1);
 		}
@@ -235,7 +236,8 @@ GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 	if (CurStarDescPtr->Index == VUX_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateRandomRuins (&solarSys->SysInfo, 1, whichNode);
+		GenerateDefault_generateRuins (solarSys, whichNode);
+		GenerateDefault_pickupRuins (solarSys, NULL);
 		return true;
 	}
 
@@ -300,9 +302,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, BIOLOGICAL_SCAN, 0)
 				&& !GET_GAME_STATE (VUX_BEAST))
 		{	// Picked up Zex' Beauty
-			UnbatchGraphics ();
-			DoDiscoveryReport (MenuSounds);
-			BatchGraphics ();
+			GenerateDefault_landerReport (solarSys);
 			SetLanderTakeoff ();
 
 			SET_GAME_STATE (VUX_BEAST, 1);

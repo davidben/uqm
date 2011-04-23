@@ -67,6 +67,7 @@ extern void FreeLanderData (void);
 extern void object_animation (ELEMENT *ElementPtr);
 
 extern void SetLanderTakeoff (void);
+extern bool KillLanderCrewSeq (COUNT numKilled, DWORD period);
 
 // ELEMENT.playerNr constants
 enum

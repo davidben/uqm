@@ -1396,17 +1396,7 @@ GeneratePlanetSide (void)
 				NodeElementPtr->preprocess_func = object_animation;
 				if (scan == ENERGY_SCAN)
 				{
-					if (pSolarSysState->SysInfo.PlanetInfo.CurType == 1)
-					{
-						NodeElementPtr->mass_points = 0;
-					}
-					else if (pSolarSysState->SysInfo.PlanetInfo.CurType == 2)
-					{
-						// Special case: Fwiffo
-						NodeElementPtr->mass_points = 1;
-					}
-					else
-						NodeElementPtr->mass_points = MAX_SCROUNGED;
+					NodeElementPtr->mass_points = MAX_SCROUNGED;
 					DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
 							pSolarSysState->PlanetSideFrame[1];
 				}

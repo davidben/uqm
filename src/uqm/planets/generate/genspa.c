@@ -18,6 +18,7 @@
 
 #include "genall.h"
 #include "../lifeform.h"
+#include "../lander.h"
 #include "../planets.h"
 #include "../scan.h"
 #include "../../build.h"
@@ -196,30 +197,23 @@ GenerateSpathi_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 {
 	if (matchWorld (solarSys, world, 0, 0))
 	{
-		DWORD old_rand;
-
 		if (GET_GAME_STATE (UMGAH_BROADCASTERS))
 		{	// already picked up
 			*whichNode = 0;
 			return true;
 		}
 
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-		GenerateRandomLocation (&solarSys->SysInfo);
-		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-		solarSys->SysInfo.PlanetInfo.CurType = 0;
-		
-		*whichNode = 1; // only matters when count is requested
+		GenerateDefault_generateArtifact (solarSys, whichNode);
 
 		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
 			SET_GAME_STATE (UMGAH_BROADCASTERS, 1);
 			SET_GAME_STATE (UMGAH_BROADCASTERS_ON_SHIP, 1);
+
+			GenerateDefault_landerReport (solarSys);
+			SetLanderTakeoff ();
 		}
 
-		TFB_SeedRandom (old_rand);
 		return true;
 	}
 

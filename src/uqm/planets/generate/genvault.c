@@ -80,42 +80,40 @@ GenerateVault_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 {
 	if (matchWorld (solarSys, world, 0, 0))
 	{
-		DWORD old_rand;
-
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-		GenerateRandomLocation (&solarSys->SysInfo);
-		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-		if (!GET_GAME_STATE (SHIP_VAULT_UNLOCKED))
-			solarSys->SysInfo.PlanetInfo.CurType = 0;
-		else
-			solarSys->SysInfo.PlanetInfo.CurType = 1;
+		PLANET_INFO *planetInfo = &solarSys->SysInfo.PlanetInfo;
 		
-		// This node is always present, even after it is "picked up".
-		*whichNode = 1; // only matters when count is requested
+		GenerateDefault_generateArtifact (solarSys, whichNode);
 
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
+		if (isNodeRetrieved (planetInfo, ENERGY_SCAN, 0))
 		{
 			// Retrieval status is cleared to keep the node on the map
-			setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0);
+			setNodeNotRetrieved (planetInfo, ENERGY_SCAN, 0);
 
-			if (GET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP))
+			if (GET_GAME_STATE (SHIP_VAULT_UNLOCKED))
+			{	// Give the final report, "omg empty" and whatnot
+				GenerateDefault_landerReportCycle (solarSys);
+			}
+			else if (GET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP))
 			{
+				GenerateDefault_landerReportCycle (solarSys);
 				SetLanderTakeoff ();
 
 				SET_GAME_STATE (SHIP_VAULT_UNLOCKED, 1);
 				SET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP, 0);
 				SET_GAME_STATE (SYREEN_HOME_VISITS, 0);
 			}
-			else if (!GET_GAME_STATE (KNOW_SYREEN_VAULT))
+			else
 			{
-				SET_GAME_STATE (KNOW_SYREEN_VAULT, 1);
-				SET_GAME_STATE (SYREEN_HOME_VISITS, 0);
+				GenerateDefault_landerReport (solarSys);
+
+				if (!GET_GAME_STATE (KNOW_SYREEN_VAULT))
+				{
+					SET_GAME_STATE (KNOW_SYREEN_VAULT, 1);
+					SET_GAME_STATE (SYREEN_HOME_VISITS, 0);
+				}
 			}
 		}
 
-		TFB_SeedRandom (old_rand);
 		return true;
 	}
 

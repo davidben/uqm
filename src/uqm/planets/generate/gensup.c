@@ -19,7 +19,6 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../globdata.h"
@@ -104,8 +103,8 @@ GenerateSupox_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 					CaptureDrawable (LoadGraphic (RUINS_MASK_PMAP_ANIM));
 			solarSys->SysInfo.PlanetInfo.DiscoveryString =
 					CaptureStringTable (LoadStringTable (RUINS_STRTAB));
-			if (!GET_GAME_STATE (ULTRON_CONDITION))
-			{
+			if (GET_GAME_STATE (ULTRON_CONDITION))
+			{	// Already picked up the Ultron, skip the report
 				solarSys->SysInfo.PlanetInfo.DiscoveryString =
 						SetAbsStringTableIndex (
 						solarSys->SysInfo.PlanetInfo.DiscoveryString, 1);
@@ -119,33 +118,29 @@ GenerateSupox_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static bool
+onRuinPickedUp (SOLARSYS_STATE *solarSys, COUNT whichNode)
+{
+	if (!GET_GAME_STATE (ULTRON_CONDITION))
+	{	// Just picked up the Ultron from a ruin
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (ULTRON_CONDITION, 1);
+	}
+
+	(void) solarSys;
+	(void) whichNode;
+
+	return true; // give whatever report is next
+}
+
+static bool
 GenerateSupox_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		COUNT i;
-		COUNT type;
-
-		type = GET_GAME_STATE (ULTRON_CONDITION) ? 1 : 0;
-		GenerateRandomRuins (&solarSys->SysInfo, type, whichNode);
-
-		for (i = 0; i < 16; ++i)
-		{
-			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i))
-			{
-				// Retrieval status is cleared to keep the node on the map
-				setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i);
-
-				if (!GET_GAME_STATE (ULTRON_CONDITION))
-				{
-					SetLanderTakeoff ();
-
-					SET_GAME_STATE (ULTRON_CONDITION, 1);
-				}
-			}
-		}
-
+		GenerateDefault_generateRuins (solarSys, whichNode);
+		GenerateDefault_pickupRuins (solarSys, onRuinPickedUp);
 		return true;
 	}
 

@@ -268,7 +268,9 @@ GenerateRandomNodes (SYSTEM_INFO *SysInfoPtr, COUNT scan, COUNT numNodes,
 	for (i = 0; i < numNodes; ++i)
 	{
 		GenerateRandomLocation (SysInfoPtr);
+		// CurType is irrelevant for energy nodes
 		SysInfoPtr->PlanetInfo.CurType = type;
+		// CurDensity is irrelevant for energy and bio nodes
 		SysInfoPtr->PlanetInfo.CurDensity = 0;
 
 		if (i >= *whichNode)
@@ -278,10 +280,4 @@ GenerateRandomNodes (SYSTEM_INFO *SysInfoPtr, COUNT scan, COUNT numNodes,
 	*whichNode = i; // only matters when count is requested
 
 	return (TFB_SeedRandom (old_rand));
-}
-
-DWORD
-GenerateRandomRuins (SYSTEM_INFO *SysInfoPtr, COUNT type, COUNT *whichNode)
-{
-	return GenerateRandomNodes (SysInfoPtr, ENERGY_SCAN, 16, type, whichNode);
 }

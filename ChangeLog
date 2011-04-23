@@ -1,4 +1,5 @@
 Changes towards version 0.7:
+- Fixed Syreen Vault lander report infinite loop (bug #1118) - Alex
 - Same captain names are used on both net sides (bug #989) - Alex
 - Fixed sync loss in netplay games having duplicate ships (bug #1081) - Alex
 - Fixed loading of melee.cfg (bug #1099) - Alex

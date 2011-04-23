@@ -160,7 +160,8 @@ GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateRandomRuins (&solarSys->SysInfo, 1, whichNode);
+		GenerateDefault_generateRuins (solarSys, whichNode);
+		GenerateDefault_pickupRuins (solarSys, NULL);
 		return true;
 	}
 

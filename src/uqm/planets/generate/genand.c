@@ -121,44 +121,30 @@ GenerateAndrosynth_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 }
 
 static bool
+onRuinPickedUp (SOLARSYS_STATE *solarSys, COUNT whichNode)
+{
+	PLANET_INFO *planetInfo = &solarSys->SysInfo.PlanetInfo;
+
+	// Ruins previously visited are marked in the upper 16 bits
+	if (isNodeRetrieved (planetInfo, ENERGY_SCAN, whichNode + 16))
+		return false; // already visited this ruin before, no report
+
+	setNodeRetrieved (planetInfo, ENERGY_SCAN, whichNode + 16);
+	// We set the retrieved bit manually here and need to indicate
+	// the change to the solar system state functions
+	SET_GAME_STATE (PLANETARY_CHANGE, 1);
+
+	return true; // give whatever report is next
+}
+
+static bool
 GenerateAndrosynth_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
 	if (matchWorld (solarSys, world, 1, MATCH_PLANET))
 	{
-		COUNT i;
-
-		GenerateRandomRuins (&solarSys->SysInfo, 0, whichNode);
-
-		for (i = 0; i < 16; ++i)
-		{
-			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i))
-			{
-				// Retrieval status is cleared to keep the node on the map
-				setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i);
-				// Ruins previously visited are marked in the upper 16 bits
-				if (!isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN,
-						i + 16))
-				{
-					SET_GAME_STATE (PLANETARY_CHANGE, 1);
-
-					setNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN,
-							i + 16);
-					if (solarSys->SysInfo.PlanetInfo.DiscoveryString)
-					{
-						UnbatchGraphics ();
-						DoDiscoveryReport (MenuSounds);
-						BatchGraphics ();
-						// Advance to the next report
-						solarSys->SysInfo.PlanetInfo.DiscoveryString =
-								SetRelStringTableIndex (
-								solarSys->SysInfo.PlanetInfo.DiscoveryString,
-								1);
-					}
-				}
-			}
-		}
-		
+		GenerateDefault_generateRuins (solarSys, whichNode);
+		GenerateDefault_pickupRuins (solarSys, onRuinPickedUp);
 		return true;
 	}
 

@@ -524,18 +524,23 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 
 		solarSys->SysInfo.PlanetInfo.CurPt.x = 20;
 		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT - 8;
-		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-		solarSys->SysInfo.PlanetInfo.CurType = 2;
 
 		*whichNode = 1; // only matters when count is requested
 		
 		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
+		{	// Ran into Fwiffo on Pluto
 			// Retrieval status is cleared to keep the node on the map
 			// while the lander is taking off. FOUND_PLUTO_SPATHI bit
 			// will keep the node from showing up on subsequent visits.
 			setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0);
+
+			#define FWIFFO_FRAGS  8
+			if (!KillLanderCrewSeq (FWIFFO_FRAGS, ONE_SECOND / 20))
+				return true; // lander probably died
+
+			SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
+
+			GenerateDefault_landerReport (solarSys);
 			SetLanderTakeoff ();
 		}
 
@@ -553,8 +558,6 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 
 		solarSys->SysInfo.PlanetInfo.CurPt.x = MAP_WIDTH * 3 / 4;
 		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 1 / 4;
-		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-		solarSys->SysInfo.PlanetInfo.CurType = 0;
 
 		*whichNode = 1; // only matters when count is requested
 
@@ -562,6 +565,9 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		{
 			SET_GAME_STATE (MOONBASE_DESTROYED, 1);
 			SET_GAME_STATE (MOONBASE_ON_SHIP, 1);
+
+			GenerateDefault_landerReport (solarSys);
+			SetLanderTakeoff ();
 		}
 
 		return true;

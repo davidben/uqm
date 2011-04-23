@@ -82,6 +82,8 @@ enum
 // XXX: -9 to match the original, but why? I have no idea
 #define PLANET_ORG_Y ((SCAN_SCREEN_HEIGHT - 9) / 2)
 
+#define NUM_RACE_RUINS  16
+
 typedef struct planet_desc PLANET_DESC;
 typedef struct star_desc STAR_DESC;
 typedef struct planet_orbit PLANET_ORBIT;

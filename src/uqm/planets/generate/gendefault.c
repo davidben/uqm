@@ -16,12 +16,15 @@
 
 #include "genall.h"
 #include "../planets.h"
+#include "../scan.h"
+#include "../lander.h"
 #include "../../encount.h"
 #include "../../gamestr.h"
 #include "../../globdata.h"
 #include "../../grpinfo.h"
 #include "../../races.h"
 #include "../../state.h"
+#include "../../sounds.h"
 #include "libs/mathlib.h"
 
 
@@ -191,6 +194,99 @@ GenerateDefault_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 	return true;
 }
 
+bool
+GenerateDefault_generateArtifact (SOLARSYS_STATE *solarSys, COUNT *whichNode)
+{
+	// Generate an energy node at a random location
+	GenerateRandomNodes (&solarSys->SysInfo, ENERGY_SCAN, 1, 0, whichNode);
+	return true;
+}
+
+bool
+GenerateDefault_generateRuins (SOLARSYS_STATE *solarSys, COUNT *whichNode)
+{
+	// Generate a standard spread of city ruins of a destroyed civilization
+	GenerateRandomNodes (&solarSys->SysInfo, ENERGY_SCAN, NUM_RACE_RUINS,
+			0, whichNode);
+	return true;
+}
+
+bool
+GenerateDefault_pickupRuins (SOLARSYS_STATE *solarSys,
+		PickupRuinCallback callback)
+{
+	PLANET_INFO *planetInfo = &solarSys->SysInfo.PlanetInfo;
+	COUNT i;
+
+	for (i = 0; i < NUM_RACE_RUINS; ++i)
+	{
+		if (!isNodeRetrieved (planetInfo, ENERGY_SCAN, i))
+			continue;
+
+		// Retrieval status is cleared to keep the node on the map
+		setNodeNotRetrieved (planetInfo, ENERGY_SCAN, i);
+
+		if (callback && !callback (solarSys, i))
+			continue; // no lander report wanted
+
+		// Some ruins have more than one lander report, like when
+		// you fish artifacts out of the ruins.
+		GenerateDefault_landerReportCycle (solarSys);
+	}
+	return true;
+}
+
+static inline void
+runLanderReport (void)
+{
+	UnbatchGraphics ();
+	DoDiscoveryReport (MenuSounds);
+	BatchGraphics ();
+}
+
+bool
+GenerateDefault_landerReport (SOLARSYS_STATE *solarSys)
+{
+	PLANET_INFO *planetInfo = &solarSys->SysInfo.PlanetInfo;
+
+	if (!planetInfo->DiscoveryString)
+		return false;
+
+	runLanderReport ();
+
+	// XXX: A non-cycling report is given only once and has to be deleted
+	//   in some circumstances (like the Syreen Vault). It does not
+	//   hurt to simply delete it in all cases. Nothing should rely on
+	//   the presence of DiscoveryString, but the Syreen Vault and the
+	//   Mycon Egg Cases rely on its absence.
+	DestroyStringTable (ReleaseStringTable (planetInfo->DiscoveryString));
+	planetInfo->DiscoveryString = 0;
+
+	return true;
+}
+
+bool
+GenerateDefault_landerReportCycle (SOLARSYS_STATE *solarSys)
+{
+	PLANET_INFO *planetInfo = &solarSys->SysInfo.PlanetInfo;
+
+	if (!planetInfo->DiscoveryString)
+		return false;
+
+	runLanderReport ();
+	// Advance to the next report
+	planetInfo->DiscoveryString = SetRelStringTableIndex (
+			planetInfo->DiscoveryString, 1);
+
+	// If our discovery strings have cycled, we're done
+	if (GetStringTableIndex (planetInfo->DiscoveryString) == 0)
+	{
+		DestroyStringTable (ReleaseStringTable (planetInfo->DiscoveryString));
+		planetInfo->DiscoveryString = 0;
+	}
+
+	return true;
+}
 
 // NB. This function modifies the RNG state.
 static void

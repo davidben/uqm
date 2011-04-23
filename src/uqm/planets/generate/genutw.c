@@ -17,6 +17,7 @@
  */
 
 #include "genall.h"
+#include "../lander.h"
 #include "../planets.h"
 #include "../scan.h"
 #include "../../build.h"
@@ -209,12 +210,11 @@ static bool
 GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
-	DWORD old_rand;
-
 	if (CurStarDescPtr->Index == UTWIG_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateRandomRuins (&solarSys->SysInfo, 1, whichNode);
+		GenerateDefault_generateRuins (solarSys, whichNode);
+		GenerateDefault_pickupRuins (solarSys, NULL);
 		return true;
 	}
 
@@ -227,14 +227,7 @@ GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return true;
 		}
 
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-		GenerateRandomLocation (&solarSys->SysInfo);
-		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-		solarSys->SysInfo.PlanetInfo.CurType = 0;
-
-		*whichNode = 1; // only matters when count is requested
+		GenerateDefault_generateArtifact (solarSys, whichNode);
 
 		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
@@ -243,9 +236,11 @@ GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			SET_GAME_STATE (DRUUGE_MANNER, 1);
 			SET_GAME_STATE (DRUUGE_VISITS, 0);
 			SET_GAME_STATE (DRUUGE_HOME_VISITS, 0);
+
+			GenerateDefault_landerReport (solarSys);
+			SetLanderTakeoff ();
 		}
 
-		TFB_SeedRandom (old_rand);
 		return true;
 	}
 

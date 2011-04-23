@@ -17,6 +17,7 @@
  */
 
 #include "genall.h"
+#include "../lander.h"
 #include "../planets.h"
 #include "../scan.h"
 #include "../../build.h"
@@ -185,8 +186,6 @@ static bool
 GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
-	DWORD old_rand;
-
 	if (CurStarDescPtr->Index == SUN_DEVICE_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
@@ -196,23 +195,18 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return true;
 		}
 
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-		GenerateRandomLocation (&solarSys->SysInfo);
-		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-		solarSys->SysInfo.PlanetInfo.CurType = 0;
-
-		*whichNode = 1; // only matters when count is requested
+		GenerateDefault_generateArtifact (solarSys, whichNode);
 
 		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
 			SET_GAME_STATE (SUN_DEVICE, 1);
 			SET_GAME_STATE (SUN_DEVICE_ON_SHIP, 1);
 			SET_GAME_STATE (MYCON_VISITS, 0);
+
+			GenerateDefault_landerReport (solarSys);
+			SetLanderTakeoff ();
 		}
 
-		TFB_SeedRandom (old_rand);
 		return true;
 	}
 
@@ -229,15 +223,8 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			*whichNode = 0;
 			return true;
 		}
-		
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
 
-		GenerateRandomLocation (&solarSys->SysInfo);
-		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-		solarSys->SysInfo.PlanetInfo.CurType = 0;
-
-		*whichNode = 1; // only matters when count is requested
+		GenerateDefault_generateArtifact (solarSys, whichNode);
 		
 		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
@@ -253,9 +240,11 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 					SET_GAME_STATE (EGG_CASE2_ON_SHIP, 1);
 					break;
 			}
+
+			GenerateDefault_landerReport (solarSys);
+			SetLanderTakeoff ();
 		}
 
-		TFB_SeedRandom (old_rand);
 		return true;
 	}
 

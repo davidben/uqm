@@ -19,7 +19,6 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../globdata.h"
@@ -114,9 +113,11 @@ GenerateDruuge_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 					CaptureStringTable (
 							LoadStringTable (DRUUGE_RUINS_STRTAB));
 			if (GET_GAME_STATE (ROSY_SPHERE))
+			{	// Already picked up Rosy Sphere, skip the report
 				solarSys->SysInfo.PlanetInfo.DiscoveryString =
 						SetAbsStringTableIndex (
 						solarSys->SysInfo.PlanetInfo.DiscoveryString, 1);
+			}
 		}
 	}
 
@@ -126,34 +127,30 @@ GenerateDruuge_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static bool
+onRuinPickedUp (SOLARSYS_STATE *solarSys, COUNT whichNode)
+{
+	if (!GET_GAME_STATE (ROSY_SPHERE))
+	{	// Just picked up the Rosy Sphere from a ruin
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (ROSY_SPHERE, 1);
+		SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);
+	}
+
+	(void) solarSys;
+	(void) whichNode;
+
+	return true; // give whatever report is next
+}
+
+static bool
 GenerateDruuge_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		COUNT *whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		COUNT i;
-		COUNT type;
-
-		type = GET_GAME_STATE (ROSY_SPHERE) ? 1 : 0;
-		GenerateRandomRuins (&solarSys->SysInfo, type, whichNode);
-
-		for (i = 0; i < 16; ++i)
-		{
-			if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i))
-			{
-				// Retrieval status is cleared to keep the node on the map
-				setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, i);
-
-				if (!GET_GAME_STATE (ROSY_SPHERE))
-				{
-					SetLanderTakeoff ();
-
-					SET_GAME_STATE (ROSY_SPHERE, 1);
-					SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);
-				}
-			}
-		}
-
+		GenerateDefault_generateRuins (solarSys, whichNode);
+		GenerateDefault_pickupRuins (solarSys, onRuinPickedUp);
 		return true;
 	}
 

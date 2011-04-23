@@ -745,39 +745,7 @@ CheckObjectCollision (COUNT index)
 					}
 					else if (scan == ENERGY_SCAN)
 					{
-						if (ElementPtr->mass_points == 1)
-						{
-							#define FWIFFO_FRAGS  8
-							DWORD TimeIn;
-							int i;
-
-							/* Ran into Spathi on Pluto */
-							TimeIn = GetTimeCounter ();
-							for (i = 0; i < FWIFFO_FRAGS && crew_left; ++i)
-							{
-								DeltaLanderCrew (-1, LANDER_INJURED);
-								SleepThreadUntil (TimeIn + ONE_SECOND / 20);
-								TimeIn = GetTimeCounter();
-							}
-						}
-
-						if (crew_left
-								&& pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-								&& CurStarDescPtr->Index != ANDROSYNTH_DEFINED)
-						{
-							UnbatchGraphics ();
-							DoDiscoveryReport (MenuSounds);
-							BatchGraphics ();
-						}
-						if (ElementPtr->mass_points == 0)
-						{
-							DestroyStringTable (ReleaseStringTable (
-									pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-									));
-							pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
-							UnlockElement (hElement);
-							continue;
-						}
+						// noop; handled by generation funcs, see below
 					}
 					else if (scan == BIOLOGICAL_SCAN && ElementPtr->hit_points)
 					{
@@ -865,24 +833,11 @@ CheckObjectCollision (COUNT index)
 						pSolarSysState->pOrbitalDesc,
 						&allNodes, scan);
 
-				if (!isNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo, scan,
+				// Generation func above may reset the retrieved status bit
+				// to keep the node on the map
+				if (isNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo, scan,
 						which_node))
 				{
-					/* If our discovery strings have cycled, we're done */
-					if (GetStringTableIndex (
-							pSolarSysState->SysInfo.PlanetInfo.DiscoveryString) == 0)
-					{
-						if (DestroyStringTable (ReleaseStringTable (
-								pSolarSysState->SysInfo.PlanetInfo.DiscoveryString
-								)))
-							pSolarSysState->SysInfo.PlanetInfo.DiscoveryString = 0;
-					}
-				}
-				else
-				{
-					if (NumRetrieved && scan == ENERGY_SCAN)
-						pPSD->InTransit = TRUE;
-
 					SET_GAME_STATE (PLANETARY_CHANGE, 1);
 					ElementPtr->state_flags |= DISAPPEARING;
 				}
@@ -1890,6 +1845,24 @@ SetLanderTakeoff (void)
 	assert (planetSideDesc != NULL);
 	if (planetSideDesc)
 		planetSideDesc->InTransit = TRUE;
+}
+
+// Returns whether the lander is still alive at the end of the sequence
+bool
+KillLanderCrewSeq (COUNT numKilled, DWORD period)
+{
+	TimeCount TimeOut;
+	COUNT i;
+
+	TimeOut = GetTimeCounter ();
+	for (i = 0; i < numKilled && crew_left; ++i)
+	{
+		TimeOut += period;
+		DeltaLanderCrew (-1, LANDER_INJURED);
+		SleepThreadUntil (TimeOut);
+	}
+	
+	return crew_left > 0;
 }
 
 void

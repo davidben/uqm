@@ -293,9 +293,7 @@ typedef struct
 			//          NUM_CREATURE_TYPES     is an Evil One
 			//          NUM_CREATURE_TYPES + 1 is a Brainbox Bulldozer
 			//          NUM_CREATURE_TYPES + 2 is Zex' Beauty
-			// For energy: 0 - Liftoff on collision
-			//             1 - No liftoff on collision
-			//             2 - (special case) Fwiffo
+			// For energy: undefined
 
 	STRING DiscoveryString;
 	FONT LanderFont;

@@ -57,7 +57,7 @@ GenerateWreck_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		solarSys->SysInfo.PlanetInfo.DiscoveryString =
 				CaptureStringTable (LoadStringTable (WRECK_STRTAB));
 		if (GET_GAME_STATE (PORTAL_KEY))
-		{
+		{	// Already picked it up, skip the first report
 			solarSys->SysInfo.PlanetInfo.DiscoveryString =
 					SetAbsStringTableIndex (
 					solarSys->SysInfo.PlanetInfo.DiscoveryString, 1);
@@ -74,25 +74,14 @@ GenerateWreck_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 {
 	if (matchWorld (solarSys, world, 6, MATCH_PLANET))
 	{
-		DWORD old_rand;
-
-		old_rand = TFB_SeedRandom (
-				solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN]);
-
-		GenerateRandomLocation (&solarSys->SysInfo);
-		solarSys->SysInfo.PlanetInfo.CurDensity = 0;
-		if (!GET_GAME_STATE (PORTAL_KEY))
-			solarSys->SysInfo.PlanetInfo.CurType = 0;
-		else
-			solarSys->SysInfo.PlanetInfo.CurType = 1;
-
-		// This node is always present, even after it is "picked up".
-		*whichNode = 1; // only matters when count is requested
+		GenerateDefault_generateArtifact (solarSys, whichNode);
 
 		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
 		{
 			// Retrieval status is cleared to keep the node on the map
 			setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0);
+
+			GenerateDefault_landerReportCycle (solarSys);
 
 			if (!GET_GAME_STATE (PORTAL_KEY))
 			{
@@ -103,7 +92,6 @@ GenerateWreck_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			}
 		}
 
-		TFB_SeedRandom (old_rand);
 		return true;
 	}
 
