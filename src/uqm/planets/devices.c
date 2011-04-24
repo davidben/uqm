@@ -231,8 +231,9 @@ UseCaster (void)
 			|| !playerInSolarSystem ())
 		return FALSE;
 
-	if (pSolarSysState->pOrbitalDesc == &pSolarSysState->PlanetDesc[1]
-			&& playerInPlanetOrbit ()
+	if (playerInPlanetOrbit ()
+			&& matchWorld (pSolarSysState, pSolarSysState->pOrbitalDesc,
+				1, MATCH_PLANET)
 			&& CurStarDescPtr->Index == CHMMR_DEFINED
 			&& !GET_GAME_STATE (CHMMR_UNLEASHED))
 	{
@@ -254,8 +255,9 @@ UseCaster (void)
 		BOOLEAN FoundIlwrath;
 		HIPGROUP hGroup;
 
-		FoundIlwrath = (BOOLEAN)(CurStarDescPtr->Index == ILWRATH_DEFINED);
-				// In the Ilwrath home system?
+		FoundIlwrath = (CurStarDescPtr->Index == ILWRATH_DEFINED)
+				&& ActivateStarShip (ILWRATH_SHIP, SPHERE_TRACKING);
+				// In the Ilwrath home system and they are alive?
 
 		if (!FoundIlwrath &&
 				(hGroup = GetHeadLink (&GLOBAL (ip_group_q))))
@@ -328,8 +330,9 @@ InvokeDevice (BYTE which_device)
 				SleepThreadUntil (FadeScreen (FadeAllToWhite, ONE_SECOND * 1)
 						+ (ONE_SECOND * 2));
 				if (CurStarDescPtr->Index != CHMMR_DEFINED
-						|| pSolarSysState->pOrbitalDesc !=
-						&pSolarSysState->PlanetDesc[1])
+						|| !matchWorld (pSolarSysState,
+								pSolarSysState->pOrbitalDesc,
+								1, MATCH_PLANET))
 				{
 					FadeScreen (FadeAllToColor, ONE_SECOND * 2);
 				}
