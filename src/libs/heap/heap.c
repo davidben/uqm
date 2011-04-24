@@ -103,6 +103,8 @@ Heap_removeByIndex(Heap *heap, size_t i) {
 		// Restore the heap invariant. We're shifting entries into the
 		// gap that was created until we find the place where we can
 		// insert the last entry.
+		HeapValue *lastEntry = heap->entries[heap->numEntries];
+
 		for (;;) {
 			size_t childI = i * 2 + 1;
 			// The two children are childI and 'childI + 1'.
@@ -114,7 +116,7 @@ Heap_removeByIndex(Heap *heap, size_t i) {
 					// There is no left child either.
 					break;
 				}
-
+			} else {
 				if (heap->comparator(heap->entries[childI + 1],
 						heap->entries[childI]) < 0) {
 					// The right child is the child with the lowest value.
@@ -123,8 +125,7 @@ Heap_removeByIndex(Heap *heap, size_t i) {
 			}
 			// childI is now the child with the lowest value.
 
-			if (heap->comparator(heap->entries[heap->numEntries],
-					heap->entries[childI]) <= 0) {
+			if (heap->comparator(lastEntry, heap->entries[childI]) <= 0) {
 				// The last entry goes here.
 				break;
 			}
@@ -138,7 +139,7 @@ Heap_removeByIndex(Heap *heap, size_t i) {
 		}
 
 		// Fill the gap with the last entry.
-		heap->entries[i] = heap->entries[heap->numEntries];
+		heap->entries[i] = lastEntry;
 		heap->entries[i]->index = i;
 	}
 
