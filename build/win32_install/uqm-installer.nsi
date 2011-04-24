@@ -303,6 +303,7 @@ SectionGroup "!UQM" SECGRP01
     SetOverwrite try
     File "uqm-pc.cfg"
     File "uqm-3do.cfg"
+    File "uqm-remix.cfg"
     
     # Delete old content
     Delete "$INSTDIR\content\packages\uqm-0.3-3domusic.zip"
@@ -325,7 +326,7 @@ SectionGroup "!UQM" SECGRP01
 
   Section "Core Data" SEC02
     SectionIn 1 2 3 4 6
-    CreateDirectory "$INSTDIR\content\packages\addons"
+    CreateDirectory "$INSTDIR\content\addons"
     SetOutPath "$INSTDIR\content"
     SetOverwrite ifnewer
     AddSize 12261
@@ -382,8 +383,11 @@ SectionGroup "Modern Remixes" SECGRP03
     StrCpy $MANDATORY 0
     StrCpy $MD5SUM "09f242d8d72166d1d5ccbd3d99c93e7d"
     Push "uqm-remix-disc1.uqm"
-    Push "$INSTDIR\content\addons\"
+    Push "$INSTDIR\content\addons"
     Call HandlePackage
+    SetOutPath $UQMUSERDATA
+    Delete "uqm.cfg"
+    CopyFiles "$UQMUSERDATA\uqm-remix.cfg" "$UQMUSERDATA\uqm.cfg"
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -395,8 +399,11 @@ SectionGroup "Modern Remixes" SECGRP03
     StrCpy $MANDATORY 0
     StrCpy $MD5SUM "fbc8bdcb709939d559d8c7216ad15cc2"
     Push "uqm-remix-disc2.uqm"
-    Push "$INSTDIR\content\addons\"
+    Push "$INSTDIR\content\addons"
     Call HandlePackage
+    SetOutPath $UQMUSERDATA
+    Delete "uqm.cfg"
+    CopyFiles "$UQMUSERDATA\uqm-remix.cfg" "$UQMUSERDATA\uqm.cfg"
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -408,8 +415,11 @@ SectionGroup "Modern Remixes" SECGRP03
     StrCpy $MANDATORY 0
     StrCpy $MD5SUM "5ccc6d4ac301ae98e172ac6835dcdead"
     Push "uqm-remix-disc3.uqm"
-    Push "$INSTDIR\content\addons\"
+    Push "$INSTDIR\content\addons"
     Call HandlePackage
+    SetOutPath $UQMUSERDATA
+    Delete "uqm.cfg"
+    CopyFiles "$UQMUSERDATA\uqm-remix.cfg" "$UQMUSERDATA\uqm.cfg"
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -441,8 +451,6 @@ Section -ShortcutsAndIcons
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Documentation\Manual.lnk" "$INSTDIR\Manual.txt"
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Documentation\README.lnk" "$INSTDIR\README.txt"
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Documentation\WhatsNew.lnk" "$INSTDIR\WhatsNew.txt"
-    CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Key Configuration.lnk" "$WINDIR\notepad" "$UQMUSERDATA\keys.cfg"
-    CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Options Configuration.lnk" "$WINDIR\notepad" "$UQMUSERDATA\uqm.cfg"
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Keyboard Test.lnk" "$INSTDIR\keyjam.exe"
     CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Saved Games.lnk" "$UQMUSERDATA\save"
     IntCmp $MAKEICON 1 0 NoIcon NoIcon
@@ -468,7 +476,12 @@ Section -SetPCConfig
     Delete "uqm.cfg"
     CopyFiles "$UQMUSERDATA\uqm-pc.cfg" "$UQMUSERDATA\uqm.cfg"
   !insertmacro MUI_STARTMENU_WRITE_END
-SectionEnd  
+SectionEnd
+
+Section -SetRemixConfig
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
 
 Section -Post
   WriteUninstaller "$INSTDIR\uninst.exe"
@@ -489,7 +502,7 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SECGRP02} "Optional content packages containing music and sound unique to the 1993 3DO release."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Optional package which includes the remixed songs from the 3DO release.  If this package is selected and not present in the packages directory, the installer will attempt to download it."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Optional package containing the voiceovers from the 3DO release.  If this package is selected and not present in the packages directory, the installer will attempt to download it."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SECGRP03} "Optional content packages containing the official UQM remixes by The Precursors.  Selecting any element from this group will also enable the 'remix' addon by default in any shortcuts."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SECGRP03} "Optional content packages containing the official UQM remixes by The Precursors.  Selecting any element from this group will also enable the 'remix' addon by default in the starting configuration."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} `Ur-Quan Masters Remix Pack 1 - 'Super Melee!'  Optional add-on music package.  If this package is selected and not present in the packages directory, the installer will attempt to download it.`
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} `Ur-Quan Masters Remix Pack 2 - 'Neutral Aliens - Don't Shoot!'  Optional add-on music package.  If this package is selected and not present in the packages directory, the installer will attempt to download it.`
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} `Ur-Quan Masters Remix Pack 3 - 'The Ur-Quan Hierarchy.'  Optional add-on music package.  If this package is selected and not present in the packages directory, the installer will attempt to download it.`
