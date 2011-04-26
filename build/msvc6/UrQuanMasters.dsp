@@ -3374,10 +3374,6 @@ SOURCE=..\..\src\uqm\resinst.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\respkg.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\restart.c
 # End Source File
 # Begin Source File
