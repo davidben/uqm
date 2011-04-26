@@ -1580,10 +1580,6 @@ SOURCE=..\..\src\uqm\comm\arilou\arilouc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\arilou\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\arilou\resinst.h
 # End Source File
 # Begin Source File
@@ -1597,10 +1593,6 @@ SOURCE=..\..\src\uqm\comm\arilou\strings.h
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\blackur\blackurc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\blackur\igfxres.h
 # End Source File
 # Begin Source File
 
@@ -1620,10 +1612,6 @@ SOURCE=..\..\src\uqm\comm\chmmr\chmmrc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\chmmr\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\chmmr\resinst.h
 # End Source File
 # Begin Source File
@@ -1637,10 +1625,6 @@ SOURCE=..\..\src\uqm\comm\chmmr\strings.h
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\comandr\comandr.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\comandr\igfxres.h
 # End Source File
 # Begin Source File
 
@@ -1660,10 +1644,6 @@ SOURCE=..\..\src\uqm\comm\druuge\druugec.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\druuge\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\druuge\resinst.h
 # End Source File
 # Begin Source File
@@ -1674,10 +1654,6 @@ SOURCE=..\..\src\uqm\comm\druuge\strings.h
 # Begin Group "ilwrath.comm"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\ilwrath\igfxres.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\ilwrath\ilwrathc.c
@@ -1696,10 +1672,6 @@ SOURCE=..\..\src\uqm\comm\ilwrath\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\melnorm\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\melnorm\melnorm.c
 # End Source File
 # Begin Source File
@@ -1714,10 +1686,6 @@ SOURCE=..\..\src\uqm\comm\melnorm\strings.h
 # Begin Group "mycon.comm"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\mycon\igfxres.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\mycon\myconc.c
@@ -1736,10 +1704,6 @@ SOURCE=..\..\src\uqm\comm\mycon\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\orz\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\orz\orzc.c
 # End Source File
 # Begin Source File
@@ -1754,10 +1718,6 @@ SOURCE=..\..\src\uqm\comm\orz\strings.h
 # Begin Group "pkunk.comm"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\pkunk\igfxres.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\pkunk\pkunkc.c
@@ -1788,10 +1748,6 @@ SOURCE=..\..\src\uqm\comm\rebel\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\shofixt\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\shofixt\resinst.h
 # End Source File
 # Begin Source File
@@ -1808,10 +1764,6 @@ SOURCE=..\..\src\uqm\comm\shofixt\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\slyhome\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\slyhome\resinst.h
 # End Source File
 # Begin Source File
@@ -1826,10 +1778,6 @@ SOURCE=..\..\src\uqm\comm\slyhome\strings.h
 # Begin Group "slyland.comm"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\slyland\igfxres.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\slyland\resinst.h
@@ -1860,10 +1808,6 @@ SOURCE=..\..\src\uqm\comm\spahome\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\spathi\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\spathi\resinst.h
 # End Source File
 # Begin Source File
@@ -1892,10 +1836,6 @@ SOURCE=..\..\src\uqm\comm\starbas\strings.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\supox\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\supox\resinst.h
 # End Source File
 # Begin Source File
@@ -1910,10 +1850,6 @@ SOURCE=..\..\src\uqm\comm\supox\supoxc.c
 # Begin Group "syreen.comm"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\syreen\igfxres.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\syreen\resinst.h
@@ -1932,10 +1868,6 @@ SOURCE=..\..\src\uqm\comm\syreen\syreenc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\talkpet\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\talkpet\resinst.h
 # End Source File
 # Begin Source File
@@ -1950,10 +1882,6 @@ SOURCE=..\..\src\uqm\comm\talkpet\talkpet.c
 # Begin Group "thradd.comm"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\thradd\igfxres.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\thradd\resinst.h
@@ -1972,10 +1900,6 @@ SOURCE=..\..\src\uqm\comm\thradd\thraddc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\umgah\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\umgah\resinst.h
 # End Source File
 # Begin Source File
@@ -1990,10 +1914,6 @@ SOURCE=..\..\src\uqm\comm\umgah\umgahc.c
 # Begin Group "urquan.comm"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\urquan\igfxres.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\urquan\resinst.h
@@ -2012,10 +1932,6 @@ SOURCE=..\..\src\uqm\comm\urquan\urquanc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\utwig\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\utwig\resinst.h
 # End Source File
 # Begin Source File
@@ -2030,10 +1946,6 @@ SOURCE=..\..\src\uqm\comm\utwig\utwigc.c
 # Begin Group "vux.comm"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\vux\igfxres.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\vux\resinst.h
@@ -2052,10 +1964,6 @@ SOURCE=..\..\src\uqm\comm\vux\vuxc.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\uqm\comm\yehat\igfxres.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\comm\yehat\resinst.h
 # End Source File
 # Begin Source File
@@ -2070,10 +1978,6 @@ SOURCE=..\..\src\uqm\comm\yehat\yehatc.c
 # Begin Group "zoqfot.comm"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\uqm\comm\zoqfot\igfxres.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\uqm\comm\zoqfot\resinst.h
@@ -2652,27 +2556,7 @@ SOURCE=..\..\src\uqm\ships\sis_ship\icode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\ships\sis_ship\igfxres.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\ships\sis_ship\imusicre.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\ships\sis_ship\istrtab.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\uqm\ships\sis_ship\resinst.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\ships\sis_ship\respkg.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\uqm\ships\sis_ship\restypes.h
 # End Source File
 # Begin Source File
 
@@ -3370,6 +3254,10 @@ SOURCE=..\..\src\uqm\igfxres.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\uqm\ikey_con.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\uqm\imusicre.h
 # End Source File
 # Begin Source File
@@ -3402,7 +3290,7 @@ SOURCE=..\..\src\uqm\ipdisp.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\uqm\ires_ind.h
+SOURCE=..\..\src\uqm\isndres.h
 # End Source File
 # Begin Source File
 
