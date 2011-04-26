@@ -718,7 +718,6 @@ CheckObjectCollision (COUNT index)
 			{
 				COUNT scan, NumRetrieved;
 				SIZE which_node;
-				COUNT allNodes;
 
 				scan = LOBYTE (ElementPtr->scan_node);
 				if (pLanderPrim == 0)
@@ -826,18 +825,11 @@ CheckObjectCollision (COUNT index)
 				}
 
 				which_node = HIBYTE (ElementPtr->scan_node) - 1;
-				setNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo, scan,
-						which_node);
-				allNodes = (COUNT)~0;
-				callGenerateForScanType (pSolarSysState,
-						pSolarSysState->pOrbitalDesc,
-						&allNodes, scan);
-
-				// Generation func above may reset the retrieved status bit
-				// to keep the node on the map
-				if (isNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo, scan,
-						which_node))
-				{
+				if (callPickupForScanType (pSolarSysState,
+						pSolarSysState->pOrbitalDesc, which_node, scan))
+				{	// Node retrieved, remove from the surface
+					setNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo,
+							scan, which_node);
 					SET_GAME_STATE (PLANETARY_CHANGE, 1);
 					ElementPtr->state_flags |= DISAPPEARING;
 				}

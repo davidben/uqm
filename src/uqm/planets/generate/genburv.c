@@ -19,7 +19,6 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../globdata.h"
 #include "../../nameref.h"
 #include "../../resinst.h"
@@ -31,8 +30,10 @@ static bool GenerateBurvixese_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
 static bool GenerateBurvixese_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateBurvixese_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateBurvixese_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateBurvixese_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateBurvixeseFunctions = {
@@ -46,6 +47,9 @@ const GenerateFunctions generateBurvixeseFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateBurvixese_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateBurvixese_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -136,40 +140,54 @@ GenerateBurvixese_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateBurvixese_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, NULL);
-		return true;
+		return GenerateDefault_generateRuins (solarSys, whichNode);
 	}
 
 	if (matchWorld (solarSys, world, 0, 0))
 	{
+		// This check is redundant since the retrieval bit will keep the
+		// node from showing up again
 		if (GET_GAME_STATE (BURVIXESE_BROADCASTERS))
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 		
-		GenerateDefault_generateArtifact (solarSys, whichNode);
-
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			SET_GAME_STATE (BURVIXESE_BROADCASTERS, 1);
-			SET_GAME_STATE (BURV_BROADCASTERS_ON_SHIP, 1);
-
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-		}
-
-		return true;
+		return GenerateDefault_generateArtifact (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
+static bool
+GenerateBurvixese_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		// Standard ruins report
+		GenerateDefault_landerReportCycle (solarSys);
+		return false;
+	}
+
+	if (matchWorld (solarSys, world, 0, 0))
+	{
+		assert (!GET_GAME_STATE (BURVIXESE_BROADCASTERS) && whichNode == 0);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (BURVIXESE_BROADCASTERS, 1);
+		SET_GAME_STATE (BURV_BROADCASTERS_ON_SHIP, 1);
+
+		return true; // picked up
+	}
+
+	(void) whichNode;
+	return false;
+}

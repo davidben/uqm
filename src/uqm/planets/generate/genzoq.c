@@ -30,8 +30,10 @@ static bool GenerateZoqFotPik_initNpcs (SOLARSYS_STATE *solarSys);
 static bool GenerateZoqFotPik_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateZoqFotPik_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateZoqFotPik_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateZoqFotPik_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateZoqFotPik_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateZoqFotPikFunctions = {
@@ -45,6 +47,9 @@ const GenerateFunctions generateZoqFotPikFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateZoqFotPik_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateZoqFotPik_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -137,18 +142,29 @@ GenerateZoqFotPik_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateZoqFotPik_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, NULL);
-		return true;
+		return GenerateDefault_generateRuins (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
+static bool
+GenerateZoqFotPik_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		// Standard ruins report
+		GenerateDefault_landerReportCycle (solarSys);
+		return false;
+	}
+
+	(void) whichNode;
+	return false;
+}

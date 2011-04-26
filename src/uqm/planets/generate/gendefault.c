@@ -16,7 +16,6 @@
 
 #include "genall.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../lander.h"
 #include "../../encount.h"
 #include "../../gamestr.h"
@@ -38,12 +37,6 @@ bool GenerateDefault_generateName (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
 bool GenerateDefault_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-bool GenerateDefault_generateMinerals (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
-bool GenerateDefault_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
-bool GenerateDefault_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
 
 static void GeneratePlanets (SOLARSYS_STATE *system);
 static void check_yehat_rebellion (void);
@@ -60,6 +53,9 @@ const GenerateFunctions generateDefaultFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateDefault_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateDefault_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -166,74 +162,84 @@ GenerateDefault_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-bool
+COUNT
 GenerateDefault_generateMinerals (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode)
+		PLANET_DESC *world, COUNT whichNode)
 {
-	GenerateMineralDeposits (&solarSys->SysInfo, whichNode);
+	GenerateMineralDeposits (&solarSys->SysInfo, &whichNode);
 	(void) world;
-	return true;
+	return whichNode;
 }
 
 bool
-GenerateDefault_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+GenerateDefault_pickupMinerals (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
 {
-	*whichNode = 0;
+	// Minerals do not need any extra handling as of now
 	(void) solarSys;
 	(void) world;
+	(void) whichNode;
 	return true;
 }
 
-bool
-GenerateDefault_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+COUNT
+GenerateDefault_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
 {
-	GenerateLifeForms (&solarSys->SysInfo, whichNode);
+	(void) whichNode;
+	(void) solarSys;
 	(void) world;
-	return true;
+	return 0;
 }
 
 bool
-GenerateDefault_generateArtifact (SOLARSYS_STATE *solarSys, COUNT *whichNode)
+GenerateDefault_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	// This should never be called since every energy node needs
+	// special handling and the function should be overridden
+	assert (false);
+	(void) solarSys;
+	(void) world;
+	(void) whichNode;
+	return false;
+}
+
+COUNT
+GenerateDefault_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	GenerateLifeForms (&solarSys->SysInfo, &whichNode);
+	(void) world;
+	return whichNode;
+}
+
+bool
+GenerateDefault_pickupLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	// Bio does not need any extra handling as of now
+	(void) solarSys;
+	(void) world;
+	(void) whichNode;
+	return true;
+}
+
+COUNT
+GenerateDefault_generateArtifact (SOLARSYS_STATE *solarSys, COUNT whichNode)
 {
 	// Generate an energy node at a random location
-	GenerateRandomNodes (&solarSys->SysInfo, ENERGY_SCAN, 1, 0, whichNode);
-	return true;
+	GenerateRandomNodes (&solarSys->SysInfo, ENERGY_SCAN, 1, 0, &whichNode);
+	return whichNode;
 }
 
-bool
-GenerateDefault_generateRuins (SOLARSYS_STATE *solarSys, COUNT *whichNode)
+COUNT
+GenerateDefault_generateRuins (SOLARSYS_STATE *solarSys, COUNT whichNode)
 {
 	// Generate a standard spread of city ruins of a destroyed civilization
 	GenerateRandomNodes (&solarSys->SysInfo, ENERGY_SCAN, NUM_RACE_RUINS,
-			0, whichNode);
-	return true;
-}
-
-bool
-GenerateDefault_pickupRuins (SOLARSYS_STATE *solarSys,
-		PickupRuinCallback callback)
-{
-	PLANET_INFO *planetInfo = &solarSys->SysInfo.PlanetInfo;
-	COUNT i;
-
-	for (i = 0; i < NUM_RACE_RUINS; ++i)
-	{
-		if (!isNodeRetrieved (planetInfo, ENERGY_SCAN, i))
-			continue;
-
-		// Retrieval status is cleared to keep the node on the map
-		setNodeNotRetrieved (planetInfo, ENERGY_SCAN, i);
-
-		if (callback && !callback (solarSys, i))
-			continue; // no lander report wanted
-
-		// Some ruins have more than one lander report, like when
-		// you fish artifacts out of the ruins.
-		GenerateDefault_landerReportCycle (solarSys);
-	}
-	return true;
+			0, &whichNode);
+	return whichNode;
 }
 
 static inline void

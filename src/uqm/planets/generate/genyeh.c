@@ -30,8 +30,10 @@
 static bool GenerateYehat_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateYehat_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateYehat_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateYehat_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateYehat_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateYehatFunctions = {
@@ -45,6 +47,9 @@ const GenerateFunctions generateYehatFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateYehat_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateYehat_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -107,18 +112,29 @@ GenerateYehat_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateYehat_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, NULL);
-		return true;
+		return GenerateDefault_generateRuins (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
+static bool
+GenerateYehat_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		// Standard ruins report
+		GenerateDefault_landerReportCycle (solarSys);
+		return false;
+	}
+
+	(void) whichNode;
+	return false;
+}

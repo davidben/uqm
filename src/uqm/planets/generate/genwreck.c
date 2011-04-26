@@ -19,7 +19,6 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../globdata.h"
 #include "../../nameref.h"
 #include "../../resinst.h"
@@ -28,8 +27,10 @@
 
 static bool GenerateWreck_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateWreck_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateWreck_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateWreck_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateWreckFunctions = {
@@ -43,6 +44,9 @@ const GenerateFunctions generateWreckFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateWreck_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateWreck_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -68,34 +72,40 @@ GenerateWreck_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateWreck_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 6, MATCH_PLANET))
 	{
-		GenerateDefault_generateArtifact (solarSys, whichNode);
-
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			// Retrieval status is cleared to keep the node on the map
-			setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0);
-
-			GenerateDefault_landerReportCycle (solarSys);
-
-			if (!GET_GAME_STATE (PORTAL_KEY))
-			{
-				SetLanderTakeoff ();
-
-				SET_GAME_STATE (PORTAL_KEY, 1);
-				SET_GAME_STATE (PORTAL_KEY_ON_SHIP, 1);
-			}
-		}
-
-		return true;
+		return GenerateDefault_generateArtifact (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
+static bool
+GenerateWreck_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 6, MATCH_PLANET))
+	{
+		assert (whichNode == 0);
+
+		GenerateDefault_landerReportCycle (solarSys);
+
+		if (!GET_GAME_STATE (PORTAL_KEY))
+		{
+			SetLanderTakeoff ();
+
+			SET_GAME_STATE (PORTAL_KEY, 1);
+			SET_GAME_STATE (PORTAL_KEY_ON_SHIP, 1);
+		}
+
+		// The Wreck cannot be "picked up". It is always on the surface.
+		return false;
+	}
+
+	(void) whichNode;
+	return false;
+}

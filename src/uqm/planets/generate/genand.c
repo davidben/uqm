@@ -30,8 +30,10 @@
 static bool GenerateAndrosynth_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateAndrosynth_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateAndrosynth_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateAndrosynth_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateAndrosynth_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateAndrosynthFunctions = {
@@ -45,6 +47,9 @@ const GenerateFunctions generateAndrosynthFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateAndrosynth_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateAndrosynth_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -121,34 +126,39 @@ GenerateAndrosynth_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 }
 
 static bool
-onRuinPickedUp (SOLARSYS_STATE *solarSys, COUNT whichNode)
-{
-	PLANET_INFO *planetInfo = &solarSys->SysInfo.PlanetInfo;
-
-	// Ruins previously visited are marked in the upper 16 bits
-	if (isNodeRetrieved (planetInfo, ENERGY_SCAN, whichNode + 16))
-		return false; // already visited this ruin before, no report
-
-	setNodeRetrieved (planetInfo, ENERGY_SCAN, whichNode + 16);
-	// We set the retrieved bit manually here and need to indicate
-	// the change to the solar system state functions
-	SET_GAME_STATE (PLANETARY_CHANGE, 1);
-
-	return true; // give whatever report is next
-}
-
-static bool
-GenerateAndrosynth_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+GenerateAndrosynth_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 1, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, onRuinPickedUp);
-		return true;
+		PLANET_INFO *planetInfo = &solarSys->SysInfo.PlanetInfo;
+
+		// Ruins previously visited are marked in the upper 16 bits
+		if (isNodeRetrieved (planetInfo, ENERGY_SCAN, whichNode + 16))
+			return false; // already visited this ruin, do not remove
+
+		setNodeRetrieved (planetInfo, ENERGY_SCAN, whichNode + 16);
+		// We set the retrieved bit manually here and need to indicate
+		// the change to the solar system state functions
+		SET_GAME_STATE (PLANETARY_CHANGE, 1);
+
+		// Androsynth ruins have several lander reports which form a story
+		GenerateDefault_landerReportCycle (solarSys);
+
+		return false; // do not remove the node from the surface
 	}
 
-	*whichNode = 0;
-	return true;
+	return false;
 }
 
+static COUNT
+GenerateAndrosynth_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 1, MATCH_PLANET))
+	{
+		return GenerateDefault_generateRuins (solarSys, whichNode);
+	}
+
+	return 0;
+}

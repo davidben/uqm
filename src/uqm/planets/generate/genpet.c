@@ -32,8 +32,10 @@
 static bool GenerateTalkingPet_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateTalkingPet_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 static void ZapToUrquanEncounter (void);
 
@@ -49,6 +51,9 @@ const GenerateFunctions generateTalkingPetFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateTalkingPet_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateTalkingPet_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -154,19 +159,31 @@ GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 	return true;
 }
 
-static bool
+static COUNT
 GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, NULL);
-		return true;
+		return GenerateDefault_generateRuins (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
+}
+
+static bool
+GenerateTalkingPet_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		// Standard ruins report
+		GenerateDefault_landerReportCycle (solarSys);
+		return false;
+	}
+
+	(void) whichNode;
+	return false;
 }
 
 static void

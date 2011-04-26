@@ -20,7 +20,6 @@
 #include "../lander.h"
 #include "../lifeform.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../build.h"
 #include "../../encount.h"
 #include "../../globdata.h"
@@ -40,10 +39,12 @@ static bool GenerateSol_generateName (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
 static bool GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
-static bool GenerateSol_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateSol_generateLife (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateSol_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 static int init_probe (void);
 static void check_probe (void);
@@ -60,6 +61,9 @@ const GenerateFunctions generateSolFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateSol_generateEnergy,
 	/* .generateLife     = */ GenerateSol_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateSol_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -509,88 +513,100 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 8, MATCH_PLANET))
 	{
 		/* Pluto */
+		// This check is needed because the retrieval bit is not set for
+		// this node to keep it on the surface while the lander is taking off
 		if (GET_GAME_STATE (FOUND_PLUTO_SPATHI))
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 
 		solarSys->SysInfo.PlanetInfo.CurPt.x = 20;
 		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT - 8;
 
-		*whichNode = 1; // only matters when count is requested
-		
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{	// Ran into Fwiffo on Pluto
-			// Retrieval status is cleared to keep the node on the map
-			// while the lander is taking off. FOUND_PLUTO_SPATHI bit
-			// will keep the node from showing up on subsequent visits.
-			setNodeNotRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0);
-
-			#define FWIFFO_FRAGS  8
-			if (!KillLanderCrewSeq (FWIFFO_FRAGS, ONE_SECOND / 20))
-				return true; // lander probably died
-
-			SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
-
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-		}
-
-		return true;
+		return 1; // only matters when count is requested
 	}
 	
 	if (matchWorld (solarSys, world, 2, 1))
 	{
 		/* Earth Moon */
+		// This check is redundant since the retrieval bit will keep the
+		// node from showing up again
 		if (GET_GAME_STATE (MOONBASE_DESTROYED))
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 
 		solarSys->SysInfo.PlanetInfo.CurPt.x = MAP_WIDTH * 3 / 4;
 		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 1 / 4;
 
-		*whichNode = 1; // only matters when count is requested
-
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			SET_GAME_STATE (MOONBASE_DESTROYED, 1);
-			SET_GAME_STATE (MOONBASE_ON_SHIP, 1);
-
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-		}
-
-		return true;
+		return 1; // only matters when count is requested
 	}
 
-	*whichNode = 0;
-	return true;
+	(void) whichNode;
+	return 0;
 }
 
 static bool
+GenerateSol_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 8, MATCH_PLANET))
+	{	// Pluto
+		assert (!GET_GAME_STATE (FOUND_PLUTO_SPATHI) && whichNode == 0);
+	
+		// Ran into Fwiffo on Pluto
+		#define FWIFFO_FRAGS  8
+		if (!KillLanderCrewSeq (FWIFFO_FRAGS, ONE_SECOND / 20))
+			return false; // lander probably died
+
+		SET_GAME_STATE (FOUND_PLUTO_SPATHI, 1);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		// Do not remove the node from the surface while the lander is
+		// taking off. FOUND_PLUTO_SPATHI bit will keep the node from
+		// showing up on subsequent visits.
+		return false;
+	}
+	
+	if (matchWorld (solarSys, world, 2, 1))
+	{	// Earth Moon
+		assert (!GET_GAME_STATE (MOONBASE_DESTROYED) && whichNode == 0);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (MOONBASE_DESTROYED, 1);
+		SET_GAME_STATE (MOONBASE_ON_SHIP, 1);
+
+		return true; // picked up
+	}
+
+	(void) whichNode;
+	return false;
+}
+
+static COUNT
 GenerateSol_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 2, 1))
 	{
 		/* Earth Moon */
 		GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, 10,
-				NUM_CREATURE_TYPES + 1, whichNode);
-		return true;
+				NUM_CREATURE_TYPES + 1, &whichNode);
+		return whichNode;
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
 

@@ -35,10 +35,14 @@ static bool GenerateSpathi_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
 static bool GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateSpathi_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
-static bool GenerateSpathi_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateSpathi_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateSpathi_generateLife (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateSpathi_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateSpathi_pickupLife (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateSpathiFunctions = {
@@ -52,6 +56,9 @@ const GenerateFunctions generateSpathiFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateSpathi_generateEnergy,
 	/* .generateLife     = */ GenerateSpathi_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateSpathi_pickupEnergy,
+	/* .pickupLife       = */ GenerateSpathi_pickupLife,
 };
 
 
@@ -191,64 +198,79 @@ GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateSpathi_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, 0))
 	{
+		// This check is redundant since the retrieval bit will keep the
+		// node from showing up again
 		if (GET_GAME_STATE (UMGAH_BROADCASTERS))
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 
-		GenerateDefault_generateArtifact (solarSys, whichNode);
-
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			SET_GAME_STATE (UMGAH_BROADCASTERS, 1);
-			SET_GAME_STATE (UMGAH_BROADCASTERS_ON_SHIP, 1);
-
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-		}
-
-		return true;
+		return GenerateDefault_generateArtifact (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
 static bool
+GenerateSpathi_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, 0))
+	{
+		assert (!GET_GAME_STATE (UMGAH_BROADCASTERS) && whichNode == 0);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (UMGAH_BROADCASTERS, 1);
+		SET_GAME_STATE (UMGAH_BROADCASTERS_ON_SHIP, 1);
+
+		return true; // picked up
+	}
+
+	(void) whichNode;
+	return false;
+}
+
+static COUNT
 GenerateSpathi_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		if (GET_GAME_STATE (SPATHI_CREATURES_ELIMINATED)
-				|| GET_GAME_STATE (SPATHI_SHIELDED_SELVES))
-		{	// no creatures left
-			*whichNode = 0;
-			return true;
-		}
-
-		GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, 32,
-				NUM_CREATURE_TYPES, whichNode);
-
-		if (solarSys->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN])
-		{
-			SET_GAME_STATE (SPATHI_CREATURES_EXAMINED, 1);
-			if (solarSys->SysInfo.
-					PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN] == 0xFFFFFFFF)
-				SET_GAME_STATE (SPATHI_CREATURES_ELIMINATED, 1);
-		}
-
-		return true;
+		#define NUM_EVIL_ONES  32
+		GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, NUM_EVIL_ONES,
+				NUM_CREATURE_TYPES, &whichNode);
+		return whichNode;
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
+static bool
+GenerateSpathi_pickupLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		assert (!GET_GAME_STATE (SPATHI_CREATURES_ELIMINATED) &&
+				!GET_GAME_STATE (SPATHI_SHIELDED_SELVES));
+
+		SET_GAME_STATE (SPATHI_CREATURES_EXAMINED, 1);
+		if (countNodesRetrieved (&solarSys->SysInfo.PlanetInfo, BIOLOGICAL_SCAN)
+				+ 1 == NUM_EVIL_ONES)
+		{	// last creature picked up
+			SET_GAME_STATE (SPATHI_CREATURES_ELIMINATED, 1);
+		}
+
+		return true; // picked up
+	}
+
+	return GenerateDefault_pickupLife (solarSys, world, whichNode);
+}

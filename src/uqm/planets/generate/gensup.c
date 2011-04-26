@@ -31,8 +31,10 @@
 static bool GenerateSupox_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateSupox_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateSupox_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateSupox_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateSupox_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateSupoxFunctions = {
@@ -46,6 +48,9 @@ const GenerateFunctions generateSupoxFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateSupox_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateSupox_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -118,33 +123,37 @@ GenerateSupox_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static bool
-onRuinPickedUp (SOLARSYS_STATE *solarSys, COUNT whichNode)
-{
-	if (!GET_GAME_STATE (ULTRON_CONDITION))
-	{	// Just picked up the Ultron from a ruin
-		SetLanderTakeoff ();
-
-		SET_GAME_STATE (ULTRON_CONDITION, 1);
-	}
-
-	(void) solarSys;
-	(void) whichNode;
-
-	return true; // give whatever report is next
-}
-
-static bool
-GenerateSupox_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+GenerateSupox_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, onRuinPickedUp);
-		return true;
+		GenerateDefault_landerReportCycle (solarSys);
+
+		// The artifact can be picked up from any ruin
+		if (!GET_GAME_STATE (ULTRON_CONDITION))
+		{	// Just picked up the Ultron from a ruin
+			SetLanderTakeoff ();
+
+			SET_GAME_STATE (ULTRON_CONDITION, 1);
+		}
+
+		return false; // do not remove the node
 	}
 
-	*whichNode = 0;
-	return true;
+	(void) whichNode;
+	return false;
+}
+
+static COUNT
+GenerateSupox_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		return GenerateDefault_generateRuins (solarSys, whichNode);
+	}
+
+	return 0;
 }
 

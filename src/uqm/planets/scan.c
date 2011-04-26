@@ -934,9 +934,9 @@ DrawScannedStuff (COUNT y, COUNT scan)
 	SetContextForeGroundColor (OldColor);
 }
 
-bool
+COUNT
 callGenerateForScanType (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *node, BYTE scanType)
+		COUNT node, BYTE scanType)
 {
 	switch (scanType)
 	{
@@ -948,6 +948,27 @@ callGenerateForScanType (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 					solarSys, world, node);
 		case BIOLOGICAL_SCAN:
 			return (*solarSys->genFuncs->generateLife) (
+					solarSys, world, node);
+	}
+
+	assert (false);
+	return 0;
+}
+
+bool
+callPickupForScanType (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT node, BYTE scanType)
+{
+	switch (scanType)
+	{
+		case MINERAL_SCAN:
+			return (*solarSys->genFuncs->pickupMinerals) (
+					solarSys, world, node);
+		case ENERGY_SCAN:
+			return (*solarSys->genFuncs->pickupEnergy) (
+					solarSys, world, node);
+		case BIOLOGICAL_SCAN:
+			return (*solarSys->genFuncs->pickupLife) (
 					solarSys, world, node);
 	}
 
@@ -1337,15 +1358,13 @@ GeneratePlanetSide (void)
 		f = SetAbsFrameIndex (MiscDataFrame,
 				NUM_SCANDOT_TRANSITIONS * (scan - ENERGY_SCAN));
 
-		num_nodes = (COUNT)~0;
-		callGenerateForScanType (pSolarSysState,
-				pSolarSysState->pOrbitalDesc, &num_nodes, scan);
+		num_nodes = callGenerateForScanType (pSolarSysState,
+				pSolarSysState->pOrbitalDesc, ~0, scan);
 
 		while (num_nodes--)
 		{
 			HELEMENT hNodeElement;
 			ELEMENT *NodeElementPtr;
-			COUNT whichNode;
 
 			if (isNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo,
 					scan, num_nodes))
@@ -1357,9 +1376,8 @@ GeneratePlanetSide (void)
 
 			LockElement (hNodeElement, &NodeElementPtr);
 
-			whichNode = num_nodes;
 			callGenerateForScanType (pSolarSysState,
-					pSolarSysState->pOrbitalDesc, &whichNode,
+					pSolarSysState->pOrbitalDesc, num_nodes,
 					scan);
 
 			NodeElementPtr->scan_node = MAKE_WORD (scan, num_nodes + 1);
@@ -1423,6 +1441,22 @@ isNodeRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr)
 {
 	return (planetInfo->ScanRetrieveMask[scanType] & ((DWORD) 1 << nodeNr))
 			!= 0;
+}
+
+COUNT
+countNodesRetrieved (PLANET_INFO *planetInfo, BYTE scanType)
+{
+	COUNT count;
+	DWORD mask = planetInfo->ScanRetrieveMask[scanType];
+
+	// count the number of bits set
+	// Caution: 'mask' must be unsigned
+	for (count = 0; mask != 0; mask >>= 1)
+	{
+		if (mask & 1)
+			++count;
+	}
+	return count;
 }
 
 void

@@ -19,7 +19,6 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../encount.h"
@@ -34,8 +33,10 @@
 static bool GenerateOrz_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateOrz_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateOrz_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateOrz_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateOrzFunctions = {
@@ -49,6 +50,9 @@ const GenerateFunctions generateOrzFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateOrz_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateOrz_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -162,42 +166,58 @@ GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateOrz_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (CurStarDescPtr->Index == TAALO_PROTECTOR_DEFINED
 			&& matchWorld (solarSys, world, 1, 2))
 	{
+		// This check is redundant since the retrieval bit will keep the
+		// node from showing up again
 		if (GET_GAME_STATE (TAALO_PROTECTOR))
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 
-		GenerateDefault_generateArtifact (solarSys, whichNode);
-
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			SET_GAME_STATE (TAALO_PROTECTOR, 1);
-			SET_GAME_STATE (TAALO_PROTECTOR_ON_SHIP, 1);
-
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-		}
-
-		return true;
+		return GenerateDefault_generateArtifact (solarSys, whichNode);
 	}
 
 	if (CurStarDescPtr->Index == ORZ_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, NULL);
-		return true;
+		return GenerateDefault_generateRuins (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
+static bool
+GenerateOrz_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (CurStarDescPtr->Index == TAALO_PROTECTOR_DEFINED
+			&& matchWorld (solarSys, world, 1, 2))
+	{
+		assert (!GET_GAME_STATE (TAALO_PROTECTOR) && whichNode == 0);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (TAALO_PROTECTOR, 1);
+		SET_GAME_STATE (TAALO_PROTECTOR_ON_SHIP, 1);
+
+		return true; // picked up
+	}
+
+	if (CurStarDescPtr->Index == ORZ_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		// Standard ruins report
+		GenerateDefault_landerReportCycle (solarSys);
+		return false;
+	}
+
+	(void) whichNode;
+	return false;
+}

@@ -31,20 +31,21 @@ bool GenerateDefault_generateName (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
 bool GenerateDefault_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-bool GenerateDefault_generateMinerals (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
-bool GenerateDefault_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
-bool GenerateDefault_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
-
-// Ruin callback returns 'true' if a lander report should be given
-typedef bool (*PickupRuinCallback)(SOLARSYS_STATE *solarSys,
+COUNT GenerateDefault_generateMinerals (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+COUNT GenerateDefault_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+COUNT GenerateDefault_generateLife (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+bool GenerateDefault_pickupMinerals (SOLARSYS_STATE *, PLANET_DESC *world,
+		COUNT whichNode);
+bool GenerateDefault_pickupEnergy (SOLARSYS_STATE *, PLANET_DESC *world,
+		COUNT whichNode);
+bool GenerateDefault_pickupLife (SOLARSYS_STATE *, PLANET_DESC *world,
 		COUNT whichNode);
 
-bool GenerateDefault_generateArtifact (SOLARSYS_STATE *, COUNT *whichNode);
-bool GenerateDefault_generateRuins (SOLARSYS_STATE *, COUNT *whichNode);
-bool GenerateDefault_pickupRuins (SOLARSYS_STATE *, PickupRuinCallback);
+COUNT GenerateDefault_generateArtifact (SOLARSYS_STATE *, COUNT whichNode);
+COUNT GenerateDefault_generateRuins (SOLARSYS_STATE *, COUNT whichNode);
 bool GenerateDefault_landerReport (SOLARSYS_STATE *);
 bool GenerateDefault_landerReportCycle (SOLARSYS_STATE *);
 

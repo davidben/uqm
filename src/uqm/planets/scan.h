@@ -47,14 +47,18 @@ extern void ScanSystem (void);
 
 extern void RepairBackRect (RECT *pRect);
 extern void GeneratePlanetSide (void);
-extern bool callGenerateForScanType (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *node, BYTE scanType);
+extern COUNT callGenerateForScanType (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT node, BYTE scanType);
+// Returns true if the node should be removed from the surface
+extern bool callPickupForScanType (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT node, BYTE scanType);
 
 extern void RedrawSurfaceScan (const POINT *newLoc);
 extern CONTEXT GetScanContext (BOOLEAN *owner);
 extern void DestroyScanContext (void);
 
 bool isNodeRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr);
+COUNT countNodesRetrieved (PLANET_INFO *planetInfo, BYTE scanType);
 void setNodeRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr);
 void setNodeNotRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr);
 

@@ -33,8 +33,10 @@
 static bool GenerateDruuge_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateDruuge_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateDruuge_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateDruuge_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateDruuge_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateDruugeFunctions = {
@@ -48,6 +50,9 @@ const GenerateFunctions generateDruugeFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateDruuge_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateDruuge_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -127,34 +132,38 @@ GenerateDruuge_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static bool
-onRuinPickedUp (SOLARSYS_STATE *solarSys, COUNT whichNode)
-{
-	if (!GET_GAME_STATE (ROSY_SPHERE))
-	{	// Just picked up the Rosy Sphere from a ruin
-		SetLanderTakeoff ();
-
-		SET_GAME_STATE (ROSY_SPHERE, 1);
-		SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);
-	}
-
-	(void) solarSys;
-	(void) whichNode;
-
-	return true; // give whatever report is next
-}
-
-static bool
-GenerateDruuge_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+GenerateDruuge_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, onRuinPickedUp);
-		return true;
+		GenerateDefault_landerReportCycle (solarSys);
+
+		// The artifact can be picked up from any ruin
+		if (!GET_GAME_STATE (ROSY_SPHERE))
+		{	// Just picked up the Rosy Sphere from a ruin
+			SetLanderTakeoff ();
+
+			SET_GAME_STATE (ROSY_SPHERE, 1);
+			SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);
+		}
+
+		return false; // do not remove the node
 	}
 
-	*whichNode = 0;
-	return true;
+	(void) whichNode;
+	return false;
+}
+
+static COUNT
+GenerateDruuge_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		return GenerateDefault_generateRuins (solarSys, whichNode);
+	}
+
+	return 0;
 }
 

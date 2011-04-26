@@ -19,7 +19,6 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../encount.h"
@@ -34,8 +33,10 @@
 static bool GenerateThraddash_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateThraddash_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateThraddash_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateThraddash_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateThraddashFunctions = {
@@ -49,6 +50,9 @@ const GenerateFunctions generateThraddashFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateThraddash_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateThraddash_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -155,44 +159,60 @@ GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 	return true;
 }
 
-static bool
+static COUNT
 GenerateThraddash_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode)
+		PLANET_DESC *world, COUNT whichNode)
 {
 	if (CurStarDescPtr->Index == THRADD_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, NULL);
-		return true;
+		return GenerateDefault_generateRuins (solarSys, whichNode);
 	}
 
 	if (CurStarDescPtr->Index == AQUA_HELIX_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
+		// This check is redundant since the retrieval bit will keep the
+		// node from showing up again
 		if (GET_GAME_STATE (AQUA_HELIX))
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 
-		GenerateDefault_generateArtifact (solarSys, whichNode);
-
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			SET_GAME_STATE (HELIX_VISITS, 0);
-			SET_GAME_STATE (AQUA_HELIX, 1);
-			SET_GAME_STATE (AQUA_HELIX_ON_SHIP, 1);
-			SET_GAME_STATE (HELIX_UNPROTECTED, 1);
-
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-		}
-
-		return true;
+		return GenerateDefault_generateArtifact (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
+static bool
+GenerateThraddash_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (CurStarDescPtr->Index == THRADD_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		// Standard ruins report
+		GenerateDefault_landerReportCycle (solarSys);
+		return false;
+	}
+
+	if (CurStarDescPtr->Index == AQUA_HELIX_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		assert (!GET_GAME_STATE (AQUA_HELIX) && whichNode == 0);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (HELIX_VISITS, 0);
+		SET_GAME_STATE (AQUA_HELIX, 1);
+		SET_GAME_STATE (AQUA_HELIX_ON_SHIP, 1);
+		SET_GAME_STATE (HELIX_UNPROTECTED, 1);
+
+		return true; // picked up
+	}
+
+	(void) whichNode;
+	return false;
+}

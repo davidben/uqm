@@ -19,7 +19,6 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../globdata.h"
 #include "../../nameref.h"
 #include "../../resinst.h"
@@ -28,8 +27,10 @@
 
 static bool GenerateVault_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateVault_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateVault_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateVault_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateVaultFunctions = {
@@ -43,6 +44,9 @@ const GenerateFunctions generateVaultFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateVault_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateVault_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -74,50 +78,54 @@ GenerateVault_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateVault_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, 0))
 	{
-		PLANET_INFO *planetInfo = &solarSys->SysInfo.PlanetInfo;
-		
-		GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode);
+	}
 
-		if (isNodeRetrieved (planetInfo, ENERGY_SCAN, 0))
+	return 0;
+}
+
+static bool
+GenerateVault_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, 0))
+	{
+		assert (whichNode == 0);
+
+		if (GET_GAME_STATE (SHIP_VAULT_UNLOCKED))
+		{	// Give the final report, "omg empty" and whatnot
+			GenerateDefault_landerReportCycle (solarSys);
+		}
+		else if (GET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP))
 		{
-			// Retrieval status is cleared to keep the node on the map
-			setNodeNotRetrieved (planetInfo, ENERGY_SCAN, 0);
+			GenerateDefault_landerReportCycle (solarSys);
+			SetLanderTakeoff ();
 
-			if (GET_GAME_STATE (SHIP_VAULT_UNLOCKED))
-			{	// Give the final report, "omg empty" and whatnot
-				GenerateDefault_landerReportCycle (solarSys);
-			}
-			else if (GET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP))
+			SET_GAME_STATE (SHIP_VAULT_UNLOCKED, 1);
+			SET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP, 0);
+			SET_GAME_STATE (SYREEN_HOME_VISITS, 0);
+		}
+		else
+		{
+			GenerateDefault_landerReport (solarSys);
+
+			if (!GET_GAME_STATE (KNOW_SYREEN_VAULT))
 			{
-				GenerateDefault_landerReportCycle (solarSys);
-				SetLanderTakeoff ();
-
-				SET_GAME_STATE (SHIP_VAULT_UNLOCKED, 1);
-				SET_GAME_STATE (SYREEN_SHUTTLE_ON_SHIP, 0);
+				SET_GAME_STATE (KNOW_SYREEN_VAULT, 1);
 				SET_GAME_STATE (SYREEN_HOME_VISITS, 0);
-			}
-			else
-			{
-				GenerateDefault_landerReport (solarSys);
-
-				if (!GET_GAME_STATE (KNOW_SYREEN_VAULT))
-				{
-					SET_GAME_STATE (KNOW_SYREEN_VAULT, 1);
-					SET_GAME_STATE (SYREEN_HOME_VISITS, 0);
-				}
 			}
 		}
 
-		return true;
+		// The Vault cannot be "picked up". It is always on the surface.
+		return false;
 	}
 
-	*whichNode = 0;
-	return true;
+	(void) whichNode;
+	return false;
 }
-

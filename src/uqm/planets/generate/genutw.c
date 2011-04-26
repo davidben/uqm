@@ -19,7 +19,6 @@
 #include "genall.h"
 #include "../lander.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../encount.h"
@@ -35,8 +34,10 @@ static bool GenerateUtwig_initNpcs (SOLARSYS_STATE *solarSys);
 static bool GenerateUtwig_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateUtwig_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateUtwigFunctions = {
@@ -50,6 +51,9 @@ const GenerateFunctions generateUtwigFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateUtwig_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateUtwig_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -206,45 +210,61 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (CurStarDescPtr->Index == UTWIG_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, NULL);
-		return true;
+		return GenerateDefault_generateRuins (solarSys, whichNode);
 	}
 
 	if (CurStarDescPtr->Index == BOMB_DEFINED
 			&& matchWorld (solarSys, world, 5, 1))
 	{
+		// This check is redundant since the retrieval bit will keep the
+		// node from showing up again
 		if (GET_GAME_STATE (UTWIG_BOMB))
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 
-		GenerateDefault_generateArtifact (solarSys, whichNode);
-
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			SET_GAME_STATE (UTWIG_BOMB, 1);
-			SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 1);
-			SET_GAME_STATE (DRUUGE_MANNER, 1);
-			SET_GAME_STATE (DRUUGE_VISITS, 0);
-			SET_GAME_STATE (DRUUGE_HOME_VISITS, 0);
-
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-		}
-
-		return true;
+		return GenerateDefault_generateArtifact (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
+static bool
+GenerateUtwig_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (CurStarDescPtr->Index == UTWIG_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		// Standard ruins report
+		GenerateDefault_landerReportCycle (solarSys);
+		return false;
+	}
+
+	if (CurStarDescPtr->Index == BOMB_DEFINED
+			&& matchWorld (solarSys, world, 5, 1))
+	{
+		assert (!GET_GAME_STATE (UTWIG_BOMB) && whichNode == 0);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (UTWIG_BOMB, 1);
+		SET_GAME_STATE (UTWIG_BOMB_ON_SHIP, 1);
+		SET_GAME_STATE (DRUUGE_MANNER, 1);
+		SET_GAME_STATE (DRUUGE_VISITS, 0);
+		SET_GAME_STATE (DRUUGE_HOME_VISITS, 0);
+
+		return true; // picked up
+	}
+
+	(void) whichNode;
+	return false;
+}

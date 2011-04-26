@@ -31,8 +31,10 @@
 static bool GeneratePkunk_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GeneratePkunk_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GeneratePkunk_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GeneratePkunk_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GeneratePkunk_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generatePkunkFunctions = {
@@ -46,6 +48,9 @@ const GenerateFunctions generatePkunkFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GeneratePkunk_generateEnergy,
 	/* .generateLife     = */ GenerateDefault_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GeneratePkunk_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -117,34 +122,38 @@ GeneratePkunk_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static bool
-onRuinPickedUp (SOLARSYS_STATE *solarSys, COUNT whichNode)
-{
-	if (!GET_GAME_STATE (CLEAR_SPINDLE))
-	{	// Just picked up the Clear Spindle from a ruin
-		SetLanderTakeoff ();
-
-		SET_GAME_STATE (CLEAR_SPINDLE, 1);
-		SET_GAME_STATE (CLEAR_SPINDLE_ON_SHIP, 1);
-	}
-
-	(void) solarSys;
-	(void) whichNode;
-
-	return true; // give whatever report is next
-}
-
-static bool
-GeneratePkunk_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+GeneratePkunk_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, onRuinPickedUp);
-		return true;
+		GenerateDefault_landerReportCycle (solarSys);
+
+		// The artifact can be picked up from any ruin
+		if (!GET_GAME_STATE (CLEAR_SPINDLE))
+		{	// Just picked up the Clear Spindle from a ruin
+			SetLanderTakeoff ();
+
+			SET_GAME_STATE (CLEAR_SPINDLE, 1);
+			SET_GAME_STATE (CLEAR_SPINDLE_ON_SHIP, 1);
+		}
+
+		return false; // do not remove the node
 	}
 
-	*whichNode = 0;
-	return true;
+	(void) whichNode;
+	return false;
+}
+
+static COUNT
+GeneratePkunk_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		return GenerateDefault_generateRuins (solarSys, whichNode);
+	}
+
+	return 0;
 }
 

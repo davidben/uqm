@@ -34,10 +34,12 @@
 static bool GenerateMycon_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
-static bool GenerateMycon_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateMycon_generateLife (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateMycon_pickupEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
 
 
 const GenerateFunctions generateMyconFunctions = {
@@ -51,6 +53,9 @@ const GenerateFunctions generateMyconFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateMycon_generateEnergy,
 	/* .generateLife     = */ GenerateMycon_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateMycon_pickupEnergy,
+	/* .pickupLife       = */ GenerateDefault_pickupLife,
 };
 
 
@@ -182,32 +187,21 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (CurStarDescPtr->Index == SUN_DEVICE_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
+		// This check is redundant since the retrieval bit will keep the
+		// node from showing up again
 		if (GET_GAME_STATE (SUN_DEVICE))
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 
-		GenerateDefault_generateArtifact (solarSys, whichNode);
-
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			SET_GAME_STATE (SUN_DEVICE, 1);
-			SET_GAME_STATE (SUN_DEVICE_ON_SHIP, 1);
-			SET_GAME_STATE (MYCON_VISITS, 0);
-
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-		}
-
-		return true;
+		return GenerateDefault_generateArtifact (solarSys, whichNode);
 	}
 
 	if ((CurStarDescPtr->Index == EGG_CASE0_DEFINED
@@ -215,50 +209,77 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			|| CurStarDescPtr->Index == EGG_CASE2_DEFINED)
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
+		// This check is redundant since the retrieval bit will keep the
+		// node from showing up again
 		// XXX: DiscoveryString is set by generateOrbital() only when the
 		//   node has not been picked up yet
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0)
-				&& !solarSys->SysInfo.PlanetInfo.DiscoveryString)
+		if (!solarSys->SysInfo.PlanetInfo.DiscoveryString)
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 
-		GenerateDefault_generateArtifact (solarSys, whichNode);
-		
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			switch (CurStarDescPtr->Index)
-			{
-				case EGG_CASE0_DEFINED:
-					SET_GAME_STATE (EGG_CASE0_ON_SHIP, 1);
-					break;
-				case EGG_CASE1_DEFINED:
-					SET_GAME_STATE (EGG_CASE1_ON_SHIP, 1);
-					break;
-				case EGG_CASE2_DEFINED:
-					SET_GAME_STATE (EGG_CASE2_ON_SHIP, 1);
-					break;
-			}
-
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-		}
-
-		return true;
+		return GenerateDefault_generateArtifact (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
 static bool
-GenerateMycon_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+GenerateMycon_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
 {
-	*whichNode = 0;
+	if (CurStarDescPtr->Index == SUN_DEVICE_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		assert (!GET_GAME_STATE (SUN_DEVICE) && whichNode == 0);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (SUN_DEVICE, 1);
+		SET_GAME_STATE (SUN_DEVICE_ON_SHIP, 1);
+		SET_GAME_STATE (MYCON_VISITS, 0);
+
+		return true; // picked up
+	}
+
+	if ((CurStarDescPtr->Index == EGG_CASE0_DEFINED
+			|| CurStarDescPtr->Index == EGG_CASE1_DEFINED
+			|| CurStarDescPtr->Index == EGG_CASE2_DEFINED)
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		assert (whichNode == 0);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		switch (CurStarDescPtr->Index)
+		{
+			case EGG_CASE0_DEFINED:
+				SET_GAME_STATE (EGG_CASE0_ON_SHIP, 1);
+				break;
+			case EGG_CASE1_DEFINED:
+				SET_GAME_STATE (EGG_CASE1_ON_SHIP, 1);
+				break;
+			case EGG_CASE2_DEFINED:
+				SET_GAME_STATE (EGG_CASE2_ON_SHIP, 1);
+				break;
+		}
+
+		return true; // picked up
+	}
+
+	(void) whichNode;
+	return false;
+}
+
+static COUNT
+GenerateMycon_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	(void) whichNode;
 	(void) solarSys;
 	(void) world;
-	return true;
+	return 0;
 }
 

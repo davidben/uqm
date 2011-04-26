@@ -1059,16 +1059,14 @@ calculateBioValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 
 	assert (system->pOrbitalDesc == world);
 	
-	numBio = (COUNT)~0;
-	callGenerateForScanType ((SOLARSYS_STATE *) system, (PLANET_DESC *) world,
-			&numBio, BIOLOGICAL_SCAN);
+	numBio = callGenerateForScanType ((SOLARSYS_STATE *) system,
+			(PLANET_DESC *) world, ~0, BIOLOGICAL_SCAN);
 
 	result = 0;
 	for (i = 0; i < numBio; i++)
 	{
-		COUNT whichNode = i;
 		callGenerateForScanType ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, &whichNode, BIOLOGICAL_SCAN);
+				(PLANET_DESC *) world, i, BIOLOGICAL_SCAN);
 		result += BIO_CREDIT_VALUE * LONIBBLE (CreatureData[
 				system->SysInfo.PlanetInfo.CurType].ValueAndHitPoints);
 	}
@@ -1084,18 +1082,16 @@ generateBioIndex(const SOLARSYS_STATE *system, const PLANET_DESC *world,
 
 	assert (system->pOrbitalDesc == world);
 	
-	numBio = (COUNT)~0;
-	callGenerateForScanType ((SOLARSYS_STATE *) system, (PLANET_DESC *) world,
-			&numBio, BIOLOGICAL_SCAN);
+	numBio = callGenerateForScanType ((SOLARSYS_STATE *) system,
+			(PLANET_DESC *) world, ~0, BIOLOGICAL_SCAN);
 
 	for (i = 0; i < NUM_CREATURE_TYPES + NUM_SPECIAL_CREATURE_TYPES; i++)
 		bio[i] = 0;
 	
 	for (i = 0; i < numBio; i++)
 	{
-		COUNT whichNode = i;
 		callGenerateForScanType ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, &whichNode, BIOLOGICAL_SCAN);
+				(PLANET_DESC *) world, i, BIOLOGICAL_SCAN);
 		bio[system->SysInfo.PlanetInfo.CurType]++;
 	}
 }
@@ -1109,16 +1105,14 @@ calculateMineralValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 
 	assert (system->pOrbitalDesc == world);
 	
-	numDeposits = (COUNT)~0;
-	callGenerateForScanType ((SOLARSYS_STATE *) system, (PLANET_DESC *) world,
-			&numDeposits, MINERAL_SCAN);
+	numDeposits = callGenerateForScanType ((SOLARSYS_STATE *) system,
+			(PLANET_DESC *) world, ~0, MINERAL_SCAN);
 
 	result = 0;
 	for (i = 0; i < numDeposits; i++)
 	{
-		COUNT whichNode = i;
 		callGenerateForScanType ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, &whichNode, MINERAL_SCAN);
+				(PLANET_DESC *) world, i, MINERAL_SCAN);
 		result += HIBYTE (system->SysInfo.PlanetInfo.CurDensity) *
 				GLOBAL (ElementWorth[ElementCategory (
 				system->SysInfo.PlanetInfo.CurType)]);
@@ -1135,18 +1129,16 @@ generateMineralIndex(const SOLARSYS_STATE *system, const PLANET_DESC *world,
 
 	assert (system->pOrbitalDesc == world);
 	
-	numDeposits = (COUNT)~0;
-	callGenerateForScanType ((SOLARSYS_STATE *) system, (PLANET_DESC *) world,
-			&numDeposits, MINERAL_SCAN);
+	numDeposits = callGenerateForScanType ((SOLARSYS_STATE *) system,
+			(PLANET_DESC *) world, ~0, MINERAL_SCAN);
 
 	for (i = 0; i < NUM_ELEMENT_CATEGORIES; i++)
 		minerals[i] = 0;
 	
 	for (i = 0; i < numDeposits; i++)
 	{
-		COUNT whichNode = i;
 		callGenerateForScanType ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, &whichNode, MINERAL_SCAN);
+				(PLANET_DESC *) world, i, MINERAL_SCAN);
 		minerals[ElementCategory(system->SysInfo.PlanetInfo.CurType)] +=
 				HIBYTE (system->SysInfo.PlanetInfo.CurDensity);
 	}

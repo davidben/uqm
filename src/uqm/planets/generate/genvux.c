@@ -20,7 +20,6 @@
 #include "../lander.h"
 #include "../lifeform.h"
 #include "../planets.h"
-#include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../encount.h"
@@ -36,10 +35,14 @@
 static bool GenerateVux_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateVux_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static bool GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
-static bool GenerateVux_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT *whichNode);
+static COUNT GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateVux_generateLife (SOLARSYS_STATE *solarSys,
+		PLANET_DESC *world, COUNT whichNode);
+static bool GenerateVux_pickupEnergy (SOLARSYS_STATE *, PLANET_DESC *world,
+		COUNT whichNode);
+static bool GenerateVux_pickupLife (SOLARSYS_STATE *, PLANET_DESC *world,
+		COUNT whichNode);
 
 
 const GenerateFunctions generateVuxFunctions = {
@@ -53,6 +56,9 @@ const GenerateFunctions generateVuxFunctions = {
 	/* .generateMinerals = */ GenerateDefault_generateMinerals,
 	/* .generateEnergy   = */ GenerateVux_generateEnergy,
 	/* .generateLife     = */ GenerateVux_generateLife,
+	/* .pickupMinerals   = */ GenerateDefault_pickupMinerals,
+	/* .pickupEnergy     = */ GenerateVux_pickupEnergy,
+	/* .pickupLife       = */ GenerateVux_pickupLife,
 };
 
 
@@ -203,51 +209,68 @@ GenerateVux_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	return true;
 }
 
-static bool
+static COUNT
 GenerateVux_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (CurStarDescPtr->Index == MAIDENS_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
+		// This check is redundant since the retrieval bit will keep the
+		// node from showing up again
 		if (GET_GAME_STATE (SHOFIXTI_MAIDENS))
 		{	// already picked up
-			*whichNode = 0;
-			return true;
+			return 0;
 		}
 
 		solarSys->SysInfo.PlanetInfo.CurPt.x = MAP_WIDTH / 3;
 		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 5 / 8;
 		
-		*whichNode = 1; // only matters when count is requested
-
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, ENERGY_SCAN, 0))
-		{
-			GenerateDefault_landerReport (solarSys);
-			SetLanderTakeoff ();
-
-			SET_GAME_STATE (SHOFIXTI_MAIDENS, 1);
-			SET_GAME_STATE (MAIDENS_ON_SHIP, 1);
-		}
-		
-		return true;
+		return 1; // only matters when count is requested
 	}
 
 	if (CurStarDescPtr->Index == VUX_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		GenerateDefault_generateRuins (solarSys, whichNode);
-		GenerateDefault_pickupRuins (solarSys, NULL);
-		return true;
+		return GenerateDefault_generateRuins (solarSys, whichNode);
 	}
 
-	*whichNode = 0;
-	return true;
+	return 0;
 }
 
 static bool
+GenerateVux_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (CurStarDescPtr->Index == MAIDENS_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		assert (!GET_GAME_STATE (SHOFIXTI_MAIDENS) && whichNode == 0);
+
+		GenerateDefault_landerReport (solarSys);
+		SetLanderTakeoff ();
+
+		SET_GAME_STATE (SHOFIXTI_MAIDENS, 1);
+		SET_GAME_STATE (MAIDENS_ON_SHIP, 1);
+		
+		return true; // picked up
+	}
+
+	if (CurStarDescPtr->Index == VUX_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		// Standard ruins report
+		GenerateDefault_landerReportCycle (solarSys);
+		return false;
+	}
+
+	(void) whichNode;
+	return false;
+}
+
+static COUNT
 GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT *whichNode)
+		COUNT whichNode)
 {
 	if (CurStarDescPtr->Index == MAIDENS_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
@@ -258,7 +281,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
-		for (i = 0; i <= *whichNode && i < 12; ++i)
+		for (i = 0; i <= whichNode && i < 12; ++i)
 		{
 			GenerateRandomLocation (&solarSys->SysInfo);
 			if (i < 4)
@@ -269,10 +292,9 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				solarSys->SysInfo.PlanetInfo.CurType = 18;
 		}
 		
-		*whichNode = 12; // only matters when count is requested
-
 		TFB_SeedRandom (old_rand);
-		return true;
+
+		return 12; // only matters when count is requested
 	}
 
 	if (CurStarDescPtr->Index == VUX_BEAST_DEFINED
@@ -284,7 +306,7 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 		old_rand = TFB_SeedRandom (
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
-		for (i = 0; i <= *whichNode && i < 11; ++i)
+		for (i = 0; i <= whichNode && i < 11; ++i)
 		{
 			GenerateRandomLocation (&solarSys->SysInfo);
 			if (i == 0) /* VUX Beast */
@@ -297,11 +319,25 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				solarSys->SysInfo.PlanetInfo.CurType = 8;
 		}
 		
-		*whichNode = 11; // only matters when count is requested
+		TFB_SeedRandom (old_rand);
 
-		if (isNodeRetrieved (&solarSys->SysInfo.PlanetInfo, BIOLOGICAL_SCAN, 0)
-				&& !GET_GAME_STATE (VUX_BEAST))
+		return  11; // only matters when count is requested
+	}
+
+	return GenerateDefault_generateLife (solarSys, world, whichNode);
+}
+
+static bool
+GenerateVux_pickupLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
+		COUNT whichNode)
+{
+	if (CurStarDescPtr->Index == VUX_BEAST_DEFINED
+			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
+	{
+		if (whichNode == 0)
 		{	// Picked up Zex' Beauty
+			assert (!GET_GAME_STATE (VUX_BEAST));
+
 			GenerateDefault_landerReport (solarSys);
 			SetLanderTakeoff ();
 
@@ -309,11 +345,8 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			SET_GAME_STATE (VUX_BEAST_ON_SHIP, 1);
 		}
 
-		TFB_SeedRandom (old_rand);
-		return true;
+		return true; // picked up
 	}
 
-	GenerateDefault_generateLife (solarSys, world, whichNode);
-	return true;
+	return GenerateDefault_pickupLife (solarSys, world, whichNode);
 }
-
