@@ -107,7 +107,7 @@ GenerateSupox_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 			solarSys->PlanetSideFrame[1] =
 					CaptureDrawable (LoadGraphic (RUINS_MASK_PMAP_ANIM));
 			solarSys->SysInfo.PlanetInfo.DiscoveryString =
-					CaptureStringTable (LoadStringTable (RUINS_STRTAB));
+					CaptureStringTable (LoadStringTable (SUPOX_RUINS_STRTAB));
 			if (GET_GAME_STATE (ULTRON_CONDITION))
 			{	// Already picked up the Ultron, skip the report
 				solarSys->SysInfo.PlanetInfo.DiscoveryString =

@@ -956,6 +956,7 @@ text.starcon = STRTAB:base/gamestrings.txt
 text.sundevice = STRTAB:base/lander/energy/sundevice.txt
 text.syreenvault = STRTAB:base/lander/energy/syreenvault.txt
 text.taalodevice = STRTAB:base/lander/energy/taalodevice.txt
+text.ultron = STRTAB:base/lander/energy/ultron.txt
 text.umgahcaster = STRTAB:base/lander/energy/umgahcaster.txt
 text.urquanwreck = STRTAB:base/lander/energy/urquanwreck.txt
 text.utwigbomb = STRTAB:base/lander/energy/utwigbomb.txt

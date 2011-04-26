@@ -125,6 +125,7 @@
 #define SUN_DEVICE_STRTAB "text.sundevice"
 #define SUPER_DENSE_COLOR_TAB "planet.superdense.colortable"
 #define SUPER_DENSE_XLAT_TAB "planet.superdense.translatetable"
+#define SUPOX_RUINS_STRTAB "text.ultron"
 #define TAALO_DEVICE_STRTAB "text.taalodevice"
 #define TELLURIC_COLOR_TAB "planet.telluric.colortable"
 #define TELLURIC_XLAT_TAB "planet.telluric.translatetable"
