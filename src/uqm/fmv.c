@@ -132,12 +132,5 @@ Victory (void)
 	FadeScreen (FadeAllToBlack, 0);
 }
 
-void
-Logo (void)
-{
-	ShowPresentation ("slides.logo");
-}
-
-
 
 

@@ -187,8 +187,6 @@ while (--ac > 0)
 	}
 	log_add (log_Info, "We've loaded the Kernel");
 
-	Logo ();
-	
 	GLOBAL (CurrentActivity) = 0;
 	// show splash and init the kernel in the meantime
 	SplashScreen (BackgroundInitKernel);
