@@ -697,6 +697,14 @@ Intro (void)
 	else if (GET_GAME_STATE (TALKING_PET_ON_SHIP))
 	{
 		NumVisits = GET_GAME_STATE (TALKING_PET_VISITS);
+		
+		// You can acquire the Talking Pet without having Taalo Shield after
+		// the Kohr-Ah wipe out the Umgah. In that case, the Pet will join
+		// you willingly, but his complaints about the Taalo shield as in
+		// HELLO_AS_DEVICE_1 do not make any sense.
+		if (!GET_GAME_STATE (TAALO_PROTECTOR_ON_SHIP) && NumVisits == 0)
+			++NumVisits; // skip HELLO_AS_DEVICE_1
+
 		switch (NumVisits++)
 		{
 			case 0:
@@ -773,9 +781,21 @@ Intro (void)
 	else
 	{
 		if (ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING))
+		{
 			NPCPhrase (LETS_MAKE_A_DEAL);
+		}
 		else
+		{
 			NPCPhrase (UMGAH_ALL_GONE);
+
+			if (GET_GAME_STATE (TALKING_PET_HOME_VISITS) == 0
+					|| !GET_GAME_STATE (TAALO_PROTECTOR_ON_SHIP))
+			{	// The how_trust-TRUST exchange only makes sense when the
+				// player visited the Talking Pet before so he tried to
+				// kill the player *and* the player has the Taalo shield.
+				DISABLE_PHRASE (how_trust);
+			}
+		}
 
 		PetDeal ((RESPONSE_REF)0);
 	}
