@@ -71,25 +71,34 @@ load_ship (SPECIES_ID SpeciesID, BOOLEAN LoadBattleData)
 		goto BadLoad;
 	RDPtr->CodeRef = CodeRef;
 
-	RDPtr->ship_info.icons = CaptureDrawable (LoadGraphic (
-			RDPtr->ship_info.icons_rsc));
-	if (!RDPtr->ship_info.icons)
+	if (RDPtr->ship_info.icons_rsc != NULL_RESOURCE)
 	{
-		/* goto BadLoad */
+		RDPtr->ship_info.icons = CaptureDrawable (LoadGraphic (
+				RDPtr->ship_info.icons_rsc));
+		if (!RDPtr->ship_info.icons)
+		{
+			/* goto BadLoad */
+		}
 	}
-		
-	RDPtr->ship_info.melee_icon = CaptureDrawable (LoadGraphic (
-			RDPtr->ship_info.melee_icon_rsc));
-	if (!RDPtr->ship_info.melee_icon)
+	
+	if (RDPtr->ship_info.melee_icon_rsc != NULL_RESOURCE)
 	{
-		/* goto BadLoad */
+		RDPtr->ship_info.melee_icon = CaptureDrawable (LoadGraphic (
+				RDPtr->ship_info.melee_icon_rsc));
+		if (!RDPtr->ship_info.melee_icon)
+		{
+			/* goto BadLoad */
+		}
 	}
 
-	RDPtr->ship_info.race_strings =	CaptureStringTable (LoadStringTable (
-			RDPtr->ship_info.race_strings_rsc));
-	if (!RDPtr->ship_info.race_strings)
+	if (RDPtr->ship_info.race_strings_rsc != NULL_RESOURCE)
 	{
-		/* goto BadLoad */
+		RDPtr->ship_info.race_strings =	CaptureStringTable (LoadStringTable (
+				RDPtr->ship_info.race_strings_rsc));
+		if (!RDPtr->ship_info.race_strings)
+		{
+			/* goto BadLoad */
+		}
 	}
 
 	if (LoadBattleData)
