@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Added lander reports for Supox ruins and Ultron. The reports text
+  is new content from TFB. (bug #1120) - Alex
 - Fixed 'caster comm with Ilwrath after they die off (bug #850) - Alex
 - Fixed Syreen Vault lander report infinite loop (bug #1118) - Alex
 - Same captain names are used on both net sides (bug #989) - Alex
