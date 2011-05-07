@@ -166,6 +166,14 @@ GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 					CaptureDrawable (LoadGraphic (UMGAH_BCS_MASK_PMAP_ANIM));
 			solarSys->SysInfo.PlanetInfo.DiscoveryString =
 					CaptureStringTable (LoadStringTable (UMGAH_BCS_STRTAB));
+			if (!GET_GAME_STATE (SPATHI_SHIELDED_SELVES))
+			{	// The first report talks extensively about Spathi
+				// slave-shielding selves. If they never did so, the report
+				// makes no sense, so use an alternate.
+				solarSys->SysInfo.PlanetInfo.DiscoveryString =	
+						SetAbsStringTableIndex (
+						solarSys->SysInfo.PlanetInfo.DiscoveryString, 1);
+			}
 		}
 		LoadPlanet (NULL);
 		return true;
