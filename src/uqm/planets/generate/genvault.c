@@ -118,7 +118,6 @@ GenerateVault_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			if (!GET_GAME_STATE (KNOW_SYREEN_VAULT))
 			{
 				SET_GAME_STATE (KNOW_SYREEN_VAULT, 1);
-				SET_GAME_STATE (SYREEN_HOME_VISITS, 0);
 			}
 		}
 

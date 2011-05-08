@@ -694,6 +694,7 @@ PlanAmbush (RESPONSE_REF R)
 	NPCPhrase (OK_FOUND_VAULT);
 
 	SET_GAME_STATE (MYCON_AMBUSH, 1);
+	// This is redundant but left here for clarity
 	SET_GAME_STATE (SYREEN_HOME_VISITS, 0);
 
 	Response (whats_my_reward, Foreplay);
@@ -818,6 +819,12 @@ Intro (void)
 	else if (GET_GAME_STATE (SHIP_VAULT_UNLOCKED))
 	{
 		PlanAmbush ((RESPONSE_REF)0);
+		// XXX: PlanAmbush() sets SYREEN_HOME_VISITS=0, but then this value
+		// is immediately reset to NumVisits just below. The intent was to
+		// reset the HELLO stack so that is what we will do here as well.
+		// Note that it is completely redundant because genvault.c resets
+		// SYREEN_HOME_VISITS when it sets SHIP_VAULT_UNLOCKED=1.
+		NumVisits = 0;
 	}
 	else
 	{

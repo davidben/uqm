@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Syreen dialog tree no longer resets after visiting the Syreen Vault
+  for the very first time (bug #891) - Alex
 - Fixed lander report at the Syreen Vault inconsistency (bug #1121) - Alex
 - Added lander reports for Supox ruins and Ultron. The reports text
   is new content from TFB. (bug #1120) - Alex
