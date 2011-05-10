@@ -19,7 +19,7 @@ Our bodies seethe with the passion of our genes.
 A thousand of your species do not possess the richness in one of my cells.
 
 #(RAMBLE_3)	mycon-004.ogg
-I fill with my parents parents parents parents parents
+I fill with my parents' parents' parents' parents' parents
 I am they -- and they are us. Then, and now.
 
 #(RAMBLE_4)	mycon-005.ogg
@@ -29,7 +29,7 @@ The dwellers in the Mohorovichic.
 #(RAMBLE_5)	mycon-006.ogg
 I am Dugee
 I am the purity monitor
-I choose what buds are permitted to mature.
+I choose what buds are permitted to mature
 and which must be eradicated.
 I died of general misfunction 57,283 years ago.
 
@@ -58,7 +58,7 @@ Their discarded husks speak of joy to come.
 
 #(RAMBLE_11)	mycon-012.ogg
 I have chosen my offsprings' memories carefully from my set of remembrances
-the sweet and warm times of my existence and those of my parents parents parents
+the sweet and warm times of my existence and those of my parents' parents' parents
 the bits of a million lifetimes coalesced into a birth gift of complete awareness.
 
 #(RAMBLE_12)	mycon-013.ogg
@@ -232,7 +232,7 @@ I can't believe I'm trying to have a conversation with a hot fungus.
 Stop wiggling those... those... whatever they are!
 
 #(insult_7)
-Where's the Absorbing Junior when you need it?
+Where's the Absorbine Junior when you need it?
 
 #(insult_8)
 Helloo? Ugly! Can you hear me?
