@@ -29,7 +29,7 @@ we pull ourselves from our intense cycle of self-analysis
 and offer this greeting which, we hope, will suffice.
 
 #(HOSTILE_BOMB_HELLO_1)	utwig-006.ogg
-Oh woe. We find your presence here disconcerting.
+Oh, woe! We find your presence here disconcerting.
 In order to deal with the situation in such a way that we maintain some semblance of authority
 we are forced to deploy our forces against your armada.
 Prepare yourselves for battle.
@@ -45,7 +45,7 @@ but you find us in a state of moderate depression
 instead of our normal cycle of self-destructive tendencies.
 
 #(NEUTRAL_HOMEWORLD_HELLO_2)	utwig-009.ogg
-Alien vessel. Grieve for the loss of both the Utwig and the Universe at large.
+Alien vessel, grieve for the loss of both the Utwig and the Universe at large.
 
 #(NEUTRAL_HOMEWORLD_HELLO_3)	utwig-010.ogg
 You disturb our routine of eternal grieving
@@ -61,7 +61,7 @@ we find within ourselves the verve required to engage you in a duel to the death
 Indeed, we will find satisfaction in your demise or in our release from our mortal burden.
 
 #(HOSTILE_HOMEWORLD_HELLO_2)	utwig-013.ogg
-Attention Offending vessel! Your presence here is deeply appreciated!
+Attention offending vessel! Your presence here is deeply appreciated!
 You have stirred us from our depression-induced apathy
 to the point where our desire actually registers as a sensation!
 We look forward to either finding personal release in the netherworld
@@ -224,7 +224,7 @@ Your blatant transgressions have me hopping mad!
 Hop hop hop! Okay, that's it! Put up your dukes! Nobody makes fun of the Ultron!
 
 #(real_sorry_about_ultron)
-Sniff. That reminds me when my pet dog Splib, ran in front of a... rock chipper!
+Sniff. That reminds me when my pet dog Splib ran in front of a... rock chipper!
 
 #(APPRECIATE_SYMPATHY)	utwig-030.ogg
 You are kind. If we could wield the Ultron to resurrect your Splib, we would.
@@ -277,7 +277,7 @@ I could act upon these things in ways that would most likely seem mysterious if 
 Years later, you would herald our participation in your development as the turning point for your species.
 The Druuge were only one of the few to benefit in this way.
 Even now, they are puzzled by the way we rewarded them for the delivery of the Ultron to its correct place.
-In twenty four years, two months and three days they will all dance the dance of Jubilation.
+In twenty-four years, two months and three days they will all dance the dance of Jubilation.
 Indeed, the Ultron has allowed us to fundamentally change the Druuge forever!
 The Supox too received many benefits from our use of the Ultron.
 They can testify to its power!
@@ -447,7 +447,7 @@ I should don the facial effigy of Remorse For Lost Comrades.
 As you know, we were forced to withdraw from the Kohr-Ah offensive.
 Although we were able to make good account of ourselves, our casualties were high.
 In our attempt to balance the Doctrinal Conflict between the Kohr-Ah and the Ur-Quan
-we avoided the Ur-Quan; however they continued to engage us whenever possible.
+we avoided the Ur-Quan; however, they continued to engage us whenever possible.
 We had no choice but to take whatever losses were handed to us.
 I can think of no mask that properly expresses how I feel concerning this situation.
 
@@ -539,7 +539,7 @@ thus we have made it a policy to avoid Ur-Quan ships whenever possible.
 We have discovered that the Kohr-Ah, in addition to their formidable battle vessels
 will soon possess an immense ship capable of inflicting destruction on a vast scale.
 I do not need to examine the pulsations of the Ultron to know that they will use this instrument
-to implement their stated objective, the elimination of all intelligent life besides their own.
+to implement their stated objective: the elimination of all intelligent life besides their own.
 
 #(FLEET_ON_WAY)	utwig-054.ogg
 Even as I utter these words, the combined military resource of both the Utwig and Supox
@@ -639,7 +639,7 @@ This occasion ideally calls for me to don the Expression of Ultimate Gratitude.
 Eegh! I am compelled by the forceful Emanations of the Ultron to describe the appearance of the mask.
 Its foundation is composed entirely of a matrix of beetle secretions and Trooba Fern
 in an intricate and complex texture.
-The proccess is extremely time-consuming since even the best-trained beetle colonies
+The process is extremely time-consuming since even the best-trained beetle colonies
 will build a thousand rejects for every successful foundation.
 Alas, it will be many years before any of the Utwig will be able to wear such a mask.
 
