@@ -83,7 +83,7 @@ Hello. We are pleased to see you again. Have you any numbness yet?
 Good. It should be too soon for that. Too soon by far.
 
 #(FRDLY_HOMEWORLD_HELLO_4)	arilou-011.ogg
-Yes, Captain. What can the Arilou Lalee'lay of Falayalaralfali do for you this day?
+Yes, Captain? What can the Arilou Lalee'lay of Falayalaralfali do for you this day?
 
 #(whats_up_1)
 What exactly IS your connection with Earth and Humans, anyway?
@@ -179,8 +179,8 @@ The fate of your world and your heart relate to these matters.
 
 #(ARILOU_HINTS_3)	arilou-021.ogg
 The carnate forces of Ur-Quan and Kohr-Ah are twined about the memory of pain.
-They respond to these words.
-Hold! What you are doing to us is wrong! Why do you do this thing?
+They respond to these words:
+'Hold! What you are doing to us is wrong! Why do you do this thing?'
 
 #(ARILOU_HINTS_4)	arilou-022.ogg
 The enemy of your enemy is your friend... at least for a time.
@@ -236,7 +236,7 @@ Why should I trust you? You did funny things to that horror writer a while ago, 
 #(TRUST_BECAUSE)	arilou-030.ogg
 We do many things, few of them funny... at least by our standards.
 You do not, CANNOT understand some of what we do, or why.
-Therefore it may be best if you simply consider us... quirky.
+Therefore, it may be best if you simply consider us... quirky.
 
 #(what_about_interference)
 What gives your people the right to interfere with mine?
@@ -260,10 +260,10 @@ So what DID happen at the end of the War?
 #(ABOUT_WAR)	arilou-033.ogg
 Forgive us if we forget the importance you attach to such events as this.
 Our... context, is infinitely broader than yours in scope, both in space and *time*.
-Nevertheless, to please you I shall try to recall
-yes, now I remember. Here is the sequence
-the Ur-Quan fleets have moved through your solar system and you are defeated
-your people make the choice not to fight with and for the Ur-Quan
+Nevertheless, to please you I shall try to recall.
+Yes, now I remember. Here is the sequence:
+The Ur-Quan fleets have moved through your solar system and you are defeated.
+Your people make the choice not to fight with and for the Ur-Quan.
 A shield is cast about your world. Your people are now safe. This makes us happy.
 The Armada departs your star system and moves toward the remaining Alliance members
 ourselves, the Syreen, the Yehat and their adopted Shofixti.
@@ -346,8 +346,8 @@ So what can we do about the psychically zombified blobbies?
 We have had no success with our own investigations.
 Whatever controls the Umgah is a threat, but we seem unprepared to deal with it.
 Perhaps you and your crew are better suited to this mission.
-If you choose to go to Beta Orionis, take care, child
-whatever controls the Umgah now knows of our presence
+If you choose to go to Beta Orionis, take care, child.
+Whatever controls the Umgah now knows of our presence
 and it may take measures against us.
 
 #(tell_arilou_about_tpet)
@@ -368,7 +368,7 @@ So what should we do about this Dnyarri creature?
 
 #(DANGEROUS_BUT_USEFUL)	arilou-044.ogg
 The Dnyarri were the most inimical race this galaxy has known.
-In other dimensions, other *times* there are far, far worse beings
+In other dimensions, other *times*, there are far, far worse beings
 but they do not threaten you at the present time.
 During their reign, the Dnyarri possessed absolute power over all intelligent species in this region.
 They used their slaves for all menial tasks and many forms of depraved entertainment.
@@ -392,11 +392,11 @@ which will transport a ship from HyperSpace to QuasiSpace.
 We therefore find it convenient to generate our own Portals artificially
 with focused dimensional fatigue rays.
 As a sign of our long-standing relationship with your species
-we would happily fit your vessel with a Portal spawner of its own
+we would happily fit your vessel with a Portal Spawner of its own
 but your ship is so massive, our units would be ineffective. However
-we suspect you may find a sufficiently powerful warp pod, the key element in a Portal spawner
+we suspect you may find a sufficiently powerful warp pod, the key element in a Portal Spawner
 in the wreck of the Ur-Quan Dreadnought on the seventh world at Alpha Pavonis.
-Bring that warp pod back here, and we will prepare a Portal spawner for your vessel.
+Bring that warp pod back here, and we will prepare a Portal Spawner for your vessel.
 
 #(what_about_tpet)
 You mentioned a Talking Pet. How did you find one?
@@ -418,18 +418,18 @@ We turned to the Umgah, whom we have known for many centuries.
 Their bioscience skills are far superior to our own.
 The Umgah promised to do what they could, and let us know how the Pet fared.
 We have not heard from the Umgah since.
-Perhaps if you are travelling through their stars, you can ask them for us.
+Perhaps, if you are travelling through their stars, you can ask them for us.
 
 #(about_portal_again)
 Can you tell me about that Portal Spawner thing again?
 
 #(PORTAL_AGAIN)	arilou-047.ogg
 Certainly. As a sign of our long-standing friendship with your species
-we would be happy to fit your vessel with a Portal spawner
+we would be happy to fit your vessel with a Portal Spawner
 allowing you to jump from place to place in HyperSpace, without travelling the intervening distance.
 However, your ship is so massive, our normal warp pod units are insufficient
 but you will find a sufficiently powerful warp pod in the wreck of the Ur-Quan Dreadnought
-on Alpha Pavonis VII. Bring that warp pod back here, and we will prepare a Portal spawner for your vessel.
+on Alpha Pavonis VII. Bring that warp pod back here, and we will prepare a Portal Spawner for your vessel.
 
 #(got_it)
 I have obtained the Warp Pod unit from the Ur-Quan wreck.
@@ -441,9 +441,9 @@ We are so proud of you! But don't worry that you shall have to wait.
 
 #(GIVE_PORTAL)	arilou-049.ogg
 We are prepared. Even now our technical personnel are equipping your ship
-with a custom version of our Portal spawner device.
+with a custom version of our Portal Spawner device.
 The device is useable only in HyperSpace. Whenever it is activated
-the spawner will focus several inter-dimensional fatigue beams adjacent to your vessel
+the Spawner will focus several inter-dimensional fatigue beams adjacent to your vessel
 opening a temporary hole into QuasiSpace. Move quickly through the Portal!
 After your ship has passed into QuasiSpace, you can choose any of the nearby Portals
 which lead back to HyperSpace, thus saving you needless transit time.
