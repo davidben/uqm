@@ -1,6 +1,6 @@
 #(HELLO_BEFORE_AMBUSH_1)	syreen-000.ogg
 Attention unidentified space vessel!
-Be Warned! This slave world and its inhabitants belong to the Ur-Quan.
+Be warned! This slave world and its inhabitants belong to the Ur-Quan.
 I am Starbase Commander Talana of the slave planet Gaia.
 Your ship is not responding to standard Hierarchy identification sequences.
 You are therefore classed as Independent and... WHAT?!
@@ -46,7 +46,7 @@ I am Captain
 .
 
 #(WELCOME_VINDICATOR0)	syreen-006.ogg
-Hello Captain 
+Hello, Captain 
 
 #(WELCOME_VINDICATOR1)
  from the Starship 
@@ -142,7 +142,7 @@ when we remember what we have lost... Syra... our Eden.
 The very idea that the Mycons, or any alien race, may have been responsible for Syra's destruction
 fills me with BURNING RAGE!
 If it were true, none of us here would rest until we had avenged ourselves on the perpetrators.
-We would find some way leave this starbase, locate our starships, and hunt down the evil monsters!
+We would find some way to leave this starbase, locate our starships, and hunt down the evil monsters!
 Captain, if you ever gather proof of what you say, you MUST inform us immediately.
 But until then... do not mention the subject again. It is too painful.
 
@@ -175,9 +175,9 @@ I was only a young girl living in Habitat Thirty-One.
 My older sister, Diani, was a starship officer in the Space Patrol
 she was part of the final defense at Raynet... she didn't make it back.
 When the Ur-Quan caught us in open space, we all thought we were going to die
-but then, instead of killing us, the Ur-Quan offered us a choice
+but then, instead of killing us, the Ur-Quan offered us a choice:
 we could join the ranks of their combat thralls, or we could be slave-shielded in our homeworld.
-Like the people of Earth, we choose peace. We became fallow slaves.
+Like the people of Earth, we chose peace. We became fallow slaves.
 When the Ur-Quan told us to return to our homeworld, we explained that we had none.
 Ur-Quan Master Nine explained that they had encountered this situation before
 and if we would provide them with a list of our requirements
@@ -242,7 +242,7 @@ In your world, the agricultural communities were conquered by the more primitive
 This led to a particular kind of sexual and political dominance structure
 which pervaded almost all of your Earth Cultures until the early Twenty First century.
 On Syra, our only primitive migratory tribes were confined to our mountainous regions.
-Their herd beasts, the Yma, did not do well in the agricultural basins and plains
+Their herd beasts, the Yma, did not do well in the agricultural basins and plains.
 The two cultures were isolated until much later
 when the technological superiority of the farmers curtailed any major conflict.
 
@@ -300,8 +300,8 @@ Within three days after the cataclysm began, the surface temperature of Syra had
 to above the boiling point of water.
 It became clear that Syra, our paradise, our Eden, was gone.
 The survivors spent years in orbit. They made a few missions to the surface
-and actually found a handful of survivors, but their main activity was preparations for departure.
-The Space Patrol fitted makeshift drive units to anything that could hold air
+and actually found a handful of survivors, but their main activity was to make preparations for departure.
+The Space Patrol fitted makeshift drive units to anything that could hold air:
 orbital factories, research pods, even hotels. When the fleet was ready, they left orbit and never looked back.
 The final population of our species was less than ten thousand, with only five hundred males
 but they were the best and the brightest.
@@ -362,7 +362,7 @@ Captain! We have assembled a small team of our most skilled officers.
 we will send them to your ship on board their own small shuttle.
 We feel that in the interests of efficiency, we keep our officers away from your crew
 at least until the mission is over.
-As soon as you arrive at the Vault, our people will take over, figure out a way to open the Vault
+As soon as you arrive at the vault, our people will take over, figure out a way to open the vault
 and bring our Penetrators back here.
 
 #(im_on_my_way)
