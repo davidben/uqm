@@ -671,11 +671,13 @@ InitialSyreen (RESPONSE_REF R)
 		NPCPhrase (OK_NEED);
 
 		DISABLE_PHRASE (i_need_you);
+		DISABLE_PHRASE (i_need_touch_o_vision);
 	}
 	else if (PLAYER_SAID (R, i_need_touch_o_vision))
 	{
 		NPCPhrase (TOUCH_O_VISION);
 
+		DISABLE_PHRASE (i_need_you);
 		DISABLE_PHRASE (i_need_touch_o_vision);
 	}
 
