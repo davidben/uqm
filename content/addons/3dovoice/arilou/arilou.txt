@@ -355,7 +355,7 @@ The source of the Umgah's compulsion is the Talking Pet you gave the Umgah,
 but now it is intelligent and exhibits strange powers.
 
 #(BAD_NEWS_ABOUT_TPET)	arilou-043.ogg
-That is very bad news. This creature, a super-intelligent, psychically coercive creature
+That is very bad news. This creature, a super-intelligent, physically coercive creature
 is very similar to a race of beings which was thought to have vanished over 20,000 years ago.
 They were called the Dnyarri, and history tells that they ruled a wide region of this galaxy
 for many thousands of years. The Dnyarri were cruel and devious

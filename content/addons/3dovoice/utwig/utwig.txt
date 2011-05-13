@@ -306,10 +306,9 @@ Even the most fundamental fixtures were committed to this irreversible fate.
 The Mask of Natural Bodily Excretions once hung in every lavatory!
 Most of the public facilities have removed the disposable mask dispensers
 but every once in a while I still see such a repository... always empty.
-In despair, we gave the broken device to our allies, the Supox, who live at Beta Librae.
-We just couldn't stand to look at it any longer.
-At that time, many suggested that we use the Precursor relic as a form of self punishment.
+*Sigh*. At that time, many suggested that we use the Precursor relic as a form of self punishment.
 The proposal was that we collectively go to the second moon of the sixth planet of Zeta Hyades
+(at coordinates 850.3, 937.2)
 and use the ancient planeteering device to end our existence.
 After much discussion, we decided that we deserved to suffer.
 We can use the Bomb if we ever decide the time is right
@@ -383,18 +382,7 @@ We now terminate communication in a civil, yet efficient manner.
 As do we. Go now with neither malice nor joy.
 
 #(TOO_LATE)	utwig-040.ogg
-BUT WAIT!!
-The Ultron moans and hums! Matters of significance are being relayed to our brains.
-It has been so long since we communicated with the Ultimate in such a manner
-but slowly, the truth is revealed!!...
-Something dire is afoot in the galaxy
-The Kohr-Ah, the dark cousins of the Ur-Quan, have won their Doctrinal Conflict
-and are even now moving through the stars on a mission of universal genocide.
-The Ultron reveals that our participation is required to stop the Kohr-Ah
-before they destroy all life in this part of the galaxy.
-We will grant you the boon of our nigh invincible Jugger starship designs
-as well as a supply of trained starship commanders.
-If our allies, the Supox, are still alive, I am certain they will give you the same assistance.
+It is too late.
 
 #(name_1)
 The New Alliance of Free Stars
@@ -441,12 +429,6 @@ YOU!...
 We attack... YOUR ENEMIES... the Ur-Quan and the Kohr-Ah!...
 ...no, that's not quite right either... what? Oh, okay.
 We must strike ONLY the black ships... only the Kohr-Ah!
-IN ADDITION! We will grant you the boon of our Jugger starship designs
-as well as a supply of trained starship commanders.
-Our Juggers are nigh invincible!
-I can also say with certainty that our allies, the Supox, will give you the same assistance.
-Together, we shall defeat the Kohr-Ah!... or at least provide you with a few more months
-to find a more permanent solution.
 Now, Captain, we must leave to prepare our battle fleets. Wish us luck!
 
 #(whats_up_after_space)
@@ -718,13 +700,8 @@ Just so. The Ultron has hummed its assent.
 Take possession of four of our Jugger craft this instant!
 
 #(NO_ULTRON_AT_BOMB)	utwig-074.ogg
-Foolish tricksters! Don't you know the Druuge tried that ploy on us just a few days ago?
-You say you have the Ultron, that you wish to return it to us... LIES!
-The moment our back is turned, you will sneak down to the surface of this world
-and deprive us of our destructive device of dignity.
-If you truly had our Ultron, repaired to its state of perfection
-you would surely take it to the Proctors at our homeworld at Beta Aquarii.
-Speak no more of this subject.
+We are the stewards of the Bomb.
+Taunting us buys you nothing. Go now!
 
 #(OUT_TAKES)	utwig-075.ogg
 Hello again, heroic humanoid!

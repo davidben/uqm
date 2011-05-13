@@ -251,11 +251,6 @@ What was Syra like?
 
 #(ABOUT_HOMEWORLD)	syreen-022.ogg
 It was our paradise, Captain, our Eden.
-You would call our world Beta Copernicus I... we called it Syra.
-You may wonder about our relationship with the Mycon, who now control that area of space.
-When we lived on Syra, their sphere of influence was much smaller.
-We never laid eyes on a Mycon until we met them in combat during the War.
-But back to our beloved Syra.
 Earth is the only world we know of whose variety and richness of life even comes close to Syra.
 Again, like so many other things about our two species, our worlds were very much the same
 at least before you began encasing yours in concrete and plastic.
@@ -663,9 +658,7 @@ Then stop wasting your lips on words, you silly fool
 and come here!...
 
 #(LATER)	syreen-069.ogg
-(...later...)
-(...much later...)
-(...quite a good bit later...)
+(...several hours later...)  
 
 #(SEX_GOODBYE)	syreen-070.ogg
 Goodbye Captain, darling... we each have our jobs to do

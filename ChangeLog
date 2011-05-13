@@ -1,4 +1,6 @@
 Changes towards version 0.7:
+- Added the missing bits to the no-voice versions of Mycon, Syreen and
+  Utwig dialogue (bug #327) - Alex
 - Syreen dialog tree no longer resets after visiting the Syreen Vault
   for the very first time (bug #891) - Alex
 - Fixed lander report at the Syreen Vault inconsistency (bug #1121) - Alex

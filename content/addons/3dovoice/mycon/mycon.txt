@@ -271,7 +271,6 @@ We are the Mycon.
 We are part of Juffo-Wup.
 Juffo-Wup is the hot light in the darkness.
 All else is unfulfilled Void.
-The source of Juffo-Wup is at 629.1, 220.8.
 We are the Mycon.
 
 #(HELLO_SPACE_2)	mycon-044.ogg
@@ -308,7 +307,7 @@ Heinous fungus! Submit to our will!
 We'll just be going now.
 
 #(GOODBYE_SUN_DEVICE)	mycon-051.ogg
-Begone from our special place.
+You are the Non. You must go now, and never return.
 
 #(RESPONSE_1)	mycon-052.ogg
 This is good.
@@ -337,9 +336,7 @@ These are the homes of the Deep Children.
 #(HELLO_SUN_DEVICE_WORLD_1)	mycon-056.ogg
 This is a special place
 filled with Juffo-Wup.
-But it is not the source.
-Juffo-Wup springs forth from 629.1, 220.8.
-We must not allow this place to be soiled by the Non.
+We must not allow it to be soiled by the Non.
 You must go. Now.
 
 #(HELLO_SUN_DEVICE_WORLD_2)	mycon-057.ogg
@@ -386,10 +383,8 @@ We have experienced unforeseen delays implanting Deep Children beneath the crust
 However, Juffo-Wup is inevitable.  The Deep Children WILL be born.
 
 #(DIE_THIEF)	mycon-062.ogg
-You have taken something from us which we value
-something which is important to Juffo-Wup.
-We require the Solar Manipulator.
-We will take it back from you now!
+You have taken something from us which we value... which is important to Juffo-Wup.
+Return the Solar Manipulator immediately.
 
 #(DIE_THIEF_AGAIN)	mycon-063.ogg
 You have taken something from us which we value... which is important to Juffo-Wup.
@@ -419,6 +414,5 @@ then you would truly understand Juffo-Wup... become part of Juffo-Wup.
 You WOULD be happier and more fulfilled.  Consider our offer.
 
 #(WONT_FALL_FOR_TRICK)	mycon-066.ogg
-We do not interpret the will of Juffo-Wup.
-Only the source is so empowered.
-Until instructed otherwise, Juffo-Wup requires that we remain here.
+This is a special place.
+You must go. Now.
