@@ -39,7 +39,7 @@
 #define NUM_ALIEN_RACE_ITEMS 16
 #define NUM_TECH_ITEMS 13
 
-static NUMBER_SPEECH_DESC melnorme_numbers_english;
+static const NUMBER_SPEECH_DESC melnorme_numbers_english;
 
 static LOCDATA melnorme_desc =
 {
@@ -159,7 +159,7 @@ static COUNT melnorme_tens_names[] =
 	ENUMERATE_NINETY
 };
 
-static NUMBER_SPEECH_DESC melnorme_numbers_english =
+static const NUMBER_SPEECH_DESC melnorme_numbers_english =
 {
 	5, /* NumDigits */
 	{
@@ -1183,9 +1183,9 @@ DoSell (RESPONSE_REF R)
 			added_credit = GLOBAL_SIS (TotalBioMass) * BIO_CREDIT_VALUE;
 
 			NPCPhrase (SOLD_LIFE_DATA1);
-			NPCPhrase (-(int)GLOBAL_SIS (TotalBioMass));
+			NPCNumber (GLOBAL_SIS (TotalBioMass), NULL);
 			NPCPhrase (SOLD_LIFE_DATA2);
-			NPCPhrase (-(int)added_credit);
+			NPCNumber (added_credit, NULL);
 			NPCPhrase (SOLD_LIFE_DATA3);
 			// queue WHAT_TO_SELL before talk-segue
 			if (num_new_rainbows)
@@ -1231,9 +1231,9 @@ DoSell (RESPONSE_REF R)
 			added_credit = num_new_rainbows * (250 * BIO_CREDIT_VALUE);
 
 			NPCPhrase (SOLD_RAINBOW_LOCATIONS1);
-			NPCPhrase (-(int)num_new_rainbows);
+			NPCNumber (num_new_rainbows, NULL);
 			NPCPhrase (SOLD_RAINBOW_LOCATIONS2);
-			NPCPhrase (-(int)added_credit);
+			NPCNumber (added_credit, NULL);
 			NPCPhrase (SOLD_RAINBOW_LOCATIONS3);
 
 			num_new_rainbows += GET_GAME_STATE (MELNORME_RAINBOW_COUNT);

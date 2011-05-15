@@ -17,6 +17,7 @@
  */
 
 #include "../commall.h"
+#include <math.h>
 #include "resinst.h"
 #include "strings.h"
 
@@ -24,6 +25,8 @@
 #include "uqm/battle.h"
 #include "uqm/setup.h"
 
+
+static const NUMBER_SPEECH_DESC probe_numbers_english;
 
 static LOCDATA slylandro_desc =
 {
@@ -110,11 +113,95 @@ static LOCDATA slylandro_desc =
 		0, 0, /* RestartRate */
 		0, /* BlockMask */
 	},
-	NULL, /* AlienNumberSpeech - none */
+	&probe_numbers_english, /* AlienNumberSpeech - default */
 	/* Filler for loaded resources */
 	NULL, NULL, NULL,
 	NULL,
 	NULL,
+};
+
+static COUNT probe_digit_names[] =
+{
+	ENUMERATE_ZERO,
+	ENUMERATE_ONE,
+	ENUMERATE_TWO,
+	ENUMERATE_THREE,
+	ENUMERATE_FOUR,
+	ENUMERATE_FIVE,
+	ENUMERATE_SIX,
+	ENUMERATE_SEVEN,
+	ENUMERATE_EIGHT,
+	ENUMERATE_NINE,
+};
+
+static COUNT probe_teen_names[] =
+{
+	ENUMERATE_TEN,
+	ENUMERATE_ELEVEN,
+	ENUMERATE_TWELVE,
+	ENUMERATE_THIRTEEN,
+	ENUMERATE_FOURTEEN,
+	ENUMERATE_FIFTEEN,
+	ENUMERATE_SIXTEEN,
+	ENUMERATE_SEVENTEEN,
+	ENUMERATE_EIGHTEEN,
+	ENUMERATE_NINETEEN,
+};
+
+static COUNT probe_tens_names[] =
+{
+	0, /* invalid */
+	0, /* skip digit */
+	ENUMERATE_TWENTY,
+	ENUMERATE_THIRTY,
+	ENUMERATE_FOURTY,
+	ENUMERATE_FIFTY,
+	ENUMERATE_SIXTY,
+	ENUMERATE_SEVENTY,
+	ENUMERATE_EIGHTY,
+	ENUMERATE_NINETY,
+};
+
+static const NUMBER_SPEECH_DESC probe_numbers_english =
+{
+	5, /* NumDigits */
+	{
+		{ /* 1000-999999 */
+			1000, /* Divider */
+			0, /* Subtrahend */
+			NULL, /* StrDigits - recurse */
+			NULL, /* Names - not used */
+			ENUMERATE_THOUSAND /* CommonIndex */
+		},
+		{ /* 100-999 */
+			100, /* Divider */
+			0, /* Subtrahend */
+			probe_digit_names, /* StrDigits */
+			NULL, /* Names - not used */
+			ENUMERATE_HUNDRED /* CommonIndex */
+		},
+		{ /* 20-99 */
+			10, /* Divider */
+			0, /* Subtrahend */
+			probe_tens_names, /* StrDigits */
+			NULL, /* Names - not used */
+			0 /* CommonIndex - not used */
+		},
+		{ /* 10-19 */
+			1, /* Divider */
+			10, /* Subtrahend */
+			probe_teen_names, /* StrDigits */
+			NULL, /* Names - not used */
+			0 /* CommonIndex - not used */
+		},
+		{ /* 0-9 */
+			1, /* Divider */
+			0, /* Subtrahend */
+			probe_digit_names, /* StrDigits */
+			NULL, /* Names - not used */
+			0 /* CommonIndex - not used */
+		}
+	}
 };
 
 static RESPONSE_REF threat,
@@ -122,6 +209,19 @@ static RESPONSE_REF threat,
 			we_are_us,
 			why_attack,
 			bye;
+
+static void
+sayCoord (int coord)
+{
+	int ac;
+	
+	ac = abs (coord);
+
+	NPCPhrase_splice (coord < 0 ? COORD_MINUS : COORD_PLUS);
+	NPCNumber (ac / 10, "%03d");
+	NPCPhrase_splice (COORD_POINT);
+	NPCNumber (ac % 10, NULL);
+}
 
 static void
 CombatIsInevitable (RESPONSE_REF R)
@@ -266,13 +366,6 @@ CombatIsInevitable (RESPONSE_REF R)
 		else if (PLAYER_SAID (R, we_are_us))
 		{
 			NumVisits = GET_GAME_STATE (SLYLANDRO_PROBE_ID);
-			if (NumVisits == 3 && !optSubtitles)
-			{
-				/* If playing without subtitles, don't use the
-				 * last item in the conversation tree, which mentions
-				 * coordinates which can't be spoken. */
-				NumVisits--;
-			}
 			switch (NumVisits++)
 			{
 				case 0:
@@ -286,9 +379,16 @@ CombatIsInevitable (RESPONSE_REF R)
 					break;
 				case 3:
 				{
+					SIZE dx, dy;
+
+					// Probe's coordinate system is {-Y,X} relative to B Corvi
+					dx = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x)) - 333;
+					dy = 9812 - LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
+
 					NPCPhrase (THIS_IS_PROBE_40);
-					NPCPhrase (THIS_IS_PROBE_41);
-					NPCPhrase (GLOBAL_PLAYER_LOCATION);
+					sayCoord (dy);
+					NPCPhrase_splice (THIS_IS_PROBE_41);
+					sayCoord (dx);
 					NPCPhrase (THIS_IS_PROBE_42);
 
 					--NumVisits;

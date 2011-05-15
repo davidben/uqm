@@ -94,12 +94,12 @@ THIS IS PROBE 2418-B. WE SEEK TO MAKE FRIENDLY CONTACT WITH ALIEN LIFE FORMS.
 THIS IS PROBE 2418-B. WE REPLICATE SO THAT WE MAY EXPAND THE SCOPE OF MISSION.
 
 #(THIS_IS_PROBE_40)	probe-019.ogg
-THIS IS PROBE 2418-B.
+THIS IS PROBE 2418-B. COORDINATES ARE: 
 
 #(THIS_IS_PROBE_41)	probe-030.ogg
-COORDINATES ARE: 
+,
 
-#(THIS_IS_PROBE_42)
+#(THIS_IS_PROBE_42)	probe-031.ogg
 .
 
 #(why_attack_1)
@@ -177,3 +177,102 @@ ENGAGING SELF-DESTRUCTION CIRCUITRY.
 
 #(destruct_code)
 Transmit destruct sequence!
+
+#(COORD_PLUS)	probe-032.ogg
++
+
+#(COORD_MINUS)	probe-033.ogg
+-
+
+#(COORD_POINT)	probe-034.ogg
+.
+
+#(ENUMERATE_HUNDRED)	probe-035.ogg
+hundred
+
+#(ENUMERATE_THOUSAND)	probe-036.ogg
+thousand
+
+#(ENUMERATE_ZERO)	probe-037.ogg
+zero
+
+#(ENUMERATE_ONE)	probe-038.ogg
+one
+
+#(ENUMERATE_TWO)	probe-039.ogg
+two
+
+#(ENUMERATE_THREE)	probe-040.ogg
+three
+
+#(ENUMERATE_FOUR)	probe-041.ogg
+four
+
+#(ENUMERATE_FIVE)	probe-042.ogg
+five
+
+#(ENUMERATE_SIX)	probe-043.ogg
+six
+
+#(ENUMERATE_SEVEN)	probe-044.ogg
+seven
+
+#(ENUMERATE_EIGHT)	probe-045.ogg
+eight
+
+#(ENUMERATE_NINE)	probe-046.ogg
+nine
+
+#(ENUMERATE_TEN)	probe-047.ogg
+ten
+
+#(ENUMERATE_ELEVEN)	probe-048.ogg
+eleven
+
+#(ENUMERATE_TWELVE)	probe-049.ogg
+twelve
+
+#(ENUMERATE_THIRTEEN)	probe-050.ogg
+thirteen
+
+#(ENUMERATE_FOURTEEN)	probe-051.ogg
+fourteen
+
+#(ENUMERATE_FIFTEEN)	probe-052.ogg
+fifteen
+
+#(ENUMERATE_SIXTEEN)	probe-053.ogg
+sixteen
+
+#(ENUMERATE_SEVENTEEN)	probe-054.ogg
+seventeen
+
+#(ENUMERATE_EIGHTEEN)	probe-055.ogg
+eighteen
+
+#(ENUMERATE_NINETEEN)	probe-056.ogg
+nineteen
+
+#(ENUMERATE_TWENTY)	probe-057.ogg
+twenty
+
+#(ENUMERATE_THIRTY)	probe-058.ogg
+thirty
+
+#(ENUMERATE_FOURTY)	probe-059.ogg
+fourty
+
+#(ENUMERATE_FIFTY)	probe-060.ogg
+fifty
+
+#(ENUMERATE_SIXTY)	probe-061.ogg
+sixty
+
+#(ENUMERATE_SEVENTY)	probe-062.ogg
+seventy
+
+#(ENUMERATE_EIGHTY)	probe-063.ogg
+eighty
+
+#(ENUMERATE_NINETY)	probe-064.ogg
+ninety

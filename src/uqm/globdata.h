@@ -82,7 +82,7 @@ typedef struct
 	// 0-9, 10-19, ..20-90, ..100-900, etc.
 	SPEECH_DIGIT Digits[MAX_SPEECH_DIGITS];
 } NUMBER_SPEECH_DESC;
-typedef NUMBER_SPEECH_DESC *NUMBER_SPEECH;
+typedef const NUMBER_SPEECH_DESC *NUMBER_SPEECH;
 
 typedef DWORD LDAS_FLAGS;
 #define LDASF_NONE           ((LDAS_FLAGS)      0 )

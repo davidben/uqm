@@ -26,12 +26,12 @@
 #include <assert.h>
 #include "libs/log.h"
 
-int NPCNumberPhrase (int number, UNICODE **ptrack);
+static int NPCNumberPhrase (int number, const char *fmt, UNICODE **ptrack);
 
 void
 NPCPhrase_cb (int index,  TFB_TrackCB cb)
 {
-	UNICODE *pStr, numbuf[400];
+	UNICODE *pStr, buf[400];
 	void *pClip, *pTimeStamp;
 
 	switch (index)
@@ -46,54 +46,25 @@ NPCPhrase_cb (int index,  TFB_TrackCB cb)
 			pClip = 0;
 			pTimeStamp = 0;
 			break;
-		case GLOBAL_PLAYER_LOCATION:
-		{
-			SIZE dx, dy;
-			COUNT adx, ady;
-
-			dx = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x)) - 333;
-			adx = dx >= 0 ? dx : -dx;
-			dy = 9812 - LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
-			ady = dy >= 0 ? dy : -dy;
-			sprintf (numbuf,
-					"%+04d.%01u,%+04d.%01u",
-					(SIZE)(dy / 10), (COUNT)(ady % 10),
-					(SIZE)(dx / 10), (COUNT)(adx % 10));
-			pStr = numbuf;
-			pClip = 0;
-			pTimeStamp = 0;
-			break;
-		}
 		case 0:
 		{
 			return;
 		}
 		default:
 			if (index < 0)
-			{
-				if (index > UNREASONABLE_NUMBER)
-				{
-					if (CommData.AlienNumberSpeech)
-					{
-						NPCNumberPhrase (-index, NULL);
-						return;
-					}
-					sprintf (numbuf, "%d", -index);
-				}
-				else
-				{
-					COUNT i;
-					STRING S;
+			{	// One of the alliance name variants
+				COUNT i;
+				STRING S;
 
-					index -= GLOBAL_ALLIANCE_NAME;
+				index -= GLOBAL_ALLIANCE_NAME;
 
-					i = GET_GAME_STATE (NEW_ALLIANCE_NAME);
-					S = SetAbsStringTableIndex (CommData.ConversationPhrases, (index - 1) + i);
-					strcpy (numbuf, (UNICODE *)GetStringAddress (S));
-					if (i == 3)
-						strcat (numbuf, GLOBAL_SIS (CommanderName));
-				}
-				pStr = numbuf;
+				i = GET_GAME_STATE (NEW_ALLIANCE_NAME);
+				S = SetAbsStringTableIndex (CommData.ConversationPhrases, (index - 1) + i);
+				strcpy (buf, (UNICODE *)GetStringAddress (S));
+				if (i == 3)
+					strcat (buf, GLOBAL_SIS (CommanderName));
+
+				pStr = buf;
 				pClip = 0;
 				pTimeStamp = 0;
 			}
@@ -115,8 +86,56 @@ NPCPhrase_cb (int index,  TFB_TrackCB cb)
 	SpliceTrack (pClip, pStr, pTimeStamp, cb);
 }
 
-int
-NPCNumberPhrase (int number, UNICODE **ptrack)
+// Special case variant: prevents page breaks.
+void
+NPCPhrase_splice (int index)
+{
+	UNICODE *pStr;
+	void *pClip;
+
+	assert (index >= 0);
+	if (index == 0)
+		return;
+
+	pStr = (UNICODE *)GetStringAddress (
+			SetAbsStringTableIndex (CommData.ConversationPhrases, index - 1));
+	pClip = GetStringSoundClip (
+			SetAbsStringTableIndex (CommData.ConversationPhrases, index - 1));
+
+	if (!pClip)
+	{	// Just appending some text
+		SpliceTrack (NULL, pStr, NULL, NULL);
+	}
+	else
+	{	// Splicing in some voice
+		UNICODE *tracks[] = {NULL, NULL};
+
+		tracks[0] = pClip;
+		SpliceMultiTrack (tracks, pStr);
+	}
+}
+
+void
+NPCNumber (int number, const char *fmt)
+{
+	UNICODE buf[32];
+
+	if (!fmt)
+		fmt = "%d";
+
+	if (CommData.AlienNumberSpeech)
+	{
+		NPCNumberPhrase (number, fmt, NULL);
+		return;
+	}
+	
+	// just splice in the subtitle text
+	snprintf (buf, sizeof buf, fmt, number);
+	SpliceTrack (NULL, buf, NULL, NULL);
+}
+
+static int
+NPCNumberPhrase (int number, const char *fmt, UNICODE **ptrack)
 {
 #define MAX_NUMBER_TRACKS 20
 	NUMBER_SPEECH speech = CommData.AlienNumberSpeech;
@@ -125,6 +144,7 @@ NPCNumberPhrase (int number, UNICODE **ptrack)
 	int toplevel = 0;
 	UNICODE *TrackNames[MAX_NUMBER_TRACKS];
 	UNICODE numbuf[60];
+	const SPEECH_DIGIT* dig = NULL;
 
 	if (!speech)
 		return 0;
@@ -132,15 +152,17 @@ NPCNumberPhrase (int number, UNICODE **ptrack)
 	if (!ptrack)
 	{
 		toplevel = 1;
-		sprintf (numbuf, "%d", number);
+		if (!fmt)
+			fmt = "%d";
+		sprintf (numbuf, fmt, number);
 		ptrack = TrackNames;
 	}
 
 	for (i = 0; i < speech->NumDigits; ++i)
 	{
-		SPEECH_DIGIT* dig = speech->Digits + i;
 		int quot;
 
+		dig = speech->Digits + i;
 		quot = number / dig->Divider;
 	
 		if (quot == 0)
@@ -166,7 +188,7 @@ NPCNumberPhrase (int number, UNICODE **ptrack)
 		}
 		else
 		{
-			int ctracks = NPCNumberPhrase (quot, ptrack);
+			int ctracks = NPCNumberPhrase (quot, NULL, ptrack);
 			ptrack += ctracks;
 			queued += ctracks;
 		}
@@ -181,9 +203,7 @@ NPCNumberPhrase (int number, UNICODE **ptrack)
 				{
 					*ptrack++ = GetStringSoundClip (
 							SetAbsStringTableIndex (
-							CommData.ConversationPhrases,
-							(COUNT) (name->StrIndex - 1)
-							));
+							CommData.ConversationPhrases, name->StrIndex - 1));
 					queued++;
 					break;
 				}
@@ -192,9 +212,7 @@ NPCNumberPhrase (int number, UNICODE **ptrack)
 		else if (dig->CommonNameIndex != 0)
 		{
 			*ptrack++ = GetStringSoundClip (SetAbsStringTableIndex (
-					CommData.ConversationPhrases,
-					(COUNT) (dig->CommonNameIndex - 1)
-					));
+					CommData.ConversationPhrases, dig->CommonNameIndex - 1));
 			queued++;
 		}
 
@@ -205,11 +223,9 @@ NPCNumberPhrase (int number, UNICODE **ptrack)
 	{
 		if (queued == 0)
 		{	// nothing queued, say "zero"
+			assert (number == 0);
 			*ptrack++ = GetStringSoundClip (SetAbsStringTableIndex (
-					CommData.ConversationPhrases,
-					speech->Digits[speech->NumDigits - 1].StrDigits[0]
-					));
-			
+					CommData.ConversationPhrases, dig->StrDigits[number] - 1));
 		}
 		*ptrack++ = NULL; // term
 		

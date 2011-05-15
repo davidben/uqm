@@ -74,10 +74,7 @@ enum
 {
 	GLOBAL_PLAYER_NAME = -1000000,
 	GLOBAL_SHIP_NAME,
-	GLOBAL_PLAYER_LOCATION,
-
 	GLOBAL_ALLIANCE_NAME,
-	UNREASONABLE_NUMBER = GLOBAL_ALLIANCE_NAME + 1000,
 };
 
 typedef COUNT RESPONSE_REF;
@@ -90,6 +87,8 @@ extern void DoNPCPhrase (UNICODE *pStr);
 
 extern void NPCPhrase_cb (int index, TFB_TrackCB cb);
 #define NPCPhrase(index) NPCPhrase_cb ((index), NULL)
+extern void NPCPhrase_splice (int index);
+extern void NPCNumber (int number, const char *fmt);
 
 #define ALLIANCE_NAME_BUFSIZE 256
 extern void GetAllianceName (UNICODE *buf, RESPONSE_REF name_1);

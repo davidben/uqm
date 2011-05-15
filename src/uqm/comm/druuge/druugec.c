@@ -476,7 +476,7 @@ DoTransaction (RESPONSE_REF R)
 			UnlockMutex (GraphicsLock);
 
 			NPCPhrase (FUEL0);
-			NPCPhrase (-(int)f);
+			NPCNumber (f, NULL);
 			NPCPhrase (FUEL1);
 
 			if (f >= 250)
