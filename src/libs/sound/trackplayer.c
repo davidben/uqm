@@ -393,6 +393,7 @@ SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText)
 
 			chunks_tail->next = create_SoundChunk (track_decs[tracks], sound_sample->length);
 			chunks_tail = chunks_tail->next;
+			chunks_tail->track_num = track_count - 1;
 			sound_sample->length += track_decs[tracks]->length;
 		}
 		else
@@ -580,10 +581,10 @@ SpliceTrack (UNICODE *TrackName, UNICODE *TrackText, UNICODE *TimeStamp, TFB_Tra
 					dec_offset, time_stamps[page]);
 #endif
 			sound_sample->length += decoder->length;
+			chunks_tail->track_num = track_count - 1;
 			if (!no_page_break)
 			{
 				chunks_tail->tag_me = 1;
-				chunks_tail->track_num = track_count - 1;
 				if (page < num_pages)
 				{
 					chunks_tail->text = pages[page];
@@ -773,12 +774,9 @@ TFB_SoundChunk *
 create_SoundChunk (TFB_SoundDecoder *decoder, float start_time)
 {
 	TFB_SoundChunk *chunk;
-	chunk = HMalloc (sizeof (TFB_SoundChunk));
+	chunk = HCalloc (sizeof (*chunk));
 	chunk->decoder = decoder;
-	chunk->next = NULL;
 	chunk->start_time = start_time;
-	chunk->tag_me = 0;
-	chunk->text = 0;
 	return chunk;
 }
 
