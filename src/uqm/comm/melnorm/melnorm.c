@@ -590,7 +590,7 @@ DeltaCredit (SIZE delta_credit)
 	else
 	{
 		NPCPhrase (NEED_MORE_CREDIT0);
-		NPCPhrase (delta_credit + (int)Credit);
+		NPCNumber (-delta_credit - Credit, NULL);
 		NPCPhrase (NEED_MORE_CREDIT1);
 	}
 	
