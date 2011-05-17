@@ -4,7 +4,7 @@ Making a release binary:
 
 - Change build/unix_installer/template to suit your needs.
 
-- From the top of the cvs tree, run the following command, changing
+- From the 'sc2' dir of the svn tree, run the following command, changing
   the arguments if necessary.
   The first one is the name of the final executable, the second
   the template to use.

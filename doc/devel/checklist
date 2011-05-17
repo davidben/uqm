@@ -13,19 +13,16 @@ Preparing for the release:
   - doc/users/unixinstall
   - Contributing
   - AUTHORS
-  - INSTALL
+  - INSTALL (and platform variants)
   - unix man pages (in the future)
 
 
 Building the release:
-- make a new tag for the cvs repository
 - make a final build in release mode
 - for the source archive:
-  - use a clean cvs dir.
-    Just using 'cvs update' and watching the output will not be
-    enough, as some files like those beginning with '.#'will be ignored.
-    Make sure it is the most recent version (check out using authenticated
-    cvs), but modify the CVS/Root files to refer to anonymous CVS.
+  - use a clean subversion checkout.
+    Just using 'svn update' and watching the output will not be
+    enough, as the files not in repository will be ignored.
   - be sure to include content/version
 - Building the content packages:
   - make sure the permissions in the .zip files are ok (0644 for data files
@@ -50,5 +47,5 @@ Announcing the release:
 Moving on to the next version:
 - update the snapshots page so that content diffs are generated to the
   most recent release
-
+- update doc/devel/versions with the release revision
 

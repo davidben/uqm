@@ -7,6 +7,9 @@ SDL: http://www.libsdl.org/download-1.2.php
 Only the Runtime is truly necessary, but the devel extras are nice.
 
 SDL_image: http://www.libsdl.org/projects/SDL_image/
+The last version of stock framework that can be used is v1.2.7.
+Starting with v1.2.8, the stock framework uses ImageIO by default
+to load PNG files, which strips out the PNG palettes.
 
 Ogg Vorbis: http://www.xiph.org/downloads/
 Theoretically optional, but necessary if you're using the 3DO music

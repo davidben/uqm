@@ -10,7 +10,7 @@ GNU Make 3.80
 	Debian package: make
 
 For Windows:
-Microsoft Visual C++ 6 or 7 (or MinGW+MSYS, see INSTALL.mingw for that)
+Microsoft Visual C++ 6 or newer (or MinGW+MSYS, see INSTALL.mingw for that)
 Visual C++ 6.0 Processor Pack (if using VC6, to build MMX-accelerated code)
 	http://msdn.microsoft.com/vstudio/downloads/tools/ppack/
 
@@ -21,7 +21,7 @@ Xcode Tools (for Mac OS X 10.3)
 	http://developer.apple.com/tools/macosxtools.html
 
 Additionally, The Ur-Quan Masters requires the following libraries:
-Note that dependancies can differ between different OS's.
+Note that dependencies can differ between different OS's.
 
 OpenGL v1.2 (if HAVE_OPENGL is defined, which is the default)
     Win32 users should have all by default, following is for Linux version:
@@ -45,12 +45,12 @@ SDL_image
 	Download: http://www.libsdl.org/projects/SDL_image/release/
 	Debian packages: libsdl-image1.2 libsdl-image1.2-dev
 	
-OpenAL (Win32 only)
+OpenAL (optional)
 	A cross-platform spatialized audio library.
 	Homepage: http://www.openal.org/
-	SDK download: http://developer.creative.com/articles/article.asp?aid=45&file=OpenAL11CoreSDK.exe
+	Windows SDK download: http://connect.creativelabs.com/openal/Downloads/OpenAL11CoreSDK.zip
 
-libogg and libvorbis
+libogg and libvorbis (optional but highly recommended)
 	Audio codec to play Ogg Vorbis files, used for music and speech.
 	Homepage: http://www.xiph.org/ogg/vorbis/index.html
 	Download:
@@ -68,10 +68,10 @@ Tremor (alternative for libogg and libvorbis)
 	Homepage: http://www.xiph.org/vorbis/
 	Download: http://svn.xiph.org/trunk/Tremor (Subversion)
 
-Libmikmod
-	Audio codec to play .mof files, used for the original PC music.
+Libmikmod (also included with UQM source)
+	Audio codec to play .mod files, used for the original PC music.
 	Homepage: http://mikmod.raphnet.net/
-	Download: http://sourceforge.net/project/showfiles.php?group_id=40531
+	Download: https://sourceforge.net/projects/mikmod/files/
 
 Zlib v1.2
 	Data compression / decompression library
