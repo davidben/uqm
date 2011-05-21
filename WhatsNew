@@ -17,6 +17,9 @@ Changes are broadly classified into the following categories:
 
 NEW FEATURES
 
+- Added spoken Slylandro probe coordinates
+- Added the missing bits to the no-voice versions of Mycon, Syreen and
+  Utwig dialogue
 - Remixes are now selectable from the setup menu
 - "Safe mode", which will ignore settings. Useful if you've somehow
   wrecked your configuration files.
@@ -33,6 +36,9 @@ NEW FEATURES
 - Support for 3do "ship spin" videos
   
 BALANCE/GAME FLOW CHANGES
+- Cannot talk to Ilwrath with a 'caster anymore after they die off
+- New lander reports for Supox ruins and Ultron. The reports text
+  is new content from TFB.
 - Do not match singular stars when given a prefix in star search
 - Properly account for simultaneous destruction in SuperMelee.
 - Druuge no longer turn hostile after attempting a salvage
