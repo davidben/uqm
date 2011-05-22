@@ -287,6 +287,7 @@ SectionGroup "!UQM" SECGRP01
     File "Manual.txt"
     File "ogg.dll"
     File "OpenAL32.dll"
+    File "wrap_oal.dll"
     File "README.txt"
     File "SDL.dll"
     File "SDL_image.dll"
@@ -318,6 +319,10 @@ SectionGroup "!UQM" SECGRP01
     Delete "$INSTDIR\content\packages\uqm-0.6.0-3domusic.uqm"
     Delete "$INSTDIR\content\packages\uqm-0.6.0-voice.uqm"
     Delete "$INSTDIR\content\packages\uqm-0.6.0-content.uqm"
+    # and in a case of manual install and overly helpful browsers
+    Delete "$INSTDIR\content\packages\uqm-0.6.0-3domusic.uqm.zip"
+    Delete "$INSTDIR\content\packages\uqm-0.6.0-voice.uqm.zip"
+    Delete "$INSTDIR\content\packages\uqm-0.6.0-content.uqm.zip"
 
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -546,6 +551,7 @@ Section Uninstall
   Delete "$INSTDIR\SDL_image.dll"
   Delete "$INSTDIR\SDL.dll"
   Delete "$INSTDIR\README.txt"
+  Delete "$INSTDIR\wrap_oal.dll"
   Delete "$INSTDIR\OpenAL32.dll"
   Delete "$INSTDIR\ogg.dll"
   Delete "$INSTDIR\Manual.txt"
