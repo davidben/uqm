@@ -204,7 +204,6 @@ Function HandlePackage
   Exch $0 # File location
   Exch
   Exch $1 # File name
-  Exch
   Push $2
   Push $3
   # Check to make sure the file wasn't already installed
