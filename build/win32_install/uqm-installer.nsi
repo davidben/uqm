@@ -279,6 +279,32 @@ PackageDone:
   Pop $0
 FunctionEnd
 
+# Usage:
+# Push the file name, preferrably a full path.
+# Push the string to be appended
+# Any errors during appending will be ignored.
+Function AppendToFile
+  Exch $0 # string to append
+  Exch
+  Exch $1 # File name
+  Push $2 # using $2 for file handle
+  FileOpen $2 $1 a
+  IfErrors done
+  FileSeek $2 0 END  # seek to end
+  FileWrite $2 $0
+  FileClose $2
+done:
+  Pop $2
+  Pop $1
+  Pop $0
+FunctionEnd
+
+Function EnableRemixes
+  Push "$UQMUSERDATA\uqm.cfg"
+  Push "remixmusic = BOOLEAN:true$\r$\n"
+  Call AppendToFile
+FunctionEnd
+
 SectionGroup "!UQM" SECGRP01
   Section "Executable" SEC01
     SectionIn 1 2 3 4 5 6 RO
@@ -301,13 +327,10 @@ SectionGroup "!UQM" SECGRP01
     File "vorbisfile.dll"
     File "WhatsNew.txt"
     File "zlib1.dll"
-    SetOverwrite off
     SetOutPath $UQMUSERDATA
-    File "uqm.cfg"
     SetOverwrite try
     File "uqm-pc.cfg"
     File "uqm-3do.cfg"
-    File "uqm-remix.cfg"
     
     # Delete old content
     Delete "$INSTDIR\content\packages\uqm-0.3-3domusic.zip"
@@ -393,9 +416,7 @@ SectionGroup "Modern Remixes" SECGRP03
     Push "${PKG_REMIX1_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
-    SetOutPath $UQMUSERDATA
-    Delete "uqm.cfg"
-    CopyFiles "$UQMUSERDATA\uqm-remix.cfg" "$UQMUSERDATA\uqm.cfg"
+    Call EnableRemixes
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -409,9 +430,7 @@ SectionGroup "Modern Remixes" SECGRP03
     Push "${PKG_REMIX2_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
-    SetOutPath $UQMUSERDATA
-    Delete "uqm.cfg"
-    CopyFiles "$UQMUSERDATA\uqm-remix.cfg" "$UQMUSERDATA\uqm.cfg"
+    Call EnableRemixes
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -425,9 +444,7 @@ SectionGroup "Modern Remixes" SECGRP03
     Push "${PKG_REMIX3_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
-    SetOutPath $UQMUSERDATA
-    Delete "uqm.cfg"
-    CopyFiles "$UQMUSERDATA\uqm-remix.cfg" "$UQMUSERDATA\uqm.cfg"
+    Call EnableRemixes
   ; Shortcuts
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     !insertmacro MUI_STARTMENU_WRITE_END
@@ -441,6 +458,7 @@ SectionGroup "Modern Remixes" SECGRP03
 #    Push "${PKG_REMIX4_FILE}"
 #    Push "$INSTDIR\content\addons"
 #    Call HandlePackage
+#    Call EnableRemixes
 #  ; Shortcuts
 #    !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 #    !insertmacro MUI_STARTMENU_WRITE_END
