@@ -14,6 +14,9 @@ Var UQMUSERDATA
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
+; UQM Package definitions
+!include "packages.nsh"
+
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
 
@@ -77,7 +80,7 @@ var ICONS_GROUP
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "uqm-0.7.0-installer.exe"
+OutFile "uqm-${PRODUCT_VERSION}-installer.exe"
 InstallDir "$PROGRAMFILES\The Ur-Quan Masters\"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -334,11 +337,11 @@ SectionGroup "!UQM" SECGRP01
     CreateDirectory "$INSTDIR\content\addons"
     SetOutPath "$INSTDIR\content"
     SetOverwrite ifnewer
-    AddSize 12261
+    AddSize ${PKG_CONTENT_SIZE}
     StrCpy $MANDATORY 1
-    StrCpy $MD5SUM "5c9114112ed84bd372755f881e235f61"
+    StrCpy $MD5SUM "${PKG_CONTENT_MD5SUM}"
     File "content\version"
-    Push "uqm-0.7.0-content.uqm"
+    Push "${PKG_CONTENT_FILE}"
     Push "$INSTDIR\content\packages"
     Call HandlePackage
 
@@ -356,10 +359,10 @@ SectionGroupEnd
 SectionGroup /e "3DO Content" SECGRP02
   Section "Music" SEC03
     SectionIn 1 4 6
-    AddSize 18536
+    AddSize ${PKG_3DOMUSIC_SIZE}
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "86a5e376d9b76888add1d10818f0ab9f"
-    Push "uqm-0.7.0-3domusic.uqm"
+    StrCpy $MD5SUM "${PKG_3DOMUSIC_MD5SUM}"
+    Push "${PKG_3DOMUSIC_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
   ; Shortcuts
@@ -369,10 +372,10 @@ SectionGroup /e "3DO Content" SECGRP02
 
   Section "Voiceovers" SEC04
     SectionIn 1 4 6
-    AddSize 112291
+    AddSize ${PKG_VOICE_SIZE}
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "320bd2f278ea06c443048b9fa1e40dbf"
-    Push "uqm-0.7.0-voice.uqm"
+    StrCpy $MD5SUM "${PKG_VOICE_MD5SUM}"
+    Push "${PKG_VOICE_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
   ; Shortcuts
@@ -384,10 +387,10 @@ SectionGroupEnd
 SectionGroup "Modern Remixes" SECGRP03
   Section "Pack 1" SEC05
     SectionIn 6
-    AddSize 49012
+    AddSize ${PKG_REMIX1_SIZE}
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "09f242d8d72166d1d5ccbd3d99c93e7d"
-    Push "uqm-remix-disc1.uqm"
+    StrCpy $MD5SUM "${PKG_REMIX1_MD5SUM}"
+    Push "${PKG_REMIX1_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
     SetOutPath $UQMUSERDATA
@@ -400,10 +403,10 @@ SectionGroup "Modern Remixes" SECGRP03
 
   Section "Pack 2" SEC06
     SectionIn 6
-    AddSize 58869
+    AddSize ${PKG_REMIX2_SIZE}
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "fbc8bdcb709939d559d8c7216ad15cc2"
-    Push "uqm-remix-disc2.uqm"
+    StrCpy $MD5SUM "${PKG_REMIX2_MD5SUM}"
+    Push "${PKG_REMIX2_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
     SetOutPath $UQMUSERDATA
@@ -416,10 +419,10 @@ SectionGroup "Modern Remixes" SECGRP03
 
   Section "Pack 3" SEC07
     SectionIn 6
-    AddSize 38989
+    AddSize ${PKG_REMIX3_SIZE}
     StrCpy $MANDATORY 0
-    StrCpy $MD5SUM "5ccc6d4ac301ae98e172ac6835dcdead"
-    Push "uqm-remix-disc3.uqm"
+    StrCpy $MD5SUM "${PKG_REMIX3_MD5SUM}"
+    Push "${PKG_REMIX3_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
     SetOutPath $UQMUSERDATA
@@ -432,9 +435,10 @@ SectionGroup "Modern Remixes" SECGRP03
 
 #  Section "Pack 4" SEC08
 #    SectionIn 6
-#    AddSize 50000  # ESTIMATE: Update later
+#    AddSize ${PKG_REMIX4_SIZE}
 #    StrCpy $MANDATORY 0
-#    Push "uqm-remix-pack4.zip"
+#    StrCpy $MD5SUM "${PKG_REMIX4_MD5SUM}"
+#    Push "${PKG_REMIX4_FILE}"
 #    Push "$INSTDIR\content\addons"
 #    Call HandlePackage
 #  ; Shortcuts
@@ -536,9 +540,9 @@ Section Uninstall
   Delete "$INSTDIR\content\addons\uqm-remix-disc3.uqm"
   Delete "$INSTDIR\content\addons\uqm-remix-disc2.uqm"
   Delete "$INSTDIR\content\addons\uqm-remix-disc1.uqm"
-  Delete "$INSTDIR\content\addons\uqm-0.7.0-voice.uqm"
-  Delete "$INSTDIR\content\addons\uqm-0.7.0-3domusic.uqm"
-  Delete "$INSTDIR\content\packages\uqm-0.7.0-content.uqm"
+  Delete "$INSTDIR\content\addons\${PKG_VOICE_FILE}"
+  Delete "$INSTDIR\content\addons\${PKG_3DOMUSIC_FILE}"
+  Delete "$INSTDIR\content\packages\${PKG_CONTENT_FILE}"
   Delete "$INSTDIR\content\version"
   Delete "$INSTDIR\zlib.dll"
   Delete "$INSTDIR\zlib1.dll"
