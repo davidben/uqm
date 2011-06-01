@@ -17,7 +17,7 @@
  */
 
 #include "../commall.h"
-#include <math.h>
+#include <stdlib.h>
 #include "resinst.h"
 #include "strings.h"
 
