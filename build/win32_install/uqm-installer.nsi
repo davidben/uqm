@@ -125,7 +125,7 @@ FunctionEnd
 
 Function RandomServer
   Push $0
-  Push 15
+  Push 27
   Call Random
   Pop  $0
   IntCmp $0 0 0 +4 +4
@@ -137,7 +137,7 @@ Function RandomServer
   Exch $0
   Return
   IntCmp $0 2 0 +4 +4
-  StrCpy $0 "easynews"
+  StrCpy $0 "aarnet"
   Exch $0
   Return
   IntCmp $0 3 0 +4 +4
@@ -145,7 +145,7 @@ Function RandomServer
   Exch $0
   Return
   IntCmp $0 4 0 +4 +4
-  StrCpy $0 "superb-east"
+  StrCpy $0 "superb-sea2"
   Exch $0
   Return
   IntCmp $0 5 0 +4 +4
@@ -153,7 +153,7 @@ Function RandomServer
   Exch $0
   Return
   IntCmp $0 6 0 +4 +4
-  StrCpy $0 "ufpr"
+  StrCpy $0 "voxel"
   Exch $0
   Return
   IntCmp $0 7 0 +4 +4
@@ -161,15 +161,15 @@ Function RandomServer
   Exch $0
   Return
   IntCmp $0 8 0 +4 +4
-  StrCpy $0 "puzzle"
+  StrCpy $0 "cdnetworks-us-1"
   Exch $0
   Return
   IntCmp $0 9 0 +4 +4
-  StrCpy $0 "superb-west"
+  StrCpy $0 "cdnetworks-us-2"
   Exch $0
   Return
   IntCmp $0 10 0 +4 +4
-  StrCpy $0 "optusnet"
+  StrCpy $0 "cdnetworks-kr-1"
   Exch $0
   Return
   IntCmp $0 11 0 +4 +4
@@ -177,7 +177,7 @@ Function RandomServer
   Exch $0
   Return
   IntCmp $0 12 0 +4 +4
-  StrCpy $0 "belnet"
+  StrCpy $0 "cdnetworks-kr-2"
   Exch $0
   Return
   IntCmp $0 13 0 +4 +4
@@ -188,7 +188,51 @@ Function RandomServer
   StrCpy $0 "nchc"
   Exch $0
   Return
-  StrCpy $0 "umn"
+  IntCmp $0 15 0 +4 +4
+  StrCpy $0 "dfn"
+  Exch $0
+  Return
+  IntCmp $0 16 0 +4 +4
+  StrCpy $0 "freefr"
+  Exch $0
+  Return
+  IntCmp $0 17 0 +4 +4
+  StrCpy $0 "garr"
+  Exch $0
+  Return
+  IntCmp $0 18 0 +4 +4
+  StrCpy $0 "ignum"
+  Exch $0
+  Return
+  IntCmp $0 19 0 +4 +4
+  StrCpy $0 "internode"
+  Exch $0
+  Return
+  IntCmp $0 20 0 +4 +4
+  StrCpy $0 "iweb"
+  Exch $0
+  Return
+  IntCmp $0 21 0 +4 +4
+  StrCpy $0 "netcologne"
+  Exch $0
+  Return
+  IntCmp $0 22 0 +4 +4
+  StrCpy $0 "leaseweb"
+  Exch $0
+  Return
+  IntCmp $0 23 0 +4 +4
+  StrCpy $0 "ncu"
+  Exch $0
+  Return
+  IntCmp $0 24 0 +4 +4
+  StrCpy $0 "tenet"
+  Exch $0
+  Return
+  IntCmp $0 25 0 +4 +4
+  StrCpy $0 "transact"
+  Exch $0
+  Return
+  StrCpy $0 "citylan"
   Exch $0
 FunctionEnd
 
@@ -200,6 +244,7 @@ FunctionEnd
 Var DOWNLOADTARGET
 Var MANDATORY
 Var MD5SUM
+Var DOWNLOADPATH
 Function HandlePackage
   Exch $0 # File location
   Exch
@@ -239,7 +284,7 @@ AttemptDownload:
   GetTempFileName $DOWNLOADTARGET
   Delete $DOWNLOADTARGET
   CreateDirectory $DOWNLOADTARGET
-  NSISdl::download "http://$2.dl.sourceforge.net/sourceforge/sc2/UQM/0.6.0/$1" "$DOWNLOADTARGET\$1"
+  NSISdl::download "http://$2.dl.sourceforge.net/project/sc2/$DOWNLOADPATH$1" "$DOWNLOADTARGET\$1"
   Pop $2
   StrCmp $2 "success" DownloadSuccessful
   StrCmp $2 "cancel" DownloadCanceled
@@ -364,6 +409,7 @@ SectionGroup "!UQM" SECGRP01
     StrCpy $MANDATORY 1
     StrCpy $MD5SUM "${PKG_CONTENT_MD5SUM}"
     File "content\version"
+    StrCpy $DOWNLOADPATH "UQM/0.7/"
     Push "${PKG_CONTENT_FILE}"
     Push "$INSTDIR\content\packages"
     Call HandlePackage
@@ -385,6 +431,7 @@ SectionGroup /e "3DO Content" SECGRP02
     AddSize ${PKG_3DOMUSIC_SIZE}
     StrCpy $MANDATORY 0
     StrCpy $MD5SUM "${PKG_3DOMUSIC_MD5SUM}"
+    StrCpy $DOWNLOADPATH "UQM/0.7/"
     Push "${PKG_3DOMUSIC_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
@@ -398,6 +445,7 @@ SectionGroup /e "3DO Content" SECGRP02
     AddSize ${PKG_VOICE_SIZE}
     StrCpy $MANDATORY 0
     StrCpy $MD5SUM "${PKG_VOICE_MD5SUM}"
+    StrCpy $DOWNLOADPATH "UQM/0.7/"
     Push "${PKG_VOICE_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
@@ -413,6 +461,7 @@ SectionGroup "Modern Remixes" SECGRP03
     AddSize ${PKG_REMIX1_SIZE}
     StrCpy $MANDATORY 0
     StrCpy $MD5SUM "${PKG_REMIX1_MD5SUM}"
+    StrCpy $DOWNLOADPATH "UQM%20Remix%20Packs/UQM%20Remix%20Pack%201/"
     Push "${PKG_REMIX1_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
@@ -427,6 +476,7 @@ SectionGroup "Modern Remixes" SECGRP03
     AddSize ${PKG_REMIX2_SIZE}
     StrCpy $MANDATORY 0
     StrCpy $MD5SUM "${PKG_REMIX2_MD5SUM}"
+    StrCpy $DOWNLOADPATH "UQM%20Remix%20Packs/UQM%20Remix%20Pack%202/"
     Push "${PKG_REMIX2_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
@@ -441,6 +491,7 @@ SectionGroup "Modern Remixes" SECGRP03
     AddSize ${PKG_REMIX3_SIZE}
     StrCpy $MANDATORY 0
     StrCpy $MD5SUM "${PKG_REMIX3_MD5SUM}"
+    StrCpy $DOWNLOADPATH "UQM%20Remix%20Packs/UQM%20Remix%20Pack%203/"
     Push "${PKG_REMIX3_FILE}"
     Push "$INSTDIR\content\addons"
     Call HandlePackage
@@ -455,6 +506,7 @@ SectionGroup "Modern Remixes" SECGRP03
 #    AddSize ${PKG_REMIX4_SIZE}
 #    StrCpy $MANDATORY 0
 #    StrCpy $MD5SUM "${PKG_REMIX4_MD5SUM}"
+#    StrCpy $DOWNLOADPATH "UQM%20Remix%20Packs/UQM%20Remix%20Pack%204/"
 #    Push "${PKG_REMIX4_FILE}"
 #    Push "$INSTDIR\content\addons"
 #    Call HandlePackage
