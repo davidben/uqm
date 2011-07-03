@@ -317,6 +317,7 @@ SectionGroup "!UQM" SECGRP01
     File "OpenAL32.dll"
     File "wrap_oal.dll"
     File "README.txt"
+    File "README-SDL.txt"
     File "SDL.dll"
     File "SDL_image.dll"
     File "SDL_gfx.dll"
