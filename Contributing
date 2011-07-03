@@ -103,7 +103,7 @@ Getting the patches committed:
   particular field of expertise with the source. Though all of us
   should have enough experience to deal with most issues not explicitely
   mentioned.
-    Serge van den Boom (svdb at stack.nl), Meep-Eep at #sc2
+    Serge van den Boom (svdb at stack.nl), SvdB at #sc2
       - Resource system
       - 3DO historical code
       - *nix build system
@@ -119,7 +119,7 @@ Getting the patches committed:
       - Input system
       - In-game configuration
       - General issues
-    Alex Volkov (codepro at usa.net), fOSSiL at #sc2
+    Alex Volkov (codepro at usa.net), fossil at #sc2
       - Graphics
       - Sound (particularly MixSDL)
       - Alien communications code
