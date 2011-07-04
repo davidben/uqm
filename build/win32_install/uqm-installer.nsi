@@ -344,9 +344,12 @@ done:
 FunctionEnd
 
 Function EnableRemixes
+  # If there are errors pending AppendToFile will fail
+  ClearErrors
   Push "$UQMUSERDATA\uqm.cfg"
   Push "remixmusic = BOOLEAN:true$\r$\n"
   Call AppendToFile
+  ClearErrors
 FunctionEnd
 
 SectionGroup "!UQM" SECGRP01
@@ -625,6 +628,7 @@ Section Uninstall
   Delete "$INSTDIR\SDL_image.dll"
   Delete "$INSTDIR\SDL.dll"
   Delete "$INSTDIR\README.txt"
+  Delete "$INSTDIR\README-SDL.txt"
   Delete "$INSTDIR\wrap_oal.dll"
   Delete "$INSTDIR\OpenAL32.dll"
   Delete "$INSTDIR\ogg.dll"
