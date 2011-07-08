@@ -105,22 +105,6 @@ Yes, let us get down to business.
 
 #(HELLO_AND_DOWN_TO_BUSINESS_2)	melnorme-013.ogg
 How nice to see you again, Captain.
-Before we go on, I have a small announcement.
-As you may know, in our travels throughout the galaxy
-we Melnorme have found many strange and interesting alien artifacts.
-One of these devices is the MetaChron, a kind of trans-time alarm system.
-In a nutshell, it warns me of future dangers by predicting its own demise
-which is most likely linked to my own well being, since I keep it under my pillow.
-The unit is a small pyramid and, when all is well, white in color.
-But if we are proceeding along a timeline which will eventually result in the destruction of the MetaChron
-the unit slowly darkens. Presumably, it will be destroyed at the same time as it turns completely black.
-When we first entered this region of space, the MetaChron was white.
-Now it is light gray.
-At its present rate of change, something will destroy the MetaChron
-in the early part of the year 2159.
-In order to avoid this unpleasantness, we may be leaving just before this time
-so if you have business you wish to conduct with us
-I suggest you do so before January 2159, or February at the latest.
 
 #(HELLO_AND_DOWN_TO_BUSINESS_3)	melnorme-014.ogg
 I had itchy pods this morning, Captain, and here you are!

@@ -1,4 +1,7 @@
-Changes towards version 0.7:
+Changes towards version 0.8:
+- Added the MetaChron story to the no-voice Melnorme script (bug #43) - Alex
+
+0.7.0:
 - Build with debug info in strict-debug mode (bug #1127), from Scott A. Colcord
 - Added spoken Slylandro probe coordinates (bug #732) - Nic, Alex
 - Added the missing bits to the no-voice versions of Mycon, Syreen and
