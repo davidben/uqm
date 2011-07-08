@@ -1013,7 +1013,7 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				}
 				break;
 			}
-	                case SAFEMODE_OPT:
+			case SAFEMODE_OPT:
 				setBoolOption (&options->safeMode, true);
 				break;
 #ifdef NETPLAY
