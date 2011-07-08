@@ -212,10 +212,6 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 
 	atexit (unInitAudio);
 
-	SetSFXVolume (sfxVolumeScale);
-	SetSpeechVolume (speechVolumeScale);
-	SetMusicVolume ((COUNT)musicVolume);
-				
 	SDL_PauseAudio (0);
 		
 	return 0;

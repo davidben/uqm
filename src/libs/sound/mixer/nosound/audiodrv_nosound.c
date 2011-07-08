@@ -148,10 +148,6 @@ noSound_Init (audio_Driver *driver, sint32 flags)
 
 	atexit (unInitAudio);
 
-	SetSFXVolume (sfxVolumeScale);
-	SetSpeechVolume (speechVolumeScale);
-	SetMusicVolume ((COUNT)musicVolume);
-		
 	PlaybackTask = AssignTask (PlaybackTaskFunc, 1024, 
 		"nosound audio playback");
 
