@@ -73,7 +73,7 @@ static void clear_control (WIDGET_CONTROLENTRY *widget);
 #endif
 
 #define MENU_COUNT          8
-#define CHOICE_COUNT       23
+#define CHOICE_COUNT       24
 #define SLIDER_COUNT        3
 #define BUTTON_COUNT       10
 #define LABEL_COUNT         4
@@ -96,7 +96,7 @@ typedef int (*HANDLER)(WIDGET *, int);
 static int choice_widths[CHOICE_COUNT] = {
 	3, 2, 3, 3, 2, 2, 2, 2, 2, 2, 
 	2, 2, 3, 2, 2, 3, 3, 2,	3, 3, 
-	3, 2, 2 };
+	3, 2, 2, 2 };
 
 static HANDLER button_handlers[BUTTON_COUNT] = {
 	quit_main_menu, quit_sub_menu, do_graphics, do_engine,
@@ -117,6 +117,7 @@ static WIDGET *main_widgets[] = {
 
 static WIDGET *graphics_widgets[] = {
 	(WIDGET *)(&choices[0]),
+	(WIDGET *)(&choices[23]),
 	(WIDGET *)(&choices[10]),
 	(WIDGET *)(&choices[2]),
 	(WIDGET *)(&choices[3]),
@@ -399,6 +400,7 @@ SetDefaults (void)
 	choices[20].selected = 0;
 	choices[21].selected = opts.musicremix;
 	choices[22].selected = opts.speech;
+	choices[23].selected = opts.keepaspect;
 
 	sliders[0].value = opts.musicvol;
 	sliders[1].value = opts.sfxvol;
@@ -431,6 +433,7 @@ PropagateResults (void)
 	opts.player2 = choices[19].selected;
 	opts.musicremix = choices[21].selected;
 	opts.speech = choices[22].selected;
+	opts.keepaspect = choices[23].selected;
 
 	opts.musicvol = sliders[0].value;
 	opts.sfxvol = sliders[1].value;
@@ -1121,6 +1124,7 @@ GetGlobalOptions (GLOBALOPTS *opts)
 	opts->music3do = opt3doMusic ? OPTVAL_ENABLED : OPTVAL_DISABLED;
 	opts->musicremix = optRemixMusic ? OPTVAL_ENABLED : OPTVAL_DISABLED;
 	opts->speech = optSpeech ? OPTVAL_ENABLED : OPTVAL_DISABLED;
+	opts->keepaspect = optKeepAspectRatio ? OPTVAL_ENABLED : OPTVAL_DISABLED;
 	switch (snddriver) {
 	case audio_DRIVER_OPENAL:
 		opts->adriver = OPTVAL_OPENAL;
@@ -1343,6 +1347,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	optSpeech = (opts->speech == OPTVAL_ENABLED);
 	optWhichIntro = (opts->intro == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optStereoSFX = (opts->stereo == OPTVAL_ENABLED);
+	optKeepAspectRatio = (opts->keepaspect == OPTVAL_ENABLED);
 	PlayerControls[0] = opts->player1;
 	PlayerControls[1] = opts->player2;
 
@@ -1360,6 +1365,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	res_PutBoolean ("config.smoothmelee", opts->meleezoom == OPTVAL_3DO);
 	res_PutBoolean ("config.positionalsfx", opts->stereo == OPTVAL_ENABLED); 
 	res_PutBoolean ("config.pulseshield", opts->shield == OPTVAL_3DO);
+	res_PutBoolean ("config.keepaspectratio", opts->keepaspect == OPTVAL_ENABLED);
 	res_PutInteger ("config.player1control", opts->player1);
 	res_PutInteger ("config.player2control", opts->player2);
 

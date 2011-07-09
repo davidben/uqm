@@ -35,6 +35,7 @@ Player Two
 Control Set
 UQM Remixes
 Speech
+Aspect Ratio
 
 #(CAT_0_OPTS)
 320x240
@@ -435,6 +436,20 @@ Requires a restart of UQM to take effect.
 Use 3DO speech. The script is closer to 3DO
 version where there are differences.
 Requires a restart of UQM to take effect.
+
+#(CAT_23_OPTS)
+Any
+Force 4:3
+
+#(CAT_23_OPT_0_DESC)
+Allow any aspect ratio. The game may be
+stretched in windows that are not 4:3.
+Currently only meaningful in OpenGL mode.
+
+#(CAT_23_OPT_1_DESC)
+Display the game with 4:3 aspect even when
+the window is not.
+Currently only meaningful in OpenGL mode.
 
 #(SLIDERS)
 Music Volume
