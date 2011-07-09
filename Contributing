@@ -65,8 +65,8 @@ Making changes:
   because you think that would be easier than trying to understand the
   original. If you don't have the skills or patience to do so, this is not
   the place for you.
-- Only use portable functions. The code is intended to work on Windows,
-  Linux, FreeBSD, BeOS and MacOS X.
+- Only use portable functions. The code is intended to work on Windows
+  (MSVC 6), Linux (GCC 4), FreeBSD (GCC 4) and MacOS X (GCC 4).
   Try to avoid unnecessary system-dependant code, but use #ifdefs if you
   really have to.
 - No shortcuts. Don't assume anything about user input (like the length),
