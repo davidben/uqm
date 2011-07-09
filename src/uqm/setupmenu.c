@@ -103,18 +103,6 @@ static HANDLER button_handlers[BUTTON_COUNT] = {
 	do_audio, do_resources, do_keyconfig, do_advanced, do_editkeys, 
 	do_keyconfig };
 
-static int menu_sizes[MENU_COUNT] = {
-	7, 5, 8, 9, 2, 5,
-#ifdef HAVE_OPENGL
-	5,
-#else
-	4,
-#endif
-	11
-};
-
-static int menu_bgs[MENU_COUNT] = { 0, 1, 1, 2, 3, 1, 2, 1 };
-
 /* These refer to uninitialized widgets, but that's OK; we'll fill
  * them in before we touch them */
 static WIDGET *main_widgets[] = {
@@ -124,14 +112,16 @@ static WIDGET *main_widgets[] = {
 	(WIDGET *)(&buttons[5]),
 	(WIDGET *)(&buttons[6]),
 	(WIDGET *)(&buttons[7]),
-	(WIDGET *)(&buttons[0]) };
+	(WIDGET *)(&buttons[0]),
+	NULL };
 
 static WIDGET *graphics_widgets[] = {
 	(WIDGET *)(&choices[0]),
 	(WIDGET *)(&choices[10]),
 	(WIDGET *)(&choices[2]),
 	(WIDGET *)(&choices[3]),
-	(WIDGET *)(&buttons[1]) };
+	(WIDGET *)(&buttons[1]),
+	NULL };
 
 static WIDGET *audio_widgets[] = {
 	(WIDGET *)(&sliders[0]),
@@ -141,7 +131,8 @@ static WIDGET *audio_widgets[] = {
 	(WIDGET *)(&choices[9]),
 	(WIDGET *)(&choices[21]),
 	(WIDGET *)(&choices[22]),
-	(WIDGET *)(&buttons[1]) };
+	(WIDGET *)(&buttons[1]),
+	NULL };
 
 static WIDGET *engine_widgets[] = {
 	(WIDGET *)(&choices[4]),
@@ -152,7 +143,8 @@ static WIDGET *engine_widgets[] = {
 	(WIDGET *)(&choices[13]),
 	(WIDGET *)(&choices[11]),
 	(WIDGET *)(&choices[17]),
-	(WIDGET *)(&buttons[1]) };
+	(WIDGET *)(&buttons[1]),
+	NULL };
 
 static WIDGET *advanced_widgets[] = {
 #ifdef HAVE_OPENGL
@@ -161,14 +153,16 @@ static WIDGET *advanced_widgets[] = {
 	(WIDGET *)(&choices[12]),
 	(WIDGET *)(&choices[15]),
 	(WIDGET *)(&choices[16]),
-	(WIDGET *)(&buttons[1]) };
+	(WIDGET *)(&buttons[1]),
+	NULL };
 	
 static WIDGET *keyconfig_widgets[] = {
 	(WIDGET *)(&choices[18]),
 	(WIDGET *)(&choices[19]),
 	(WIDGET *)(&labels[1]),
 	(WIDGET *)(&buttons[8]),
-	(WIDGET *)(&buttons[1]) };
+	(WIDGET *)(&buttons[1]),
+	NULL };
 
 static WIDGET *editkeys_widgets[] = {
 	(WIDGET *)(&choices[20]),
@@ -181,15 +175,31 @@ static WIDGET *editkeys_widgets[] = {
 	(WIDGET *)(&controlentries[4]),
 	(WIDGET *)(&controlentries[5]),
 	(WIDGET *)(&controlentries[6]),
-	(WIDGET *)(&buttons[9]) };
+	(WIDGET *)(&buttons[9]),
+	NULL };
 
 static WIDGET *incomplete_widgets[] = {
 	(WIDGET *)(&labels[0]),
-	(WIDGET *)(&buttons[1]) };
+	(WIDGET *)(&buttons[1]),
+	NULL };
 
-static WIDGET **menu_widgets[MENU_COUNT] = {
-	main_widgets, graphics_widgets, audio_widgets, engine_widgets, 
-	incomplete_widgets, keyconfig_widgets, advanced_widgets, editkeys_widgets };
+static const struct
+{
+	WIDGET **widgets;
+	int bgIndex;
+}
+menu_defs[] =
+{
+	{main_widgets, 0},
+	{graphics_widgets, 1},
+	{audio_widgets, 1},
+	{engine_widgets, 2},
+	{incomplete_widgets, 3},
+	{keyconfig_widgets, 1},
+	{advanced_widgets, 2},
+	{editkeys_widgets, 1},
+	{NULL, 0}
+};
 
 static int
 quit_main_menu (WIDGET *self, int event)
@@ -606,6 +616,16 @@ clear_control (WIDGET_CONTROLENTRY *widget)
 	populate_editkeys (template);
 }	
 
+static int
+count_widgets (const WIDGET **widgets)
+{
+	int count;
+
+	for (count = 0; *widgets != NULL; ++widgets, ++count)
+		;
+	return count;
+}
+
 static stringbank *bank = NULL;
 static FRAME setup_frame = NULL;
 
@@ -655,10 +675,14 @@ init_widgets (void)
 		menus[i].subtitle = buffer[i];
 		menus[i].bgStamp.origin.x = 0;
 		menus[i].bgStamp.origin.y = 0;
-		menus[i].bgStamp.frame = SetAbsFrameIndex (setup_frame, menu_bgs[i]);
-		menus[i].num_children = menu_sizes[i];
-		menus[i].child = menu_widgets[i];
+		menus[i].bgStamp.frame = SetAbsFrameIndex (setup_frame, menu_defs[i].bgIndex);
+		menus[i].num_children = count_widgets (menu_defs[i].widgets);
+		menus[i].child = menu_defs[i].widgets;
 		menus[i].highlighted = 0;
+	}
+	if (menu_defs[i].widgets != NULL)
+	{
+		log_add (log_Error, "Menu definition array has more items!");
 	}
 		
 	/* Options */
