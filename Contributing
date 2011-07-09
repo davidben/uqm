@@ -5,7 +5,7 @@ These guidelines are there so that you won't waste both our and your time.
 
 Before making changes:
 - Read this entire document
-- See if the the Bugzilla bug database at
+- See if the Bugzilla bug database at
   http://bugs.uqm.stack.nl/ contains any comments on what you're planning
   to do.
 - Make sure you're using the most recent Subversion version
@@ -26,9 +26,9 @@ Making changes:
   we don't even always do, but we've accepted this as our standard. The main
   reason is that this is very close to the original style.
   Trying to start a discussion about the standard is pointless and is
-  definately NOT appreciated.
+  definitely NOT appreciated.
   - Use 1 tab per indentation level
-  - Use no more than 76 chars on a line, when using a tabsize of 4.
+  - Use no more than 76 chars on a line, when using a tab size of 4.
   - Use 2 extra indentation levels for the continuation of a broken line,
     like this:
     if (blablablabla || foobar ||
@@ -47,7 +47,7 @@ Making changes:
     }
     (Though in this particular case, I personally would repeat the 'long',
     or place l and m on the same line)
-  - Put { on a seperate line, both for the start of a function and
+  - Put { on a separate line, both for the start of a function and
     for the start of a block.
   - one space around binary operators, and after commas.
   - one space between the function name and following '(', both in
@@ -101,7 +101,7 @@ Getting the patches committed:
   mentioning an URL where we can get the patch.
   The committers are listed below (in alphabetical order), with their
   particular field of expertise with the source. Though all of us
-  should have enough experience to deal with most issues not explicitely
+  should have enough experience to deal with most issues not explicitly
   mentioned.
     Serge van den Boom (svdb at stack.nl), SvdB at #sc2
       - Resource system
@@ -113,7 +113,7 @@ Getting the patches committed:
       - Graphics
       - Sound
       - General issues
-    Michael Martin (mcmartin at stanford.edu), McMartin at #sc2
+    Michael Martin (mcmartin at mail.com), McMartin at #sc2
       - Threading
       - Graphics
       - Input system
