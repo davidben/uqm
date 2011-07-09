@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Added speech option which controls loading of 3dovoice addon (no need
+  to set speech volume to 0 anymore) - Alex
 - Added the MetaChron story to the no-voice Melnorme script (bug #43) - Alex
 
 0.7.0:

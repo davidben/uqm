@@ -54,6 +54,7 @@ const char **optAddons;
 
 BOOLEAN opt3doMusic;
 BOOLEAN optRemixMusic;
+BOOLEAN optSpeech;
 BOOLEAN optSubtitles;
 BOOLEAN optStereoSFX;
 BOOLEAN optKeepAspectRatio;

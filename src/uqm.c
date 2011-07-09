@@ -114,6 +114,7 @@ struct options_struct
 	DECL_CONFIG_OPTION(int, soundQuality);
 	DECL_CONFIG_OPTION(bool, use3doMusic);
 	DECL_CONFIG_OPTION(bool, useRemixMusic);
+	DECL_CONFIG_OPTION(bool, useSpeech);
 	DECL_CONFIG_OPTION(int, whichCoarseScan);
 	DECL_CONFIG_OPTION(int, whichMenu);
 	DECL_CONFIG_OPTION(int, whichFonts);
@@ -247,6 +248,7 @@ main (int argc, char *argv[])
 		INIT_CONFIG_OPTION(  soundQuality,      audio_QUALITY_MEDIUM ),
 		INIT_CONFIG_OPTION(  use3doMusic,       true ),
 		INIT_CONFIG_OPTION(  useRemixMusic,     false ),
+		INIT_CONFIG_OPTION(  useSpeech,         true ),
 		INIT_CONFIG_OPTION(  whichCoarseScan,   OPT_PC ),
 		INIT_CONFIG_OPTION(  whichMenu,         OPT_PC ),
 		INIT_CONFIG_OPTION(  whichFonts,        OPT_PC ),
@@ -368,6 +370,7 @@ main (int argc, char *argv[])
 	// Fill in global variables:
 	opt3doMusic = options.use3doMusic.value;
 	optRemixMusic = options.useRemixMusic.value;
+	optSpeech = options.useSpeech.value;
 	optWhichCoarseScan = options.whichCoarseScan.value;
 	optWhichMenu = options.whichMenu.value;
 	optWhichFonts = options.whichFonts.value;
@@ -620,19 +623,13 @@ getUserConfigOptions (struct options_struct *options)
 
 	getBoolConfigValue (&options->use3doMusic, "config.3domusic");
 	getBoolConfigValue (&options->useRemixMusic, "config.remixmusic");
+	getBoolConfigValue (&options->useSpeech, "config.speech");
 
 	getBoolConfigValueXlat (&options->meleeScale, "config.smoothmelee",
 			TFB_SCALE_TRILINEAR, TFB_SCALE_STEP);
 
-	if (getListConfigValue (&options->soundDriver, "config.audiodriver",
-			audioDriverList))
-	{
-		// XXX: I don't know if we should turn speech off in this case.
-		//   This affects which version of the alien script will be used.
-		if (options->soundDriver.value == audio_DRIVER_NOSOUND)
-			options->speechVolumeScale.value = 0.0f;
-	}
-	
+	getListConfigValue (&options->soundDriver, "config.audiodriver",
+			audioDriverList);
 	getListConfigValue (&options->soundQuality, "config.audioquality",
 			audioQualityList);
 	getBoolConfigValue (&options->stereoSFX, "config.positionalsfx");
@@ -971,16 +968,8 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				}
 				break;
 			case SOUND_OPT:
-				if (setListOption (&options->soundDriver, optarg,
+				if (!setListOption (&options->soundDriver, optarg,
 						audioDriverList))
-				{
-					// XXX: I don't know if we should turn speech off in
-					//   this case. This affects which version of the alien
-					//   script will be used.
-					if (options->soundDriver.value == audio_DRIVER_NOSOUND)
-						options->speechVolumeScale.value = 0.0f;
-				}
-				else
 				{
 					InvalidArgument (optarg, "--sound");
 					badArg = true;

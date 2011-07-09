@@ -34,6 +34,7 @@ Player One
 Player Two
 Control Set
 UQM Remixes
+Speech
 
 #(CAT_0_OPTS)
 320x240
@@ -419,6 +420,20 @@ Requires a restart of UQM to take effect.
 #(CAT_21_OPT_1_DESC)
 Overrides PC or 3do soundtrack with the
 modern soundtrack written by The Precursors.
+Requires a restart of UQM to take effect.
+
+#(CAT_22_OPTS)
+Disabled
+Enabled
+
+#(CAT_22_OPT_0_DESC)
+Do not load the 3DO Speech Pack.
+Uses script closer to PC version.
+Requires a restart of UQM to take effect.
+
+#(CAT_22_OPT_1_DESC)
+Use 3DO speech. The script is closer to 3DO
+version where there are differences.
 Requires a restart of UQM to take effect.
 
 #(SLIDERS)

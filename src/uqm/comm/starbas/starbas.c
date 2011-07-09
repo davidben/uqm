@@ -28,7 +28,6 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
 #include "libs/inplib.h"
-#include "libs/sound/sound.h"
 
 
 static void TellMission (RESPONSE_REF R);
@@ -214,7 +213,7 @@ ByeBye (RESPONSE_REF R)
 		}
 
 		NPCPhrase (pStr0);
-		if (speechVolumeScale == 0.0f)
+		if (!usingSpeech)
 		{
 			NPCPhrase (SPACE);
 			NPCPhrase (GLOBAL_PLAYER_NAME);
@@ -900,7 +899,7 @@ TellStarBase (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, tell_me_about_crew))
 	{
 		NPCPhrase (ABOUT_CREW0);
-		if (speechVolumeScale > 0.0f)
+		if (usingSpeech)
 			NPCPhrase (YOUR_FLAGSHIP_3DO2);
 		else {
 			NPCPhrase (YOUR_FLAGSHIP_PC);
@@ -1646,14 +1645,14 @@ NormalStarbase (RESPONSE_REF R)
 		if (GET_GAME_STATE (MOONBASE_ON_SHIP))
 		{
 			NPCPhrase (STARBASE_IS_READY_A);
-			if (speechVolumeScale > 0.0f)
+			if (usingSpeech)
 				NPCPhrase (YOUR_FLAGSHIP_3DO1);
 			else {
 				NPCPhrase (YOUR_FLAGSHIP_PC);
 				NPCPhrase (GLOBAL_SHIP_NAME);
 			}
 			NPCPhrase (STARBASE_IS_READY_B);
-			if (speechVolumeScale > 0.0f)
+			if (usingSpeech)
 				NPCPhrase (YOUR_FLAGSHIP_3DO0);
 			else
 				NPCPhrase (GLOBAL_SHIP_NAME);
@@ -1711,7 +1710,7 @@ NormalStarbase (RESPONSE_REF R)
 					break;
 			}
 			NPCPhrase (pStr0);
-			if (speechVolumeScale == 0.0f)
+			if (!usingSpeech)
 			{
 				NPCPhrase (SPACE);
 				NPCPhrase (GLOBAL_PLAYER_NAME);
@@ -1914,7 +1913,7 @@ SellMinerals (RESPONSE_REF R)
 	}
 
 	NPCPhrase (pStr1);
-	if (speechVolumeScale == 0.0f)
+	if (!usingSpeech)
 	{
 		NPCPhrase (SPACE);
 		NPCPhrase (GLOBAL_PLAYER_NAME);

@@ -20,8 +20,8 @@
 #include "resinst.h"
 #include "strings.h"
 
-#include "libs/sound/sound.h"
 #include "uqm/build.h"
+#include "uqm/setup.h"
 
 
 static LOCDATA syreen_desc =
@@ -652,7 +652,7 @@ InitialSyreen (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, we_are_vindicator0))
 	{
 		NPCPhrase (WELCOME_VINDICATOR0);
-		if (speechVolumeScale == 0.0f)
+		if (!usingSpeech)
 		{
 			NPCPhrase (GLOBAL_PLAYER_NAME);
 			NPCPhrase (WELCOME_VINDICATOR1);

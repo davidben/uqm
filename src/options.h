@@ -40,6 +40,7 @@ extern int optMeleeScale;
 
 extern BOOLEAN opt3doMusic;
 extern BOOLEAN optRemixMusic;
+extern BOOLEAN optSpeech;
 extern BOOLEAN optSubtitles;
 extern BOOLEAN optStereoSFX;
 extern BOOLEAN optKeepAspectRatio;

@@ -46,8 +46,7 @@
 #include <ctype.h>
 
 #define MAX_RESPONSES 8
-#define BACKGROUND_VOL \
-		(speechVolumeScale == 0.0f ? NORMAL_VOLUME : (NORMAL_VOLUME >> 1))
+#define BACKGROUND_VOL (usingSpeech ? (NORMAL_VOLUME / 2) : NORMAL_VOLUME)
 #define FOREGROUND_VOL NORMAL_VOLUME
 
 // Oscilloscope frame rate
