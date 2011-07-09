@@ -1318,6 +1318,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	optMeleeScale = (opts->meleezoom == OPTVAL_3DO) ? TFB_SCALE_TRILINEAR : TFB_SCALE_STEP;
 	optSpeech = (opts->speech == OPTVAL_ENABLED);
 	optWhichIntro = (opts->intro == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
+	optStereoSFX = (opts->stereo == OPTVAL_ENABLED);
 	PlayerControls[0] = opts->player1;
 	PlayerControls[1] = opts->player2;
 
