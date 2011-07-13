@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Refactor Melnorme comm code to make modding easier; step 1 (bug #1128),
+  from Scott A. Colcord
 - Added aspect ratio option to the setup menu - Alex
 - Added speech option which controls loading of 3dovoice addon (no need
   to set speech volume to 0 anymore) - Alex

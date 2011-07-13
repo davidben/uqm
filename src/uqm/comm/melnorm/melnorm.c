@@ -34,11 +34,6 @@
 #include "uqm/sis.h"
 
 
-#define NUM_HISTORY_ITEMS 9
-#define NUM_EVENT_ITEMS 8
-#define NUM_ALIEN_RACE_ITEMS 16
-#define NUM_TECH_ITEMS 13
-
 static const NUMBER_SPEECH_DESC melnorme_numbers_english;
 
 static LOCDATA melnorme_desc =
@@ -201,6 +196,294 @@ static const NUMBER_SPEECH_DESC melnorme_numbers_english =
 	}
 };
 
+#define ARRAY_SIZE(array) (sizeof(array) / sizeof (*array))
+
+
+//////////////Technology System///////////////////////
+// This section deals with enabling and checking for
+// various technologies.  It should probably be
+// migrated to its own file.
+
+// Identifiers for the various technologies
+typedef enum 
+{
+	TECH_MODULE_BLASTER,
+	TECH_LANDER_SPEED,
+	TECH_MODULE_ANTIMISSILE,
+	TECH_LANDER_SHIELD_BIO,
+	TECH_LANDER_CARGO,
+	TECH_MODULE_BIGFUELTANK,
+	TECH_LANDER_RAPIDFIRE,
+	TECH_LANDER_SHIELD_QUAKE,
+	TECH_MODULE_TRACKING,
+	TECH_LANDER_SHIELD_LIGHTNING,
+	TECH_LANDER_SHIELD_HEAT,
+	TECH_MODULE_CANNON,
+	TECH_MODULE_FURNACE,
+} TechId_t;
+
+// Group the technologies into three subtypes
+typedef enum
+{
+	TECH_TYPE_MODULE,         // Flagship modules
+	                          //  subtype = moduleId, info = cost
+                              //   Cost will be scaled by MODULE_COST_SCALE.
+	TECH_TYPE_LANDER_SHIELD,  // Lander shield enhancements
+                              //  subtype = disaster type, info = unused
+	TECH_TYPE_STATE           // Other game state changes
+	                          //  subtype = stateId, info = state value
+} TechType_t;
+
+
+// Define the information specifying a particular technology
+typedef struct
+{
+	TechId_t   id;      // ID of the technology
+	TechType_t type;    // Type of the technology
+	int        subtype; // Subtype of the technology
+	int        info;    // Supplemental information
+} TechData;
+
+
+// A table of the available technologies.
+// This should really be an associative map of TechIds to tech data records,
+// but implementing that would be excessive.
+static const TechData tech_data_table[] = 
+{
+	// Tech ID                      Tech Type,               Supplemental info
+	{ TECH_MODULE_BLASTER,          TECH_TYPE_MODULE,        BLASTER_WEAPON,        4000 },
+	{ TECH_LANDER_SPEED,            TECH_TYPE_STATE,         IMPROVED_LANDER_SPEED,    1 },
+	{ TECH_MODULE_ANTIMISSILE,      TECH_TYPE_MODULE,        ANTIMISSILE_DEFENSE,   4000 },
+	{ TECH_LANDER_SHIELD_BIO,       TECH_TYPE_LANDER_SHIELD, BIOLOGICAL_DISASTER,     -1 },
+	{ TECH_LANDER_CARGO,            TECH_TYPE_STATE,         IMPROVED_LANDER_CARGO,    1 },
+	{ TECH_MODULE_BIGFUELTANK,      TECH_TYPE_MODULE,        HIGHEFF_FUELSYS,       1000 },
+	{ TECH_LANDER_RAPIDFIRE,        TECH_TYPE_STATE,         IMPROVED_LANDER_SHOT,     1 },
+	{ TECH_LANDER_SHIELD_QUAKE,     TECH_TYPE_LANDER_SHIELD, EARTHQUAKE_DISASTER,     -1 },
+	{ TECH_MODULE_TRACKING,         TECH_TYPE_MODULE,        TRACKING_SYSTEM,       5000 },
+	{ TECH_LANDER_SHIELD_LIGHTNING, TECH_TYPE_LANDER_SHIELD, LIGHTNING_DISASTER,      -1 },
+	{ TECH_LANDER_SHIELD_HEAT,      TECH_TYPE_LANDER_SHIELD, LAVASPOT_DISASTER,       -1 },
+	{ TECH_MODULE_CANNON,           TECH_TYPE_MODULE,        CANNON_WEAPON,         6000 },
+	{ TECH_MODULE_FURNACE,          TECH_TYPE_MODULE,        SHIVA_FURNACE,         4000 },
+};
+const size_t NUM_TECHNOLOGIES = ARRAY_SIZE (tech_data_table);
+
+// Lookup function to get the data for a particular tech
+static const TechData* 
+GetTechData (TechId_t techId)
+{
+	size_t i = 0;
+	for (i = 0; i < NUM_TECHNOLOGIES; ++i)
+	{
+		if (tech_data_table[i].id == techId)
+			return &tech_data_table[i];
+	}
+	return NULL;
+}
+
+
+// We have to explicitly switch on the state ID because the xxx_GAME_STATE
+// macros use preprocessor stringizing.
+static bool
+HasStateTech (int stateId)
+{
+	switch (stateId)
+	{
+		case IMPROVED_LANDER_SPEED:
+			return GET_GAME_STATE (IMPROVED_LANDER_SPEED);
+		case IMPROVED_LANDER_CARGO:
+			return GET_GAME_STATE (IMPROVED_LANDER_CARGO);
+		case IMPROVED_LANDER_SHOT:
+			return GET_GAME_STATE (IMPROVED_LANDER_SHOT);
+	}
+	return false;
+}
+
+static void
+GrantStateTech (int stateId, BYTE value)
+{
+	switch (stateId)
+	{
+		case IMPROVED_LANDER_SPEED:
+			SET_GAME_STATE (IMPROVED_LANDER_SPEED, value);
+			return;
+		case IMPROVED_LANDER_CARGO:
+			SET_GAME_STATE (IMPROVED_LANDER_CARGO, value);
+			return;
+		case IMPROVED_LANDER_SHOT:
+			SET_GAME_STATE (IMPROVED_LANDER_SHOT, value);
+			return;
+	}
+}
+
+static bool
+HasTech (TechId_t techId)
+{
+	const TechData* techData = GetTechData (techId);
+	if (!techData)
+		return false;
+
+	switch (techData->type)
+	{
+		case TECH_TYPE_MODULE:
+			return GLOBAL (ModuleCost[techData->subtype]) != 0;
+		case TECH_TYPE_LANDER_SHIELD:
+			return (GET_GAME_STATE (LANDER_SHIELDS) & (1 << techData->subtype)) != 0;
+		case TECH_TYPE_STATE:
+			return HasStateTech (techData->subtype);
+	}
+	return false;
+}
+
+static void
+GrantTech (TechId_t techId)
+{
+	const TechData* techData = GetTechData (techId);
+	if (!techData)
+		return;
+
+	switch (techData->type)
+	{
+		case TECH_TYPE_MODULE:
+			GLOBAL (ModuleCost[techData->subtype]) = techData->info / MODULE_COST_SCALE;
+			return;
+		case TECH_TYPE_LANDER_SHIELD:
+		{
+			COUNT state = GET_GAME_STATE (LANDER_SHIELDS) | (1 << techData->subtype);
+			SET_GAME_STATE (LANDER_SHIELDS, state);
+			return;
+		}
+		case TECH_TYPE_STATE:
+			GrantStateTech (techData->subtype, techData->info);
+			return;
+	}
+}
+
+
+////////////Melnorme Sales System///////////
+// This section contains code related to Melnorme sales
+
+// Many of the conversation lines in strings.h fall into groups
+// of sequential responses.  These structures allow those
+// responses to be interated through.
+static const int ok_buy_event_lines[] =
+{
+	OK_BUY_EVENT_1, OK_BUY_EVENT_2, OK_BUY_EVENT_3, OK_BUY_EVENT_4,
+	OK_BUY_EVENT_5, OK_BUY_EVENT_6, OK_BUY_EVENT_7, OK_BUY_EVENT_8
+};
+const size_t NUM_EVENT_ITEMS = ARRAY_SIZE (ok_buy_event_lines);
+
+static const int ok_buy_alien_race_lines[] =
+{
+	OK_BUY_ALIEN_RACE_1,  OK_BUY_ALIEN_RACE_2,  OK_BUY_ALIEN_RACE_3, 
+	OK_BUY_ALIEN_RACE_4,  OK_BUY_ALIEN_RACE_5,  OK_BUY_ALIEN_RACE_6, 
+	OK_BUY_ALIEN_RACE_7,  OK_BUY_ALIEN_RACE_8,  OK_BUY_ALIEN_RACE_9, 
+	OK_BUY_ALIEN_RACE_10, OK_BUY_ALIEN_RACE_11, OK_BUY_ALIEN_RACE_12,
+	OK_BUY_ALIEN_RACE_13, OK_BUY_ALIEN_RACE_14, OK_BUY_ALIEN_RACE_15, 
+	OK_BUY_ALIEN_RACE_16
+};
+const size_t NUM_ALIEN_RACE_ITEMS = ARRAY_SIZE (ok_buy_alien_race_lines);
+
+static const int ok_buy_history_lines[] =
+{
+	OK_BUY_HISTORY_1, OK_BUY_HISTORY_2, OK_BUY_HISTORY_3, 
+	OK_BUY_HISTORY_4, OK_BUY_HISTORY_5, OK_BUY_HISTORY_6, 
+	OK_BUY_HISTORY_7, OK_BUY_HISTORY_8, OK_BUY_HISTORY_9
+};
+const size_t NUM_HISTORY_ITEMS = ARRAY_SIZE (ok_buy_history_lines);
+
+static const int hello_and_down_to_business_lines[] =
+{
+	HELLO_AND_DOWN_TO_BUSINESS_1, HELLO_AND_DOWN_TO_BUSINESS_2,
+	HELLO_AND_DOWN_TO_BUSINESS_3, HELLO_AND_DOWN_TO_BUSINESS_4,
+	HELLO_AND_DOWN_TO_BUSINESS_5, HELLO_AND_DOWN_TO_BUSINESS_6,
+	HELLO_AND_DOWN_TO_BUSINESS_7, HELLO_AND_DOWN_TO_BUSINESS_8,
+	HELLO_AND_DOWN_TO_BUSINESS_9, HELLO_AND_DOWN_TO_BUSINESS_10
+};
+const size_t NUM_HELLO_LINES = ARRAY_SIZE (hello_and_down_to_business_lines);
+
+static const int rescue_lines[] =
+{
+	RESCUE_EXPLANATION, RESCUE_AGAIN_1, RESCUE_AGAIN_2,
+	RESCUE_AGAIN_3,     RESCUE_AGAIN_4, RESCUE_AGAIN_5
+};
+const size_t NUM_RESCUE_LINES = ARRAY_SIZE (rescue_lines);
+
+// How many lines are available in the given array?
+static size_t
+GetNumLines (const int array[])
+{
+	if (array == ok_buy_event_lines)
+		return NUM_EVENT_ITEMS;
+	else if (array == ok_buy_alien_race_lines)
+		return NUM_ALIEN_RACE_ITEMS;
+	else if (array == ok_buy_history_lines)
+		return NUM_HISTORY_ITEMS;
+	else if (array == hello_and_down_to_business_lines)
+		return NUM_HELLO_LINES;
+	else if (array == rescue_lines)
+		return NUM_RESCUE_LINES;
+	return 0;
+}
+
+// Get the line, with range checking.
+// Returns the last line if the desired one is out of range.
+static int 
+GetLineSafe (const int array[], size_t linenum)
+{
+	const size_t array_size = GetNumLines (array);
+	assert (array_size > 0);
+	if (linenum >= array_size)
+		linenum = array_size - 1;
+	return array[linenum];
+}
+
+// Data structure to hold the Melnorme's info on a technology
+typedef struct
+{
+	TechId_t techId;  // ID of technology
+	int price;        // Melnorme's price to sell
+	int sale_line;    // Sales pitch line ID
+	int sold_line;    // Post-sale line ID
+} TechSaleData;
+
+// Right now, all techs have the same price.
+#define TECHPRICE (75 * BIO_CREDIT_VALUE)
+
+static const TechSaleData tech_sale_catalog[] =
+{
+	{ TECH_MODULE_BLASTER,          TECHPRICE, NEW_TECH_1,  OK_BUY_NEW_TECH_1 },
+	{ TECH_LANDER_SPEED,            TECHPRICE, NEW_TECH_2,  OK_BUY_NEW_TECH_2 },
+	{ TECH_MODULE_ANTIMISSILE,      TECHPRICE, NEW_TECH_3,  OK_BUY_NEW_TECH_3 },
+	{ TECH_LANDER_SHIELD_BIO,       TECHPRICE, NEW_TECH_4,  OK_BUY_NEW_TECH_4 },
+	{ TECH_LANDER_CARGO,            TECHPRICE, NEW_TECH_5,  OK_BUY_NEW_TECH_5 },
+	{ TECH_MODULE_BIGFUELTANK,      TECHPRICE, NEW_TECH_6,  OK_BUY_NEW_TECH_6 },
+	{ TECH_LANDER_RAPIDFIRE,        TECHPRICE, NEW_TECH_7,  OK_BUY_NEW_TECH_7 },
+	{ TECH_LANDER_SHIELD_QUAKE,     TECHPRICE, NEW_TECH_8,  OK_BUY_NEW_TECH_8 },
+	{ TECH_MODULE_TRACKING,         TECHPRICE, NEW_TECH_9,  OK_BUY_NEW_TECH_9 },
+	{ TECH_LANDER_SHIELD_LIGHTNING, TECHPRICE, NEW_TECH_10, OK_BUY_NEW_TECH_10 },
+	{ TECH_LANDER_SHIELD_HEAT,      TECHPRICE, NEW_TECH_11, OK_BUY_NEW_TECH_11 },
+	{ TECH_MODULE_CANNON,           TECHPRICE, NEW_TECH_12, OK_BUY_NEW_TECH_12 },
+	{ TECH_MODULE_FURNACE,          TECHPRICE, NEW_TECH_13, OK_BUY_NEW_TECH_13 },
+};
+const size_t NUM_TECH_ITEMS = ARRAY_SIZE (tech_sale_catalog);
+
+// Return the next tech for sale that the player doesn't already have.
+// Returns NULL if the player has all the techs.
+static const TechSaleData*
+GetNextTechForSale (void)
+{
+	size_t i = 0;
+	for (i = 0; i < NUM_TECH_ITEMS; ++i)
+	{
+		if (!HasTech (tech_sale_catalog[i].techId))
+			return &tech_sale_catalog[i];
+	}
+
+	return NULL;
+}
+
+///////////End Melnorme Sales Section//////////////////
+
 static StatMsgMode prevMsgMode;
 
 static void DoFirstMeeting (RESPONSE_REF R);
@@ -246,6 +529,34 @@ ShipWorth (void)
 
 static COUNT rescue_fuel;
 static SIS_STATE SIS_copy;
+
+// Extract method to return the response string index
+// for stripping a given module.
+static int 
+GetStripModuleRef (int moduleID)
+{
+	switch (moduleID)
+	{
+		case PLANET_LANDER:       return LANDERS;
+		case FUSION_THRUSTER:     return THRUSTERS;
+		case TURNING_JETS:        return JETS;
+		case CREW_POD:            return PODS;
+		case STORAGE_BAY:         return BAYS;
+		case DYNAMO_UNIT:         return DYNAMOS;
+		case SHIVA_FURNACE:       return FURNACES;
+		case GUN_WEAPON:          return GUNS;
+		case BLASTER_WEAPON:      return BLASTERS;
+		case CANNON_WEAPON:       return CANNONS;
+		case TRACKING_SYSTEM:     return TRACKERS;
+		case ANTIMISSILE_DEFENSE: return DEFENSES;
+		// If a modder has added new modules, should it really
+		// be a fatal error if the Melnorme don't know about
+		// them?
+		default:
+			assert (0 && "Unknown module");
+	}
+	return 0;
+}
 
 static BOOLEAN
 StripShip (COUNT fuel_required)
@@ -414,54 +725,10 @@ StripShip (COUNT fuel_required)
 			{
 				if (module_count[i])
 				{
-					RESPONSE_REF pStr = 0;
-
-					switch (i)
-					{
-						case PLANET_LANDER:
-							pStr = LANDERS;
-							break;
-						case FUSION_THRUSTER:
-							pStr = THRUSTERS;
-							break;
-						case TURNING_JETS:
-							pStr = JETS;
-							break;
-						case CREW_POD:
-							pStr = PODS;
-							break;
-						case STORAGE_BAY:
-							pStr = BAYS;
-							break;
-						case DYNAMO_UNIT:
-							pStr = DYNAMOS;
-							break;
-						case SHIVA_FURNACE:
-							pStr = FURNACES;
-							break;
-						case GUN_WEAPON:
-							pStr = GUNS;
-							break;
-						case BLASTER_WEAPON:
-							pStr = BLASTERS;
-							break;
-						case CANNON_WEAPON:
-							pStr = CANNONS;
-							break;
-						case TRACKING_SYSTEM:
-							pStr = TRACKERS;
-							break;
-						case ANTIMISSILE_DEFENSE:
-							pStr = DEFENSES;
-							break;
-						default:
-							assert (0 && "Unknown module");
-					}
-
 					if (i == end_mod && i != beg_mod)
 						NPCPhrase (END_LIST_WITH_AND);
 					NPCPhrase (ENUMERATE_ONE + (module_count[i] - 1));
-					NPCPhrase (pStr);
+					NPCPhrase (GetStripModuleRef (i));
 				}
 			}
 		}
@@ -569,182 +836,109 @@ DoRescue (RESPONSE_REF R)
 	}
 }
 
-static COUNT
+// Extract method for getting the player's current credits.
+static COUNT 
+GetAvailableCredits (void)
+{
+	return MAKE_WORD (GET_GAME_STATE (MELNORME_CREDIT0),
+			GET_GAME_STATE (MELNORME_CREDIT1));
+}
+
+// Extract method for setting the player's current credits.
+static void
+SetAvailableCredits (COUNT credits)
+{
+	SET_GAME_STATE (MELNORME_CREDIT0, LOBYTE (credits));
+	SET_GAME_STATE (MELNORME_CREDIT1, HIBYTE (credits));
+}
+
+// Now returns whether the purchase succeeded instead of the remaining
+// credit balance.  Use GetAvailableCredits() to get the latter.
+static bool
 DeltaCredit (SIZE delta_credit)
 {
-	COUNT Credit;
+	COUNT Credit = GetAvailableCredits ();
 
-	Credit = MAKE_WORD (
-			GET_GAME_STATE (MELNORME_CREDIT0),
-			GET_GAME_STATE (MELNORME_CREDIT1)
-			);
+	// Can they afford it?
 	if ((int)delta_credit >= 0 || ((int)(-delta_credit) <= (int)(Credit)))
 	{
 		Credit += delta_credit;
-		SET_GAME_STATE (MELNORME_CREDIT0, LOBYTE (Credit));
-		SET_GAME_STATE (MELNORME_CREDIT1, HIBYTE (Credit));
+		SetAvailableCredits (Credit);
 		LockMutex (GraphicsLock);
 		DrawStatusMessage (NULL);
 		UnlockMutex (GraphicsLock);
+		return true;
 	}
-	else
-	{
-		NPCPhrase (NEED_MORE_CREDIT0);
-		NPCNumber (-delta_credit - Credit, NULL);
-		NPCPhrase (NEED_MORE_CREDIT1);
-	}
+
+	// Fail
+	NPCPhrase (NEED_MORE_CREDIT0);
+	NPCNumber (-delta_credit - Credit, NULL);
+	NPCPhrase (NEED_MORE_CREDIT1);
 	
-	return (Credit);
+	return false;
 }
 
+
+// Extract methods to process the giving of various bits of information to the
+// player.  Ideally, we'd want to merge these three into a single parameterized
+// function, but the nature of the XXX_GAME_STATE() code makes that tricky.
 static void
 CurrentEvents (void)
 {
-	BYTE stack;
-
-	stack = GET_GAME_STATE (MELNORME_EVENTS_INFO_STACK);
-	switch (stack++)
-	{
-		case 0:
-			NPCPhrase (OK_BUY_EVENT_1);
-			break;
-		case 1:
-			NPCPhrase (OK_BUY_EVENT_2);
-			break;
-		case 2:
-			NPCPhrase (OK_BUY_EVENT_3);
-			break;
-		case 3:
-			NPCPhrase (OK_BUY_EVENT_4);
-			break;
-		case 4:
-			NPCPhrase (OK_BUY_EVENT_5);
-			break;
-		case 5:
-			NPCPhrase (OK_BUY_EVENT_6);
-			break;
-		case 6:
-			NPCPhrase (OK_BUY_EVENT_7);
-			break;
-		case 7:
-			NPCPhrase (OK_BUY_EVENT_8);
-			break;
-	}
-	SET_GAME_STATE (MELNORME_EVENTS_INFO_STACK, stack);
+	BYTE stack = GET_GAME_STATE (MELNORME_EVENTS_INFO_STACK);
+	const int phraseId = GetLineSafe (ok_buy_event_lines, stack);
+	NPCPhrase (phraseId);
+	SET_GAME_STATE (MELNORME_EVENTS_INFO_STACK, stack + 1);
 }
 
 static void
 AlienRaces (void)
 {
-	BYTE stack;
-
-	stack = GET_GAME_STATE (MELNORME_ALIEN_INFO_STACK);
-	switch (stack++)
+	BYTE stack = GET_GAME_STATE (MELNORME_ALIEN_INFO_STACK);
+	const int phraseId = GetLineSafe (ok_buy_alien_race_lines, stack);
+	// Two pieces of alien knowledge trigger state changes.
+	switch (phraseId)
 	{
-		case 0:
-			NPCPhrase (OK_BUY_ALIEN_RACE_1);
-			break;
-		case 1:
-			NPCPhrase (OK_BUY_ALIEN_RACE_2);
-			break;
-		case 2:
-			NPCPhrase (OK_BUY_ALIEN_RACE_3);
-			break;
-		case 3:
-			NPCPhrase (OK_BUY_ALIEN_RACE_4);
-			break;
-		case 4:
-			NPCPhrase (OK_BUY_ALIEN_RACE_5);
-			break;
-		case 5:
-			NPCPhrase (OK_BUY_ALIEN_RACE_6);
-			break;
-		case 6:
-			NPCPhrase (OK_BUY_ALIEN_RACE_7);
-			break;
-		case 7:
-			NPCPhrase (OK_BUY_ALIEN_RACE_8);
-			break;
-		case 8:
-			NPCPhrase (OK_BUY_ALIEN_RACE_9);
-			break;
-		case 9:
-			NPCPhrase (OK_BUY_ALIEN_RACE_10);
-			break;
-		case 10:
-			NPCPhrase (OK_BUY_ALIEN_RACE_11);
-			break;
-		case 11:
-			NPCPhrase (OK_BUY_ALIEN_RACE_12);
-			break;
-		case 12:
-			NPCPhrase (OK_BUY_ALIEN_RACE_13);
-			break;
-		case 13:
-			NPCPhrase (OK_BUY_ALIEN_RACE_14);
+		case OK_BUY_ALIEN_RACE_14:
 			if (!GET_GAME_STATE (FOUND_PLUTO_SPATHI))
 			{
 				SET_GAME_STATE (KNOW_SPATHI_PASSWORD, 1);
 				SET_GAME_STATE (SPATHI_HOME_VISITS, 7);
 			}
 			break;
-		case 14:
-			NPCPhrase (OK_BUY_ALIEN_RACE_15);
+		case OK_BUY_ALIEN_RACE_15:
 			if (GET_GAME_STATE (KNOW_ABOUT_SHATTERED) < 2)
 			{
 				SET_GAME_STATE (KNOW_ABOUT_SHATTERED, 2);
 			}
 			SET_GAME_STATE (KNOW_SYREEN_WORLD_SHATTERED, 1);
 			break;
-		case 15:
-			NPCPhrase (OK_BUY_ALIEN_RACE_16);
-			break;
 	}
-	SET_GAME_STATE (MELNORME_ALIEN_INFO_STACK, stack);
+	NPCPhrase (phraseId);
+	SET_GAME_STATE (MELNORME_ALIEN_INFO_STACK, stack + 1);
 }
 
 static void
 History (void)
 {
-	BYTE stack;
+	BYTE stack = GET_GAME_STATE (MELNORME_HISTORY_INFO_STACK);
+	const int phraseId = GetLineSafe (ok_buy_history_lines, stack);
+	NPCPhrase (phraseId);
+	SET_GAME_STATE (MELNORME_HISTORY_INFO_STACK, stack + 1);
+}
 
-	stack = GET_GAME_STATE (MELNORME_HISTORY_INFO_STACK);
-	switch (stack++)
-	{
-		case 0:
-			NPCPhrase (OK_BUY_HISTORY_1);
-			break;
-		case 1:
-			NPCPhrase (OK_BUY_HISTORY_2);
-			break;
-		case 2:
-			NPCPhrase (OK_BUY_HISTORY_3);
-			break;
-		case 3:
-			NPCPhrase (OK_BUY_HISTORY_4);
-			break;
-		case 4:
-			NPCPhrase (OK_BUY_HISTORY_5);
-			break;
-		case 5:
-			NPCPhrase (OK_BUY_HISTORY_6);
-			break;
-		case 6:
-			NPCPhrase (OK_BUY_HISTORY_7);
-			break;
-		case 7:
-			NPCPhrase (OK_BUY_HISTORY_8);
-			break;
-		case 8:
-			NPCPhrase (OK_BUY_HISTORY_9);
-			break;
-	}
-	SET_GAME_STATE (MELNORME_HISTORY_INFO_STACK, stack);
+// extract method to tell if we have any information left to sell to the player.
+static bool AnyInfoLeftToSell (void)
+{
+	return GET_GAME_STATE (MELNORME_EVENTS_INFO_STACK) < NUM_EVENT_ITEMS
+			|| GET_GAME_STATE (MELNORME_ALIEN_INFO_STACK) < NUM_ALIEN_RACE_ITEMS
+			|| GET_GAME_STATE (MELNORME_HISTORY_INFO_STACK) < NUM_HISTORY_ITEMS;
 }
 
 static void NatureOfConversation (RESPONSE_REF R);
 
 static BYTE AskedToBuy;
+
 
 static void
 DoBuy (RESPONSE_REF R)
@@ -754,10 +948,7 @@ DoBuy (RESPONSE_REF R)
 	BYTE slot;
 	DWORD capacity;
 
-	credit = MAKE_WORD (
-			GET_GAME_STATE (MELNORME_CREDIT0),
-			GET_GAME_STATE (MELNORME_CREDIT1)
-			);
+	credit = GetAvailableCredits ();
 
 	capacity = FUEL_RESERVE;
 	slot = NUM_MODULE_SLOTS - 1;
@@ -774,6 +965,7 @@ DoBuy (RESPONSE_REF R)
 		}
 	} while (slot--);
 
+	// If they're out of credits, educate them on how commerce works.
 	if (credit == 0)
 	{
 		AskedToBuy = TRUE;
@@ -856,223 +1048,43 @@ TryFuelAgain:
 	else if (PLAYER_SAID (R, buy_technology)
 			|| PLAYER_SAID (R, buy_new_tech))
 	{
-		BYTE stack;
+		// Note that this code no longer uses the MELNORME_TECH_STACK state
+		// buts, as they're not needed; we can tell what technologies the
+		// player has by using the technology API above.  This opens the
+		// possibility of the player acquiring tech from someplace other than
+		// the Melnorme.
+		const TechSaleData* nextTech;
 
-		needed_credit = 0;
-		if (PLAYER_SAID (R, buy_technology))
+		// If it's our first time, give an introduction.
+		if (!GET_GAME_STATE (MELNORME_TECH_PROCEDURE))
 		{
-			if (!GET_GAME_STATE (MELNORME_TECH_PROCEDURE))
-			{
-				NPCPhrase (BUY_NEW_TECH_INTRO);
-				SET_GAME_STATE (MELNORME_TECH_PROCEDURE, 1);
-			}
-			stack = 0;
-		}
-		else
-		{
-			RESPONSE_REF pStr = 0;
-
-			stack = GET_GAME_STATE (MELNORME_TECH_STACK);
-			switch (stack)
-			{
-				case 0:
-					pStr = OK_BUY_NEW_TECH_1;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 1:
-					pStr = OK_BUY_NEW_TECH_2;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 2:
-					pStr = OK_BUY_NEW_TECH_3;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 3:
-					pStr = OK_BUY_NEW_TECH_4;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 4:
-					pStr = OK_BUY_NEW_TECH_5;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 5:
-					pStr = OK_BUY_NEW_TECH_6;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 6:
-					pStr = OK_BUY_NEW_TECH_7;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 7:
-					pStr = OK_BUY_NEW_TECH_8;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 8:
-					pStr = OK_BUY_NEW_TECH_9;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 9:
-					pStr = OK_BUY_NEW_TECH_10;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 10:
-					pStr = OK_BUY_NEW_TECH_11;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 11:
-					pStr = OK_BUY_NEW_TECH_12;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				case 12:
-					pStr = OK_BUY_NEW_TECH_13;
-					needed_credit = 75 * BIO_CREDIT_VALUE;
-					break;
-				default:
-					assert (0 && "Unknown tech");
-			}
-			if ((int)needed_credit > (int)credit)
-			{
-				DeltaCredit (-needed_credit);
-				goto BuyBuyBuy;
-			}
-			else
-			{
-				++stack;
-				NPCPhrase (pStr);
-				DeltaCredit (-needed_credit);
-			}
+			NPCPhrase (BUY_NEW_TECH_INTRO);
+			SET_GAME_STATE (MELNORME_TECH_PROCEDURE, 1);
 		}
 
-		switch (stack)
+		// Did the player just attempt to buy a tech?
+		if (PLAYER_SAID (R, buy_new_tech))
 		{
-			case 0:
-				if (GLOBAL (ModuleCost[BLASTER_WEAPON]) == 0)
-				{
-					NPCPhrase (NEW_TECH_1);
-					break;
-				}
-				++stack;
-			case 1:
-				GLOBAL (ModuleCost[BLASTER_WEAPON]) =
-						4000 / MODULE_COST_SCALE;
-				if (!GET_GAME_STATE (IMPROVED_LANDER_SPEED))
-				{
-					NPCPhrase (NEW_TECH_2);
-					break;
-				}
-				++stack;
-			case 2:
-				SET_GAME_STATE (IMPROVED_LANDER_SPEED, 1);
-				if (GLOBAL (ModuleCost[ANTIMISSILE_DEFENSE]) == 0)
-				{
-					NPCPhrase (NEW_TECH_3);
-					break;
-				}
-				++stack;
-			case 3:
-				GLOBAL (ModuleCost[ANTIMISSILE_DEFENSE]) =
-						4000 / MODULE_COST_SCALE;
-				if (!(GET_GAME_STATE (LANDER_SHIELDS)
-						& (1 << BIOLOGICAL_DISASTER)))
-				{
-					NPCPhrase (NEW_TECH_4);
-					break;
-				}
-				++stack;
-			case 4:
-				credit = GET_GAME_STATE (LANDER_SHIELDS)
-						| (1 << BIOLOGICAL_DISASTER);
-				SET_GAME_STATE (LANDER_SHIELDS, credit);
-				if (!GET_GAME_STATE (IMPROVED_LANDER_CARGO))
-				{
-					NPCPhrase (NEW_TECH_5);
-					break;
-				}
-				++stack;
-			case 5:
-				SET_GAME_STATE (IMPROVED_LANDER_CARGO, 1);
-				if (GLOBAL (ModuleCost[HIGHEFF_FUELSYS]) == 0)
-				{
-					NPCPhrase (NEW_TECH_6);
-					break;
-				}
-				++stack;
-			case 6:
-				GLOBAL (ModuleCost[HIGHEFF_FUELSYS]) =
-						1000 / MODULE_COST_SCALE;
-				if (!GET_GAME_STATE (IMPROVED_LANDER_SHOT))
-				{
-					NPCPhrase (NEW_TECH_7);
-					break;
-				}
-				++stack;
-			case 7:
-				SET_GAME_STATE (IMPROVED_LANDER_SHOT, 1);
-				if (!(GET_GAME_STATE (LANDER_SHIELDS)
-						& (1 << EARTHQUAKE_DISASTER)))
-				{
-					NPCPhrase (NEW_TECH_8);
-					break;
-				}
-				++stack;
-			case 8:
-				credit = GET_GAME_STATE (LANDER_SHIELDS)
-						| (1 << EARTHQUAKE_DISASTER);
-				SET_GAME_STATE (LANDER_SHIELDS, credit);
-				if (GLOBAL (ModuleCost[TRACKING_SYSTEM]) == 0)
-				{
-					NPCPhrase (NEW_TECH_9);
-					break;
-				}
-				++stack;
-			case 9:
-				GLOBAL (ModuleCost[TRACKING_SYSTEM]) =
-						5000 / MODULE_COST_SCALE;
-				if (!(GET_GAME_STATE (LANDER_SHIELDS)
-						& (1 << LIGHTNING_DISASTER)))
-				{
-					NPCPhrase (NEW_TECH_10);
-					break;
-				}
-				++stack;
-			case 10:
-				credit = GET_GAME_STATE (LANDER_SHIELDS)
-						| (1 << LIGHTNING_DISASTER);
-				SET_GAME_STATE (LANDER_SHIELDS, credit);
-				if (!(GET_GAME_STATE (LANDER_SHIELDS)
-						& (1 << LAVASPOT_DISASTER)))
-				{
-					NPCPhrase (NEW_TECH_11);
-					break;
-				}
-				++stack;
-			case 11:
-				credit = GET_GAME_STATE (LANDER_SHIELDS)
-						| (1 << LAVASPOT_DISASTER);
-				SET_GAME_STATE (LANDER_SHIELDS, credit);
-				if (GLOBAL (ModuleCost[CANNON_WEAPON]) == 0)
-				{
-					NPCPhrase (NEW_TECH_12);
-					break;
-				}
-				++stack;
-			case 12:
-				GLOBAL (ModuleCost[CANNON_WEAPON]) =
-						6000 / MODULE_COST_SCALE;
-				if (GLOBAL (ModuleCost[SHIVA_FURNACE]) == 0)
-				{
-					NPCPhrase (NEW_TECH_13);
-					break;
-				}
-				++stack;
-			case 13:
-				GLOBAL (ModuleCost[SHIVA_FURNACE]) =
-						4000 / MODULE_COST_SCALE;
-				NPCPhrase (NEW_TECH_ALL_GONE);
-				SET_GAME_STATE (MELNORME_TECH_STACK, stack);
-				goto BuyBuyBuy;
+			nextTech = GetNextTechForSale ();
+			if (!nextTech)
+				goto BuyBuyBuy; // No tech left to buy
+
+			if (!DeltaCredit (-nextTech->price))
+				goto BuyBuyBuy;  // Can't afford it
+
+			// Make the sale
+			GrantTech (nextTech->techId);
+			NPCPhrase (nextTech->sold_line);
 		}
-		SET_GAME_STATE (MELNORME_TECH_STACK, stack);
+
+		nextTech = GetNextTechForSale ();
+		if (!nextTech)
+		{
+			NPCPhrase (NEW_TECH_ALL_GONE);
+			goto BuyBuyBuy; // No tech left to buy
+		}
+
+		NPCPhrase (nextTech->sale_line);
 
 		Response (buy_new_tech, DoBuy);
 		Response (no_buy_new_tech, DoBuy);
@@ -1082,42 +1094,33 @@ TryFuelAgain:
 			|| PLAYER_SAID (R, buy_alien_races)
 			|| PLAYER_SAID (R, buy_history))
 	{
-		needed_credit = 0;
-		if (PLAYER_SAID (R, buy_info))
+		if (!GET_GAME_STATE (MELNORME_INFO_PROCEDURE))
 		{
-			if (GET_GAME_STATE (MELNORME_INFO_PROCEDURE))
-				NPCPhrase (OK_BUY_INFO);
-			else
-			{
-				NPCPhrase (BUY_INFO_INTRO);
-				SET_GAME_STATE (MELNORME_INFO_PROCEDURE, 1);
-			}
+			NPCPhrase (BUY_INFO_INTRO);
+			SET_GAME_STATE (MELNORME_INFO_PROCEDURE, 1);
+		}
+		else if (PLAYER_SAID (R, buy_info))
+		{
+			NPCPhrase (OK_BUY_INFO);
 		}
 		else
 		{
 #define INFO_COST 75
-			needed_credit = INFO_COST;
-			if ((int)credit >= (int)needed_credit)
-			{
-				if (PLAYER_SAID (R, buy_current_events))
-					CurrentEvents ();
-				else if (PLAYER_SAID (R, buy_alien_races))
-					AlienRaces ();
-				else /* if (R == buy_history) */
-					History ();
-			}
-
-			DeltaCredit (-needed_credit);
-			if (GET_GAME_STATE (MELNORME_EVENTS_INFO_STACK) < NUM_EVENT_ITEMS
-					 || GET_GAME_STATE (MELNORME_ALIEN_INFO_STACK) < NUM_ALIEN_RACE_ITEMS
-					 || GET_GAME_STATE (MELNORME_HISTORY_INFO_STACK) < NUM_HISTORY_ITEMS)
-			{
-			}
-			else
-			{
-				NPCPhrase (INFO_ALL_GONE);
+			if (!DeltaCredit (-INFO_COST))
 				goto BuyBuyBuy;
-			}
+
+			if (PLAYER_SAID (R, buy_current_events))
+				CurrentEvents ();
+			else if (PLAYER_SAID (R, buy_alien_races))
+				AlienRaces ();
+			else if (PLAYER_SAID (R, buy_history))
+				History ();
+		}
+
+		if (!AnyInfoLeftToSell ())
+		{
+			NPCPhrase (INFO_ALL_GONE);
+			goto BuyBuyBuy;
 		}
 
 		if (GET_GAME_STATE (MELNORME_EVENTS_INFO_STACK) < NUM_EVENT_ITEMS)
@@ -1142,12 +1145,11 @@ TryFuelAgain:
 BuyBuyBuy:
 		if (GLOBAL_SIS (FuelOnBoard) < capacity)
 			Response (buy_fuel, DoBuy);
-		if (GET_GAME_STATE (MELNORME_TECH_STACK) < NUM_TECH_ITEMS)
+		if (GetNextTechForSale ())
 			Response (buy_technology, DoBuy);
-		if (GET_GAME_STATE (MELNORME_ALIEN_INFO_STACK) < NUM_ALIEN_RACE_ITEMS
-				|| GET_GAME_STATE (MELNORME_HISTORY_INFO_STACK) < NUM_HISTORY_ITEMS
-				|| GET_GAME_STATE (MELNORME_EVENTS_INFO_STACK) < NUM_EVENT_ITEMS)
+		if (AnyInfoLeftToSell ())
 			Response (buy_info, DoBuy);
+
 		Response (done_buying, NatureOfConversation);
 		Response (be_leaving_now, ExitConversation);
 	}
@@ -1267,6 +1269,7 @@ DoSell (RESPONSE_REF R)
 	}
 }
 
+
 static void
 NatureOfConversation (RESPONSE_REF R)
 {
@@ -1280,46 +1283,15 @@ NatureOfConversation (RESPONSE_REF R)
 		R = 0;
 	}
 
-	Credit = DeltaCredit (0);
+	// Draw credits display
+	DeltaCredit (0);
+	Credit = GetAvailableCredits ();
 	if (R == 0)
 	{
-		BYTE stack;
-
-		stack = (BYTE)(GET_GAME_STATE (MELNORME_YACK_STACK2) - 5);
-		switch (stack++)
-		{
-			case 0:
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_1);
-				break;
-			case 1:
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_2);
-				break;
-			case 2:
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_3);
-				break;
-			case 3:
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_4);
-				break;
-			case 4:
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_5);
-				break;
-			case 5:
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_6);
-				break;
-			case 6:
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_7);
-				break;
-			case 7:
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_8);
-				break;
-			case 8:
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_9);
-				break;
-			default:
-				--stack;
-				NPCPhrase (HELLO_AND_DOWN_TO_BUSINESS_10);
-				break;
-		}
+		BYTE stack = GET_GAME_STATE (MELNORME_YACK_STACK2) - 5;
+		NPCPhrase (GetLineSafe (hello_and_down_to_business_lines, stack));
+		if (stack < (NUM_HELLO_LINES - 1))
+			++stack;
 		SET_GAME_STATE (MELNORME_YACK_STACK2, stack + 5);
 	}
 
@@ -1352,11 +1324,11 @@ NatureOfConversation (RESPONSE_REF R)
 		{
 				/* Melnorme reports any news and turns purple */
 			NPCPhrase (BUY_OR_SELL);
-			AlienTalkSegue(1);
+			AlienTalkSegue (1);
 			XFormColorMap (GetColorMapAddress (
 					SetAbsColorMapIndex (CommData.AlienColorMap, 1)
 					), ONE_SECOND / 2);
-			AlienTalkSegue((COUNT)~0);
+			AlienTalkSegue ((COUNT)~0);
 		}
 		else if (PLAYER_SAID (R, why_turned_purple))
 		{
@@ -1394,32 +1366,10 @@ NatureOfConversation (RESPONSE_REF R)
 		}
 		else
 		{
-			BYTE num_rescues;
+			BYTE num_rescues = GET_GAME_STATE (MELNORME_RESCUE_COUNT);
+			NPCPhrase (GetLineSafe (rescue_lines, num_rescues));
 
-			num_rescues = GET_GAME_STATE (MELNORME_RESCUE_COUNT);
-			switch (num_rescues)
-			{
-				case 0:
-					NPCPhrase (RESCUE_EXPLANATION);
-					break;
-				case 1:
-					NPCPhrase (RESCUE_AGAIN_1);
-					break;
-				case 2:
-					NPCPhrase (RESCUE_AGAIN_2);
-					break;
-				case 3:
-					NPCPhrase (RESCUE_AGAIN_3);
-					break;
-				case 4:
-					NPCPhrase (RESCUE_AGAIN_4);
-					break;
-				case 5:
-					NPCPhrase (RESCUE_AGAIN_5);
-					break;
-			 }
-
-			if (num_rescues < 5)
+			if (num_rescues < NUM_RESCUE_LINES - 1)
 			{
 				++num_rescues;
 				SET_GAME_STATE (MELNORME_RESCUE_COUNT, num_rescues);
