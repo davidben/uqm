@@ -45,6 +45,9 @@ extern BOOLEAN optSubtitles;
 extern BOOLEAN optStereoSFX;
 extern BOOLEAN optKeepAspectRatio;
 
+#define GAMMA_SCALE  1000
+extern float optGamma;
+
 extern uio_DirHandle *contentDir;
 extern uio_DirHandle *configDir;
 extern uio_DirHandle *saveDir;
@@ -75,6 +78,8 @@ void prepareShadowAddons (const char **addons);
 
 BOOLEAN loadAddon (const char *addon);
 int loadIndices (uio_DirHandle *baseDir);
+
+bool setGammaCorrection (float gamma);
 
 #endif
 

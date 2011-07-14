@@ -58,6 +58,9 @@ BOOLEAN optSpeech;
 BOOLEAN optSubtitles;
 BOOLEAN optStereoSFX;
 BOOLEAN optKeepAspectRatio;
+
+float optGamma;
+
 uio_DirHandle *contentDir;
 uio_DirHandle *configDir;
 uio_DirHandle *saveDir;
@@ -583,4 +586,15 @@ prepareAddons (const char **addons)
 			break;
 		}
 	}
+}
+
+bool
+setGammaCorrection (float gamma)
+{
+	bool set = TFB_SetGamma (gamma);
+	if (set)
+		log_add (log_Info, "Gamma correction set to %.4f.", gamma);
+	else
+		log_add (log_Warning, "Unable to set gamma correction.");
+	return set;
 }

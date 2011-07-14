@@ -1,4 +1,5 @@
 Changes towards version 0.8:
+- Added gamma correction to the setup menu (bug #977) - Alex, Nic
 - Refactor Melnorme comm code to make modding easier; step 1 (bug #1128),
   from Scott A. Colcord
 - Added aspect ratio option to the setup menu - Alex

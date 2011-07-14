@@ -243,7 +243,7 @@ main (int argc, char *argv[])
 		INIT_CONFIG_OPTION(  scaler,            0 ),
 		INIT_CONFIG_OPTION(  showFps,           false ),
 		INIT_CONFIG_OPTION(  keepAspectRatio,   false ),
-		INIT_CONFIG_OPTION(  gamma,             0.0f ),
+		INIT_CONFIG_OPTION(  gamma,             1.0f ),
 		INIT_CONFIG_OPTION(  soundDriver,       audio_DRIVER_MIXSDL ),
 		INIT_CONFIG_OPTION(  soundQuality,      audio_QUALITY_MEDIUM ),
 		INIT_CONFIG_OPTION(  use3doMusic,       true ),
@@ -418,8 +418,11 @@ main (int argc, char *argv[])
 		gfxFlags |= TFB_GFXFLAGS_SHOWFPS;
 	TFB_InitGraphics (gfxDriver, gfxFlags, options.resolution.width,
 			options.resolution.height);
-	if (options.gamma.set)
-		TFB_SetGamma (options.gamma.value);
+	if (options.gamma.set && setGammaCorrection (options.gamma.value))
+		optGamma = options.gamma.value;
+	else
+		optGamma = 1.0f; // failed or default
+	
 	InitColorMaps ();
 	init_communication ();
 	/* TODO: Once threading is gone, restore initAudio here.
@@ -557,6 +560,25 @@ getVolumeConfigValue (struct float_option *option, const char *config_val)
 	option->set = true;
 }
 
+static void
+getGammaConfigValue (struct float_option *option, const char *config_val)
+{
+	int val;
+
+	if (option->set || !res_IsInteger (config_val))
+		return;
+
+	val = res_GetInteger (config_val);
+	// gamma config option is a fixed-point number
+	// ignore ridiculously out-of-range values
+	if (val < (int)(0.03 * GAMMA_SCALE) || val > (int)(9.9 * GAMMA_SCALE))
+		return;
+	option->value = val / (float)GAMMA_SCALE;
+	// avoid setting gamma when not necessary
+	if (option->value != 1.0f)
+		option->set = true;
+}
+
 static bool
 getListConfigValue (struct int_option *option, const char *config_val,
 		const struct option_list_value *list)
@@ -605,6 +627,7 @@ getUserConfigOptions (struct options_struct *options)
 	getBoolConfigValue (&options->scanlines, "config.scanlines");
 	getBoolConfigValue (&options->showFps, "config.showfps");
 	getBoolConfigValue (&options->keepAspectRatio, "config.keepaspectratio");
+	getGammaConfigValue (&options->gamma, "config.gamma");
 
 	getBoolConfigValue (&options->subtitles, "config.subtitles");
 	

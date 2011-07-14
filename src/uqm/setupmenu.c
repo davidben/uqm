@@ -37,6 +37,8 @@
 #include "libs/memlib.h"
 #include "resinst.h"
 #include "nameref.h"
+#include <math.h>
+
 
 static STRING SetupTab;
 
@@ -74,7 +76,7 @@ static void clear_control (WIDGET_CONTROLENTRY *widget);
 
 #define MENU_COUNT          8
 #define CHOICE_COUNT       24
-#define SLIDER_COUNT        3
+#define SLIDER_COUNT        4
 #define BUTTON_COUNT       10
 #define LABEL_COUNT         4
 #define TEXTENTRY_COUNT     1
@@ -119,6 +121,7 @@ static WIDGET *graphics_widgets[] = {
 	(WIDGET *)(&choices[0]),
 	(WIDGET *)(&choices[23]),
 	(WIDGET *)(&choices[10]),
+	(WIDGET *)(&sliders[3]),
 	(WIDGET *)(&choices[2]),
 	(WIDGET *)(&choices[3]),
 	(WIDGET *)(&buttons[1]),
@@ -201,6 +204,18 @@ menu_defs[] =
 	{editkeys_widgets, 1},
 	{NULL, 0}
 };
+
+// Start with reasonable gamma bounds. These will get updated
+// as we find out the actual bounds.
+static float minGamma = 0.4f;
+static float maxGamma = 2.5f;
+// The gamma slider uses an exponential curve
+// We use y = e^(2.1972*(x-1)) curve to give us a nice spread of
+// gamma values 0.11 < g < 9.0 centered at g=1.0
+#define GAMMA_CURVE_B  2.1972f
+static float minGammaX;
+static float maxGammaX;
+
 
 static int
 quit_main_menu (WIDGET *self, int event)
@@ -405,6 +420,7 @@ SetDefaults (void)
 	sliders[0].value = opts.musicvol;
 	sliders[1].value = opts.sfxvol;
 	sliders[2].value = opts.speechvol;
+	sliders[3].value = opts.gamma;
 }
 
 static void
@@ -438,6 +454,7 @@ PropagateResults (void)
 	opts.musicvol = sliders[0].value;
 	opts.sfxvol = sliders[1].value;
 	opts.speechvol = sliders[2].value;
+	opts.gamma = sliders[3].value;
 	SetGlobalOptions (&opts);
 }
 
@@ -592,6 +609,135 @@ OnTextEntryEvent (WIDGET_TEXTENTRY *widget)
 	redraw_menu ();
 
 	return TRUE; // event handled
+}
+
+static inline float
+gammaCurve (float x)
+{
+	// The slider uses an exponential curve
+	return exp ((x - 1) * GAMMA_CURVE_B);
+}
+
+static inline float
+solveGammaCurve (float y)
+{
+	return log (y) / GAMMA_CURVE_B + 1;
+}
+
+static int
+gammaToSlider (float gamma)
+{
+	const float x = solveGammaCurve (gamma);
+	const float step = (maxGammaX - minGammaX) / 100;
+	return (int) ((x - minGammaX) / step + 0.5);
+}
+
+static float
+sliderToGamma (int value)
+{
+	const float step = (maxGammaX - minGammaX) / 100;
+	const float x = minGammaX + step * value;
+	const float g = gammaCurve (x);
+	// report any value that is close enough as 1.0
+	return (fabs (g - 1.0f) < 0.001f) ? 1.0f : g;
+}
+
+static void
+updateGammaBounds (bool useUpper)
+{
+	float g, x;
+	int slider;
+	
+	// The slider uses an exponential curve.
+	// Calculate where on the curve the min and max gamma values are
+	minGammaX = solveGammaCurve (minGamma);
+	maxGammaX = solveGammaCurve (maxGamma);
+
+	// We have 100 discrete steps through the range, so the slider may
+	// skip over a 1.0 gamma. We need to ensure that there always is
+	// a 1.0 on the slider by tweaking the range (expanding/contracting).
+	slider = gammaToSlider (1.0f);
+	g = sliderToGamma (slider);
+	if (g == 1.0f)
+		return; // no adjustment needed
+
+	x = solveGammaCurve (g);
+	if (useUpper)
+	{	// Move the upper bound up or down to land on 1.0
+		const float d = (x - 1.0f) * 100 / slider;
+		maxGammaX -= d;
+		maxGamma = gammaCurve (maxGammaX);
+	}
+	else
+	{	// Move the lower bound up or down to land on 1.0
+		const float d = (x - 1.0f) * 100 / (100 - slider);
+		minGammaX -= d;
+		minGamma = gammaCurve (minGammaX);
+	}
+}
+
+static int
+gamma_HandleEventSlider (WIDGET *_self, int event)
+{
+	WIDGET_SLIDER *self = (WIDGET_SLIDER *)_self;
+	int prevValue = self->value;
+	float gamma;
+	bool set;
+
+	switch (event)
+	{
+	case WIDGET_EVENT_LEFT:
+		self->value -= self->step;
+		break;
+	case WIDGET_EVENT_RIGHT:
+		self->value += self->step;
+		break;
+	default:
+		return FALSE;
+	}
+
+	// Limit the slider to values accepted by gfx subsys
+	gamma = sliderToGamma (self->value);
+	set = TFB_SetGamma (gamma);
+	if (!set)
+	{	// revert
+		self->value = prevValue;
+		gamma = sliderToGamma (self->value);
+	}
+
+	// Grow or shrink the range based on accepted values
+	if (gamma < minGamma || (!set && event == WIDGET_EVENT_LEFT))
+	{
+		minGamma = gamma;
+		updateGammaBounds (true);
+		// at the lowest end
+		self->value = 0;
+	}
+	else if (gamma > maxGamma || (!set && event == WIDGET_EVENT_RIGHT))
+	{
+		maxGamma = gamma;
+		updateGammaBounds (false);
+		// at the highest end
+		self->value = 100;
+	}
+	return TRUE;
+}
+
+static void
+gamma_DrawValue (WIDGET_SLIDER *self, int x, int y)
+{
+	TEXT t;
+	char buf[16];
+	float gamma = sliderToGamma (self->value);
+	snprintf (buf, sizeof buf, "%.4f", gamma);
+
+	t.baseline.x = x;
+	t.baseline.y = y;
+	t.align = ALIGN_CENTER;
+	t.CharCount = ~0;
+	t.pStr = buf;
+
+	font_DrawText (&t);
 }
 
 static void
@@ -804,6 +950,10 @@ init_widgets (void)
 		sliders[i].tooltip[1] = "";
 		sliders[i].tooltip[2] = "";
 	}
+	// gamma is a special case
+	sliders[3].step = 1;
+	sliders[3].handleEvent = gamma_HandleEventSlider;
+	sliders[3].draw_value = gamma_DrawValue;
 
 	for (i = 0; i < SLIDER_COUNT; i++)
 	{
@@ -1080,6 +1230,8 @@ SetupMenu (void)
 void
 GetGlobalOptions (GLOBALOPTS *opts)
 {
+	bool whichBound;
+
 	if (GfxFlags & TFB_GFXFLAGS_SCALE_BILINEAR) 
 	{
 		opts->scaler = OPTVAL_BILINEAR_SCALE;
@@ -1227,13 +1379,22 @@ GetGlobalOptions (GLOBALOPTS *opts)
 		}
 	}
 
+	whichBound = (optGamma < maxGamma);
+	// The option supplied by the user may be beyond our starting range
+	// but valid nonetheless. We need to account for that.
+	if (optGamma <= minGamma)
+		minGamma = optGamma - 0.03f;
+	else if (optGamma >= maxGamma)
+		maxGamma = optGamma + 0.3f;
+	updateGammaBounds (whichBound);
+	opts->gamma = gammaToSlider (optGamma);
+
 	opts->player1 = PlayerControls[0];
 	opts->player2 = PlayerControls[1];
 
 	opts->musicvol = (((int)(musicVolumeScale * 100.0f) + 2) / 5) * 5;
 	opts->sfxvol = (((int)(sfxVolumeScale * 100.0f) + 2) / 5) * 5;
 	opts->speechvol = (((int)(speechVolumeScale * 100.0f) + 2) / 5) * 5;
-	
 }
 
 void
@@ -1336,6 +1497,14 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		FlushGraphics ();
 		InitVideoPlayer (TRUE);
 	}
+
+	// Avoid setting gamma when it is not necessary
+	if (optGamma != 1.0f || sliderToGamma (opts->gamma) != 1.0f)
+	{
+		optGamma = sliderToGamma (opts->gamma);
+		setGammaCorrection (optGamma);
+	}
+
 	optSubtitles = (opts->subtitles == OPTVAL_ENABLED) ? TRUE : FALSE;
 	// optWhichMusic = (opts->music == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optWhichMenu = (opts->menu == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
@@ -1366,6 +1535,7 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	res_PutBoolean ("config.positionalsfx", opts->stereo == OPTVAL_ENABLED); 
 	res_PutBoolean ("config.pulseshield", opts->shield == OPTVAL_3DO);
 	res_PutBoolean ("config.keepaspectratio", opts->keepaspect == OPTVAL_ENABLED);
+	res_PutInteger ("config.gamma", (int) (optGamma * GAMMA_SCALE + 0.5));
 	res_PutInteger ("config.player1control", opts->player1);
 	res_PutInteger ("config.player2control", opts->player2);
 

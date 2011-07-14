@@ -592,16 +592,8 @@ TFB_UploadTransitionScreen (void)
 #endif
 }
 
-void
+bool
 TFB_SetGamma (float gamma)
 {
-	if (SDL_SetGamma (gamma, gamma, gamma) == -1)
-	{
-		log_add (log_Warning, "Unable to set gamma correction.");
-	}
-	else
-	{
-		log_add (log_Info, "Gamma correction set to %1.4f.", gamma);
-	}
+	return (SDL_SetGamma (gamma, gamma, gamma) == 0);
 }
-
