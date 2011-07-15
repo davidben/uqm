@@ -68,18 +68,18 @@ signedDivWithError (long val, long divisor)
 #define MAP_FIT_X ((MAX_X_UNIVERSE + 1) / SIS_SCREEN_WIDTH + 1)
 
 static inline COORD
-universeToDispx (COORD ux)
+universeToDispx (long ux)
 {
-	return signedDivWithError ((((long)ux - mapOrigin.x) << zoomLevel)
+	return signedDivWithError (((ux - mapOrigin.x) << zoomLevel)
 			* SIS_SCREEN_WIDTH, MAX_X_UNIVERSE + MAP_FIT_X)
 			+ ((SIS_SCREEN_WIDTH - 1) >> 1);
 }
 #define UNIVERSE_TO_DISPX(ux)  universeToDispx(ux)
 
 static inline COORD
-universeToDispy (COORD uy)
+universeToDispy (long uy)
 {
-	return signedDivWithError ((((long)mapOrigin.y - uy) << zoomLevel)
+	return signedDivWithError (((mapOrigin.y - uy) << zoomLevel)
 			* SIS_SCREEN_HEIGHT, MAX_Y_UNIVERSE + 2)
 			+ ((SIS_SCREEN_HEIGHT - 1) >> 1);
 }
@@ -343,6 +343,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 	}
 	ClearDrawable ();
 
+	// Draw the fuel range circle
 	if (race_update == 0
 			&& which_space < 2
 			&& (diameter = (long)GLOBAL_SIS (FuelOnBoard) << 1))
@@ -356,6 +357,10 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 			r.corner.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
 			r.corner.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
 		}
+
+		// Cap the diameter to a sane range
+		if (diameter > MAX_X_UNIVERSE * 4)
+			diameter = MAX_X_UNIVERSE * 4;
 
 		r.extent.width = UNIVERSE_TO_DISPX (diameter)
 				- UNIVERSE_TO_DISPX (0);
