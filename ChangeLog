@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Fixed flagship re-entering the inner system after an encounter in the
+  outer system, thus trapping the player (bug #1135) - Alex
 - Fixed starmap fuel range circle shrinking (bug #1130) - Alex
 - Added gamma correction to the setup menu (bug #977) - Alex, Nic
 - Refactor Melnorme comm code to make modding easier; step 1 (bug #1128),

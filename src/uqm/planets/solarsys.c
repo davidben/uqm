@@ -527,7 +527,7 @@ getCollisionFrame (PLANET_DESC *planet, COUNT WaitPlanet)
 
 // Returns the planet with which the flagship is colliding
 static PLANET_DESC *
-CheckIntersect (BOOLEAN just_checking)
+CheckIntersect (void)
 {
 	COUNT i;
 	PLANET_DESC *pCurDesc;
@@ -618,16 +618,9 @@ CheckIntersect (BOOLEAN just_checking)
 				continue;
 			}
 			
-			if (playerInInnerSystem ())
-			{	// Collision in the inner system (starts orbital)
-				pSolarSysState->WaitIntersect = NewWaitPlanet;
-			}
-			else
-			{	// Going into an inner system
-				// So there is now no existing collision
-				if (!just_checking)
-					pSolarSysState->WaitIntersect = 0;
-			}
+			// Collision with a new planet/moon. This may cause a transition
+			// to an inner system or start an orbital view.
+			pSolarSysState->WaitIntersect = NewWaitPlanet;
 			return pCurDesc;
 		}
 	}
@@ -942,7 +935,7 @@ leaveInnerSystem (PLANET_DESC *planet)
 	// See if we also intersect with another planet, and if we do,
 	// disable collisions comletely until we stop intersecting
 	// with any planet at all.
-	CheckIntersect (TRUE);
+	CheckIntersect ();
 	if (pSolarSysState->WaitIntersect != outerPlanetWait)
 		pSolarSysState->WaitIntersect = (COUNT)~0;
 }
@@ -998,7 +991,7 @@ CheckShipLocation (SIZE *newRadius)
 
 	if (GLOBAL (autopilot.x) == ~0 && GLOBAL (autopilot.y) == ~0)
 	{	// Not on autopilot -- may collide with a planet
-		PLANET_DESC *planet = CheckIntersect (FALSE);
+		PLANET_DESC *planet = CheckIntersect ();
 		if (planet)
 		{	// Collision with a planet
 			if (playerInInnerSystem ())
@@ -1241,7 +1234,12 @@ ResetSolarSys (void)
 	DoMissions ();
 
 	// Figure out and note which planet/moon we just left, if any
-	CheckIntersect (TRUE);
+	// This records any existing collision and prevents the ship
+	// from entering planets until a new collision occurs.
+	// TODO: this may need logic similar to one in leaveInnerSystem()
+	//   for when the ship collides with more than one planet at
+	//   the same time. While quite rare, it's still possible.
+	CheckIntersect ();
 	
 	pSolarSysState->InIpFlight = TRUE;
 
