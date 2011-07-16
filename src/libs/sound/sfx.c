@@ -29,7 +29,7 @@
 
 static void CheckFinishedChannels (void);
 
-static const SoundPosition notPositional = {FALSE};
+static const SoundPosition notPositional = {FALSE, 0, 0};
 
 void
 PlayChannel (COUNT channel, SOUND snd, SoundPosition pos,
