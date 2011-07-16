@@ -707,7 +707,7 @@ enum
 #endif
 };
 
-static const char *optString = "+r:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:vwxk";
+static const char *optString = "+r:foc:b:spC:n:?hM:S:T:q:ug:l:i:vwxk";
 static struct option longOptions[] = 
 {
 	{"res", 1, NULL, 'r'},
