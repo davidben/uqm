@@ -1506,13 +1506,14 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	}
 
 	optSubtitles = (opts->subtitles == OPTVAL_ENABLED) ? TRUE : FALSE;
-	// optWhichMusic = (opts->music == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optWhichMenu = (opts->menu == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optWhichFonts = (opts->text == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optWhichCoarseScan = (opts->cscan == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optSmoothScroll = (opts->scroll == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optWhichShield = (opts->shield == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optMeleeScale = (opts->meleezoom == OPTVAL_3DO) ? TFB_SCALE_TRILINEAR : TFB_SCALE_STEP;
+	opt3doMusic = (opts->music3do == OPTVAL_ENABLED);
+	optRemixMusic = (opts->musicremix == OPTVAL_ENABLED);
 	optSpeech = (opts->speech == OPTVAL_ENABLED);
 	optWhichIntro = (opts->intro == OPTVAL_3DO) ? OPT_3DO : OPT_PC;
 	optStereoSFX = (opts->stereo == OPTVAL_ENABLED);
