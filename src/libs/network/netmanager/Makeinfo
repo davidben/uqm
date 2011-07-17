@@ -3,9 +3,9 @@ uqm_HFILES="ndesc.h netmanager.h"
 
 if [ -n "$uqm_USE_WINSOCK" ]; then
 	uqm_CFILES="$uqm_CFILES netmanager_win.c"
-	uqm_CFILES="$uqm_HFILES netmanager_win.h"
+	uqm_HFILES="$uqm_HFILES netmanager_win.h"
 else
 	uqm_CFILES="$uqm_CFILES netmanager_bsd.c"
-	uqm_CFILES="$uqm_HFILES netmanager_bsd.h"
+	uqm_HFILES="$uqm_HFILES netmanager_bsd.h"
 fi
 
