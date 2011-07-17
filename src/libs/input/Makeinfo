@@ -3,3 +3,4 @@ if [ "$uqm_GFXMODULE" = "sdl" ]; then
 fi
 
 uqm_CFILES="input_common.c"
+uqm_HFILES="inpintrn.h input_common.h"
