@@ -420,7 +420,7 @@ mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
 		count = 0;
 		for (i = 0; i < availableAddons->numNames; ++i)
 		{
-			static char mountname[128];
+			char mountname[128];
 			uio_DirHandle *addonDir;
 			const char *addon = availableAddons->names[i];
 			
@@ -430,8 +430,7 @@ mountAddonDir (uio_Repository *repository, uio_MountHandle *contentMountHandle,
 			++count;
 			log_add (log_Info, "    %d. %s", count, addon);
 		
-			snprintf(mountname, 128, "addons/%s", addon);
-			mountname[127]=0;
+			snprintf (mountname, sizeof mountname, "addons/%s", addon);
 
 			addonDir = uio_openDirRelative (addonsDir, addon, 0);
 			if (addonDir == NULL)
@@ -532,6 +531,11 @@ loadAddon (const char *addon)
 	}
 
 	numLoaded = loadIndices (addonDir);
+	if (!numLoaded)
+	{
+		log_add (log_Error, "No RMP index files were loaded for addon '%s'",
+				addon);
+	}
 
 	uio_closeDir (addonDir);
 	uio_closeDir (addonsDir);
@@ -583,6 +587,9 @@ prepareAddons (const char **addons)
 		log_add (log_Info, "Loading addon '%s'", *addons);
 		if (!loadAddon (*addons))
 		{
+			// TODO: Should we do something like inform the user?
+			//   Why simply refuse to load other addons?
+			//   Maybe exit() to inform the user of the failure?
 			break;
 		}
 	}
