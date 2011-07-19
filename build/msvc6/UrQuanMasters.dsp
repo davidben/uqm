@@ -3118,6 +3118,10 @@ SOURCE=..\..\src\uqm\controls.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\uqm\corecode.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\uqm\credits.c
 # End Source File
 # Begin Source File
