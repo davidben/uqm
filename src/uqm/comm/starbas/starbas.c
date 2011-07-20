@@ -677,7 +677,7 @@ AnalyzeCondition (void)
 		if (num_bays < 1)
 			NPCPhrase (NEED_STORAGE_1);
 		if (GLOBAL_SIS (NumLanders) == 0)
-			NPCPhrase (NEED_LANDERS_1);
+			NPCPhrase (NEED_LANDERS_2);
 		if (num_batts < 1)
 			NPCPhrase (NEED_DYNAMOS_1);
 
@@ -754,7 +754,7 @@ AnalyzeCondition (void)
 					if (GLOBAL_SIS (FuelOnBoard) < FUEL_TANK_CAPACITY * 3)
 						NPCPhrase (NEED_FUEL_2);
 					if (GLOBAL_SIS (NumLanders) < 3)
-						NPCPhrase (NEED_LANDERS_2);
+						NPCPhrase (NEED_LANDERS_1);
 					if (num_batts < 4)
 						NPCPhrase (NEED_DYNAMOS_2);
 					if (num_defense < 2)

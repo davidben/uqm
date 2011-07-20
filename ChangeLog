@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Commander Hayes now advises the player correctly on the number of
+  landers one needs (bug #1098) - Alex
 - All Sound Options are now preserved between visits to the setup menu.
   Some options still require a restart (bug #1132) - Alex
 - Removed the remnants of the --music option (bug #1133) - Alex
