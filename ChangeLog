@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Fixed player's phrase leading to Tanaka's response about a solitary
+  vigil (bug #859) - Alex
 - Added the Ur-Quan to the list of starfaring races on which Commander
   Hayes provides info (bug #865) - Alex
 - Commander Hayes now advises the player correctly on the number of
