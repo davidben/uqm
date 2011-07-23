@@ -131,6 +131,7 @@ build_clean() {
 
 	eval DEPEND_FILE="\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}${DEPEND_NAME}"
 	rm -f "$DEPEND_FILE" "$BUILD_WORK/build.vars" \
+			"$BUILD_WORK/uqm-wrapper" \
 			"$BUILD_WORK/config.state"
 	eval "${TARGET}_clean"
 }
