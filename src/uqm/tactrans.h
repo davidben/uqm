@@ -24,6 +24,10 @@
 #include "element.h"
 #include "battlecontrols.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 bool battleEndReadyHuman (HumanInputContext *context);
 bool battleEndReadyComputer (ComputerInputContext *context);
 #ifdef NETPLAY
@@ -39,6 +43,10 @@ extern void flee_preprocess (ELEMENT *ElementPtr);
 
 extern void StopDitty (void);
 extern void ResetWinnerStarShip (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _TACTRANS_H */
 

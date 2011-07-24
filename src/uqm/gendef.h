@@ -4,7 +4,15 @@
 #include "planets/generate.h"
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 const GenerateFunctions *getGenerateFunctions (BYTE Index);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* GENDEF_H */
 

@@ -17,7 +17,15 @@
 #ifndef PKUNK_H
 #define PKUNK_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_pkunk (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* PKUNK_H */
 

@@ -26,6 +26,10 @@
 #include "libs/compiler.h"
 #include "libs/uio.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define OPT_3DO 0x01
 #define OPT_PC  0x02
 #define OPT_ALL 0xFF
@@ -80,6 +84,10 @@ BOOLEAN loadAddon (const char *addon);
 int loadIndices (uio_DirHandle *baseDir);
 
 bool setGammaCorrection (float gamma);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif
 

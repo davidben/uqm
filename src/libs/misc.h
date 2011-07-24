@@ -26,6 +26,10 @@
 #include <stdlib.h>
 #include "port.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 extern int TFB_DEBUG_HALT;
 
@@ -53,6 +57,10 @@ unconst(const void *arg) {
 	u.cc = arg;
 	return u.c;
 }
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif
 

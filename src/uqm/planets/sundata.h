@@ -22,6 +22,9 @@
 #include "plandata.h"
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /*------------------------------ Global Data ------------------------------ */
 
@@ -57,6 +60,10 @@ extern DWORD DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr,
 		PLANET_DESC *pPlanetDesc);
 
 extern SYSTEM_INFO CurSysInfo;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _SUNDATA_H */
 

@@ -17,6 +17,10 @@
 #ifndef PLATFORM_H_
 #define PLATFORM_H_
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #if defined(USE_PLATFORM_ACCEL)
 #	if defined(__GNUC__) && (defined(i386) || defined(__x86_64__))
 #		define MMX_ASM
@@ -45,5 +49,9 @@ typedef enum
 } PLATFORM_TYPE;
 
 extern PLATFORM_TYPE force_platform;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* PLATFORM_H_ */

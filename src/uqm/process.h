@@ -21,9 +21,17 @@
 #include "libs/gfxlib.h"
 #include "element.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern void RedrawQueue (BOOLEAN clear);
 extern void InitDisplayList (void);
 extern void SetUpElement (ELEMENT *ElementPtr);
 extern void InsertPrim (PRIM_LINKS *pLinks, COUNT primIndex, COUNT iPI);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* UQM_PROCESS_H_INCL_ */

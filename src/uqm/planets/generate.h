@@ -23,6 +23,10 @@ typedef struct GenerateFunctions GenerateFunctions;
 #include "planets.h"
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 /*
  * To do (for further cleanups):
  * - split off generateOrbital in a calculation and an activation
@@ -98,6 +102,9 @@ struct GenerateFunctions {
 	PickupLifeFunction pickupLife;
 };
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* GENERATE_H */
 

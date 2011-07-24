@@ -20,8 +20,16 @@
 #include "libs/compiler.h"
 #include "races.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern HSTARSHIP GetEncounterStarShip (STARSHIP *LastStarShipPtr,
 		COUNT which_player);
 extern void DrawArmadaPickShip (BOOLEAN draw_salvage_frame, RECT *pPickRect);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* UQM_PICKSHIP_H_INCL_ */

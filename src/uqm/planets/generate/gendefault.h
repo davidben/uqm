@@ -21,6 +21,10 @@
 #include "../planets.h"
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 bool GenerateDefault_initNpcs (SOLARSYS_STATE *solarSys);
 bool GenerateDefault_reinitNpcs (SOLARSYS_STATE *solarSys);
 bool GenerateDefault_uninitNpcs (SOLARSYS_STATE *solarSys);
@@ -51,6 +55,10 @@ bool GenerateDefault_landerReportCycle (SOLARSYS_STATE *);
 
 
 extern const GenerateFunctions generateDefaultFunctions;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* GENDEFAULT_H */
 

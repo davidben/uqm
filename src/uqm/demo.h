@@ -19,6 +19,10 @@
 #ifndef _DEMO_H
 #define _DEMO_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #ifndef DEMO_MODE
 #define DEMO_MODE 0
 #endif /* DEMO_MODE */
@@ -42,6 +46,10 @@ extern BOOLEAN CloseJournal (void);
 extern void JournalInput (INPUT_STATE InputState);
 #endif /* CREATE_JOURNAL */
 
+#endif
+
+#if defined(__cplusplus)
+}
 #endif
 
 #endif /* _DEMO_H */

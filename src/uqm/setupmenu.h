@@ -21,6 +21,10 @@
 
 #include "controls.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef enum {
 	OPTVAL_DISABLED,
 	OPTVAL_ENABLED
@@ -87,5 +91,9 @@ void SetupMenu (void);
 
 void GetGlobalOptions (GLOBALOPTS *opts);
 void SetGlobalOptions (GLOBALOPTS *opts);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif // _SETUPMENU_H

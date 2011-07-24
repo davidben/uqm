@@ -21,6 +21,10 @@
 
 #include "libs/reslib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern BOOLEAN InstallCodeResType (void);
 extern void *LoadCodeResInstance (RESOURCE res);
 extern void *CaptureCodeRes (void *hCode, void *pData, void **ppLocData);
@@ -31,6 +35,10 @@ typedef struct
 {
 	UWORD size;
 } CODE_REF;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _CODERES_H */
 

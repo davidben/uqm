@@ -17,7 +17,15 @@
 #ifndef MYCON_H
 #define MYCON_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_mycon (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* MYCON_H */
 

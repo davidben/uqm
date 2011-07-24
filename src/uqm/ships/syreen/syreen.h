@@ -17,7 +17,15 @@
 #ifndef SYREEN_H
 #define SYREEN_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_syreen (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* SYREEN_H */
 

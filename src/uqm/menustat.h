@@ -23,6 +23,10 @@
 #include "libs/sndlib.h"
 #include "flash.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef struct menu_state
 {
 	// Standard field required by DoInput()
@@ -119,6 +123,10 @@ enum
 
 extern BOOLEAN DoMenuChooser (MENU_STATE *pMS, BYTE BaseState);
 extern void DrawMenuStateStrings (BYTE beg_index, SWORD NewState);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _MENUSTAT_H */
 

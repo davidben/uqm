@@ -30,6 +30,10 @@ typedef struct encounter ENCOUNTER;
 #include "element.h"
 #include "races.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 typedef HLINK HENCOUNTER;
 
@@ -189,6 +193,10 @@ extern void GenerateIlwrath (BYTE control);
 // the flagship.
 extern SIZE EncounterRace;
 extern BYTE EncounterGroup;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _ENCOUNT_H */
 

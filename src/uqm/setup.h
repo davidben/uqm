@@ -24,6 +24,10 @@
 #include "libs/gfxlib.h"
 #include "libs/threadlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern RESOURCE_INDEX hResIndex;
 
 extern FRAME Screen;
@@ -78,6 +82,10 @@ bool SetPlayerInputAll (void);
 void ClearPlayerInput (COUNT playerI);
 void ClearPlayerInputAll (void);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _SETUP_H */
 

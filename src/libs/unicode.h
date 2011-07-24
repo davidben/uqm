@@ -23,6 +23,10 @@
 #include <sys/types.h>
 		// For size_t
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef uint32 UniChar;
 
 #ifdef UNICODE_INTERNAL
@@ -59,6 +63,10 @@ UniChar UniChar_toUpper(UniChar ch);
 UniChar UniChar_toLower(UniChar ch);
 
 #undef UNICODE_CHAR
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* UNICODE_H */
 

@@ -25,6 +25,10 @@ typedef struct crc_State crc_State;
 
 #include <stddef.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 struct crc_State {
 	uint32 crc;
 };
@@ -36,6 +40,9 @@ void crc_processUint16(crc_State *state, uint16 val);
 void crc_processUint32(crc_State *state, uint32 val);
 uint32 crc_finish(const crc_State *state);
 
+#if defined(__cplusplus)
+}
+#endif
 
 #ifdef DUMP_CRC_OPS
 #include "netconnection.h"

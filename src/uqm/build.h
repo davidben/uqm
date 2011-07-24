@@ -23,6 +23,10 @@
 #include "displist.h"
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define NAME_OFFSET 5
 #define NUM_CAPTAINS_NAMES 16
 
@@ -59,6 +63,10 @@ extern int SetEscortCrewComplement (COUNT which_ship, COUNT crew_level,
 extern RACE_DESC *load_ship (SPECIES_ID SpeciesID, BOOLEAN LoadBattleData);
 extern void free_ship (RACE_DESC *RaceDescPtr, BOOLEAN FreeIconData,
 		BOOLEAN FreeBattleData);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _BUILD_H */
 

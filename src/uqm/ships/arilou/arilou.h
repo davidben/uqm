@@ -17,7 +17,15 @@
 #ifndef ARILOU_H
 #define ARILOU_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_arilou (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* ARILOU_H */
 

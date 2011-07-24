@@ -21,8 +21,16 @@
 
 #include "packet.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 int sendPacket(NetConnection *conn, Packet *packet);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _NETSEND_H */
 

@@ -1,4 +1,5 @@
 Changes towards version 0.8:
+- Preparing for linking with C++ code, from Scott A. Colcord
 - Fixed player's phrase leading to Tanaka's response about a solitary
   vigil (bug #859) - Alex
 - Added the Ur-Quan to the list of starfaring races on which Commander

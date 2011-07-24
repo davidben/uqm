@@ -21,6 +21,9 @@
 
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /*------------------------------ Type Defines ----------------------------- */
 enum
@@ -204,6 +207,10 @@ enum
 #define MAX_ELEMENT_UNITS 0xF
 
 extern const BYTE *Elements;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _ELEMDATA_H */
 

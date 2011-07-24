@@ -17,7 +17,15 @@
 #ifndef BLACKURQ_H
 #define BLACKURQ_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_black_urquan (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* BLACKURQ_H */
 

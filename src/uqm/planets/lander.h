@@ -26,6 +26,9 @@
 #include "libs/timelib.h"
 #include "../element.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 // Surface magnification shift (x4)
 #define MAG_SHIFT 2
@@ -75,6 +78,10 @@ enum
 	PS_HUMAN_PLAYER,
 	PS_NON_PLAYER,
 };
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _LANDER_H */
 

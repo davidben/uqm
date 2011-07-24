@@ -19,6 +19,14 @@
 #ifndef _CDPLIB_H
 #define _CDPLIB_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "cdp/cdp.h"
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _CDPLIB_H */

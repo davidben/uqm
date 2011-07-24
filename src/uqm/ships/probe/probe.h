@@ -17,7 +17,15 @@
 #ifndef PROBE_H
 #define PROBE_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_probe (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* PROBE_H */
 

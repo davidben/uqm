@@ -21,6 +21,9 @@
 
 #include "libs/reslib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /*------------------------------ Type Defines ----------------------------- */
 #define NUMBER_OF_ORBITS 16
@@ -327,6 +330,10 @@ enum
 #define SUPER_TECTONICS 200
 
 extern const PlanetFrame *PlanData;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _PLANDATA_H */
 

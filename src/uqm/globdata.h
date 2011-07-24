@@ -27,6 +27,10 @@
 #include "velocity.h"
 #include "commanim.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 // general numbers-speech generator info
 // should accomodate most common base-10 languages
@@ -1009,6 +1013,10 @@ extern void InitGlobData (void);
 
 extern BOOLEAN InitGameStructures (void);
 extern void UninitGameStructures (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _GLOBDATA_H */
 

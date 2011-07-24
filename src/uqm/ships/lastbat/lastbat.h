@@ -17,7 +17,15 @@
 #ifndef LASTBAT_H
 #define LASTBAT_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_samatra (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* LASTBAT_H */
 

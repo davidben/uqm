@@ -90,6 +90,10 @@
 #include "libs/gfxlib.h"
 #include "libs/timelib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef enum {
 	FlashState_fadeIn = 0,
 			// Someway between on and off, going towards on.
@@ -210,6 +214,10 @@ void Flash_postUpdate (FlashContext *context);
 void Flash_setCacheSize (FlashContext *context, COUNT size);
 COUNT Flash_getCacheSize (const FlashContext *context);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _FLASH_H */
 

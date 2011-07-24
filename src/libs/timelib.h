@@ -21,6 +21,10 @@
 
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 /* ONE_SECOND is the LCM of all the fractions of a second the game uses.
  * Battle is 24 FPS, Landers are 35 FPS, most UI-level things are 15 FPS,
  * The Interplanetary flight is 30 FPS, Comm ambient animation is 40 FPS,
@@ -37,6 +41,10 @@ typedef DWORD TimePeriod;
 extern void InitTimeSystem (void);
 extern void UnInitTimeSystem (void);
 extern TimeCount GetTimeCounter (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _TIMLIB_H */
 

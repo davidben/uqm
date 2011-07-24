@@ -21,6 +21,10 @@
 
 #include "menustat.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 enum
 {
 	TALK_COMMANDER = 0,
@@ -43,6 +47,10 @@ extern void DrawShipPiece (FRAME ModuleFrame, COUNT which_piece, COUNT
 extern COUNT WrapText (const UNICODE *pStr, COUNT len, TEXT *tarray, SIZE
 		field_width);
 		// XXX: Doesn't really belong in this file.
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _STARBASE_H */
 

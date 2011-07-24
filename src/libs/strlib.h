@@ -36,6 +36,10 @@ typedef char *STRINGPTR;
 /* This has to go here because reslib requires the above typedefs. */
 #include "libs/reslib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern BOOLEAN InstallStringTableResType (void);
 extern STRING_TABLE LoadStringTableInstance (RESOURCE res);
 extern STRING_TABLE LoadStringTableFile (uio_DirHandle *dir,
@@ -66,6 +70,10 @@ extern STRINGPTR GetStringTimeStamp (STRING String);
 #define STR_MIDDLE_DOT      "\xC2\xB7"
 #define UNICHAR_BULLET        0x2022
 #define STR_BULLET          "\xE2\x80\xA2"
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _STRLIB_H */
 

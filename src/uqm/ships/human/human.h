@@ -17,7 +17,15 @@
 #ifndef HUMAN_H
 #define HUMAN_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_human (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* HUMAN_H */
 

@@ -24,6 +24,10 @@
 #include "libs/uio.h"
 #include "libs/unicode.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 extern BOOLEAN AnyButtonPress (BOOLEAN DetectSpecial);
 
@@ -58,6 +62,10 @@ void SaveKeyConfiguration (uio_DirHandle *path, const char *fname);
 /* Separate inputs into frames for dealing with very fast inputs */
 
 void BeginInputFrame (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _INPLIB_H */
 

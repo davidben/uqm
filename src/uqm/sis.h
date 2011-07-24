@@ -22,6 +22,10 @@
 #include "planets/elemdata.h"
 		// for NUM_ELEMENT_CATEGORIES
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define CLEAR_SIS_RADAR (1 << 2)
 #define DRAW_SIS_DISPLAY (1 << 3)
 
@@ -243,6 +247,10 @@ extern COUNT CountSISPieces (BYTE piece_type);
 
 extern void DrawFlagshipName (BOOLEAN InStatusArea);
 extern void DrawCaptainsName (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* SIS_H_INCL__ */
 

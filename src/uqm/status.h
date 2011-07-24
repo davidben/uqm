@@ -22,6 +22,10 @@
 #include "races.h"
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define CREW_XOFFS 4
 #define ENERGY_XOFFS 52
 #define GAUGE_YOFFS (SHIP_INFO_HEIGHT - 10)
@@ -63,5 +67,9 @@ extern BOOLEAN DeltaCrew (ELEMENT *ElementPtr, SIZE crew_delta);
 
 extern void PreProcessStatus (ELEMENT *ShipPtr);
 extern void PostProcessStatus (ELEMENT *ShipPtr);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* UQM_STATUS_H_INCL_ */

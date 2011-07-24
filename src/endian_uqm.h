@@ -61,6 +61,11 @@
 #define UQM_Swap32  __arch__swab32
 #endif
 #endif /* linux */
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 /* Use inline functions for compilers that support them, and static
    functions for those that do not.  Because these functions become
    static for compilers that do not support inline functions, this
@@ -122,6 +127,10 @@ static __inline__ uint64 UQM_Swap64(uint64 val)
 #define UQM_SwapBE16(X)	(X)
 #define UQM_SwapBE32(X)	(X)
 #define UQM_SwapBE64(X)	(X)
+#endif
+
+#if defined(__cplusplus)
+}
 #endif
 
 #endif /* _ENDIAN_H */

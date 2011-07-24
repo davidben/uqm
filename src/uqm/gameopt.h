@@ -19,11 +19,19 @@
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern void ConfirmSaveLoad (STAMP *MsgStamp);
 extern BOOLEAN GameOptions (void);
 
 typedef void (NamingCallback) (void);
 extern void SetNamingCallback (NamingCallback *);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _GAMEOPT_H */
 

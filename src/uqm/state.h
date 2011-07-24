@@ -23,6 +23,10 @@
 #include "libs/compiler.h"
 #include <assert.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern void InitPlanetInfo (void);
 extern void UninitPlanetInfo (void);
 extern void GetPlanetInfo (void);
@@ -154,6 +158,10 @@ swrite_a32 (void *fp, const DWORD *ar, COUNT count)
 	}
 	return 1;
 }
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _STATE_H */
 

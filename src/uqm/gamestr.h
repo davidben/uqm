@@ -25,6 +25,10 @@
 
 #include "libs/strlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define STAR_STRING_COUNT       133
 #define DEVICE_STRING_COUNT      29
 #define CARGO_STRING_COUNT       10
@@ -81,6 +85,10 @@ enum {
 extern STRING GameStrings;
 
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _GAMESTR_H */
 

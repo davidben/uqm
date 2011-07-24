@@ -17,11 +17,19 @@
 #ifndef ORZ_H
 #define ORZ_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_orz (void);
 
 void intruder_preprocess (ELEMENT *ElementPtr);
 void marine_collision (ELEMENT *ElementPtr0, POINT *pPt0,
 		ELEMENT *ElementPtr1, POINT *pPt1);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* ORZ_H */
 

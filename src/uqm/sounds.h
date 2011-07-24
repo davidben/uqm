@@ -23,6 +23,10 @@
 #include "libs/compiler.h"
 #include "libs/sndlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef enum
 {
 	GRAB_CREW = 0,
@@ -73,6 +77,10 @@ extern SoundPosition NotPositional (void);
 extern void UpdateSoundPositions (void);
 extern void FlushSounds (void);
 extern void RemoveSoundsForObject (ELEMENT *PosObj);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _SOUNDS_H */
 

@@ -23,6 +23,10 @@
 #include "resinst.h"
 #include "libs/sound/trackplayer.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef enum {
 	ARILOU_CONVERSATION,
 	CHMMR_CONVERSATION,
@@ -153,6 +157,10 @@ extern LOCDATA* init_yehat_comm (void);
 extern LOCDATA* init_zoqfot_comm (void);
 
 extern LOCDATA* init_umgah_comm (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _COMMGLUE_H */
 

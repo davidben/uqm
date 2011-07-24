@@ -45,6 +45,10 @@
 #include <sys/types.h>
 #include "libs/timelib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #if defined (PROFILE_THREADS) || defined (DEBUG_THREADS)
 #define THREAD_NAMES
 #endif
@@ -172,6 +176,10 @@ void DestroyCondVar (CondVar);
 void WaitCondVar (CondVar);
 void SignalCondVar (CondVar);
 void BroadcastCondVar (CondVar);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _THREADLIB_H */
 

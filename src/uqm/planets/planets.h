@@ -99,6 +99,9 @@ typedef struct solarsys_state SOLARSYS_STATE;
 #include "plandata.h"
 #include "sundata.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 struct planet_desc
 {
@@ -285,6 +288,10 @@ extern void GetPlanetOrMoonName (UNICODE *buf, COUNT bufsize);
 
 extern void PlanetOrbitMenu (void);
 extern void SaveSolarSysLocation (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _PLANETS_H */
 

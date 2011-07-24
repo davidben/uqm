@@ -20,6 +20,10 @@
 #include "libs/gfxlib.h"
 #include "libs/reslib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define NUM_PLAYERS 2
 #define NUM_SIDES 2
 
@@ -34,6 +38,10 @@ extern void UninitShips (void);
 extern BOOLEAN load_animation (FRAME *pixarray, RESOURCE big_res,
 		RESOURCE med_res, RESOURCE sml_res);
 extern BOOLEAN free_image (FRAME *pixarray);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _INIT_H */
 

@@ -22,6 +22,10 @@
 #include <string.h> /* for memset */
 #include "libs/gfxlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef struct velocity_desc
 {
 	COUNT TravelAngle;
@@ -64,6 +68,10 @@ VelocitySquared (SIZE dx, SIZE dy)
 
 #define VELOCITY_TO_WORLD(v) ((v)>>VELOCITY_SHIFT)
 #define WORLD_TO_VELOCITY(l) ((l)<<VELOCITY_SHIFT)
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _VELOCITY_H */
 

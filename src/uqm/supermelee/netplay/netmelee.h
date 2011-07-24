@@ -31,6 +31,9 @@
 #include "../../races.h"
 		// for STARSHIP
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 extern struct NetConnection *netConnections[];
 
@@ -79,6 +82,10 @@ bool waitReady(NetConnection *conn);
 
 bool waitReset(NetConnection *conn, NetState nextState);
 bool waitResetConnections(NetState nextState);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _NETMELEE_H */
 

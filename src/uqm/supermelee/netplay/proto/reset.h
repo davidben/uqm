@@ -22,6 +22,10 @@
 #include "../netconnection.h"
 #include "../packet.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 void Netplay_setResetCallback(NetConnection *conn,
 		NetConnection_ResetCallback callback, void *resetArg);
 void Netplay_localReset(NetConnection *conn, NetplayResetReason reason);
@@ -29,6 +33,9 @@ void Netplay_remoteReset(NetConnection *conn, NetplayResetReason reason);
 bool Netplay_isLocalReset(const NetConnection *conn);
 bool Netplay_isRemoteReset(const NetConnection *conn);
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _RESET_H */
 

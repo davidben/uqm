@@ -19,6 +19,10 @@
 
 #include "libs/sndlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern void ToggleMusic (void);
 extern void StopMusic (void);
 extern void ResumeMusic (void);
@@ -29,6 +33,10 @@ extern void PlayMusic (MUSIC_REF MusicRef, BOOLEAN Continuous, BYTE Priority);
 extern void PlaySoundEffect (SOUND S, COUNT Channel, SoundPosition Pos,
 		void *PositionalObject, BYTE Priority);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _SETTINGS_H */
 

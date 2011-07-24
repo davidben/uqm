@@ -79,12 +79,24 @@
 
 
 #ifndef HAVE_STRUPR
+#if defined(__cplusplus)
+extern "C" {
+#endif
 char *strupr (char *str);
+#if defined(__cplusplus)
+}
+#endif
 #endif
 
 #if !defined (_MSC_VER) && !defined (HAVE_READDIR_R)
 #	include <dirent.h>
+#if defined(__cplusplus)
+extern "C" {
+#endif
 int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);
+#if defined(__cplusplus)
+}
+#endif
 #endif
 
 // Directories
@@ -161,9 +173,20 @@ typedef unsigned short mode_t;
 #ifdef _MSC_VER
 #	include <stdarg.h>
 // Defined in port.c
+#if defined(__cplusplus)
+extern "C" {
+#endif
 int snprintf(char *str, size_t size, const char *format, ...);
 int vsnprintf(char *str, size_t size, const char *format, va_list args);
+#if defined(__cplusplus)
+}
+#endif
+
 #endif  /* _MSC_VER */
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 // setenv()
 #ifndef HAVE_SETENV
@@ -176,6 +199,10 @@ typedef unsigned short wchar_t;
 
 #ifndef HAVE_WINT_T
 typedef unsigned int wint_t;
+#endif
+
+#if defined(__cplusplus)
+}
 #endif
 
 #if defined (_MSC_VER) || defined(__MINGW32__)

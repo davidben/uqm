@@ -17,7 +17,15 @@
 #ifndef ZOQFOT_H
 #define ZOQFOT_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_zoqfotpik (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* ZOQFOT_H */
 

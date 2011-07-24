@@ -24,6 +24,10 @@
 #include "velocity.h"
 #include "libs/gfxlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 #define NORMAL_LIFE 1
 
@@ -229,6 +233,10 @@ extern void MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy);
 
 extern BOOLEAN CalculateGravity (ELEMENT *ElementPtr);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _ELEMENT_H */
 

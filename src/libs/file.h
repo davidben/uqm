@@ -25,6 +25,10 @@
 // for bool
 #include "types.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #if 0
 // from temp.h
 void initTempDir (void);
@@ -82,6 +86,10 @@ static inline int isDriveLetter(int c)
 	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
 #endif  /* HAVE_DRIVE_LETTERS */
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _FILE_H */
 

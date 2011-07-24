@@ -23,6 +23,10 @@
 #include "libs/strlib.h"
 #include "libs/timelib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 // Enumerated type for controls
 enum {
 	KEY_UP,
@@ -161,6 +165,10 @@ typedef struct textentry_state
 } TEXTENTRY_STATE;
 
 extern BOOLEAN DoTextEntry (TEXTENTRY_STATE *pTES);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif
 

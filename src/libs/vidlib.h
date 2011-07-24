@@ -23,6 +23,10 @@
 #include "libs/sndlib.h"
 #include "libs/reslib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef enum
 {
 	NO_FMV = 0,
@@ -56,5 +60,9 @@ extern BOOLEAN DestroyLegacyVideo (LEGACY_VIDEO vid);
 extern LEGACY_VIDEO_REF PlayLegacyVideo (LEGACY_VIDEO vid);
 extern void StopLegacyVideo (LEGACY_VIDEO_REF ref);
 extern BOOLEAN PlayingLegacyVideo (LEGACY_VIDEO_REF ref);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _VIDLIB_H */
