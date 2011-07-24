@@ -80,7 +80,11 @@ int Socket_bind(Socket *sock, const struct sockaddr *addr,
 int Socket_listen(Socket *sock, int backlog);
 Socket *Socket_accept(Socket *sock, struct sockaddr *addr, socklen_t *addrLen);
 ssize_t Socket_send(Socket *sock, const void *buf, size_t len, int flags);
+ssize_t Socket_sendto(Socket *sock, const void *buf, size_t len, int flags,
+		const struct sockaddr *addr, socklen_t addrLen);
 ssize_t Socket_recv(Socket *sock, void *buf, size_t len, int flags);
+ssize_t Socket_recvfrom(Socket *sock, void *buf, size_t len, int flags,
+		struct sockaddr *from, socklen_t *fromLen);
 
 int Socket_setNonBlocking(Socket *sock);
 int Socket_setReuseAddr(Socket *sock);
