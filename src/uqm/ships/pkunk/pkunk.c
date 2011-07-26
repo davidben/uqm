@@ -21,6 +21,7 @@
 #include "resinst.h"
 
 #include "uqm/globdata.h"
+#include "uqm/tactrans.h"
 #include "libs/mathlib.h"
 
 
@@ -112,6 +113,16 @@ static RACE_DESC pkunk_desc =
 	0, /* CodeRef */
 };
 
+// Private per-instance ship data
+typedef struct
+{
+	HELEMENT hPhoenix;
+	ElementProcessFunc *saved_preprocess_func;
+	ElementProcessFunc *saved_postprocess_func;
+	ElementProcessFunc *saved_death_func;
+	
+} PKUNK_DATA;
+
 static void
 animate (ELEMENT *ElementPtr)
 {
@@ -186,15 +197,15 @@ pkunk_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 		COUNT ConcernCounter)
 {
 	STARSHIP *StarShipPtr;
-	HELEMENT hPhoenix;
+	PKUNK_DATA *PkunkData;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
-	hPhoenix = (HELEMENT) StarShipPtr->RaceDescPtr->data;
-	if (hPhoenix && (StarShipPtr->control & STANDARD_RATING))
+	PkunkData = (PKUNK_DATA *) StarShipPtr->RaceDescPtr->data;
+	if (PkunkData->hPhoenix && (StarShipPtr->control & STANDARD_RATING))
 	{
-		RemoveElement (hPhoenix);
-		FreeElement (hPhoenix);
-		StarShipPtr->RaceDescPtr->data = 0;
+		RemoveElement (PkunkData->hPhoenix);
+		FreeElement (PkunkData->hPhoenix);
+		PkunkData->hPhoenix = 0;
 	}
 
 	if (StarShipPtr->RaceDescPtr->ship_info.energy_level <
@@ -208,108 +219,116 @@ pkunk_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 }
 
 static void pkunk_preprocess (ELEMENT *ElementPtr);
-static void pkunk_postprocess (ELEMENT *ElementPtr);
 
 static void
 new_pkunk (ELEMENT *ElementPtr)
 {
 	STARSHIP *StarShipPtr;
+	PKUNK_DATA *PkunkData;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
-	if (!(ElementPtr->state_flags & PLAYER_SHIP))
+	PkunkData = (PKUNK_DATA *) StarShipPtr->RaceDescPtr->data;
+
+	ElementPtr->state_flags = APPEARING | PLAYER_SHIP | IGNORE_SIMILAR;
+	ElementPtr->mass_points = SHIP_MASS;
+	// Restore the element processing callbacks after the explosion.
+	// The callbacks were changed for the explosion sequence
+	ElementPtr->preprocess_func = PkunkData->saved_preprocess_func;
+	ElementPtr->postprocess_func = PkunkData->saved_postprocess_func;
+	ElementPtr->death_func = PkunkData->saved_death_func;
+	// preprocess_func() is called during the phoenix transition and
+	// then cleared, so we need to restore it
+	StarShipPtr->RaceDescPtr->preprocess_func = pkunk_preprocess;
+	StarShipPtr->RaceDescPtr->ship_info.crew_level = MAX_CREW;
+	StarShipPtr->RaceDescPtr->ship_info.energy_level = MAX_ENERGY;
+				/* fix vux impairment */
+	StarShipPtr->RaceDescPtr->characteristics.max_thrust = MAX_THRUST;
+	StarShipPtr->RaceDescPtr->characteristics.thrust_increment = THRUST_INCREMENT;
+	StarShipPtr->RaceDescPtr->characteristics.turn_wait = TURN_WAIT;
+	StarShipPtr->RaceDescPtr->characteristics.thrust_wait = THRUST_WAIT;
+	StarShipPtr->RaceDescPtr->characteristics.special_wait = 0;
+
+	StarShipPtr->ship_input_state = 0;
+	// Pkunk wins in a simultaneous destruction if it reincarnates
+	StarShipPtr->cur_status_flags &= PLAY_VICTORY_DITTY;
+	StarShipPtr->old_status_flags = 0;
+	StarShipPtr->energy_counter = 0;
+	StarShipPtr->weapon_counter = 0;
+	StarShipPtr->special_counter = 0;
+	ElementPtr->crew_level = 0;
+	ElementPtr->turn_wait = 0;
+	ElementPtr->thrust_wait = 0;
+	ElementPtr->life_span = NORMAL_LIFE;
+
+	StarShipPtr->ShipFacing = NORMALIZE_FACING (TFB_Random ());
+	ElementPtr->current.image.farray = StarShipPtr->RaceDescPtr->ship_data.ship;
+	ElementPtr->current.image.frame = SetAbsFrameIndex (
+			StarShipPtr->RaceDescPtr->ship_data.ship[0],
+			StarShipPtr->ShipFacing);
+	SetPrimType (&(GLOBAL (DisplayArray))[ElementPtr->PrimIndex], STAMP_PRIM);
+
+	do
 	{
-		ELEMENT *ShipPtr;
+		ElementPtr->current.location.x =
+				WRAP_X (DISPLAY_ALIGN_X (TFB_Random ()));
+		ElementPtr->current.location.y =
+				WRAP_Y (DISPLAY_ALIGN_Y (TFB_Random ()));
+	} while (CalculateGravity (ElementPtr)
+			|| TimeSpaceMatterConflict (ElementPtr));
 
-		LockElement (StarShipPtr->hShip, &ShipPtr);
-		ShipPtr->death_func = new_pkunk;
-		UnlockElement (StarShipPtr->hShip);
-	}
-	else
-	{
-		ElementPtr->state_flags = APPEARING | PLAYER_SHIP | IGNORE_SIMILAR;
-		ElementPtr->mass_points = SHIP_MASS;
-		ElementPtr->preprocess_func = StarShipPtr->RaceDescPtr->preprocess_func;
-		ElementPtr->postprocess_func = StarShipPtr->RaceDescPtr->postprocess_func;
-		ElementPtr->death_func =
-				(void (*) (ELEMENT *ElementPtr))
-						StarShipPtr->RaceDescPtr->init_weapon_func;
-		StarShipPtr->RaceDescPtr->preprocess_func = pkunk_preprocess;
-		StarShipPtr->RaceDescPtr->postprocess_func = pkunk_postprocess;
-		StarShipPtr->RaceDescPtr->init_weapon_func = initialize_bug_missile;
-		StarShipPtr->RaceDescPtr->ship_info.crew_level = MAX_CREW;
-		StarShipPtr->RaceDescPtr->ship_info.energy_level = MAX_ENERGY;
-					/* fix vux impairment */
-		StarShipPtr->RaceDescPtr->characteristics.max_thrust = MAX_THRUST;
-		StarShipPtr->RaceDescPtr->characteristics.thrust_increment = THRUST_INCREMENT;
-		StarShipPtr->RaceDescPtr->characteristics.turn_wait = TURN_WAIT;
-		StarShipPtr->RaceDescPtr->characteristics.thrust_wait = THRUST_WAIT;
-		StarShipPtr->RaceDescPtr->characteristics.special_wait = 0;
+	// XXX: Hack: Set hTarget!=0 so that ship_preprocess() does not
+	//   call ship_transition() for us.
+	ElementPtr->hTarget = StarShipPtr->hShip;
+}
 
-		StarShipPtr->ship_input_state = 0;
-		StarShipPtr->cur_status_flags = 0;
-		StarShipPtr->old_status_flags = 0;
-		StarShipPtr->energy_counter = 0;
-		StarShipPtr->weapon_counter = 0;
-		StarShipPtr->special_counter = 0;
-		ElementPtr->crew_level = 0;
-		ElementPtr->turn_wait = 0;
-		ElementPtr->thrust_wait = 0;
-		ElementPtr->life_span = NORMAL_LIFE;
-
-		StarShipPtr->ShipFacing = NORMALIZE_FACING (TFB_Random ());
-		ElementPtr->current.image.farray = StarShipPtr->RaceDescPtr->ship_data.ship;
-		ElementPtr->current.image.frame =
-				SetAbsFrameIndex (StarShipPtr->RaceDescPtr->ship_data.ship[0],
-				StarShipPtr->ShipFacing);
-		SetPrimType (&(GLOBAL (DisplayArray))[
-				ElementPtr->PrimIndex
-				], STAMP_PRIM);
-
-		do
-		{
-			ElementPtr->current.location.x =
-					WRAP_X (DISPLAY_ALIGN_X (TFB_Random ()));
-			ElementPtr->current.location.y =
-					WRAP_Y (DISPLAY_ALIGN_Y (TFB_Random ()));
-		} while (CalculateGravity (ElementPtr)
-				|| TimeSpaceMatterConflict (ElementPtr));
-
-		ElementPtr->hTarget = StarShipPtr->hShip;
-	}
+// This function is called when the ship dies but reincarnates.
+// The generic ship_death() function is not called for the ship in this case.
+static void
+pkunk_reincarnation_death (ELEMENT *ShipPtr)
+{
+	// Simulate ship death
+	StopAllBattleMusic ();
+	StartShipExplosion (ShipPtr, true);
+	// Once the explosion ends, we will get a brand new ship
+	ShipPtr->death_func = new_pkunk;
 }
 
 static void
 intercept_pkunk_death (ELEMENT *ElementPtr)
 {
 	STARSHIP *StarShipPtr;
-
-	ElementPtr->state_flags &= ~DISAPPEARING;
-	ElementPtr->life_span = 1;
+	PKUNK_DATA *PkunkData;
+	ELEMENT *ShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
-	if (StarShipPtr->RaceDescPtr->ship_info.crew_level == 0)
-	{
-		ELEMENT *ShipPtr;
-
-		LockElement (StarShipPtr->hShip, &ShipPtr);
-		if (GRAVITY_MASS (ShipPtr->mass_points + 1))
-		{
-			ElementPtr->state_flags |= DISAPPEARING;
-			ElementPtr->life_span = 0;
-		}
-		else
-		{
-			ShipPtr->mass_points = MAX_SHIP_MASS + 1;
-			StarShipPtr->RaceDescPtr->preprocess_func = ShipPtr->preprocess_func;
-			StarShipPtr->RaceDescPtr->postprocess_func = ShipPtr->postprocess_func;
-			StarShipPtr->RaceDescPtr->init_weapon_func =
-					(COUNT (*) (ELEMENT *ElementPtr, HELEMENT Weapon[]))
-							ShipPtr->death_func;
-
-			ElementPtr->death_func = new_pkunk;
-		}
-		UnlockElement (StarShipPtr->hShip);
+	PkunkData = (PKUNK_DATA *) StarShipPtr->RaceDescPtr->data;
+	
+	if (StarShipPtr->RaceDescPtr->ship_info.crew_level != 0)
+	{	// Ship not dead yet.
+		// Keep the Phoenix element alive.
+		ElementPtr->state_flags &= ~DISAPPEARING;
+		ElementPtr->life_span = 1;
+		return;
 	}
+
+	LockElement (StarShipPtr->hShip, &ShipPtr);
+	// GRAVITY_MASS() indicates a warp-out here. If Pkunk dies while warping
+	// out, there is no reincarnation.
+	if (!GRAVITY_MASS (ShipPtr->mass_points + 1))
+	{
+		// XXX: Hack: Set mass_points to indicate a reincarnation to
+		//   FindAliveStarShip()
+		ShipPtr->mass_points = MAX_SHIP_MASS + 1;
+		// Save the various element processing callbacks before the
+		// explosion happens, because we were not the ones who set
+		// these callbacks and they are about to be changed.
+		PkunkData->saved_preprocess_func = ShipPtr->preprocess_func;
+		PkunkData->saved_postprocess_func = ShipPtr->postprocess_func;
+		PkunkData->saved_death_func = ShipPtr->death_func;
+
+		ShipPtr->death_func = pkunk_reincarnation_death;
+	}
+	UnlockElement (StarShipPtr->hShip);
 }
 
 #define START_PHOENIX_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A)
@@ -425,15 +444,22 @@ static void
 pkunk_preprocess (ELEMENT *ElementPtr)
 {
 	STARSHIP *StarShipPtr;
+	PKUNK_DATA *PkunkData;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
+	PkunkData = (PKUNK_DATA *) StarShipPtr->RaceDescPtr->data;
 	if (ElementPtr->state_flags & APPEARING)
 	{
 		HELEMENT hPhoenix = 0;
 
-		if ((BYTE)TFB_Random () & 1)
+		if (TFB_Random () & 1)
 			hPhoenix = AllocElement ();
 
+		// The hPhoenix element is created and placed at the head of the
+		// queue so that it is preprocessed before any of the ships' elements
+		// are, and so before death_func() is called for the dead Pkunk.
+		// hPhoenix detects when the Pkunk ship dies and tweaks the ship,
+		// starting the death + reincarnation sequence.
 		if (hPhoenix)
 		{
 			ELEMENT *PhoenixPtr;
@@ -450,12 +476,17 @@ pkunk_preprocess (ELEMENT *ElementPtr)
 			UnlockElement (hPhoenix);
 			InsertElement (hPhoenix, GetHeadElement ());
 		}
-		StarShipPtr->RaceDescPtr->data = (intptr_t) hPhoenix;
+		PkunkData->hPhoenix = hPhoenix;
 
+		// XXX: Hack: new_pkunk() sets hTarget!=0 which indicates a
+		//   reincarnation to us.
 		if (ElementPtr->hTarget == 0)
-			StarShipPtr->RaceDescPtr->preprocess_func = 0;
-		else
 		{
+			// A brand new ship is preprocessed only once
+			StarShipPtr->RaceDescPtr->preprocess_func = 0;
+		}
+		else
+		{	// Start the reincarnation sequence
 			COUNT angle, facing;
 
 			ProcessSound (SetAbsSoundIndex (
@@ -538,17 +569,31 @@ pkunk_postprocess (ELEMENT *ElementPtr)
 	}
 }
 
+static void
+uninit_pkunk (RACE_DESC *pRaceDesc)
+{
+	HFree ((void *)pRaceDesc->data);
+	pRaceDesc->data = 0;
+}
+
 RACE_DESC*
 init_pkunk (void)
 {
 	RACE_DESC *RaceDescPtr;
+	// The caller of this func will copy the struct
+	static RACE_DESC new_pkunk_desc;
 
+	pkunk_desc.uninit_func = uninit_pkunk;
 	pkunk_desc.preprocess_func = pkunk_preprocess;
 	pkunk_desc.postprocess_func = pkunk_postprocess;
 	pkunk_desc.init_weapon_func = initialize_bug_missile;
 	pkunk_desc.cyborg_control.intelligence_func = pkunk_intelligence;
 
-	RaceDescPtr = &pkunk_desc;
+	/* copy initial ship settings to the new descriptor */
+	new_pkunk_desc = pkunk_desc;
+	new_pkunk_desc.data = (intptr_t) HCalloc (sizeof (PKUNK_DATA));
+
+	RaceDescPtr = &new_pkunk_desc;
 
 	LastSound = 0;
 			// We need to reinitialise it at least each battle, to ensure
@@ -557,4 +602,3 @@ init_pkunk (void)
 
 	return (RaceDescPtr);
 }
-

@@ -452,7 +452,7 @@ RACE_DESC*
 init_mmrnmhrm (void)
 {
 	RACE_DESC *RaceDescPtr;
-
+	// The caller of this func will copy the struct
 	static RACE_DESC new_mmrnmhrm_desc;
 	CHARACTERISTIC_STUFF *otherwing_desc;
 

@@ -1660,6 +1660,7 @@ CreateStarBackGround (void)
 	RECT clipRect;
 	FRAME frame;
 
+	// Use SpaceContext to find out the dimensions of the background
 	oldContext = SetContext (SpaceContext);
 	GetContextClipRect (&clipRect);
 

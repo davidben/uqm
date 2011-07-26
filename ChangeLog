@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Fixed various Pkunk reincarnation and Shofixti Glory device interactions;
+  Pkunk ditty plays in a simultaneous destruction (bug #666) - Alex
 - Preparing for linking with C++ code, from Scott A. Colcord
 - Fixed player's phrase leading to Tanaka's response about a solitary
   vigil (bug #859) - Alex

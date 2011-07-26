@@ -426,7 +426,7 @@ androsynth_preprocess (ELEMENT *ElementPtr)
 					StarShipPtr->RaceDescPtr->characteristics.special_wait;
 			StarShipPtr->RaceDescPtr->characteristics.energy_regeneration = ENERGY_REGENERATION;
 			ElementPtr->mass_points = SHIP_MASS;
-			ElementPtr->collision_func = (CollisionFunc *)
+			ElementPtr->collision_func = (ElementCollisionFunc *)
 					StarShipPtr->RaceDescPtr->data;
 			ElementPtr->next.image.farray =
 					StarShipPtr->RaceDescPtr->ship_data.ship;

@@ -848,8 +848,8 @@ RACE_DESC*
 init_sis (void)
 {
 	RACE_DESC *RaceDescPtr;
-
 	COUNT i;
+	// The caller of this func will copy the struct
 	static RACE_DESC new_sis_desc;
 
 	/* copy initial ship settings to new_sis_desc */

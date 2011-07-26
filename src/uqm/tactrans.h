@@ -43,6 +43,12 @@ extern void flee_preprocess (ELEMENT *ElementPtr);
 
 extern void StopDitty (void);
 extern void ResetWinnerStarShip (void);
+extern void StopAllBattleMusic (void);
+extern STARSHIP* FindAliveStarShip (ELEMENT *deadShip);
+extern STARSHIP* GetWinnerStarShip (void);
+extern void SetWinnerStarShip (STARSHIP *winner);
+extern void RecordShipDeath (ELEMENT *deadShip);
+extern void StartShipExplosion (ELEMENT *ShipPtr, bool playSound);
 
 #if defined(__cplusplus)
 }

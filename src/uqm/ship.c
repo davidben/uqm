@@ -193,6 +193,9 @@ ship_preprocess (ELEMENT *ElementPtr)
 			if (RDPtr->preprocess_func)
 				(*RDPtr->preprocess_func) (ElementPtr);
 
+			// XXX: Hack: Pkunk sets hTarget!=0 when it reincarnates. In that
+			//   case there is no ship_transition() but a Phoenix transition
+			//   instead.
 			if (ElementPtr->hTarget == 0)
 			{
 				ship_transition (ElementPtr);

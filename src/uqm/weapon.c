@@ -50,7 +50,7 @@ initialize_laser (LASER_BLOCK *pLaserBlock)
 		LaserElementPtr->state_flags = APPEARING | FINITE_LIFE
 				| pLaserBlock->flags;
 		LaserElementPtr->life_span = LASER_LIFE;
-		LaserElementPtr->collision_func = (CollisionFunc*)weapon_collision;
+		LaserElementPtr->collision_func = weapon_collision;
 		LaserElementPtr->blast_offset = 1;
 
 		LaserElementPtr->current.location.x = pLaserBlock->cx
@@ -100,7 +100,7 @@ initialize_missile (MISSILE_BLOCK *pMissileBlock)
 				SetAbsFrameIndex (pMissileBlock->farray[0],
 				pMissileBlock->index);
 		MissileElementPtr->preprocess_func = pMissileBlock->preprocess_func;
-		MissileElementPtr->collision_func = (CollisionFunc*)weapon_collision;
+		MissileElementPtr->collision_func = weapon_collision;
 		MissileElementPtr->blast_offset = (BYTE)pMissileBlock->blast_offs;
 
 		angle = FACING_TO_ANGLE (pMissileBlock->face);
