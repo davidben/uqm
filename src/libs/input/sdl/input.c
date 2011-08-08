@@ -33,7 +33,7 @@
 static int kbdhead=0, kbdtail=0;
 static UniChar kbdbuf[KBDBUFSIZE];
 static UniChar lastchar;
-static unsigned int num_keys = 0;
+static int num_keys = 0;
 static int *kbdstate = NULL;
 		// Holds all SDL keys +1 for holding invalid values
 
@@ -213,20 +213,13 @@ TFB_SetInputVectors (volatile int menu[], int num_menu_, volatile int flight[],
 	num_flight = num_flight_;
 }
 
-int 
-TFB_InitInput (int driver, int flags)
-{
-	int i;
-	int nJoysticks;
-	(void)driver;
-	(void)flags;
-
-	SDL_EnableUNICODE(1);
-	(void)SDL_GetKeyState (&num_keys);
-	kbdstate = (int *)HMalloc (sizeof (int) * (num_keys + 1));
-	
-
 #ifdef HAVE_JOYSTICK
+
+static void
+initJoystick (void)
+{
+	int nJoysticks;
+
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
 		log_add (log_Fatal, "Couldn't initialize joystick subsystem: %s",
@@ -239,6 +232,8 @@ TFB_InitInput (int driver, int flags)
 	nJoysticks = SDL_NumJoysticks ();
 	if (nJoysticks > 0)
 	{
+		int i;
+
 		log_add (log_Info, "The names of the joysticks are:");
 		for (i = 0; i < nJoysticks; i++)
 		{
@@ -246,6 +241,23 @@ TFB_InitInput (int driver, int flags)
 		}
 		SDL_JoystickEventState (SDL_ENABLE);
 	}
+}
+
+#endif /* HAVE_JOYSTICK */
+
+int 
+TFB_InitInput (int driver, int flags)
+{
+	(void)driver;
+	(void)flags;
+
+	SDL_EnableUNICODE(1);
+	(void)SDL_GetKeyState (&num_keys);
+	kbdstate = (int *)HMalloc (sizeof (int) * (num_keys + 1));
+	
+
+#ifdef HAVE_JOYSTICK
+	initJoystick ();
 #endif /* HAVE_JOYSTICK */
 
 	in_character_mode = FALSE;
@@ -350,10 +362,12 @@ ProcessInputEvent (const SDL_Event *Event)
 
 	if (Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP)
 	{	// process character input event, if any
-		SDLKey k = Event->key.keysym.sym;
+		// keysym.sym is an SDLKey type which is an enum and can be signed
+		// or unsigned on different platforms; we'll use a guaranteed type
+		int k = Event->key.keysym.sym;
 		UniChar map_key = Event->key.keysym.unicode;
 
-		if (k > num_keys)
+		if (k < 0 || k > num_keys)
 			k = num_keys; // for unknown keys
 
 		if (Event->type == SDL_KEYDOWN)
