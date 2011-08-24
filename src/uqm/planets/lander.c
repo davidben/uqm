@@ -1857,40 +1857,65 @@ KillLanderCrewSeq (COUNT numKilled, DWORD period)
 	return crew_left > 0;
 }
 
+// Maps a temperature to a (0-7) hazard rating.
+// Thermal hazards aren't exposed to the user as a hazard number,
+// but the code still works with them that way.
+#define ARRAY_SIZE(array) (sizeof(array) / sizeof (*array))
+unsigned
+GetThermalHazardRating (int temp)
+{
+	static const int tempBreakpoints[] = { 50, 100, 150, 250, 350, 550, 800 };
+	const size_t numBreakpoints = ARRAY_SIZE (tempBreakpoints);
+	unsigned i;
+
+	for (i = 0; i < numBreakpoints; ++i)
+	{
+		if (temp < tempBreakpoints[i])
+			return i;
+	}
+
+	return numBreakpoints;
+}
+
+// Given a hazard type and rating, return the chance (out of 256) of the hazard
+// being generated.
+static BYTE
+GetHazardChance (int hazardType, unsigned HazardRating)
+{
+	static const BYTE TectonicsChanceTab[] = {0*3, 0*3, 1*3, 2*3, 4*3,  8*3, 16*3, 32*3};
+	static const BYTE WeatherChanceTab  [] = {0*3, 0*3, 1*3, 2*3, 3*3,  6*3, 12*3, 24*3};
+	static const BYTE FireChanceTab     [] = {0*3, 0*3, 1*3, 2*3, 4*3, 12*3, 24*3, 48*3};
+
+	switch (hazardType)
+	{
+		case EARTHQUAKE_DISASTER:
+			return TectonicsChanceTab[HazardRating];
+		case LIGHTNING_DISASTER:
+			return WeatherChanceTab[HazardRating];
+		case LAVASPOT_DISASTER:
+			return FireChanceTab[HazardRating];
+	}
+
+	return 0;
+}
+
 void
 PlanetSide (POINT planetLoc)
 {
 	SIZE index;
 	LanderInputState landerInputState;
 	PLANETSIDE_DESC PSD;
-	BYTE TectonicsChanceTab[] = {0*3, 0*3, 1*3, 2*3, 4*3, 8*3, 16*3, 32*3};
-	BYTE WeatherChanceTab[] = {0*3, 0*3, 1*3, 2*3, 3*3, 6*3, 12*3, 24*3};
-	BYTE FireChanceTab[] = {0*3, 0*3, 1*3, 2*3, 4*3, 12*3, 24*3, 48*3};
 
 	memset (&PSD, 0, sizeof (PSD));
 	PSD.InTransit = TRUE;
 
-	PSD.TectonicsChance =
-			TectonicsChanceTab[pSolarSysState->SysInfo.PlanetInfo.Tectonics];
-	PSD.WeatherChance =
-			WeatherChanceTab[pSolarSysState->SysInfo.PlanetInfo.Weather];
-	index = pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature;
-	if (index < 50)
-		PSD.FireChance = FireChanceTab[0];
-	else if (index < 100)
-		PSD.FireChance = FireChanceTab[1];
-	else if (index < 150)
-		PSD.FireChance = FireChanceTab[2];
-	else if (index < 250)
-		PSD.FireChance = FireChanceTab[3];
-	else if (index < 350)
-		PSD.FireChance = FireChanceTab[4];
-	else if (index < 550)
-		PSD.FireChance = FireChanceTab[5];
-	else if (index < 800)
-		PSD.FireChance = FireChanceTab[6];
-	else
-		PSD.FireChance = FireChanceTab[7];
+	// Set our chances of hazards occurring.
+	PSD.TectonicsChance = GetHazardChance (EARTHQUAKE_DISASTER,
+			pSolarSysState->SysInfo.PlanetInfo.Tectonics);
+	PSD.WeatherChance = GetHazardChance (LIGHTNING_DISASTER,
+			pSolarSysState->SysInfo.PlanetInfo.Weather);
+	PSD.FireChance = GetHazardChance (LAVASPOT_DISASTER, GetThermalHazardRating (
+			pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature));
 
 	PSD.ElementLevel = GetStorageBayCapacity () - GLOBAL_SIS (TotalElementMass);
 	PSD.MaxElementLevel = MAX_SCROUNGED;
