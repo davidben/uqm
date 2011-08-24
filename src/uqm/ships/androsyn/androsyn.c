@@ -110,6 +110,46 @@ static RACE_DESC androsynth_desc =
 	0, /* CodeRef */
 };
 
+
+// Private per-instance ship data
+typedef struct
+{
+	ElementCollisionFunc* collision_func;
+} ANDROSYNTH_DATA;
+
+// Local typedef
+typedef ANDROSYNTH_DATA CustomShipData_t;
+
+// Retrieve race-specific ship data from a race desc
+static CustomShipData_t *
+GetCustomShipData (RACE_DESC *pRaceDesc)
+{
+	return pRaceDesc->data;
+}
+
+// Set the race-specific data in a race desc
+// (Re)Allocates its own storage for the data.
+static void
+SetCustomShipData (RACE_DESC *pRaceDesc, const CustomShipData_t *data)
+{
+	if (pRaceDesc->data == data) 
+		return;  // no-op
+
+	if (pRaceDesc->data) // Out with the old
+	{
+		HFree (pRaceDesc->data);
+		pRaceDesc->data = NULL;
+	}
+
+	if (data) // In with the new
+	{
+		CustomShipData_t* newData = HMalloc (sizeof (*data));
+		*newData = *data;
+		pRaceDesc->data = newData;
+	}
+}
+
+
 #define BLAZER_DAMAGE 3
 #define BLAZER_MASS 1
 
@@ -355,11 +395,14 @@ androsynth_postprocess (ELEMENT *ElementPtr)
 				ElementPtr->mass_points = BLAZER_MASS;
 				StarShipPtr->RaceDescPtr->characteristics.turn_wait
 						= BLAZER_TURN_WAIT;
+
 				/* Save the current collision func because we were not the
 				 * ones who set it */
-				StarShipPtr->RaceDescPtr->data = (intptr_t)
-						ElementPtr->collision_func;
-				ElementPtr->collision_func = blazer_collision;
+				{
+					const ANDROSYNTH_DATA shipData = { ElementPtr->collision_func };
+					SetCustomShipData (StarShipPtr->RaceDescPtr, &shipData);
+					ElementPtr->collision_func = blazer_collision;
+				}
 			}
 		}
 
@@ -426,8 +469,8 @@ androsynth_preprocess (ELEMENT *ElementPtr)
 					StarShipPtr->RaceDescPtr->characteristics.special_wait;
 			StarShipPtr->RaceDescPtr->characteristics.energy_regeneration = ENERGY_REGENERATION;
 			ElementPtr->mass_points = SHIP_MASS;
-			ElementPtr->collision_func = (ElementCollisionFunc *)
-					StarShipPtr->RaceDescPtr->data;
+			ElementPtr->collision_func = 
+					GetCustomShipData (StarShipPtr->RaceDescPtr)->collision_func;
 			ElementPtr->next.image.farray =
 					StarShipPtr->RaceDescPtr->ship_data.ship;
 			ElementPtr->next.image.frame =
@@ -463,11 +506,19 @@ androsynth_preprocess (ELEMENT *ElementPtr)
 	StarShipPtr->cur_status_flags = cur_status_flags;
 }
 
+static void
+uninit_androsynth (RACE_DESC *pRaceDesc)
+{
+	SetCustomShipData (pRaceDesc, NULL);
+}
+
+
 RACE_DESC*
 init_androsynth (void)
 {
 	RACE_DESC *RaceDescPtr;
 
+	androsynth_desc.uninit_func = uninit_androsynth;
 	androsynth_desc.preprocess_func = androsynth_preprocess;
 	androsynth_desc.postprocess_func = androsynth_postprocess;
 	androsynth_desc.init_weapon_func = initialize_bubble;

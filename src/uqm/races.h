@@ -221,7 +221,7 @@ struct race_desc
 	POSTPROCESS_FUNC *postprocess_func;
 	INIT_WEAPON_FUNC *init_weapon_func;
 
-	intptr_t data;  // private ship data, ship code owns this
+	void* data;  // private ship data, ship code owns this
 
 	void *CodeRef;
 };

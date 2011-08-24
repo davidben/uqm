@@ -2217,6 +2217,10 @@ SOURCE=..\..\src\uqm\planets\solarsys.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\uqm\planets\solarsys.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\uqm\planets\sundata.h
 # End Source File
 # Begin Source File

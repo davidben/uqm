@@ -25,13 +25,10 @@
 #include "planets/lander.h"
 #include "starcon.h"
 #include "setup.h"
+#include "planets/solarsys.h"
 #include "sounds.h"
 #include "libs/sndlib.h"
 #include "libs/vidlib.h"
-
-// XXX: we do not current have a header for this prototype to live in
-//  should be something like solarsys.h
-extern void FreeIPData (void);
 
 
 void

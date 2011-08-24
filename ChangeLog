@@ -1,4 +1,5 @@
 Changes towards version 0.8:
+- Various warnings cleanup (bug #50), from Scott A. Colcord
 - Fixed various Pkunk reincarnation and Shofixti Glory device interactions;
   Pkunk ditty plays in a simultaneous destruction (bug #666) - Alex
 - Preparing for linking with C++ code, from Scott A. Colcord

@@ -766,7 +766,7 @@ clear_control (WIDGET_CONTROLENTRY *widget)
 }	
 
 static int
-count_widgets (const WIDGET **widgets)
+count_widgets (WIDGET **widgets)
 {
 	int count;
 

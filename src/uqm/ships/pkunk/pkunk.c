@@ -123,6 +123,38 @@ typedef struct
 	
 } PKUNK_DATA;
 
+// Local typedef
+typedef PKUNK_DATA CustomShipData_t;
+
+// Retrieve race-specific ship data from a race desc
+static CustomShipData_t *
+GetCustomShipData (RACE_DESC *pRaceDesc)
+{
+	return pRaceDesc->data;
+}
+
+// Set the race-specific data in a race desc
+// (Re)Allocates its own storage for the data.
+static void
+SetCustomShipData (RACE_DESC *pRaceDesc, const CustomShipData_t *data)
+{
+	if (pRaceDesc->data == data) 
+		return;  // no-op
+
+	if (pRaceDesc->data) // Out with the old
+	{
+		HFree (pRaceDesc->data);
+		pRaceDesc->data = NULL;
+	}
+
+	if (data) // In with the new
+	{
+		CustomShipData_t* newData = HMalloc (sizeof (*data));
+		*newData = *data;
+		pRaceDesc->data = newData;
+	}
+}
+
 static void
 animate (ELEMENT *ElementPtr)
 {
@@ -200,7 +232,7 @@ pkunk_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 	PKUNK_DATA *PkunkData;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
-	PkunkData = (PKUNK_DATA *) StarShipPtr->RaceDescPtr->data;
+	PkunkData = GetCustomShipData (StarShipPtr->RaceDescPtr);
 	if (PkunkData->hPhoenix && (StarShipPtr->control & STANDARD_RATING))
 	{
 		RemoveElement (PkunkData->hPhoenix);
@@ -227,7 +259,7 @@ new_pkunk (ELEMENT *ElementPtr)
 	PKUNK_DATA *PkunkData;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
-	PkunkData = (PKUNK_DATA *) StarShipPtr->RaceDescPtr->data;
+	PkunkData = GetCustomShipData (StarShipPtr->RaceDescPtr);
 
 	ElementPtr->state_flags = APPEARING | PLAYER_SHIP | IGNORE_SIMILAR;
 	ElementPtr->mass_points = SHIP_MASS;
@@ -301,7 +333,7 @@ intercept_pkunk_death (ELEMENT *ElementPtr)
 	ELEMENT *ShipPtr;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
-	PkunkData = (PKUNK_DATA *) StarShipPtr->RaceDescPtr->data;
+	PkunkData = GetCustomShipData (StarShipPtr->RaceDescPtr);
 	
 	if (StarShipPtr->RaceDescPtr->ship_info.crew_level != 0)
 	{	// Ship not dead yet.
@@ -447,7 +479,7 @@ pkunk_preprocess (ELEMENT *ElementPtr)
 	PKUNK_DATA *PkunkData;
 
 	GetElementStarShip (ElementPtr, &StarShipPtr);
-	PkunkData = (PKUNK_DATA *) StarShipPtr->RaceDescPtr->data;
+	PkunkData = GetCustomShipData (StarShipPtr->RaceDescPtr);
 	if (ElementPtr->state_flags & APPEARING)
 	{
 		HELEMENT hPhoenix = 0;
@@ -572,8 +604,7 @@ pkunk_postprocess (ELEMENT *ElementPtr)
 static void
 uninit_pkunk (RACE_DESC *pRaceDesc)
 {
-	HFree ((void *)pRaceDesc->data);
-	pRaceDesc->data = 0;
+	SetCustomShipData (pRaceDesc, NULL);
 }
 
 RACE_DESC*
@@ -582,6 +613,8 @@ init_pkunk (void)
 	RACE_DESC *RaceDescPtr;
 	// The caller of this func will copy the struct
 	static RACE_DESC new_pkunk_desc;
+	PKUNK_DATA empty_data;
+	memset (&empty_data, 0, sizeof (empty_data));
 
 	pkunk_desc.uninit_func = uninit_pkunk;
 	pkunk_desc.preprocess_func = pkunk_preprocess;
@@ -591,7 +624,7 @@ init_pkunk (void)
 
 	/* copy initial ship settings to the new descriptor */
 	new_pkunk_desc = pkunk_desc;
-	new_pkunk_desc.data = (intptr_t) HCalloc (sizeof (PKUNK_DATA));
+	SetCustomShipData (&new_pkunk_desc, &empty_data);
 
 	RaceDescPtr = &new_pkunk_desc;
 
