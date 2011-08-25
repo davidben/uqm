@@ -758,7 +758,7 @@ arilou_space_collision (ELEMENT *ElementPtr0,
 }
 
 static HELEMENT
-AllocHyperElement (STAR_DESC *SDPtr)
+AllocHyperElement (const POINT *elem_pt)
 {
 	HELEMENT hHyperSpaceElement;
 
@@ -776,11 +776,11 @@ AllocHyperElement (STAR_DESC *SDPtr)
 		{
 			long lx, ly;
 
-			lx = UNIVERSE_TO_LOGX (SDPtr->star_pt.x)
+			lx = UNIVERSE_TO_LOGX (elem_pt->x)
 					+ (LOG_SPACE_WIDTH >> 1) - GLOBAL_SIS (log_x);
 			HyperSpaceElementPtr->current.location.x = WRAP_X (lx);
 
-			ly = UNIVERSE_TO_LOGY (SDPtr->star_pt.y)
+			ly = UNIVERSE_TO_LOGY (elem_pt->y)
 					+ (LOG_SPACE_HEIGHT >> 1) - GLOBAL_SIS (log_y);
 			HyperSpaceElementPtr->current.location.y = WRAP_Y (ly);
 		}
@@ -951,7 +951,7 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 {
 	BOOLEAN NewEncounter;
 	HELEMENT hElement;
-	STAR_DESC SD;
+	POINT enc_pt;
 	
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) >= 2)
 		return 0;
@@ -969,7 +969,7 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 	if (LONIBBLE (EncounterPtr->SD.Index))
 	{
 		NewEncounter = FALSE;
-		SD.star_pt = EncounterPtr->SD.star_pt;
+		enc_pt = EncounterPtr->SD.star_pt;
 	}
 	else
 	{
@@ -1021,29 +1021,29 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 
 			rand_val = TFB_Random ();
 
-			SD.star_pt.x = puniverse->x
+			enc_pt.x = puniverse->x
 					+ (LOWORD (rand_val) % (XOFFS << 1)) - XOFFS;
-			if (SD.star_pt.x < 0)
-				SD.star_pt.x = 0;
-			else if (SD.star_pt.x > MAX_X_UNIVERSE)
-				SD.star_pt.x = MAX_X_UNIVERSE;
-			SD.star_pt.y = puniverse->y
+			if (enc_pt.x < 0)
+				enc_pt.x = 0;
+			else if (enc_pt.x > MAX_X_UNIVERSE)
+				enc_pt.x = MAX_X_UNIVERSE;
+			enc_pt.y = puniverse->y
 					+ (HIWORD (rand_val) % (YOFFS << 1)) - YOFFS;
-			if (SD.star_pt.y < 0)
-				SD.star_pt.y = 0;
-			else if (SD.star_pt.y > MAX_Y_UNIVERSE)
-				SD.star_pt.y = MAX_Y_UNIVERSE;
+			if (enc_pt.y < 0)
+				enc_pt.y = 0;
+			else if (enc_pt.y > MAX_Y_UNIVERSE)
+				enc_pt.y = MAX_Y_UNIVERSE;
 
-			dx = SD.star_pt.x - EncounterPtr->origin.x;
-			dy = SD.star_pt.y - EncounterPtr->origin.y;
+			dx = enc_pt.x - EncounterPtr->origin.x;
+			dy = enc_pt.y - EncounterPtr->origin.y;
 		} while ((DWORD)((long)dx * dx + (long)dy * dy) > radius_squared);
 
-		EncounterPtr->SD.star_pt = SD.star_pt;
-		EncounterPtr->log_x = UNIVERSE_TO_LOGX (SD.star_pt.x);
-		EncounterPtr->log_y = UNIVERSE_TO_LOGY (SD.star_pt.y);
+		EncounterPtr->SD.star_pt = enc_pt;
+		EncounterPtr->log_x = UNIVERSE_TO_LOGX (enc_pt.x);
+		EncounterPtr->log_y = UNIVERSE_TO_LOGY (enc_pt.y);
 	}
 
-	hElement = AllocHyperElement (&SD);
+	hElement = AllocHyperElement (&enc_pt);
 	if (hElement)
 	{
 		SIZE i;
@@ -1482,7 +1482,7 @@ SeedUniverse (void)
 					|| ey > (YOFFS / NUM_RADAR_SCREENS))
 				continue;
 
-			hHyperSpaceElement = AllocHyperElement (&SD[i]);
+			hHyperSpaceElement = AllocHyperElement (&SD[i].star_pt);
 			if (hHyperSpaceElement == 0)
 				continue;
 
@@ -1527,7 +1527,7 @@ SeedUniverse (void)
 					|| ey > (YOFFS / NUM_RADAR_SCREENS))
 				continue;
 
-			hHyperSpaceElement = AllocHyperElement (SDPtr);
+			hHyperSpaceElement = AllocHyperElement (&SDPtr->star_pt);
 			if (hHyperSpaceElement == 0)
 				continue;
 
