@@ -225,13 +225,13 @@ check_hyperspace_encounter (void)
 					encounter_flags = ONE_SHOT_ENCOUNTER;
 				}
 
-
+				// There can be only one! (of either Slylandro or Melnorme)
 				for (hEncounter = GetHeadEncounter ();
 						hEncounter; hEncounter = hNextEncounter)
 				{
 					LockEncounter (hEncounter, &EncounterPtr);
 					hNextEncounter = GetSuccEncounter (EncounterPtr);
-					if (EncounterPtr->SD.Type == Type)
+					if (EncounterPtr->race_id == Type)
 					{
 						percent = 0;
 						hNextEncounter = 0;
@@ -266,8 +266,8 @@ check_hyperspace_encounter (void)
 					memset (EncounterPtr, 0, sizeof (*EncounterPtr));
 					EncounterPtr->origin = FleetPtr->loc;
 					EncounterPtr->radius = encounter_radius;
-					EncounterPtr->SD.Index = encounter_flags;
-					EncounterPtr->SD.Type = Type;
+					EncounterPtr->flags = encounter_flags;
+					EncounterPtr->race_id = Type;
 					UnlockEncounter (hEncounter);
 
 					PutEncounter (hEncounter);
@@ -956,20 +956,20 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) >= 2)
 		return 0;
 
-	if (EncounterPtr->SD.Index & ENCOUNTER_REFORMING)
+	if (EncounterPtr->flags & ENCOUNTER_REFORMING)
 	{
-		EncounterPtr->SD.Index &= ~ENCOUNTER_REFORMING;
+		EncounterPtr->flags &= ~ENCOUNTER_REFORMING;
 
 		EncounterPtr->transition_state = 100;
-		if ((EncounterPtr->SD.Index & ONE_SHOT_ENCOUNTER)
-				|| LONIBBLE (EncounterPtr->SD.Index) == 0)
+		if ((EncounterPtr->flags & ONE_SHOT_ENCOUNTER)
+				|| EncounterPtr->num_ships == 0)
 			return 0;
 	}
 
-	if (LONIBBLE (EncounterPtr->SD.Index))
+	if (EncounterPtr->num_ships)
 	{
 		NewEncounter = FALSE;
-		enc_pt = EncounterPtr->SD.star_pt;
+		enc_pt = EncounterPtr->loc_pt;
 	}
 	else
 	{
@@ -987,7 +987,7 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 
 		radius_squared = (DWORD)EncounterPtr->radius * EncounterPtr->radius;
 
-		Type = EncounterPtr->SD.Type;
+		Type = EncounterPtr->race_id;
 		NumShips = LONIBBLE (EncounterMakeup[Type]);
 		for (i = HINIBBLE (EncounterMakeup[Type]) - NumShips; i; --i)
 		{
@@ -998,9 +998,7 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 		if (NumShips > MAX_HYPER_SHIPS)
 			NumShips = MAX_HYPER_SHIPS;
 
-
-		EncounterPtr->SD.Index =
-				MAKE_BYTE (NumShips, HINIBBLE (EncounterPtr->SD.Index));
+		EncounterPtr->num_ships = NumShips;
 		for (i = 0; i < NumShips; ++i)
 		{
 			BRIEF_SHIP_INFO *BSIPtr = &EncounterPtr->ShipList[i];
@@ -1038,7 +1036,7 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 			dy = enc_pt.y - EncounterPtr->origin.y;
 		} while ((DWORD)((long)dx * dx + (long)dy * dy) > radius_squared);
 
-		EncounterPtr->SD.star_pt = enc_pt;
+		EncounterPtr->loc_pt = enc_pt;
 		EncounterPtr->log_x = UNIVERSE_TO_LOGX (enc_pt.x);
 		EncounterPtr->log_y = UNIVERSE_TO_LOGY (enc_pt.y);
 	}
@@ -1197,8 +1195,8 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 			cur_facing = ANGLE_TO_FACING (
 					GetVelocityTravelAngle (&ElementPtr->velocity));
 			delta_facing = NORMALIZE_FACING (cur_facing - ANGLE_TO_FACING (
-					ARCTAN (puniverse->x - EncounterPtr->SD.star_pt.x,
-					puniverse->y - EncounterPtr->SD.star_pt.y)));
+					ARCTAN (puniverse->x - EncounterPtr->loc_pt.x,
+					puniverse->y - EncounterPtr->loc_pt.y)));
 			if (delta_facing || (delta_x == 0 && delta_y == 0))
 			{
 				SIZE speed;
@@ -1208,7 +1206,7 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 				};
 
 #define ENCOUNTER_TRACK_WAIT 3
-				speed = RaceHyperSpeed[EncounterPtr->SD.Type];
+				speed = RaceHyperSpeed[EncounterPtr->race_id];
 				if (delta_facing < ANGLE_TO_FACING (HALF_CIRCLE))
 					--cur_facing;
 				else
@@ -1233,14 +1231,14 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 		}
 		EncounterPtr->log_x += delta_x;
 		EncounterPtr->log_y -= delta_y;
-		EncounterPtr->SD.star_pt.x = LOGX_TO_UNIVERSE (EncounterPtr->log_x);
-		EncounterPtr->SD.star_pt.y = LOGY_TO_UNIVERSE (EncounterPtr->log_y);
+		EncounterPtr->loc_pt.x = LOGX_TO_UNIVERSE (EncounterPtr->log_x);
+		EncounterPtr->loc_pt.y = LOGY_TO_UNIVERSE (EncounterPtr->log_y);
 
 		encounter_radius = EncounterPtr->radius + (GRID_OFFSET >> 1);
-		delta_x = EncounterPtr->SD.star_pt.x - EncounterPtr->origin.x;
+		delta_x = EncounterPtr->loc_pt.x - EncounterPtr->origin.x;
 		if (delta_x < 0)
 			delta_x = -delta_x;
-		delta_y = EncounterPtr->SD.star_pt.y - EncounterPtr->origin.y;
+		delta_y = EncounterPtr->loc_pt.y - EncounterPtr->origin.y;
 		if (delta_y < 0)
 			delta_y = -delta_y;
 		if ((COUNT)delta_x >= encounter_radius
@@ -1248,6 +1246,7 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 				|| (DWORD)delta_x * delta_x + (DWORD)delta_y * delta_y >=
 				(DWORD)encounter_radius * encounter_radius)
 		{
+			// Encounter globe traveled outside the SoI and now disappears
 			ElementPtr->state_flags |= NONSOLID;
 			ElementPtr->life_span = 0;
 
@@ -1266,8 +1265,8 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 		}
 	}
 
-	ex = EncounterPtr->SD.star_pt.x;
-	ey = EncounterPtr->SD.star_pt.y;
+	ex = EncounterPtr->loc_pt.x;
+	ey = EncounterPtr->loc_pt.y;
 	if (ex - puniverse->x >= -UNIT_SCREEN_WIDTH
 			&& ex - puniverse->x <= UNIT_SCREEN_WIDTH
 			&& ey - puniverse->y >= -UNIT_SCREEN_HEIGHT

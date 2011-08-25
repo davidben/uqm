@@ -38,8 +38,16 @@ extern "C" {
 typedef HLINK HENCOUNTER;
 
 #define MAX_HYPER_SHIPS 7
+
+// ENCOUNTER.flags
+// XXX: Currently, the flags are combined with num_ships into a single BYTE
+//   in the savegames: num_ships occupy the low nibble and flags the high one.
+//   Bits 4 and 5 are available for more flags in the savegames,
+//   and bits 0-3 available in the game but will not be saved.
 #define ONE_SHOT_ENCOUNTER (1 << 7)
 #define ENCOUNTER_REFORMING (1 << 6)
+#define ENCOUNTER_SHIPS_MASK  0x0f
+#define ENCOUNTER_FLAGS_MASK  0xf0
 
 struct brief_ship_info
 {
@@ -61,9 +69,14 @@ struct encounter
 	SIZE transition_state;
 	POINT origin;
 	COUNT radius;
+	BYTE race_id;
+	BYTE num_ships;
+	BYTE flags;
+			// See ENCOUNTER.flags above
+	POINT loc_pt;
 
-	STAR_DESC SD;
 	BRIEF_SHIP_INFO ShipList[MAX_HYPER_SHIPS];
+			// Only the crew_level member is currently used
 
 	SDWORD log_x, log_y;
 };

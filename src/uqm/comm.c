@@ -1536,7 +1536,6 @@ RaceCommunication (void)
 		else
 		{
 			/* Encounter with a black globe in HS, prepare enemy ship list */
-			COUNT NumShips;
 			ENCOUNTER *EncounterPtr;
 
 			// The encounter globe that the flagship collided with is moved
@@ -1544,10 +1543,9 @@ RaceCommunication (void)
 			hEncounter = GetHeadEncounter ();
 			LockEncounter (hEncounter, &EncounterPtr);
 
-			NumShips = LONIBBLE (EncounterPtr->SD.Index);
-			for (i = 0; i < NumShips; ++i)
+			for (i = 0; i < EncounterPtr->num_ships; ++i)
 			{
-				CloneShipFragment (EncounterPtr->SD.Type,
+				CloneShipFragment (EncounterPtr->race_id,
 						&GLOBAL (npc_built_ship_q),
 						EncounterPtr->ShipList[i].crew_level);
 			}
@@ -1588,12 +1586,11 @@ RaceCommunication (void)
 
 		LockEncounter (hEncounter, &EncounterPtr);
 
-		NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
-		EncounterPtr->SD.Index = MAKE_BYTE (NumShips,
-				HINIBBLE (EncounterPtr->SD.Index));
-		EncounterPtr->SD.Index |= ENCOUNTER_REFORMING;
+		NumShips = CountLinks (&GLOBAL (npc_built_ship_q));
+		EncounterPtr->num_ships = NumShips;
+		EncounterPtr->flags |= ENCOUNTER_REFORMING;
 		if (status == 0)
-			EncounterPtr->SD.Index |= ONE_SHOT_ENCOUNTER;
+			EncounterPtr->flags |= ONE_SHOT_ENCOUNTER;
 
 		for (i = 0; i < NumShips; ++i)
 		{

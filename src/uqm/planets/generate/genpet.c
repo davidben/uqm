@@ -211,17 +211,18 @@ ZapToUrquanEncounter (void)
 		TemplatePtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 		EncounterPtr->origin = TemplatePtr->loc;
 		EncounterPtr->radius = TemplatePtr->actual_strength;
-		EncounterPtr->SD.Type = URQUAN_SHIP;
-		EncounterPtr->SD.Index = MAKE_BYTE (1, 0) | ONE_SHOT_ENCOUNTER;
+		EncounterPtr->race_id = URQUAN_SHIP;
+		EncounterPtr->num_ships = 1;
+		EncounterPtr->flags = ONE_SHOT_ENCOUNTER;
 		BSIPtr = &EncounterPtr->ShipList[0];
 		BSIPtr->race_id = URQUAN_SHIP;
 		BSIPtr->crew_level = TemplatePtr->crew_level;
 		BSIPtr->max_crew = TemplatePtr->max_crew;
 		BSIPtr->max_energy = TemplatePtr->max_energy;
-		EncounterPtr->SD.star_pt.x = 5288;
-		EncounterPtr->SD.star_pt.y = 4892;
-		EncounterPtr->log_x = UNIVERSE_TO_LOGX (EncounterPtr->SD.star_pt.x);
-		EncounterPtr->log_y = UNIVERSE_TO_LOGY (EncounterPtr->SD.star_pt.y);
+		EncounterPtr->loc_pt.x = 5288;
+		EncounterPtr->loc_pt.y = 4892;
+		EncounterPtr->log_x = UNIVERSE_TO_LOGX (EncounterPtr->loc_pt.x);
+		EncounterPtr->log_y = UNIVERSE_TO_LOGY (EncounterPtr->loc_pt.y);
 		GLOBAL_SIS (log_x) = EncounterPtr->log_x;
 		GLOBAL_SIS (log_y) = EncounterPtr->log_y;
 		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
@@ -236,8 +237,8 @@ ZapToUrquanEncounter (void)
 
 		GLOBAL (CurrentActivity) = MAKE_WORD (IN_HYPERSPACE, 0) | START_ENCOUNTER;
 
-		dx = CurStarDescPtr->star_pt.x - EncounterPtr->SD.star_pt.x;
-		dy = CurStarDescPtr->star_pt.y - EncounterPtr->SD.star_pt.y;
+		dx = CurStarDescPtr->star_pt.x - EncounterPtr->loc_pt.x;
+		dy = CurStarDescPtr->star_pt.y - EncounterPtr->loc_pt.y;
 		dx = (SIZE)square_root ((long)dx * dx + (long)dy * dy)
 				+ (FUEL_TANK_SCALE >> 1);
 
@@ -250,7 +251,7 @@ ZapToUrquanEncounter (void)
 			DeltaSISGauges (0, dx, 0);
 		}
 		DrawSISMessage (NULL);
-		DrawHyperCoords (EncounterPtr->SD.star_pt);
+		DrawHyperCoords (EncounterPtr->loc_pt);
 		UnlockMutex (GraphicsLock);
 
 		UnlockEncounter (hEncounter);

@@ -276,11 +276,13 @@ SaveEncounter (const ENCOUNTER *EncounterPtr, DECODE_REF fh)
 	cwrite_16  (fh, EncounterPtr->origin.x);
 	cwrite_16  (fh, EncounterPtr->origin.y);
 	cwrite_16  (fh, EncounterPtr->radius);
-	// STAR_DESC fields
-	cwrite_16  (fh, EncounterPtr->SD.star_pt.x);
-	cwrite_16  (fh, EncounterPtr->SD.star_pt.y);
-	cwrite_8   (fh, EncounterPtr->SD.Type);
-	cwrite_8   (fh, EncounterPtr->SD.Index);
+	// former STAR_DESC fields
+	cwrite_16  (fh, EncounterPtr->loc_pt.x);
+	cwrite_16  (fh, EncounterPtr->loc_pt.y);
+	cwrite_8   (fh, EncounterPtr->race_id);
+	// XXX: writing combined fields to maintain savegame compatibility
+	cwrite_8   (fh, (EncounterPtr->num_ships & ENCOUNTER_SHIPS_MASK)
+			| (EncounterPtr->flags & ENCOUNTER_FLAGS_MASK));
 	cwrite_16  (fh, 0); /* alignment padding */
 
 	// Save each entry in the BRIEF_SHIP_INFO array
