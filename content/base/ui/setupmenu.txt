@@ -30,8 +30,8 @@ Positional Audio
 Sound Driver
 Sound Quality
 Slave Shields
-Player One
-Player Two
+Bottom Player
+Top Player
 Control Set
 UQM Remixes
 Speech
@@ -317,28 +317,28 @@ Placeholder
 Placeholder
 
 #(CAT_18_OPT_0_DESC)
-Player 1 controls the bottom player in
-Super Melee, and the entire Full Game.
+Controls the bottom player in Super
+Melee, and the entire Full Game.
 
 #(CAT_18_OPT_1_DESC)
-Player 1 controls the bottom player in
-Super Melee, and the entire Full Game.
+Controls the bottom player in Super
+Melee, and the entire Full Game.
 
 #(CAT_18_OPT_2_DESC)
-Player 1 controls the bottom player in
-Super Melee, and the entire Full Game.
+Controls the bottom player in Super
+Melee, and the entire Full Game.
 
 #(CAT_18_OPT_3_DESC)
-Player 1 controls the bottom player in
-Super Melee, and the entire Full Game.
+Controls the bottom player in Super
+Melee, and the entire Full Game.
 
 #(CAT_18_OPT_4_DESC)
-Player 1 controls the bottom player in
-Super Melee, and the entire Full Game.
+Controls the bottom player in Super
+Melee, and the entire Full Game.
 
 #(CAT_18_OPT_5_DESC)
-Player 1 controls the bottom player in
-Super Melee, and the entire Full Game.
+Controls the bottom player in Super
+Melee, and the entire Full Game.
 
 #(CAT_19_OPTS)
 Placeholder
@@ -349,27 +349,27 @@ Placeholder
 Placeholder
 
 #(CAT_19_OPT_0_DESC)
-Player 2 controls the top player
+Controls the top player
 in Super Melee.
 
 #(CAT_19_OPT_1_DESC)
-Player 2 controls the top player
+Controls the top player
 in Super Melee.
 
 #(CAT_19_OPT_2_DESC)
-Player 2 controls the top player
+Controls the top player
 in Super Melee.
 
 #(CAT_19_OPT_3_DESC)
-Player 2 controls the top player
+Controls the top player
 in Super Melee.
 
 #(CAT_19_OPT_4_DESC)
-Player 2 controls the top player
+Controls the top player
 in Super Melee.
 
 #(CAT_19_OPT_5_DESC)
-Player 2 controls the top player
+Controls the top player
 in Super Melee.
 
 #(CAT_20_OPTS)
