@@ -1,4 +1,8 @@
 Changes towards version 0.8:
+- Allow F6 as a default alternate search key, from related projects.
+- "Player 1" and "Player 2" are now "Bottom" and "Top" player (#954) - McM
+- Fix Utwig dialog inconsistency (#756) - McM
+- Use a deterministic seed for Melnorme modules-for-fuel deals (#567) - McM
 - Various warnings cleanup (bug #50), from Scott A. Colcord
 - Fixed various Pkunk reincarnation and Shofixti Glory device interactions;
   Pkunk ditty plays in a simultaneous destruction (bug #666) - Alex
