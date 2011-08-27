@@ -611,6 +611,15 @@ StripShip (COUNT fuel_required)
 		BYTE module_count[BOMB_MODULE_0];
 		BYTE slot;
 		DWORD capacity;
+		RandomContext *rc;
+		
+		// Bug #567
+		// In order to offer the same deal each time if it is refused, we seed
+		// the random number generator with our location, thus making the deal
+		// a repeatable pseudo-random function of where we got stuck and what,
+		// exactly, is on our ship.
+		rc = RandomContext_New();
+		RandomContext_SeedRandom(rc, GLOBAL_SIS (log_y) * LOG_UNITS_X + GLOBAL_SIS (log_x));
 
 		SIS_copy = GlobData.SIS_state;
 		for (i = PLANET_LANDER; i < BOMB_MODULE_0; ++i)
@@ -654,7 +663,7 @@ StripShip (COUNT fuel_required)
 		{
 			DWORD rand_val;
 
-			rand_val = TFB_Random ();
+			rand_val = RandomContext_Random (rc);
 			switch (which_module = LOBYTE (LOWORD (rand_val)) % (CREW_POD + 1))
 			{
 				case PLANET_LANDER:
@@ -703,6 +712,7 @@ StripShip (COUNT fuel_required)
 				end_mod = which_module;
 			++module_count[which_module];
 			total += GLOBAL (ModuleCost[which_module]);
+			RandomContext_Delete (rc);
 		}
 
 		if (total == 0)

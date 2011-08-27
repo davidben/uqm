@@ -390,7 +390,7 @@ AlliedHome (RESPONSE_REF R)
 		Response (what_now_homeworld, AlliedHome);
 	if (PHRASE_ENABLED (how_is_ultron))
 		Response (how_is_ultron, AlliedHome);
-	if (NumVisits == 0)
+	if (NumVisits == 0 && ActivateStarShip (UTWIG_SHIP, FEASIBILITY_STUDY) != 0)
 		Response (can_you_help, ExitConversation);
 	Response (bye_allied_homeworld, ExitConversation);
 }
