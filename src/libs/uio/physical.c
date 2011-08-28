@@ -157,7 +157,7 @@ uio_PRoot_refMount(uio_PRoot *pRoot) {
 #ifdef uio_MEM_DEBUG
 	uio_MemDebug_debugRef(uio_PRoot, (void *) pRoot);
 #endif
-	pRoot->handleRef++;
+	pRoot->mountRef++;
 }
 
 void
