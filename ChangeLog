@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Fixes to a few small bugs in UIO which shouldn't have had an impact on
+  UQM, but would in the future, from Alex
 - Allow F6 as a default alternate search key, from related projects.
 - "Player 1" and "Player 2" are now "Bottom" and "Top" player (#954) - McM
 - Fix Utwig dialog inconsistency (#756) - McM
