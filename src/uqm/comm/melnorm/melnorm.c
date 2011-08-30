@@ -712,8 +712,8 @@ StripShip (COUNT fuel_required)
 				end_mod = which_module;
 			++module_count[which_module];
 			total += GLOBAL (ModuleCost[which_module]);
-			RandomContext_Delete (rc);
 		}
+		RandomContext_Delete (rc);
 
 		if (total == 0)
 		{
