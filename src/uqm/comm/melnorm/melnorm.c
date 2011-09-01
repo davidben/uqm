@@ -558,6 +558,22 @@ GetStripModuleRef (int moduleID)
 	return 0;
 }
 
+static DWORD
+getStripRandomSeed (void)
+{
+	DWORD x, y;
+	// We truncate the location because encounters move the ship slightly in
+	// HSpace, and throw some other relatively immutable values in the mix to
+	// vary the deal when stuck at the same general location again.
+	// It is still possible but unlikely for encounters to move the ship into
+	// another truncation sector so the player could choose from 2 deals.
+	x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x)) / 100;
+	y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y)) / 100;
+	// prime numbers help randomness
+	return y * 1013 + x + GLOBAL_SIS (TotalElementMass)
+			+ GLOBAL_SIS (NumLanders);
+}
+
 static BOOLEAN
 StripShip (COUNT fuel_required)
 {
@@ -619,7 +635,7 @@ StripShip (COUNT fuel_required)
 		// a repeatable pseudo-random function of where we got stuck and what,
 		// exactly, is on our ship.
 		rc = RandomContext_New();
-		RandomContext_SeedRandom(rc, GLOBAL_SIS (log_y) * LOG_UNITS_X + GLOBAL_SIS (log_x));
+		RandomContext_SeedRandom (rc, getStripRandomSeed ());
 
 		SIS_copy = GlobData.SIS_state;
 		for (i = PLANET_LANDER; i < BOMB_MODULE_0; ++i)
