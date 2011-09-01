@@ -570,8 +570,9 @@ getStripRandomSeed (void)
 	x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x)) / 100;
 	y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y)) / 100;
 	// prime numbers help randomness
-	return y * 1013 + x + GLOBAL_SIS (TotalElementMass)
-			+ GLOBAL_SIS (NumLanders);
+	return y * 1013 + x + GLOBAL_SIS (NumLanders)
+			+ GLOBAL_SIS (ModuleSlots[1]) + GLOBAL_SIS (ModuleSlots[4])
+			+ GLOBAL_SIS (ModuleSlots[7]) + GLOBAL_SIS (ModuleSlots[10]);
 }
 
 static BOOLEAN
