@@ -307,7 +307,7 @@ aifa_readCommonChunk (TFB_AiffSoundDecoder* aifa, uint32 size,
 {
 	int bytes;
 
-	memset(fmt, sizeof(*fmt), 0);
+	memset(fmt, 0, sizeof(*fmt));
 	if (size < AIFF_COMM_SIZE)
 	{
 		aifa->last_error = aifae_BadFile;
@@ -369,7 +369,7 @@ aifa_Open (THIS_PTR, uio_DirHandle *dir, const char *filename)
 	aifa->max_pcm = 0;
 	aifa->data_ofs = 0;
 	memset(&aifa->fmtHdr, 0, sizeof(aifa->fmtHdr));
-	memset(aifa->prev_val, sizeof(aifa->prev_val), 0);
+	memset(aifa->prev_val, 0, sizeof(aifa->prev_val));
 
 	// read wave header
 	if (!aifa_readFileHeader (aifa, &fileHdr))
@@ -635,7 +635,7 @@ aifa_Seek (THIS_PTR, uint32 pcm_pos)
 
 	// reset previous values for SDX2 on seek ops
 	// the delta will recover faster with reset
-	memset(aifa->prev_val, sizeof(aifa->prev_val), 0);
+	memset(aifa->prev_val, 0, sizeof(aifa->prev_val));
 
 	return pcm_pos;
 }
