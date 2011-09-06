@@ -18,8 +18,10 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <string.h>
+#include "input.h"
 #include "../inpintrn.h"
-#include "libs/graphics/sdl/sdl_common.h"
+#include "libs/threadlib.h"
 #include "libs/input/sdl/vcontrol.h"
 #include "libs/input/sdl/keynames.h"
 #include "libs/memlib.h"
