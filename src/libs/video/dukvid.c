@@ -727,7 +727,8 @@ dukv_SeekTime (THIS_PTR, float time)
 	//TFB_DuckVideoDecoder* dukv = (TFB_DuckVideoDecoder*) This;
 	uint32 frame = (uint32) (time * DUCK_GENERAL_FPS);
 	
-	return (float) dukv_SeekFrame (This, frame) / DUCK_GENERAL_FPS;
+	// Note that DUCK_GENERAL_FPS is a float constant
+	return dukv_SeekFrame (This, frame) / DUCK_GENERAL_FPS;
 }
 
 static uint32
