@@ -105,7 +105,7 @@ typedef struct
 
 static const TFB_DecoderFormats* duka_formats = NULL;
 
-sint32
+static sint32
 duka_readAudFrameHeader (TFB_DuckSoundDecoder* duka, uint32 iframe,
 		DukAud_AudSubframe* aud)
 {
@@ -246,7 +246,7 @@ decode_nibbles (sint16 *output, sint32 output_size, sint32 channels,
 }
 // *** END part copied from MPlayer ***
 
-sint32
+static sint32
 duka_decodeFrame (TFB_DuckSoundDecoder* duka, DukAud_AudSubframe* header,
 		uint8* input)
 {
@@ -273,7 +273,7 @@ duka_decodeFrame (TFB_DuckSoundDecoder* duka, DukAud_AudSubframe* header,
 }
 
 
-sint32
+static sint32
 duka_readNextFrame (TFB_DuckSoundDecoder* duka)
 {
 	DukAud_FrameHeader hdr;

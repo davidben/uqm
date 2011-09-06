@@ -307,7 +307,7 @@ void TFB_GL_UploadTransitionScreen (void)
 	GL_Screens[TFB_SCREEN_TRANSITION].dirty = TRUE;
 }
 
-void
+static void
 TFB_GL_ScanLines (void)
 {
 	int y;

@@ -66,8 +66,8 @@ void SetSpeechVolume (float volume);
 TFB_SoundSample *TFB_CreateSoundSample (TFB_SoundDecoder*, uint32 num_buffers,
 		const TFB_SoundCallbacks* /* can be NULL */);
 void TFB_DestroySoundSample (TFB_SoundSample*);
-void TFB_SetSoundSampleData (TFB_SoundSample*, intptr_t data);
-intptr_t TFB_GetSoundSampleData (TFB_SoundSample*);
+void TFB_SetSoundSampleData (TFB_SoundSample*, void* data);
+void* TFB_GetSoundSampleData (TFB_SoundSample*);
 void TFB_SetSoundSampleCallbacks (TFB_SoundSample*,
 		const TFB_SoundCallbacks* /* can be NULL */);
 TFB_SoundDecoder* TFB_GetSoundSampleDecoder (TFB_SoundSample*);

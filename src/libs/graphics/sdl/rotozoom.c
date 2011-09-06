@@ -222,6 +222,7 @@ int zoomSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int smooth)
  
 */
 
+static
 int zoomSurfaceY(SDL_Surface * src, SDL_Surface * dst)
 {
     Uint32 sx, sy, *sax, *say, *csax, *csay, csx, csy;
@@ -342,6 +343,7 @@ int zoomSurfaceY(SDL_Surface * src, SDL_Surface * dst)
  
 */
 
+static
 void transformSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int cx, int cy, int isin, int icos, int smooth)
 {
     int x, y, t1, t2, dx, dy, xd, yd, sdx, sdy, ax, ay, ex, ey, sw, sh;
@@ -497,6 +499,7 @@ void transformSurfaceRGBA(SDL_Surface * src, SDL_Surface * dst, int cx, int cy, 
  
 */
 
+static
 void transformSurfaceY(SDL_Surface * src, SDL_Surface * dst, int cx, int cy, int isin, int icos)
 {
     int x, y, dx, dy, xd, yd, sdx, sdy, ax, ay, sw, sh;
@@ -557,6 +560,7 @@ void transformSurfaceY(SDL_Surface * src, SDL_Surface * dst, int cx, int cy, int
 
 /* Local rotozoom-size function with trig result return */
 
+static
 void rotozoomSurfaceSizeTrig(int width, int height, double angle, double zoom, int *dstwidth, int *dstheight,
 			     double *canglezoom, double *sanglezoom)
 {
@@ -578,8 +582,8 @@ void rotozoomSurfaceSizeTrig(int width, int height, double angle, double zoom, i
     cy = *canglezoom * y;
     sx = *sanglezoom * x;
     sy = *sanglezoom * y;
-    dstwidthhalf = MAX((int) ceil(fabs(cx) + fabs(sy)), 1);
-    dstheighthalf = MAX((int) ceil(fabs(sx) + fabs(cy)), 1);
+    dstwidthhalf = MAX(ceil(fabs(cx) + fabs(sy)), 1);
+    dstheighthalf = MAX(ceil(fabs(sx) + fabs(cy)), 1);
     *dstwidth = 2 * dstwidthhalf;
     *dstheight = 2 * dstheighthalf;
 }

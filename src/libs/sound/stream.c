@@ -225,12 +225,12 @@ TFB_DestroySoundSample (TFB_SoundSample *sample)
 }
 
 void
-TFB_SetSoundSampleData (TFB_SoundSample *sample, intptr_t data)
+TFB_SetSoundSampleData (TFB_SoundSample *sample, void* data)
 {
 	sample->data = data;
 }
 
-intptr_t
+void*
 TFB_GetSoundSampleData (TFB_SoundSample *sample)
 {
 	return sample->data;

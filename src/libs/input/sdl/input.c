@@ -322,7 +322,7 @@ GetLastCharacter (void)
 
 volatile int MouseButtonDown = 0;
 
-void
+static void
 ProcessMouseEvent (const SDL_Event *e)
 {
 	switch (e->type)

@@ -27,6 +27,7 @@
 #endif
 
 #include <stdarg.h>
+#include <errno.h>
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/cmap.h"
 #include "libs/sound/sound.h"
@@ -279,7 +280,11 @@ main (int argc, char *argv[])
 	if (options.logFile != NULL)
 	{
 		int i;
-		freopen (options.logFile, "w", stderr);
+		if (!freopen (options.logFile, "w", stderr))
+		{
+			printf ("Error %d calling freopen() on stderr\n", errno);
+			return EXIT_FAILURE;
+		}
 #ifdef UNBUFFERED_LOGFILE
 		setbuf (stderr, NULL);
 #endif

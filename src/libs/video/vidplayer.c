@@ -273,7 +273,7 @@ TFB_PlayVideo (VIDEO_REF vid, uint32 x, uint32 y)
 		}
 
 		TFB_SetSoundSampleCallbacks (*vid->hAudio, &vp_AudioCBs);
-		TFB_SetSoundSampleData (*vid->hAudio, (intptr_t)vid);
+		TFB_SetSoundSampleData (*vid->hAudio, vid);
 	}
 
 	// get the first frame
@@ -432,7 +432,7 @@ vp_SetTimer (TFB_VideoDecoder* decoder, uint32 msecs)
 static bool
 vp_AudioStart (TFB_SoundSample* sample)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+	TFB_VideoClip* vid = TFB_GetSoundSampleData (sample);
 	TFB_SoundDecoder *decoder;
 
 	assert (sizeof (intptr_t) >= sizeof (vid));
@@ -450,7 +450,7 @@ vp_AudioStart (TFB_SoundSample* sample)
 static void
 vp_AudioEnd (TFB_SoundSample* sample)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+	TFB_VideoClip* vid = TFB_GetSoundSampleData (sample);
 
 	assert (vid != NULL);
 
@@ -462,7 +462,7 @@ vp_AudioEnd (TFB_SoundSample* sample)
 static void
 vp_BufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+	TFB_VideoClip* vid = TFB_GetSoundSampleData (sample);
 	uint32 frame = (uint32) tag->data;
 
 	assert (sizeof (tag->data) >= sizeof (frame));
