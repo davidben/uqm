@@ -142,6 +142,31 @@ case "$HOST_SYSTEM" in
 		BUILDTOOL_LINK_COMMAND="\$PROG_gcce_FILE $EXTRA_GCCE_FLAGS_LINK"
 		BUILDTOOL_LINK_DEPEND='gcce'
 		;;	
+	CYGWIN*)
+		EXTRA_CYGWIN_FLAGS_COMPILE=''
+		EXTRA_CYGWIN_FLAGS_LINK=''
+
+		BUILDTOOL_PREPROC_C_COMMAND="\$PROG_mingw_gcc_FILE -E $EXTRA_CYGWIN_FLAGS_COMPILE"
+		BUILDTOOL_PREPROC_C_DEPEND='mingw_gcc'
+
+		BUILDTOOL_MKDEP_C_COMMAND="\$PROG_mingw_gcc_FILE -MM $EXTRA_CYGWIN_FLAGS_COMPILE"
+		BUILDTOOL_MKDEP_C_DEPEND='mingw_gcc'
+
+		BUILDTOOL_COMPILE_C_COMMAND="\$PROG_mingw_gcc_FILE -c $EXTRA_CYGWIN_FLAGS_COMPILE"
+		BUILDTOOL_COMPILE_C_DEPEND='mingw_gcc'
+
+		BUILDTOOL_PREPROC_OBJC_COMMAND="\$PROG_mingw_gcc_FILE -E"
+		BUILDTOOL_PREPROC_OBJC_DEPEND='mingw_gcc'
+
+		BUILDTOOL_MKDEP_OBJC_COMMAND="\$PROG_mingw_gcc_FILE -MM"
+		BUILDTOOL_MKDEP_OBJC_DEPEND='mingw_gcc'
+
+		BUILDTOOL_COMPILE_OBJC_COMMAND="\$PROG_mingw_gcc_FILE -c"
+		BUILDTOOL_COMPILE_OBJC_DEPEND='mingw_gcc'
+
+		BUILDTOOL_LINK_COMMAND="\$PROG_mingw_gcc_FILE $EXTRA_CYGWIN_FLAGS_LINK"
+		BUILDTOOL_LINK_DEPEND='mingw_gcc'
+		;;
 	*)
 		useGccBuildTools
 		;;
@@ -302,6 +327,12 @@ PROG_gcce_FILE="arm-none-symbianelf-gcc"
 PROG_gcce_ACTION=""
 PROG_gcce_VERSION='$(arm-none-symbianelf-gcc --version)'
 
+
+### mingw-gcc ###
+PROG_mingw_gcc_NAME="GNU C MinGW Cross-compiler"
+PROG_mingw_gcc_FILE="i686-pc-mingw32-gcc"
+PROG_mingw_gcc_ACTION=""
+PROG_mingw_gcc_VERSION='$(i686-pc-mingw32-gcc --version)'
 
 
 ##############################################################################
