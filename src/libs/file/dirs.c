@@ -656,7 +656,7 @@ err:
 		// This code is only needed if we have a current working directory
 		// per drive.
 // letter is 0 based: 0 = A, 1 = B, ...
-bool
+static bool
 driveLetterExists(int letter)
 {
 	unsigned long drives;
