@@ -321,18 +321,18 @@ do_advanced (WIDGET *self, int event)
 }
 
 static void
-populate_editkeys (int template)
+populate_editkeys (int templat)
 {
 	int i, j;
 	
-	strncpy (textentries[0].value, input_templates[template].name, textentries[0].maxlen);
+	strncpy (textentries[0].value, input_templates[templat].name, textentries[0].maxlen);
 	textentries[0].value[textentries[0].maxlen-1] = 0;
 	
 	for (i = 0; i < NUM_KEYS; i++)
 	{
 		for (j = 0; j < 2; j++)
 		{
-			InterrogateInputState (template, i, j, controlentries[i].controlname[j], WIDGET_CONTROLENTRY_WIDTH);
+			InterrogateInputState (templat, i, j, controlentries[i].controlname[j], WIDGET_CONTROLENTRY_WIDTH);
 		}
 	}
 }
@@ -743,26 +743,26 @@ gamma_DrawValue (WIDGET_SLIDER *self, int x, int y)
 static void
 rebind_control (WIDGET_CONTROLENTRY *widget)
 {
-	int template = choices[20].selected;
+	int templat = choices[20].selected;
 	int control = widget->controlindex;
 	int index = widget->highlighted;
 
 	FlushInput ();
 	DrawLabelAsWindow (&labels[3], NULL);
-	RebindInputState (template, control, index);
-	populate_editkeys (template);
+	RebindInputState (templat, control, index);
+	populate_editkeys (templat);
 	FlushInput ();
 }
 
 static void
 clear_control (WIDGET_CONTROLENTRY *widget)
 {
-	int template = choices[20].selected;
+	int templat = choices[20].selected;
 	int control = widget->controlindex;
 	int index = widget->highlighted;
       
-	RemoveInputState (template, control, index);
-	populate_editkeys (template);
+	RemoveInputState (templat, control, index);
+	populate_editkeys (templat);
 }	
 
 static int

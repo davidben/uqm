@@ -48,12 +48,12 @@ static TFB_GRAPHICS_BACKEND pure_unscaled_backend = {
 	TFB_Pure_ColorLayer };
 
 static SDL_Surface *
-Create_Screen (SDL_Surface *template, int w, int h)
+Create_Screen (SDL_Surface *templat, int w, int h)
 {
 	SDL_Surface *newsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
-			template->format->BitsPerPixel,
-			template->format->Rmask, template->format->Gmask,
-			template->format->Bmask, 0);
+			templat->format->BitsPerPixel,
+			templat->format->Rmask, templat->format->Gmask,
+			templat->format->Bmask, 0);
 	if (newsurf == 0) {
 		log_add (log_Error, "Couldn't create screen buffers: %s",
 				SDL_GetError());
@@ -62,11 +62,11 @@ Create_Screen (SDL_Surface *template, int w, int h)
 }
 
 static int
-ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
+ReInit_Screen (SDL_Surface **screen, SDL_Surface *templat, int w, int h)
 {
 	if (*screen)
 		SDL_FreeSurface (*screen);
-	*screen = Create_Screen (template, w, h);
+	*screen = Create_Screen (templat, w, h);
 	
 	return *screen == 0 ? -1 : 0;
 }

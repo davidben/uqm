@@ -420,11 +420,11 @@ TFB_ResetControls (void)
 }
 
 void
-InterrogateInputState (int template, int control, int index, char *buffer, int maxlen)
+InterrogateInputState (int templat, int control, int index, char *buffer, int maxlen)
 {
-	VCONTROL_GESTURE *g = CONTROL_PTR(template, control, index);
+	VCONTROL_GESTURE *g = CONTROL_PTR(templat, control, index);
 
-	if (template >= num_templ || control >= num_flight
+	if (templat >= num_templ || control >= num_flight
 			|| index >= MAX_FLIGHT_ALTERNATES)
 	{
 		log_add (log_Warning, "InterrogateInputState(): invalid control index");
@@ -457,13 +457,13 @@ InterrogateInputState (int template, int control, int index, char *buffer, int m
 }
 
 void
-RemoveInputState (int template, int control, int index)
+RemoveInputState (int templat, int control, int index)
 {
-	VCONTROL_GESTURE *g = CONTROL_PTR(template, control, index);
+	VCONTROL_GESTURE *g = CONTROL_PTR(templat, control, index);
 	char keybuf[40];
 	keybuf[39] = '\0';
 
-	if (template >= num_templ || control >= num_flight
+	if (templat >= num_templ || control >= num_flight
 			|| index >= MAX_FLIGHT_ALTERNATES)
 	{
 		log_add (log_Warning, "RemoveInputState(): invalid control index");
@@ -471,23 +471,23 @@ RemoveInputState (int template, int control, int index)
 	}
 
 	VControl_RemoveGestureBinding (g,
-			(int *)(flight_vec + template * num_flight + control));
+			(int *)(flight_vec + templat * num_flight + control));
 	g->type = VCONTROL_NONE;
 
-	snprintf (keybuf, 39, "keys.%d.%s.%d", template+1, flight_res_names[control], index+1);
+	snprintf (keybuf, 39, "keys.%d.%s.%d", templat+1, flight_res_names[control], index+1);
 	res_Remove (keybuf);
 
 	return;
 }
 
 void
-RebindInputState (int template, int control, int index)
+RebindInputState (int templat, int control, int index)
 {
 	VCONTROL_GESTURE g;
 	char keybuf[40], valbuf[40];
 	keybuf[39] = valbuf[39] = '\0';
 
-	if (template >= num_templ || control >= num_flight
+	if (templat >= num_templ || control >= num_flight
 			|| index >= MAX_FLIGHT_ALTERNATES)
 	{
 		log_add (log_Warning, "RebindInputState(): invalid control index");
@@ -495,7 +495,7 @@ RebindInputState (int template, int control, int index)
 	}
 
 	/* Remove the old binding on this spot */
-	RemoveInputState (template, control, index);
+	RemoveInputState (templat, control, index);
 
 	/* Wait for the next interesting bit of user input */
 	VControl_ClearGesture ();
@@ -506,9 +506,9 @@ RebindInputState (int template, int control, int index)
 
 	/* And now, add the new binding. */
 	VControl_AddGestureBinding (&g,
-			(int *)(flight_vec + template * num_flight + control));
-	*CONTROL_PTR(template, control, index) = g;
-	snprintf (keybuf, 39, "keys.%d.%s.%d", template+1, flight_res_names[control], index+1);
+			(int *)(flight_vec + templat * num_flight + control));
+	*CONTROL_PTR(templat, control, index) = g;
+	snprintf (keybuf, 39, "keys.%d.%s.%d", templat+1, flight_res_names[control], index+1);
 	VControl_DumpGesture (valbuf, 39, &g);
 	res_PutString (keybuf, valbuf);
 }
