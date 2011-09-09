@@ -33,8 +33,8 @@
 static bool GenerateTalkingPet_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateTalkingPet_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateTalkingPet_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -161,12 +161,12 @@ GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 }
 
 static COUNT
-GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateTalkingPet_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		return GenerateDefault_generateRuins (solarSys, whichNode);
+		return GenerateDefault_generateRuins (solarSys, whichNode, info);
 	}
 
 	return 0;

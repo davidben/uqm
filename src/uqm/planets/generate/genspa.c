@@ -35,10 +35,10 @@ static bool GenerateSpathi_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
 static bool GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateSpathi_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
-static COUNT GenerateSpathi_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateSpathi_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
+static COUNT GenerateSpathi_generateLife (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateSpathi_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 static bool GenerateSpathi_pickupLife (SOLARSYS_STATE *solarSys,
@@ -148,11 +148,11 @@ GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		rand_val = RandomContext_GetSeed (SysGenRNG);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
-		GenerateLifeForms (&solarSys->SysInfo, GENERATE_ALL);
+		GenerateLifeForms (&solarSys->SysInfo, GENERATE_ALL, NULL);
 		rand_val = RandomContext_GetSeed (SysGenRNG);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-		GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL);
+		GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL, NULL);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] = rand_val;
 
@@ -185,7 +185,7 @@ GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		rand_val = RandomContext_GetSeed (SysGenRNG);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-		GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL);
+		GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL, NULL);
 		rand_val = RandomContext_GetSeed (SysGenRNG);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
@@ -207,8 +207,8 @@ GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateSpathi_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateSpathi_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 0, 0))
 	{
@@ -219,7 +219,7 @@ GenerateSpathi_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	return 0;
@@ -247,14 +247,14 @@ GenerateSpathi_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 }
 
 static COUNT
-GenerateSpathi_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateSpathi_generateLife (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
 		#define NUM_EVIL_ONES  32
 		return GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, NUM_EVIL_ONES,
-				NUM_CREATURE_TYPES, whichNode);
+				NUM_CREATURE_TYPES, whichNode, info);
 	}
 
 	return 0;

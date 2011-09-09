@@ -935,20 +935,20 @@ DrawScannedStuff (COUNT y, COUNT scan)
 }
 
 COUNT
-callGenerateForScanType (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT node, BYTE scanType)
+callGenerateForScanType (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT node, BYTE scanType, NODE_INFO *info)
 {
 	switch (scanType)
 	{
 		case MINERAL_SCAN:
 			return (*solarSys->genFuncs->generateMinerals) (
-					solarSys, world, node);
+					solarSys, world, node, info);
 		case ENERGY_SCAN:
 			return (*solarSys->genFuncs->generateEnergy) (
-					solarSys, world, node);
+					solarSys, world, node, info);
 		case BIOLOGICAL_SCAN:
 			return (*solarSys->genFuncs->generateLife) (
-					solarSys, world, node);
+					solarSys, world, node, info);
 	}
 
 	assert (false);
@@ -1293,19 +1293,16 @@ ScanSystem (void)
 
 static void
 generateBioNode (SOLARSYS_STATE *system, ELEMENT *NodeElementPtr,
-		BYTE *life_init_tab)
+		BYTE *life_init_tab, COUNT creatureType)
 {
 	COUNT i;
-	COUNT creatureType;
-
-	creatureType = system->SysInfo.PlanetInfo.CurType;
 
 	// NOTE: TFB_Random() calls here are NOT part of the deterministic planet
 	//   generation PRNG flow.
 	if (CreatureData[creatureType].Attributes & SPEED_MASK)
 	{
 		// Place moving creatures at a random location.
-		i = (COUNT)TFB_Random ();
+		i = TFB_Random ();
 		NodeElementPtr->current.location.x =
 				(LOBYTE (i) % (MAP_WIDTH - (8 << 1))) + 8;
 		NodeElementPtr->current.location.y =
@@ -1361,12 +1358,13 @@ GeneratePlanetSide (void)
 				NUM_SCANDOT_TRANSITIONS * (scan - ENERGY_SCAN));
 
 		num_nodes = callGenerateForScanType (pSolarSysState,
-				pSolarSysState->pOrbitalDesc, ~0, scan);
+				pSolarSysState->pOrbitalDesc, GENERATE_ALL, scan, NULL);
 
 		while (num_nodes--)
 		{
 			HELEMENT hNodeElement;
 			ELEMENT *NodeElementPtr;
+			NODE_INFO info;
 
 			if (isNodeRetrieved (&pSolarSysState->SysInfo.PlanetInfo,
 					scan, num_nodes))
@@ -1380,30 +1378,24 @@ GeneratePlanetSide (void)
 
 			callGenerateForScanType (pSolarSysState,
 					pSolarSysState->pOrbitalDesc, num_nodes,
-					scan);
+					scan, &info);
 
 			NodeElementPtr->scan_node = MAKE_WORD (scan, num_nodes + 1);
 			NodeElementPtr->playerNr = PS_NON_PLAYER;
-			NodeElementPtr->current.location.x =
-					pSolarSysState->SysInfo.PlanetInfo.CurPt.x;
-			NodeElementPtr->current.location.y =
-					pSolarSysState->SysInfo.PlanetInfo.CurPt.y;
+			NodeElementPtr->current.location.x = info.loc_pt.x;
+			NodeElementPtr->current.location.y = info.loc_pt.y;
 
 			SetPrimType (&DisplayArray[NodeElementPtr->PrimIndex], STAMP_PRIM);
 			if (scan == MINERAL_SCAN)
 			{
-				COUNT EType;
-
-				EType = pSolarSysState->SysInfo.PlanetInfo.CurType;
-				NodeElementPtr->turn_wait = (BYTE)EType;
-				NodeElementPtr->mass_points = HIBYTE (
-						pSolarSysState->SysInfo.PlanetInfo.CurDensity);
+				NodeElementPtr->turn_wait = info.type;
+				NodeElementPtr->mass_points = HIBYTE (info.density);
 				NodeElementPtr->current.image.frame = SetAbsFrameIndex (
 						MiscDataFrame, (NUM_SCANDOT_TRANSITIONS * 2)
-						+ ElementCategory (EType) * 5);
+						+ ElementCategory (info.type) * 5);
 				NodeElementPtr->next.image.frame = SetRelFrameIndex (
-						NodeElementPtr->current.image.frame, LOBYTE (
-						pSolarSysState->SysInfo.PlanetInfo.CurDensity) + 1);
+						NodeElementPtr->current.image.frame,
+						LOBYTE (info.density) + 1);
 				DisplayArray[NodeElementPtr->PrimIndex].Object.Stamp.frame =
 						IncFrameIndex (NodeElementPtr->next.image.frame);
 			}
@@ -1423,7 +1415,7 @@ GeneratePlanetSide (void)
 				else /* (scan == BIOLOGICAL_SCAN) */
 				{
 					generateBioNode (pSolarSysState, NodeElementPtr,
-							life_init_tab);
+							life_init_tab, info.type);
 				}
 			}
 

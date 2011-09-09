@@ -50,8 +50,8 @@ extern void ScanSystem (void);
 
 extern void RepairBackRect (RECT *pRect);
 extern void GeneratePlanetSide (void);
-extern COUNT callGenerateForScanType (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT node, BYTE scanType);
+extern COUNT callGenerateForScanType (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT node, BYTE scanType, NODE_INFO *);
 // Returns true if the node should be removed from the surface
 extern bool callPickupForScanType (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT node, BYTE scanType);

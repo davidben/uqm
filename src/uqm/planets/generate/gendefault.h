@@ -31,16 +31,16 @@ bool GenerateDefault_uninitNpcs (SOLARSYS_STATE *solarSys);
 bool GenerateDefault_generatePlanets (SOLARSYS_STATE *solarSys);
 bool GenerateDefault_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
-bool GenerateDefault_generateName (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world);
+bool GenerateDefault_generateName (const SOLARSYS_STATE *,
+		const PLANET_DESC *world);
 bool GenerateDefault_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-COUNT GenerateDefault_generateMinerals (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
-COUNT GenerateDefault_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
-COUNT GenerateDefault_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+COUNT GenerateDefault_generateMinerals (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
+COUNT GenerateDefault_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
+COUNT GenerateDefault_generateLife (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 bool GenerateDefault_pickupMinerals (SOLARSYS_STATE *, PLANET_DESC *world,
 		COUNT whichNode);
 bool GenerateDefault_pickupEnergy (SOLARSYS_STATE *, PLANET_DESC *world,
@@ -48,8 +48,10 @@ bool GenerateDefault_pickupEnergy (SOLARSYS_STATE *, PLANET_DESC *world,
 bool GenerateDefault_pickupLife (SOLARSYS_STATE *, PLANET_DESC *world,
 		COUNT whichNode);
 
-COUNT GenerateDefault_generateArtifact (SOLARSYS_STATE *, COUNT whichNode);
-COUNT GenerateDefault_generateRuins (SOLARSYS_STATE *, COUNT whichNode);
+COUNT GenerateDefault_generateArtifact (const SOLARSYS_STATE *,
+		COUNT whichNode, NODE_INFO *info);
+COUNT GenerateDefault_generateRuins (const SOLARSYS_STATE *,
+		COUNT whichNode, NODE_INFO *info);
 bool GenerateDefault_landerReport (SOLARSYS_STATE *);
 bool GenerateDefault_landerReportCycle (SOLARSYS_STATE *);
 

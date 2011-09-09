@@ -30,8 +30,8 @@
 static bool GenerateIlwrath_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateIlwrath_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateIlwrath_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateIlwrath_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateIlwrath_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -123,12 +123,12 @@ GenerateIlwrath_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateIlwrath_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateIlwrath_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		return GenerateDefault_generateRuins (solarSys, whichNode);
+		return GenerateDefault_generateRuins (solarSys, whichNode, info);
 	}
 
 	return 0;

@@ -35,10 +35,10 @@
 static bool GenerateMycon_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
-static COUNT GenerateMycon_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateMycon_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
+static COUNT GenerateMycon_generateLife (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateMycon_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -189,8 +189,8 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateMycon_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (CurStarDescPtr->Index == SUN_DEVICE_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
@@ -202,7 +202,7 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	if ((CurStarDescPtr->Index == EGG_CASE0_DEFINED
@@ -219,7 +219,7 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	return 0;
@@ -275,12 +275,14 @@ GenerateMycon_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 }
 
 static COUNT
-GenerateMycon_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateMycon_generateLife (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
+	// Gee, I wonder why there isn't any life in Mycon systems...
 	(void) whichNode;
 	(void) solarSys;
 	(void) world;
+	(void) info;
 	return 0;
 }
 

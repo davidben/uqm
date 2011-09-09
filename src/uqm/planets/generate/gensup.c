@@ -31,8 +31,8 @@
 static bool GenerateSupox_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateSupox_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateSupox_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateSupox_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateSupox_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -146,12 +146,12 @@ GenerateSupox_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 }
 
 static COUNT
-GenerateSupox_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateSupox_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		return GenerateDefault_generateRuins (solarSys, whichNode);
+		return GenerateDefault_generateRuins (solarSys, whichNode, info);
 	}
 
 	return 0;

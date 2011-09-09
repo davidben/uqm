@@ -34,8 +34,8 @@
 static bool GenerateOrz_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateOrz_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateOrz_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateOrz_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -168,8 +168,8 @@ GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateOrz_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateOrz_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (CurStarDescPtr->Index == TAALO_PROTECTOR_DEFINED
 			&& matchWorld (solarSys, world, 1, 2))
@@ -181,13 +181,13 @@ GenerateOrz_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	if (CurStarDescPtr->Index == ORZ_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		return GenerateDefault_generateRuins (solarSys, whichNode);
+		return GenerateDefault_generateRuins (solarSys, whichNode, info);
 	}
 
 	return 0;

@@ -30,8 +30,8 @@ static bool GenerateBurvixese_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
 static bool GenerateBurvixese_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateBurvixese_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateBurvixese_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateBurvixese_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -104,11 +104,11 @@ GenerateBurvixese_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
-	GenerateLifeForms (&solarSys->SysInfo, GENERATE_ALL);
+	GenerateLifeForms (&solarSys->SysInfo, GENERATE_ALL, NULL);
 	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-	GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL);
+	GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL, NULL);
 
 	solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] = rand_val;
 
@@ -140,12 +140,12 @@ GenerateBurvixese_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateBurvixese_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateBurvixese_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		return GenerateDefault_generateRuins (solarSys, whichNode);
+		return GenerateDefault_generateRuins (solarSys, whichNode, info);
 	}
 
 	if (matchWorld (solarSys, world, 0, 0))
@@ -157,7 +157,7 @@ GenerateBurvixese_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 		
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	return 0;

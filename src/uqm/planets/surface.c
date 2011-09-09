@@ -28,7 +28,8 @@ const BYTE *Elements;
 const PlanetFrame *PlanData;
 
 static COUNT
-CalcMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT which_deposit)
+CalcMineralDeposits (const SYSTEM_INFO *SysInfoPtr, COUNT which_deposit,
+		NODE_INFO *info)
 {
 	BYTE j;
 	COUNT num_deposits;
@@ -62,27 +63,26 @@ CalcMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT which_deposit)
 			else
 				deposit_quality_gross = 2;
 
-			GenerateRandomLocation (SysInfoPtr);
+			GenerateRandomLocation (&info->loc_pt);
 
-			SysInfoPtr->PlanetInfo.CurDensity =
-					MAKE_WORD (
-					deposit_quality_gross, deposit_quality_fine / 10 + 1
-					);
-			SysInfoPtr->PlanetInfo.CurType = eptr->ElementType;
+			info->density = MAKE_WORD (
+					deposit_quality_gross, deposit_quality_fine / 10 + 1);
+			info->type = eptr->ElementType;
 #ifdef DEBUG_SURFACE
 			log_add (log_Debug, "\t\t%d units of %Fs",
-					SysInfoPtr->PlanetInfo.CurDensity,
+					info->density,
 					Elements[eptr->ElementType].name);
 #endif /* DEBUG_SURFACE */
 			if (num_deposits >= which_deposit
 					|| ++num_deposits == sizeof (DWORD) * 8)
-				goto ExitCalcMinerals;
+			{	// reached the maximum or the requested node
+				return num_deposits;
+			}
 		}
 		++eptr;
 	} while (--j);
 
-ExitCalcMinerals:
-	return (num_deposits);
+	return num_deposits;
 }
 
 // Returns:
@@ -90,15 +90,20 @@ ExitCalcMinerals:
 //   for whichLife<32  : the index of the last node (no known usage exists)
 // Sets the SysGenRNG to the required state first.
 COUNT
-GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT whichDeposit)
+GenerateMineralDeposits (const SYSTEM_INFO *SysInfoPtr, COUNT whichDeposit,
+		NODE_INFO *info)
 {
+	NODE_INFO temp_info;
+	if (!info) // user not interested in info but we need space for it
+		info = &temp_info;
 	RandomContext_SeedRandom (SysGenRNG,
 			SysInfoPtr->PlanetInfo.ScanSeed[MINERAL_SCAN]);
-	return CalcMineralDeposits (SysInfoPtr, whichDeposit);
+	return CalcMineralDeposits (SysInfoPtr, whichDeposit, info);
 }
 
 static COUNT
-CalcLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT which_life)
+CalcLifeForms (const SYSTEM_INFO *SysInfoPtr, COUNT which_life,
+		NODE_INFO *info)
 {
 	COUNT num_life_forms;
 
@@ -127,26 +132,28 @@ CalcLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT which_life)
 				num_creatures = 1 + HIBYTE (rand_val) % 10;
 				do
 				{
-					GenerateRandomLocation (SysInfoPtr);
-					SysInfoPtr->PlanetInfo.CurType = index;
+					GenerateRandomLocation (&info->loc_pt);
+					info->type = index;
+					info->density = 0;
 
 					if (num_life_forms >= which_life
 							|| ++num_life_forms == sizeof (DWORD) * 8)
-					{
-						num_types = 1;
-						break;
+					{	// reached the maximum or the requested node
+						return num_life_forms;
 					}
 				} while (--num_creatures);
 			} while (--num_types);
 		}
 #ifdef DEBUG_SURFACE
 		else
+		{
 			log_add (log_Debug, "It's dead, Jim! (%d >= %d)", life_var,
 				SysInfoPtr->PlanetInfo.LifeChance);
+		}
 #endif /* DEBUG_SURFACE */
 	}
 
-	return (num_life_forms);
+	return num_life_forms;
 }
 
 // Returns:
@@ -154,23 +161,61 @@ CalcLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT which_life)
 //   for whichLife<32  : the index of the last lifeform (no known usage exists)
 // Sets the SysGenRNG to the required state first.
 COUNT
-GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT whichLife)
+GenerateLifeForms (const SYSTEM_INFO *SysInfoPtr, COUNT whichLife,
+		NODE_INFO *info)
 {
+	NODE_INFO temp_info;
+	if (!info) // user not interested in info but we need space for it
+		info = &temp_info;
 	RandomContext_SeedRandom (SysGenRNG,
 			SysInfoPtr->PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
-	return CalcLifeForms (SysInfoPtr, whichLife);
+	return CalcLifeForms (SysInfoPtr, whichLife, info);
+}
+
+// Returns:
+//   for whichLife==~0 : the number of lifeforms generated
+//   for whichLife<32  : the index of the last lifeform (no known usage exists)
+// Sets the SysGenRNG to the required state first.
+// lifeTypes[] is terminated with -1
+COUNT
+GeneratePresetLife (const SYSTEM_INFO *SysInfoPtr, const SBYTE *lifeTypes,
+		COUNT whichLife, NODE_INFO *info)
+{
+	COUNT i;
+	NODE_INFO temp_info;
+
+	if (!info) // user not interested in info but we need space for it
+		info = &temp_info;
+
+	// This function may look unnecessarily complicated, but it must be
+	// kept this way to preserve the universe. That is done by preserving
+	// the order and number of Random() calls.
+
+	RandomContext_SeedRandom (SysGenRNG,
+			SysInfoPtr->PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
+
+	for (i = 0; lifeTypes[i] >= 0; ++i)
+	{
+		GenerateRandomLocation (&info->loc_pt);
+		info->type = lifeTypes[i];
+		// density is irrelevant for bio nodes
+		info->density = 0;
+
+		if (i >= whichLife)
+			break;
+	}
+	
+	return i;
 }
 
 void
-GenerateRandomLocation (SYSTEM_INFO *SysInfoPtr)
+GenerateRandomLocation (POINT *loc)
 {
 	UWORD rand_val;
 
 	rand_val = RandomContext_Random (SysGenRNG);
-	SysInfoPtr->PlanetInfo.CurPt.x =
-			(LOBYTE (rand_val) % (MAP_WIDTH - (8 << 1))) + 8;
-	SysInfoPtr->PlanetInfo.CurPt.y =
-			(HIBYTE (rand_val) % (MAP_HEIGHT - (8 << 1))) + 8;
+	loc->x = 8 + LOBYTE (rand_val) % (MAP_WIDTH - (8 << 1));
+	loc->y = 8 + HIBYTE (rand_val) % (MAP_HEIGHT - (8 << 1));
 }
 
 // Returns:
@@ -178,20 +223,25 @@ GenerateRandomLocation (SYSTEM_INFO *SysInfoPtr)
 //   for whichNode<32  : the index of the last node (no known usage exists)
 // Sets the SysGenRNG to the required state first.
 COUNT
-GenerateRandomNodes (SYSTEM_INFO *SysInfoPtr, COUNT scan, COUNT numNodes,
-		COUNT type, COUNT whichNode)
+GenerateRandomNodes (const SYSTEM_INFO *SysInfoPtr, COUNT scan, COUNT numNodes,
+		COUNT type, COUNT whichNode, NODE_INFO *info)
 {
 	COUNT i;
+	NODE_INFO temp_info;
 
-	RandomContext_SeedRandom (SysGenRNG, SysInfoPtr->PlanetInfo.ScanSeed[scan]);
+	if (!info) // user not interested in info but we need space for it
+		info = &temp_info;
+
+	RandomContext_SeedRandom (SysGenRNG,
+			SysInfoPtr->PlanetInfo.ScanSeed[scan]);
 
 	for (i = 0; i < numNodes; ++i)
 	{
-		GenerateRandomLocation (SysInfoPtr);
-		// CurType is irrelevant for energy nodes
-		SysInfoPtr->PlanetInfo.CurType = type;
-		// CurDensity is irrelevant for energy and bio nodes
-		SysInfoPtr->PlanetInfo.CurDensity = 0;
+		GenerateRandomLocation (&info->loc_pt);
+		// type is irrelevant for energy nodes
+		info->type = type;
+		// density is irrelevant for energy and bio nodes
+		info->density = 0;
 
 		if (i >= whichNode)
 			break;

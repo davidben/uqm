@@ -35,14 +35,14 @@ static bool GenerateSol_reinitNpcs (SOLARSYS_STATE *solarSys);
 static bool GenerateSol_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateSol_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
-static bool GenerateSol_generateName (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world);
+static bool GenerateSol_generateName (const SOLARSYS_STATE *,
+		const PLANET_DESC *world);
 static bool GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
-static COUNT GenerateSol_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateSol_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
+static COUNT GenerateSol_generateLife (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateSol_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -241,7 +241,8 @@ GenerateSol_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 }
 
 static bool
-GenerateSol_generateName (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
+GenerateSol_generateName (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world)
 {
 	COUNT planetNr = planetIndex (solarSys, world);
 	utf8StringCopy (GLOBAL_SIS (PlanetName), sizeof (GLOBAL_SIS (PlanetName)),
@@ -274,7 +275,7 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-	GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL);
+	GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL, NULL);
 	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	planetNr = planetIndex (solarSys, world);
@@ -514,8 +515,8 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateSol_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 8, MATCH_PLANET))
 	{
@@ -527,8 +528,11 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		solarSys->SysInfo.PlanetInfo.CurPt.x = 20;
-		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT - 8;
+		if (info)
+		{
+			info->loc_pt.x = 20;
+			info->loc_pt.y = MAP_HEIGHT - 8;
+		}
 
 		return 1; // only matters when count is requested
 	}
@@ -543,8 +547,11 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		solarSys->SysInfo.PlanetInfo.CurPt.x = MAP_WIDTH * 3 / 4;
-		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 1 / 4;
+		if (info)
+		{
+			info->loc_pt.x = MAP_WIDTH * 3 / 4;
+			info->loc_pt.y = MAP_HEIGHT * 1 / 4;
+		}
 
 		return 1; // only matters when count is requested
 	}
@@ -595,14 +602,14 @@ GenerateSol_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 }
 
 static COUNT
-GenerateSol_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateSol_generateLife (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 2, 1))
 	{
 		/* Earth Moon */
 		return GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, 10,
-				NUM_CREATURE_TYPES + 1, whichNode);
+				NUM_CREATURE_TYPES + 1, whichNode, info);
 	}
 
 	return 0;

@@ -45,12 +45,16 @@ typedef struct
 
 #define GENERATE_ALL  ((COUNT)~0)
 		
-extern COUNT GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr,
-		COUNT whichDeposit);
-extern COUNT GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT whichLife);
-extern void GenerateRandomLocation (SYSTEM_INFO *);
-extern COUNT GenerateRandomNodes (SYSTEM_INFO *, COUNT scan, COUNT numNodes,
-		COUNT type, COUNT whichNode);
+extern COUNT GenerateMineralDeposits (const SYSTEM_INFO *, COUNT whichDeposit,
+		NODE_INFO *info);
+extern COUNT GenerateLifeForms (const SYSTEM_INFO *, COUNT whichLife,
+		NODE_INFO *info);
+extern void GenerateRandomLocation (POINT *loc);
+extern COUNT GenerateRandomNodes (const SYSTEM_INFO *, COUNT scan, COUNT numNodes,
+		COUNT type, COUNT whichNode, NODE_INFO *info);
+// Generate lifeforms from a preset lifeTypes[] array
+extern COUNT GeneratePresetLife (const SYSTEM_INFO *,
+		const SBYTE *lifeTypes, COUNT whichLife, NODE_INFO *info);
 
 #define DWARF_ELEMENT_DENSITY  1
 #define GIANT_ELEMENT_DENSITY 3
