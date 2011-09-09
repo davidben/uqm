@@ -18,12 +18,13 @@
 
 #include "state.h"
 
-#include "encount.h"
+#include "starmap.h"
 #include "libs/memlib.h"
 #include "libs/log.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <memory.h>
 
 // in-memory file i/o
 struct GAME_STATE_FILE

@@ -3482,6 +3482,10 @@ SOURCE=..\..\src\uqm\starmap.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\uqm\starmap.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\uqm\state.c
 # End Source File
 # Begin Source File

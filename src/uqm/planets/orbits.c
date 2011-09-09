@@ -17,8 +17,7 @@
  */
 
 #include "planets.h"
-// XXX: for CurStarDescPtr
-#include "../encount.h"
+#include "../starmap.h"
 #include "libs/compiler.h"
 #include "libs/mathlib.h"
 #include "libs/log.h"
@@ -499,10 +498,15 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 
 	if (NumPlanets == (BYTE)~0)
 	{
-#define MAX_GENERATED_PLANETS 10
-		while ((NumPlanets = (BYTE)(LOWORD (TFB_Random())
-				% MAX_GENERATED_PLANETS)) == 0)
-			;
+#define MAX_GENERATED_PLANETS 9
+		// XXX: This is pretty funny. Instead of calling RNG once, like so:
+		//     1 + Random % MAX_GENERATED_PLANETS
+		//   we spin in a loop until the result > 0.
+		//   Note that this behavior must be kept to preserve the universe.
+		do
+			NumPlanets = LOWORD (RandomContext_Random (SysGenRNG))
+					% (MAX_GENERATED_PLANETS + 1);
+		while (NumPlanets == 0);
 		system->SunDesc[0].NumPlanets = NumPlanets;
 	}
 
@@ -528,7 +532,7 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 
 		do
 		{
-			rand_val = TFB_Random ();
+			rand_val = RandomContext_Random (SysGenRNG);
 			if (TypesDefined)
 				rand_val = 0;
 			else
@@ -564,7 +568,7 @@ char scolor[] = {'B', 'G', 'O', 'R', 'W', 'Y'};
 		else
 			min_radius = Suns[StarSize].MinGasGDist;
 RelocatePlanet:
-		rand_val = TFB_Random ();
+		rand_val = RandomContext_Random (SysGenRNG);
 		if (GeneratingMoons)
 		{
 			pPD->radius = MIN_MOON_RADIUS
@@ -592,7 +596,7 @@ RelocatePlanet:
 			}
 		}
 
-		rand_val = TFB_Random ();
+		rand_val = RandomContext_Random (SysGenRNG);
 		angle = NORMALIZE_ANGLE (LOWORD (rand_val));
 		pPD->location.x = COSINE (angle, pPD->radius);
 		pPD->location.y = SINE (angle, pPD->radius);

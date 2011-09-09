@@ -23,6 +23,7 @@
 #include "build.h"
 #include "libs/declib.h"
 #include "encount.h"
+#include "starmap.h"
 #include "libs/file.h"
 #include "globdata.h"
 #include "load.h"

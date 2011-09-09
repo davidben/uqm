@@ -102,7 +102,7 @@ GenerateSpathi_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 
 		solarSys->MoonDesc[0].data_index = PELLUCID_WORLD;
 		solarSys->MoonDesc[0].radius = MIN_MOON_RADIUS + MOON_DELTA;
-		angle = NORMALIZE_ANGLE (LOWORD (TFB_Random ()));
+		angle = NORMALIZE_ANGLE (LOWORD (RandomContext_Random (SysGenRNG)));
 		solarSys->MoonDesc[0].location.x =
 				COSINE (angle, solarSys->MoonDesc[0].radius);
 		solarSys->MoonDesc[0].location.y =
@@ -116,7 +116,6 @@ static bool
 GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 {
 	DWORD rand_val;
-	COUNT i;
 
 	if (matchWorld (solarSys, world, 0, 0))
 	{
@@ -144,15 +143,16 @@ GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 			}
 			return true;
 		}
-		rand_val = DoPlanetaryAnalysis (&solarSys->SysInfo, world);
+		
+		DoPlanetaryAnalysis (&solarSys->SysInfo, world);
+		rand_val = RandomContext_GetSeed (SysGenRNG);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
-		i = (COUNT)~0;
-		rand_val = GenerateLifeForms (&solarSys->SysInfo, &i);
+		GenerateLifeForms (&solarSys->SysInfo, GENERATE_ALL);
+		rand_val = RandomContext_GetSeed (SysGenRNG);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-		i = (COUNT)~0;
-		GenerateMineralDeposits (&solarSys->SysInfo, &i);
+		GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] = rand_val;
 
@@ -181,18 +181,18 @@ GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	else if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
 		/* visiting Spathiwa */
-		rand_val = DoPlanetaryAnalysis (&solarSys->SysInfo, world);
+		DoPlanetaryAnalysis (&solarSys->SysInfo, world);
+		rand_val = RandomContext_GetSeed (SysGenRNG);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-		i = (COUNT)~0;
-		rand_val = GenerateMineralDeposits (&solarSys->SysInfo, &i);
+		GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL);
+		rand_val = RandomContext_GetSeed (SysGenRNG);
 
 		solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
 
 		solarSys->SysInfo.PlanetInfo.PlanetRadius = 120;
 		solarSys->SysInfo.PlanetInfo.SurfaceGravity =
-				CalcGravity (solarSys->SysInfo.PlanetInfo.PlanetDensity,
-				solarSys->SysInfo.PlanetInfo.PlanetRadius);
+				CalcGravity (&solarSys->SysInfo.PlanetInfo);
 		solarSys->SysInfo.PlanetInfo.Weather = 0;
 		solarSys->SysInfo.PlanetInfo.Tectonics = 0;
 		solarSys->SysInfo.PlanetInfo.SurfaceTemperature = 31;
@@ -253,9 +253,8 @@ GenerateSpathi_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
 		#define NUM_EVIL_ONES  32
-		GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, NUM_EVIL_ONES,
-				NUM_CREATURE_TYPES, &whichNode);
-		return whichNode;
+		return GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, NUM_EVIL_ONES,
+				NUM_CREATURE_TYPES, whichNode);
 	}
 
 	return 0;

@@ -85,7 +85,7 @@ GenerateBurvixese_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 		solarSys->MoonDesc[0].data_index = SELENIC_WORLD;
 		solarSys->MoonDesc[0].radius = MIN_MOON_RADIUS
 				+ (MAX_MOONS - 1) * MOON_DELTA;
-		rand_val = TFB_Random ();
+		rand_val = RandomContext_Random (SysGenRNG);
 		angle = NORMALIZE_ANGLE (LOWORD (rand_val));
 		solarSys->MoonDesc[0].location.x =
 				COSINE (angle, solarSys->MoonDesc[0].radius);
@@ -98,18 +98,17 @@ GenerateBurvixese_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 static bool
 GenerateBurvixese_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 {
-	COUNT i;
 	DWORD rand_val;
 
-	rand_val = DoPlanetaryAnalysis (&solarSys->SysInfo, world);
+	DoPlanetaryAnalysis (&solarSys->SysInfo, world);
+	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
-	i = (COUNT)~0;
-	rand_val = GenerateLifeForms (&solarSys->SysInfo, &i);
+	GenerateLifeForms (&solarSys->SysInfo, GENERATE_ALL);
+	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-	i = (COUNT)~0;
-	GenerateMineralDeposits (&solarSys->SysInfo, &i);
+	GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL);
 
 	solarSys->SysInfo.PlanetInfo.ScanSeed[ENERGY_SCAN] = rand_val;
 

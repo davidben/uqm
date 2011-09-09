@@ -22,6 +22,7 @@
 
 #include "build.h"
 #include "controls.h"
+#include "starmap.h"
 #include "encount.h"
 #include "libs/file.h"
 #include "gamestr.h"

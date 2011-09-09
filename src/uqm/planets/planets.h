@@ -19,6 +19,8 @@
 #ifndef _PLANETS_H
 #define _PLANETS_H
 
+#include "libs/mathlib.h"
+
 #define END_INTERPLANETARY START_INTERPLANETARY
 
 enum PlanetScanTypes
@@ -233,6 +235,9 @@ extern SOLARSYS_STATE *pSolarSysState;
 extern MUSIC_REF SpaceMusic;
 extern CONTEXT PlanetContext;
 
+// Random context used for all solar system, planets and surfaces generation
+extern RandomContext *SysGenRNG;
+
 bool playerInSolarSystem (void);
 bool playerInPlanetOrbit (void);
 bool playerInInnerSystem (void);
@@ -243,6 +248,8 @@ COUNT moonIndex (const SOLARSYS_STATE *solarSys, const PLANET_DESC *moon);
 #define MATCH_PLANET ((BYTE) -1)
 bool matchWorld (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world,
 		BYTE planetI, BYTE moonI);
+
+DWORD GetRandomSeedForStar (const STAR_DESC *star);
 
 POINT locationToDisplay (POINT pt, SIZE scaleRadius);
 POINT displayToLocation (POINT pt, SIZE scaleRadius);

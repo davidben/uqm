@@ -26,6 +26,7 @@
 #include "menustat.h"
 		// for DrawMenuStateStrings()
 #include "encount.h"
+#include "starmap.h"
 #include "ship.h"
 #include "shipcont.h"
 #include "process.h"

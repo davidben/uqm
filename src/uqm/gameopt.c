@@ -21,8 +21,7 @@
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
-// XXX: for FindStart(), GetClusterName()
-#include "encount.h"
+#include "starmap.h"
 #include "menustat.h"
 #include "sis.h"
 #include "units.h"

@@ -22,6 +22,7 @@
 #include "battlecontrols.h"
 #include "build.h"
 #include "colors.h"
+#include "starmap.h"
 #include "cons_res.h"
 #include "controls.h"
 #include "menustat.h"

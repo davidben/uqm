@@ -22,7 +22,8 @@
 #include "../planets.h"
 #include "../../build.h"
 #include "../../comm.h"
-#include "../../encount.h"
+#include "../../gendef.h"
+#include "../../starmap.h"
 #include "../../globdata.h"
 #include "../../ipdisp.h"
 #include "../../nameref.h"
@@ -276,9 +277,8 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
 		COUNT i;
-		DWORD old_rand;
 
-		old_rand = TFB_SeedRandom (
+		RandomContext_SeedRandom (SysGenRNG,
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
 		for (i = 0; i <= whichNode && i < 12; ++i)
@@ -292,8 +292,6 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				solarSys->SysInfo.PlanetInfo.CurType = 18;
 		}
 		
-		TFB_SeedRandom (old_rand);
-
 		return 12; // only matters when count is requested
 	}
 
@@ -301,9 +299,8 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
 		COUNT i;
-		DWORD old_rand;
 
-		old_rand = TFB_SeedRandom (
+		RandomContext_SeedRandom (SysGenRNG,
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
 
 		for (i = 0; i <= whichNode && i < 11; ++i)
@@ -319,8 +316,6 @@ GenerateVux_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 				solarSys->SysInfo.PlanetInfo.CurType = 8;
 		}
 		
-		TFB_SeedRandom (old_rand);
-
 		return  11; // only matters when count is requested
 	}
 

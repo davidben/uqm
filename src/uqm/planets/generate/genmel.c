@@ -18,7 +18,8 @@
 
 #include "genall.h"
 #include "../../build.h"
-#include "../../encount.h"
+#include "../../gendef.h"
+#include "../../starmap.h"
 #include "../../globdata.h"
 #include "../../state.h"
 #include "libs/log.h"

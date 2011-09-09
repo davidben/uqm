@@ -41,16 +41,16 @@ CalcMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT which_deposit)
 	{
 		BYTE num_possible;
 
-		num_possible = (BYTE)((BYTE)TFB_Random ()
-				% (DEPOSIT_QUANTITY (eptr->Density) + 1));
+		num_possible = LOBYTE (RandomContext_Random (SysGenRNG))
+				% (DEPOSIT_QUANTITY (eptr->Density) + 1);
 		while (num_possible--)
 		{
 #define MEDIUM_DEPOSIT_THRESHOLD 150
 #define LARGE_DEPOSIT_THRESHOLD 225
-			COUNT deposit_quality_fine,
-						deposit_quality_gross;
+			COUNT deposit_quality_fine;
+			COUNT deposit_quality_gross;
 
-			deposit_quality_fine = ((COUNT)TFB_Random () % 100)
+			deposit_quality_fine = (LOWORD (RandomContext_Random (SysGenRNG)) % 100)
 					+ (
 					DEPOSIT_QUALITY (eptr->Density)
 					+ SysInfoPtr->StarSize
@@ -85,14 +85,16 @@ ExitCalcMinerals:
 	return (num_deposits);
 }
 
-DWORD
-GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT *pwhich_deposit)
+// Returns:
+//   for whichLife==~0 : the number of nodes generated
+//   for whichLife<32  : the index of the last node (no known usage exists)
+// Sets the SysGenRNG to the required state first.
+COUNT
+GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr, COUNT whichDeposit)
 {
-	DWORD old_rand;
-
-	old_rand = TFB_SeedRandom (SysInfoPtr->PlanetInfo.ScanSeed[MINERAL_SCAN]);
-	*pwhich_deposit = CalcMineralDeposits (SysInfoPtr, *pwhich_deposit);
-	return (TFB_SeedRandom (old_rand));
+	RandomContext_SeedRandom (SysGenRNG,
+			SysInfoPtr->PlanetInfo.ScanSeed[MINERAL_SCAN]);
+	return CalcMineralDeposits (SysInfoPtr, whichDeposit);
 }
 
 static COUNT
@@ -101,114 +103,28 @@ CalcLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT which_life)
 	COUNT num_life_forms;
 
 	num_life_forms = 0;
-	if (PLANSIZE (SysInfoPtr->PlanetInfo.PlanDataPtr->Type) == GAS_GIANT)
-		SysInfoPtr->PlanetInfo.LifeChance = -1;
-	else
+	if (PLANSIZE (SysInfoPtr->PlanetInfo.PlanDataPtr->Type) != GAS_GIANT)
 	{
 #define MIN_LIFE_CHANCE 10
 		SIZE life_var;
 
-		life_var = 0;
-
-		if (SysInfoPtr->PlanetInfo.SurfaceTemperature < -151)
-			life_var -= 300;
-		else if (SysInfoPtr->PlanetInfo.SurfaceTemperature < -51)
-			life_var -= 100;
-		else if (SysInfoPtr->PlanetInfo.SurfaceTemperature < 0)
-			life_var += 100;
-		else if (SysInfoPtr->PlanetInfo.SurfaceTemperature < 50)
-			life_var += 300;
-		else if (SysInfoPtr->PlanetInfo.SurfaceTemperature < 150)
-			life_var += 50;
-		else if (SysInfoPtr->PlanetInfo.SurfaceTemperature < 250)
-			life_var -= 100;
-		else if (SysInfoPtr->PlanetInfo.SurfaceTemperature < 500)
-			life_var -= 400;
-		else
-			life_var -= 800;
-
-		if (SysInfoPtr->PlanetInfo.AtmoDensity == 0)
-			life_var -= 1000;
-		else if (SysInfoPtr->PlanetInfo.AtmoDensity < 15)
-			life_var += 100;
-		else if (SysInfoPtr->PlanetInfo.AtmoDensity < 30)
-			life_var += 200;
-		else if (SysInfoPtr->PlanetInfo.AtmoDensity < 100)
-			life_var += 300;
-		else if (SysInfoPtr->PlanetInfo.AtmoDensity < 1000)
-			life_var += 150;
-		else if (SysInfoPtr->PlanetInfo.AtmoDensity < 2500)
-			;
-		else
-			life_var -= 100;
-
-#ifndef NOTYET
-		life_var += 200 + 80 + 80;
-#else /* NOTYET */
-		if (SysInfoPtr->PlanetInfo.SurfaceGravity < 10)
-			;
-		else if (SysInfoPtr->PlanetInfo.SurfaceGravity < 35)
-			life_var += 50;
-		else if (SysInfoPtr->PlanetInfo.SurfaceGravity < 75)
-			life_var += 100;
-		else if (SysInfoPtr->PlanetInfo.SurfaceGravity < 150)
-			life_var += 200;
-		else if (SysInfoPtr->PlanetInfo.SurfaceGravity < 400)
-			life_var += 50;
-		else if (SysInfoPtr->PlanetInfo.SurfaceGravity < 800)
-			;
-		else
-			life_var -= 100;
-
-		if (SysInfoPtr->PlanetInfo.Tectonics < 1)
-			life_var += 80;
-		else if (SysInfoPtr->PlanetInfo.Tectonics < 2)
-			life_var += 70;
-		else if (SysInfoPtr->PlanetInfo.Tectonics < 3)
-			life_var += 60;
-		else if (SysInfoPtr->PlanetInfo.Tectonics < 4)
-			life_var += 50;
-		else if (SysInfoPtr->PlanetInfo.Tectonics < 5)
-			life_var += 25;
-		else if (SysInfoPtr->PlanetInfo.Tectonics < 6)
-			;
-		else
-			life_var -= 100;
-
-		if (SysInfoPtr->PlanetInfo.Weather < 1)
-			life_var += 80;
-		else if (SysInfoPtr->PlanetInfo.Weather < 2)
-			life_var += 70;
-		else if (SysInfoPtr->PlanetInfo.Weather < 3)
-			life_var += 60;
-		else if (SysInfoPtr->PlanetInfo.Weather < 4)
-			life_var += 50;
-		else if (SysInfoPtr->PlanetInfo.Weather < 5)
-			life_var += 25;
-		else if (SysInfoPtr->PlanetInfo.Weather < 6)
-			;
-		else
-			life_var -= 100;
-#endif /* NOTYET */
-
-		SysInfoPtr->PlanetInfo.LifeChance = life_var;
-
-		life_var = (COUNT)TFB_Random () & 1023;
+		life_var = RandomContext_Random (SysGenRNG) & 1023;
 		if (life_var < SysInfoPtr->PlanetInfo.LifeChance
 				|| (SysInfoPtr->PlanetInfo.LifeChance < MIN_LIFE_CHANCE
 				&& life_var < MIN_LIFE_CHANCE))
 		{
 			BYTE num_types;
 
-			num_types = (BYTE)(((BYTE)TFB_Random () % MAX_LIFE_VARIATION) + 1);
+			num_types = 1 + LOBYTE (RandomContext_Random (SysGenRNG))
+					% MAX_LIFE_VARIATION;
 			do
 			{
 				BYTE index, num_creatures;
 				UWORD rand_val;
 
-				rand_val = (UWORD)TFB_Random ();
+				rand_val = RandomContext_Random (SysGenRNG);
 				index = LOBYTE (rand_val) % NUM_CREATURE_TYPES;
-				num_creatures = (BYTE)((HIBYTE (rand_val) % 10) + 1);
+				num_creatures = 1 + HIBYTE (rand_val) % 10;
 				do
 				{
 					GenerateRandomLocation (SysInfoPtr);
@@ -233,15 +149,16 @@ CalcLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT which_life)
 	return (num_life_forms);
 }
 
-DWORD
-GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT *pwhich_life)
+// Returns:
+//   for whichLife==~0 : the number of lifeforms generated
+//   for whichLife<32  : the index of the last lifeform (no known usage exists)
+// Sets the SysGenRNG to the required state first.
+COUNT
+GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT whichLife)
 {
-	DWORD old_rand;
-
-	old_rand = TFB_SeedRandom (
+	RandomContext_SeedRandom (SysGenRNG,
 			SysInfoPtr->PlanetInfo.ScanSeed[BIOLOGICAL_SCAN]);
-	*pwhich_life = CalcLifeForms (SysInfoPtr, *pwhich_life);
-	return (TFB_SeedRandom (old_rand));
+	return CalcLifeForms (SysInfoPtr, whichLife);
 }
 
 void
@@ -249,21 +166,24 @@ GenerateRandomLocation (SYSTEM_INFO *SysInfoPtr)
 {
 	UWORD rand_val;
 
-	rand_val = (UWORD)TFB_Random ();
+	rand_val = RandomContext_Random (SysGenRNG);
 	SysInfoPtr->PlanetInfo.CurPt.x =
 			(LOBYTE (rand_val) % (MAP_WIDTH - (8 << 1))) + 8;
 	SysInfoPtr->PlanetInfo.CurPt.y =
 			(HIBYTE (rand_val) % (MAP_HEIGHT - (8 << 1))) + 8;
 }
 
-DWORD
+// Returns:
+//   for whichNode==~0 : the number of nodes generated
+//   for whichNode<32  : the index of the last node (no known usage exists)
+// Sets the SysGenRNG to the required state first.
+COUNT
 GenerateRandomNodes (SYSTEM_INFO *SysInfoPtr, COUNT scan, COUNT numNodes,
-		COUNT type, COUNT *whichNode)
+		COUNT type, COUNT whichNode)
 {
-	DWORD old_rand;
 	COUNT i;
 
-	old_rand = TFB_SeedRandom (SysInfoPtr->PlanetInfo.ScanSeed[scan]);
+	RandomContext_SeedRandom (SysGenRNG, SysInfoPtr->PlanetInfo.ScanSeed[scan]);
 
 	for (i = 0; i < numNodes; ++i)
 	{
@@ -273,11 +193,9 @@ GenerateRandomNodes (SYSTEM_INFO *SysInfoPtr, COUNT scan, COUNT numNodes,
 		// CurDensity is irrelevant for energy and bio nodes
 		SysInfoPtr->PlanetInfo.CurDensity = 0;
 
-		if (i >= *whichNode)
+		if (i >= whichNode)
 			break;
 	}
 	
-	*whichNode = i; // only matters when count is requested
-
-	return (TFB_SeedRandom (old_rand));
+	return i;
 }

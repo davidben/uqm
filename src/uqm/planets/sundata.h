@@ -42,13 +42,15 @@ typedef struct
 
 	PLANET_INFO PlanetInfo;
 } SYSTEM_INFO;
+
+#define GENERATE_ALL  ((COUNT)~0)
 		
-extern DWORD GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr,
-		COUNT *pwhich_deposit);
-extern DWORD GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT *pwhich_life);
+extern COUNT GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr,
+		COUNT whichDeposit);
+extern COUNT GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT whichLife);
 extern void GenerateRandomLocation (SYSTEM_INFO *);
-extern DWORD GenerateRandomNodes (SYSTEM_INFO *, COUNT scan, COUNT numNodes,
-		COUNT type, COUNT *whichNode);
+extern COUNT GenerateRandomNodes (SYSTEM_INFO *, COUNT scan, COUNT numNodes,
+		COUNT type, COUNT whichNode);
 
 #define DWARF_ELEMENT_DENSITY  1
 #define GIANT_ELEMENT_DENSITY 3
@@ -56,10 +58,8 @@ extern DWORD GenerateRandomNodes (SYSTEM_INFO *, COUNT scan, COUNT numNodes,
 
 #define MAX_ELEMENT_DENSITY ((MAX_ELEMENT_UNITS * SUPERGIANT_ELEMENT_DENSITY) << 1)
 
-extern DWORD DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr,
+extern void DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr,
 		PLANET_DESC *pPlanetDesc);
-
-extern SYSTEM_INFO CurSysInfo;
 
 #if defined(__cplusplus)
 }

@@ -77,7 +77,7 @@ GenerateChmmr_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 
 		solarSys->MoonDesc[0].data_index = HIERARCHY_STARBASE;
 		solarSys->MoonDesc[0].radius = MIN_MOON_RADIUS;
-		rand_val = TFB_Random ();
+		rand_val = RandomContext_Random (SysGenRNG);
 		angle = NORMALIZE_ANGLE (LOWORD (rand_val));
 		solarSys->MoonDesc[0].location.x =
 				COSINE (angle, solarSys->MoonDesc[0].radius);

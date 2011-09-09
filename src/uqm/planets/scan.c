@@ -1300,6 +1300,8 @@ generateBioNode (SOLARSYS_STATE *system, ELEMENT *NodeElementPtr,
 
 	creatureType = system->SysInfo.PlanetInfo.CurType;
 
+	// NOTE: TFB_Random() calls here are NOT part of the deterministic planet
+	//   generation PRNG flow.
 	if (CreatureData[creatureType].Attributes & SPEED_MASK)
 	{
 		// Place moving creatures at a random location.

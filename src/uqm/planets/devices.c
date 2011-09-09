@@ -18,6 +18,8 @@
 
 #include "../build.h"
 #include "../colors.h"
+#include "../gendef.h"
+#include "../starmap.h"
 #include "../encount.h"
 #include "../gamestr.h"
 #include "../controls.h"

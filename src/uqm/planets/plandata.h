@@ -313,8 +313,7 @@ enum
 	SUPER_DENSITY
 };
 
-#define CalcGravity(d,r) (UWORD)((DWORD)(d) * (r) / 100)
-#define CalcFromBase(b,v) ((UWORD)(b) + ((UWORD)TFB_Random () % (v)))
+extern UWORD CalcGravity (const PLANET_INFO*);
 
 #define EARTH_ATMOSPHERE 50
 

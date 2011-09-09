@@ -18,5 +18,6 @@ uqm_HFILES="battlecontrols.h battle.h build.h clock.h cnctdlg.h coderes.h
 		nameref.h oscill.h pickship.h process.h races.h resinst.h respkg.h
 		restart.h save.h settings.h setup.h setupmenu.h shipcont.h ship.h
 		sis.h sounds.h starbase.h starcon.h state.h status.h tactrans.h
+		starmap.h
 		units.h uqmdebug.h util.h velocity.h weapon.h"
 

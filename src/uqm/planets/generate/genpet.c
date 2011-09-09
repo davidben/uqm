@@ -21,6 +21,7 @@
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../encount.h"
+#include "../../starmap.h"
 #include "../../globdata.h"
 #include "../../ipdisp.h"
 #include "../../nameref.h"

@@ -20,8 +20,7 @@
 
 #include "colors.h"
 #include "races.h"
-// XXX: including encount.h for stuff that does not belong there
-#include "encount.h"
+#include "starmap.h"
 #include "units.h"
 #include "menustat.h"
 		// for DrawMenuStateStrings()

@@ -17,8 +17,8 @@
  */
 
 #include "build.h"
-// XXX: for CurStarDescPtr and XXX_DEFINED constants
-#include "encount.h"
+#include "starmap.h"
+#include "gendef.h"
 #include "libs/file.h"
 #include "globdata.h"
 #include "intel.h"

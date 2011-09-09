@@ -22,7 +22,7 @@
 #include "../controls.h"
 #include "../menustat.h"
 		// for DrawMenuStateStrings()
-#include "../encount.h"
+#include "../starmap.h"
 #include "../races.h"
 #include "../gamestr.h"
 #include "../gendef.h"
@@ -95,6 +95,7 @@ static FRAME SolarSysFrame;
 static RECT scaleRect;
 		// system zooms in when the flagship enters this rect
 
+RandomContext *SysGenRNG;
 
 #define DISPLAY_TO_LOC  (DISPLAY_FACTOR >> 1)
 
@@ -211,15 +212,15 @@ playerInInnerSystem (void)
 	return pSolarSysState->pBaseDesc != pSolarSysState->PlanetDesc;
 }
 
+// Sets the SysGenRNG to the required state first.
 static void
 GenerateMoons (SOLARSYS_STATE *system, PLANET_DESC *planet)
 {
 	COUNT i;
 	COUNT facing;
 	PLANET_DESC *pMoonDesc;
-	DWORD old_seed;
 
-	old_seed = TFB_SeedRandom (planet->rand_seed);
+	RandomContext_SeedRandom (SysGenRNG, planet->rand_seed);
 
 	(*system->genFuncs->generateName) (system, planet);
 	(*system->genFuncs->generateMoons) (system, planet);
@@ -235,8 +236,6 @@ GenerateMoons (SOLARSYS_STATE *system, PLANET_DESC *planet)
 		
 		pMoonDesc->temp_color = planet->temp_color;
 	}
-
-	TFB_SeedRandom (old_seed);
 }
 
 void
@@ -256,6 +255,9 @@ FreeIPData (void)
 	SpaceJunkFrame = 0;
 	DestroyMusic (SpaceMusic);
 	SpaceMusic = 0;
+
+	RandomContext_Delete (SysGenRNG);
+	SysGenRNG = NULL;
 }
 
 void
@@ -274,6 +276,11 @@ LoadIPData (void)
 		SunFrame = CaptureDrawable (LoadGraphic (SUN_MASK_PMAP_ANIM));
 
 		SpaceMusic = LoadMusic (IP_MUSIC);
+	}
+
+	if (!SysGenRNG)
+	{
+		SysGenRNG = RandomContext_New ();
 	}
 }
 	
@@ -350,11 +357,10 @@ initSolarSysSISCharacteristics (void)
 	}
 }
 
-static DWORD
-seedRandomForSolarSys (void)
+DWORD
+GetRandomSeedForStar (const STAR_DESC *star)
 {
-	return TFB_SeedRandom (MAKE_DWORD (CurStarDescPtr->star_pt.x,
-			CurStarDescPtr->star_pt.y));
+	return MAKE_DWORD (star->star_pt.x, star->star_pt.y);
 }
 
 // Returns an orbital PLANET_DESC when player is in orbit
@@ -364,7 +370,6 @@ LoadSolarSys (void)
 	COUNT i;
 	PLANET_DESC *orbital = NULL;
 	PLANET_DESC *pCurDesc;
-	DWORD old_seed;
 #define NUM_TEMP_RANGES 5
 	static const Color temp_color_array[NUM_TEMP_RANGES] =
 	{
@@ -375,13 +380,13 @@ LoadSolarSys (void)
 		BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x08, 0x00), 0x75),
 	};
 
-	old_seed = seedRandomForSolarSys ();
+	RandomContext_SeedRandom (SysGenRNG, GetRandomSeedForStar (CurStarDescPtr));
 
 	SunFrame = SetAbsFrameIndex (SunFrame, STAR_TYPE (CurStarDescPtr->Type));
 
 	pCurDesc = &pSolarSysState->SunDesc[0];
 	pCurDesc->pPrevDesc = 0;
-	pCurDesc->rand_seed = TFB_Random ();
+	pCurDesc->rand_seed = RandomContext_Random (SysGenRNG);
 
 	pCurDesc->data_index = STAR_TYPE (CurStarDescPtr->Type);
 	pCurDesc->location.x = 0;
@@ -466,9 +471,6 @@ LoadSolarSys (void)
 
 		GLOBAL (ShipStamp.frame) = SetAbsFrameIndex (SISIPFrame, i - 1);
 	}
-
-	// Restore RNG state:
-	TFB_SeedRandom (old_seed);
 
 	return orbital;
 }
@@ -1656,7 +1658,6 @@ CreateStarBackGround (void)
 	COUNT i, j;
 	DWORD rand_val;
 	STAMP s;
-	DWORD old_seed;
 	CONTEXT oldContext;
 	RECT clipRect;
 	FRAME frame;
@@ -1675,7 +1676,7 @@ CreateStarBackGround (void)
 
 	ClearDrawable ();
 
-	old_seed = seedRandomForSolarSys ();
+	RandomContext_SeedRandom (SysGenRNG, GetRandomSeedForStar (CurStarDescPtr));
 
 #define NUM_DIM_PIECES 8
 	s.frame = SpaceJunkFrame;
@@ -1684,7 +1685,7 @@ CreateStarBackGround (void)
 #define NUM_DIM_DRAWN 5
 		for (j = 0; j < NUM_DIM_DRAWN; ++j)
 		{
-			rand_val = TFB_Random ();
+			rand_val = RandomContext_Random (SysGenRNG);
 			s.origin.x = LOWORD (rand_val) % SIS_SCREEN_WIDTH;
 			s.origin.y = HIWORD (rand_val) % SIS_SCREEN_HEIGHT;
 
@@ -1698,7 +1699,7 @@ CreateStarBackGround (void)
 #define NUM_BRT_DRAWN 30
 		for (j = 0; j < NUM_BRT_DRAWN; ++j)
 		{
-			rand_val = TFB_Random ();
+			rand_val = RandomContext_Random (SysGenRNG);
 			s.origin.x = LOWORD (rand_val) % SIS_SCREEN_WIDTH;
 			s.origin.y = HIWORD (rand_val) % SIS_SCREEN_HEIGHT;
 
@@ -1706,8 +1707,6 @@ CreateStarBackGround (void)
 		}
 		s.frame = IncFrameIndex (s.frame);
 	}
-
-	TFB_SeedRandom (old_seed);
 
 	SetContext (oldContext);
 

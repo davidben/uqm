@@ -82,4 +82,8 @@ RandomContext_SeedRandom (RandomContext *context, DWORD new_seed)
 	return old_seed;
 }
 
-
+DWORD
+RandomContext_GetSeed (RandomContext *context)
+{
+	return context->seed;
+}

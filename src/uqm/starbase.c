@@ -19,8 +19,7 @@
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
-// XXX: for CurStarDescPtr
-#include "encount.h"
+#include "starmap.h"
 #include "comm.h"
 #include "gamestr.h"
 #include "load.h"

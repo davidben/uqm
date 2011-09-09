@@ -22,7 +22,7 @@
 #include "colors.h"
 #include "controls.h"
 #include "clock.h"
-#include "encount.h"
+#include "starmap.h"
 #include "element.h"
 #include "sis.h"
 #include "status.h"
@@ -627,15 +627,14 @@ starRecurse (STAR_DESC *star, void *arg)
 
 	SOLARSYS_STATE SolarSysState;
 	SOLARSYS_STATE *oldPSolarSysState = pSolarSysState;
-	DWORD oldSeed =
-			TFB_SeedRandom (MAKE_DWORD (star->star_pt.x, star->star_pt.y));
-
 	STAR_DESC *oldStarDescPtr = CurStarDescPtr;
 	CurStarDescPtr = star;
 
+	RandomContext_SeedRandom (SysGenRNG, GetRandomSeedForStar (star));
+
 	memset (&SolarSysState, 0, sizeof (SolarSysState));
 	SolarSysState.SunDesc[0].pPrevDesc = 0;
-	SolarSysState.SunDesc[0].rand_seed = TFB_Random ();
+	SolarSysState.SunDesc[0].rand_seed = RandomContext_Random (SysGenRNG);
 	SolarSysState.SunDesc[0].data_index = STAR_TYPE (star->Type);
 	SolarSysState.SunDesc[0].location.x = 0;
 	SolarSysState.SunDesc[0].location.y = 0;
@@ -667,7 +666,6 @@ starRecurse (STAR_DESC *star, void *arg)
 	
 	pSolarSysState = oldPSolarSysState;
 	CurStarDescPtr = oldStarDescPtr;
-	TFB_SeedRandom (oldSeed);
 }
 
 static void
@@ -695,14 +693,12 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 
 	if (universeRecurseArg->moonFunc != NULL)
 	{
-		DWORD oldSeed = TFB_SeedRandom (planet->rand_seed);
+		RandomContext_SeedRandom (SysGenRNG, planet->rand_seed);
 		
 		(*system->genFuncs->generateMoons) (system, planet);
 
 		forAllMoons (star, system, planet, moonRecurse,
 				(void *) universeRecurseArg);
-
-		TFB_SeedRandom (oldSeed);
 	}
 	
 	if (universeRecurseArg->planetFuncPost != NULL)

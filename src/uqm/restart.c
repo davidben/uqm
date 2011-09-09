@@ -21,8 +21,7 @@
 #include "colors.h"
 #include "controls.h"
 #include "credits.h"
-// XXX: for star_array[]
-#include "encount.h"
+#include "starmap.h"
 #include "fmv.h"
 #include "menustat.h"
 #include "gamestr.h"

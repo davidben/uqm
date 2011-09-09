@@ -108,7 +108,7 @@ GenerateSol_generatePlanets (SOLARSYS_STATE *solarSys)
 	COUNT planetI;
 
 #define SOL_SEED 334241042L
-	TFB_SeedRandom (SOL_SEED);
+	RandomContext_SeedRandom (SysGenRNG, SOL_SEED);
 
 	solarSys->SunDesc[0].NumPlanets = 9;
 	for (planetI = 0; planetI < 9; ++planetI)
@@ -118,7 +118,8 @@ GenerateSol_generatePlanets (SOLARSYS_STATE *solarSys)
 		UWORD word_val;
 		PLANET_DESC *pCurDesc = &solarSys->PlanetDesc[planetI];
 
-		pCurDesc->rand_seed = rand_val = TFB_Random ();
+		pCurDesc->rand_seed = RandomContext_Random (SysGenRNG);
+		rand_val = pCurDesc->rand_seed;
 		word_val = LOWORD (rand_val);
 		angle = NORMALIZE_ANGLE ((COUNT)HIBYTE (word_val));
 
@@ -208,7 +209,7 @@ GenerateSol_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 			solarSys->MoonDesc[1].data_index = SELENIC_WORLD;
 			solarSys->MoonDesc[1].radius = MIN_MOON_RADIUS
 					+ (MAX_MOONS - 1) * MOON_DELTA;
-			rand_val = TFB_Random ();
+			rand_val = RandomContext_Random (SysGenRNG);
 			angle = NORMALIZE_ANGLE (LOWORD (rand_val));
 			solarSys->MoonDesc[1].location.x =
 					COSINE (angle, solarSys->MoonDesc[1].radius);
@@ -269,15 +270,12 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		return true;
 	}
 
-	rand_val = DoPlanetaryAnalysis (&solarSys->SysInfo, world);
-	if (rand_val)
-	{
-		COUNT i;
+	DoPlanetaryAnalysis (&solarSys->SysInfo, world);
+	rand_val = RandomContext_GetSeed (SysGenRNG);
 
-		solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-		i = (COUNT)~0;
-		rand_val = GenerateMineralDeposits (&solarSys->SysInfo, &i);
-	}
+	solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
+	GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL);
+	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	planetNr = planetIndex (solarSys, world);
 	if (worldIsPlanet (solarSys, world))
@@ -405,8 +403,7 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		}
 
 		solarSys->SysInfo.PlanetInfo.SurfaceGravity =
-				CalcGravity (solarSys->SysInfo.PlanetInfo.PlanetDensity,
-				solarSys->SysInfo.PlanetInfo.PlanetRadius);
+				CalcGravity (&solarSys->SysInfo.PlanetInfo);
 		LoadPlanet (planetNr == 2 ?
 				CaptureDrawable (LoadGraphic (EARTH_MASK_ANIM)) : NULL);
 	}
@@ -421,6 +418,10 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		switch (planetNr)
 		{
 			case 2: /* moons of EARTH */
+				// NOTE: Even though we save the seed here, it is irrelevant.
+				//   The seed will be used to randomly place the tractors, but
+				//   since they are mobile, they will be moved to different
+				//   locations not governed by this seed.
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] =
 						rand_val;
 
@@ -505,8 +506,7 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		}
 
 		solarSys->SysInfo.PlanetInfo.SurfaceGravity =
-				CalcGravity (solarSys->SysInfo.PlanetInfo.PlanetDensity,
-				solarSys->SysInfo.PlanetInfo.PlanetRadius);
+				CalcGravity (&solarSys->SysInfo.PlanetInfo);
 		LoadPlanet (NULL);
 	}
 
@@ -601,9 +601,8 @@ GenerateSol_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 	if (matchWorld (solarSys, world, 2, 1))
 	{
 		/* Earth Moon */
-		GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, 10,
-				NUM_CREATURE_TYPES + 1, &whichNode);
-		return whichNode;
+		return GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, 10,
+				NUM_CREATURE_TYPES + 1, whichNode);
 	}
 
 	return 0;

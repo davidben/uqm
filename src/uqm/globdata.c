@@ -20,6 +20,7 @@
 
 #include "coderes.h"
 #include "encount.h"
+#include "starmap.h"
 #include "master.h"
 #include "setup.h"
 #include "units.h"
