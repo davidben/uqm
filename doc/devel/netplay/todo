@@ -14,6 +14,9 @@ Medium-priority:
 - Closing and destroying of NetConnections is a terrible mess.
 - Checks allConnected() shouldn't be needed if CHECK_ABORT is set
   on disconnect.
+- Shorten or lengthen the time between frames depending on how full the input
+  buffer is, to prevent one side constantly stalling when the connection in
+  one direction is slower than in the other direction.
 
 
 Low-priority:
@@ -75,6 +78,7 @@ Future improvements/optimisations:
 - Per state data (in NetConnection.stateData) is unnecessarilly complicated.
   Putting all fields directly in NetConnection simplifies things a lot.
   It's not as generic, but this code won't be used elsewhere anyhow.
+- Send captain names to the other side
 
 
 Bugs:
