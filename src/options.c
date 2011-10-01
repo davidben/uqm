@@ -571,6 +571,14 @@ prepareShadowAddons (const char **addons)
 		{
 			log_add (log_Debug, "Mounting shadow content of '%s' addon", addon);
 			mountDirZips (shadowDir, "/", uio_MOUNT_ABOVE, contentMountHandle);
+			// Mount non-zipped shadow content
+			if (uio_transplantDir ("/", shadowDir, uio_MOUNT_RDONLY |
+					uio_MOUNT_ABOVE, contentMountHandle) == NULL)
+			{
+				log_add (log_Warning, "Warning: Could not mount shadow content"
+						" of '%s': %s.", addon, strerror (errno));
+			}
+
 			uio_closeDir (shadowDir);
 		}
 		uio_closeDir (addonDir);

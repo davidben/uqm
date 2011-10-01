@@ -1,4 +1,5 @@
 Changes towards version 0.8:
+- Don't require the 'shadow' dir in addon packs, from Alex
 - Make use of GAME_STATE_FILE consistently, from Scott A. Colcord
 - Fixed unconst(), from Scott A. Colcord
 - Fixes to a few small bugs in UIO which shouldn't have had an impact on
