@@ -1,4 +1,4 @@
-#(Vega)
+#(Vega) -- STAR_STRING_BASE
 Vega
 
 
@@ -530,7 +530,7 @@ Lentilis
 UNKNOWN
 
 
-#(devices)
+#(devices) -- DEVICE_STRING_BASE
 devices
 
 
@@ -646,7 +646,7 @@ Glowing Rod
 Moon Base
 
 
-#(cargo)
+#(cargo) -- CARGO_STRING_BASE
 cargo
 
 
@@ -686,7 +686,7 @@ Radioactive
 Exotic
 
 
-#(Hydrogen)
+#(Hydrogen) -- ELEMENTS_STRING_BASE
 Hydrogen
 
 
@@ -1218,7 +1218,7 @@ Calcium Compounds
 Nitric Acid
 
 
-#(MINERAL SCAN)
+#(MINERAL SCAN) -- SCAN_STRING_BASE
 MINERAL SCAN
 
 
@@ -1442,7 +1442,7 @@ World
 Gas Giant
 
 
-#(Alpha)
+#(Alpha) -- STAR_NUMBER_BASE
 Alpha
 
 
@@ -1498,7 +1498,7 @@ Nu
 Xi
 
 
-#(Mercury)
+#(Mercury) -- PLANET_NUMBER_BASE
 Mercury
 
 
@@ -1625,10 +1625,12 @@ Planet XV
 #(Planet XVI)
 Planet XVI
 
+
 #(Sa-Matra)
 Sa-Matra
 
-#(JAN)
+
+#(JAN) -- MONTHS_STRING_BASE
 JAN
 
 
@@ -1676,7 +1678,7 @@ NOV
 DEC
 
 
-#((In response to your statement))
+#((In response to your statement)) -- FEEDBACK_STRING_BASE
 (In response to your statement)
 
 
@@ -1684,7 +1686,7 @@ DEC
 MORE
 
 
-#(Starbase)
+#(Starbase) -- STARBASE_STRING_BASE
 Starbase
 
 
@@ -1704,7 +1706,7 @@ Shipyard
 Depart StarBase
 
 
-#(ENCOUNTER IN)
+#(ENCOUNTER IN) -- ENCOUNTER_STRING_BASE
 ENCOUNTER IN
 
 
@@ -1736,7 +1738,7 @@ Debris
 Scavenged
 
 
-#(HyperSpace)
+#(HyperSpace) -- NAVIGATION_STRING_BASE
 HyperSpace
 
 
@@ -1760,7 +1762,7 @@ Fuel:
 Fuel Use:
 
 
-#(Enter name)
+#(Enter name) -- NAMING_STRING_BASE
 Enter name
 
 
@@ -1776,7 +1778,7 @@ Vindicator
 Zelnick
 
 
-#(Empty)
+#(Empty) -- MELEE_STRING_BASE
 Empty
 
 
@@ -1812,7 +1814,7 @@ Behemoth Zenith
 The Peeled Eyes
 
 
-#(Saving . . .)
+#(Saving . . .) -- SAVEGAME_STRING_BASE
 Saving . . .
 
 
@@ -1832,7 +1834,7 @@ Empty Slot
 Saved Game - Date:
 
 
-#(Sound)
+#(Sound) -- OPTION_STRING_BASE
 Sound
 
 
@@ -1852,7 +1854,7 @@ OFF
 ON
 
 
-#(Really Quit)
+#(Really Quit) -- QUITMENU_STRING_BASE
 Really Quit?
 
 
@@ -1864,7 +1866,7 @@ Yes
 No
 
 
-#(Cr)
+#(Cr) -- STATUS_STRING_BASE
 Cr
 
 
@@ -1888,7 +1890,7 @@ CREW
 CAPTAIN
 
 
-#(nose:)
+#(nose:) -- FLAGSHIP_STRING_BASE
 nose:
 
 
@@ -1940,7 +1942,7 @@ n/a
 none
 
 
-#(Orbit: )
+#(Orbit: ) -- ORBITSCAN_STRING_BASE
 Orbit: 
 
 
@@ -2016,7 +2018,7 @@ Day:
 Tilt: 
 
 
-#(scan)
+#(scan) -- MAINMENU_STRING_BASE
 scan
 
 
@@ -2237,7 +2239,7 @@ Use the keyboard or joystick instead.
 
 Please press ENTER or SPACE to return.
 
-#(Unconnected. Press LEFT to connect.)
+#(Unconnected. Press LEFT to connect.) -- NETMELEE_STRING_BASE
 Unconnected. Press LEFT to connect.
 
 
