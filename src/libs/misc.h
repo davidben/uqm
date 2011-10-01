@@ -51,8 +51,8 @@ static inline void explode (void)
 static inline void *
 unconst(const void *arg) {
 	union {
-		char *c;
-		const char *cc;
+		void *c;
+		const void *cc;
 	} u;
 	u.cc = arg;
 	return u.c;

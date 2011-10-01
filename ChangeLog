@@ -1,4 +1,5 @@
 Changes towards version 0.8:
+- Fixed unconst(), from Scott A. Colcord
 - Fixes to a few small bugs in UIO which shouldn't have had an impact on
   UQM, but would in the future, from Alex
 - Allow F6 as a default alternate search key, from related projects.
