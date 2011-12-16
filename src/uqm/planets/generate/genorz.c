@@ -93,7 +93,7 @@ GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 
 		if ((CurStarDescPtr->Index == ORZ_DEFINED
 				|| !GET_GAME_STATE (TAALO_UNPROTECTED))
-				&& ActivateStarShip (ORZ_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (ORZ_SHIP))
 		{
 			NotifyOthers (ORZ_SHIP, IPNL_ALL_CLEAR);
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);

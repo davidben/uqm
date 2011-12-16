@@ -258,7 +258,7 @@ UseCaster (void)
 		HIPGROUP hGroup;
 
 		FoundIlwrath = (CurStarDescPtr->Index == ILWRATH_DEFINED)
-				&& ActivateStarShip (ILWRATH_SHIP, SPHERE_TRACKING);
+				&& StartSphereTracking (ILWRATH_SHIP);
 				// In the Ilwrath home system and they are alive?
 
 		if (!FoundIlwrath &&

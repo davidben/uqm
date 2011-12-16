@@ -1,5 +1,6 @@
 Changes towards version 0.8:
-- Removed obsolete RESPONSE_TO_REF - SvdB
+- Annigilate ActivateStarShip() - SvdB
+- Removed obsolete RESPONSE_TO_REF() - SvdB
 - Don't require the 'shadow' dir in addon packs, from Alex
 - Make use of GAME_STATE_FILE consistently, from Scott A. Colcord
 - Fixed unconst(), from Scott A. Colcord

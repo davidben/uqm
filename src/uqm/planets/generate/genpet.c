@@ -83,14 +83,14 @@ GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET)
 			&& (GET_GAME_STATE (UMGAH_ZOMBIE_BLOBBIES)
 			|| !GET_GAME_STATE (TALKING_PET)
-			|| ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING)))
+			|| StartSphereTracking (UMGAH_SHIP)))
 	{
 		NotifyOthers (UMGAH_SHIP, IPNL_ALL_CLEAR);
 		PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 		ReinitQueue (&GLOBAL (ip_group_q));
 		assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
-		if (ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING))
+		if (StartSphereTracking (UMGAH_SHIP))
 		{
 			GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
@@ -129,7 +129,7 @@ GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 				// Defeated the zombie fleet.
 				InitCommunication (TALKING_PET_CONVERSATION);
 			}
-			else if (!(ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING)))
+			else if (!(StartSphereTracking (UMGAH_SHIP)))
 			{
 				// The Kohr-Ah have destroyed the Umgah, but the
 				// talking pet survived.

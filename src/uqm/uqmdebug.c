@@ -85,18 +85,18 @@ debugKeyPressed (void)
 	// Give the player the ships you can't ally with under normal
 	// conditions.
 	clearEscorts ();
-	ActivateStarShip (ARILOU_SHIP, 1);
-	ActivateStarShip (PKUNK_SHIP, 1);
-	ActivateStarShip (VUX_SHIP, 1);
-	ActivateStarShip (YEHAT_SHIP, 1);
-	ActivateStarShip (MELNORME_SHIP, 1);
-	ActivateStarShip (DRUUGE_SHIP, 1);
-	ActivateStarShip (ILWRATH_SHIP, 1);
-	ActivateStarShip (MYCON_SHIP, 1);
-	ActivateStarShip (SLYLANDRO_SHIP, 1);
-	ActivateStarShip (UMGAH_SHIP, 1);
-	ActivateStarShip (URQUAN_SHIP, 1);
-	ActivateStarShip (BLACK_URQUAN_SHIP, 1);
+	AddEscortShips (ARILOU_SHIP, 1);
+	AddEscortShips (PKUNK_SHIP, 1);
+	AddEscortShips (VUX_SHIP, 1);
+	AddEscortShips (YEHAT_SHIP, 1);
+	AddEscortShips (MELNORME_SHIP, 1);
+	AddEscortShips (DRUUGE_SHIP, 1);
+	AddEscortShips (ILWRATH_SHIP, 1);
+	AddEscortShips (MYCON_SHIP, 1);
+	AddEscortShips (SLYLANDRO_SHIP, 1);
+	AddEscortShips (UMGAH_SHIP, 1);
+	AddEscortShips (URQUAN_SHIP, 1);
+	AddEscortShips (BLACK_URQUAN_SHIP, 1);
 
 	resetCrewBattle ();
 	resetEnergyBattle ();

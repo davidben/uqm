@@ -213,7 +213,7 @@ ExitConversation (RESPONSE_REF R)
 		SET_GAME_STATE (ORZ_GENERAL_INFO, 0);
 		SET_GAME_STATE (ORZ_PERSONAL_INFO, 0);
 		SET_GAME_STATE (ORZ_MANNER, 3);
-		ActivateStarShip (ORZ_SHIP, SET_ALLIED);
+		SetRaceAllied (ORZ_SHIP, TRUE);
 	}
 	else if (PLAYER_SAID (R, demand_to_land))
 	{
@@ -234,8 +234,8 @@ ExitConversation (RESPONSE_REF R)
 		SET_GAME_STATE (BATTLE_SEGUE, 1);
 		if (PLAYER_SAID (R, about_andro_3))
 		{
-			ActivateStarShip (ORZ_SHIP, SET_NOT_ALLIED);
-			ActivateStarShip (ORZ_SHIP, REMOVE_BUILT);
+			SetRaceAllied (ORZ_SHIP, FALSE);
+			RemoveEscortShips (ORZ_SHIP);
 		}
 
 		XFormColorMap (GetColorMapAddress (
@@ -322,8 +322,7 @@ TaaloWorld (RESPONSE_REF R)
 
 	if (PHRASE_ENABLED (may_we_land))
 	{
-		if (Manner == 3 &&
-				ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+		if (Manner == 3 && CheckAlliance (ORZ_SHIP) == GOOD_GUY)
 			Response (may_we_land, ExitConversation);
 		else
 			Response (may_we_land, TaaloWorld);
@@ -705,8 +704,7 @@ Intro (void)
 
 		TaaloWorld ((RESPONSE_REF)0);
 	}
-	else if (Manner == 3 &&
-			ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+	else if (Manner == 3 && CheckAlliance (ORZ_SHIP) == GOOD_GUY)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{

@@ -337,7 +337,7 @@ InitGameStructures (void)
 			sizeof (GLOBAL_SIS (CommanderName)),
 			GAME_STRING (NAMING_STRING_BASE + 3));
 
-	ActivateStarShip (HUMAN_SHIP, SET_ALLIED);
+	SetRaceAllied (HUMAN_SHIP, TRUE);
 	CloneShipFragment (HUMAN_SHIP, &GLOBAL (built_ship_q), 0);
 
 	GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (SOL_X);

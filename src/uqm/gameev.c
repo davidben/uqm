@@ -120,7 +120,7 @@ EventHandler (BYTE selector)
 			}
 			break;
 		case SHOFIXTI_RETURN_EVENT:
-			ActivateStarShip (SHOFIXTI_SHIP, SET_ALLIED);
+			SetRaceAllied (SHOFIXTI_SHIP, TRUE);
 			GLOBAL (CrewCost) -= 2;
 					/* crew is not an issue anymore */
 			SET_GAME_STATE (CREW_PURCHASED0, 0);
@@ -145,7 +145,7 @@ EventHandler (BYTE selector)
 
 				if (SpathiPtr->actual_strength)
 				{
-					ActivateStarShip (SPATHI_SHIP, SET_NOT_ALLIED);
+					SetRaceAllied (SPATHI_SHIP, FALSE);
 					SET_GAME_STATE (SPATHI_SHIELDED_SELVES, 1);
 					SpathiPtr->actual_strength = 0;
 				}
@@ -181,7 +181,7 @@ EventHandler (BYTE selector)
 			RebelPtr->loc.y = 0;
 			UnlockFleetInfo (&GLOBAL (avail_race_q), hRoyalist);
 			UnlockFleetInfo (&GLOBAL (avail_race_q), hRebel);
-			ActivateStarShip (YEHAT_REBEL_SHIP, SPHERE_TRACKING);
+			StartSphereTracking (YEHAT_REBEL_SHIP);
 			break;
 		}
 		case SLYLANDRO_RAMP_UP:
@@ -439,7 +439,7 @@ pkunk_mission (void)
 		{
 			SET_GAME_STATE (YEHAT_ABSORBED_PKUNK, 1);
 			PkunkPtr->allied_state = DEAD_GUY;
-			ActivateStarShip (YEHAT_SHIP, SPHERE_TRACKING);
+			StartSphereTracking (YEHAT_SHIP);
 		}
 		else
 		{
@@ -577,7 +577,7 @@ ilwrath_mission (void)
 
 				SET_GAME_STATE (THRADD_VISITS, 0);
 				if (ThraddPtr->allied_state == GOOD_GUY)
-					ActivateStarShip (THRADDASH_SHIP, SET_NOT_ALLIED);
+					SetRaceAllied (THRADDASH_SHIP, FALSE);
 			}
 
 			ThraddState = GET_GAME_STATE (THRADD_MISSION);

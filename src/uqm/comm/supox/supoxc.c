@@ -126,14 +126,14 @@ ExitConversation (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, can_you_help))
 	{
 		NPCPhrase (HOW_HELP);
-		if (ActivateStarShip (SUPOX_SHIP, FEASIBILITY_STUDY) == 0)
+		if (EscortFeasibilityStudy (SUPOX_SHIP) == 0)
 			NPCPhrase (DONT_NEED);
 		else
 		{
 			NPCPhrase (HAVE_4_SHIPS);
 
 			AlienTalkSegue ((COUNT)~0);
-			ActivateStarShip (SUPOX_SHIP, 4);
+			AddEscortShips (SUPOX_SHIP, 4);
 		}
 	}
 }
@@ -357,7 +357,7 @@ NeutralSupox (RESPONSE_REF R)
 
 		LastStack = 2;
 		SET_GAME_STATE (SUPOX_WAR_NEWS, 1);
-		ActivateStarShip (UTWIG_SHIP, SPHERE_TRACKING);
+		StartSphereTracking (UTWIG_SHIP);
 	}
 	else if (PLAYER_SAID (R, what_relation_to_utwig))
 	{
@@ -552,7 +552,7 @@ Intro (void)
 
 		SET_GAME_STATE (BATTLE_SEGUE, 0);
 	}
-	else if (ActivateStarShip (SUPOX_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+	else if (CheckAlliance (SUPOX_SHIP) == GOOD_GUY)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{

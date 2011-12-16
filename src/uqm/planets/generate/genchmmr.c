@@ -107,7 +107,7 @@ GenerateChmmr_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		}
 		else if (GET_GAME_STATE (SUN_DEVICE_ON_SHIP)
 				&& !GET_GAME_STATE (ILWRATH_DECEIVED)
-				&& ActivateStarShip (ILWRATH_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (ILWRATH_SHIP))
 		{
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 			ReinitQueue (&GLOBAL (ip_group_q));

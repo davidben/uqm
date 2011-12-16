@@ -89,7 +89,7 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	{
 		if ((CurStarDescPtr->Index == MYCON_DEFINED
 				|| CurStarDescPtr->Index == SUN_DEVICE_DEFINED)
-				&& ActivateStarShip (MYCON_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (MYCON_SHIP))
 		{
 			if (CurStarDescPtr->Index == MYCON_DEFINED
 					|| !GET_GAME_STATE (SUN_DEVICE_UNGUARDED))

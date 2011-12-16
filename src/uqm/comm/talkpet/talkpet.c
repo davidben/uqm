@@ -780,7 +780,7 @@ Intro (void)
 	}
 	else
 	{
-		if (ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING))
+		if (StartSphereTracking (UMGAH_SHIP))
 		{
 			NPCPhrase (LETS_MAKE_A_DEAL);
 		}

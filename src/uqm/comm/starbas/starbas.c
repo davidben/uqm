@@ -700,11 +700,10 @@ AnalyzeCondition (void)
 		COUNT FleetStrength;
 		BOOLEAN HasMaximum;
 
-		FleetStrength = ActivateStarShip (0, ESCORT_WORTH);
+		FleetStrength = CalculateEscortsWorth ();
 		for (i = 0; i < NUM_AVAILABLE_RACES; ++i)
 		{
-			if (i != HUMAN_SHIP
-					&& ActivateStarShip (i, CHECK_ALLIANCE) == GOOD_GUY)
+			if (i != HUMAN_SHIP && CheckAlliance (i) == GOOD_GUY)
 				++num_aliens;
 		}
 
@@ -1377,36 +1376,31 @@ CheckBulletins (BOOLEAN Repeat)
 			switch (b0)
 			{
 				case 0:
-					if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (SPATHI_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_1;
 					}
 					break;
 				case 1:
-					if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (ZOQFOTPIK_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_2;
 					}
 					break;
 				case 2:
-					if (ActivateStarShip (SUPOX_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (SUPOX_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_3;
 					}
 					break;
 				case 3:
-					if (ActivateStarShip (UTWIG_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (UTWIG_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_4;
 					}
 					break;
 				case 4:
-					if (ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (ORZ_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_5;
 					}
@@ -1415,14 +1409,13 @@ CheckBulletins (BOOLEAN Repeat)
 					if (GET_GAME_STATE (ARILOU_MANNER) == 2)
 						BulletinMask |= 1L << b0;
 					else if (GET_GAME_STATE (PORTAL_SPAWNER)
-							&& (Repeat || ActivateStarShip (
-									ARILOU_SHIP, FEASIBILITY_STUDY
-									)))
+							&& (Repeat || EscortFeasibilityStudy (
+									ARILOU_SHIP)))
 					{
 #define NUM_GIFT_ARILOUS 3
 						pStr = STARBASE_BULLETIN_6;
 						if (!Repeat)
-							ActivateStarShip (ARILOU_SHIP, NUM_GIFT_ARILOUS);
+							AddEscortShips (ARILOU_SHIP, NUM_GIFT_ARILOUS);
 					}
 					break;
 				case 6:
@@ -1471,15 +1464,13 @@ CheckBulletins (BOOLEAN Repeat)
 					}
 					break;
 				case 12:
-					if (ActivateStarShip (CHMMR_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (CHMMR_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_13;
 					}
 					break;
 				case 13:
-					if (ActivateStarShip (SHOFIXTI_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (SHOFIXTI_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_14;
 					}

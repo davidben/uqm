@@ -87,7 +87,7 @@ GenerateZoqFotPik_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		if (ActivateStarShip (ZOQFOTPIK_SHIP, SPHERE_TRACKING))
+		if (StartSphereTracking (ZOQFOTPIK_SHIP))
 		{
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 			ReinitQueue (&GLOBAL (ip_group_q));

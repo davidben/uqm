@@ -110,7 +110,7 @@ static void
 PrepareShip (void)
 {
 #define MAX_PKUNK_SHIPS 4
-	if (ActivateStarShip (PKUNK_SHIP, MAX_PKUNK_SHIPS))
+	if (AddEscortShips (PKUNK_SHIP, MAX_PKUNK_SHIPS))
 	{
 		BYTE mi, di, yi;
 
@@ -157,7 +157,7 @@ ExitConversation (RESPONSE_REF R)
 		SET_GAME_STATE (PKUNK_INFO, 0);
 
 		AddEvent (RELATIVE_EVENT, 6, 0, 0, ADVANCE_PKUNK_MISSION);
-		if (ActivateStarShip (PKUNK_SHIP, FEASIBILITY_STUDY) == 0)
+		if (EscortFeasibilityStudy (PKUNK_SHIP) == 0)
 			NPCPhrase (INIT_NO_ROOM);
 		else
 		{
@@ -949,7 +949,7 @@ Intro (void)
 		{
 			if (NumVisits && ShipsReady ())
 			{
-				if (ActivateStarShip (PKUNK_SHIP, FEASIBILITY_STUDY) == 0)
+				if (EscortFeasibilityStudy (PKUNK_SHIP) == 0)
 					NPCPhrase (NO_ROOM);
 				else
 				{

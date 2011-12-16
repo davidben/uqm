@@ -505,7 +505,7 @@ ThraddWorship (RESPONSE_REF R)
 	SET_GAME_STATE (THRADD_VISITS, 0);
 	SET_GAME_STATE (THRADD_MANNER, 1);
 	SET_GAME_STATE (THRADD_STACK_1, 0);
-	ActivateStarShip (THRADDASH_SHIP, SET_ALLIED);
+	SetRaceAllied (THRADDASH_SHIP, TRUE);
 
 	Response (be_polite, ThraddCulture);
 	Response (speak_pig_latin, ThraddCulture);

@@ -96,7 +96,7 @@ GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		if (ActivateStarShip (THRADDASH_SHIP, SPHERE_TRACKING)
+		if (StartSphereTracking (THRADDASH_SHIP)
 				&& (CurStarDescPtr->Index == THRADD_DEFINED
 				|| (!GET_GAME_STATE (HELIX_UNPROTECTED)
 				&& (BYTE)(GET_GAME_STATE (THRADD_MISSION) - 1) >= 3)))

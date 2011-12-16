@@ -60,6 +60,16 @@ extern COUNT GetIndexFromStarShip (QUEUE *pShipQ, HLINK hStarShip);
 extern int SetEscortCrewComplement (COUNT which_ship, COUNT crew_level,
 		BYTE captain);
 
+COUNT AddEscortShips (COUNT race, SIZE count);
+extern COUNT CalculateEscortsWorth (void);
+//extern COUNT GetRaceKnownSize (COUNT race);
+extern COUNT SetRaceAllied (COUNT race, BOOLEAN flag);
+extern COUNT StartSphereTracking (COUNT race);
+BOOLEAN HaveEscortShip (COUNT race);
+extern COUNT EscortFeasibilityStudy (COUNT race);
+extern COUNT CheckAlliance (COUNT race);
+extern void RemoveEscortShips (COUNT race);
+
 extern RACE_DESC *load_ship (SPECIES_ID SpeciesID, BOOLEAN LoadBattleData);
 extern void free_ship (RACE_DESC *RaceDescPtr, BOOLEAN FreeIconData,
 		BOOLEAN FreeBattleData);

@@ -324,7 +324,7 @@ Rebels (RESPONSE_REF R)
 			|| ((NumVisits == 0 && (NumVisits = GLOBAL (GameClock.month_index) - GET_GAME_STATE (YEHAT_SHIP_MONTH)) < 0) 
 			    || (NumVisits == 0 && GLOBAL (GameClock.day_index) < GET_GAME_STATE (YEHAT_SHIP_DAY)))))
 			NPCPhrase (NO_SHIPS_YET);
-		else if ((NumVisits = ActivateStarShip (YEHAT_SHIP, FEASIBILITY_STUDY)) == 0)
+		else if ((NumVisits = EscortFeasibilityStudy (YEHAT_SHIP)) == 0)
 			NPCPhrase (NO_ROOM);
 		else
 		{
@@ -338,7 +338,7 @@ Rebels (RESPONSE_REF R)
 			}
 
 			AlienTalkSegue ((COUNT)~0);
-			ActivateStarShip (YEHAT_SHIP, NumVisits);
+			AddEscortShips (YEHAT_SHIP, NumVisits);
 			PrepareShip ();
 		}
 
@@ -382,12 +382,11 @@ Intro (void)
 		NPCPhrase (YEHAT_CAVALRY);
 		AlienTalkSegue ((COUNT)~0);
 
-		if ((NumVisits = (BYTE)ActivateStarShip (
-				YEHAT_REBEL_SHIP, FEASIBILITY_STUDY
-				)) > 8)
+		NumVisits = (BYTE) EscortFeasibilityStudy (YEHAT_REBEL_SHIP);
+		if (NumVisits > 8)
 			NumVisits = 8;
-		ActivateStarShip (YEHAT_REBEL_SHIP, NumVisits - (NumVisits >> 1));
-		ActivateStarShip (PKUNK_SHIP, NumVisits >> 1);
+		AddEscortShips (YEHAT_REBEL_SHIP, NumVisits - (NumVisits >> 1));
+		AddEscortShips (PKUNK_SHIP, NumVisits >> 1);
 	}
 	else
 	{

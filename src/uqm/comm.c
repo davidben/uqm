@@ -1394,7 +1394,7 @@ InitCommunication (CONVERSATION which_comm)
 				status = HUMAN_SHIP;
 			}
 		}
-		ActivateStarShip (status, SPHERE_TRACKING);
+		StartSphereTracking (status);
 
 		if (which_comm == ORZ_CONVERSATION
 				|| (which_comm == TALKING_PET_CONVERSATION
@@ -1402,7 +1402,7 @@ InitCommunication (CONVERSATION which_comm)
 				|| LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE))
 				|| (which_comm != CHMMR_CONVERSATION
 				&& which_comm != SYREEN_CONVERSATION
-				))//&& ActivateStarShip (status, CHECK_ALLIANCE) == BAD_GUY))
+				))//&& CheckAlliance (status) == BAD_GUY))
 			BuildBattle (NPC_PLAYER_NUM);
 	}
 

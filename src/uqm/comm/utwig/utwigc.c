@@ -288,22 +288,22 @@ ExitConversation (RESPONSE_REF R)
 				SET_GAME_STATE (SUPOX_HOSTILE, 0);
 				SET_GAME_STATE (UTWIG_HOSTILE, 0);
 
-				ActivateStarShip (UTWIG_SHIP, SET_ALLIED);
-				ActivateStarShip (SUPOX_SHIP, SET_ALLIED);
+				SetRaceAllied (UTWIG_SHIP, TRUE);
+				SetRaceAllied (SUPOX_SHIP, TRUE);
 			}
 		}
 	}
 	else if (PLAYER_SAID (R, can_you_help))
 	{
 		NPCPhrase (HOW_HELP);
-		if (ActivateStarShip (UTWIG_SHIP, FEASIBILITY_STUDY) == 0)
+		if (EscortFeasibilityStudy (UTWIG_SHIP) == 0)
 			NPCPhrase (DONT_NEED);
 		else
 		{
 			NPCPhrase (HAVE_4_SHIPS);
 
 			AlienTalkSegue ((COUNT)~0);
-			ActivateStarShip (UTWIG_SHIP, 4);
+			AddEscortShips (UTWIG_SHIP, 4);
 		}
 	}
 }
@@ -390,7 +390,7 @@ AlliedHome (RESPONSE_REF R)
 		Response (what_now_homeworld, AlliedHome);
 	if (PHRASE_ENABLED (how_is_ultron))
 		Response (how_is_ultron, AlliedHome);
-	if (NumVisits == 0 && ActivateStarShip (UTWIG_SHIP, FEASIBILITY_STUDY) != 0)
+	if (NumVisits == 0 && EscortFeasibilityStudy (UTWIG_SHIP) != 0)
 		Response (can_you_help, ExitConversation);
 	Response (bye_allied_homeworld, ExitConversation);
 }
@@ -525,7 +525,7 @@ NeutralUtwig (RESPONSE_REF R)
 		NPCPhrase (ABOUT_US_2);
 
 		LastStack = 2;
-		ActivateStarShip (SUPOX_SHIP, SPHERE_TRACKING);
+		StartSphereTracking (SUPOX_SHIP);
 		SET_GAME_STATE (UTWIG_WAR_NEWS, 2);
 	}
 	else if (PLAYER_SAID (R, what_about_you_3))
@@ -807,7 +807,7 @@ Intro (void)
 			Response (hey_wait_got_ultron, ExitConversation);
 		}
 	}
-	else if (ActivateStarShip (UTWIG_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+	else if (CheckAlliance (UTWIG_SHIP) == GOOD_GUY)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{

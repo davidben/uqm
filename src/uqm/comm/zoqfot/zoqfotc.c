@@ -224,7 +224,7 @@ ExitConversation (RESPONSE_REF R)
 		NPCPhrase_cb (WE_ALLY4, &SelectAlienZOQ);
 		NPCPhrase_cb (WE_ALLY5, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
-		ActivateStarShip (ZOQFOTPIK_SHIP, SET_ALLIED);
+		SetRaceAllied (ZOQFOTPIK_SHIP, TRUE);
 		AddEvent (RELATIVE_EVENT, 3, 0, 0, ZOQFOT_DISTRESS_EVENT);
 		SET_GAME_STATE (ZOQFOT_HOME_VISITS, 0);
 	}
@@ -735,7 +735,7 @@ ZoqFotHome (RESPONSE_REF R)
 		NPCPhrase_cb (GOOD9, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
 
-		ActivateStarShip (ZOQFOTPIK_SHIP, SET_ALLIED);
+		SetRaceAllied (ZOQFOTPIK_SHIP, TRUE);
 		AddEvent (RELATIVE_EVENT, 3, 0, 0, ZOQFOT_DISTRESS_EVENT);
 	}
 	else if (PLAYER_SAID (R, enough_info))
@@ -748,7 +748,7 @@ ZoqFotHome (RESPONSE_REF R)
 		Response (whats_up_homeworld, ZoqFotHome);
 	if (PHRASE_ENABLED (any_war_news))
 		Response (any_war_news, ZoqFotHome);
-	if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
+	if (CheckAlliance (ZOQFOTPIK_SHIP) != GOOD_GUY)
 		Response (i_want_alliance, ZoqFotHome);
 	else if (PHRASE_ENABLED (want_specific_info))
 	{
@@ -870,12 +870,12 @@ Intro (void)
 			ZFPTalkSegue ((COUNT)~0);
 
 			SET_GAME_STATE (ZOQFOT_DISTRESS, 0);
-			ActivateStarShip (ZOQFOTPIK_SHIP, MAX_ZFP_SHIPS);
+			AddEscortShips (ZOQFOTPIK_SHIP, MAX_ZFP_SHIPS);
 		}
 		else
 		{
 			NumVisits = GET_GAME_STATE (ZOQFOT_HOME_VISITS);
-			if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
+			if (CheckAlliance (ZOQFOTPIK_SHIP) != GOOD_GUY)
 			{
 				switch (NumVisits++)
 				{
@@ -960,7 +960,7 @@ init_zoqfot_comm (void)
 
 	zoqfot_desc.AlienTextWidth = (SIS_TEXT_WIDTH >> 1) - TEXT_X_OFFS;
 
-	if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) == GOOD_GUY
+	if (CheckAlliance (ZOQFOTPIK_SHIP) == GOOD_GUY
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
 		SET_GAME_STATE (BATTLE_SEGUE, 0);

@@ -384,9 +384,9 @@ typedef struct
 // Values for FLEET_INFO.allied_state
 enum
 {
-	DEAD_GUY = 0,
-	GOOD_GUY,
-	BAD_GUY,
+	DEAD_GUY = 0,  // Race is extinct
+	GOOD_GUY,      // Race is allied with the player
+	BAD_GUY,       // Race is not allied with the player
 };
 
 static inline FLEET_INFO *

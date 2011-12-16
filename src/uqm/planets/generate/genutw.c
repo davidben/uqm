@@ -109,7 +109,7 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	{
 		if ((CurStarDescPtr->Index == UTWIG_DEFINED
 				|| !GET_GAME_STATE (UTWIG_HAVE_ULTRON))
-				&& ActivateStarShip (UTWIG_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (UTWIG_SHIP))
 		{
 			NotifyOthers (UTWIG_SHIP, IPNL_ALL_CLEAR);
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
@@ -141,7 +141,7 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 
 		if (CurStarDescPtr->Index == BOMB_DEFINED
 				&& !GET_GAME_STATE (BOMB_UNPROTECTED)
-				&& ActivateStarShip (DRUUGE_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (DRUUGE_SHIP))
 		{
 			COUNT i;
 

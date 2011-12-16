@@ -188,14 +188,14 @@ ExitConversation (RESPONSE_REF Response)
 	}
 	else if (PLAYER_SAID (Response, join_us))
 	{
-		if (ActivateStarShip (SPATHI_SHIP, FEASIBILITY_STUDY) == 0)
+		if (EscortFeasibilityStudy (SPATHI_SHIP) == 0)
 			NPCPhrase (TOO_SCARY);
 		else
 		{
 			NPCPhrase (WILL_JOIN);
 
 			AlienTalkSegue ((COUNT)~0);
-			ActivateStarShip (SPATHI_SHIP, 1);
+			AddEscortShips (SPATHI_SHIP, 1);
 			/* Make the Eluder escort captained by Fwiffo alone */
 			SetEscortCrewComplement (SPATHI_SHIP, 1,
 					NAME_OFFSET + NUM_CAPTAINS_NAMES);
@@ -750,7 +750,7 @@ Intro (void)
 		Response (we_fight_again_space, ExitConversation);
 		Response (bye_angry_space, ExitConversation);
 	}
-	else if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+	else if (CheckAlliance (SPATHI_SHIP) == GOOD_GUY)
 	{
 		SpathiAllies ((RESPONSE_REF)0);
 	}

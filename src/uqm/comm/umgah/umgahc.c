@@ -242,7 +242,7 @@ CombatIsInevitable (RESPONSE_REF R)
 		NPCPhrase (FUNNY_IDEA);
 
 		AlienTalkSegue ((COUNT)~0);
-		ActivateStarShip (UMGAH_SHIP, 4);
+		AddEscortShips (UMGAH_SHIP, 4);
 		SET_GAME_STATE (UMGAH_HOSTILE, 1);
 	}
 }

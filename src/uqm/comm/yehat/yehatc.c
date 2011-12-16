@@ -309,7 +309,7 @@ StartRevolt (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, shofixti_alive_2))
 		NPCPhrase (SEND_HIM_OVER_2);
 
-	if (ActivateStarShip (SHOFIXTI_SHIP, ESCORTING_FLAGSHIP))
+	if (HaveEscortShip (SHOFIXTI_SHIP))
 		Response (ok_send, ExitConversation);
 	else
 		Response (not_here, ExitConversation);

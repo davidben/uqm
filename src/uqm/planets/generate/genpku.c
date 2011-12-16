@@ -79,7 +79,7 @@ GeneratePkunk_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		if (ActivateStarShip (PKUNK_SHIP, SPHERE_TRACKING))
+		if (StartSphereTracking (PKUNK_SHIP))
 		{
 			NotifyOthers (PKUNK_SHIP, IPNL_ALL_CLEAR);
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);

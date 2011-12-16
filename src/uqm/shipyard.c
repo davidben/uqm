@@ -525,7 +525,7 @@ CrewTransaction (SIZE crew_delta)
 				LockMutex (GraphicsLock);
 			}
 		}
-		if (ActivateStarShip (SHOFIXTI_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
+		if (CheckAlliance (SHOFIXTI_SHIP) != GOOD_GUY)
 		{
 			SET_GAME_STATE (CREW_PURCHASED0, LOBYTE (crew_bought));
 			SET_GAME_STATE (CREW_PURCHASED1, HIBYTE (crew_bought));

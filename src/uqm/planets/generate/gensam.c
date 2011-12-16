@@ -215,9 +215,8 @@ GenerateSaMatra_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				EncounterRace = -1;
 				GLOBAL (CurrentActivity) = IN_LAST_BATTLE | START_ENCOUNTER;
 				if (GET_GAME_STATE (YEHAT_CIVIL_WAR)
-						&& ActivateStarShip (YEHAT_SHIP, SPHERE_TRACKING)
-						&& ActivateStarShip (YEHAT_REBEL_SHIP,
-						FEASIBILITY_STUDY))
+						&& StartSphereTracking (YEHAT_SHIP)
+						&& EscortFeasibilityStudy (YEHAT_REBEL_SHIP))
 					InitCommunication (YEHAT_REBEL_CONVERSATION);
 			}
 		}

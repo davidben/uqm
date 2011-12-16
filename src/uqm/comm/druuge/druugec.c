@@ -240,7 +240,7 @@ Buy (RESPONSE_REF R)
 #define SHIP_CREW_COST 100
 		if (GLOBAL_SIS (CrewEnlisted) < SHIP_CREW_COST)
 			NPCPhrase (NOT_ENOUGH_CREW);
-		else if (ActivateStarShip (DRUUGE_SHIP, FEASIBILITY_STUDY) == 0)
+		else if (EscortFeasibilityStudy (DRUUGE_SHIP) == 0)
 			NPCPhrase (NOT_ENOUGH_ROOM);
 		else
 		{
@@ -248,7 +248,7 @@ Buy (RESPONSE_REF R)
 			DeltaSISGauges (-SHIP_CREW_COST, 0, 0);
 			UnlockMutex (GraphicsLock);
 			SlaveryCount += SHIP_CREW_COST;
-			ActivateStarShip (DRUUGE_SHIP, 1);
+			AddEscortShips (DRUUGE_SHIP, 1);
 
 			NPCPhrase (BOUGHT_SHIP);
 		}
@@ -403,7 +403,7 @@ DoTransaction (RESPONSE_REF R)
 
 		trade_gas = 0;
 		ships_to_trade = 0;
-		ship_slots = ActivateStarShip (DRUUGE_SHIP, FEASIBILITY_STUDY);
+		ship_slots = EscortFeasibilityStudy (DRUUGE_SHIP);
 		if (PLAYER_SAID (R, sell_maidens))
 		{
 			NPCPhrase (BOUGHT_MAIDENS);
@@ -430,7 +430,7 @@ DoTransaction (RESPONSE_REF R)
 		NPCPhrase (YOU_GET);
 		if (ships_to_trade)
 		{
-			ActivateStarShip (DRUUGE_SHIP, ships_to_trade);
+			AddEscortShips (DRUUGE_SHIP, ships_to_trade);
 
 			if (ship_slots >= ships_to_trade)
 				NPCPhrase (DEAL_FOR_STATED_SHIPS);

@@ -134,7 +134,7 @@ ExitConversation (RESPONSE_REF R)
 
 		NPCPhrase (TAKE_2_WEEKS);
 
-		ActivateStarShip (CHMMR_SHIP, SET_ALLIED);
+		SetRaceAllied (CHMMR_SHIP, TRUE);
 
 		SET_GAME_STATE (CHMMR_HOME_VISITS, 0);
 		SET_GAME_STATE (CHMMR_STACK, 0);
@@ -248,7 +248,7 @@ NotReady (RESPONSE_REF R)
 	{
 		NPCPhrase (USE_OUR_SHIPS_BEFORE);
 
-		ActivateStarShip (CHMMR_SHIP, SET_ALLIED);
+		SetRaceAllied (CHMMR_SHIP, TRUE);
 	}
 	else if (PLAYER_SAID (R, where_weapon))
 	{
@@ -263,7 +263,7 @@ NotReady (RESPONSE_REF R)
 		DISABLE_PHRASE (where_distraction);
 	}
 
-	if (ActivateStarShip (CHMMR_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
+	if (CheckAlliance (CHMMR_SHIP) != GOOD_GUY)
 		Response (tech_help, NotReady);
 	else if (PHRASE_ENABLED (further_assistance))
 		Response (further_assistance, NotReady);
@@ -301,7 +301,7 @@ ImproveBomb (RESPONSE_REF R)
 	{
 		NPCPhrase (USE_OUR_SHIPS_AFTER);
 
-		ActivateStarShip (CHMMR_SHIP, SET_ALLIED);
+		SetRaceAllied (CHMMR_SHIP, TRUE);
 	}
 
 	if (PHRASE_ENABLED (what_now))
@@ -310,7 +310,7 @@ ImproveBomb (RESPONSE_REF R)
 		Response (wont_hurt_my_ship, ImproveBomb);
 	else if (PHRASE_ENABLED (bummer_about_my_ship))
 		Response (bummer_about_my_ship, ImproveBomb);
-	if (ActivateStarShip (CHMMR_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
+	if (CheckAlliance (CHMMR_SHIP) != GOOD_GUY)
 		Response (other_assistance, ImproveBomb);
 	Response (proceed, ExitConversation);
 }

@@ -125,7 +125,7 @@ GenerateVux_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 			&& (CurStarDescPtr->Index == VUX_DEFINED
 			|| (CurStarDescPtr->Index == MAIDENS_DEFINED
 			&& !GET_GAME_STATE (ZEX_IS_DEAD))))
-			&& ActivateStarShip (VUX_SHIP, SPHERE_TRACKING))
+			&& StartSphereTracking (VUX_SHIP))
 	{
 		NotifyOthers (VUX_SHIP, IPNL_ALL_CLEAR);
 		PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);

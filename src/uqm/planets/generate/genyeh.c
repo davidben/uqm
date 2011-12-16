@@ -77,7 +77,7 @@ GenerateYehat_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		if (ActivateStarShip (YEHAT_SHIP, SPHERE_TRACKING))
+		if (StartSphereTracking (YEHAT_SHIP))
 		{
 			NotifyOthers (YEHAT_SHIP, IPNL_ALL_CLEAR);
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);

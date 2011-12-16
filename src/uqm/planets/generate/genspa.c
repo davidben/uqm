@@ -121,7 +121,7 @@ GenerateSpathi_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	{
 		/* Spathiwa's moon */
 		if (!GET_GAME_STATE (SPATHI_SHIELDED_SELVES)
-				&& ActivateStarShip (SPATHI_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (SPATHI_SHIP))
 		{
 			NotifyOthers (SPATHI_SHIP, IPNL_ALL_CLEAR);
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
