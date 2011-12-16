@@ -371,7 +371,7 @@ NormalMycon (RESPONSE_REF R)
 		DoRamble (R);
 		NPCPhrase (RAMBLE_TAIL);
 
-		DISABLE_PHRASE (RESPONSE_TO_REF (R));
+		DISABLE_PHRASE (R);
 	}
 
 	if ((BYTE)TFB_Random () < 256 * 30 / 100)

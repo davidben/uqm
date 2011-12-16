@@ -69,7 +69,6 @@ extern UNICODE shared_phrase_buf[2048];
 		(*(UNICODE *)GetStringAddress ( \
 				SetAbsStringTableIndex (CommData.ConversationPhrases, (p)-1) \
 				) = '\0')
-#define RESPONSE_TO_REF(R) (R)
 
 #define Response(i,a) \
 		DoResponsePhrase(i,(RESPONSE_FUNC)a,0)
