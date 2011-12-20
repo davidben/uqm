@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Added a free callback function for the values of the key-value pairs
+  in hash tables - SvdB
 - Annigilate ActivateStarShip() - SvdB
 - Removed obsolete RESPONSE_TO_REF() - SvdB
 - Don't require the 'shadow' dir in addon packs, from Alex

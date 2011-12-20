@@ -46,12 +46,14 @@ static inline HASHTABLE_(HashEntry) *HASHTABLE_(allocHashEntry)(void);
 static inline void HASHTABLE_(freeHashEntry)(
 		HASHTABLE_(HashEntry) *entry);
 
+// Create a new HashTable.
 HASHTABLE_(HashTable) *
 HASHTABLE_(newHashTable)(
 		HASHTABLE_(HashFunction) hashFunction,
 		HASHTABLE_(EqualFunction) equalFunction,
 		HASHTABLE_(CopyFunction) copyFunction,
-		HASHTABLE_(FreeFunction) freeFunction,
+		HASHTABLE_(FreeKeyFunction) freeKeyFunction,
+		HASHTABLE_(FreeValueFunction) freeValueFunction,
 		uio_uint32 initialSize,
 		double minFillQuotient,
 		double maxFillQuotient) {
@@ -63,7 +65,8 @@ HASHTABLE_(newHashTable)(
 	hashTable->hashFunction = hashFunction;
 	hashTable->equalFunction = equalFunction;
 	hashTable->copyFunction = copyFunction;
-	hashTable->freeFunction = freeFunction;
+	hashTable->freeKeyFunction = freeKeyFunction;
+	hashTable->freeValueFunction = freeValueFunction;
 
 	hashTable->minFillQuotient = minFillQuotient;
 	hashTable->maxFillQuotient = maxFillQuotient;
@@ -72,6 +75,7 @@ HASHTABLE_(newHashTable)(
 	return hashTable;
 }
 
+// Add an entry to the HashTable.
 uio_bool
 HASHTABLE_(add)(HASHTABLE_(HashTable) *hashTable,
 		const HASHTABLE_(Key) *key, HASHTABLE_(Value) *value) {
@@ -104,6 +108,7 @@ HASHTABLE_(add)(HASHTABLE_(HashTable) *hashTable,
 	return true;
 }
 
+// Remove an entry with a specified Key from the HashTable.
 uio_bool
 HASHTABLE_(remove)(HASHTABLE_(HashTable) *hashTable,
 		const HASHTABLE_(Key) *key) {
@@ -122,7 +127,8 @@ HASHTABLE_(remove)(HASHTABLE_(HashTable) *hashTable,
 		entry = &(*entry)->next;
 	}
 	next = (*entry)->next;
-	HASHTABLE_(FREE)(hashTable, (*entry)->key);
+	HASHTABLE_(FREEKEY)(hashTable, (*entry)->key);
+	HASHTABLE_(FREEVALUE)(hashTable, (*entry)->value);
 	HASHTABLE_(freeHashEntry)(*entry);
 	*entry = next;
 
@@ -133,6 +139,7 @@ HASHTABLE_(remove)(HASHTABLE_(HashTable) *hashTable,
 	return true;
 }
 
+// Find the Value stored for some Key.
 HASHTABLE_(Value) *
 HASHTABLE_(find)(HASHTABLE_(HashTable) *hashTable,
 		const HASHTABLE_(Key) *key) {
@@ -151,11 +158,13 @@ HASHTABLE_(find)(HASHTABLE_(HashTable) *hashTable,
 	return NULL;
 }
 
+// Returns the number of entries in the HashTable.
 uio_uint32
 HASHTABLE_(count)(const HASHTABLE_(HashTable) *hashTable) {
 	return hashTable->numEntries;
 }
 
+// Auxiliary function to (re)initialise the buckets in the HashTable.
 static void
 HASHTABLE_(setup)(HASHTABLE_(HashTable) *hashTable, uio_uint32 initialSize) {
 	if (initialSize < 4)
@@ -175,6 +184,7 @@ HASHTABLE_(setup)(HASHTABLE_(HashTable) *hashTable, uio_uint32 initialSize) {
 #endif
 }
 
+// Resize the buckets in the HashTable.
 static void
 HASHTABLE_(resize)(HASHTABLE_(HashTable) *hashTable) {
 	HASHTABLE_(HashEntry) **oldEntries;
@@ -224,6 +234,7 @@ nextPower2(uio_uint32 x) {
 	return x + 1;
 }
 
+// Get an iterator to iterate through all the entries in the HashTable.
 // NB: Iterator should be considered invalid if the HashTable is changed.
 // TODO: change this (make it thread-safe)
 //       this can be done by only marking items as deleted when
@@ -252,21 +263,26 @@ HASHTABLE_(getIterator)(const HASHTABLE_(HashTable) *hashTable) {
 	return iterator;
 }
 
+// Returns true if and only if there are no more entries in the hash table
+// for the Iterator to find.
 int
 HASHTABLE_(iteratorDone)(const HASHTABLE_(Iterator) *iterator) {
 	return iterator->bucketNr >= iterator->hashTable->size;
 }
 
+// Get the Key of the entry pointed to by an Iterator.
 HASHTABLE_(Key) *
 HASHTABLE_(iteratorKey)(HASHTABLE_(Iterator) *iterator) {
 	return iterator->entry->key;
 }
 
+// Get the Value of the entry pointed to by an Iterator.
 HASHTABLE_(Value) *
 HASHTABLE_(iteratorValue)(HASHTABLE_(Iterator) *iterator) {
 	return iterator->entry->value;
 }
 
+// Move the Iterator to the next entry in the HashTable.
 // Should not be called if the iterator is already past the last entry.
 HASHTABLE_(Iterator) *
 HASHTABLE_(iteratorNext)(HASHTABLE_(Iterator) *iterator) {
@@ -293,16 +309,19 @@ HASHTABLE_(iteratorNext)(HASHTABLE_(Iterator) *iterator) {
 	return iterator;
 }
 
+// Free the Iterator.
 void
 HASHTABLE_(freeIterator)(HASHTABLE_(Iterator) *iterator) {
 	uio_free(iterator);
 }
 
+// Auxiliary function to allocate a HashTable.
 static inline HASHTABLE_(HashTable) *
 HASHTABLE_(allocHashTable)(void) {
 	return uio_malloc(sizeof (HASHTABLE_(HashTable)));
 }
 
+// Auxiliary function to create a HashEntry.
 static inline HASHTABLE_(HashEntry) *
 HASHTABLE_(newHashEntry)(uio_uint32 hash, HASHTABLE_(Key) *key,
 		HASHTABLE_(Value) *value, HASHTABLE_(HashEntry) *next) {
@@ -316,11 +335,13 @@ HASHTABLE_(newHashEntry)(uio_uint32 hash, HASHTABLE_(Key) *key,
 	return result;
 }
 
+// Allocate a new HashEntry.
 static inline HASHTABLE_(HashEntry) *
 HASHTABLE_(allocHashEntry)(void) {
 	return uio_malloc(sizeof (HASHTABLE_(HashEntry)));
 }
 
+// Delete the HashTable.
 void
 HASHTABLE_(deleteHashTable)(HASHTABLE_(HashTable) *hashTable) {
 	uio_uint32 i;
@@ -333,7 +354,8 @@ HASHTABLE_(deleteHashTable)(HASHTABLE_(HashTable) *hashTable) {
 		entry = *bucketPtr;
 		while (entry != NULL) {
 			next = entry->next;
-			HASHTABLE_(FREE)(hashTable, entry->key);
+			HASHTABLE_(FREEKEY)(hashTable, entry->key);
+			HASHTABLE_(FREEVALUE)(hashTable, entry->value);
 			HASHTABLE_(freeHashEntry)(entry);
 			entry = next;
 			i--;
@@ -344,6 +366,7 @@ HASHTABLE_(deleteHashTable)(HASHTABLE_(HashTable) *hashTable) {
 	uio_free(hashTable);
 }
 
+// Auxiliary function to deallocate a HashEntry.
 static inline void
 HASHTABLE_(freeHashEntry)(HASHTABLE_(HashEntry) *entry) {
 	uio_free(entry);

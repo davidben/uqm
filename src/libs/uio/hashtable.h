@@ -39,6 +39,8 @@
 // (and typedefs) from the HASHTABLE_ block below.
 // In the .c file, #define HASHTABLE_INTERNAL, #include the .h file
 // and hashtable.c (in this order), and add the necessary functions.
+// If you do not need to free the Value, you can define HashTable_FREEVALUE
+// as a no-op.
 #ifndef HASHTABLE_
 #	define HASHTABLE_(identifier) HashTable ## _ ## identifier
 	typedef void HashTable_Key;
@@ -49,8 +51,10 @@
 		(hashTable)->equalFunction(hashKey1, hashKey2)
 #	define HashTable_COPY(hashTable, hashKey) \
 		(hashTable)->copyFunction(hashKey)
-#	define HashTable_FREE(hashTable, hashKey) \
-		(hashTable)->freeFunction(hashKey)
+#	define HashTable_FREEKEY(hashTable, hashKey) \
+		(hashTable)->freeKeyFunction(hashKey)
+#	define HashTable_FREEVALUE(hashTable, hashValue) \
+		(hashTable)->freeValueFunction(hashKey)
 #endif
 
 
@@ -59,8 +63,9 @@ typedef uio_uint32 (*HASHTABLE_(HashFunction))(const HASHTABLE_(Key) *);
 typedef uio_bool (*HASHTABLE_(EqualFunction))(const HASHTABLE_(Key) *,
 		const HASHTABLE_(Key) *);
 typedef HASHTABLE_(Value) *(*HASHTABLE_(CopyFunction))(
-		const HASHTABLE_(Value) *);
-typedef void (*HASHTABLE_(FreeFunction))(HASHTABLE_(Value) *);
+		const HASHTABLE_(Key) *);
+typedef void (*HASHTABLE_(FreeKeyFunction))(HASHTABLE_(Key) *);
+typedef void (*HASHTABLE_(FreeValueFunction))(HASHTABLE_(Value) *);
 
 typedef struct HASHTABLE_(HashTable) HASHTABLE_(HashTable);
 typedef struct HASHTABLE_(HashEntry) HASHTABLE_(HashEntry);
@@ -68,9 +73,17 @@ typedef struct HASHTABLE_(Iterator) HASHTABLE_(Iterator);
 
 struct HASHTABLE_(HashTable) {
 	HASHTABLE_(HashFunction) hashFunction;	
+			// Function creating a uio_uint32 hash of a key.
 	HASHTABLE_(EqualFunction) equalFunction;
+			// Function used to compare two keys.
 	HASHTABLE_(CopyFunction) copyFunction;
-	HASHTABLE_(FreeFunction) freeFunction;
+			// Function used to copy a key.
+	HASHTABLE_(FreeKeyFunction) freeKeyFunction;
+			// Function used to free a key.
+	HASHTABLE_(FreeValueFunction) freeValueFunction;
+			// Function used to free a value. Called when an entry is
+			// removed using the remove function, or for entries
+			// still in the HashTable when the HashTable is deleted.
 
 	double minFillQuotient;
 			// How much of half of the hashtable needs to be filled
@@ -114,7 +127,9 @@ HASHTABLE_(HashTable) *HASHTABLE_(newHashTable)(
 		HASHTABLE_(HashFunction) hashFunction,
 		HASHTABLE_(EqualFunction) equalFunction,
 		HASHTABLE_(CopyFunction) copyFunction,
-		HASHTABLE_(FreeFunction) freeFunction, uio_uint32 initialSize,
+		HASHTABLE_(FreeKeyFunction) freeKeyFunction,
+		HASHTABLE_(FreeValueFunction) freeValueFunction,
+		uio_uint32 initialSize,
 		double minFillQuotient, double maxFillQuotient);
 uio_bool HASHTABLE_(add)(HASHTABLE_(HashTable) *hashTable,
 		const HASHTABLE_(Key) *key, HASHTABLE_(Value) *value);

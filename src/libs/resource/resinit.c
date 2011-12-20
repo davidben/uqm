@@ -34,7 +34,8 @@
 static RESOURCE_INDEX
 allocResourceIndex (void) {
 	RESOURCE_INDEX ndx = HMalloc (sizeof (RESOURCE_INDEX_DESC));
-	ndx->map = CharHashTable_newHashTable (NULL, NULL, NULL, NULL, 0, 0.85, 0.9);
+	ndx->map = CharHashTable_newHashTable (NULL, NULL, NULL, NULL, NULL,
+			0, 0.85, 0.9);
 	return ndx;
 }
 
