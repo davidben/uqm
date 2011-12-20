@@ -35,5 +35,5 @@ typedef void HASHTABLE_(Value);
 #include "hashtable.h"
 
 
-#endif  /* _HASHTABLE_H */
+#endif  /* _CHARHASHTABLE_H */
 
