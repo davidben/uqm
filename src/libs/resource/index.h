@@ -19,19 +19,22 @@
 #ifndef _INDEX_H
 #define _INDEX_H
 
+typedef struct resource_handlers ResourceHandlers;
+typedef struct resource_desc ResourceDesc;
+
 #include <stdio.h>
 #include "libs/reslib.h"
 #include "libs/uio/charhashtable.h"
 
-typedef struct resource_handlers
+struct resource_handlers
 {
 	const char *resType;
 	ResourceLoadFun *loadFun;
 	ResourceFreeFun *freeFun;
 	ResourceStringFun *toString;
-} ResourceHandlers;
+};
 
-typedef struct resource_desc
+struct resource_desc
 {
 	RESOURCE res_id;
 	char *fname;
@@ -39,7 +42,7 @@ typedef struct resource_desc
 	RESOURCE_DATA resdata;
 	// refcount is rudimentary as nothing really frees the descriptors
 	unsigned refcount;
-} ResourceDesc;
+};
 
 struct resource_index_desc
 {
