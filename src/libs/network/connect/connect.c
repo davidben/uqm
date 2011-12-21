@@ -57,7 +57,7 @@ static void doConnectErrorCallback(ConnectState *connectState,
 static ConnectState *
 ConnectState_alloc(void) {
 	return (ConnectState *) malloc(sizeof (ConnectState));
-};
+}
 
 static void
 ConnectState_free(ConnectState *connectState) {
