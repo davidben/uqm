@@ -131,7 +131,7 @@ TFB_Prim_Stamp (STAMP *stmp, DrawMode mode, POINT ctxOrigin)
 	if (!SrcFramePtr)
 	{
 		log_add (log_Warning, "TFB_Prim_Stamp: Tried to draw a NULL frame"
-				" (Stamp address = %p)", stmp);
+				" (Stamp address = %p)", (void *) stmp);
 		return;
 	}
 	img = SrcFramePtr->image;
@@ -180,7 +180,7 @@ TFB_Prim_StampFill (STAMP *stmp, Color color, DrawMode mode, POINT ctxOrigin)
 	if (!SrcFramePtr)
 	{
 		log_add (log_Warning, "TFB_Prim_StampFill: Tried to draw a NULL frame"
-				" (Stamp address = %p)", stmp);
+				" (Stamp address = %p)", (void *) stmp);
 		return;
 	}
 	img = SrcFramePtr->image;
