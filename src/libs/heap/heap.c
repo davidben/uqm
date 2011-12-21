@@ -49,7 +49,7 @@ Heap_new(HeapValue_Comparator comparator, size_t initialSize, size_t minSize,
 	heap->minSize = minSize;
 	heap->minFillQuotient = minFillQuotient;
 	heap->size = nextPower2(initialSize);
-	heap->minFill = (size_t) ceil(((double) (heap->size >> 1))
+	heap->minFill = ceil(((double) (heap->size >> 1))
 			* heap->minFillQuotient);
 	heap->entries = malloc(heap->size * sizeof (HeapValue *));
 	heap->numEntries = 0;

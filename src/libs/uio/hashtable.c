@@ -169,12 +169,12 @@ static void
 HASHTABLE_(setup)(HASHTABLE_(HashTable) *hashTable, uio_uint32 initialSize) {
 	if (initialSize < 4)
 		initialSize = 4;
-	hashTable->size = nextPower2((uio_uint32) ceil(
-				((double) initialSize) / hashTable->maxFillQuotient));
+	hashTable->size = nextPower2(ceil(((double) initialSize) /
+			hashTable->maxFillQuotient));
 	hashTable->hashMask = hashTable->size - 1;
-	hashTable->minSize = (uio_uint32) ceil(((double) (hashTable->size >> 1))
+	hashTable->minSize = ceil(((double) (hashTable->size >> 1))
 			* hashTable->minFillQuotient);
-	hashTable->maxSize = (uio_uint32) floor(((double) hashTable->size)
+	hashTable->maxSize = floor(((double) hashTable->size)
 			* hashTable->maxFillQuotient);
 	hashTable->entries = uio_calloc(hashTable->size,
 			sizeof (HASHTABLE_(HashEntry) *));
