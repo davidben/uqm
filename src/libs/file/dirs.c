@@ -142,7 +142,7 @@ mkdirhier (const char *path)
 
 	if (*pathstart == '\0') {
 		// path exists completely, nothing more to do
-		return 0;
+		goto success;
 	}
 
 	// walk through the path as long as the components exist
@@ -177,7 +177,7 @@ mkdirhier (const char *path)
 		}
 		
 		if (*pathend == '\0')
-			return 0;
+			goto success;
 
 		*ptr = '/';
 		ptr++;
@@ -187,7 +187,7 @@ mkdirhier (const char *path)
 		// pathstart is the next non-slash character
 
 		if (*pathstart == '\0')
-			return 0;
+			goto success;
 	}
 	
 	// create all components left
@@ -221,6 +221,9 @@ mkdirhier (const char *path)
 		ptr += pathend - pathstart;
 		*ptr = '\0';
 	}
+
+success:
+	HFree (buf);
 	return 0;
 
 err:
@@ -641,6 +644,7 @@ expandPath (char *dest, size_t len, const char *src, int what)
 		*destptr = '\0';
 	}
 	
+	HFree (buf);
 	return 0;
 
 err:

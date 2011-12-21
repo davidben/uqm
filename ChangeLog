@@ -1,4 +1,5 @@
 Changes towards version 0.8:
+- Fix memory leak in mkdirhier(), from Loius Delacroix
 - Some cleanups / warnings fixes, from Louis Delacroix
 - Added a free callback function for the values of the key-value pairs
   in hash tables - SvdB
