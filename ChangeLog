@@ -1,4 +1,5 @@
 Changes towards version 0.8:
+- Added Valgrind suppression file, from Louis Delacroix
 - Fix several memory leaks, from Loius Delacroix
 - Some cleanups / warnings fixes, from Louis Delacroix
 - Added a free callback function for the values of the key-value pairs
