@@ -139,6 +139,10 @@ DestroyContext (CONTEXT ContextRef)
 	}
 #endif  /* DEBUG */
 
+	TFB_Image *img = ContextRef->FontBacking;
+	if (img)
+		TFB_DrawImage_Delete (img);
+
 	FreeContext (ContextRef);
 	return TRUE;
 }
