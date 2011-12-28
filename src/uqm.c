@@ -487,6 +487,8 @@ main (int argc, char *argv[])
 		UnInitThreadSystem ();
 		mem_uninit ();
 	}
+
+	HFree (options.addons);
 	
 	return EXIT_SUCCESS;
 }

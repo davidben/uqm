@@ -211,6 +211,7 @@ Flash_terminate (FlashContext *context)
 		Flash_drawFrame (context, context->original);
 
 		Flash_clearCache (context);
+		HFree (context->cache);
 		DestroyDrawable (ReleaseDrawable (context->original));
 	}
 
