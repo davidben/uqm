@@ -186,7 +186,7 @@ TFB_ProcessEvents ()
 {
 	SDL_Event Event;
 
-	while (SDL_PollEvent (&Event) > 0)
+	while (SDL_PollEvent (&Event))
 	{
 		/* Run through the InputEvent filter. */
 		ProcessInputEvent (&Event);
