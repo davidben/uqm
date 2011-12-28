@@ -38,68 +38,47 @@ mem_uninit (void)
 }
 
 void *
-HMalloc (int size)
+HMalloc (size_t size)
 {
-	void *p;
-
-	if (size == 0)
-		return NULL;
-
-	if (size < 0) 
-	{
-		log_add (log_Fatal, "HMalloc() FATAL: "
-				"request for negative amount of memory %d!", size);
-		fflush (stderr);
-		explode ();
-	}
-
-	p = malloc (size);
-	if (p == NULL) 
+	void *p = malloc (size);
+	if (p == NULL && size > 0)
 	{
 		log_add (log_Fatal, "HMalloc() FATAL: out of memory.");
 		fflush (stderr);
 		explode ();
 	}
-	return (p);
+
+	return p;
 }
 
 void
 HFree (void *p)
 {
-	if (p)
-	{
-		free (p);
-	}
+	free (p);
 }
 
 void *
-HCalloc (int size)
+HCalloc (size_t size)
 {
 	void *p;
 
 	p = HMalloc (size);
 	memset (p, 0, size);
 
-	return (p);
+	return p;
 }
 
 void *
-HRealloc (void *p, int size)
+HRealloc (void *p, size_t size)
 {
-	if (size < 0) 
-	{
-		log_add (log_Fatal, "HRealloc() FATAL: "
-				"request for negative amount of memory %d!", size);
-		fflush (stderr);
-		explode ();
-	}
-
 	p = realloc (p, size);
-	if (!p && size > 0) 
+	if (p == NULL && size > 0)
 	{
 		log_add (log_Fatal, "HRealloc() FATAL: out of memory.");
 		fflush (stderr);
 		explode ();
 	}
+
 	return p;
 }
+

@@ -19,6 +19,8 @@
 #ifndef _MEMLIB_H
 #define _MEMLIB_H
 
+#include <stddef.h>
+
 #include "types.h"
 
 #if defined(__cplusplus)
@@ -28,10 +30,10 @@ extern "C" {
 extern bool mem_init (void);
 extern bool mem_uninit (void);
 
-extern void *HMalloc (int size);
+extern void *HMalloc (size_t size);
 extern void HFree (void *p);
-extern void *HCalloc (int size);
-extern void *HRealloc (void *p, int size);
+extern void *HCalloc (size_t size);
+extern void *HRealloc (void *p, size_t size);
 
 #if defined(__cplusplus)
 }
