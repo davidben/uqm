@@ -182,6 +182,8 @@ extern void InitSISContexts (void);
 extern void DrawSISFrame (void);
 extern void ClearSISRect (BYTE ClearFlags);
 extern void SetFlashRect (RECT *pRect);
+extern void PreUpdateRadarRect (void);
+extern void PostUpdateRadarRect (void);
 #define SFR_MENU_3DO ((RECT*)~0L)
 #define SFR_MENU_ANY ((RECT*)~1L)
 extern void DrawHyperCoords (POINT puniverse);
