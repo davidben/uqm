@@ -31,18 +31,17 @@
  *
  * // We create the flash context; it is used to manipulate the flash
  * // rectangle while it exists.
- * FlashContext *fc = Flash_createHighlight (context, (FRAME) 0, rect);
+ * FlashContext *fc = Flash_createHighlight (gfxContext, rect);
  * 
  * // Specify how bright the flash is at the beginning and ending of the
  * // sequence.
- * Flash_setMergeFactors(context, 2, 3, 2);
+ * Flash_setMergeFactors(fc, 2, 3, 2);
  *
  * // We change the flashing speed from the defaults.
  * Flash_setSpeed (ONE_SECOND, ONE_SECOND, ONE_SECOND, ONE_SECOND);
  * 
  * // During cross-fades, update 8 times per second.
- * Flash_setFrameTime (gmstate.player[playerI].flashContext,
- *         ONE_SECOND / 8);
+ * Flash_setFrameTime (fc, ONE_SECOND / 8);
  *
  * // We start the flashing. The default is to start from the "off" state.
  * Flash_start (fc);
