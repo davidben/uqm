@@ -38,7 +38,7 @@
  * Flash_setMergeFactors(fc, 2, 3, 2);
  *
  * // We change the flashing speed from the defaults.
- * Flash_setSpeed (ONE_SECOND, ONE_SECOND, ONE_SECOND, ONE_SECOND);
+ * Flash_setSpeed (fc, ONE_SECOND, ONE_SECOND, ONE_SECOND, ONE_SECOND);
  * 
  * // During cross-fades, update 8 times per second.
  * Flash_setFrameTime (fc, ONE_SECOND / 8);
@@ -62,7 +62,7 @@
  * ...
  * // Modifying the graphics of the area that is flashing:
  * void Flash_preUpdate (fc);
- * ... // do Drawing
+ * ... // do drawing
  * void Flash_postUpdate (fc);
  * ...
  * // We're done. Terminating the flash restores the flash area to its
@@ -77,13 +77,15 @@
  *
  * Limitations:
  *
- * 2) Functions that draw to the gfxContext or read the original gfxContext
- * contents, which is most of them, must be called with gfxContext having
- * the same clip-rect as it did when other drawing functions were called.
- * Otherwise, original contents restoration may draw to the wrong area, or
- * the wrong area may be read.
- * There may be cases where one would *want* that to happen, and such
- * cases are not covered by this limitation.
+ * * Functions that draw to the gfxContext or read the original gfxContext
+ *   contents, which is most of them, must be called with gfxContext having
+ *   the same clip-rect as it did when other drawing functions were called.
+ *   Otherwise, original contents restoration may draw to the wrong area, or
+ *   the wrong area may be read.
+ *   There may be cases where one would *want* that to happen, and such
+ *   cases are not covered by this limitation.
+ * * Multiple flashes may be used simultaneously, but don't let them
+ *   overlap; artifacts would occur.
  */
 
 #include "libs/gfxlib.h"
