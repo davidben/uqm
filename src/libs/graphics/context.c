@@ -123,6 +123,8 @@ FindContextPtr (CONTEXT context) {
 BOOLEAN
 DestroyContext (CONTEXT ContextRef)
 {
+	TFB_Image *img;
+
 	if (ContextRef == 0)
 		return (FALSE);
 
@@ -139,7 +141,7 @@ DestroyContext (CONTEXT ContextRef)
 	}
 #endif  /* DEBUG */
 
-	TFB_Image *img = ContextRef->FontBacking;
+	img = ContextRef->FontBacking;
 	if (img)
 		TFB_DrawImage_Delete (img);
 
