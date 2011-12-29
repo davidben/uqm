@@ -275,37 +275,36 @@ Flash_process (FlashContext *context)
 	
 	now = GetTimeCounter ();
 
-	if (context->state == FlashState_fadeIn)
+	switch (context->state)
 	{
-		if (now >= context->lastStateTime + context->fadeInTime)
-		{
+		case FlashState_fadeIn:
+			if (now >= context->lastStateTime + context->fadeInTime)
+			{
+				Flash_nextState (context);
+				context->lastStateTime = now;
+			}
+			context->lastFrameTime = now;
+			break;
+		case FlashState_on:
+			if (now < context->lastStateTime + context->onTime)
+				return;
 			Flash_nextState (context);
 			context->lastStateTime = now;
-		}
-		context->lastFrameTime = now;
-	}
-	else if (context->state == FlashState_on)
-	{
-		if (now < context->lastStateTime + context->onTime)
-			return;
-		Flash_nextState (context);
-		context->lastStateTime = now;
-	}
-	else if (context->state == FlashState_fadeOut)
-	{
-		if (now >= context->lastStateTime + context->fadeOutTime)
-		{
+			break;
+		case FlashState_fadeOut:
+			if (now >= context->lastStateTime + context->fadeOutTime)
+			{
+				Flash_nextState (context);
+				context->lastStateTime = now;
+			}
+			context->lastFrameTime = now;
+			break;
+		case FlashState_off:
+			if (now < context->lastStateTime + context->offTime)
+				return;
 			Flash_nextState (context);
 			context->lastStateTime = now;
-		}
-		context->lastFrameTime = now;
-	}
-	else /* context->state == FlashState_off */
-	{
-		if (now < context->lastStateTime + context->offTime)
-			return;
-		Flash_nextState (context);
-		context->lastStateTime = now;
+			break;
 	}
 
 	Flash_drawCurrentFrame (context);
