@@ -28,6 +28,9 @@
 #include "libs/tasklib.h"
 #include "libs/log.h"
 
+extern Task flash_task;
+extern RECT flash_rect;
+
 static BYTE GetEndMenuState (BYTE BaseState);
 static BYTE GetBeginMenuState (BYTE BaseState);
 static BYTE FixMenuState (BYTE BadState);
@@ -497,7 +500,6 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	if (NewState <= end_index - beg_index)
 		s.frame = SetAbsFrameIndex (PlayFrame, beg_index + NewState);
 
-	PreUpdateRadarRect ();
 	LockMutex (GraphicsLock);
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&r);
@@ -598,8 +600,13 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 		}
 	}
 	UnbatchGraphics ();
+	if (flash_task
+			&& flash_rect.corner.x == RADAR_X
+			&& flash_rect.corner.y == RADAR_Y
+			&& flash_rect.extent.width == RADAR_WIDTH
+			&& flash_rect.extent.height == RADAR_HEIGHT)
+		SetFlashRect (SFR_MENU_3DO);
 	SetContext (OldContext);
 	UnlockMutex (GraphicsLock);
-	PostUpdateRadarRect ();
 }
 

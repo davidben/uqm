@@ -1,5 +1,4 @@
 Changes towards version 0.8:
-- Changed SetFlashRect() to use the new flash code - SvdB
 - Added Valgrind suppression file, from Louis Delacroix
 - Fix several memory leaks, from Loius Delacroix
 - Some cleanups / warnings fixes, from Louis Delacroix
