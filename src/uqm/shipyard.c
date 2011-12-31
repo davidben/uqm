@@ -73,6 +73,12 @@ enum
 	SHIPYARD_EXIT
 };
 
+static COUNT ShipCost[] =
+{
+	RACE_SHIP_COST
+};
+
+
 static void
 animatePowerLines (MENU_STATE *pMS)
 {
@@ -214,10 +220,6 @@ DrawRaceStrings (MENU_STATE *pMS, BYTE NewRaceItem)
 		HFLEETINFO hStarShip;
 		FLEET_INFO *FleetPtr;
 		UNICODE buf[30];
-		COUNT ShipCost[] =
-		{
-			RACE_SHIP_COST
-		};
 
 		hStarShip = GetAvailableRaceFromIndex (NewRaceItem);
 		NewRaceItem = GetIndexFromStarShip (&GLOBAL (avail_race_q),
@@ -591,6 +593,47 @@ DMS_SpinShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 }
 #endif  /* WANT_SHIP_SPINS */
 
+// Try to add the currently selected ship 
+static void
+DMS_TryAddEscortShip (MENU_STATE *pMS)
+{
+	HFLEETINFO shipInfo = GetAvailableRaceFromIndex (
+			LOBYTE (pMS->delta_item));
+	COUNT Index = GetIndexFromStarShip (&GLOBAL (avail_race_q), shipInfo);
+
+	if (GLOBAL_SIS (ResUnits) >= (DWORD)ShipCost[Index]
+			&& CloneShipFragment (Index, &GLOBAL (built_ship_q), 1))
+	{
+		RECT r;
+		ShowCombatShip (pMS, pMS->CurState, NULL);
+		//Reset flash rectangle
+		LockMutex (GraphicsLock);
+		SetFlashRect (SFR_MENU_3DO);
+		UnlockMutex (GraphicsLock);
+		DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
+
+		LockMutex (GraphicsLock);
+		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
+				-((int)ShipCost[Index]));
+		r.corner.x = pMS->flash_rect0.corner.x;
+		r.corner.y = pMS->flash_rect0.corner.y
+				+ pMS->flash_rect0.extent.height - 6;
+		r.extent.width = SHIP_WIN_WIDTH;
+		r.extent.height = 5;
+		SetContext (SpaceContext);
+		SetFlashRect (&r);
+		UnlockMutex (GraphicsLock);
+	}
+	else
+	{
+		// not enough RUs to build, or cloning the ship failed.
+		PlayMenuSound (MENU_SOUND_FAILURE);
+	}
+
+	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+			MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+}
+
 /* in this routine, the least significant byte of pMS->CurState is used
  * to store the current selected ship index
  * a special case for the row is hi-nibble == -1 (0xf), which specifies
@@ -708,25 +751,25 @@ DoModifyShips (MENU_STATE *pMS)
 			if (select || ((pMS->delta_item & MODIFY_CREW_FLAG)
 					&& (dx || dy || cancel)))
 			{
-				COUNT ShipCost[] =
-				{
-					RACE_SHIP_COST
-				};
-
 				if (hStarShip == 0 && HINIBBLE (pMS->CurState) == 0)
 				{
+					// Cursor is over an empty escort ship slot.
 					COUNT Index;
 
 // SetFlashRect (NULL);
 					UnlockMutex (GraphicsLock);
 					if (!(pMS->delta_item & MODIFY_CREW_FLAG))
 					{
+						// Select button was pressed over an empty escort
+						// ship slot. Switch to 'add ship' mode.
 						pMS->delta_item = MODIFY_CREW_FLAG;
 						DrawRaceStrings (pMS, 0);
 						return TRUE;
 					}
 					else if (cancel)
 					{
+						// We were selecting a ship to be inserted in an
+						// empty escort ship slot, but cancelled.
 						pMS->delta_item ^= MODIFY_CREW_FLAG;
 						LockMutex (GraphicsLock);
 						SetFlashRect (SFR_MENU_3DO);
@@ -736,44 +779,15 @@ DoModifyShips (MENU_STATE *pMS)
 					}
 					else if (select)
 					{
-						Index = GetIndexFromStarShip (&GLOBAL (avail_race_q),
-								GetAvailableRaceFromIndex (
-								LOBYTE (pMS->delta_item)));
-
-						if (GLOBAL_SIS (ResUnits) >= (DWORD)ShipCost[Index]
-								&& CloneShipFragment (Index,
-								&GLOBAL (built_ship_q), 1))
-						{
-							ShowCombatShip (pMS, pMS->CurState, NULL);
-							//Reset flash rectangle
-							LockMutex (GraphicsLock);
-							SetFlashRect (SFR_MENU_3DO);
-							UnlockMutex (GraphicsLock);
-							DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
-
-							LockMutex (GraphicsLock);
-							DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
-									-((int)ShipCost[Index]));
-							r.corner.x = pMS->flash_rect0.corner.x;
-							r.corner.y = pMS->flash_rect0.corner.y
-									+ pMS->flash_rect0.extent.height - 6;
-							r.extent.width = SHIP_WIN_WIDTH;
-							r.extent.height = 5;
-							SetContext (SpaceContext);
-							SetFlashRect (&r);
-							UnlockMutex (GraphicsLock);
-						}
-						else
-						{	// not enough RUs to build
-							PlayMenuSound (MENU_SOUND_FAILURE);
-						}
-						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
-								MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
-							
+						// Selected a ship to be inserted in an empty escort
+						// ship slot.
+						DMS_TryAddEscortShip (pMS);
 						return TRUE;
 					}
 					else
 					{
+						// Motion key pressed while selecting a ship to be
+						// inserted in an empty escort ship slot.
 						Index = GetAvailableRaceCount ();
 						NewState = LOBYTE (pMS->delta_item);
 						if (dx < 0 || dy < 0)
@@ -832,7 +846,8 @@ DoModifyShips (MENU_STATE *pMS)
 						}
 					}
 					
-					if (!(pMS->delta_item ^= MODIFY_CREW_FLAG))
+					pMS->delta_item ^= MODIFY_CREW_FLAG;
+					if (!pMS->delta_item)
 					{
 						goto ChangeFlashRect;
 					}
@@ -1023,8 +1038,8 @@ DoModifyShips (MENU_STATE *pMS)
 ChangeFlashRect:
 				if (HINIBBLE (pMS->CurState))
 				{
-					pMS->flash_rect0.corner.x =
-							pMS->flash_rect0.corner.y = 0;
+					pMS->flash_rect0.corner.x = 0;
+					pMS->flash_rect0.corner.y = 0;
 					pMS->flash_rect0.extent.width = SIS_SCREEN_WIDTH;
 					pMS->flash_rect0.extent.height = 61;
 				}
