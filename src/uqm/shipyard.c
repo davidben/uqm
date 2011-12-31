@@ -889,8 +889,10 @@ DoModifyShips (MENU_STATE *pMS)
 					crew_delta = 0;
 					if (dy < 0)
 					{
+						// Buy crew
 						if (hStarShip == 0)
 						{
+							// Buy crew for the flagship.
 							if (GetCPodCapacity (&r.corner) > GetCrewCount ()
 									&& GLOBAL_SIS (ResUnits) >=
 									(DWORD)GLOBAL (CrewCost))
@@ -911,6 +913,7 @@ DoModifyShips (MENU_STATE *pMS)
 						}
 						else
 						{
+							// Buy crew for an escort ship.
 							HFLEETINFO hTemplate;
 							FLEET_INFO *TemplatePtr;
 
@@ -952,11 +955,13 @@ DoModifyShips (MENU_STATE *pMS)
 					}
 					else if (dy > 0)
 					{
+						// Dismiss crew.
 						crew_bought = (SIZE)MAKE_WORD (
 								GET_GAME_STATE (CREW_PURCHASED0),
 								GET_GAME_STATE (CREW_PURCHASED1));
 						if (hStarShip == 0)
 						{
+							// Dismiss crew from the flagship.
 							if (GetCrewCount ())
 							{
 								DeltaSISGauges (-1, 0, GLOBAL (CrewCost)
@@ -980,15 +985,25 @@ DoModifyShips (MENU_STATE *pMS)
 						}
 						else
 						{
+							// Dismiss crew from an escort ship.
 							if (StarShipPtr->crew_level > 0)
 							{
 								if (StarShipPtr->crew_level > 1)
+								{
+									// The ship was not at 'scrap'.
+									// Give one crew member worth of RU.
 									DeltaSISGauges (0, 0, GLOBAL (CrewCost)
 											- (crew_bought ==
 											CREW_EXPENSE_THRESHOLD ? 2 : 0));
+								}
 								else
+								{
+									// With the last crew member, the ship
+									// will be scrapped.
+									// Give RU for the ship.
 									DeltaSISGauges (0, 0, (COUNT)ShipCost[
 											StarShipPtr->race_id]);
+								}
 								crew_delta = -1;
 								--StarShipPtr->crew_level;
 							}
