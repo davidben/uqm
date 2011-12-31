@@ -38,35 +38,20 @@ extern HLINK Build (QUEUE *pQueue, SPECIES_ID SpeciesID);
 extern HSHIPFRAG CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue,
 		COUNT crew_level);
 extern HLINK GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index);
-HSHIPFRAG GetEscortByStarShipIndex (COUNT index);
+extern HSHIPFRAG GetEscortByStarShipIndex (COUNT index);
 extern BYTE NameCaptain (QUEUE *pQueue, SPECIES_ID SpeciesID);
-
-/* Possible values for the 'state' argument of
- * COUNT ActivateStarShip (COUNT which_ship, SIZE state)
- * See that function for more information.
- */
-#define SET_ALLIED          0
-#define SET_NOT_ALLIED     -1
-#define CHECK_ALLIANCE     -2
-#define REMOVE_BUILT       -3
-#define ESCORT_WORTH       -4
-#define SPHERE_KNOWN       -5
-#define SPHERE_TRACKING    -6
-#define ESCORTING_FLAGSHIP -7
-#define FEASIBILITY_STUDY  -8
-		/* Check for how many escort ships there's still space */
 
 extern COUNT ActivateStarShip (COUNT which_ship, SIZE state);
 extern COUNT GetIndexFromStarShip (QUEUE *pShipQ, HLINK hStarShip);
 extern int SetEscortCrewComplement (COUNT which_ship, COUNT crew_level,
 		BYTE captain);
 
-COUNT AddEscortShips (COUNT race, SIZE count);
+extern COUNT AddEscortShips (COUNT race, SIZE count);
 extern COUNT CalculateEscortsWorth (void);
 //extern COUNT GetRaceKnownSize (COUNT race);
 extern COUNT SetRaceAllied (COUNT race, BOOLEAN flag);
 extern COUNT StartSphereTracking (COUNT race);
-BOOLEAN HaveEscortShip (COUNT race);
+extern BOOLEAN HaveEscortShip (COUNT race);
 extern COUNT EscortFeasibilityStudy (COUNT race);
 extern COUNT CheckAlliance (COUNT race);
 extern void RemoveEscortShips (COUNT race);
