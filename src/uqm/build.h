@@ -38,6 +38,7 @@ extern HLINK Build (QUEUE *pQueue, SPECIES_ID SpeciesID);
 extern HSHIPFRAG CloneShipFragment (COUNT shipIndex, QUEUE *pDstQueue,
 		COUNT crew_level);
 extern HLINK GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index);
+HSHIPFRAG GetEscortByStarShipIndex (COUNT index);
 extern BYTE NameCaptain (QUEUE *pQueue, SPECIES_ID SpeciesID);
 
 /* Possible values for the 'state' argument of

@@ -68,6 +68,31 @@ GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index)
 	return (hStarShip);
 }
 
+HSHIPFRAG
+GetEscortByStarShipIndex (COUNT index)
+{
+	HSHIPFRAG hStarShip;
+	HSHIPFRAG hNextShip;
+	SHIP_FRAGMENT *StarShipPtr;
+
+	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
+			hStarShip; hStarShip = hNextShip)
+	{
+		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+
+		if (StarShipPtr->index == index)
+		{
+			UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+			break;
+		}
+
+		hNextShip = _GetSuccLink (StarShipPtr);
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+	}
+
+	return hStarShip;
+}
+
 /*
  * Give the player 'count' ships of the specified race,
  * limited by the number of free slots.

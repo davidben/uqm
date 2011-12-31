@@ -533,6 +533,64 @@ CrewTransaction (SIZE crew_delta)
 	}
 }
 
+#define MODIFY_CREW_FLAG (1 << 8)
+#ifdef WANT_SHIP_SPINS
+// Helper function for DoModifyShips(), called when the player presses the
+// special button.
+// It works both when the cursor is over an escort ship, while not editing
+// the crew, and when a new ship is added.
+// hStarShip is the ship in the slot under the cursor (or 0 if no such ship).
+static BOOLEAN
+DMS_SpinShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
+{
+	HFLEETINFO hSpinShip = 0;
+	CONTEXT OldContext;
+	RECT OldClipRect;
+	
+	// No spinning the flagship.
+	if (HINIBBLE (pMS->CurState) != 0)
+		return FALSE;
+
+	// We must either be hovering over a used ship slot, or adding a new
+	// ship to the fleet.
+	if ((hStarShip == 0) == !(pMS->delta_item & MODIFY_CREW_FLAG))
+		return FALSE;
+
+	if (!hStarShip)
+	{
+		// Selecting a ship to build.
+		hSpinShip = GetAvailableRaceFromIndex (LOBYTE (pMS->delta_item));
+		if (!hSpinShip)
+			return FALSE;
+	}
+	else
+	{
+		// Hovering over an escort ship.
+		SHIP_FRAGMENT *FragPtr = LockShipFrag (
+				&GLOBAL (built_ship_q), hStarShip);
+		hSpinShip = GetStarShipFromIndex (
+				&GLOBAL (avail_race_q), FragPtr->race_id);
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+	}
+	
+	SetFlashRect (NULL);
+
+	OldContext = SetContext (ScreenContext);
+	GetContextClipRect (&OldClipRect);
+
+	SpinStarShip (pMS, hSpinShip);
+
+	SetContextClipRect (&OldClipRect);
+	SetContext (OldContext);
+
+	if (hStarShip)
+		return TRUE;
+
+	SetFlashRect (SFR_MENU_3DO);
+	return FALSE;
+}
+#endif  /* WANT_SHIP_SPINS */
+
 /* in this routine, the least significant byte of pMS->CurState is used
  * to store the current selected ship index
  * a special case for the row is hi-nibble == -1 (0xf), which specifies
@@ -543,7 +601,6 @@ CrewTransaction (SIZE crew_delta)
 static BOOLEAN
 DoModifyShips (MENU_STATE *pMS)
 {
-#define MODIFY_CREW_FLAG (1 << 8)
 	BOOLEAN select, cancel;
 #ifdef WANT_SHIP_SPINS
 	BOOLEAN special;
@@ -611,7 +668,8 @@ DoModifyShips (MENU_STATE *pMS)
 		else if (dx && !HINIBBLE (NewState))
 		{
 			NewState = NewState % HANGAR_SHIPS_ROW;
-			if ((dx += NewState) < 0)
+			dx += NewState;
+			if (dx < 0)
 				NewState = (BYTE)(pMS->CurState + (HANGAR_SHIPS_ROW - 1));
 			else if (dx > HANGAR_SHIPS_ROW - 1)
 				NewState = (BYTE)(pMS->CurState - (HANGAR_SHIPS_ROW - 1));
@@ -626,24 +684,11 @@ DoModifyShips (MENU_STATE *pMS)
 				|| NewState != pMS->CurState
 				|| ((pMS->delta_item & MODIFY_CREW_FLAG) && (dx || dy)))
 		{
-			HSHIPFRAG hStarShip, hNextShip;
-			SHIP_FRAGMENT *StarShipPtr;
+			HSHIPFRAG hStarShip;
 			RECT r;
 
-			for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
-					hStarShip; hStarShip = hNextShip)
-			{
-				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+			hStarShip = GetEscortByStarShipIndex (pMS->CurState);
 
-				if (StarShipPtr->index == pMS->CurState)
-				{
-					UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-					break;
-				}
-
-				hNextShip = _GetSuccLink (StarShipPtr);
-				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-			}
 			if ((pMS->delta_item & MODIFY_CREW_FLAG) && (hStarShip))
 			{
 				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
@@ -659,49 +704,11 @@ DoModifyShips (MENU_STATE *pMS)
 #ifdef WANT_SHIP_SPINS
 			if (special)
 			{
-				HFLEETINFO hSpinShip = 0;
-				
-				if ((special && (((hStarShip == 0
-						   && HINIBBLE (pMS->CurState) == 0)
-						  && (pMS->delta_item & MODIFY_CREW_FLAG))
-						 || ((hStarShip != 0 &&
-						      HINIBBLE (pMS->CurState) == 0)
-						     && !(pMS->delta_item & MODIFY_CREW_FLAG))))
-				    && (hStarShip
-					|| (HINIBBLE (pMS->CurState) == 0
-					    && (hSpinShip = GetAvailableRaceFromIndex (
-							LOBYTE (pMS->delta_item))))))
-				{
-					CONTEXT OldContext;
-					RECT OldClipRect;
-
-					if (!hSpinShip)
-					{	/* Get fleet info from selected escort */
-						SHIP_FRAGMENT *FragPtr = LockShipFrag (
-								&GLOBAL (built_ship_q), hStarShip);
-						hSpinShip = GetStarShipFromIndex (
-								&GLOBAL (avail_race_q), FragPtr->race_id);
-						UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-					}
-					
-					SetFlashRect (NULL);
-
-					OldContext = SetContext (ScreenContext);
-					GetContextClipRect (&OldClipRect);
-
-					SpinStarShip (pMS, hSpinShip);
-
-					SetContextClipRect (&OldClipRect);
-					SetContext (OldContext);
-
-					if (hStarShip)
-						goto ChangeFlashRect;
-
-					SetFlashRect (SFR_MENU_3DO);
-				}
+				if (DMS_SpinShip (pMS, hStarShip))
+					goto ChangeFlashRect;
 			}
 			else
-#endif
+#endif  /* WANT_SHIP_SPINS */
 			if (select || ((pMS->delta_item & MODIFY_CREW_FLAG)
 					&& (dx || dy || cancel)))
 			{
@@ -800,8 +807,8 @@ DoModifyShips (MENU_STATE *pMS)
 					if ((pMS->delta_item & MODIFY_CREW_FLAG)
 							&& hStarShip != 0)
 					{
-						StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q),
-								hStarShip);
+						SHIP_FRAGMENT *StarShipPtr = LockShipFrag (
+								&GLOBAL (built_ship_q), hStarShip);
 						if (StarShipPtr->crew_level == 0)
 						{
 							SetFlashRect (NULL);
@@ -858,6 +865,7 @@ DoModifyShips (MENU_STATE *pMS)
 				else if (pMS->delta_item & MODIFY_CREW_FLAG)
 				{
 					SIZE crew_delta, crew_bought;
+					SHIP_FRAGMENT *StarShipPtr;
 
 					if (hStarShip)
 						StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q),
