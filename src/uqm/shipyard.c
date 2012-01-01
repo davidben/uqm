@@ -257,7 +257,7 @@ DrawRaceStrings (MENU_STATE *pMS, BYTE NewRaceItem)
 #define SHIP_WIN_FRAMES ((SHIP_WIN_WIDTH >> 1) + 1)
 
 static void
-ShowShipCrew (SHIP_FRAGMENT *StarShipPtr, RECT *pRect)
+ShowShipCrew (SHIP_FRAGMENT *StarShipPtr, const RECT *pRect)
 {
 	RECT r;
 	TEXT t;
@@ -535,6 +535,67 @@ CrewTransaction (SIZE crew_delta)
 	}
 }
 
+// Pre: GraphicsLock is locked.
+static void
+DMS_FlashFlagShip (void)
+{
+	RECT r;
+	r.corner.x = 0;
+	r.corner.y = 0;
+	r.extent.width = SIS_SCREEN_WIDTH;
+	r.extent.height = 61;
+	SetFlashRect (&r);
+}
+
+static void
+DMS_GetEscortShipRect (RECT *rOut, BYTE slotNr)
+{
+	BYTE row = slotNr / HANGAR_SHIPS_ROW;
+	BYTE col = slotNr % HANGAR_SHIPS_ROW;
+
+	rOut->corner.x = hangar_x_coords[col];
+	rOut->corner.y = HANGAR_Y + (HANGAR_DY * row);
+	rOut->extent.width = SHIP_WIN_WIDTH;
+	rOut->extent.height = SHIP_WIN_HEIGHT;
+}
+
+// Pre: GraphicsLock is locked.
+static void
+DMS_FlashEscortShip (BYTE slotNr)
+{
+	RECT r;
+	DMS_GetEscortShipRect (&r, slotNr);
+	SetFlashRect (&r);
+}
+
+// Pre: GraphicsLock is locked.
+static void
+DMS_FlashFlagShipCrewCount (void)
+{
+	RECT r;
+	SetContext (StatusContext);
+	GetGaugeRect (&r, TRUE);
+	SetFlashRect (&r);
+	SetContext (SpaceContext);
+}
+
+// Pre: GraphicsLock is locked.
+static void
+DMS_FlashEscortShipCrewCount (BYTE slotNr)
+{
+	RECT r;
+	BYTE row = slotNr / HANGAR_SHIPS_ROW;
+	BYTE col = slotNr % HANGAR_SHIPS_ROW;
+
+	r.corner.x = hangar_x_coords[col];
+	r.corner.y = (HANGAR_Y + (HANGAR_DY * row)) + (SHIP_WIN_HEIGHT - 6);
+	r.extent.width = SHIP_WIN_WIDTH;
+	r.extent.height = 5;
+
+	SetContext (SpaceContext);
+	SetFlashRect (&r);
+}
+
 #define MODIFY_CREW_FLAG (1 << 8)
 #ifdef WANT_SHIP_SPINS
 // Helper function for DoModifyShips(), called when the player presses the
@@ -655,9 +716,10 @@ DMS_DismissFlagShipCrew (void)
 // Buy crew for an escort ship
 // Returns the change in crew (1 on success, 0 on failure).
 static SIZE
-DMS_HireEscortShipCrew (MENU_STATE *pMS, SHIP_FRAGMENT *StarShipPtr)
+DMS_HireEscortShipCrew (SHIP_FRAGMENT *StarShipPtr)
 {
 	COUNT templateMaxCrew;
+	RECT r;
 
 	{
 		// XXX Split this off into a separate function?
@@ -698,7 +760,8 @@ DMS_HireEscortShipCrew (MENU_STATE *pMS, SHIP_FRAGMENT *StarShipPtr)
 	}
 
 	++StarShipPtr->crew_level;
-	ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
+	DMS_GetEscortShipRect (&r, StarShipPtr->index);
+	ShowShipCrew (StarShipPtr, &r);
 
 	return 1;
 }
@@ -708,9 +771,10 @@ DMS_HireEscortShipCrew (MENU_STATE *pMS, SHIP_FRAGMENT *StarShipPtr)
 // Dismiss crew from an escort ship
 // Returns the change in crew (-1 on success, 0 on failure).
 static SIZE
-DMS_DismissEscortShipCrew (MENU_STATE *pMS, SHIP_FRAGMENT *StarShipPtr)
+DMS_DismissEscortShipCrew (SHIP_FRAGMENT *StarShipPtr)
 {
 	SIZE crew_delta = 0;
+	RECT r;
 
 	if (StarShipPtr->crew_level > 0)
 	{
@@ -727,8 +791,7 @@ DMS_DismissEscortShipCrew (MENU_STATE *pMS, SHIP_FRAGMENT *StarShipPtr)
 		}
 		else
 		{
-			// With the last crew member, the ship
-			// will be scrapped.
+			// With the last crew member, the ship will be scrapped.
 			// Give RU for the ship.
 			DeltaSISGauges (0, 0, (COUNT)ShipCost[StarShipPtr->race_id]);
 		}
@@ -740,7 +803,8 @@ DMS_DismissEscortShipCrew (MENU_STATE *pMS, SHIP_FRAGMENT *StarShipPtr)
 		PlayMenuSound (MENU_SOUND_FAILURE);
 	}
 
-	ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
+	DMS_GetEscortShipRect (&r, StarShipPtr->index);
+	ShowShipCrew (StarShipPtr, &r);
 
 	return crew_delta;
 }
@@ -779,13 +843,7 @@ DMS_ModifyCrew (MENU_STATE *pMS, HSHIPFRAG hStarShip, SBYTE dy)
 		}
 
 		if (crew_delta != 0)
-		{
-			RECT r;
-			SetContext (StatusContext);
-			GetGaugeRect (&r, TRUE);
-			SetFlashRect (&r);
-			SetContext (SpaceContext);
-		}
+			DMS_FlashFlagShipCrewCount ();
 	}
 	else
 	{
@@ -793,26 +851,16 @@ DMS_ModifyCrew (MENU_STATE *pMS, HSHIPFRAG hStarShip, SBYTE dy)
 		if (dy < 0)
 		{
 			// Add crew for an escort ship.
-			crew_delta = DMS_HireEscortShipCrew (pMS, StarShipPtr);
+			crew_delta = DMS_HireEscortShipCrew (StarShipPtr);
 		}
 		else
 		{
 			// Dismiss crew from an escort ship.
-			crew_delta = DMS_DismissEscortShipCrew (pMS, StarShipPtr);
+			crew_delta = DMS_DismissEscortShipCrew (StarShipPtr);
 		}
 		
 		if (crew_delta != 0)
-		{
-			RECT r;
-			r.corner.x = pMS->flash_rect0.corner.x;
-			r.corner.y = pMS->flash_rect0.corner.y
-					+ pMS->flash_rect0.extent.height - 6;
-			r.extent.width = SHIP_WIN_WIDTH;
-			r.extent.height = 5;
-
-			SetContext (SpaceContext);
-			SetFlashRect (&r);
-		}
+			DMS_FlashEscortShipCrewCount (StarShipPtr->index);
 	}
 
 	if (crew_delta == 0)
@@ -843,7 +891,6 @@ DMS_TryAddEscortShip (MENU_STATE *pMS)
 	if (GLOBAL_SIS (ResUnits) >= (DWORD)ShipCost[Index]
 			&& CloneShipFragment (Index, &GLOBAL (built_ship_q), 1))
 	{
-		RECT r;
 		ShowCombatShip (pMS, pMS->CurState, NULL);
 		//Reset flash rectangle
 		LockMutex (GraphicsLock);
@@ -854,13 +901,8 @@ DMS_TryAddEscortShip (MENU_STATE *pMS)
 		LockMutex (GraphicsLock);
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
 				-((int)ShipCost[Index]));
-		r.corner.x = pMS->flash_rect0.corner.x;
-		r.corner.y = pMS->flash_rect0.corner.y
-				+ pMS->flash_rect0.extent.height - 6;
-		r.extent.width = SHIP_WIN_WIDTH;
-		r.extent.height = 5;
-		SetContext (SpaceContext);
-		SetFlashRect (&r);
+		
+		DMS_FlashEscortShipCrewCount (pMS->CurState);
 		UnlockMutex (GraphicsLock);
 	}
 	else
@@ -935,15 +977,16 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN select, BOOLEAN cancel,
 static void
 DMS_ScrapEscortShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 {
-	RECT r;
 	SHIP_FRAGMENT *StarShipPtr =
 			LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+	BYTE slotNr;
 
 	SetFlashRect (NULL);
 	UnlockMutex (GraphicsLock);
 	ShowCombatShip (pMS, pMS->CurState, StarShipPtr);
 	LockMutex (GraphicsLock);
 
+	slotNr = StarShipPtr->index;
 	UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
 	RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
@@ -951,13 +994,8 @@ DMS_ScrapEscortShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 	// refresh SIS display
 	DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
 
-	r.corner.x = pMS->flash_rect0.corner.x;
-	r.corner.y = pMS->flash_rect0.corner.y;
-	r.extent.width = SHIP_WIN_WIDTH;
-	r.extent.height = SHIP_WIN_HEIGHT;
-
 	SetContext (SpaceContext);
-	SetFlashRect (&r);
+	DMS_FlashEscortShip (slotNr);
 }
 
 // Helper function for DoModifyShips(), called when the player presses
@@ -1070,7 +1108,6 @@ DoModifyShips (MENU_STATE *pMS)
 				|| ((pMS->delta_item & MODIFY_CREW_FLAG) && (dx || dy)))
 		{
 			HSHIPFRAG hStarShip;
-			RECT r;
 
 			hStarShip = GetEscortByStarShipIndex (pMS->CurState);
 
@@ -1150,28 +1187,18 @@ DoModifyShips (MENU_STATE *pMS)
 						
 					if (hStarShip == 0)
 					{
-						// Enter crew editing mode for an escort ship.
-						SetContext (StatusContext);
-						GetGaugeRect (&r, TRUE);
-						SetFlashRect (&r);
-						SetContext (SpaceContext);
-						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
-								MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+						// Enter crew editing mode for the flagship.
+						DMS_FlashFlagShipCrewCount ();
 					}
 					else
 					{
-						// Enter crew editing mode for the flagship.
-						r.corner.x = pMS->flash_rect0.corner.x;
-						r.corner.y = pMS->flash_rect0.corner.y
-								+ pMS->flash_rect0.extent.height - 6;
-						r.extent.width = SHIP_WIN_WIDTH;
-						r.extent.height = 5;
-
-						SetContext (SpaceContext);
-						SetFlashRect (&r);
-						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
-								MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+						// Enter crew editing mode for an escort ship.
+						DMS_FlashEscortShipCrewCount (pMS->CurState);
 					}
+
+					// Entering crew editing mode
+					SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+							MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 				}
 				else if (pMS->delta_item & MODIFY_CREW_FLAG)
 				{
@@ -1202,24 +1229,13 @@ ChangeFlashRect:
 				if (HINIBBLE (pMS->CurState))
 				{
 					// Flash the flag ship.
-					pMS->flash_rect0.corner.x = 0;
-					pMS->flash_rect0.corner.y = 0;
-					pMS->flash_rect0.extent.width = SIS_SCREEN_WIDTH;
-					pMS->flash_rect0.extent.height = 61;
+					DMS_FlashFlagShip ();
 				}
 				else
 				{
 					// Flash the current escort ship slot.
-					BYTE row = pMS->CurState / HANGAR_SHIPS_ROW;
-					BYTE col = pMS->CurState % HANGAR_SHIPS_ROW;
-
-					pMS->flash_rect0.corner.x = hangar_x_coords[col];
-					pMS->flash_rect0.corner.y =
-							HANGAR_Y + (HANGAR_DY * row);
-					pMS->flash_rect0.extent.width = SHIP_WIN_WIDTH;
-					pMS->flash_rect0.extent.height = SHIP_WIN_HEIGHT;
+					DMS_FlashEscortShip (pMS->CurState);
 				}
-				SetFlashRect (&pMS->flash_rect0);
 			}
 			UnlockMutex (GraphicsLock);
 		}
