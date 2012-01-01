@@ -961,6 +961,47 @@ DMS_ScrapEscortShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 	SetFlashRect (&r);
 }
 
+// Helper function for DoModifyShips(), called when the player presses
+// one of the motion keys when not in crew modification mode.
+static BYTE
+DMS_MoveCursor (BYTE curState, SBYTE dx, SBYTE dy)
+{
+	BYTE row = LONIBBLE(curState) / HANGAR_SHIPS_ROW;
+	BYTE col = LONIBBLE(curState) % HANGAR_SHIPS_ROW;
+	BOOLEAN isFlagShipSelected = (HINIBBLE(curState) != 0);
+
+	if (dy)
+	{
+		// Vertical motion.
+	
+		// We consider the flagship an extra row (on the bottom),
+		// to ease operations.
+		if (isFlagShipSelected)
+			row = HANGAR_ROWS;
+
+		// Move up/down, wrapping around:
+		row = (row + (HANGAR_ROWS + 1) + dy) % (HANGAR_ROWS + 1);
+
+		// If we moved to the 'extra row', this means the flag ship.
+		isFlagShipSelected = (row == HANGAR_ROWS);
+		if (isFlagShipSelected)
+			row = 0;
+	}
+	else if (dx)
+	{
+		// Horizontal motion.
+		if (!isFlagShipSelected)
+		{
+			// Moving horizontally through the escort ship slots,
+			// wrapping around if necessary.
+			col = (col + HANGAR_SHIPS_ROW + dx) % HANGAR_SHIPS_ROW;
+		}
+	}
+		
+	return MAKE_BYTE(row * HANGAR_SHIPS_ROW + col,
+			isFlagShipSelected ? 0xf : 0);
+}
+
 /* in this routine, the least significant byte of pMS->CurState is used
  * to store the current selected ship index
  * a special case for the row is hi-nibble == -1 (0xf), which specifies
@@ -1017,34 +1058,9 @@ DoModifyShips (MENU_STATE *pMS)
 		if (pMS->delta_item & MODIFY_CREW_FLAG)
 		{
 		}
-		else if (dy)
+		else if (dx || dy)
 		{
-			if (HINIBBLE (NewState))
-				NewState = pMS->CurState % HANGAR_SHIPS_ROW;
-			else
-				NewState = (unsigned char)(pMS->CurState + HANGAR_SHIPS_ROW);
-
-			NewState += dy * HANGAR_SHIPS_ROW;
-			if (NewState / HANGAR_SHIPS_ROW > 0
-					&& NewState / HANGAR_SHIPS_ROW <= HANGAR_ROWS)
-				NewState -= HANGAR_SHIPS_ROW;
-			else if (NewState / HANGAR_SHIPS_ROW > HANGAR_ROWS + 1)
-				/* negative number - select last row */
-				NewState = pMS->CurState % HANGAR_SHIPS_ROW
-						+ HANGAR_SHIPS_ROW * (HANGAR_ROWS - 1);
-			else
-				// select SIS
-				NewState = MAKE_BYTE (pMS->CurState, 0xF);
-		}
-		else if (dx && !HINIBBLE (NewState))
-		{
-			// Moving horizontally through the escort ship slots,
-			// wrapping around if necessary.
-			BYTE row = pMS->CurState / HANGAR_SHIPS_ROW;
-			BYTE col = pMS->CurState % HANGAR_SHIPS_ROW;
-
-			col = (col + HANGAR_SHIPS_ROW + dx) % HANGAR_SHIPS_ROW;
-			NewState = row * HANGAR_SHIPS_ROW + col;
+			NewState = DMS_MoveCursor (NewState, dx, dy);
 		}
 
 		if (select || cancel
