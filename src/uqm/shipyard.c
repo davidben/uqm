@@ -876,11 +876,11 @@ DMS_TryAddEscortShip (MENU_STATE *pMS)
 // Helper function for DoModifyShips(), called when the player is in the
 // mode to add a new escort ship to the fleet (after pressing select on an
 // empty slot).
+// LOBYTE (pMS->delta_item) is used to store the currently highlighted ship.
 static BOOLEAN
 DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN select, BOOLEAN cancel,
-		SBYTE dx, SBYTE dy, BYTE *newStateOut)
+		SBYTE dx, SBYTE dy)
 {
-	BYTE NewState;
 	assert (select || cancel || dx || dy);
 	assert (pMS->delta_item & MODIFY_CREW_FLAG);
 
@@ -907,26 +907,25 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN select, BOOLEAN cancel,
 	{
 		// Motion key pressed while selecting a ship to be
 		// inserted in an empty escort ship slot.
-		COUNT Index = GetAvailableRaceCount ();
-		NewState = LOBYTE (pMS->delta_item);
+		COUNT availableCount = GetAvailableRaceCount ();
+		BYTE currentShip = LOBYTE (pMS->delta_item);
 		if (dx < 0 || dy < 0)
 		{
-			if (NewState-- == 0)
-				NewState = Index - 1;
+			if (currentShip-- == 0)
+				currentShip = availableCount - 1;
 		}
 		else if (dx > 0 || dy > 0)
 		{
-			if (++NewState == Index)
-				NewState = 0;
+			if (++currentShip == availableCount)
+				currentShip = 0;
 		}
 		
-		if (NewState != LOBYTE (pMS->delta_item))
+		if (currentShip != LOBYTE (pMS->delta_item))
 		{
-			DrawRaceStrings (pMS, NewState);
-			pMS->delta_item = NewState | MODIFY_CREW_FLAG;
+			DrawRaceStrings (pMS, currentShip);
+			pMS->delta_item = currentShip | MODIFY_CREW_FLAG;
 		}
 	
-		*newStateOut = NewState;
 		return TRUE;
 	}
 }
@@ -1095,8 +1094,8 @@ DoModifyShips (MENU_STATE *pMS)
 			}
 			else
 #endif  /* WANT_SHIP_SPINS */
-			if (hStarShip == 0 && HINIBBLE (pMS->CurState) == 0 &&
-					!(pMS->delta_item & MODIFY_CREW_FLAG) && select)
+			if (!(pMS->delta_item & MODIFY_CREW_FLAG) &&
+					hStarShip == 0 && HINIBBLE (pMS->CurState) == 0 && select)
 			{
 				// Select button was pressed over an empty escort
 				// ship slot. Switch to 'add escort ship' mode.
@@ -1105,21 +1104,22 @@ DoModifyShips (MENU_STATE *pMS)
 				DrawRaceStrings (pMS, 0);
 				return TRUE;
 			}
+			else if ((pMS->delta_item & MODIFY_CREW_FLAG) &&
+					hStarShip == 0 && HINIBBLE (pMS->CurState) == 0 &&
+					(dx || dy || select || cancel))
+			{
+				// Cursor is over an empty escort ship slot, while we're
+				// in 'add escort ship' mode.
+				UnlockMutex (GraphicsLock);
+				if (DMS_AddEscortShip (pMS, select, cancel, dx, dy))
+					return TRUE;
+
+				LockMutex (GraphicsLock);
+				goto ChangeFlashRect;
+			}
 			else if (select || ((pMS->delta_item & MODIFY_CREW_FLAG)
 					&& (dx || dy || cancel)))
 			{
-				if (hStarShip == 0 && HINIBBLE (pMS->CurState) == 0)
-				{
-					// Cursor is over an empty escort ship slot, while we're
-					// in 'add escort ship' mode.
-					UnlockMutex (GraphicsLock);
-					if (DMS_AddEscortShip (pMS, select, cancel, dx, dy, &NewState))
-						return TRUE;
-
-					LockMutex (GraphicsLock);
-					goto ChangeFlashRect;
-				}
-				
 				if (select || cancel)
 				{
 					if ((pMS->delta_item & MODIFY_CREW_FLAG)
@@ -1146,11 +1146,11 @@ DoModifyShips (MENU_STATE *pMS)
 					
 					pMS->delta_item ^= MODIFY_CREW_FLAG;
 					if (!pMS->delta_item)
-					{
 						goto ChangeFlashRect;
-					}
-					else if (hStarShip == 0)
+						
+					if (hStarShip == 0)
 					{
+						// Enter crew editing mode for an escort ship.
 						SetContext (StatusContext);
 						GetGaugeRect (&r, TRUE);
 						SetFlashRect (&r);
@@ -1160,11 +1160,13 @@ DoModifyShips (MENU_STATE *pMS)
 					}
 					else
 					{
+						// Enter crew editing mode for the flagship.
 						r.corner.x = pMS->flash_rect0.corner.x;
 						r.corner.y = pMS->flash_rect0.corner.y
 								+ pMS->flash_rect0.extent.height - 6;
 						r.extent.width = SHIP_WIN_WIDTH;
 						r.extent.height = 5;
+
 						SetContext (SpaceContext);
 						SetFlashRect (&r);
 						SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
@@ -1180,6 +1182,7 @@ DoModifyShips (MENU_STATE *pMS)
 			}
 			else if (cancel)
 			{
+				// Leave escort ship editor.
 				UnlockMutex (GraphicsLock);
 
 				pMS->InputFunc = DoShipyard;
