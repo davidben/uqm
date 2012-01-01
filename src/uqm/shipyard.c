@@ -593,7 +593,246 @@ DMS_SpinShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 }
 #endif  /* WANT_SHIP_SPINS */
 
-// Try to add the currently selected ship 
+// Helper function for DoModifyShips(), called when the player presses the
+// up button when modifying the crew of the flagship.
+// Buy crew for the flagship.
+// Returns the change in crew (1 on success, 0 on failure).
+static SIZE
+DMS_HireFlagShipCrew (void)
+{
+	RECT r;
+	
+	if (GetCPodCapacity (&r.corner) <= GetCrewCount ())
+	{
+		// At capacity.
+		return 0;
+	}
+		
+	if (GLOBAL_SIS (ResUnits) < (DWORD)GLOBAL (CrewCost))
+	{
+		// Not enough RUs.
+		return 0;
+	}
+
+	DrawPoint (&r.corner);
+	DeltaSISGauges (1, 0, -GLOBAL (CrewCost));
+
+	return 1;
+}
+
+// Helper function for DoModifyShips(), called when the player presses the
+// down button when modifying the crew of the flagship.
+// Dismiss crew from the flagship.
+// Returns the change in crew (-1 on success, 0 on failure).
+static SIZE
+DMS_DismissFlagShipCrew (void)
+{
+	SIZE crew_bought;
+	RECT r;
+
+	if (GetCrewCount () == 0)
+	{
+		// No crew to dismiss.
+		return 0;
+	}
+
+	crew_bought = (SIZE)MAKE_WORD (
+			GET_GAME_STATE (CREW_PURCHASED0),
+			GET_GAME_STATE (CREW_PURCHASED1));
+
+	DeltaSISGauges (-1, 0, GLOBAL (CrewCost) -
+			(crew_bought == CREW_EXPENSE_THRESHOLD ? 2 : 0));
+
+	GetCPodCapacity (&r.corner);
+	SetContextForeGroundColor (BLACK_COLOR);
+	DrawPoint (&r.corner);
+
+	return -1;
+}
+
+// Helper function for DoModifyShips(), called when the player presses the
+// up button when modifying the crew of an escort ship.
+// Buy crew for an escort ship
+// Returns the change in crew (1 on success, 0 on failure).
+static SIZE
+DMS_HireEscortShipCrew (MENU_STATE *pMS, SHIP_FRAGMENT *StarShipPtr)
+{
+	COUNT templateMaxCrew;
+
+	{
+		// XXX Split this off into a separate function?
+		HFLEETINFO hTemplate = GetStarShipFromIndex (&GLOBAL (avail_race_q),
+				StarShipPtr->race_id);
+		FLEET_INFO *TemplatePtr =
+				LockFleetInfo (&GLOBAL (avail_race_q), hTemplate);
+		templateMaxCrew = TemplatePtr->crew_level;
+		UnlockFleetInfo (&GLOBAL (avail_race_q), hTemplate);
+	}
+	
+	if (GLOBAL_SIS (ResUnits) < (DWORD)GLOBAL (CrewCost))
+	{
+		// Not enough money to hire a crew member.
+		return 0;
+	}
+
+	if (StarShipPtr->crew_level >= StarShipPtr->max_crew)
+	{
+		// This ship cannot handle more crew.
+		return 0;
+	}
+
+	if (StarShipPtr->crew_level >= templateMaxCrew)
+	{
+		// A ship of this type cannot handle more crew.
+		return 0;
+	}
+
+	if (StarShipPtr->crew_level > 0)
+	{
+		DeltaSISGauges (0, 0, -GLOBAL (CrewCost));
+	}
+	else
+	{
+		// Buy a ship.
+		DeltaSISGauges (0, 0, -(COUNT)ShipCost[StarShipPtr->race_id]);
+	}
+
+	++StarShipPtr->crew_level;
+	ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
+
+	return 1;
+}
+
+// Helper function for DoModifyShips(), called when the player presses the
+// down button when modifying the crew of an escort ship.
+// Dismiss crew from an escort ship
+// Returns the change in crew (-1 on success, 0 on failure).
+static SIZE
+DMS_DismissEscortShipCrew (MENU_STATE *pMS, SHIP_FRAGMENT *StarShipPtr)
+{
+	SIZE crew_delta = 0;
+
+	if (StarShipPtr->crew_level > 0)
+	{
+		if (StarShipPtr->crew_level > 1)
+		{
+			// The ship was not at 'scrap'.
+			// Give one crew member worth of RU.
+			SIZE crew_bought = (SIZE)MAKE_WORD (
+					GET_GAME_STATE (CREW_PURCHASED0),
+					GET_GAME_STATE (CREW_PURCHASED1));
+
+			DeltaSISGauges (0, 0, GLOBAL (CrewCost)
+					- (crew_bought == CREW_EXPENSE_THRESHOLD ? 2 : 0));
+		}
+		else
+		{
+			// With the last crew member, the ship
+			// will be scrapped.
+			// Give RU for the ship.
+			DeltaSISGauges (0, 0, (COUNT)ShipCost[StarShipPtr->race_id]);
+		}
+		crew_delta = -1;
+		--StarShipPtr->crew_level;
+	}
+	else
+	{	// no crew to dismiss
+		PlayMenuSound (MENU_SOUND_FAILURE);
+	}
+
+	ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
+
+	return crew_delta;
+}
+
+// Helper function for DoModifyShips(), called when the player presses the
+// up or down button when modifying the crew of the flagship or of an escort
+// ship.
+// 'hStarShip' is the currently escort ship, or 0 if no ship is
+// selected.
+// 'dy' is -1 if the 'up' button was pressed, or '1' if the down button was
+// pressed.
+static void
+DMS_ModifyCrew (MENU_STATE *pMS, HSHIPFRAG hStarShip, SBYTE dy)
+{
+	SIZE crew_delta = 0;
+	SHIP_FRAGMENT *StarShipPtr = NULL;
+
+	if (hStarShip)
+		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+
+	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
+			MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+
+	if (hStarShip == 0)
+	{
+		// Add/Dismiss crew for the flagship.
+		if (dy < 0)
+		{
+			// Add crew for the flagship.
+			crew_delta = DMS_HireFlagShipCrew ();
+		}
+		else
+		{
+			// Dismiss crew from the flagship.
+			crew_delta = DMS_DismissFlagShipCrew ();
+		}
+
+		if (crew_delta != 0)
+		{
+			RECT r;
+			SetContext (StatusContext);
+			GetGaugeRect (&r, TRUE);
+			SetFlashRect (&r);
+			SetContext (SpaceContext);
+		}
+	}
+	else
+	{
+		// Add/Dismiss crew for an escort ship.
+		if (dy < 0)
+		{
+			// Add crew for an escort ship.
+			crew_delta = DMS_HireEscortShipCrew (pMS, StarShipPtr);
+		}
+		else
+		{
+			// Dismiss crew from an escort ship.
+			crew_delta = DMS_DismissEscortShipCrew (pMS, StarShipPtr);
+		}
+		
+		if (crew_delta != 0)
+		{
+			RECT r;
+			r.corner.x = pMS->flash_rect0.corner.x;
+			r.corner.y = pMS->flash_rect0.corner.y
+					+ pMS->flash_rect0.extent.height - 6;
+			r.extent.width = SHIP_WIN_WIDTH;
+			r.extent.height = 5;
+
+			SetContext (SpaceContext);
+			SetFlashRect (&r);
+		}
+	}
+
+	if (crew_delta == 0)
+		PlayMenuSound (MENU_SOUND_FAILURE);
+
+	if (hStarShip)
+	{
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+		
+		// Clear out the bought ship index so that flash rects work
+		// correctly.
+		pMS->delta_item &= MODIFY_CREW_FLAG;
+	}
+
+	CrewTransaction (crew_delta);
+}
+
+// Helper function for DoModifyShips(), called when the player presses the
+// select button when the cursor is over an empty escort ship slot.
+// Try to add the currently selected ship as an escort ship.
 static void
 DMS_TryAddEscortShip (MENU_STATE *pMS)
 {
@@ -634,6 +873,64 @@ DMS_TryAddEscortShip (MENU_STATE *pMS)
 			MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 }
 
+// Helper function for DoModifyShips(), called when the player is in the
+// mode to add a new escort ship to the fleet (after pressing select on an
+// empty slot).
+static BOOLEAN
+DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN select, BOOLEAN cancel,
+		SBYTE dx, SBYTE dy, BYTE *newStateOut)
+{
+	BYTE NewState;
+	assert (select || cancel || dx || dy);
+	assert (pMS->delta_item & MODIFY_CREW_FLAG);
+
+	if (cancel)
+	{
+		// Cancel selecting an escort ship.
+		pMS->delta_item &= ~MODIFY_CREW_FLAG;
+		LockMutex (GraphicsLock);
+		SetFlashRect (SFR_MENU_3DO);
+		UnlockMutex (GraphicsLock);
+		DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
+		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
+		return FALSE;
+	}
+
+	if (select)
+	{
+		// Selected a ship to be inserted in an empty escort
+		// ship slot.
+		DMS_TryAddEscortShip (pMS);
+		return TRUE;
+	}
+
+	{
+		// Motion key pressed while selecting a ship to be
+		// inserted in an empty escort ship slot.
+		COUNT Index = GetAvailableRaceCount ();
+		NewState = LOBYTE (pMS->delta_item);
+		if (dx < 0 || dy < 0)
+		{
+			if (NewState-- == 0)
+				NewState = Index - 1;
+		}
+		else if (dx > 0 || dy > 0)
+		{
+			if (++NewState == Index)
+				NewState = 0;
+		}
+		
+		if (NewState != LOBYTE (pMS->delta_item))
+		{
+			DrawRaceStrings (pMS, NewState);
+			pMS->delta_item = NewState | MODIFY_CREW_FLAG;
+		}
+	
+		*newStateOut = NewState;
+		return TRUE;
+	}
+}
+
 /* in this routine, the least significant byte of pMS->CurState is used
  * to store the current selected ship index
  * a special case for the row is hi-nibble == -1 (0xf), which specifies
@@ -644,14 +941,11 @@ DMS_TryAddEscortShip (MENU_STATE *pMS)
 static BOOLEAN
 DoModifyShips (MENU_STATE *pMS)
 {
-	BOOLEAN select, cancel;
 #ifdef WANT_SHIP_SPINS
-	BOOLEAN special;
-
-	special = PulsedInputState.menu[KEY_MENU_SPECIAL];
+	BOOLEAN special = PulsedInputState.menu[KEY_MENU_SPECIAL];
 #endif /* WANT_SHIP_SPINS */
-	select = PulsedInputState.menu[KEY_MENU_SELECT];
-	cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
+	BOOLEAN select = PulsedInputState.menu[KEY_MENU_SELECT];
+	BOOLEAN cancel = PulsedInputState.menu[KEY_MENU_CANCEL];
 
 	if (GLOBAL (CurrentActivity) & CHECK_ABORT)
 	{
@@ -674,18 +968,22 @@ DoModifyShips (MENU_STATE *pMS)
 	{
 		SBYTE dx = 0;
 		SBYTE dy = 0;
-		BYTE NewState;
+		BYTE NewState = pMS->CurState;
 
 		if (!(pMS->delta_item & MODIFY_CREW_FLAG))
 		{
 			SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		}
 
-		if (PulsedInputState.menu[KEY_MENU_RIGHT]) dx = 1;
-		if (PulsedInputState.menu[KEY_MENU_LEFT]) dx = -1;
-		if (PulsedInputState.menu[KEY_MENU_UP]) dy = -1;
-		if (PulsedInputState.menu[KEY_MENU_DOWN]) dy = 1;
-		NewState = pMS->CurState;
+		if (PulsedInputState.menu[KEY_MENU_RIGHT])
+			dx = 1;
+		if (PulsedInputState.menu[KEY_MENU_LEFT])
+			dx = -1;
+		if (PulsedInputState.menu[KEY_MENU_UP])
+			dy = -1;
+		if (PulsedInputState.menu[KEY_MENU_DOWN])
+			dy = 1;
+
 		if (pMS->delta_item & MODIFY_CREW_FLAG)
 		{
 		}
@@ -748,71 +1046,32 @@ DoModifyShips (MENU_STATE *pMS)
 			}
 			else
 #endif  /* WANT_SHIP_SPINS */
-			if (select || ((pMS->delta_item & MODIFY_CREW_FLAG)
+			if (hStarShip == 0 && HINIBBLE (pMS->CurState) == 0 &&
+					!(pMS->delta_item & MODIFY_CREW_FLAG) && select)
+			{
+				// Select button was pressed over an empty escort
+				// ship slot. Switch to 'add escort ship' mode.
+				UnlockMutex (GraphicsLock);
+				pMS->delta_item = MODIFY_CREW_FLAG;
+				DrawRaceStrings (pMS, 0);
+				return TRUE;
+			}
+			else if (select || ((pMS->delta_item & MODIFY_CREW_FLAG)
 					&& (dx || dy || cancel)))
 			{
 				if (hStarShip == 0 && HINIBBLE (pMS->CurState) == 0)
 				{
-					// Cursor is over an empty escort ship slot.
-					COUNT Index;
-
-// SetFlashRect (NULL);
+					// Cursor is over an empty escort ship slot, while we're
+					// in 'add escort ship' mode.
 					UnlockMutex (GraphicsLock);
-					if (!(pMS->delta_item & MODIFY_CREW_FLAG))
-					{
-						// Select button was pressed over an empty escort
-						// ship slot. Switch to 'add ship' mode.
-						pMS->delta_item = MODIFY_CREW_FLAG;
-						DrawRaceStrings (pMS, 0);
+					if (DMS_AddEscortShip (pMS, select, cancel, dx, dy, &NewState))
 						return TRUE;
-					}
-					else if (cancel)
-					{
-						// We were selecting a ship to be inserted in an
-						// empty escort ship slot, but cancelled.
-						pMS->delta_item ^= MODIFY_CREW_FLAG;
-						LockMutex (GraphicsLock);
-						SetFlashRect (SFR_MENU_3DO);
-						UnlockMutex (GraphicsLock);
-						DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
-						SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-					}
-					else if (select)
-					{
-						// Selected a ship to be inserted in an empty escort
-						// ship slot.
-						DMS_TryAddEscortShip (pMS);
-						return TRUE;
-					}
-					else
-					{
-						// Motion key pressed while selecting a ship to be
-						// inserted in an empty escort ship slot.
-						Index = GetAvailableRaceCount ();
-						NewState = LOBYTE (pMS->delta_item);
-						if (dx < 0 || dy < 0)
-						{
-							if (NewState-- == 0)
-								NewState = Index - 1;
-						}
-						else if (dx > 0 || dy > 0)
-						{
-							if (++NewState == Index)
-								NewState = 0;
-						}
-						
-						if (NewState != LOBYTE (pMS->delta_item))
-						{
-							DrawRaceStrings (pMS, NewState);
-							pMS->delta_item = NewState | MODIFY_CREW_FLAG;
-						}
-						
-						return TRUE;
-					}
+
 					LockMutex (GraphicsLock);
 					goto ChangeFlashRect;
 				}
-				else if (select || cancel)
+				
+				if (select || cancel)
 				{
 					if ((pMS->delta_item & MODIFY_CREW_FLAG)
 							&& hStarShip != 0)
@@ -875,162 +1134,9 @@ DoModifyShips (MENU_STATE *pMS)
 				}
 				else if (pMS->delta_item & MODIFY_CREW_FLAG)
 				{
-					SIZE crew_delta, crew_bought;
-					SHIP_FRAGMENT *StarShipPtr;
-
-					if (hStarShip)
-						StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q),
-								hStarShip);
-					else
-						StarShipPtr = NULL;  // Keeping compiler quiet.
-
-					SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
-							MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
-					crew_delta = 0;
-					if (dy < 0)
-					{
-						// Buy crew
-						if (hStarShip == 0)
-						{
-							// Buy crew for the flagship.
-							if (GetCPodCapacity (&r.corner) > GetCrewCount ()
-									&& GLOBAL_SIS (ResUnits) >=
-									(DWORD)GLOBAL (CrewCost))
-							{
-								DrawPoint (&r.corner);
-								DeltaSISGauges (1, 0, -GLOBAL (CrewCost));
-								crew_delta = 1;
-
-								SetContext (StatusContext);
-								GetGaugeRect (&r, TRUE);
-								SetFlashRect (&r);
-								SetContext (SpaceContext);
-							}
-							else
-							{	// at capacity or not enough RUs
-								PlayMenuSound (MENU_SOUND_FAILURE);
-							}
-						}
-						else
-						{
-							// Buy crew for an escort ship.
-							HFLEETINFO hTemplate;
-							FLEET_INFO *TemplatePtr;
-
-							hTemplate = GetStarShipFromIndex (
-									&GLOBAL (avail_race_q),
-									StarShipPtr->race_id);
-							TemplatePtr = LockFleetInfo (
-									&GLOBAL (avail_race_q), hTemplate);
-							if (GLOBAL_SIS (ResUnits) >=
-									(DWORD)GLOBAL (CrewCost)
-									&& StarShipPtr->crew_level <
-									StarShipPtr->max_crew &&
-									StarShipPtr->crew_level <
-									TemplatePtr->crew_level)
-							{
-								if (StarShipPtr->crew_level > 0)
-									DeltaSISGauges (0, 0, -GLOBAL (CrewCost));
-								else
-									DeltaSISGauges (0, 0, -(COUNT)ShipCost[
-											StarShipPtr->race_id]);
-								++StarShipPtr->crew_level;
-								crew_delta = 1;
-								ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
-								r.corner.x = pMS->flash_rect0.corner.x;
-								r.corner.y = pMS->flash_rect0.corner.y
-										+ pMS->flash_rect0.extent.height - 6;
-								r.extent.width = SHIP_WIN_WIDTH;
-								r.extent.height = 5;
-								SetContext (SpaceContext);
-								SetFlashRect (&r);
-							}
-							else
-							{	// at capacity or not enough RUs
-								PlayMenuSound (MENU_SOUND_FAILURE);
-							}
-							UnlockFleetInfo (&GLOBAL (avail_race_q),
-									hTemplate);
-						}
-					}
-					else if (dy > 0)
-					{
-						// Dismiss crew.
-						crew_bought = (SIZE)MAKE_WORD (
-								GET_GAME_STATE (CREW_PURCHASED0),
-								GET_GAME_STATE (CREW_PURCHASED1));
-						if (hStarShip == 0)
-						{
-							// Dismiss crew from the flagship.
-							if (GetCrewCount ())
-							{
-								DeltaSISGauges (-1, 0, GLOBAL (CrewCost)
-										- (crew_bought ==
-										CREW_EXPENSE_THRESHOLD ? 2 : 0));
-								crew_delta = -1;
-
-								GetCPodCapacity (&r.corner);
-								SetContextForeGroundColor (BLACK_COLOR);
-								DrawPoint (&r.corner);
-
-								SetContext (StatusContext);
-								GetGaugeRect (&r, TRUE);
-								SetFlashRect (&r);
-								SetContext (SpaceContext);
-							}
-							else
-							{	// no crew to dismiss
-								PlayMenuSound (MENU_SOUND_FAILURE);
-							}
-						}
-						else
-						{
-							// Dismiss crew from an escort ship.
-							if (StarShipPtr->crew_level > 0)
-							{
-								if (StarShipPtr->crew_level > 1)
-								{
-									// The ship was not at 'scrap'.
-									// Give one crew member worth of RU.
-									DeltaSISGauges (0, 0, GLOBAL (CrewCost)
-											- (crew_bought ==
-											CREW_EXPENSE_THRESHOLD ? 2 : 0));
-								}
-								else
-								{
-									// With the last crew member, the ship
-									// will be scrapped.
-									// Give RU for the ship.
-									DeltaSISGauges (0, 0, (COUNT)ShipCost[
-											StarShipPtr->race_id]);
-								}
-								crew_delta = -1;
-								--StarShipPtr->crew_level;
-							}
-							else
-							{	// no crew to dismiss
-								PlayMenuSound (MENU_SOUND_FAILURE);
-							}
-							ShowShipCrew (StarShipPtr, &pMS->flash_rect0);
-							r.corner.x = pMS->flash_rect0.corner.x;
-							r.corner.y = pMS->flash_rect0.corner.y
-									+ pMS->flash_rect0.extent.height - 6;
-							r.extent.width = SHIP_WIN_WIDTH;
-							r.extent.height = 5;
-							SetContext (SpaceContext);
-							SetFlashRect (&r);
-						}
-					}
-
-					if (hStarShip)
-					{
-						UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-						
-						// clear out the bought ship index
-						// so that flash rects work correctly
-						pMS->delta_item &= MODIFY_CREW_FLAG;
-					}
-					CrewTransaction (crew_delta);
+					// Hire or dismiss crew for the flagship or an escort
+					// ship.
+					DMS_ModifyCrew (pMS, hStarShip, dy);
 				}
 			}
 			else if (cancel)
@@ -1053,6 +1159,7 @@ DoModifyShips (MENU_STATE *pMS)
 ChangeFlashRect:
 				if (HINIBBLE (pMS->CurState))
 				{
+					// Flash the flag ship.
 					pMS->flash_rect0.corner.x = 0;
 					pMS->flash_rect0.corner.y = 0;
 					pMS->flash_rect0.extent.width = SIS_SCREEN_WIDTH;
@@ -1060,10 +1167,13 @@ ChangeFlashRect:
 				}
 				else
 				{
-					pMS->flash_rect0.corner.x = hangar_x_coords[
-							pMS->CurState % HANGAR_SHIPS_ROW];
-					pMS->flash_rect0.corner.y = HANGAR_Y + (HANGAR_DY *
-							(pMS->CurState / HANGAR_SHIPS_ROW));
+					// Flash the current escort ship slot.
+					BYTE row = pMS->CurState / HANGAR_SHIPS_ROW;
+					BYTE col = pMS->CurState % HANGAR_SHIPS_ROW;
+
+					pMS->flash_rect0.corner.x = hangar_x_coords[col];
+					pMS->flash_rect0.corner.y =
+							HANGAR_Y + (HANGAR_DY * row);
 					pMS->flash_rect0.extent.width = SHIP_WIN_WIDTH;
 					pMS->flash_rect0.extent.height = SHIP_WIN_HEIGHT;
 				}
