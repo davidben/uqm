@@ -931,6 +931,36 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN select, BOOLEAN cancel,
 	}
 }
 
+// Helper function for DoModifyShips(), called when the player presses
+// 'select' or 'cancel' after selling all the crew.
+static void
+DMS_ScrapEscortShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
+{
+	RECT r;
+	SHIP_FRAGMENT *StarShipPtr =
+			LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+
+	SetFlashRect (NULL);
+	UnlockMutex (GraphicsLock);
+	ShowCombatShip (pMS, pMS->CurState, StarShipPtr);
+	LockMutex (GraphicsLock);
+
+	UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+
+	RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
+	FreeShipFrag (&GLOBAL (built_ship_q), hStarShip);
+	// refresh SIS display
+	DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
+
+	r.corner.x = pMS->flash_rect0.corner.x;
+	r.corner.y = pMS->flash_rect0.corner.y;
+	r.extent.width = SHIP_WIN_WIDTH;
+	r.extent.height = SHIP_WIN_HEIGHT;
+
+	SetContext (SpaceContext);
+	SetFlashRect (&r);
+}
+
 /* in this routine, the least significant byte of pMS->CurState is used
  * to store the current selected ship index
  * a special case for the row is hi-nibble == -1 (0xf), which specifies
@@ -1076,32 +1106,22 @@ DoModifyShips (MENU_STATE *pMS)
 					if ((pMS->delta_item & MODIFY_CREW_FLAG)
 							&& hStarShip != 0)
 					{
+						// Pressing the select or cancel button in crew edit
+						// mode for an escort ship.
 						SHIP_FRAGMENT *StarShipPtr = LockShipFrag (
 								&GLOBAL (built_ship_q), hStarShip);
-						if (StarShipPtr->crew_level == 0)
+						COUNT crew_level = StarShipPtr->crew_level;
+						UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+
+						if (crew_level == 0)
 						{
-							SetFlashRect (NULL);
-							UnlockMutex (GraphicsLock);
-							ShowCombatShip (pMS, pMS->CurState, StarShipPtr);
-							LockMutex (GraphicsLock);
-							UnlockShipFrag (&GLOBAL (built_ship_q),
-									hStarShip);
-							RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
-							FreeShipFrag (&GLOBAL (built_ship_q), hStarShip);
-							// refresh SIS display
-							DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
-									UNDEFINED_DELTA);
-							r.corner.x = pMS->flash_rect0.corner.x;
-							r.corner.y = pMS->flash_rect0.corner.y;
-							r.extent.width = SHIP_WIN_WIDTH;
-							r.extent.height = SHIP_WIN_HEIGHT;
-							SetContext (SpaceContext);
-							SetFlashRect (&r);
+							// Scrap escort ship, then exiting crew edit
+							// mode.
+							DMS_ScrapEscortShip (pMS, hStarShip);
 						}
 						else
 						{
-							UnlockShipFrag (&GLOBAL (built_ship_q),
-									hStarShip);
+							// Just exiting escort ship crew edit mode.
 						}
 					}
 					
