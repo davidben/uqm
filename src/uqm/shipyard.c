@@ -1040,8 +1040,11 @@ DoModifyShips (MENU_STATE *pMS)
 		{
 			// Moving horizontally through the escort ship slots,
 			// wrapping around if necessary.
-			NewState = (pMS->CurState + HANGAR_SHIPS_ROW + dx) %
-					HANGAR_SHIPS_ROW;
+			BYTE row = pMS->CurState / HANGAR_SHIPS_ROW;
+			BYTE col = pMS->CurState % HANGAR_SHIPS_ROW;
+
+			col = (col + HANGAR_SHIPS_ROW + dx) % HANGAR_SHIPS_ROW;
+			NewState = row * HANGAR_SHIPS_ROW + col;
 		}
 
 		if (select || cancel
