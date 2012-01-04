@@ -1285,6 +1285,7 @@ AnimateLaunch (FRAME farray)
 	r.corner.x = 0;
 	r.corner.y = 0;
 	r.extent.width = 0;
+	r.extent.height = 0;
 	s.origin.x = 0;
 	s.origin.y = 0;
 	s.frame = farray;
