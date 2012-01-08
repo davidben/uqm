@@ -301,6 +301,7 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	img->last_scale_hs = NullHs;
 	img->last_scale_type = -1;
 	img->last_scale = 0;
+	img->dirty = FALSE;
 	TFB_DrawCanvas_GetExtent (canvas, &img->extent);
 
 	if (TFB_DrawCanvas_IsPaletted (canvas))
