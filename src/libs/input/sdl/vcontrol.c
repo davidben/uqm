@@ -1265,7 +1265,7 @@ VControl_ParseGesture (VCONTROL_GESTURE *g, const char *spec)
 	parse_state ps;
 
 	strncpy (ps.line, spec, LINE_SIZE);
-	ps.line[LINE_SIZE] = '\0';
+	ps.line[LINE_SIZE - 1] = '\0';
 	ps.index = ps.error = 0;
 	ps.linenum = -1;
 
