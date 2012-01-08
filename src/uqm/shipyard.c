@@ -233,9 +233,11 @@ DrawRaceStrings (MENU_STATE *pMS, BYTE NewRaceItem)
 		NewRaceItem = GetIndexFromStarShip (&GLOBAL (avail_race_q),
 				hStarShip);
 		s.frame = SetAbsFrameIndex (pMS->ModuleFrame, 3 + NewRaceItem);
+				// Ship name, above the ship image.
 		DrawStamp (&s);
 		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 		s.frame = FleetPtr->melee_icon;
+				// Ship image.
 		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 
 		t.baseline.x = s.origin.x + RADAR_WIDTH - 2;
