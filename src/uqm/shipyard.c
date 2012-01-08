@@ -712,10 +712,7 @@ DMS_SpinShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 	SetContextClipRect (&OldClipRect);
 	SetContext (OldContext);
 
-	if (hStarShip)
-		return TRUE;
-
-	return FALSE;
+	return TRUE;
 }
 #endif  /* WANT_SHIP_SPINS */
 
@@ -985,9 +982,9 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 	if (special)
 	{
 		HSHIPFRAG hStarShip = GetEscortByStarShipIndex (pMS->delta_item);
-		DMS_SpinShip (pMS, hStarShip);
 		LockMutex (GraphicsLock);
-		DMS_SetMode (pMS, DMS_Mode_addEscort);
+		if (DMS_SpinShip (pMS, hStarShip))
+			DMS_SetMode (pMS, DMS_Mode_addEscort);
 		UnlockMutex (GraphicsLock);
 		return;
 	}
@@ -1169,8 +1166,8 @@ DMS_NavigateShipSlots (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 #else
 	if (special)
 	{
-		DMS_SpinShip (pMS, hStarShip);
-		DMS_SetMode (pMS, DMS_Mode_navigate);
+		if (DMS_SpinShip (pMS, hStarShip))
+			DMS_SetMode (pMS, DMS_Mode_navigate);
 	}
 	else
 #endif  /* WANT_SHIP_SPINS */
