@@ -606,6 +606,7 @@ DMS_FlashEscortShipCrewCount (BYTE slotNr)
 
 // Helper function for DoModifyShips(). Called to change the flash
 // rectangle to the currently selected ship (flagship or escort ship).
+// The caller must hold the graphicsLock.
 static void
 DMS_FlashActiveShip (MENU_STATE *pMS)
 {
@@ -626,10 +627,10 @@ DMS_FlashActiveShip (MENU_STATE *pMS)
 // XXX: right now, this only switches the sound and flash rectangle.
 // Perhaps we should move more of the code to modify other aspects
 // here too.
+// The caller must hold the graphicsLock.
 static void
 DMS_SetMode (MENU_STATE *pMS, DMS_Mode mode)
 {
-	LockMutex (GraphicsLock);
 	switch (mode) {
 		case DMS_Mode_navigate:
 			SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
@@ -658,7 +659,6 @@ DMS_SetMode (MENU_STATE *pMS, DMS_Mode mode)
 			SetFlashRect (SFR_MENU_3DO);
 			break;
 	}
-	UnlockMutex (GraphicsLock);
 }
 
 #define MODIFY_CREW_FLAG (1 << 8)
@@ -960,8 +960,8 @@ DMS_TryAddEscortShip (MENU_STATE *pMS)
 		LockMutex (GraphicsLock);
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
 				-((int)ShipCost[Index]));
-		UnlockMutex (GraphicsLock);
 		DMS_SetMode (pMS, DMS_Mode_editCrew);
+		UnlockMutex (GraphicsLock);
 	}
 	else
 	{
@@ -986,7 +986,9 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 	{
 		HSHIPFRAG hStarShip = GetEscortByStarShipIndex (pMS->delta_item);
 		DMS_SpinShip (pMS, hStarShip);
+		LockMutex (GraphicsLock);
 		DMS_SetMode (pMS, DMS_Mode_addEscort);
+		UnlockMutex (GraphicsLock);
 		return;
 	}
 #else
@@ -1002,7 +1004,9 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 		SetFlashRect (SFR_MENU_3DO);
 		UnlockMutex (GraphicsLock);
 		DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
+		LockMutex (GraphicsLock);
 		DMS_SetMode (pMS, DMS_Mode_navigate);
+		UnlockMutex (GraphicsLock);
 	}
 	else if (select)
 	{
@@ -1059,9 +1063,7 @@ DMS_ScrapEscortShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 	DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
 
 	SetContext (SpaceContext);
-	UnlockMutex (GraphicsLock);
 	DMS_SetMode (pMS, DMS_Mode_navigate);
-	LockMutex (GraphicsLock);
 }
 
 // Helper function for DoModifyShips(), called when the player presses
@@ -1131,7 +1133,9 @@ DMS_EditCrewMode (MENU_STATE *pMS, HSHIPFRAG hStarShip,
 		}
 
 		pMS->delta_item &= ~MODIFY_CREW_FLAG;
+		LockMutex (GraphicsLock);
 		DMS_SetMode (pMS, DMS_Mode_navigate);
+		UnlockMutex (GraphicsLock);
 	}
 	else if (dy)
 	{
@@ -1176,11 +1180,11 @@ DMS_NavigateShipSlots (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 		{
 			// Select button was pressed over an empty escort
 			// ship slot. Switch to 'add escort ship' mode.
-			UnlockMutex (GraphicsLock);
 			pMS->delta_item = MODIFY_CREW_FLAG;
+			UnlockMutex (GraphicsLock);
 			DrawRaceStrings (pMS, 0);
-			DMS_SetMode (pMS, DMS_Mode_addEscort);
 			LockMutex (GraphicsLock);
+			DMS_SetMode (pMS, DMS_Mode_addEscort);
 		}
 		else
 		{
@@ -1193,12 +1197,12 @@ DMS_NavigateShipSlots (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 	else if (cancel)
 	{
 		// Leave escort ship editor.
-		UnlockMutex (GraphicsLock);
 		pMS->InputFunc = DoShipyard;
 		pMS->CurState = SHIPYARD_CREW;
+		UnlockMutex (GraphicsLock);
 		DrawMenuStateStrings (PM_CREW, pMS->CurState);
-		DMS_SetMode (pMS, DMS_Mode_exit);
 		LockMutex (GraphicsLock);
+		DMS_SetMode (pMS, DMS_Mode_exit);
 	}
 }
 
@@ -1225,10 +1229,10 @@ DoModifyShips (MENU_STATE *pMS)
 		pMS->CurState = MAKE_BYTE (0, 0xF);
 		pMS->delta_item = 0;
 
-		DMS_SetMode (pMS, DMS_Mode_navigate);
 		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		DMS_SetMode (pMS, DMS_Mode_navigate);
+		UnlockMutex (GraphicsLock);
 	}
 	else
 	{
@@ -1271,9 +1275,9 @@ DoModifyShips (MENU_STATE *pMS)
 				DMS_EditCrewMode (pMS, hStarShip, select, cancel, dy);
 			}
 		}
-	}
 
-	UnlockMutex (GraphicsLock);
+		UnlockMutex (GraphicsLock);
+	}
 
 	SleepThread (ONE_SECOND / 30);
 
