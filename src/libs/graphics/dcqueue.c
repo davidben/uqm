@@ -587,3 +587,42 @@ TFB_FlushGraphics (void)
 	RenderedFrames++;
 	BroadcastCondVar (RenderingCond);
 }
+
+void
+TFB_PurgeDanglingGraphics (void)
+{
+	Lock_DCQ (-1);
+
+	for (;;)
+	{
+		TFB_DrawCommand DC;
+
+		if (!TFB_DrawCommandQueue_Pop (&DC))
+		{
+			// the Queue is now empty.
+			break;
+		}
+
+		switch (DC.Type)
+		{
+			case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:
+			{
+				TFB_Image *DC_image = DC.data.deleteimage.image;
+				TFB_DrawImage_Delete (DC_image);
+				break;
+			}
+			case TFB_DRAWCOMMANDTYPE_DELETEDATA:
+			{
+				void *data = DC.data.deletedata.data;
+				HFree (data);
+				break;
+			}
+			case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:
+			{
+				ClearSemaphore (DC.data.sendsignal.sem);
+				break;
+			}
+		}
+	}
+	Unlock_DCQ ();
+}

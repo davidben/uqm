@@ -98,6 +98,7 @@ extern float FrameRate;
 extern int FrameRateTickBase;
 
 void TFB_FlushGraphics (void); // Only call from main thread!!
+void TFB_PurgeDanglingGraphics (void); // Only call from main thread as part of shutdown.
 
 extern int ScreenWidth;
 extern int ScreenHeight;

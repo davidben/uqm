@@ -470,6 +470,8 @@ main (int argc, char *argv[])
 		unInitAudio ();
 		uninit_communication ();
 		UninitColorMaps ();
+		// TODO: Merge into TFB_UninitGraphics when it goes live
+		TFB_PurgeDanglingGraphics ();
 		// Not yet: TFB_UninitGraphics ();
 
 #ifdef NETPLAY
