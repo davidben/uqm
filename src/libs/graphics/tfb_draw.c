@@ -415,8 +415,16 @@ TFB_DrawImage_Delete (TFB_Image *image)
 
 	TFB_DrawCanvas_Delete (image->NormalImg);
 			
-	if (image->ScaledImg) {
+	if (image->ScaledImg)
+	{
 		TFB_DrawCanvas_Delete (image->ScaledImg);
+		image->ScaledImg = 0;
+	}
+
+	if (image->FilledImg)
+	{
+		TFB_DrawCanvas_Delete (image->FilledImg);
+		image->FilledImg = 0;
 	}
 
 	UnlockMutex (image->mutex);
