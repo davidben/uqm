@@ -164,8 +164,8 @@ struct FlashContext {
 	TimeCount lastFrameTime;
 			// Time of the last frame draw.
 
-	BOOLEAN started : 1;
-	BOOLEAN paused : 1;
+	BOOLEAN started;
+	BOOLEAN paused;
 
 	FRAME *cache;
 	COUNT cacheSize;
