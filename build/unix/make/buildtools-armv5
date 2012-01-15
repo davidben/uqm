@@ -7,6 +7,10 @@ define act_mkdep_c
 	$(MKDEP_C) $(CFLAGS) -o "$(@D)/$(<F).o" "$<" --depend "$@"
 endef
 
+define act_mkdep_cxx
+	$(MKDEP_CXX) $(CXXFLAGS) -o "$(@D)/$(<F).o" "$<" --depend "$@"
+endef
+
 define act_link
 	$(LINK) --create "$@" $^ $(LDFLAGS)
 endef

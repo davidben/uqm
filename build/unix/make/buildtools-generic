@@ -6,6 +6,10 @@ define act_mkdep_c
 	$(MKDEP_C) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
 endef
 
+define act_mkdep_cxx
+	$(MKDEP_CXX) $(CXXFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
+endef
+
 define act_mkdep_m
 	$(MKDEP_OBJC) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
 endef
@@ -16,6 +20,10 @@ endef
 
 define act_cc
 	$(COMPILE_C) -o "$@" $(CFLAGS) "$<"
+endef
+
+define act_cxx
+	$(COMPILE_CXX) -o "$@" $(CXXFLAGS) "$<"
 endef
 
 define act_objcc

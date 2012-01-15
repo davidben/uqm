@@ -104,9 +104,10 @@ build_depend() {
 # Compile the lot.
 # With the depend info set up, we can leave everything to make.
 build_compile() {
-	local CFLAGS LDFLAGS TARGET_FILE DEPEND_FILE OBJDIR
+	local CFLAGS CXXFLAGS LDFLAGS TARGET_FILE DEPEND_FILE OBJDIR
 
 	eval CFLAGS="\${${BUILD_PROJECT}_CFLAGS}"
+	eval CXXFLAGS="\${${BUILD_PROJECT}_CXXFLAGS}"
 	eval LDFLAGS="\${${BUILD_PROJECT}_LDFLAGS}"
 	eval OBJDIR=\""\$BUILD_WORK/\${${BUILD_PROJECT}_OBJS}"\"
 	eval TARGET_FILE=\""\$BUILD_WORK/\${${BUILD_PROJECT}_NAME}"\"
@@ -114,7 +115,7 @@ build_compile() {
 
 	eval "${TARGET}_pre_build"
 
-	CFLAGS=$CFLAGS LDFLAGS=$LDFLAGS \
+	CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS LDFLAGS=$LDFLAGS \
 			OBJDIR=$OBJDIR \
 			BUILD_ROOT= \
 			TARGET_FILE=$TARGET_FILE DEPEND_FILE=$DEPEND_FILE \

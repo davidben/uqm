@@ -10,3 +10,10 @@ define act_mkdep_c
 	@rm -f "$@.tmp"
 endef
 
+define act_mkdep_cxx
+	$(MKDEP_C) $(CXXFLAGS) "$<" -o "$@.tmp"
+	@echo -n "$(@D)/" > $@
+	@cat "$@.tmp" >> $@
+	@rm -f "$@.tmp"
+endef
+
