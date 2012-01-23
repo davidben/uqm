@@ -448,9 +448,9 @@ DoInstallModule (MENU_STATE *pMS)
 			if (NewItem != pMS->CurState)
 			{
 				pMS->CurState = NewItem;
+				PreUpdateFlashRect ();
 				DrawModuleStrings (pMS, NewItem);
-				// flash with PC menus too
-				SetFlashRect (SFR_MENU_ANY);
+				PostUpdateFlashRect ();
 			}
 		}
 		else if (NewItem != pMS->delta_item || NewState != pMS->CurState)
@@ -573,7 +573,9 @@ ChangeFuelQuantity (void)
 						SetContextBackGroundColor (BLACK_COLOR));
 				DrawFilledRectangle (&r);
 			}
+			PreUpdateFlashRect ();
 			DeltaSISGauges (0, FUEL_TANK_SCALE, -GLOBAL (FuelCost));
+			PostUpdateFlashRect ();
 			SetContext (StatusContext);
 			GetGaugeRect (&r, FALSE);
 			SetFlashRect (&r);
@@ -590,7 +592,9 @@ ChangeFuelQuantity (void)
 		SetContext (SpaceContext);
 		if (GLOBAL_SIS (FuelOnBoard))
 		{
+			PreUpdateFlashRect ();
 			DeltaSISGauges (0, -FUEL_TANK_SCALE, GLOBAL (FuelCost));
+			PostUpdateFlashRect ();
 			if (GLOBAL_SIS (FuelOnBoard) % FUEL_VOLUME_PER_ROW == 0 &&
 					GLOBAL_SIS (FuelOnBoard) >= FUEL_RESERVE)
 			{

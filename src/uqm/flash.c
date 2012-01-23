@@ -18,6 +18,12 @@
 //       areas, drawing directly to the screen, using a cache, are
 //       currently in use.
 
+// NOTE:
+// - If you change the properties of the original CONTEXT, specifically the
+//   dimensions and origin, you'll need to call Flash_preUpdate() before and
+//   Flash_postUpdate() after that change. Note that this may change which
+//   part of the screen is flashing.
+
 // TODO:
 // - During a few frames during the sequence, the frame to be displayed
 //   is equal to a frame which was supplied as a parameter to the flash
@@ -472,7 +478,8 @@ Flash_setOverlay (FlashContext *context, const POINT *origin, FRAME overlay)
 	}
 }
 
-// Call before you update the graphics in the currently flashing area.
+// Call before you update the graphics in the currently flashing area,
+// or before you change the dimensions or origin of the graphics context.
 void
 Flash_preUpdate (FlashContext *context)
 {
@@ -483,7 +490,8 @@ Flash_preUpdate (FlashContext *context)
 	}
 }
 
-// Call after you update the graphics in the currently flashing area.
+// Call after you update the graphics in the currently flashing area,
+// or after you change the dimensions or origin of the graphics context.
 void
 Flash_postUpdate (FlashContext *context)
 {
@@ -802,6 +810,4 @@ Flash_drawCurrentFrame (FlashContext *context)
 	else
 		Flash_drawCachedFrame (context, numer, denom);
 }
-
-
 

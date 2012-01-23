@@ -176,6 +176,26 @@ FeedbackSetting (BYTE which_setting)
 #define DDSHS_EDIT     1
 #define DDSHS_BLOCKCUR 2
 
+static const RECT captainNameRect = {
+	/* .corner = */ {
+		/* .x = */ 3,
+		/* .y = */ 10
+	}, /* .extent = */ {
+		/* .width = */ SHIP_NAME_WIDTH - 2,
+		/* .height = */ SHIP_NAME_HEIGHT
+	}
+};
+static const RECT shipNameRect = {
+	/* .corner = */ {
+		/* .x = */ 2,
+		/* .y = */ 20
+	}, /* .extent = */ {
+		/* .width = */ SHIP_NAME_WIDTH,
+		/* .height = */ SHIP_NAME_HEIGHT
+	}
+};
+
+
 static BOOLEAN
 DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		COUNT state)
@@ -185,20 +205,11 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 	Color BackGround, ForeGround;
 	FONT Font;
 
-	LockMutex (GraphicsLock);
-
 	{
-		r.corner.x = 2;
-		r.extent.width = SHIP_NAME_WIDTH;
-		r.extent.height = SHIP_NAME_HEIGHT;
-
-		SetContext (StatusContext);
 		if (nameCaptain)
 		{	// Naming the captain
 			Font = TinyFont;
-			r.corner.y = 10;
-			++r.corner.x;
-			r.extent.width -= 2;
+			r = captainNameRect;
 			lf.baseline.x = r.corner.x + (r.extent.width >> 1) - 1;
 
 			BackGround = BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09);
@@ -207,7 +218,7 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		else
 		{	// Naming the flagship
 			Font = StarConFont;
-			r.corner.y = 20;
+			r = shipNameRect;
 			lf.baseline.x = r.corner.x + (r.extent.width >> 1);
 
 			BackGround = BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D);
@@ -218,6 +229,8 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		lf.align = ALIGN_CENTER;
 	}
 
+	LockMutex (GraphicsLock);
+	SetContext (StatusContext);
 	SetContextFont (Font);
 	lf.pStr = Str;
 	lf.CharCount = (COUNT)~0;
@@ -244,6 +257,10 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 			// disallow the change
 			return (FALSE);
 		}
+	
+		UnlockMutex (GraphicsLock);
+		PreUpdateFlashRect ();
+		LockMutex (GraphicsLock);
 
 		SetContextForeGroundColor (BackGround);
 		DrawFilledRectangle (&r);
@@ -281,8 +298,8 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 
 		SetContextForeGroundColor (ForeGround);
 		font_DrawText (&lf);
-
-		SetFlashRect (&r);
+		
+		PostUpdateFlashRectLocked ();
 	}
 
 	UnlockMutex (GraphicsLock);
@@ -309,7 +326,7 @@ NameCaptainOrShip (bool nameCaptain)
 	UNICODE *Setting;
 
 	LockMutex (GraphicsLock);
-	SetFlashRect (NULL);
+	SetFlashRect (nameCaptain ? &captainNameRect : &shipNameRect);
 	UnlockMutex (GraphicsLock);
 
 	DrawNameString (nameCaptain, buf, 0, DDSHS_EDIT);

@@ -198,7 +198,9 @@ DeltaSupportCrew (ROSTER_STATE *rosterState, SIZE crew_delta)
 					StarShipPtr->crew_level,
 					TemplatePtr->crew_level);
 
+		PreUpdateFlashRect ();
 		DrawStatusMessage (buf);
+		PostUpdateFlashRect ();
 		DeltaSISGauges (-crew_delta, 0, 0);
 		if (crew_delta)
 		{

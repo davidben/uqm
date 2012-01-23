@@ -219,8 +219,7 @@ DrawRaceStrings (MENU_STATE *pMS, BYTE NewRaceItem)
 	r.corner = s.origin;
 	r.extent.width = RADAR_WIDTH;
 	r.extent.height = RADAR_HEIGHT;
-	SetContextForeGroundColor (
-			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x00), 0x00));
+	SetContextForeGroundColor (BLACK_COLOR);
 	DrawFilledRectangle (&r);
 	if (NewRaceItem != (BYTE)~0)
 	{
@@ -232,19 +231,22 @@ DrawRaceStrings (MENU_STATE *pMS, BYTE NewRaceItem)
 		hStarShip = GetAvailableRaceFromIndex (NewRaceItem);
 		NewRaceItem = GetIndexFromStarShip (&GLOBAL (avail_race_q),
 				hStarShip);
+
+		// Draw the ship name, above the ship image.
 		s.frame = SetAbsFrameIndex (pMS->ModuleFrame, 3 + NewRaceItem);
-				// Ship name, above the ship image.
 		DrawStamp (&s);
+
+		// Draw the ship image.
 		FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 		s.frame = FleetPtr->melee_icon;
-				// Ship image.
 		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
-
 		t.baseline.x = s.origin.x + RADAR_WIDTH - 2;
 		t.baseline.y = s.origin.y + RADAR_HEIGHT - 2;
 		s.origin.x += (RADAR_WIDTH >> 1);
 		s.origin.y += (RADAR_HEIGHT >> 1);
 		DrawStamp (&s);
+
+		// Print the ship cost.
 		t.align = ALIGN_RIGHT;
 		t.CharCount = (COUNT)~0;
 		t.pStr = buf;
@@ -257,8 +259,6 @@ DrawRaceStrings (MENU_STATE *pMS, BYTE NewRaceItem)
 	UnbatchGraphics ();
 	SetContext (OldContext);
 
-	// Flash the ship purchase menu even when optMenu == OPT_PC
-	SetFlashRect (SFR_MENU_ANY);
 	UnlockMutex (GraphicsLock);
 }
 
@@ -266,6 +266,10 @@ DrawRaceStrings (MENU_STATE *pMS, BYTE NewRaceItem)
 #define SHIP_WIN_HEIGHT (SHIP_WIN_WIDTH + 6)
 #define SHIP_WIN_FRAMES ((SHIP_WIN_WIDTH >> 1) + 1)
 
+// Print the crew count of an escort ship on top of its (already drawn)
+// image, either as '30' (full), '28/30' (partially full), or 'SCRAP'
+// (empty).
+// pRect is the rectangle of the ship image.
 static void
 ShowShipCrew (SHIP_FRAGMENT *StarShipPtr, const RECT *pRect)
 {
@@ -274,20 +278,21 @@ ShowShipCrew (SHIP_FRAGMENT *StarShipPtr, const RECT *pRect)
 	UNICODE buf[80];
 	HFLEETINFO hTemplate;
 	FLEET_INFO *TemplatePtr;
+	COUNT maxCrewLevel;
 
 	hTemplate = GetStarShipFromIndex (&GLOBAL (avail_race_q),
 			StarShipPtr->race_id);
 	TemplatePtr = LockFleetInfo (&GLOBAL (avail_race_q), hTemplate);
-	if (StarShipPtr->crew_level >= TemplatePtr->crew_level)
+	maxCrewLevel = TemplatePtr->crew_level;
+	UnlockFleetInfo (&GLOBAL (avail_race_q), hTemplate);
+
+	if (StarShipPtr->crew_level >= maxCrewLevel)
 		sprintf (buf, "%u", StarShipPtr->crew_level);
 	else if (StarShipPtr->crew_level == 0)
 		// XXX: "SCRAP" needs to be moved to starcon.txt
 		utf8StringCopy (buf, sizeof (buf), "SCRAP");
 	else
-		sprintf (buf, "%u/%u",
-				StarShipPtr->crew_level,
-				TemplatePtr->crew_level);
-	UnlockFleetInfo (&GLOBAL (avail_race_q), hTemplate);
+		sprintf (buf, "%u/%u", StarShipPtr->crew_level, maxCrewLevel);
 
 	r = *pRect;
 	t.baseline.x = r.corner.x + (r.extent.width >> 1);
@@ -313,14 +318,17 @@ static void
 ShowCombatShip (MENU_STATE *pMS, COUNT which_window,
 		SHIP_FRAGMENT *YankedStarShipPtr)
 {
-	COUNT i, num_ships;
+	COUNT i;
+	COUNT num_ships;
 	HSHIPFRAG hStarShip, hNextShip;
 	SHIP_FRAGMENT *StarShipPtr;
 	struct
 	{
 		SHIP_FRAGMENT *StarShipPtr;
 		POINT finished_s;
-		STAMP ship_s, lfdoor_s, rtdoor_s;
+		STAMP ship_s;
+		STAMP lfdoor_s;
+		STAMP rtdoor_s;
 	} ship_win_info[MAX_BUILT_SHIPS], *pship_win_info;
 
 	num_ships = 1;
@@ -388,6 +396,10 @@ ShowCombatShip (MENU_STATE *pMS, COUNT which_window,
 			hNextShip = _GetSuccLink (StarShipPtr);
 
 			pship_win_info->StarShipPtr = StarShipPtr;
+					// XXX BUG: this looks wrong according to the original
+					// semantics of LockShipFrag(): StarShipPtr is not valid
+					// anymore after UnlockShipFrag() is called, but it is
+					// used thereafter.
 
 			pship_win_info->lfdoor_s.origin.x = -1;
 			pship_win_info->rtdoor_s.origin.x = 1;
@@ -496,6 +508,7 @@ ShowCombatShip (MENU_STATE *pMS, COUNT which_window,
 	}
 }
 
+// Pre: GraphicsLock is unlocked.
 static void
 CrewTransaction (SIZE crew_delta)
 {
@@ -519,10 +532,7 @@ CrewTransaction (SIZE crew_delta)
 					&& crew_bought - crew_delta < CREW_EXPENSE_THRESHOLD)
 			{
 				GLOBAL (CrewCost) += 2;
-
-				UnlockMutex (GraphicsLock);
 				DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
-				LockMutex (GraphicsLock);
 			}
 		}
 		else
@@ -531,10 +541,7 @@ CrewTransaction (SIZE crew_delta)
 					&& crew_bought - crew_delta >= CREW_EXPENSE_THRESHOLD)
 			{
 				GLOBAL (CrewCost) -= 2;
-
-				UnlockMutex (GraphicsLock);
 				DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
-				LockMutex (GraphicsLock);
 			}
 		}
 		if (CheckAlliance (SHOFIXTI_SHIP) != GOOD_GUY)
@@ -739,8 +746,14 @@ DMS_HireFlagShipCrew (void)
 		return 0;
 	}
 
+	// Draw a crew member.
 	DrawPoint (&r.corner);
+
+	// Update the crew counter and RU. Note that the crew counter is
+	// flashing.
+	PreUpdateFlashRectLocked ();
 	DeltaSISGauges (1, 0, -GLOBAL (CrewCost));
+	PostUpdateFlashRectLocked ();
 
 	return 1;
 }
@@ -765,9 +778,14 @@ DMS_DismissFlagShipCrew (void)
 			GET_GAME_STATE (CREW_PURCHASED0),
 			GET_GAME_STATE (CREW_PURCHASED1));
 
+	// Update the crew counter and RU. Note that the crew counter is
+	// flashing.
+	PreUpdateFlashRectLocked ();
 	DeltaSISGauges (-1, 0, GLOBAL (CrewCost) -
 			(crew_bought == CREW_EXPENSE_THRESHOLD ? 2 : 0));
+	PostUpdateFlashRectLocked ();
 
+	// Remove the pixel representing the crew member.
 	GetCPodCapacity (&r.corner);
 	SetContextForeGroundColor (BLACK_COLOR);
 	DrawPoint (&r.corner);
@@ -824,8 +842,11 @@ DMS_HireEscortShipCrew (SHIP_FRAGMENT *StarShipPtr)
 	}
 
 	++StarShipPtr->crew_level;
+
+	PreUpdateFlashRectLocked ();
 	DMS_GetEscortShipRect (&r, StarShipPtr->index);
 	ShowShipCrew (StarShipPtr, &r);
+	PostUpdateFlashRectLocked ();
 
 	return 1;
 }
@@ -867,8 +888,10 @@ DMS_DismissEscortShipCrew (SHIP_FRAGMENT *StarShipPtr)
 		PlayMenuSound (MENU_SOUND_FAILURE);
 	}
 
+	PreUpdateFlashRectLocked ();
 	DMS_GetEscortShipRect (&r, StarShipPtr->index);
 	ShowShipCrew (StarShipPtr, &r);
+	PostUpdateFlashRectLocked ();
 
 	return crew_delta;
 }
@@ -880,6 +903,7 @@ DMS_DismissEscortShipCrew (SHIP_FRAGMENT *StarShipPtr)
 // selected.
 // 'dy' is -1 if the 'up' button was pressed, or '1' if the down button was
 // pressed.
+// Pre: caller holds the GraphicsLock
 static void
 DMS_ModifyCrew (MENU_STATE *pMS, HSHIPFRAG hStarShip, SBYTE dy)
 {
@@ -936,12 +960,15 @@ DMS_ModifyCrew (MENU_STATE *pMS, HSHIPFRAG hStarShip, SBYTE dy)
 		pMS->delta_item &= MODIFY_CREW_FLAG;
 	}
 
+	UnlockMutex (GraphicsLock);
 	CrewTransaction (crew_delta);
+	LockMutex (GraphicsLock);
 }
 
 // Helper function for DoModifyShips(), called when the player presses the
 // select button when the cursor is over an empty escort ship slot.
 // Try to add the currently selected ship as an escort ship.
+// Pre: caller does not hold the GraphicsLock
 static void
 DMS_TryAddEscortShip (MENU_STATE *pMS)
 {
@@ -1000,7 +1027,7 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 		// Cancel selecting an escort ship.
 		pMS->delta_item &= ~MODIFY_CREW_FLAG;
 		LockMutex (GraphicsLock);
-		SetFlashRect (SFR_MENU_3DO);
+		SetFlashRect (NULL);
 		UnlockMutex (GraphicsLock);
 		DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 		LockMutex (GraphicsLock);
@@ -1032,7 +1059,9 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 		
 		if (currentShip != LOBYTE (pMS->delta_item))
 		{
+			PreUpdateFlashRect ();
 			DrawRaceStrings (pMS, currentShip);
+			PostUpdateFlashRect ();
 			pMS->delta_item = currentShip | MODIFY_CREW_FLAG;
 		}
 	}
@@ -1041,6 +1070,7 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 
 // Helper function for DoModifyShips(), called when the player presses
 // 'select' or 'cancel' after selling all the crew.
+// Pre: caller holds the GraphicsLock
 static void
 DMS_ScrapEscortShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 {
@@ -1108,6 +1138,7 @@ DMS_MoveCursor (BYTE curState, SBYTE dx, SBYTE dy)
 
 // Helper function for DoModifyShips(), called every time DoModifyShip() is
 // called when we are in crew editing mode.
+// Pre: Caller holds the GraphicsLock
 static void
 DMS_EditCrewMode (MENU_STATE *pMS, HSHIPFRAG hStarShip,
 		BOOLEAN select, BOOLEAN cancel, SBYTE dy)
@@ -1132,9 +1163,7 @@ DMS_EditCrewMode (MENU_STATE *pMS, HSHIPFRAG hStarShip,
 		}
 
 		pMS->delta_item &= ~MODIFY_CREW_FLAG;
-		LockMutex (GraphicsLock);
 		DMS_SetMode (pMS, DMS_Mode_navigate);
-		UnlockMutex (GraphicsLock);
 	}
 	else if (dy)
 	{
@@ -1146,7 +1175,7 @@ DMS_EditCrewMode (MENU_STATE *pMS, HSHIPFRAG hStarShip,
 
 // Helper function for DoModifyShips(), called every time DoModifyShip() is
 // called when we are in the mode where you can select a ship or empty slot.
-void
+static void
 DMS_NavigateShipSlots (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 		BOOLEAN cancel, SBYTE dx, SBYTE dy)
 {

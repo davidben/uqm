@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Switch SetFlashRect() to the new flash code -- SvdB
+- Add C++ support to the build system, from Scott A. Colcord
 - Cleaning up DoModifyShips() - SvdB
 - Added Valgrind suppression file, from Louis Delacroix
 - Fix several memory leaks, from Loius Delacroix

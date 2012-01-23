@@ -181,7 +181,11 @@ extern void RepairSISBorder (void);
 extern void InitSISContexts (void);
 extern void DrawSISFrame (void);
 extern void ClearSISRect (BYTE ClearFlags);
-extern void SetFlashRect (RECT *pRect);
+extern void SetFlashRect (const RECT *pRect);
+extern void PreUpdateFlashRect (void);
+extern void PostUpdateFlashRect (void);
+extern void PreUpdateFlashRectLocked (void);
+extern void PostUpdateFlashRectLocked (void);
 #define SFR_MENU_3DO ((RECT*)~0L)
 #define SFR_MENU_ANY ((RECT*)~1L)
 extern void DrawHyperCoords (POINT puniverse);
