@@ -40,6 +40,7 @@
 #include "setup.h"
 #include "settings.h"
 #include "sounds.h"
+#include "libs/async.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/log.h"
 #include "libs/mathlib.h"
@@ -334,6 +335,7 @@ DoBattle (BATTLE_STATE *bs)
 	battle_speed = HIBYTE (nth_frame);
 	if (battle_speed == (BYTE)~0)
 	{	// maximum speed, nothing rendered at all
+		Async_process ();
 		TaskSwitch ();
 	}
 	else

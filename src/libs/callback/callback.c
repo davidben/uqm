@@ -170,4 +170,14 @@ Callback_process(void) {
 	}
 }
 
+bool
+Callback_haveMore(void) {
+	bool result;
+
+	CallbackList_lock();
+	result = (callbacks != NULL);
+	CallbackList_unlock();
+
+	return result;
+}
 

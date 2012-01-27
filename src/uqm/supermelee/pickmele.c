@@ -37,6 +37,7 @@
 #include "../races.h"
 #include "../setup.h"
 #include "../sounds.h"
+#include "libs/async.h"
 #include "libs/log.h"
 #include "libs/mathlib.h"
 
@@ -676,6 +677,7 @@ MeleeGameOver (void)
 			ButtonState = FALSE;
 		}
 
+		Async_process ();
 		TaskSwitch ();
 	} while (!(GLOBAL (CurrentActivity) & CHECK_ABORT) && (!ButtonState
 			&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)

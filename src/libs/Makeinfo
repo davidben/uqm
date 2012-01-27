@@ -12,8 +12,8 @@ fi
 #	uqm_SUBDIRS="$UQM_SUBDIRS debug"
 #fi
 
-uqm_HFILES="alarm.h callback.h cdplib.h compiler.h declib.h file.h gfxlib.h
-		heap.h inplib.h list.h log.h mathlib.h md5.h memlib.h misc.h net.h
-		platform.h reslib.h sndlib.h strlib.h tasklib.h threadlib.h
-		timelib.h uio.h uioutils.h unicode.h vidlib.h"
+uqm_HFILES="alarm.h async.h callback.h cdplib.h compiler.h declib.h file.h
+		gfxlib.h heap.h inplib.h list.h log.h mathlib.h md5.h memlib.h
+		misc.h net.h platform.h reslib.h sndlib.h strlib.h tasklib.h
+		threadlib.h timelib.h uio.h uioutils.h unicode.h vidlib.h"
 

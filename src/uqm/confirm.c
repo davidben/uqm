@@ -83,6 +83,8 @@ DoConfirmExit (void)
 	if (PlayingTrack ())
 		PauseTrack ();
 
+	PauseFlash ();
+
 	LockMutex (GraphicsLock);
 	{
 		RECT r;
@@ -160,6 +162,8 @@ DoConfirmExit (void)
 	}
 	UnlockMutex (GraphicsLock);
 
+	ContinueFlash ();
+
 	if (PlayingTrack ())
 		ResumeTrack ();
 
@@ -212,6 +216,7 @@ DoPopupWindow (const char *msg)
 	label.line_count = SplitString (msg, '\n', 30, lines, bank);
 	label.lines = lines;
 
+	PauseFlash ();
 	LockMutex (GraphicsLock);
 
 	oldContext = SetContext (ScreenContext);
@@ -242,6 +247,8 @@ DoPopupWindow (const char *msg)
 	SetContextClipRect (&oldRect);
 	SetContext (oldContext);
 	UnlockMutex (GraphicsLock);
+	ContinueFlash ();
 	SetMenuSounds (s0, s1);
 	StringBank_Free (bank);
 }
+

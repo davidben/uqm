@@ -50,6 +50,10 @@
 #include "options.h"
 
 volatile int MainExited = FALSE;
+#ifdef DEBUG_SLEEP
+uint32 mainThreadId;
+extern uint32 SDL_ThreadID(void);
+#endif
 
 // Open or close the periodically occuring QuasiSpace portal.
 // It changes the appearant portal size when necessary.
@@ -143,6 +147,10 @@ extern int snddriver, soundflags;
 int
 Starcon2Main (void *threadArg)
 {
+#ifdef DEBUG_SLEEP
+	mainThreadId = SDL_ThreadID();
+#endif
+
 #if CREATE_JOURNAL
 {
 int ac = argc;

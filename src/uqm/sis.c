@@ -34,6 +34,7 @@
 #include "flash.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
+#include "libs/alarm.h"
 #include "libs/log.h"
 
 #include <stdio.h>
@@ -1590,28 +1591,32 @@ DrawAutoPilotMessage (BOOLEAN Reset)
 }
 
 
-static Task flash_task = 0;
 static FlashContext *flashContext = NULL;
 static RECT flash_rect;
-static Mutex flash_mutex = 0;
+static Alarm *flashAlarm = NULL;
+static BOOLEAN flashPaused = FALSE;
 
-static int
-flash_rect_func (void *data)
+static void scheduleFlashAlarm (void);
+
+static void
+updateFlashRect (void *arg)
 {
-	Task task = (Task)data;
+	if (flashContext == NULL)
+		return;
 
-	while (!Task_ReadState(task, TASK_EXIT))
-	{
-		TimeCount nextTime;
-		LockMutex (flash_mutex);
-		Flash_process (flashContext);
-		nextTime = Flash_nextTime (flashContext);
-		UnlockMutex (flash_mutex);
-		SleepThreadUntil (nextTime);
-	}
+	Flash_process (flashContext);
+	scheduleFlashAlarm ();
+	(void) arg;
+}
 
-	FinishTask (task);
-	return 0;
+static void
+scheduleFlashAlarm (void)
+{
+	TimeCount nextTime = Flash_nextTime (flashContext);
+	DWORD nextTimeMs = (nextTime / ONE_SECOND) * 1000 +
+			((nextTime % ONE_SECOND) * 1000 / ONE_SECOND);
+			// Overflow-safe conversion.
+	flashAlarm = Alarm_addAbsoluteMs (nextTimeMs, updateFlashRect, NULL);
 }
 
 // Pre: the caller holds the GraphicsLock
@@ -1621,10 +1626,6 @@ SetFlashRect (const RECT *pRect)
 	RECT clip_r = {{0, 0}, {0, 0}};
 	RECT temp_r;
 	
-	if (!flash_mutex)
-		flash_mutex = CreateMutex ("FlashRect Lock",
-				SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
-
 	if (pRect != SFR_MENU_3DO && pRect != SFR_MENU_ANY)
 	{
 		// The caller specified their own flash area, or NULL (stop flashing).
@@ -1654,47 +1655,42 @@ SetFlashRect (const RECT *pRect)
 		}
 	}
 
-	// Conclude an old flash task.
-	if (flashContext != NULL)
-	{
-		UnlockMutex (GraphicsLock);
-		ConcludeTask (flash_task);
-		LockMutex (GraphicsLock);
-		flash_task = 0;
-		
-		Flash_terminate (flashContext);
-		flashContext = 0;
-	}
-
-	// Start a new flash task.
 	if (pRect != 0 && pRect->extent.width != 0)
 	{
+		// Flash rectangle is not empty, start or continue flashing.
 		flash_rect = *pRect;
 		flash_rect.corner.x += clip_r.corner.x;
 		flash_rect.corner.y += clip_r.corner.y;
 
-		flashContext = Flash_createHighlight (ScreenContext, &flash_rect);
-		Flash_setMergeFactors(flashContext, 3, 2, 2);
-		Flash_setSpeed (flashContext, 0, ONE_SECOND / 16, 0, ONE_SECOND / 16);
-		Flash_setFrameTime (flashContext, ONE_SECOND / 16);
-		Flash_start (flashContext);
-		
-		flash_task = AssignTask (flash_rect_func, 2048, "flash rectangle");
+		if (flashContext == NULL)
+		{
+			// Create a new flash context.
+			flashContext = Flash_createHighlight (ScreenContext, &flash_rect);
+			Flash_setMergeFactors(flashContext, 3, 2, 2);
+			Flash_setSpeed (flashContext, 0, ONE_SECOND / 16, 0, ONE_SECOND / 16);
+			Flash_setFrameTime (flashContext, ONE_SECOND / 16);
+			Flash_start (flashContext);
+			scheduleFlashAlarm ();
+		}
+		else
+		{
+			// Reuse an existing flash context
+			Flash_setRect (flashContext, &flash_rect);
+		}
 	}
-}
-
-// Sleep while calling the flash rectangle update when necessary.
-void
-FlashRectSleepUntil (TimeCount wakeTime)
-{
-	while (GetTimeCounter() < wakeTime)
+	else
 	{
-		TimeCount flashNextTime = Flash_nextTime (flashContext);
-		TimeCount nextTime = (flashNextTime < wakeTime) ?
-				flashNextTime : wakeTime;
-		SleepThreadUntil (nextTime);
-		if (nextTime == flashNextTime)
-			Flash_process (flashContext);
+		// Flash rectangle is empty. Stop flashing.
+		if (flashContext != NULL)
+		{
+			UnlockMutex (GraphicsLock);
+			Alarm_remove(flashAlarm);
+			LockMutex (GraphicsLock);
+			flashAlarm = 0;
+			
+			Flash_terminate (flashContext);
+			flashContext = NULL;
+		}
 	}
 }
 
@@ -1708,18 +1704,12 @@ COUNT updateFlashRectRecursion = 0;
 void
 PreUpdateFlashRect (void)
 {
-	if (flash_task)
+	if (flashAlarm)
 	{
 		updateFlashRectRecursion++;
 		if (updateFlashRectRecursion > 1)
 			return;
-
-		LockMutex (flash_mutex);
-		Flash_pause (flashContext);
-				// We need to actually pause, as the flash update function
-				// is called from another thread.
 		Flash_preUpdate (flashContext);
-		UnlockMutex (flash_mutex);
 	}
 }
 
@@ -1727,16 +1717,13 @@ PreUpdateFlashRect (void)
 void
 PostUpdateFlashRect (void)
 {
-	if (flash_task)
+	if (flashAlarm)
 	{
 		updateFlashRectRecursion--;
 		if (updateFlashRectRecursion > 0)
 			return;
 
-		LockMutex (flash_mutex);
 		Flash_postUpdate (flashContext);
-		Flash_continue (flashContext);
-		UnlockMutex (flash_mutex);
 	}
 }
 
@@ -1759,4 +1746,28 @@ PostUpdateFlashRectLocked (void)
 	PostUpdateFlashRect ();
 	LockMutex (GraphicsLock);
 }
+
+// Stop flashing if flashing is active.
+void
+PauseFlash (void)
+{
+	if (flashContext != NULL)
+	{
+		Alarm_remove(flashAlarm);
+		flashAlarm = 0;
+		flashPaused = TRUE;
+	}
+}
+
+// Continue flashing after PauseFlash (), if flashing was active.
+void
+ContinueFlash (void)
+{
+	if (flashPaused)
+	{
+		scheduleFlashAlarm ();
+		flashPaused = FALSE;
+	}
+}
+
 

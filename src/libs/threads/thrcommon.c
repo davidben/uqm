@@ -19,6 +19,7 @@
 #include "libs/threadlib.h"
 #include "libs/timelib.h"
 #include "libs/log.h"
+#include "libs/async.h"
 #include "libs/memlib.h"
 #include "thrcommon.h"
 
@@ -284,16 +285,79 @@ WaitThread (Thread thread, int *status)
 	NativeWaitThread (thread, status);
 }
 
+#ifdef DEBUG_SLEEP
+extern uint32 mainThreadId;
+extern uint32 SDL_ThreadID(void);
+#endif  /* DEBUG_SLEEP */
+
 void
-SleepThread (TimePeriod timePeriod)
+HibernateThread (TimePeriod timePeriod)
 {
+#ifdef DEBUG_SLEEP
+	if (SDL_ThreadID() == mainThreadId)
+		log_add (log_Debug, "HibernateThread called from main thread.\n");
+#endif  /* DEBUG_SLEEP */
+
 	NativeSleepThread (timePeriod);
 }
 
 void
+HibernateThreadUntil (TimeCount wakeTime)
+{
+#ifdef DEBUG_SLEEP
+	if (SDL_ThreadID() == mainThreadId)
+		log_add (log_Debug, "HibernateThreadUntil called from main "
+				"thread.\n");
+#endif  /* DEBUG_SLEEP */
+
+	NativeSleepThreadUntil (wakeTime);
+}
+
+void
+SleepThread (TimePeriod timePeriod)
+{
+	TimeCount now;
+
+#ifdef DEBUG_SLEEP
+	if (SDL_ThreadID() != mainThreadId)
+		log_add (log_Debug, "SleepThread called from non-main "
+				"thread.\n");
+#endif  /* DEBUG_SLEEP */
+
+	now = GetTimeCounter ();
+	SleepThreadUntil (now + timePeriod);
+}
+
+// Sleep until wakeTime, but call asynchrounous operations until then.
+void
 SleepThreadUntil (TimeCount wakeTime)
 {
-	NativeSleepThreadUntil (wakeTime);
+#ifdef DEBUG_SLEEP
+	if (SDL_ThreadID() != mainThreadId)
+		log_add (log_Debug, "SleepThreadUntil called from non-main "
+				"thread.\n");
+#endif  /* DEBUG_SLEEP */
+
+	for (;;) {
+		uint32 nextTimeMs;
+		TimeCount nextTime;
+		TimeCount now;
+
+		Async_process ();
+
+		now = GetTimeCounter ();
+		if (wakeTime <= now)
+			return;
+		
+		nextTimeMs = Async_timeBeforeNextMs ();
+		nextTime = (nextTimeMs / 1000) * ONE_SECOND +
+				((nextTimeMs % 1000) * ONE_SECOND / 1000);
+				// Overflow-safe conversion.
+		if (wakeTime < nextTime)
+			nextTime = wakeTime;
+
+		NativeSleepThreadUntil (nextTime);
+	}
 }
 
 void

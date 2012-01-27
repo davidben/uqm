@@ -211,7 +211,7 @@ PlaybackTaskFunc (void *data)
 		mixer_MixFake (NULL, stream, len);
 		delay = period - (GetTimeCounter () - entryTime);
 		if (delay > 0)
-			SleepThread (delay);
+			HibernateThread (delay);
 	}
 
 	HFree (stream);

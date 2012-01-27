@@ -145,6 +145,8 @@ ThreadLocal *CreateThreadLocal (void);
 void DestroyThreadLocal (ThreadLocal *tl);
 ThreadLocal *GetMyThreadLocal (void);
 
+void HibernateThread (TimePeriod timePeriod);
+void HibernateThreadUntil (TimeCount wakeTime);
 void SleepThread (TimePeriod timePeriod);
 void SleepThreadUntil (TimeCount wakeTime);
 void DestroyThread (Thread);

@@ -28,6 +28,7 @@
 #include "sounds.h"
 #include "tactrans.h"
 #include "uqmdebug.h"
+#include "libs/async.h"
 #include "libs/inplib.h"
 #include "libs/timelib.h"
 #include "libs/threadlib.h"
@@ -359,6 +360,7 @@ DoInput (void *pInputState, BOOLEAN resetInput)
 	do
 	{
 		MENU_SOUND_FLAGS soundFlags;
+		Async_process ();
 		TaskSwitch ();
 
 		UpdateInputState ();

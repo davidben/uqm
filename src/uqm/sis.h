@@ -186,6 +186,9 @@ extern void PreUpdateFlashRect (void);
 extern void PostUpdateFlashRect (void);
 extern void PreUpdateFlashRectLocked (void);
 extern void PostUpdateFlashRectLocked (void);
+extern void PauseFlash (void);
+extern void ContinueFlash (void);
+
 #define SFR_MENU_3DO ((RECT*)~0L)
 #define SFR_MENU_ANY ((RECT*)~1L)
 extern void DrawHyperCoords (POINT puniverse);

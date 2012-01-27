@@ -215,6 +215,14 @@ SOURCE=..\..\src\libs\callback\alarm.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\libs\callback\async.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\callback\async.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\libs\callback\callback.c
 # End Source File
 # Begin Source File
@@ -1467,6 +1475,10 @@ SOURCE=..\..\src\libs\network\wspiapiwrap.h
 # Begin Source File
 
 SOURCE=..\..\src\libs\alarm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\libs\async.h
 # End Source File
 # Begin Source File
 

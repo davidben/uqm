@@ -568,7 +568,7 @@ StreamDecoderTaskFunc (void *data)
 
 		if (active_streams == 0) 
 		{	// Throttle down the thread when there are no active streams
-			SleepThread (ONE_SECOND / 10);
+			HibernateThread (ONE_SECOND / 10);
 		}
 		else
 			TaskSwitch ();
