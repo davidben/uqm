@@ -1572,8 +1572,8 @@ get_vblock_avg (elev_block_t *pblk, SBYTE *pTopo, int x, int y)
 	if (y1 > MAP_HEIGHT)
 		y1 = MAP_HEIGHT;
 
-	elev = pTopo + y0 * MAP_HEIGHT + x;
-	for (i = y0; i < y1; ++i, elev += MAP_HEIGHT)
+	elev = pTopo + y0 * MAP_WIDTH + x;
+	for (i = y0; i < y1; ++i, elev += MAP_WIDTH)
 	{
 		int delta = abs (i - y);
 		int weight = 255; // full weight
@@ -1589,7 +1589,7 @@ get_vblock_avg (elev_block_t *pblk, SBYTE *pTopo, int x, int y)
 			max = v;
 		if (v < min)
 			min = v;
-		avg += pblk->avg * weight;
+		avg += v * weight;
 		total_weight += weight;
 	}
 	avg /= total_weight;
