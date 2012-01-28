@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- PageUp/PageDown now add/remove 10 fuel in the shipyard, from
+  Scott A. Colcord, Nic
 - Annihigate flash thread - SvdB
 - Switch SetFlashRect() to the new flash code - SvdB
 - Add C++ support to the build system, from Scott A. Colcord
