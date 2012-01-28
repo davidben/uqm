@@ -566,7 +566,7 @@ ChangeFuelQuantity (void)
 	{
 		const int maxFit = GetFuelTankCapacity () - GLOBAL_SIS (FuelOnBoard);
 		const int maxAfford = GLOBAL_SIS (ResUnits) / GLOBAL (FuelCost);
-		const int minFit = -GLOBAL_SIS (FuelOnBoard);
+		const int minFit = - (int) GLOBAL_SIS (FuelOnBoard);
 
 		if (incr > maxFit)
 			incr = maxFit; // All we can hold.
