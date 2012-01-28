@@ -61,6 +61,40 @@ set_strtab_entry (STRING_TABLE_DESC *strtab, int index, const char *value, int l
 	}
 }
 
+// Check whether a buffer has a certain minimum size, and enlarge it
+// if necessary.
+// buf: pointer to the pointer to the buffer. May be NULL.
+// curSize: pointer to the current size (multiple of 'increment')
+// minSize: required minimum size
+// increment: size to increment the buffer with if necessary
+// On success, *buf and *curSize are updated. On failure, they are
+// unchanged.
+// returns FALSE if and only if the buffer needs to be enlarged but
+// memory allocation failed.
+static BOOLEAN
+ensureBufSize (char **buf, size_t *curSize, size_t minSize, size_t increment)
+{
+	char *newBuf;
+	size_t newSize;
+
+	if (minSize <= *curSize)
+	{
+		// Buffer is large enough as it is.
+		return TRUE;
+	}
+
+	newSize = ((minSize + (increment - 1)) / increment) * increment;
+			// Smallest multiple of 'increment' larger or equal to minSize.
+	newBuf = HRealloc (*buf, newSize);
+	if (newBuf == NULL)
+		return FALSE;
+
+	// Success
+	*buf = newBuf;
+	*curSize = newSize;
+	return TRUE;
+}
+
 void
 _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 {
@@ -174,9 +208,21 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 	StringOffs = 0;
 	ClipOffs = 0;
 	TSOffs = 0;
-	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
+	for (;;)
 	{
 		int l;
+
+		if (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) == NULL)
+		{
+			// EOF or read error.
+			break;
+		}
+	
+		if (n >= MAX_STRINGS - 1)
+		{
+			// Too many strings.
+			break;
+		}
 
 		if (CurrentLine[0] == '#')
 		{
@@ -226,13 +272,9 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 							if (*tsptr)
 							{
 								l = strlen (tsptr) + 1;
-								if (TSOffs + l > tot_ts_size)
-								{
-									tot_ts_size += POOL_SIZE;
-									ts_data = HRealloc (ts_data, tot_ts_size);
-									if (ts_data == 0)
-										goto err;  // BUG: old ts_data leaks
-								}
+								if (!ensureBufSize (&ts_data, &tot_ts_size, TSOffs + l,
+										POOL_SIZE))
+									goto err;
 
 								strcpy (&ts_data[TSOffs], tsptr);
 								TSOffs += l;
@@ -257,13 +299,9 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 				if (s)
 				{
 					l = path_len + strlen (s) + 1;
-					if (ClipOffs + l > tot_clip_size)
-					{
-						tot_clip_size += POOL_SIZE;
-						clipdata = HRealloc (clipdata, tot_clip_size);
-						if (clipdata == 0)
-							goto err;  // BUG: old clipdata leaks
-					}
+					if (!ensureBufSize (&clipdata, &tot_clip_size,
+							ClipOffs + l, POOL_SIZE))
+						goto err;
 
 					if (clip_path)
 						strcpy (&clipdata[ClipOffs], clip_path);
@@ -277,13 +315,10 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 		{
 			char *s;
 			l = strlen (CurrentLine) + 1;
-			if (StringOffs + l > tot_string_size)
-			{
-				tot_string_size += POOL_SIZE;
-				strdata = HRealloc (strdata, tot_string_size);
-				if (strdata == 0)
-					goto err;  // BUG: old strdata leaks
-			}
+
+			if (!ensureBufSize (&strdata, &tot_string_size, StringOffs + l,
+					POOL_SIZE))
+				goto err;
 
 			if (slen[n])
 			{
@@ -385,20 +420,36 @@ _GetStringData (uio_Stream *fp, DWORD length)
 	void *result;
 
 	int n;
-	DWORD opos, slen[MAX_STRINGS], StringOffs, tot_string_size;
-	char CurrentLine[1024], *strdata;
+	DWORD opos;
+	DWORD slen[MAX_STRINGS];
+	DWORD StringOffs;
+	DWORD tot_string_size;
+	char CurrentLine[1024];
+	char *strdata = NULL;
 
 	tot_string_size = POOL_SIZE;
 	strdata = HMalloc (tot_string_size);
 	if (strdata == 0)
-		return 0;
+		goto err;
 
 	opos = uio_ftell (fp);
 	n = -1;
 	StringOffs = 0;
-	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
+	for (;;)
 	{
 		int l;
+
+		if (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) == NULL)
+		{
+			// EOF or read error.
+			break;
+		}
+	
+		if (n >= MAX_STRINGS - 1)
+		{
+			// Too many strings.
+			break;
+		}
 
 		if (CurrentLine[0] == '#')
 		{
@@ -428,13 +479,10 @@ _GetStringData (uio_Stream *fp, DWORD length)
 		{
 			char *s;
 			l = strlen (CurrentLine) + 1;
-			if (StringOffs + l > tot_string_size)
-			{
-				tot_string_size += POOL_SIZE;
-				strdata = HRealloc (strdata, tot_string_size);
-				if (strdata == 0)
-					return 0;  // BUG: old strdata leaks
-			}
+
+			if (!ensureBufSize (&strdata, &tot_string_size, StringOffs + l,
+					POOL_SIZE))
+				goto err;
 
 			if (slen[n])
 			{
@@ -489,6 +537,11 @@ _GetStringData (uio_Stream *fp, DWORD length)
 	HFree (strdata);
 
 	return result;
+
+err:
+	if (strdata != NULL)
+		HFree (strdata);
+	return 0;
 }
 
 
