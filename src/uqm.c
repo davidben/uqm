@@ -452,7 +452,7 @@ main (int argc, char *argv[])
 		}
 		else if (!GameActive)
 		{	// Throttle down the main loop when game is inactive
-			SleepThread (ONE_SECOND / 4);
+			HibernateThread (ONE_SECOND / 4);
 		}
 
 		TFB_ProcessEvents ();
