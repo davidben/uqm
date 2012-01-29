@@ -51,9 +51,11 @@ extern COUNT CalculateEscortsWorth (void);
 //extern COUNT GetRaceKnownSize (COUNT race);
 extern COUNT SetRaceAllied (COUNT race, BOOLEAN flag);
 extern COUNT StartSphereTracking (COUNT race);
+extern COUNT CountEscortShips (COUNT race);
 extern BOOLEAN HaveEscortShip (COUNT race);
 extern COUNT EscortFeasibilityStudy (COUNT race);
 extern COUNT CheckAlliance (COUNT race);
+extern COUNT RemoveSomeEscortShips (COUNT race, COUNT count);
 extern void RemoveEscortShips (COUNT race);
 
 extern RACE_DESC *load_ship (SPECIES_ID SpeciesID, BOOLEAN LoadBattleData);

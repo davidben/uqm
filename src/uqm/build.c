@@ -271,18 +271,19 @@ StartSphereTracking (COUNT race)
 }
 
 /*
- * Returns true if and only if a ship of the specified race is among the
+ * Returns the number of ships of the specified race among the
  * escort ships.
  */
-BOOLEAN
-HaveEscortShip (COUNT race)
+COUNT
+CountEscortShips (COUNT race)
 {
 	HFLEETINFO hFleet;
 	HSHIPFRAG hStarShip, hNextShip;
+	COUNT result = 0;
 
 	hFleet = GetStarShipFromIndex (&GLOBAL (avail_race_q), race);
 	if (!hFleet)
-		return FALSE;
+		return 0;
 
 	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)); hStarShip;
 			hStarShip = hNextShip)
@@ -296,9 +297,19 @@ HaveEscortShip (COUNT race)
 		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
 		if (ship_type == race)
-			return TRUE;
+			result++;
 	}
-	return FALSE;
+	return result;
+}
+
+/*
+ * Returns true if and only if a ship of the specified race is among the
+ * escort ships.
+ */
+BOOLEAN
+HaveEscortShip (COUNT race)
+{
+	return (CountEscortShips (race) > 0);
 }
 
 /*
@@ -342,13 +353,17 @@ CheckAlliance (COUNT race)
 }
 
 /*
- * Remove all escort ships of the specified race.
+ * Remove a number of escort ships of the specified race (if present).
+ * Returns the number of escort ships removed.
  */
-void
-RemoveEscortShips (COUNT race)
+COUNT
+RemoveSomeEscortShips (COUNT race, COUNT count)
 {
-	HSHIPFRAG hStarShip, hNextShip;
-	BOOLEAN ShipRemoved = FALSE;
+	HSHIPFRAG hStarShip;
+	HSHIPFRAG hNextShip;
+
+	if (count == 0)
+		return 0;
 
 	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)); hStarShip;
 			hStarShip = hNextShip)
@@ -363,18 +378,32 @@ RemoveEscortShips (COUNT race)
 
 		if (RemoveShip)
 		{
-			ShipRemoved = TRUE;
 			RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
 			FreeShipFrag (&GLOBAL (built_ship_q), hStarShip);
+			count--;
+			if (count == 0)
+				break;
 		}
 	}
 	
-	if (ShipRemoved)
+	if (count > 0)
 	{
+		// Update the display.
 		LockMutex (GraphicsLock);
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
 		UnlockMutex (GraphicsLock);
 	}
+
+	return count;
+}
+
+/*
+ * Remove all escort ships of the specified race.
+ */
+void
+RemoveEscortShips (COUNT race)
+{
+	RemoveSomeEscortShips (race, (COUNT) -1);
 }
 
 COUNT
