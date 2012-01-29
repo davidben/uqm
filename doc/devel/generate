@@ -142,7 +142,7 @@ so that it will be shown appropriately in melee if combat follows.
 There is no generate function for the names of moons. The few moons that
 are named (those in the Sol system), are handled as a special case of
 the routines that prints these names (PrintCoarseScan3DO and
-PrintCoraseScanPC).
+PrintCoarseScanPC).
 
 INIT_NPCS
 REINIT_NPCS
