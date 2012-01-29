@@ -352,7 +352,8 @@ CalcLifeChance (const PLANET_INFO *PlanetInfoPtr)
 void
 DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr, PLANET_DESC *pPlanetDesc)
 {
-	assert (pPlanetDesc->data_index != HIERARCHY_STARBASE);
+	assert ((pPlanetDesc->data_index & ~WORLD_TYPE_SPECIAL)
+			< NUMBER_OF_PLANET_TYPES);
 
 	RandomContext_SeedRandom (SysGenRNG, pPlanetDesc->rand_seed);
 

@@ -157,22 +157,16 @@ UnlockGameClock (void)
 BOOLEAN
 GameClockRunning (void)
 {
-	SIZE prev_tick, cur_tick;
+	SIZE day_in_ticks;
 
 	if (!clock_mutex)
 		return FALSE;
 
 	LockMutex (clock_mutex);
-	prev_tick = GLOBAL (GameClock.tick_count);
+	day_in_ticks = GLOBAL (GameClock.day_in_ticks);
 	UnlockMutex (clock_mutex);
 	
-	SleepThread (ONE_SECOND / 5);
-	
-	LockMutex (clock_mutex);
-	cur_tick = GLOBAL (GameClock.tick_count);
-	UnlockMutex (clock_mutex);
-
-	return cur_tick != prev_tick;
+	return day_in_ticks != 0;
 }
 
 void

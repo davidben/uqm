@@ -1,4 +1,6 @@
 Changes towards version 0.8:
+- Split debug key function into sync and async parts, paving the way
+  for GraphicsLock removal - Alex
 - PageUp/PageDown now add/remove 10 fuel in the shipyard, from
   Scott A. Colcord, Nic
 - Annihigate flash thread - SvdB

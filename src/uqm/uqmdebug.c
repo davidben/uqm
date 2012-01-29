@@ -72,11 +72,12 @@ static void dumpPlanetTypeCallback (int index, const PlanetFrame *planet,
 BOOLEAN instantMove = FALSE;
 BOOLEAN disableInteractivity = FALSE;
 void (* volatile debugHook) (void) = NULL;
-void (* volatile doInputDebugHook) (void) = NULL;
 
 
+// Must be called on the Starcon2Main thread.
+// This function is called synchronously wrt the game logic thread.
 void
-debugKeyPressed (void)
+debugKeyPressedSynchronous (void)
 {
 	// State modifying:
 	equipShip ();
@@ -107,27 +108,35 @@ debugKeyPressed (void)
 //	SET_GAME_STATE (MELNORME_CREDIT1, 100);
 //	GLOBAL_SIS (ResUnits) = 100000;
 
+	// Informational:
+//	dumpEvents (stderr);
+
+	// Graphical and textual:
+//	debugContexts();
+}
+
+// Can be called on any thread, but usually on main()
+// This function is called asynchronously wrt the game logic thread,
+// which means locking applies. Use carefully.
+// TODO: Once game logic thread is purged of graphics and clock locks,
+//   this function may not call graphics and game clock functions at all.
+void
+debugKeyPressed (void)
+{
 	// Tests
 //	Scale_PerfTest ();
 
 	// Informational:
 //	dumpStrings (stdout);
-//	dumpEvents (stderr);
 //	dumpPlanetTypes(stderr);
 //	debugHook = dumpUniverseToFile;
 			// This will cause dumpUniverseToFile to be called from the
-			// main loop. Calling it from here would give threading
+			// Starcon2Main loop. Calling it from here would give threading
 			// problems.
 //	debugHook = tallyResourcesToFile;
 			// This will cause tallyResourcesToFile to be called from the
-			// main loop. Calling it from here would give threading
+			// Starcon2Main loop. Calling it from here would give threading
 			// problems.
-
-	// Graphical and textual:
-	//doInputDebugHook = debugContexts;
-			// This will cause debugContexts to be called from the
-			// Starcon2Main thread, from DoInput(). Calling it from here
-			// would give threading problems.
 
 	// Interactive:
 //	uio_debugInteractive(stdin, stdout, stderr);
@@ -137,6 +146,9 @@ debugKeyPressed (void)
 
 // Fast forwards to the next event.
 // If skipHEE is set, HYPERSPACE_ENCOUNTER_EVENTs are skipped.
+// Must be called from the Starcon2Main thread.
+// TODO: GraphicsLock and LockGameClock may be removed since it is only
+//   supposed to be called synchronously wrt the game logic thread.
 void
 forwardToNextEvent (BOOLEAN skipHEE)
 {
@@ -596,6 +608,8 @@ forAllMoons (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 
 ////////////////////////////////////////////////////////////////////////////
 
+// Must be called from the Starcon2Main thread.
+// TODO: LockGameClock may be removed
 void
 UniverseRecurse (UniverseRecurseArg *universeRecurseArg)
 {
@@ -728,10 +742,13 @@ moonRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 	if (universeRecurseArg->moonFunc != NULL)
 	{
 		system->pOrbitalDesc = moon;
-		DoPlanetaryAnalysis (&system->SysInfo, moon);
+		if (moon->data_index != HIERARCHY_STARBASE && moon->data_index != SA_MATRA)
+		{
+			DoPlanetaryAnalysis (&system->SysInfo, moon);
 				// When GenerateDefaultFunctions is used as genFuncs,
 				// generateOrbital will also call DoPlanetaryAnalysis,
 				// but with other GenerateFunctions this is not guaranteed.
+		}
 		(*system->genFuncs->generateOrbital) (system, moon);
 		(*universeRecurseArg->moonFunc) (
 				moon, universeRecurseArg->arg);
@@ -745,6 +762,7 @@ typedef struct
 	FILE *out;
 } DumpUniverseArg;
 
+// Must be called from the Starcon2Main thread.
 void
 dumpUniverse (FILE *out)
 {
@@ -763,7 +781,7 @@ dumpUniverse (FILE *out)
 	UniverseRecurse (&universeRecurseArg);
 }
 
-// Must be called from the main thread.
+// Must be called from the Starcon2Main thread.
 void
 dumpUniverseToFile (void)
 {
@@ -1146,6 +1164,7 @@ struct TallyResourcesArg
 	COUNT bioCount;
 };
 
+// Must be called from the Starcon2Main thread.
 void
 tallyResources (FILE *out)
 {
@@ -1164,7 +1183,7 @@ tallyResources (FILE *out)
 	UniverseRecurse (&universeRecurseArg);
 }
 
-// Must be called from the main thread.
+// Must be called from the Starcon2Main thread.
 void
 tallyResourcesToFile (void)
 {

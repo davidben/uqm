@@ -33,19 +33,19 @@ extern BOOLEAN disableInteractivity;
 // Starcon2Main thread, in the main game loop.
 extern void (* volatile debugHook) (void);
 
-// If a function is assigned to this, it will be called from the
-// Starcon2Main thread, in doInput().
-extern void (* volatile doInputDebugHook) (void);
-
-
-// Called when the debug key (symbol 'Debug' in the keys.cfg) is pressed.
+// Called on the main() thread when the debug key (symbol 'Debug' in the
+// keys.cfg) is pressed
 void debugKeyPressed (void);
+// Called on the Starcon2Main() thread when the debug key (symbol 'Debug'
+// in the keys.cfg) is pressed.
+void debugKeyPressedSynchronous (void);
 
 // Forward time to the next event. If skipHEE is set, the event named
 // HYPERSPACE_ENCOUNTER_EVENT, which normally occurs every game day,
-// is skipped.
+// is skipped. Must be called on the Starcon2Main thread.
 void forwardToNextEvent (BOOLEAN skipHEE);
 // Generate a list of all events in the event queue.
+// Must be called on the Starcon2Main thread.
 void dumpEvents (FILE *out);
 // Describe one event.
 void dumpEvent (FILE *out, const EVENT *eventPtr);
@@ -102,11 +102,13 @@ typedef struct
 			// User data.
 } UniverseRecurseArg;
 // Recurse through all systems, planets, and moons in the universe.
+// Must be called on the Starcon2Main thread.
 void UniverseRecurse (UniverseRecurseArg *universeRecurseArg);
 
-// Describe the entire universe.
+// Describe the entire universe. Must be called on the Starcon2Main thread.
 void dumpUniverse (FILE *out);
 // Describe the entire universe, output to a file "./PlanetInfo".
+// Must be called on the Starcon2Main thread.
 void dumpUniverseToFile (void);
 // Describe one star system.
 void dumpSystem (FILE *out, const STAR_DESC *star,
@@ -137,9 +139,10 @@ void generateBioIndex(const SOLARSYS_STATE *system,
 		const PLANET_DESC *world, COUNT bio[]);
 
 // Tally the resources for each star system.
+// Must be called on the Starcon2Main thread.
 void tallyResources (FILE *out);
 // Tally the resources for each star system, output to a file
-// "./ResourceTally".
+// "./ResourceTally". Must be called on the Starcon2Main thread.
 void tallyResourcesToFile (void);
 
 
@@ -186,7 +189,7 @@ void dumpStrings(FILE *out);
 
 
 // Graphically and textually show all the contexts.
-// Should be called from debugHook.
+// Must be called on the Starcon2Main thread.
 void debugContexts (void);
 
 

@@ -105,6 +105,7 @@ BackgroundInitKernel (DWORD TimeOut)
 	}
 }
 
+// Executes on the main() thread
 void
 SignalStopMainThread (void)
 {
@@ -113,6 +114,7 @@ SignalStopMainThread (void)
 	TaskSwitch ();
 }
 
+// Executes on the main() thread
 void
 ProcessUtilityKeys (void)
 {
@@ -132,11 +134,17 @@ ProcessUtilityKeys (void)
 	}
 
 #if defined(DEBUG) || defined(USE_DEBUG_KEY)
-	if (ImmediateInputState.menu[KEY_DEBUG])
-	{
-		// clear ImmediateInputState so we don't repeat this next frame
-		FlushInput ();
-		debugKeyPressed ();
+	{	// Only call the debug func on the rising edge of
+		// ImmediateInputState[KEY_DEBUG] so it does not execute repeatedly.
+		// This duplicates the PulsedInputState somewhat, but we cannot
+		// use PulsedInputState here because it is meant for another thread.
+		static int debugKeyState;
+
+		if (ImmediateInputState.menu[KEY_DEBUG] && debugKeyState == 0)
+		{
+			debugKeyPressed ();
+		}
+		debugKeyState = ImmediateInputState.menu[KEY_DEBUG];
 	}
 #endif  /* DEBUG */
 }
