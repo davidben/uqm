@@ -422,7 +422,7 @@ but version $2 is required!"
 #              environment variable for it.
 # Arguments:   $1 - The type of compile tool. One of PREPROC_C, MKDEP_C,
 #                   COMPILE_C, PREPROC_OBJC, MKDEP_OBJC, COMPILE_OBJC,
-#                   and LINK.
+#                   PREPROC_CXX, MKDEP_CXX, COMPILE_CXX, and LINK.
 have_build_tool() {
 	local TOOL TEMP_NAME TEMP_PRESENT DEPENDS DEPEND SUCCESS COMMAND
 
