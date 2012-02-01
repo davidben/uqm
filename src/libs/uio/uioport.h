@@ -45,7 +45,7 @@
 		// _MAX_DIR and FILENAME_MAX could also be candidates.
 		// If anyone can tell me which one matches NAME_MAX, please
 		// let me know.
-#elif defined(_WIN32_WCE)
+#elif defined(_WIN32_WCE) || defined(__native_client__)
 #	include <sys/syslimits.h>
 #else
 #	include <limits.h>

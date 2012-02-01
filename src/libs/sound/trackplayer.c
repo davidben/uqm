@@ -24,7 +24,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef __native_client__
 #include <memory.h>
+#endif
 
 
 static int track_count;       // total number of tracks

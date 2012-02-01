@@ -27,8 +27,8 @@
 #include <stdlib.h>
 		// for abs()
 #include <errno.h>
-#ifndef _WIN32_WCE
-#	include <memory.h>
+#if !defined(_WIN32_WCE) && !defined(__native_client__)
+#      include <memory.h>
 #endif
 #include <string.h>
 #include "port.h"
