@@ -86,7 +86,7 @@ esac
 ### SDL_mixer ###
 LIB_SDL_mixer_NAME="SDL_mixer"
 LIB_SDL_mixer_CFLAGS="$LIB_SDL_CFLAGS"
-LIB_SDL_mixer_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_mixer"
+LIB_SDL_mixer_LDFLAGS="-lSDL_mixer $LIB_SDL_LDFLAGS"
 LIB_SDL_mixer_VERSION=""
 
 
@@ -104,7 +104,7 @@ case "$HOST_SYSTEM" in
 		;;	
 	*)
 		LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
-		LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_image"
+		LIB_SDL_image_LDFLAGS="-lSDL_image $LIB_SDL_LDFLAGS"
 		;;
 esac
 LIB_SDL_image_VERSION=""
@@ -320,6 +320,20 @@ case "$HOST_SYSTEM" in
 		;;
 	ARMV5|WINSCW|GCCE)
 		LIB_netlibs_DETECT="false"
+		;;
+esac
+
+
+# PPAPI code. Also other NaCl stuff that probably should be elsewhere.
+LIB_ppapi_NAME="NaCL PPAPI Bindings"
+case "$HOST_SYSTEM" in
+	NACL)
+		LIB_ppapi_CFLAGS=""
+		LIB_ppapi_LDFLAGS="-lSDLmain -lppapi_cpp -lpng -ljpeg -lnosys"
+		LIB_ppapi_VERSION=""
+		;;
+	*)
+		LIB_ppapi_DETECT="false"
 		;;
 esac
 
