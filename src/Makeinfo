@@ -8,6 +8,9 @@ case "$HOST_SYSTEM" in
 	Darwin)
 		uqm_SUBDIRS="$uqm_SUBDIRS darwin"
 		;;
+	NACL)
+		uqm_SUBDIRS="$uqm_SUBDIRS nacl"
+		;;
 esac
 
 if [ "$uqm_HAVE_REGEX" = 0 ]; then
