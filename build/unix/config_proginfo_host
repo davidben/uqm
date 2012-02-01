@@ -74,6 +74,10 @@ case "$HOST_SYSTEM" in
 		LIB_SDL_VERSION='1.2.13'
 		LIB_SDL_DETECT="true"
 		;;		
+	NACL)
+		LIB_SDL_DETECT="try_pkgconfig_lib SDL sdl"
+		LIB_SDL_DEPEND_DETECT_BIN="pkgconfig"
+		;;
 	*)
 		LIB_SDL_DETECT="have_command sdl-config"
 		LIB_SDL_CFLAGS='$(sdl-config --cflags)'

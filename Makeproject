@@ -15,6 +15,9 @@ case "$HOST_SYSTEM" in
 	MINGW32*|CYGWIN*)
 		uqm_NAME="$uqm_NAME.exe"
 		;;
+	NACL)
+		uqm_NAME="$uqm_NAME.nexe"
+		;;
 esac
 uqm_CFLAGS="$uqm_CFLAGS -Isrc"
 if [ "$uqm_HAVE_REGEX" = 0 ]; then
