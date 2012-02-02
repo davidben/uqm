@@ -329,8 +329,11 @@ LIB_ppapi_NAME="NaCL PPAPI Bindings"
 case "$HOST_SYSTEM" in
 	NACL)
 		LIB_ppapi_CFLAGS=""
-		LIB_ppapi_LDFLAGS="-lSDLmain -lppapi_cpp -lpng -ljpeg -lnosys"
+		LIB_ppapi_LDFLAGS="-lSDLmain -lppapi -lppapi_cpp -lnacl-mounts -lpng -ljpeg -lnosys"
 		LIB_ppapi_VERSION=""
+		# Don't bother detecting. It'll get upset about multiple
+		# mains and stuff.
+		LIB_ppapi_DETECT="true"
 		;;
 	*)
 		LIB_ppapi_DETECT="false"

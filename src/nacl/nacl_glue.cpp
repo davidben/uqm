@@ -23,6 +23,9 @@
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/module.h>
+#include <ppapi/cpp/rect.h>
+
+extern "C" int uqmMain(int argc, char **argv);
 
 class GameInstance : public pp::Instance {
  private:
@@ -48,7 +51,7 @@ class GameInstance : public pp::Instance {
       width_(0), height_(0),
       cc_factory_(this) {
     // Game requires mouse and keyboard events; add more if necessary.
-    RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE|
+    RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
                        PP_INPUTEVENT_CLASS_KEYBOARD);
     ++num_instances_;
     assert (num_instances_ == 1);
@@ -79,6 +82,10 @@ class GameInstance : public pp::Instance {
   virtual void DidChangeView(const pp::Rect& position, const pp::Rect& clip) {
     ++num_changed_view_;
     if (num_changed_view_ > 1) return;
+
+    width_ = position.size().width();
+    height_ = position.size().height();
+
     // NOTE: It is crucial that the two calls below are run here
     // and not in a thread.
     SDL_NACL_SetInstance(pp_instance(), width_, height_);
@@ -113,14 +120,12 @@ void GameInstance::StartGameInNewThread(int32_t dummy) {
 
 // static
 void* GameInstance::LaunchGame(void* data) {
-#if 0
   // Use "thiz" to get access to instance object.
-  GameInstance* thiz = reinterpret_cast(data);
+  fprintf(stderr, "LaunchGame\n");
+  GameInstance* thiz = static_cast<GameInstance*>(data);
   // Craft a fake command line.
-  const char* argv[] = { "game",  ...   };
-  game_main(sizeof(argv) / sizeof(argv[0]), argv);
-#endif
-  assert(false);
+  const char* argv[] = { "uqm", NULL };
+  uqmMain(sizeof(argv) / sizeof(argv[0]) - 1, const_cast<char**>(argv));
   return 0;
 }
 
