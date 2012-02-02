@@ -128,10 +128,17 @@ void* GameInstance::LaunchGameThunk(void* data) {
 }
 
 void GameInstance::LaunchGame() {
-  // Craft a fake command line.
+  // Craft a fake command line. We can probably compile-in some of
+  // this directory options, but whatever.
   char buf[100];
   snprintf(buf, sizeof(buf), "%dx%d", width_, height_);
-  const char* argv[] = { "uqm", "-r", buf, NULL };
+  const char* argv[] = {
+    "uqm",
+    "--res", buf,
+    "--configdir", "/userdata",
+    "--contentdir", "/content",
+    NULL
+  };
   uqmMain(sizeof(argv) / sizeof(argv[0]) - 1, const_cast<char**>(argv));
 }
 
