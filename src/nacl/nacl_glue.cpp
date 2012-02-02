@@ -36,7 +36,8 @@ class GameInstance : public pp::Instance {
   pp::CompletionCallbackFactory<GameInstance> cc_factory_;
 
   // Launches the actual game, e.g., by calling game_main().
-  static void* LaunchGame(void* data);
+  static void* LaunchGameThunk(void* data);
+  void LaunchGame();
 
   // This function allows us to delay game start until all
   // resources are ready.
@@ -110,7 +111,7 @@ int GameInstance::num_instances_;
 
 void GameInstance::StartGameInNewThread(int32_t dummy) {
   if (true /* [All Resources Are Ready] */) {
-    pthread_create(&game_main_thread_, NULL, &LaunchGame, this);
+    pthread_create(&game_main_thread_, NULL, &LaunchGameThunk, this);
   } else {
     // Wait some more (here: 100ms).
     pp::Module::Get()->core()->CallOnMainThread(
@@ -119,14 +120,19 @@ void GameInstance::StartGameInNewThread(int32_t dummy) {
 }
 
 // static
-void* GameInstance::LaunchGame(void* data) {
+void* GameInstance::LaunchGameThunk(void* data) {
   // Use "thiz" to get access to instance object.
-  fprintf(stderr, "LaunchGame\n");
   GameInstance* thiz = static_cast<GameInstance*>(data);
+  thiz->LaunchGame();
+  return NULL;
+}
+
+void GameInstance::LaunchGame() {
   // Craft a fake command line.
-  const char* argv[] = { "uqm", NULL };
+  char buf[100];
+  snprintf(buf, sizeof(buf), "%dx%d", width_, height_);
+  const char* argv[] = { "uqm", "-r", buf, NULL };
   uqmMain(sizeof(argv) / sizeof(argv[0]) - 1, const_cast<char**>(argv));
-  return 0;
 }
 
 namespace pp {
