@@ -133,8 +133,6 @@ GenerateChmmr_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	else if (matchWorld (solarSys, world, 1, 0))
 	{
 		/* Starbase */
-		LockMutex (GraphicsLock);
-
 		LoadStdLanderFont (&solarSys->SysInfo.PlanetInfo);
 		solarSys->SysInfo.PlanetInfo.DiscoveryString =
 				CaptureStringTable (LoadStringTable (CHMMR_BASE_STRTAB));
@@ -145,8 +143,6 @@ GenerateChmmr_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				solarSys->SysInfo.PlanetInfo.DiscoveryString));
 		solarSys->SysInfo.PlanetInfo.DiscoveryString = 0;
 		FreeLanderFont (&solarSys->SysInfo.PlanetInfo);
-
-		UnlockMutex (GraphicsLock);
 
 		return true;
 	}

@@ -167,9 +167,7 @@ FeedbackSetting (BYTE which_setting)
 			break;
 	}
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (buf);
-	UnlockMutex (GraphicsLock);
 }
 
 #define DDSHS_NORMAL   0
@@ -229,7 +227,6 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		lf.align = ALIGN_CENTER;
 	}
 
-	LockMutex (GraphicsLock);
 	SetContext (StatusContext);
 	SetContextFont (Font);
 	lf.pStr = Str;
@@ -253,14 +250,11 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		if ((text_r.extent.width + 2) >= r.extent.width)
 		{	// the text does not fit the input box size and so
 			// will not fit when displayed later
-			UnlockMutex (GraphicsLock);
 			// disallow the change
 			return (FALSE);
 		}
 	
-		UnlockMutex (GraphicsLock);
 		PreUpdateFlashRect ();
-		LockMutex (GraphicsLock);
 
 		SetContextForeGroundColor (BackGround);
 		DrawFilledRectangle (&r);
@@ -299,10 +293,9 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		SetContextForeGroundColor (ForeGround);
 		font_DrawText (&lf);
 		
-		PostUpdateFlashRectLocked ();
+		PostUpdateFlashRect ();
 	}
 
-	UnlockMutex (GraphicsLock);
 	return (TRUE);
 }
 
@@ -325,15 +318,11 @@ NameCaptainOrShip (bool nameCaptain)
 	TEXTENTRY_STATE tes;
 	UNICODE *Setting;
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (nameCaptain ? &captainNameRect : &shipNameRect);
-	UnlockMutex (GraphicsLock);
 
 	DrawNameString (nameCaptain, buf, 0, DDSHS_EDIT);
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
-	UnlockMutex (GraphicsLock);
 
 	if (nameCaptain)
 	{
@@ -359,9 +348,7 @@ NameCaptainOrShip (bool nameCaptain)
 	else
 		utf8StringCopy (buf, sizeof (buf), Setting);
 	
-	LockMutex (GraphicsLock);
 	SetFlashRect (SFR_MENU_3DO);
-	UnlockMutex (GraphicsLock);
 	
 	DrawNameString (nameCaptain, buf, 0, DDSHS_NORMAL);
 
@@ -450,9 +437,7 @@ SettingsMenu (void)
 	MenuState.InputFunc = DoSettings;
 	DoInput (&MenuState, FALSE);
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (NULL);
-	UnlockMutex (GraphicsLock);
 }
 
 typedef struct
@@ -677,10 +662,8 @@ DrawSavegameSummary (PICK_GAME_STATE *pickState, COUNT gameIndex)
 			r.corner.y = SIS_ORG_Y + 84;
 			r.extent = OldRect.extent;
 			SetContextClipRect (&r);
-			UnlockMutex (GraphicsLock);
 			// draw the lander with upgrades
 			InitLander (pSD->Flags | OVERRIDE_LANDER_FLAGS);
-			LockMutex (GraphicsLock);
 			SetContextClipRect (&OldRect);
 			SetContext (SpaceContext);
 
@@ -941,11 +924,9 @@ DoPickGame (MENU_STATE *pMS)
 
 		if (NewState != pMS->CurState)
 		{
-			LockMutex (GraphicsLock);
 			pMS->CurState = NewState;
 			SetContext (SpaceContext);
 			RedrawPickDisplay (pickState, pMS->CurState);
-			UnlockMutex (GraphicsLock);
 		}
 		
 		SleepThreadUntil (TimeIn + ONE_SECOND / 30);
@@ -965,9 +946,7 @@ SaveLoadGame (PICK_GAME_STATE *pickState, COUNT gameIndex)
 
 	// TODO: fix ConfirmSaveLoad() interface so it does not rely on
 	//   MsgStamp != NULL parameter.
-	LockMutex (GraphicsLock);
 	ConfirmSaveLoad (pickState->saving ? &saveStamp : NULL);
-	UnlockMutex (GraphicsLock);
 
 	if (pickState->saving)
 		success = SaveGame (gameIndex, desc);
@@ -978,9 +957,7 @@ SaveLoadGame (PICK_GAME_STATE *pickState, COUNT gameIndex)
 	//   display a load problem message
 	if (pickState->saving)
 	{	// restore the screen under "SAVING..." message
-		LockMutex (GraphicsLock);
 		DrawStamp (&saveStamp);
-		UnlockMutex (GraphicsLock);
 	}
 
 	DestroyDrawable (ReleaseDrawable (saveStamp.frame));
@@ -1015,12 +992,10 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 
 	LoadGameDescriptions (pickState.summary);
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 	// Save the current state of the screen for later restoration
 	DlgStamp = SaveContextFrame (NULL);
 	GetContextClipRect (&DlgRect);
-	UnlockMutex (GraphicsLock);
 
 	SleepThreadUntil (TimeOut);
 	PauseMusic ();
@@ -1028,7 +1003,6 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 	FadeMusic (NORMAL_VOLUME, 0);
 
 	// draw the current savegame and fade in
-	LockMutex (GraphicsLock);
 	SetTransitionSource (NULL);
 	BatchGraphics ();
 	
@@ -1050,7 +1024,6 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 		ScreenTransition (3, &ctxRect);
 		UnbatchGraphics ();
 	}
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS | MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN,
 			0);
@@ -1076,9 +1049,7 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 
 		// reload and redraw everything
 		LoadGameDescriptions (pickState.summary);
-		LockMutex (GraphicsLock);
 		RedrawPickDisplay (&pickState, MenuState.CurState);
-		UnlockMutex (GraphicsLock);
 	}
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
@@ -1091,20 +1062,16 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT) &&
 			(saving || (!pickState.success && !fromMainMenu)))
 	{	// Restore previous screen
-		LockMutex (GraphicsLock);
 		SetTransitionSource (&DlgRect);
 		BatchGraphics ();
 		DrawStamp (&DlgStamp);
 		ScreenTransition (3, &DlgRect);
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 	}
 
 	DestroyDrawable (ReleaseDrawable (DlgStamp.frame));
 
-	LockMutex (GraphicsLock);
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 
 	ResumeMusic ();
 
@@ -1132,14 +1099,10 @@ DoGameOptions (MENU_STATE *pMS)
 		{
 			case SAVE_GAME:
 			case LOAD_GAME:
-				LockMutex (GraphicsLock);
 				SetFlashRect (NULL);
-				UnlockMutex (GraphicsLock);
 				if (PickGame (pMS->CurState == SAVE_GAME, FALSE))
 					return FALSE;
-				LockMutex (GraphicsLock);
 				SetFlashRect (SFR_MENU_3DO);
-				UnlockMutex (GraphicsLock);
 				break;
 			case QUIT_GAME:
 				if (ConfirmExit ())
@@ -1181,17 +1144,13 @@ GameOptions (void)
 	MenuState.CurState = SAVE_GAME;
 	DrawMenuStateStrings (PM_SAVE_GAME, MenuState.CurState);
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (SFR_MENU_3DO);
-	UnlockMutex (GraphicsLock);
 	
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	MenuState.InputFunc = DoGameOptions;
 	DoInput (&MenuState, TRUE);
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
 
 	return !(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD));
 }

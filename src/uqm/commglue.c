@@ -28,8 +28,10 @@
 
 static int NPCNumberPhrase (int number, const char *fmt, UNICODE **ptrack);
 
+// The CallbackFunction is queued and executes synchronously
+// on the Starcon2Main thread
 void
-NPCPhrase_cb (int index,  TFB_TrackCB cb)
+NPCPhrase_cb (int index, CallbackFunction cb)
 {
 	UNICODE *pStr, buf[400];
 	void *pClip, *pTimeStamp;

@@ -656,7 +656,6 @@ MeleeGameOver (void)
 	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
 		DrawPickMeleeFrame (playerI);
 	
-	UnlockMutex (GraphicsLock);
 
 #ifdef NETPLAY
 	negotiateReadyConnections(true, NetState_inSetup);
@@ -683,7 +682,6 @@ MeleeGameOver (void)
 			&& (!(PlayerControl[0] & PlayerControl[1] & PSYTRON_CONTROL)
 			|| GetTimeCounter () < TimeOut)));
 
-	LockMutex (GraphicsLock);
 }
 
 void
@@ -796,12 +794,10 @@ GetMeleeStarShips (COUNT playerMask, HSTARSHIP *ships)
 	
 	SetContext (OffScreenContext);
 
-	UnlockMutex (GraphicsLock);
 
 	DoInput (&gmstate, FALSE);
 	WaitForSoundEnd (0);
 
-	LockMutex (GraphicsLock);
 
 	for (playerI = 0; playerI < NUM_PLAYERS; playerI++)
 	{

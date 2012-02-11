@@ -143,14 +143,12 @@ processAudioSyncedFrame (VIDEO_REF vid)
 	vid->cur_frame = vid->decoder->cur_frame;
 
 	// draw the frame
-	LockMutex (GraphicsLock);
 	// We have the cliprect precalculated and don't need the rest
 	oldContext = SetContext (NULL);
 	TFB_DrawScreen_Image (vid->frame,
 			vid->dst_rect.corner.x, vid->dst_rect.corner.y, 0, 0,
 			NULL, DRAW_REPLACE_MODE, TFB_SCREEN_MAIN);
 	SetContext (oldContext);
-	UnlockMutex (GraphicsLock);
 	FlushGraphics (); // needed to prevent half-frame updates
 
 	// increase interframe with positive lag-count to allow audio to catch up
@@ -195,14 +193,12 @@ processMuteFrame (VIDEO_REF vid)
 		
 		vid->cur_frame = vid->decoder->cur_frame;
 
-		LockMutex (GraphicsLock);
 		// We have the cliprect precalculated and don't need the rest
 		oldContext = SetContext (NULL);
 		TFB_DrawScreen_Image (vid->frame,
 				vid->dst_rect.corner.x, vid->dst_rect.corner.y, 0, 0,
 				NULL, DRAW_REPLACE_MODE, TFB_SCREEN_MAIN);
 		SetContext (oldContext);
-		UnlockMutex (GraphicsLock);
 		FlushGraphics (); // needed to prevent half-frame updates
 
 		if (vid->cur_frame == vid->loop_frame)

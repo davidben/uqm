@@ -118,15 +118,12 @@ enum
 
 static int LastAlien;
 
+// Queued and executes synchronously on the Starcon2Main thread
 static void
-SelectAlienZOQ (void)
+SelectAlienZOQ (CallbackArg arg)
 {
 	if (LastAlien != ZOQ_ALIEN)
 	{
-		// XXX: This should hold the GraphicsLock to block comm anims and
-		//   prevent CommData half-updates, but if we do so, the stream
-		//   decoder will deadlock with the drawing thread.
-
 		// Transition to neutral state first if Pik was talking
 		if (LastAlien != FOT_ALIEN)
 			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
@@ -142,17 +139,16 @@ SelectAlienZOQ (void)
 		CommData.AlienTextFColor = ZOQ_FG_COLOR;
 		CommData.AlienTextBColor = ZOQ_BG_COLOR;
 	}
+
+	(void)arg; // ignored
 }
 
+// Queued and executes synchronously on the Starcon2Main thread
 static void
-SelectAlienPIK (void)
+SelectAlienPIK (CallbackArg arg)
 {
 	if (LastAlien != PIK_ALIEN)
 	{
-		// XXX: This should hold the GraphicsLock to block comm anims and
-		//   prevent CommData half-updates, but if we do so, the stream
-		//   decoder will deadlock with the drawing thread.
-
 		// Transition to neutral state first if Zoq was talking
 		if (LastAlien != FOT_ALIEN)
 			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
@@ -168,13 +164,15 @@ SelectAlienPIK (void)
 		CommData.AlienTextFColor = PIK_FG_COLOR;
 		CommData.AlienTextBColor = PIK_BG_COLOR;
 	}
+
+	(void)arg; // ignored
 }
 
 static void
 ZFPTalkSegue (COUNT wait_track)
 {
 	LastAlien = FOT_ALIEN;
-	SelectAlienZOQ ();
+	SelectAlienZOQ (0);
 	AlienTalkSegue (wait_track);
 }
 

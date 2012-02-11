@@ -127,7 +127,6 @@ VidPlayEx (VIDEO_REF vid, MUSIC_REF AudRef, MUSIC_REF SpeechRef,
 	_cur_speech = 0;
 	_cur_video = NULL_VIDEO_REF;
 
-	LockMutex (GraphicsLock);
 	// play video in the center of the screen
 	if (TFB_PlayVideo (vid, (ScreenWidth - vid->w) / 2,
 			(ScreenHeight - vid->h) / 2))
@@ -144,7 +143,6 @@ VidPlayEx (VIDEO_REF vid, MUSIC_REF AudRef, MUSIC_REF SpeechRef,
 	{
 		ret = NO_FMV;
 	}
-	UnlockMutex (GraphicsLock);
 
 	return ret;
 }

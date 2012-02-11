@@ -97,10 +97,7 @@ The simplest form of lock.  If a thread tries to lock a mutex, it will
 sleep if the mutex is already locked, and awaken once the mutex
 becomes available.  A Mutex must be unlocked by the same thread that
 locked it, and a thread must never lock a mutex it has already locked
-(without unlocking it first).  The most important Mutex in the program
-the GraphicsLock.  Code in UQM that does things like change the
-screen's clipping rectangle always grabs the GraphicsLock first, to
-ensure that the screen doesn't go crazy.
+(without unlocking it first).
 
 API:
 Mutex CreateMutex (const char *name, DWORD syncClass);

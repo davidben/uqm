@@ -42,10 +42,6 @@
 #include "libs/inplib.h"
 
 
-// TODO: This entire module fails to uphold the GraphicsLock semantics
-//   This either has to be fixed, or GraphicsLock completely ignored,
-//   or will become irrelevant if GraphicsLock completely removed.
-
 enum
 {
 	START_NEW_GAME = 0,
@@ -74,7 +70,6 @@ DrawRestartMenuGraphic (MENU_STATE *pMS)
 	BatchGraphics ();
 	ClearDrawable ();
 	FlushColorXForms ();
-	LockMutex (GraphicsLock);
 	DrawStamp (&s);
 
 	// Put the version number in the bottom right corner.
@@ -89,7 +84,6 @@ DrawRestartMenuGraphic (MENU_STATE *pMS)
 	SetContextForeGroundColor (WHITE_COLOR);
 	font_DrawText (&t);
 
-	UnlockMutex (GraphicsLock);
 	UnbatchGraphics ();
 }
 

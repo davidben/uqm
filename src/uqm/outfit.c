@@ -234,7 +234,6 @@ DoInstallModule (MENU_STATE *pMS)
 
 		pMS->InputFunc = DoInstallModule;
 
-		LockMutex (GraphicsLock);
 
 		SetContext (SpaceContext);
 		ClearSISRect (CLEAR_SIS_RADAR);
@@ -296,7 +295,6 @@ DoInstallModule (MENU_STATE *pMS)
 			}
 		}
 
-		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 
 		SetFlashRect (NULL);
@@ -382,15 +380,12 @@ DoInstallModule (MENU_STATE *pMS)
 		else
 		{
 			SetContext (StatusContext);
-			UnlockMutex (GraphicsLock);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState = OUTFIT_MODULES);
-			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
 
 			pMS->InputFunc = DoOutfit;
 			ClearSISRect (DRAW_SIS_DISPLAY);
 		}
-		UnlockMutex (GraphicsLock);
 	}
 	else if (motion)
 	{
@@ -440,7 +435,6 @@ DoInstallModule (MENU_STATE *pMS)
 				|| (NewItem >= GUN_WEAPON && NewItem <= CANNON_WEAPON
 				&& pMS->delta_item > 0 && pMS->delta_item < 13)));
 
-		LockMutex (GraphicsLock);
 		if (NewState < EMPTY_SLOT)
 		{
 			if (NewItem != pMS->CurState)
@@ -540,7 +534,6 @@ InitFlash:
 			else
 				SetFlashRect (&pMS->flash_rect0);
 		}
-		UnlockMutex (GraphicsLock);
 	}
 
 	return (TRUE);
@@ -578,7 +571,6 @@ ChangeFuelQuantity (void)
 			incr = minFit; // All we have.
 	}
 
-	LockMutex (GraphicsLock);
 	if (!incr)
 	{
 		// No more room, not enough RUs, or no fuel left to drain.
@@ -600,16 +592,13 @@ ChangeFuelQuantity (void)
 		SetFlashRect (&r);
 		SetContext (oldContext);
 	}
-	UnlockMutex (GraphicsLock);
 }
 
 static void
 onNamingDone (void)
 {
 	// In case player just named a ship, redraw it
-	LockMutex (GraphicsLock);
 	DrawFlagshipName (FALSE);
-	UnlockMutex (GraphicsLock);
 }
 
 BOOLEAN
@@ -639,7 +628,6 @@ DoOutfit (MENU_STATE *pMS)
 			s.frame = CaptureDrawable (
 					LoadGraphic (OUTFIT_PMAP_ANIM));
 
-			LockMutex (GraphicsLock);
 			SetTransitionSource (NULL);
 			BatchGraphics ();
 			DrawSISFrame ();
@@ -701,21 +689,16 @@ DoOutfit (MENU_STATE *pMS)
 					DrawStamp (&s);
 			}
 
-			UnlockMutex (GraphicsLock);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState);
-			LockMutex (GraphicsLock);
 			DrawFlagshipName (FALSE);
 			if (optWhichFonts == OPT_PC)
 				DrawFlagshipStats ();
-			UnlockMutex (GraphicsLock);
 
 			ScreenTransition (3, NULL);
 			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
 			
-			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
-			UnlockMutex (GraphicsLock);
 
 			GLOBAL_SIS (FuelOnBoard) =
 					(GLOBAL_SIS (FuelOnBoard)
@@ -732,9 +715,7 @@ DoOutfit (MENU_STATE *pMS)
 		if (pMS->CurState == OUTFIT_DOFUEL)
 		{
 			pMS->CurState = OUTFIT_FUEL;
-			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
-			UnlockMutex (GraphicsLock);
 		}
 		else
 		{
@@ -758,18 +739,14 @@ ExitOutfit:
 				RECT r;
 
 				pMS->CurState = OUTFIT_DOFUEL;
-				LockMutex (GraphicsLock);
 				SetContext (StatusContext);
 				GetGaugeRect (&r, FALSE);
 				SetFlashRect (&r);
-				UnlockMutex (GraphicsLock);
 				break;
 			}
 			case OUTFIT_DOFUEL:
 				pMS->CurState = OUTFIT_FUEL;
-				LockMutex (GraphicsLock);
 				SetFlashRect (SFR_MENU_3DO);
-				UnlockMutex (GraphicsLock);
 				break;
 			case OUTFIT_MODULES:
 				pMS->CurState = EMPTY_SLOT + 2;
@@ -786,9 +763,7 @@ ExitOutfit:
 				if (!GameOptions ())
 					goto ExitOutfit;
 				DrawMenuStateStrings (PM_FUEL, pMS->CurState);
-				LockMutex (GraphicsLock);
 				SetFlashRect (SFR_MENU_3DO);
-				UnlockMutex (GraphicsLock);
 				break;
 		}
 	}

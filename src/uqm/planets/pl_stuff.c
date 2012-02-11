@@ -192,7 +192,6 @@ ZoomInPlanetSphere (void)
 		pt.y = PLANET_ORG_Y + (int) (dy * (1.0 - scale)
 				* (SCAN_SCREEN_HEIGHT * 6 / 10) + 0.5);
 
-		LockMutex (GraphicsLock);
 		SetContext (PlanetContext);
 
 		BatchGraphics ();
@@ -206,7 +205,6 @@ ZoomInPlanetSphere (void)
 		SetGraphicScaleMode (oldMode);
 
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 
 		repairRect.corner.x = pt.x + frameRect.corner.x;
 		repairRect.corner.y = pt.y + frameRect.corner.y;

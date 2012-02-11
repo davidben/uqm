@@ -123,7 +123,6 @@ flashCurrentLocation (POINT *where)
 
 		NextTime = GetTimeCounter () + (ONE_SECOND / 16);
 		
-		LockMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
 
 		if (c == 0x00 || c == 0x1A)
@@ -138,7 +137,6 @@ flashCurrentLocation (POINT *where)
 		SetContextForeGroundColor (OldColor);
 
 		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -299,7 +297,6 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 	}
 	else
 	{
-		LockMutex (GraphicsLock);
 		draw_cursor = TRUE;
 	}
 
@@ -559,9 +556,6 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 					UNIVERSE_TO_DISPY (cursorLoc.y));
 		}
 	}
-
-	if (draw_cursor)
-		UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -591,9 +585,7 @@ EraseCursor (COORD curs_x, COORD curs_y)
 #else /* NEW */
 	r.extent.height += r.corner.y & 1;
 	r.corner.y &= ~1;
-	UnlockMutex (GraphicsLock);
 	DrawStarMap (0, &r);
-	LockMutex (GraphicsLock);
 #endif /* OLD */
 }
 
@@ -693,11 +685,9 @@ UpdateCursorLocation (int sx, int sy, const POINT *newpt)
 	}
 	else
 	{
-		LockMutex (GraphicsLock);
 		EraseCursor (pt.x, pt.y);
 		// ClearDrawable ();
 		DrawCursor (s.origin.x, s.origin.y);
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -767,14 +757,12 @@ UpdateCursorInfo (UNICODE *prevbuf)
 		}
 	}
 
-	LockMutex (GraphicsLock);
 	DrawHyperCoords (cursorLoc);
 	if (strcmp (buf, prevbuf) != 0)
 	{
 		strcpy (prevbuf, buf);
 		DrawSISMessage (buf);
 	}
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -806,9 +794,7 @@ UpdateFuelRequirement (void)
 			fuel_required / FUEL_TANK_SCALE,
 			(fuel_required % FUEL_TANK_SCALE) / 10);
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (buf);
-	UnlockMutex (GraphicsLock);
 }
 
 #define STAR_SEARCH_BUFSIZE 256
@@ -1059,10 +1045,8 @@ DrawMatchedStarName (TEXTENTRY_STATE *pTES)
 			flags |= DSME_BLOCKCUR;
 	}
 	
-	LockMutex (GraphicsLock);
 	DrawSISMessageEx (buf, CurPos, ExPos, flags);
 	DrawHyperCoords (cursorLoc);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1133,9 +1117,7 @@ OnStarNameChange (TEXTENTRY_STATE *pTES)
 		if (pTES->JoystickMode)
 			flags |= DSME_BLOCKCUR;
 
-		LockMutex (GraphicsLock);
 		ret = DrawSISMessageEx (pSS->Text, pTES->CursorPos, -1, flags);
-		UnlockMutex (GraphicsLock);
 	}
 	else
 	{
@@ -1196,9 +1178,7 @@ DoStarSearch (MENU_STATE *pMS)
 	if (!pss)
 		return FALSE;
 
-	LockMutex (GraphicsLock);
 	DrawSISMessageEx ("", 0, 0, DSME_SETFR);
-	UnlockMutex (GraphicsLock);
 
 	pss->pMS = pMS;
 	pss->LastChangeTime = 0;
@@ -1220,9 +1200,7 @@ DoStarSearch (MENU_STATE *pMS)
 	SetDefaultMenuRepeatDelay ();
 	success = DoTextEntry (&tes);
 
-	LockMutex (GraphicsLock);
 	DrawSISMessageEx (pss->Text, -1, -1, DSME_CLEARFR);
-	UnlockMutex (GraphicsLock);
 
 	HFree (pss);
 
@@ -1620,8 +1598,6 @@ StarMap (void)
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 		UpdateMap ();
 
-	LockMutex (GraphicsLock);
-	
 	DrawStarMap (0, (RECT*)-1);
 	transition_pending = FALSE;
 	
@@ -1633,7 +1609,6 @@ StarMap (void)
 	DrawCursor (UNIVERSE_TO_DISPX (cursorLoc.x),
 			UNIVERSE_TO_DISPY (cursorLoc.y));
 	UnbatchGraphics ();
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY,
@@ -1642,11 +1617,9 @@ StarMap (void)
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	SetDefaultMenuRepeatDelay ();
 
-	LockMutex (GraphicsLock);
 	DrawHyperCoords (universe);
 	DrawSISMessage (NULL);
 	DrawStatusMessage (NULL);
-	UnlockMutex (GraphicsLock);
 
 	if (GLOBAL (autopilot.x) == universe.x
 			&& GLOBAL (autopilot.y) == universe.y)

@@ -59,8 +59,6 @@ CreatePlanetContext (void)
 
 	assert (PlanetContext == NULL);
 
-	LockMutex (GraphicsLock);
-
 	// PlanetContext rect is relative to SpaceContext
 	oldContext = SetContext (SpaceContext);
 	GetContextClipRect (&r);
@@ -72,7 +70,6 @@ CreatePlanetContext (void)
 	SetContextClipRect (&r);
 
 	SetContext (oldContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -263,9 +260,7 @@ LoadPlanet (FRAME SurfDefFrame)
 
 	if (WaitMode)
 	{
-		LockMutex (GraphicsLock);
 		DrawOrbitalDisplay (DRAW_ORBITAL_WAIT);
-		UnlockMutex (GraphicsLock);
 	}
 
 	StopMusic ();
@@ -281,15 +276,11 @@ LoadPlanet (FRAME SurfDefFrame)
 	if (WaitMode)
 	{
 		ZoomInPlanetSphere ();
-		LockMutex (GraphicsLock);
 		DrawOrbitalDisplay (DRAW_ORBITAL_UPDATE);
-		UnlockMutex (GraphicsLock);
 	}
 	else
 	{
-		LockMutex (GraphicsLock);
 		DrawOrbitalDisplay (DRAW_ORBITAL_FULL);
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -302,7 +293,6 @@ FreePlanet (void)
 	UninitSphereRotation ();
 
 	StopMusic ();
-	LockMutex (GraphicsLock);
 
 	for (i = 0; i < sizeof (pSolarSysState->PlanetSideFrame)
 			/ sizeof (pSolarSysState->PlanetSideFrame[0]); ++i)
@@ -353,7 +343,6 @@ FreePlanet (void)
 	DestroyPlanetContext ();
 	DestroyScanContext ();
 
-	UnlockMutex (GraphicsLock);
 }
 
 void
@@ -391,9 +380,7 @@ DoPlanetOrbit (MENU_STATE *pMS)
 	if (!select)
 		return TRUE;
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
 
 	switch (pMS->CurState)
 	{
@@ -431,9 +418,7 @@ DoPlanetOrbit (MENU_STATE *pMS)
 			// Deactivate planet rotation
 			oldCallback = SetInputCallback (NULL);
 
-			LockMutex (GraphicsLock);
 			RepairSISBorder ();
-			UnlockMutex (GraphicsLock);
 
 			AutoPilotSet = StarMap ();
 			if (GLOBAL (CurrentActivity) & CHECK_ABORT)
@@ -444,9 +429,7 @@ DoPlanetOrbit (MENU_STATE *pMS)
 
 			if (!AutoPilotSet)
 			{	// Redraw the orbital display
-				LockMutex (GraphicsLock);
 				DrawOrbitalDisplay (DRAW_ORBITAL_FULL);
-				UnlockMutex (GraphicsLock);
 				break;
 			}
 			// Fall through !!!
@@ -463,9 +446,7 @@ DoPlanetOrbit (MENU_STATE *pMS)
 				pMS->CurState = NAVIGATION;
 			DrawMenuStateStrings (PM_SCAN, pMS->CurState);
 		}
-		LockMutex (GraphicsLock);
 		SetFlashRect (SFR_MENU_3DO);
-		UnlockMutex (GraphicsLock);
 	}
 
 	return TRUE;
@@ -474,9 +455,7 @@ DoPlanetOrbit (MENU_STATE *pMS)
 static void
 on_input_frame (void)
 {
-	LockMutex (GraphicsLock);
 	RotatePlanetSphere (TRUE);
-	UnlockMutex (GraphicsLock);
 }
 
 void
@@ -488,9 +467,7 @@ PlanetOrbitMenu (void)
 	memset (&MenuState, 0, sizeof MenuState);
 
 	DrawMenuStateStrings (PM_SCAN, SCAN);
-	LockMutex (GraphicsLock);
 	SetFlashRect (SFR_MENU_3DO);
-	UnlockMutex (GraphicsLock);
 
 	MenuState.CurState = SCAN;
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
@@ -501,8 +478,6 @@ PlanetOrbitMenu (void)
 
 	SetInputCallback (oldCallback);
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
 	DrawMenuStateStrings (PM_STARMAP, -NAVIGATION);
 }

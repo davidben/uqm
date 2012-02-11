@@ -77,7 +77,6 @@ checkArilouGate (void)
 }
 
 // Battle frame callback function.
-// Called with GraphicsLock held
 static void
 on_battle_frame (void)
 {
@@ -286,9 +285,7 @@ while (--ac > 0)
 				Battle (&on_battle_frame);
 			}
 
-			LockMutex (GraphicsLock);
 			SetFlashRect (NULL);
-			UnlockMutex (GraphicsLock);
 
 			LastActivity = GLOBAL (CurrentActivity);
 

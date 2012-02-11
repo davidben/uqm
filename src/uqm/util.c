@@ -152,7 +152,6 @@ PauseGame (void)
 	if (PlayingTrack ())
 		PauseTrack ();
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (ScreenContext);
 	oldOrigin = SetContextOrigin (MAKE_POINT (0, 0));
 	GetContextClipRect (&OldRect);
@@ -170,11 +169,7 @@ PauseGame (void)
 	SetSystemRect (&r);
 	DrawStamp (&s);
 
-	// It is safer to just not release the lock so any graphics tasks
-	// would be blocked
-	//UnlockMutex (GraphicsLock);
 	FlushGraphics ();
-	//LockMutex (GraphicsLock);
 
 	while (ImmediateInputState.menu[KEY_PAUSE] && GamePaused)
 	{
@@ -209,7 +204,6 @@ PauseGame (void)
 	if (PlayingTrack ())
 		ResumeTrack ();
 
-	UnlockMutex (GraphicsLock);
 
 	TaskSwitch ();
 	GLOBAL (CurrentActivity) &= ~CHECK_PAUSE;
@@ -300,7 +294,6 @@ SleepGame (void)
 		PauseTrack ();
 	PauseMusic ();
 
-	LockMutex (GraphicsLock);
 
 	while (!GameActive && !QuitPosted)
 		SleepThread (ONE_SECOND / 2);
@@ -314,7 +307,6 @@ SleepGame (void)
 	if (PlayingTrack ())
 		ResumeTrack ();
 
-	UnlockMutex (GraphicsLock);
 
 	TaskSwitch ();
 }

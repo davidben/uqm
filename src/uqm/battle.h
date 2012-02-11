@@ -31,8 +31,7 @@ extern "C" {
 #endif
 
 // The callback function is called on every battle frame
-// with GraphicsLock held, just before the display queue
-// is drawn
+// just before the display queue is drawn
 typedef void (BattleFrameCallback) (void);
 
 typedef struct battlestate_struct {

@@ -302,7 +302,6 @@ DoBattle (BATTLE_STATE *bs)
 	}
 #endif
 
-	LockMutex (GraphicsLock);
 	if (bs->first_time)
 	{
 		r.corner.x = SIS_ORG_X;
@@ -325,7 +324,6 @@ DoBattle (BATTLE_STATE *bs)
 		ScreenTransition (3, &r);
 	}
 	UnbatchGraphics ();
-	UnlockMutex (GraphicsLock);
 	if ((!(GLOBAL (CurrentActivity) & IN_BATTLE)) ||
 			(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
@@ -399,7 +397,6 @@ Battle (BattleFrameCallback *callback)
 {
 	SIZE num_ships;
 
-	LockMutex (GraphicsLock);
 
 #if !(DEMO_MODE || CREATE_JOURNAL)
 	if (LOBYTE (GLOBAL (CurrentActivity)) != SUPER_MELEE) {
@@ -469,9 +466,7 @@ Battle (BattleFrameCallback *callback)
 		bs.first_time = (BOOLEAN)(LOBYTE (GLOBAL (CurrentActivity)) ==
 				IN_HYPERSPACE);
 
-		UnlockMutex (GraphicsLock);
 		DoInput (&bs, FALSE);
-		LockMutex (GraphicsLock);
 
 AbortBattle:
 		if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
@@ -481,12 +476,10 @@ AbortBattle:
 				// Do not return to the main menu when a game is aborted,
 				// (just to the supermelee menu).
 #ifdef NETPLAY
-				UnlockMutex (GraphicsLock);
 				waitResetConnections(NetState_inSetup);
 						// A connection may already be in inSetup (set from
 						// GetMeleeStarship). This is not a problem, although
 						// it will generate a warning in debug mode.
-				LockMutex (GraphicsLock);
 #endif
 
 				GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
@@ -514,7 +507,6 @@ AbortBattle:
 	UninitShips ();
 	FreeBattleSong ();
 
-	UnlockMutex (GraphicsLock);
 	
 	return (BOOLEAN) (num_ships < 0);
 }

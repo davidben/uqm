@@ -158,9 +158,7 @@ GenerateVux_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 					|| !GET_GAME_STATE (ZEX_IS_DEAD))
 				return true;
 
-			LockMutex (GraphicsLock);
 			RepairSISBorder ();
-			UnlockMutex (GraphicsLock);
 		}
 	}
 

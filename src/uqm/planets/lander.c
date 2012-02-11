@@ -1142,7 +1142,6 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 	
 	curLanderLoc = new_pt;
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (PlanetContext);
 
 	BatchGraphics ();
@@ -1252,7 +1251,6 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 	UnbatchGraphics ();
 
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1262,9 +1260,7 @@ animationInterframe (TimeCount *TimeIn, COUNT periods)
 
 	for ( ; periods; --periods)
 	{
-		LockMutex (GraphicsLock);
 		RotatePlanetSphere (TRUE);
-		UnlockMutex (GraphicsLock);
 
 		SleepThreadUntil (*TimeIn + ANIM_FRAME_RATE);
 		*TimeIn = GetTimeCounter ();
@@ -1279,7 +1275,6 @@ AnimateLaunch (FRAME farray)
 	COUNT num_frames;
 	TimeCount NextTime;
 
-	LockMutex (GraphicsLock);
 	SetContext (PlanetContext);
 
 	r.corner.x = 0;
@@ -1303,18 +1298,14 @@ AnimateLaunch (FRAME farray)
 #endif
 		DrawStamp (&s);
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 
 		GetFrameRect (s.frame, &r);
 		s.frame = IncFrameIndex (s.frame);
 
 		SleepThreadUntil (NextTime);
-
-		LockMutex (GraphicsLock);
 	}
 
 	RepairBackRect (&r);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1325,18 +1316,14 @@ AnimateLanderWarmup (void)
 	CONTEXT OldContext;
 	TimeCount TimeIn = GetTimeCounter ();
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (RadarContext);
-	UnlockMutex (GraphicsLock);
 
 	s.origin.x = 0;
 	s.origin.y = 0;
 	s.frame = SetAbsFrameIndex (LanderFrame[0],
 			(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 1);
 
-	LockMutex (GraphicsLock);
 	DrawStamp (&s);
-	UnlockMutex (GraphicsLock);
 
 	animationInterframe (&TimeIn, 2);
 
@@ -1345,10 +1332,8 @@ AnimateLanderWarmup (void)
 	{
 		animationInterframe (&TimeIn, 1);
 		
-		LockMutex (GraphicsLock);
 		DeltaSISGauges (-1, 0, 0);
 		DeltaLanderCrew (1, 0);
-		UnlockMutex (GraphicsLock);
 	}
 
 	animationInterframe (&TimeIn, 2);
@@ -1358,9 +1343,7 @@ AnimateLanderWarmup (void)
 	else
 		s.frame = SetAbsFrameIndex (s.frame,
 				(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 2);
-	LockMutex (GraphicsLock);
 	DrawStamp (&s);
-	UnlockMutex (GraphicsLock);
 
 	animationInterframe (&TimeIn, 2);
 
@@ -1370,26 +1353,20 @@ AnimateLanderWarmup (void)
 	{
 		s.frame = SetAbsFrameIndex (s.frame,
 				(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 3);
-		LockMutex (GraphicsLock);
 		DrawStamp (&s);
-		UnlockMutex (GraphicsLock);
 
 		animationInterframe (&TimeIn, 2);
 
 		s.frame = IncFrameIndex (s.frame);
 	}
-	LockMutex (GraphicsLock);
 	DrawStamp (&s);
-	UnlockMutex (GraphicsLock);
 
 	if (GET_GAME_STATE (IMPROVED_LANDER_CARGO))
 	{
 		animationInterframe (&TimeIn, 2);
 
 		s.frame = SetAbsFrameIndex (s.frame, 59);
-		LockMutex (GraphicsLock);
 		DrawStamp (&s);
-		UnlockMutex (GraphicsLock);
 	}
 
 	animationInterframe (&TimeIn, 2);
@@ -1419,7 +1396,6 @@ InitPlanetSide (POINT pt)
 
 	curLanderLoc = pt;
 
-	LockMutex (GraphicsLock);
 	SetContext (PlanetContext);
 	SetContextFont (TinyFont);
 
@@ -1452,7 +1428,6 @@ InitPlanetSide (POINT pt)
 		UnbatchGraphics ();
 	}
 
-	UnlockMutex (GraphicsLock);
 
 	SET_GAME_STATE (PLANETARY_LANDING, 1);
 }
@@ -1749,7 +1724,6 @@ ReturnToOrbit (void)
 	CONTEXT OldContext;
 	RECT r;
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (PlanetContext);
 	GetContextClipRect (&r);
 
@@ -1762,7 +1736,6 @@ ReturnToOrbit (void)
 	UnbatchGraphics ();
 
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1972,9 +1945,7 @@ PlanetSide (POINT planetLoc)
 		if (crew_left == 0)
 		{
 			--GLOBAL_SIS (NumLanders);
-			LockMutex (GraphicsLock);
 			DrawLanders ();
-			UnlockMutex (GraphicsLock);
 
 			ReturnToOrbit ();
 		}
@@ -1988,7 +1959,6 @@ PlanetSide (POINT planetLoc)
 			ReturnToOrbit ();
 			AnimateLaunch (LanderFrame[6]);
 			
-			LockMutex (GraphicsLock);
 			DeltaSISGauges (crew_left, 0, 0);
 
 			if (PSD.ElementLevel)
@@ -2002,7 +1972,6 @@ PlanetSide (POINT planetLoc)
 				}
 				DrawStorageBays (FALSE);
 			}
-			UnlockMutex (GraphicsLock);
 
 			GLOBAL_SIS (TotalBioMass) += PSD.BiologicalLevel;
 		}
@@ -2042,10 +2011,7 @@ InitLander (BYTE LanderFlags)
 {
 	RECT r;
 
-	LockMutex (GraphicsLock);
-
 	SetContext (RadarContext);
-	
 	BatchGraphics ();
 	
 	r.corner.x = 0;
@@ -2132,6 +2098,4 @@ InitLander (BYTE LanderFlags)
 	}
 
 	UnbatchGraphics ();
-
-	UnlockMutex (GraphicsLock);
 }

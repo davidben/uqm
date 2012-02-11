@@ -185,7 +185,6 @@ DrawDevicesDisplay (DEVICES_STATE *devState)
 static void
 DrawDevices (DEVICES_STATE *devState, COUNT OldDevice, COUNT NewDevice)
 {
-	LockMutex (GraphicsLock);
 	BatchGraphics ();
 
 	SetContext (StatusContext);
@@ -211,7 +210,6 @@ DrawDevices (DEVICES_STATE *devState, COUNT OldDevice, COUNT NewDevice)
 	}
 
 	UnbatchGraphics ();
-	UnlockMutex (GraphicsLock);
 }
 
 // Returns TRUE if the broadcaster has been successfully activated,
@@ -493,13 +491,11 @@ DoManipulateDevices (MENU_STATE *pMS)
 	{
 		DeviceStatus status;
 
-		LockMutex (GraphicsLock);
 		status = InvokeDevice (devState->list[pMS->CurState]);
 		if (status == DEVICE_FAILURE)
 			PlayMenuSound (MENU_SOUND_FAILURE);
 		else if (status == DEVICE_SUCCESS)
 			PlayMenuSound (MENU_SOUND_INVOKED);
-		UnlockMutex (GraphicsLock);
 
 		return (status == DEVICE_FAILURE);
 	}
@@ -682,9 +678,7 @@ DevicesMenu (void)
 	if (GLOBAL_SIS (CrewEnlisted) != (COUNT)~0
 			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
-		LockMutex (GraphicsLock);
 		ClearSISRect (DRAW_SIS_DISPLAY);
-		UnlockMutex (GraphicsLock);
 
 		if (!GET_GAME_STATE (PORTAL_COUNTER)
 				&& !(GLOBAL (CurrentActivity) & START_ENCOUNTER)

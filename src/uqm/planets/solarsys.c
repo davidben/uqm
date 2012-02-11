@@ -1030,10 +1030,8 @@ DrawSystemTransition (BOOLEAN inner)
 static void
 TransitionSystemIn (void)
 {
-	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
 	DrawSystemTransition (playerInInnerSystem ());
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1117,7 +1115,6 @@ IP_frame (void)
 	BOOLEAN locChange;
 	SIZE newRadius;
 
-	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
 
 	GameClockTick ();
@@ -1148,7 +1145,6 @@ IP_frame (void)
 		UnbatchGraphics ();
 	}
 	
-	UnlockMutex (GraphicsLock);
 }
 
 static BOOLEAN
@@ -1311,9 +1307,7 @@ EnterPlanetOrbit (void)
 		ValidateInnerOrbits ();
 		ResetSolarSys ();
 
-		LockMutex (GraphicsLock);
 		RepairSISBorder ();
-		UnlockMutex (GraphicsLock);
 		TransitionSystemIn ();
 	}
 }
@@ -1325,11 +1319,9 @@ InitSolarSys (void)
 	BOOLEAN Reentry;
 	PLANET_DESC *orbital;
 
-	LockMutex (GraphicsLock);
 
 	LoadIPData ();
 	LoadLanderData ();
-	UnlockMutex (GraphicsLock);
 
 	Reentry = (GLOBAL (ShipFacing) != 0);
 	if (!Reentry)
@@ -1344,7 +1336,6 @@ InitSolarSys (void)
 				MAX_ZOOM_RADIUS);
 	}
 
-	LockMutex (GraphicsLock);
 
 	StarsFrame = CreateStarBackGround ();
 	
@@ -1352,7 +1343,6 @@ InitSolarSys (void)
 	SetContextFGFrame (Screen);
 	SetContextBackGroundColor (BLACK_COLOR);
 	
-	UnlockMutex (GraphicsLock);
 
 	orbital = LoadSolarSys ();
 	InnerSystem = CheckZoomLevel ();
@@ -1380,7 +1370,6 @@ InitSolarSys (void)
 	}
 	else
 	{	// Draw the borders, the system (inner or outer) and fade/transition
-		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 
 		SetTransitionSource (NULL);
@@ -1418,8 +1407,6 @@ InitSolarSys (void)
 
 			LastActivity &= ~CHECK_LOAD;
 		}
-		
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -1928,9 +1915,7 @@ DoSolarSysMenu (MENU_STATE *pMS)
 	if (!select)
 		return TRUE;
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
 
 	switch (pMS->CurState)
 	{
@@ -1971,9 +1956,7 @@ DoSolarSysMenu (MENU_STATE *pMS)
 				pMS->CurState = NAVIGATION;
 			DrawMenuStateStrings (PM_STARMAP, pMS->CurState);
 		}
-		LockMutex (GraphicsLock);
 		SetFlashRect (SFR_MENU_3DO);
-		UnlockMutex (GraphicsLock);
 	}
 
 	return TRUE;
@@ -1996,10 +1979,8 @@ SolarSysMenu (void)
 		MenuState.CurState = STARMAP;
 	}
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (NULL);
 	SetFlashRect (SFR_MENU_3DO);
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	MenuState.InputFunc = DoSolarSysMenu;

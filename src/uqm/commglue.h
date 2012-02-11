@@ -22,6 +22,7 @@
 #include "globdata.h"
 #include "resinst.h"
 #include "libs/sound/trackplayer.h"
+#include "libs/callback.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -88,7 +89,9 @@ extern void DoResponsePhrase (RESPONSE_REF R, RESPONSE_FUNC
 		response_func, UNICODE *ContstructStr);
 extern void DoNPCPhrase (UNICODE *pStr);
 
-extern void NPCPhrase_cb (int index, TFB_TrackCB cb);
+// The CallbackFunction is queued and executes synchronously
+// on the Starcon2Main thread
+extern void NPCPhrase_cb (int index, CallbackFunction cb);
 #define NPCPhrase(index) NPCPhrase_cb ((index), NULL)
 extern void NPCPhrase_splice (int index);
 extern void NPCNumber (int number, const char *fmt);

@@ -119,11 +119,9 @@ on_input_frame (void)
 {
 	CONTEXT oldContext;
 
-	LockMutex (GraphicsLock);
 	oldContext = SetContext (SpaceContext);
 	animatePowerLines (NULL);
 	SetContext (oldContext);
-	UnlockMutex (GraphicsLock);
 }
 
 #ifdef WANT_SHIP_SPINS
@@ -139,9 +137,7 @@ SpinStarShip (MENU_STATE *pMS, HFLEETINFO hStarShip)
 				
 	if (Index >= 0 && Index < NUM_MELEE_SHIPS)
 	{
-		UnlockMutex (GraphicsLock);
 		DoShipSpin (Index, pMS->hMusic);
-		LockMutex (GraphicsLock);
 	}
 }
 #endif
@@ -201,7 +197,6 @@ DrawRaceStrings (MENU_STATE *pMS, BYTE NewRaceItem)
 	STAMP s;
 	CONTEXT OldContext;
 	
-	LockMutex (GraphicsLock);
 
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&r);
@@ -259,7 +254,6 @@ DrawRaceStrings (MENU_STATE *pMS, BYTE NewRaceItem)
 	UnbatchGraphics ();
 	SetContext (OldContext);
 
-	UnlockMutex (GraphicsLock);
 }
 
 #define SHIP_WIN_WIDTH 34
@@ -455,7 +449,6 @@ ShowCombatShip (MENU_STATE *pMS, COUNT which_window,
 				AllDoorsFinished = TRUE;
 			}
 
-			LockMutex (GraphicsLock);
 			OldContext = SetContext (SpaceContext);
 			GetContextClipRect (&OldClipRect);
 			SetContextBackGroundColor (BLACK_COLOR);
@@ -503,12 +496,10 @@ ShowCombatShip (MENU_STATE *pMS, COUNT which_window,
 #endif
 			UnbatchGraphics ();
 			SetContext (OldContext);
-			UnlockMutex (GraphicsLock);
 		}
 	}
 }
 
-// Pre: GraphicsLock is unlocked.
 static void
 CrewTransaction (SIZE crew_delta)
 {
@@ -552,7 +543,6 @@ CrewTransaction (SIZE crew_delta)
 	}
 }
 
-// Pre: GraphicsLock is locked.
 static void
 DMS_FlashFlagShip (void)
 {
@@ -576,7 +566,6 @@ DMS_GetEscortShipRect (RECT *rOut, BYTE slotNr)
 	rOut->extent.height = SHIP_WIN_HEIGHT;
 }
 
-// Pre: GraphicsLock is locked.
 static void
 DMS_FlashEscortShip (BYTE slotNr)
 {
@@ -585,7 +574,6 @@ DMS_FlashEscortShip (BYTE slotNr)
 	SetFlashRect (&r);
 }
 
-// Pre: GraphicsLock is locked.
 static void
 DMS_FlashFlagShipCrewCount (void)
 {
@@ -596,7 +584,6 @@ DMS_FlashFlagShipCrewCount (void)
 	SetContext (SpaceContext);
 }
 
-// Pre: GraphicsLock is locked.
 static void
 DMS_FlashEscortShipCrewCount (BYTE slotNr)
 {
@@ -615,7 +602,6 @@ DMS_FlashEscortShipCrewCount (BYTE slotNr)
 
 // Helper function for DoModifyShips(). Called to change the flash
 // rectangle to the currently selected ship (flagship or escort ship).
-// The caller must hold the graphicsLock.
 static void
 DMS_FlashActiveShip (MENU_STATE *pMS)
 {
@@ -636,7 +622,6 @@ DMS_FlashActiveShip (MENU_STATE *pMS)
 // XXX: right now, this only switches the sound and flash rectangle.
 // Perhaps we should move more of the code to modify other aspects
 // here too.
-// The caller must hold the graphicsLock.
 static void
 DMS_SetMode (MENU_STATE *pMS, DMS_Mode mode)
 {
@@ -677,7 +662,6 @@ DMS_SetMode (MENU_STATE *pMS, DMS_Mode mode)
 // It works both when the cursor is over an escort ship, while not editing
 // the crew, and when a new ship is added.
 // hStarShip is the ship in the slot under the cursor (or 0 if no such ship).
-// Pre: GraphicsLock is locked.
 static BOOLEAN
 DMS_SpinShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 {
@@ -751,9 +735,9 @@ DMS_HireFlagShipCrew (void)
 
 	// Update the crew counter and RU. Note that the crew counter is
 	// flashing.
-	PreUpdateFlashRectLocked ();
+	PreUpdateFlashRect ();
 	DeltaSISGauges (1, 0, -GLOBAL (CrewCost));
-	PostUpdateFlashRectLocked ();
+	PostUpdateFlashRect ();
 
 	return 1;
 }
@@ -780,10 +764,10 @@ DMS_DismissFlagShipCrew (void)
 
 	// Update the crew counter and RU. Note that the crew counter is
 	// flashing.
-	PreUpdateFlashRectLocked ();
+	PreUpdateFlashRect ();
 	DeltaSISGauges (-1, 0, GLOBAL (CrewCost) -
 			(crew_bought == CREW_EXPENSE_THRESHOLD ? 2 : 0));
-	PostUpdateFlashRectLocked ();
+	PostUpdateFlashRect ();
 
 	// Remove the pixel representing the crew member.
 	GetCPodCapacity (&r.corner);
@@ -843,10 +827,10 @@ DMS_HireEscortShipCrew (SHIP_FRAGMENT *StarShipPtr)
 
 	++StarShipPtr->crew_level;
 
-	PreUpdateFlashRectLocked ();
+	PreUpdateFlashRect ();
 	DMS_GetEscortShipRect (&r, StarShipPtr->index);
 	ShowShipCrew (StarShipPtr, &r);
-	PostUpdateFlashRectLocked ();
+	PostUpdateFlashRect ();
 
 	return 1;
 }
@@ -888,10 +872,10 @@ DMS_DismissEscortShipCrew (SHIP_FRAGMENT *StarShipPtr)
 		PlayMenuSound (MENU_SOUND_FAILURE);
 	}
 
-	PreUpdateFlashRectLocked ();
+	PreUpdateFlashRect ();
 	DMS_GetEscortShipRect (&r, StarShipPtr->index);
 	ShowShipCrew (StarShipPtr, &r);
-	PostUpdateFlashRectLocked ();
+	PostUpdateFlashRect ();
 
 	return crew_delta;
 }
@@ -903,7 +887,6 @@ DMS_DismissEscortShipCrew (SHIP_FRAGMENT *StarShipPtr)
 // selected.
 // 'dy' is -1 if the 'up' button was pressed, or '1' if the down button was
 // pressed.
-// Pre: caller holds the GraphicsLock
 static void
 DMS_ModifyCrew (MENU_STATE *pMS, HSHIPFRAG hStarShip, SBYTE dy)
 {
@@ -960,15 +943,12 @@ DMS_ModifyCrew (MENU_STATE *pMS, HSHIPFRAG hStarShip, SBYTE dy)
 		pMS->delta_item &= MODIFY_CREW_FLAG;
 	}
 
-	UnlockMutex (GraphicsLock);
 	CrewTransaction (crew_delta);
-	LockMutex (GraphicsLock);
 }
 
 // Helper function for DoModifyShips(), called when the player presses the
 // select button when the cursor is over an empty escort ship slot.
 // Try to add the currently selected ship as an escort ship.
-// Pre: caller does not hold the GraphicsLock
 static void
 DMS_TryAddEscortShip (MENU_STATE *pMS)
 {
@@ -983,11 +963,9 @@ DMS_TryAddEscortShip (MENU_STATE *pMS)
 				// Reset flash rectangle
 		DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
 
-		LockMutex (GraphicsLock);
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
 				-((int)ShipCost[Index]));
 		DMS_SetMode (pMS, DMS_Mode_editCrew);
-		UnlockMutex (GraphicsLock);
 	}
 	else
 	{
@@ -1011,28 +989,21 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 	if (special)
 	{
 		HSHIPFRAG hStarShip = GetEscortByStarShipIndex (pMS->delta_item);
-		LockMutex (GraphicsLock);
 		if (DMS_SpinShip (pMS, hStarShip))
 			DMS_SetMode (pMS, DMS_Mode_addEscort);
-		UnlockMutex (GraphicsLock);
 		return;
 	}
 #else
 	(void) special;  // Satisfying compiler.
 #endif  /* WANT_SHIP_SPINS */
 
-	UnlockMutex (GraphicsLock);
 	if (cancel)
 	{
 		// Cancel selecting an escort ship.
 		pMS->delta_item &= ~MODIFY_CREW_FLAG;
-		LockMutex (GraphicsLock);
 		SetFlashRect (NULL);
-		UnlockMutex (GraphicsLock);
 		DrawMenuStateStrings (PM_CREW, SHIPYARD_CREW);
-		LockMutex (GraphicsLock);
 		DMS_SetMode (pMS, DMS_Mode_navigate);
-		UnlockMutex (GraphicsLock);
 	}
 	else if (select)
 	{
@@ -1065,12 +1036,10 @@ DMS_AddEscortShip (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 			pMS->delta_item = currentShip | MODIFY_CREW_FLAG;
 		}
 	}
-	LockMutex (GraphicsLock);
 }
 
 // Helper function for DoModifyShips(), called when the player presses
 // 'select' or 'cancel' after selling all the crew.
-// Pre: caller holds the GraphicsLock
 static void
 DMS_ScrapEscortShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 {
@@ -1079,9 +1048,7 @@ DMS_ScrapEscortShip (MENU_STATE *pMS, HSHIPFRAG hStarShip)
 	BYTE slotNr;
 
 	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
 	ShowCombatShip (pMS, pMS->CurState, StarShipPtr);
-	LockMutex (GraphicsLock);
 
 	slotNr = StarShipPtr->index;
 	UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
@@ -1138,7 +1105,6 @@ DMS_MoveCursor (BYTE curState, SBYTE dx, SBYTE dy)
 
 // Helper function for DoModifyShips(), called every time DoModifyShip() is
 // called when we are in crew editing mode.
-// Pre: Caller holds the GraphicsLock
 static void
 DMS_EditCrewMode (MENU_STATE *pMS, HSHIPFRAG hStarShip,
 		BOOLEAN select, BOOLEAN cancel, SBYTE dy)
@@ -1209,9 +1175,7 @@ DMS_NavigateShipSlots (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 			// Select button was pressed over an empty escort
 			// ship slot. Switch to 'add escort ship' mode.
 			pMS->delta_item = MODIFY_CREW_FLAG;
-			UnlockMutex (GraphicsLock);
 			DrawRaceStrings (pMS, 0);
-			LockMutex (GraphicsLock);
 			DMS_SetMode (pMS, DMS_Mode_addEscort);
 		}
 		else
@@ -1227,9 +1191,7 @@ DMS_NavigateShipSlots (MENU_STATE *pMS, BOOLEAN special, BOOLEAN select,
 		// Leave escort ship editor.
 		pMS->InputFunc = DoShipyard;
 		pMS->CurState = SHIPYARD_CREW;
-		UnlockMutex (GraphicsLock);
 		DrawMenuStateStrings (PM_CREW, pMS->CurState);
-		LockMutex (GraphicsLock);
 		DMS_SetMode (pMS, DMS_Mode_exit);
 	}
 }
@@ -1257,10 +1219,8 @@ DoModifyShips (MENU_STATE *pMS)
 		pMS->CurState = MAKE_BYTE (0, 0xF);
 		pMS->delta_item = 0;
 
-		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 		DMS_SetMode (pMS, DMS_Mode_navigate);
-		UnlockMutex (GraphicsLock);
 	}
 	else
 	{
@@ -1279,7 +1239,6 @@ DoModifyShips (MENU_STATE *pMS)
 		if (PulsedInputState.menu[KEY_MENU_DOWN])
 			dy = 1;
 
-		LockMutex (GraphicsLock);
 
 		if (!(pMS->delta_item & MODIFY_CREW_FLAG))
 		{
@@ -1304,7 +1263,6 @@ DoModifyShips (MENU_STATE *pMS)
 			}
 		}
 
-		UnlockMutex (GraphicsLock);
 	}
 
 	SleepThread (ONE_SECOND / 30);
@@ -1452,7 +1410,6 @@ DoShipyard (MENU_STATE *pMS)
 
 			pMS->hMusic = LoadMusic (SHIPYARD_MUSIC);
 
-			LockMutex (GraphicsLock);
 			SetTransitionSource (NULL);
 			BatchGraphics ();
 			DrawSISFrame ();
@@ -1460,12 +1417,10 @@ DoShipyard (MENU_STATE *pMS)
 			DrawSISTitle (GAME_STRING (STARBASE_STRING_BASE));
 			SetContext (SpaceContext);
 			DrawBluePrint (pMS);
-			UnlockMutex (GraphicsLock);
 
 			pMS->CurState = SHIPYARD_CREW;
 			DrawMenuStateStrings (PM_CREW, pMS->CurState);
 
-			LockMutex (GraphicsLock);
 			SetContext (SpaceContext);
 			s.origin.x = 0;
 			s.origin.y = 0;
@@ -1490,7 +1445,6 @@ DoShipyard (MENU_STATE *pMS)
 
 			ScreenTransition (3, NULL);
 			UnbatchGraphics ();
-			UnlockMutex (GraphicsLock);
 
 			PlayMusic (pMS->hMusic, TRUE, 1);
 
@@ -1498,9 +1452,7 @@ DoShipyard (MENU_STATE *pMS)
 
 			SetInputCallback (on_input_frame);
 
-			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
-			UnlockMutex (GraphicsLock);
 		}
 
 		pMS->Initialized = TRUE;
@@ -1510,12 +1462,10 @@ DoShipyard (MENU_STATE *pMS)
 ExitShipyard:
 		SetInputCallback (NULL);
 
-		LockMutex (GraphicsLock);
 		DestroyDrawable (ReleaseDrawable (pMS->ModuleFrame));
 		pMS->ModuleFrame = 0;
 		DestroyColorMap (ReleaseColorMap (pMS->CurString));
 		pMS->CurString = 0;
-		UnlockMutex (GraphicsLock);
 
 		return FALSE;
 	}
@@ -1532,9 +1482,7 @@ ExitShipyard:
 			if (!GameOptions ())
 				goto ExitShipyard;
 			DrawMenuStateStrings (PM_CREW, pMS->CurState);
-			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
-			UnlockMutex (GraphicsLock);
 		}
 	}
 	else

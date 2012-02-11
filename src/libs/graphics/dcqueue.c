@@ -216,6 +216,22 @@ TFB_DrawCommandQueue_Clear ()
 	UnlockRecursiveMutex (DCQ_Mutex);
 }
 
+static void
+checkExclusiveThread (void)
+{
+#ifdef DEBUG_DCQ_THREADS
+	static uint32 exclusiveThreadId;
+	extern uint32 SDL_ThreadID(void);
+
+	// Only one thread is currently allowed to enqueue commands
+	// This is not a technical limitation but rather a semantical one atm.
+	if (!exclusiveThreadId)
+		exclusiveThreadId = SDL_ThreadID();
+	else
+		assert (SDL_ThreadID() == exclusiveThreadId);
+#endif
+}
+
 void
 TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 {
@@ -223,6 +239,8 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 	{
 		return;
 	}
+
+	checkExclusiveThread ();
 
 	if (DrawCommand->Type <= TFB_DRAWCOMMANDTYPE_COPYTOIMAGE
 			&& _CurFramePtr->Type == SCREEN_DRAWABLE)

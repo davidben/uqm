@@ -276,7 +276,6 @@ AddEvent (EVENT_TYPE type, COUNT month_index, COUNT day_index, COUNT
 	return (0);
 }
 
-// This function must be called with GraphicsLock held.
 void
 GameClockTick (void)
 {
@@ -299,7 +298,6 @@ GameClockTick (void)
 	UnlockMutex (clock_mutex);
 }
 
-// This function must be called with GraphicsLock held.
 void
 MoveGameClockDays (COUNT days)
 {

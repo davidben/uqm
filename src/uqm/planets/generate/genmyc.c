@@ -142,9 +142,7 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 						return true;
 
 					SET_GAME_STATE (SUN_DEVICE_UNGUARDED, 1);
-					LockMutex (GraphicsLock);
 					RepairSISBorder ();
-					UnlockMutex (GraphicsLock);
 				}
 			}
 		}

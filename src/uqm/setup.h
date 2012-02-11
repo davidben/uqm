@@ -51,7 +51,6 @@ extern FONT StarConFont;
 extern FONT MicroFont;
 extern FONT TinyFont;
 
-extern Mutex GraphicsLock;
 extern CondVar RenderingCond;
 
 extern QUEUE race_q[];

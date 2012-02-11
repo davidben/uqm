@@ -119,9 +119,6 @@ BOOLEAN WaitForNoInputUntil (TimeCount timeOut, BOOLEAN resetInput);
 void DoPopupWindow(const char *msg);
 
 typedef void (InputFrameCallback) (void);
-// Anything using input callbacks MUST NOT keep GraphicsLock across
-// InputFunc executions. This also means NOT holding GraphicsLock
-// when calling DoInput().
 InputFrameCallback* SetInputCallback (InputFrameCallback *);
 // pInputState must point to a struct derived from INPUT_STATE_DESC
 void DoInput (void *pInputState, BOOLEAN resetInput);

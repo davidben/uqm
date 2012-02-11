@@ -1633,9 +1633,7 @@ DoHyperspaceMenu (MENU_STATE *pMS)
 	if (!select)
 		return TRUE;
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
 
 	switch (pMS->CurState)
 	{
@@ -1675,9 +1673,7 @@ DoHyperspaceMenu (MENU_STATE *pMS)
 				pMS->CurState = NAVIGATION;
 			DrawMenuStateStrings (PM_STARMAP, pMS->CurState);
 		}
-		LockMutex (GraphicsLock);
 		SetFlashRect (SFR_MENU_3DO);
-		UnlockMutex (GraphicsLock);
 	}
 
 	return TRUE;
@@ -1695,7 +1691,6 @@ UnbatchGraphics ();
 	OldContext = SetContext (SpaceContext);
 	OldColor = SetContextBackGroundColor (BLACK_COLOR);
 
-	UnlockMutex (GraphicsLock);
 
 	memset (&MenuState, 0, sizeof (MenuState));
 	MenuState.InputFunc = DoHyperspaceMenu;
@@ -1703,14 +1698,11 @@ UnbatchGraphics ();
 	MenuState.CurState = STARMAP;
 
 	DrawMenuStateStrings (PM_STARMAP, STARMAP);
-	LockMutex (GraphicsLock);
 	SetFlashRect (SFR_MENU_3DO);
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput (&MenuState, TRUE);
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
 
 	SetContext (SpaceContext);
@@ -1718,9 +1710,7 @@ UnbatchGraphics ();
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
 		ClearSISRect (CLEAR_SIS_RADAR);
-		UnlockMutex (GraphicsLock);
 		WaitForNoInput (ONE_SECOND / 2, FALSE);
-		LockMutex (GraphicsLock);
 	}
 
 	SetContextBackGroundColor (OldColor);

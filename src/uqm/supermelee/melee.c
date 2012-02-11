@@ -250,7 +250,6 @@ GetShipBox (RECT *pRect, COUNT side, COUNT row, COUNT col)
 	pRect->extent.height = MELEE_BOX_HEIGHT;
 }
 
-// The caller must hold the GraphicsLock.
 static void
 DrawShipBox (COUNT side, FleetShipIndex index, MeleeShip ship, BOOLEAN HiLite)
 {
@@ -286,7 +285,6 @@ DrawShipBox (COUNT side, FleetShipIndex index, MeleeShip ship, BOOLEAN HiLite)
 	UnbatchGraphics ();
 }
 
-// The caller must hold the GraphicsLock.
 static void
 ClearShipBox (COUNT side, FleetShipIndex index)
 {
@@ -570,7 +568,6 @@ DrawTeamString (MELEE_STATE *pMS, COUNT side, COUNT HiLiteState,
 
 #ifdef NETPLAY
 // This function is generic. It should probably be moved to elsewhere.
-// The caller should hold the GraphicsLock.
 static void
 multiLineDrawText (TEXT *textIn, RECT *clipRect) {
 	RECT oldRect;
@@ -617,7 +614,6 @@ DrawMeleeStatusMessage (const char *message)
 	CONTEXT oldContext;
 	RECT r;
 
-	LockMutex (GraphicsLock);
 	oldContext = SetContext (SpaceContext);
 
 	r.corner.x = MELEE_STATUS_X_OFFS;
@@ -643,7 +639,6 @@ DrawMeleeStatusMessage (const char *message)
 	}
 
 	SetContext (oldContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -697,7 +692,6 @@ UpdateMeleeStatusMessage (ssize_t player)
 #endif  /* NETPLAY */
 
 // XXX: this function is called when the current selection is blinking off.
-// The caller should hold the GraphicsLock.
 static void
 Deselect (BYTE opt)
 {
@@ -760,7 +754,6 @@ Deselect (BYTE opt)
 }
 
 // XXX: this function is called when the current selection is blinking off.
-// The caller should hold the GraphicsLock.
 static void
 Select (BYTE opt)
 {
@@ -837,14 +830,12 @@ Melee_flashSelection (MELEE_STATE *pMS)
 		NextTime = Now + FLASH_RATE;
 		select = !select;
 
-		LockMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
 		if (select)
 			Select (pMS->MeleeOption);
 		else
 			Deselect (pMS->MeleeOption);
 		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -870,7 +861,6 @@ InitMelee (MELEE_STATE *pMS)
 	(void) pMS;
 }
 
-// Pre: The caller holds the GraphicsLock.
 void
 DrawMeleeShipStrings (MELEE_STATE *pMS, MeleeShip NewStarShip)
 {
@@ -957,9 +947,7 @@ UpdateCurrentShip (MELEE_STATE *pMS)
 				MeleeSetup_getShip (pMS->meleeSetup, pMS->side, slotNr);
 	}
 
-	LockMutex (GraphicsLock);
 	DrawMeleeShipStrings (pMS, pMS->currentShip);
-	UnlockMutex (GraphicsLock);
 }
 
 // returns (COUNT) ~0 for an invalid ship.
@@ -1025,9 +1013,7 @@ OnTeamNameChange (TEXTENTRY_STATE *pTES)
 	if (pTES->JoystickMode)
 		hl |= DTSHS_BLOCKCUR;
 
-	LockMutex (GraphicsLock);
 	ret = DrawTeamString (pMS, pMS->side, hl, pTES->BaseStr);
-	UnlockMutex (GraphicsLock);
 
 	return ret;
 }
@@ -1074,9 +1060,7 @@ BuildPickShipPopup (MELEE_STATE *pMS)
 		RECT r;
 			
 		GetBuildPickFrameRect (&r);
-		LockMutex (GraphicsLock);
 		RepairMeleeFrame (&r);
-		UnlockMutex (GraphicsLock);
 	}
 
 	UpdateCurrentShip (pMS);
@@ -1113,12 +1097,10 @@ DoEdit (MELEE_STATE *pMS)
 			|| pMS->row == NUM_MELEE_ROWS))))
 	{
 		// Done editing the teams.
-		LockMutex (GraphicsLock);
 		Deselect (EDIT_MELEE);
 		pMS->currentShip = MELEE_NONE;
 		pMS->MeleeOption = START_MELEE;
 		pMS->InputFunc = DoMelee;
-		UnlockMutex (GraphicsLock);
 		pMS->LastInputTime = GetTimeCounter ();
 	}
 	else if (pMS->row < NUM_MELEE_ROWS
@@ -1132,13 +1114,11 @@ DoEdit (MELEE_STATE *pMS)
 			&& PulsedInputState.menu[KEY_MENU_SPECIAL])
 	{
 		// TODO: this is a stub; Should we display a ship spin?
-		LockMutex (GraphicsLock);
 		Deselect (EDIT_MELEE);
 		if (pMS->currentShip != MELEE_NONE)
 		{
 			// Do something with pMS->currentShip here
 		}
-		UnlockMutex (GraphicsLock);
 	}
 	else if (pMS->row < NUM_MELEE_ROWS &&
 			PulsedInputState.menu[KEY_MENU_DELETE])
@@ -1165,9 +1145,7 @@ DoEdit (MELEE_STATE *pMS)
 
 				// going to enter text
 				pMS->CurIndex = 0;
-				LockMutex (GraphicsLock);
 				DrawTeamString (pMS, pMS->side, DTSHS_EDIT, NULL);
-				UnlockMutex (GraphicsLock);
 
 				strncpy (buf, MeleeSetup_getTeamName (
 						pMS->meleeSetup, pMS->side), MAX_TEAM_CHARS);
@@ -1238,12 +1216,10 @@ DoEdit (MELEE_STATE *pMS)
 
 		if (col != pMS->col || row != pMS->row || side != pMS->side)
 		{
-			LockMutex (GraphicsLock);
 			Deselect (EDIT_MELEE);
 			pMS->side = side;
 			pMS->row = row;
 			pMS->col = col;
-			UnlockMutex (GraphicsLock);
 
 			UpdateCurrentShip (pMS);
 		}
@@ -1488,9 +1464,7 @@ StartMelee (MELEE_STATE *pMS)
 	{
 		if (!SetPlayerInputAll ())
 			break;
-		LockMutex (GraphicsLock);
 		BuildAndDrawShipList (pMS);
-		UnlockMutex (GraphicsLock);
 
 		WaitForSoundEnd (TFBSOUND_WAIT_ALL);
 
@@ -1638,7 +1612,6 @@ DoConnectingDialog (MELEE_STATE *pMS)
 		pMS->InputFunc = DoConnectingDialog;
 
 		/* Draw the dialog box here */
-		LockMutex (GraphicsLock);
 		oldfont = SetContextFont (StarConFont);
 		oldcolor = SetContextForeGroundColor (BLACK_COLOR);
 		BatchGraphics ();
@@ -1674,7 +1647,6 @@ DoConnectingDialog (MELEE_STATE *pMS)
 		SetContextFont (oldfont);
 		SetContextForeGroundColor (oldcolor);
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 	}
 
 	netInput ();
@@ -1882,9 +1854,7 @@ DoMelee (MELEE_STATE *pMS)
 		
 		pMS->MeleeOption = START_MELEE;
 		PlayMusic (pMS->hMusic, TRUE, 1);
-		LockMutex (GraphicsLock);
 		InitMelee (pMS);
-		UnlockMutex (GraphicsLock);
 
 		FadeScreen (FadeAllToColor, ONE_SECOND / 2);
 		pMS->LastInputTime = GetTimeCounter ();
@@ -1899,10 +1869,8 @@ DoMelee (MELEE_STATE *pMS)
 			PulsedInputState.menu[KEY_MENU_LEFT])
 	{
 		// Start editing the teams.
-		LockMutex (GraphicsLock);
 		pMS->LastInputTime = GetTimeCounter ();
 		Deselect (pMS->MeleeOption);
-		UnlockMutex (GraphicsLock);
 		pMS->MeleeOption = EDIT_MELEE;
 		pMS->Initialized = FALSE;
 		if (PulsedInputState.menu[KEY_MENU_CANCEL])
@@ -1949,11 +1917,9 @@ DoMelee (MELEE_STATE *pMS)
 					pMS->MeleeOption == CONTROLS_BOT)
 				UpdateMeleeStatusMessage (-1);
 #endif
-			LockMutex (GraphicsLock);
 			Deselect (pMS->MeleeOption);
 			pMS->MeleeOption = NewMeleeOption;
 			Select (pMS->MeleeOption);
-			UnlockMutex (GraphicsLock);
 #ifdef NETPLAY
 			if (NewMeleeOption == CONTROLS_TOP ||
 					NewMeleeOption == CONTROLS_BOT)
@@ -2148,14 +2114,12 @@ updateRandomSeed (MELEE_STATE *pMS, COUNT side, DWORD seed)
 void
 confirmationCancelled (MELEE_STATE *pMS, COUNT side)
 {
-	LockMutex (GraphicsLock);
 	if (side == 0)
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 16));
 				// "Bottom player changed something -- need to reconfirm."
 	else
 		DrawMeleeStatusMessage (GAME_STRING (NETMELEE_STRING_BASE + 17));
 				// "Top player changed something -- need to reconfirm."
-	UnlockMutex (GraphicsLock);
 
 	if (pMS->InputFunc == DoConfirmSettings)
 		pMS->InputFunc = DoMelee;
@@ -2168,9 +2132,7 @@ connectionFeedback (NetConnection *conn, const char *str, bool forcePopup) {
 	if (bs == NULL && !forcePopup)
 	{
 		// bs == NULL means the game has not started yet.
-		LockMutex (GraphicsLock);
 		DrawMeleeStatusMessage (str);
-		UnlockMutex (GraphicsLock);
 	}
 	else
 	{
@@ -2314,10 +2276,8 @@ Melee_UpdateView_fleetValue (MELEE_STATE *pMS, COUNT side)
 	if (pMS->meleeStarted)
 		return;
 
-	LockMutex (GraphicsLock);
 	DrawFleetValue (pMS, side, DTSHS_REPAIR);
 			// BUG: The fleet value is always drawn as deselected.
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -2330,7 +2290,6 @@ Melee_UpdateView_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index)
 
 	ship = MeleeSetup_getShip (pMS->meleeSetup, side, index);
 
-	LockMutex (GraphicsLock);
 	if (ship == MELEE_NONE)
 	{
 		ClearShipBox (side, index);
@@ -2339,7 +2298,6 @@ Melee_UpdateView_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index)
 	{
 		DrawShipBox (side, index, ship, FALSE);
 	}
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -2348,9 +2306,7 @@ Melee_UpdateView_teamName (MELEE_STATE *pMS, COUNT side)
 	if (pMS->meleeStarted)
 		return;
 
-	LockMutex (GraphicsLock);
 	DrawTeamString (pMS, side, DTSHS_REPAIR, NULL);
-	UnlockMutex (GraphicsLock);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2378,9 +2334,7 @@ Melee_Change_ship (MELEE_STATE *pMS, COUNT side, FleetShipIndex index,
 	if (isShipSlotSelected (pMS, side, index))
 	{
 		pMS->currentShip = ship;
-		LockMutex (GraphicsLock);
 		DrawMeleeShipStrings (pMS, ship);
-		UnlockMutex (GraphicsLock);
 	}
 
 	return true;

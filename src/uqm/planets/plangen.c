@@ -1735,7 +1735,6 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 	RandomContext_SeedRandom (SysGenRNG, pPlanetDesc->rand_seed);
 
 	TopoContext = CreateContext ("Plangen.TopoContext");
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (TopoContext);
 	planet_orbit_init ();
 
@@ -1950,7 +1949,6 @@ GeneratePlanetSurface (PLANET_DESC *pPlanetDesc, FRAME SurfDefFrame)
 	}
 
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 	DestroyContext (TopoContext);
 }
 

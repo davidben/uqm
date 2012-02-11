@@ -3654,10 +3654,6 @@ SOURCE=..\..\doc\devel\glossary
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\doc\devel\graphicslock
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\doc\devel\input
 # End Source File
 # Begin Source File

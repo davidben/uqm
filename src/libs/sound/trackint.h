@@ -17,6 +17,8 @@
 #ifndef TRACKINT_H
 #define TRACKINT_H
 
+#include "libs/callback.h"
+
 struct tfb_soundchunk
 {
 	TFB_SoundDecoder *decoder;  // decoder for this chunk
@@ -24,7 +26,7 @@ struct tfb_soundchunk
 	int tag_me;                 // set for chunks with subtitles
 	uint32 track_num;           // logical track #, comm code needs this
 	UNICODE *text;              // subtitle text
-	TFB_TrackCB callback;       // comm callback, executed on chunk start
+	CallbackFunction callback;  // comm callback, executed on chunk start
 	struct tfb_soundchunk *next;
 };
 

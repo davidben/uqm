@@ -79,13 +79,11 @@ SplashScreen (void (* DoProcessing)(DWORD TimeOut))
 	DWORD TimeOut;
 
 	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 120));
-	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	s.origin.x = s.origin.y = 0;
 	s.frame = CaptureDrawable (LoadGraphic (TITLE_ANIM));
 	DrawStamp (&s);
 	DestroyDrawable (ReleaseDrawable (s.frame));
-	UnlockMutex (GraphicsLock);
 
 	TimeOut = FadeScreen (FadeAllToColor, ONE_SECOND / 2);
 

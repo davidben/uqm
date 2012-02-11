@@ -254,7 +254,6 @@ DoModifyRoster (MENU_STATE *pMS)
 	}
 	else if (select || cancel)
 	{
-		LockMutex (GraphicsLock);
 		rosterState->modifyingCrew ^= true;
 		if (!rosterState->modifyingCrew)
 		{
@@ -268,7 +267,6 @@ DoModifyRoster (MENU_STATE *pMS)
 			SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN,
 					MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 		}
-		UnlockMutex (GraphicsLock);
 	}
 	else if (rosterState->modifyingCrew)
 	{
@@ -292,9 +290,7 @@ DoModifyRoster (MENU_STATE *pMS)
 		
 		if (delta != 0)
 		{
-			LockMutex (GraphicsLock);
 			failed = !DeltaSupportCrew (rosterState, delta);
-			UnlockMutex (GraphicsLock);
 		}
 
 		if (failed)
@@ -350,7 +346,6 @@ DoModifyRoster (MENU_STATE *pMS)
 				--NewState;
 		}
 
-		LockMutex (GraphicsLock);
 		BatchGraphics ();
 		SetContext (StatusContext);
 
@@ -366,7 +361,6 @@ DoModifyRoster (MENU_STATE *pMS)
 		flashSupportShip (rosterState);
 
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 	}
 
 	SleepThread (ONE_SECOND / 30);
@@ -416,22 +410,18 @@ RosterMenu (void)
 	qsort (RosterState.shipPos, RosterState.count,
 			sizeof (RosterState.shipPos[0]), compShipPos);
 
-	LockMutex (GraphicsLock);
 	SetContext (StatusContext);
 	selectSupportShip (&RosterState, MenuState.CurState);
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 
 	MenuState.InputFunc = DoModifyRoster;
 	DoInput (&MenuState, TRUE);
 
-	LockMutex (GraphicsLock);
 	SetContext (StatusContext);
 	// unselect the last ship
 	drawSupportShip (&RosterState, FALSE);
 	DrawStatusMessage (NULL);
-	UnlockMutex (GraphicsLock);
 
 	return TRUE;
 }

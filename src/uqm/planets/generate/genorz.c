@@ -135,9 +135,7 @@ GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				if (OrzSurvivors)
 					return true;
 
-				LockMutex (GraphicsLock);
 				RepairSISBorder ();
-				UnlockMutex (GraphicsLock);
 			}
 		}
 

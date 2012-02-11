@@ -144,9 +144,7 @@ AddEscortShips (COUNT race, SIZE count)
 		InsertQueue (&GLOBAL (built_ship_q), hStarShip, hOldShip);
 	}
 
-	LockMutex (GraphicsLock);
 	DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
-	UnlockMutex (GraphicsLock);
 	return i;
 }
 
@@ -389,9 +387,7 @@ RemoveSomeEscortShips (COUNT race, COUNT count)
 	if (count > 0)
 	{
 		// Update the display.
-		LockMutex (GraphicsLock);
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
-		UnlockMutex (GraphicsLock);
 	}
 
 	return count;

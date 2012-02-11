@@ -311,11 +311,9 @@ flashSelectedTeam (MELEE_STATE *pMS)
 		NextTime = Now + FLASH_RATE;
 		hilite ^= 1;
 
-		LockMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
 		SelectFileString (pMS, hilite);
 		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -335,12 +333,10 @@ DoLoadTeam (MELEE_STATE *pMS)
 
 	if (!pMS->Initialized)
 	{
-		LockMutex (GraphicsLock);
 		DrawFileStrings (pMS);
 		SelectFileString (pMS, true);
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoLoadTeam;
-		UnlockMutex (GraphicsLock);
 		return TRUE;
 	}
 
@@ -360,9 +356,7 @@ DoLoadTeam (MELEE_STATE *pMS)
 			RECT r;
 			
 			GetFrameRect (SetAbsFrameIndex (MeleeFrame, 28), &r);
-			LockMutex (GraphicsLock);
 			RepairMeleeFrame (&r);
-			UnlockMutex (GraphicsLock);
 		}
 		return TRUE;
 	}
@@ -418,7 +412,6 @@ DoLoadTeam (MELEE_STATE *pMS)
 		if (newIndex != pMS->load.cur)
 		{
 			// The cursor has been moved.
-			LockMutex (GraphicsLock);
 			if (newTop == pMS->load.top)
 			{
 				// The view itself hasn't changed.
@@ -431,7 +424,6 @@ DoLoadTeam (MELEE_STATE *pMS)
 				DrawFileStrings (pMS);
 			}
 			pMS->load.cur = newIndex;
-			UnlockMutex (GraphicsLock);
 		}
 	}
 
@@ -482,11 +474,9 @@ DoSaveTeam (MELEE_STATE *pMS)
 	snprintf (file, sizeof file, "%s.mle",
 			MeleeSetup_getTeamName (pMS->meleeSetup, pMS->side));
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (ScreenContext);
 	ConfirmSaveLoad (&MsgStamp);
 			// Show the "Saving . . ." message.
-	UnlockMutex (GraphicsLock);
 
 	stream = uio_fopen (meleeDir, file, "wb");
 	if (stream != NULL)
@@ -503,11 +493,9 @@ DoSaveTeam (MELEE_STATE *pMS)
 	pMS->load.cur = 0;
 
 	// Undo the screen damage done by the "Saving . . ." message.
-	LockMutex (GraphicsLock);
 	DrawStamp (&MsgStamp);
 	DestroyDrawable (ReleaseDrawable (MsgStamp.frame));
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 
 	if (!saveOk)
 		SaveProblem ();

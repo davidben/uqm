@@ -100,9 +100,7 @@ ClearSISRect (BYTE ClearFlags)
 
 	if (ClearFlags & CLEAR_SIS_RADAR)
 	{
-		UnlockMutex (GraphicsLock);
 		DrawMenuStateStrings ((BYTE)~0, 1);
-		LockMutex (GraphicsLock);
 #ifdef NEVER
 		r.corner.x = RADAR_X - 1;
 		r.corner.y = RADAR_Y - 1;
@@ -951,7 +949,6 @@ DrawModules (void)
 	}
 }
 
-// Pre: GraphicsLock is unlocked
 static void
 DrawSupportShips (void)
 {
@@ -975,9 +972,7 @@ DrawSupportShips (void)
 
 		s.origin = *pship_pos;
 		s.frame = StarShipPtr->icons;
-		LockMutex (GraphicsLock);
 		DrawStamp (&s);
-		UnlockMutex (GraphicsLock);
 
 		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 	}
@@ -1142,9 +1137,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		DrawTurningJets ();
 		DrawModules ();
 
-		UnlockMutex (GraphicsLock);
 		DrawSupportShips ();
-		LockMutex (GraphicsLock);
 	}
 
 	SetContextFont (TinyFont);
@@ -1619,7 +1612,6 @@ scheduleFlashAlarm (void)
 	flashAlarm = Alarm_addAbsoluteMs (nextTimeMs, updateFlashRect, NULL);
 }
 
-// Pre: the caller holds the GraphicsLock
 void
 SetFlashRect (const RECT *pRect)
 {
@@ -1683,9 +1675,7 @@ SetFlashRect (const RECT *pRect)
 		// Flash rectangle is empty. Stop flashing.
 		if (flashContext != NULL)
 		{
-			UnlockMutex (GraphicsLock);
 			Alarm_remove(flashAlarm);
-			LockMutex (GraphicsLock);
 			flashAlarm = 0;
 			
 			Flash_terminate (flashContext);
@@ -1700,7 +1690,6 @@ COUNT updateFlashRectRecursion = 0;
 // ClearSISRect(), which calls DrawMenuStateStrings(), which starts its own
 // UpdateFlashRect block. This should probably be cleaned up.
 
-// GraphicsLock must be unlocked.
 void
 PreUpdateFlashRect (void)
 {
@@ -1713,7 +1702,6 @@ PreUpdateFlashRect (void)
 	}
 }
 
-// GraphicsLock must be unlocked.
 void
 PostUpdateFlashRect (void)
 {
@@ -1725,26 +1713,6 @@ PostUpdateFlashRect (void)
 
 		Flash_postUpdate (flashContext);
 	}
-}
-
-// Because the situation occurs a lot where the GraphicsLock is already
-// locked, we add this function.
-void
-PreUpdateFlashRectLocked (void)
-{
-	UnlockMutex (GraphicsLock);
-	PreUpdateFlashRect ();
-	LockMutex (GraphicsLock);
-}
-
-// Because the situation occurs a lot where the GraphicsLock is already
-// locked, we add this function.
-void
-PostUpdateFlashRectLocked (void)
-{
-	UnlockMutex (GraphicsLock);
-	PostUpdateFlashRect ();
-	LockMutex (GraphicsLock);
 }
 
 // Stop flashing if flashing is active.

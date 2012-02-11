@@ -85,7 +85,6 @@ DoConfirmExit (void)
 
 	PauseFlash ();
 
-	LockMutex (GraphicsLock);
 	{
 		RECT r;
 		STAMP s;
@@ -160,7 +159,6 @@ DoConfirmExit (void)
 		SetContextClipRect (&oldRect);
 		SetContext (oldContext);
 	}
-	UnlockMutex (GraphicsLock);
 
 	ContinueFlash ();
 
@@ -217,7 +215,6 @@ DoPopupWindow (const char *msg)
 	label.lines = lines;
 
 	PauseFlash ();
-	LockMutex (GraphicsLock);
 
 	oldContext = SetContext (ScreenContext);
 	GetContextClipRect (&oldRect);
@@ -246,7 +243,6 @@ DoPopupWindow (const char *msg)
 	DestroyDrawable (ReleaseDrawable (s.frame));
 	SetContextClipRect (&oldRect);
 	SetContext (oldContext);
-	UnlockMutex (GraphicsLock);
 	ContinueFlash ();
 	SetMenuSounds (s0, s1);
 	StringBank_Free (bank);

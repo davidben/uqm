@@ -231,9 +231,7 @@ ZapToUrquanEncounter (void)
 		{
 #define LOST_DAYS 15
 			SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND * 2));
-			LockMutex (GraphicsLock);
 			MoveGameClockDays (LOST_DAYS);
-			UnlockMutex (GraphicsLock);
 		}
 
 		GLOBAL (CurrentActivity) = MAKE_WORD (IN_HYPERSPACE, 0) | START_ENCOUNTER;
@@ -243,7 +241,6 @@ ZapToUrquanEncounter (void)
 		dx = (SIZE)square_root ((long)dx * dx + (long)dy * dy)
 				+ (FUEL_TANK_SCALE >> 1);
 
-		LockMutex (GraphicsLock);
 		DeltaSISGauges (0, -dx, 0);
 		if (GLOBAL_SIS (FuelOnBoard) < 5 * FUEL_TANK_SCALE)
 		{
@@ -253,7 +250,6 @@ ZapToUrquanEncounter (void)
 		}
 		DrawSISMessage (NULL);
 		DrawHyperCoords (EncounterPtr->loc_pt);
-		UnlockMutex (GraphicsLock);
 
 		UnlockEncounter (hEncounter);
 	}

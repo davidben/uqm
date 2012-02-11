@@ -36,8 +36,6 @@
 #define FLASH_INTERNAL
 #include "flash.h"
 
-#include "setup.h"
-		// For GraphicsLock.
 #include "libs/log.h"
 #include "libs/memlib.h"
 #include "libs/threadlib.h"
@@ -545,7 +543,6 @@ Flash_grabOriginal (FlashContext *context)
 	if (context->original != (FRAME) 0)
 		DestroyDrawable (ReleaseDrawable (context->original));
 
-	LockMutex (GraphicsLock);
 	oldGfxContext = SetContext (context->gfxContext);
 	context->original = CaptureDrawable (CopyContextRect (&context->rect));
 	SetContext (oldGfxContext);
@@ -553,7 +550,6 @@ Flash_grabOriginal (FlashContext *context)
 			// CopyContextRect() may have queued the command to read
 			// a rectangle from the screen; a FlushGraphics()
 			// is necessary to ensure that it can actually be used.
-	UnlockMutex (GraphicsLock);
 }
 
 static inline void
@@ -589,7 +585,6 @@ Flash_makeFrame (FlashContext *context, FRAME dest, int numer, int denom)
 
 	Flash_blendFraction (context, numer, denom, &blendedNumer, &blendedDenom);
 
-	LockMutex (GraphicsLock);
 	oldGfxContext = SetContext (workGfxContext);
 	SetContextFGFrame (dest);
 
@@ -650,7 +645,6 @@ Flash_makeFrame (FlashContext *context, FRAME dest, int numer, int denom)
 	}
 
 	SetContext (oldGfxContext);
-	UnlockMutex (GraphicsLock);
 }
 
 // Prepare an entry in the cache.
@@ -686,7 +680,6 @@ Flash_drawFrame (FlashContext *context, FRAME frame)
 	CONTEXT oldGfxContext;
 	STAMP stamp;
 
-	LockMutex (GraphicsLock);
 	oldGfxContext = SetContext (context->gfxContext);
 
 	stamp.origin = context->rect.corner;
@@ -694,7 +687,6 @@ Flash_drawFrame (FlashContext *context, FRAME frame)
 	DrawStamp(&stamp);
 
 	SetContext (oldGfxContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void

@@ -174,9 +174,7 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				if (DruugeSurvivors)
 					return true;
 
-				LockMutex (GraphicsLock);
 				RepairSISBorder ();
-				UnlockMutex (GraphicsLock);
 				SET_GAME_STATE (BOMB_UNPROTECTED, 1);
 			}
 		}

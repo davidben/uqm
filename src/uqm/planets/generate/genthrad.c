@@ -132,9 +132,7 @@ GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 					&& (BYTE)(GET_GAME_STATE (THRADD_MISSION) - 1) >= 3))
 				return true;
 
-			LockMutex (GraphicsLock);
 			RepairSISBorder ();
-			UnlockMutex (GraphicsLock);
 		}
 
 		if (CurStarDescPtr->Index == AQUA_HELIX_DEFINED

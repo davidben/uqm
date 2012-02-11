@@ -498,7 +498,6 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 		s.frame = SetAbsFrameIndex (PlayFrame, beg_index + NewState);
 
 	PreUpdateFlashRect ();
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (StatusContext);
 	GetContextClipRect (&r);
 	s.origin.x = RADAR_X - r.corner.x;
@@ -599,7 +598,6 @@ DrawMenuStateStrings (BYTE beg_index, SWORD NewState)
 	}
 	UnbatchGraphics ();
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 	PostUpdateFlashRect ();
 }
 

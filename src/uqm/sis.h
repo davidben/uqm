@@ -184,8 +184,6 @@ extern void ClearSISRect (BYTE ClearFlags);
 extern void SetFlashRect (const RECT *pRect);
 extern void PreUpdateFlashRect (void);
 extern void PostUpdateFlashRect (void);
-extern void PreUpdateFlashRectLocked (void);
-extern void PostUpdateFlashRectLocked (void);
 extern void PauseFlash (void);
 extern void ContinueFlash (void);
 

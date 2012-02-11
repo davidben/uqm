@@ -606,20 +606,16 @@ SaveProblem (void)
 	STAMP s;
 	CONTEXT OldContext;
 	
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 	SaveProblemMessage (&s);
 	FlushGraphics ();
-	UnlockMutex (GraphicsLock);
 
 	WaitForAnyButton (TRUE, WAIT_INFINITE, FALSE);
 
-	LockMutex (GraphicsLock);
 	// Restore the screen under the message
 	DrawStamp (&s);
 	SetContext (OldContext);
 	DestroyDrawable (ReleaseDrawable (s.frame));
-	UnlockMutex (GraphicsLock);
 }
 
 static void

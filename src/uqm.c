@@ -402,15 +402,13 @@ main (int argc, char *argv[])
 	InitTimeSystem ();
 	InitTaskSystem ();
 
-#ifdef NETPLAY
-	Network_init ();
 	Alarm_init ();
 	Callback_init ();
+
+#ifdef NETPLAY
+	Network_init ();
 	NetManager_init ();
 #endif
-
-	GraphicsLock = CreateMutex ("Graphics",
-			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
 	gfxDriver = options.opengl.value ?
 			TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE;
@@ -476,9 +474,11 @@ main (int argc, char *argv[])
 
 #ifdef NETPLAY
 		NetManager_uninit ();
-		Alarm_uninit ();
 		Network_uninit ();
 #endif
+
+		Callback_uninit ();
+		Alarm_uninit ();
 
 		// Not yet: CleanupTaskSystem ();
 		UnInitTimeSystem ();

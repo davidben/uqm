@@ -147,7 +147,7 @@ debugKeyPressed (void)
 // Fast forwards to the next event.
 // If skipHEE is set, HYPERSPACE_ENCOUNTER_EVENTs are skipped.
 // Must be called from the Starcon2Main thread.
-// TODO: GraphicsLock and LockGameClock may be removed since it is only
+// TODO: LockGameClock may be removed since it is only
 //   supposed to be called synchronously wrt the game logic thread.
 void
 forwardToNextEvent (BOOLEAN skipHEE)
@@ -161,9 +161,6 @@ forwardToNextEvent (BOOLEAN skipHEE)
 	if (!GameClockRunning ())
 		return;
 
-	// Must hold GraphicsLock for MoveGameClockDays()
-	// Must acquire GraphicsLock *before* the game clock lock
-	LockMutex (GraphicsLock);
 	LockGameClock ();
 
 	done = !skipHEE;
@@ -192,7 +189,6 @@ forwardToNextEvent (BOOLEAN skipHEE)
 	} while (!done);
 
 	UnlockGameClock ();
-	UnlockMutex (GraphicsLock);
 }
 
 const char *
@@ -376,9 +372,7 @@ equipShip (void)
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE ||
 			LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY)
 	{
-		LockMutex (GraphicsLock);
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -435,9 +429,7 @@ clearEscorts (void)
 		FreeShipFrag (&GLOBAL (built_ship_q), hStarShip);
 	}
 
-	LockMutex (GraphicsLock);
 	DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
-	UnlockMutex (GraphicsLock);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1865,16 +1857,13 @@ debugContexts (void)
 		return;
 	inDebugContexts = true;
 
-	LockMutex (GraphicsLock);
 	contextCount = countVisibleContexts ();
 	if (contextCount == 0)
 	{
-		UnlockMutex (GraphicsLock);
 		goto out;
 	}
 	
 	savedScreen = getScreen ();
-	//UnlockMutex (GraphicsLock);
 	FlushGraphics ();
 			// Make sure that the screen has actually been captured,
 			// before we use the frame.
@@ -1888,7 +1877,6 @@ debugContexts (void)
 
 	hueIncrement = 360.0 / contextCount;
 
-	//LockMutex (GraphicsLock);
 	visibleContextI = 0;
 	for (context = GetFirstContext (); context != NULL;
 			context = GetNextContext (context))
@@ -1910,7 +1898,6 @@ debugContexts (void)
 
 	// Blit the final debugging frame to the screen.
 	putScreen (debugDrawFrame);
-	UnlockMutex (GraphicsLock);
 
 	// Wait for a key:
 	{
@@ -1919,9 +1906,7 @@ debugContexts (void)
 		DoInput(&state, TRUE);
 	}
 
-	LockMutex (GraphicsLock);
 	SetContext (orgContext);
-	UnlockMutex (GraphicsLock);
 
 	// Destroy the debugging frame and context.
 	DestroyContext (debugDrawContext);
@@ -1929,9 +1914,7 @@ debugContexts (void)
 			// SetContextFGFrame().
 	DestroyDrawable (ReleaseDrawable (debugDrawFrame));
 	
-	LockMutex (GraphicsLock);
 	putScreen (savedScreen);
-	UnlockMutex (GraphicsLock);
 
 	DestroyDrawable (ReleaseDrawable (savedScreen));
 
