@@ -139,7 +139,7 @@ process_resource_desc (const char *key, const char *value)
 static void
 UseDescriptorAsRes (const char *descriptor, RESOURCE_DATA *resdata)
 {
-	resdata->ptr = (void *)descriptor;
+	resdata->str = descriptor;
 }
 
 static void
@@ -286,7 +286,7 @@ fail:
 static void
 RawDescriptor (RESOURCE_DATA *resdata, char *buf, unsigned int size)
 {
-	snprintf (buf, size, "%s", (char *)resdata->ptr);
+	snprintf (buf, size, "%s", resdata->str);
 }
 
 static void
@@ -475,12 +475,12 @@ res_GetString (const char *key)
 {
 	RESOURCE_INDEX idx = _get_current_index_header ();
 	ResourceDesc *desc = lookupResourceDesc (idx, key);
-	if (!desc || !desc->resdata.ptr || strcmp(desc->vtable->resType, "STRING"))
+	if (!desc || !desc->resdata.str || strcmp(desc->vtable->resType, "STRING"))
 		return "";
 	/* TODO: Work out exact STRING semantics, specifically, the lifetime of
 	 *   the returned value. If caller is allowed to reference the returned
 	 *   value forever, STRING has to be ref-counted. */
-	return (const char *)desc->resdata.ptr;
+	return desc->resdata.str;
 }
 
 void
@@ -489,24 +489,24 @@ res_PutString (const char *key, const char *value)
 	RESOURCE_INDEX idx = _get_current_index_header ();
 	ResourceDesc *desc = lookupResourceDesc (idx, key);
 	int srclen, dstlen;
-	if (!desc || !desc->resdata.ptr || strcmp(desc->vtable->resType, "STRING"))
+	if (!desc || !desc->resdata.str || strcmp(desc->vtable->resType, "STRING"))
 	{
 		/* TODO: This is kind of roundabout. We can do better by refactoring newResourceDesc */
 		process_resource_desc(key, "STRING:undefined");
 		desc = lookupResourceDesc (idx, key);
 	}
 	srclen = strlen (value);
-	dstlen = strlen (desc->resdata.ptr);
+	dstlen = strlen (desc->fname);
 	if (srclen > dstlen) {
 		char *newValue = HMalloc(srclen + 1);
 		char *oldValue = desc->fname;
 		log_add(log_Warning, "Reallocating string space for '%s'", key);
 		strncpy (newValue, value, srclen + 1);
-		desc->resdata.ptr = newValue;
+		desc->resdata.str = newValue;
 		desc->fname = newValue;
 		HFree (oldValue);
 	} else {
-		strncpy (desc->resdata.ptr, value, srclen + 1);
+		strncpy (desc->fname, value, srclen + 1);
 	}
 }
 

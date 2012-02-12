@@ -37,6 +37,7 @@ typedef const char *RESOURCE;
 typedef union {
 	DWORD num;
 	void *ptr;
+	const char *str;
 } RESOURCE_DATA;
 
 #define NULL_RESOURCE NULL
