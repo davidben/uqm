@@ -60,8 +60,7 @@ DrawRestartMenuGraphic (MENU_STATE *pMS)
 	TEXT t;
 	UNICODE buf[64];
 
-	s.frame = CaptureDrawable (LoadGraphic (RESTART_PMAP_ANIM));
-	pMS->CurFrame = s.frame;
+	s.frame = pMS->CurFrame;
 	GetFrameRect (s.frame, &r);
 	s.origin.x = (SCREEN_WIDTH - r.extent.width) >> 1;
 	s.origin.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
@@ -300,6 +299,9 @@ RestartMenu (MENU_STATE *pMS)
 	SleepThreadUntil (FadeScreen (FadeAllToBlack, TimeOut));
 	if (TimeOut == ONE_SECOND / 8)
 		SleepThread (ONE_SECOND * 3);
+
+	pMS->CurFrame = CaptureDrawable (LoadGraphic (RESTART_PMAP_ANIM));
+
 	DrawRestartMenuGraphic (pMS);
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT);
@@ -314,7 +316,9 @@ RestartMenu (MENU_STATE *pMS)
 	}
 
 	Flash_terminate (pMS->flashContext);
+	pMS->flashContext = 0;
 	DestroyDrawable (ReleaseDrawable (pMS->CurFrame));
+	pMS->CurFrame = 0;
 
 	if (GLOBAL (CurrentActivity) == (ACTIVITY)~0)
 		return (FALSE); // timed out
