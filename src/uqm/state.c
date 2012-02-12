@@ -124,6 +124,8 @@ DeleteStateFile (int stateFile)
 
 	fp->used = 0;
 	fp->ptr = 0;
+	HFree (fp->data);
+	fp->data = 0;
 }
 
 DWORD
