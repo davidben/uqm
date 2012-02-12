@@ -321,15 +321,7 @@ _ReleaseCelData (void *handle)
 		return (FALSE);
 
 	cel_ct = DrawablePtr->MaxIndex + 1;
-
-	if (DrawablePtr->Frame)
-	{
-		FramePtr = DrawablePtr->Frame;
-		if (FramePtr->Type == SCREEN_DRAWABLE)
-		{
-			FramePtr = NULL;
-		}
-	}
+	FramePtr = DrawablePtr->Frame;
 
 	HFree (handle);
 	if (FramePtr)
