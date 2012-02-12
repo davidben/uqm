@@ -603,6 +603,31 @@ prepareAddons (const char **addons)
 	}
 }
 
+void
+unprepareAllDirs (void)
+{
+	if (saveDir)
+	{
+		uio_closeDir (saveDir);
+		saveDir = 0;
+	}
+	if (meleeDir)
+	{
+		uio_closeDir (meleeDir);
+		meleeDir = 0;
+	}
+	if (contentDir)
+	{
+		uio_closeDir (contentDir);
+		contentDir = 0;
+	}
+	if (configDir)
+	{
+		uio_closeDir (configDir);
+		configDir = 0;
+	}
+}
+
 bool
 setGammaCorrection (float gamma)
 {

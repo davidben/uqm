@@ -486,6 +486,7 @@ main (int argc, char *argv[])
 #if 0
 		unInitTempDir ();
 #endif
+		unprepareAllDirs ();
 		uninitIO ();
 		UnInitThreadSystem ();
 		mem_uninit ();

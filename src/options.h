@@ -79,6 +79,7 @@ void prepareMeleeDir (void);
 void prepareSaveDir (void);
 void prepareAddons (const char **addons);
 void prepareShadowAddons (const char **addons);
+void unprepareAllDirs (void);
 
 BOOLEAN loadAddon (const char *addon);
 int loadIndices (uio_DirHandle *baseDir);
