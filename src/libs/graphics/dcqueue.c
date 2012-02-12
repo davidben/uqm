@@ -635,6 +635,13 @@ TFB_PurgeDanglingGraphics (void)
 				HFree (data);
 				break;
 			}
+			case TFB_DRAWCOMMANDTYPE_IMAGE:
+			{
+				TFB_ColorMap *cmap = DC.data.image.colormap;
+				if (cmap)
+					TFB_ReturnColorMap (cmap);
+				break;
+			}
 			case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:
 			{
 				ClearSemaphore (DC.data.sendsignal.sem);

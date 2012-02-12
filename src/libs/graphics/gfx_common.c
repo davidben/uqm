@@ -99,7 +99,7 @@ UnbatchGraphics (void)
    been processed. */
 
 void
-FlushGraphics ()
+FlushGraphics (void)
 {
 	TFB_DrawScreen_WaitForSignal ();
 }
