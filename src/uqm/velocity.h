@@ -49,7 +49,7 @@ extern void SetVelocityComponents (VELOCITY_DESC *velocityptr, SIZE dx,
 extern void DeltaVelocityComponents (VELOCITY_DESC *velocityptr, SIZE dx,
 		SIZE dy);
 
-static inline BOOLEAN
+static inline bool
 IsVelocityZero (VELOCITY_DESC *vptr)
 {
 	return vptr->vector.width == 0 && vptr->vector.height == 0 &&
