@@ -473,7 +473,7 @@ debugCmdExec(DebugContext *debugContext, int argc, char *argv[]) {
 				O_RDONLY, tempDir);
 		if (handles[i - 1] == NULL) {
 			if (errno == ENOENT) {
-				// No match; we keep what's typed litterally.
+				// No match; we keep what's typed literally.
 				newArgs[i - 1] = argv[i];
 				continue;
 			}
@@ -703,7 +703,7 @@ listOneDir(DebugContext *debugContext, const char *arg) {
 				match_MATCH_PREFIX);
 	} else {
 		dirList = uio_getDirList(debugContext->cwd, cpath, pattern,
-				match_MATCH_LITTERAL);
+				match_MATCH_LITERAL);
 	}
 #endif
 	if (dirList == NULL) {
