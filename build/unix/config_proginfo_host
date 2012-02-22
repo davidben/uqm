@@ -329,7 +329,7 @@ LIB_ppapi_NAME="NaCL PPAPI Bindings"
 case "$HOST_SYSTEM" in
 	NACL)
 		LIB_ppapi_CFLAGS=""
-		LIB_ppapi_LDFLAGS="-lSDLmain -lppapi -lppapi_cpp -lnacl-mounts -lpng -ljpeg -lnosys"
+		LIB_ppapi_LDFLAGS="-lSDLmain -lppapi -lppapi_cpp -Wl,--wrap=read,--wrap=write -lpng -ljpeg"
 		LIB_ppapi_VERSION=""
 		# Don't bother detecting. It'll get upset about multiple
 		# mains and stuff.
@@ -339,6 +339,60 @@ case "$HOST_SYSTEM" in
 		LIB_ppapi_DETECT="false"
 		;;
 esac
+
+# PPAPI code. Also other NaCl stuff that probably should be elsewhere.
+LIB_nacl_mounts_NAME="nacl-mounts"
+case "$HOST_SYSTEM" in
+	NACL)
+		LIB_nacl_mounts_CFLAGS=""
+		LIB_nacl_mounts_LDFLAGS=""
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=chdir"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=getcwd"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=getwd"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=dup"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=chmod"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=stat"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=mkdir"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=rmdir"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=umount"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=mount"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=read"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=write"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=fstat"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=getdents"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=fsync"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=isatty"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=close"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=lseek"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=open"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=remove"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=access"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=ioctl"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=link"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=symlink"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=kill"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=getuid"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=setuid"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=getgid"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=setgid"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=getlogin"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=getpwnam"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=getpwuid"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=umask"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=unlink"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=utime"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -Wl,--wrap=signal"
+		LIB_nacl_mounts_LDFLAGS="$LIB_nacl_mounts_LDFLAGS -lnacl-mounts"
+		LIB_nacl_mounts_VERSION=""
+		# Don't bother detecting. It'll get upset about multiple
+		# mains and stuff.
+		LIB_nacl_mounts_DETECT="true"
+		;;
+	*)
+		LIB_nacl_mounts_DETECT="false"
+		;;
+esac
+
 
 
 ##############################################################################
