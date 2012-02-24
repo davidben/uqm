@@ -376,7 +376,7 @@ Intro (void)
 {
 	BYTE NumVisits;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 	{
 		NPCPhrase (YEHAT_CAVALRY);
@@ -442,7 +442,7 @@ init_rebel_yehat_comm (void)
 	yehat_desc.AlienAltSongRes = REBEL_MUSIC;
 	yehat_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	retval = &yehat_desc;
 
 	return (retval);

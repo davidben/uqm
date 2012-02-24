@@ -102,7 +102,7 @@ static LOCDATA ilwrath_desc =
 static void
 CombatIsInevitable (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 
 	if (PLAYER_SAID (R, you_are_weak))
 		NPCPhrase (STRENGTH_NOT_ALL);
@@ -124,7 +124,7 @@ CombatIsInevitable (RESPONSE_REF R)
 	{
 		NPCPhrase (GOODBYE_GODS);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	if (PLAYER_SAID (R, whats_up))
 	{
@@ -586,7 +586,7 @@ Intro (void)
 		else
 			NPCPhrase (JUST_GRUNTS);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 4))
 	{
@@ -596,7 +596,7 @@ Intro (void)
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 
 		if (GET_GAME_STATE (ILWRATH_FIGHT_THRADDASH))
 			NPCPhrase (HAPPY_FIGHTING_THRADDASH);
@@ -637,11 +637,11 @@ init_ilwrath_comm (void)
 			& ((1 << 4) | (1 << 5)))
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &ilwrath_desc;
 

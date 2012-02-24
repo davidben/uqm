@@ -170,25 +170,25 @@ GetShofixtiName (void)
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 
 	if (PLAYER_SAID (R, bye0))
 	{
 		NPCPhrase (GOODBYE);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (PLAYER_SAID (R, go_ahead))
 	{
 		NPCPhrase (ON_SECOND_THOUGHT);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (PLAYER_SAID (R, need_you_for_duty))
 	{
 		NPCPhrase (OK_WILL_BE_SENTRY);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (PLAYER_SAID (R, females)
 			|| PLAYER_SAID (R, nubiles)
@@ -198,7 +198,7 @@ ExitConversation (RESPONSE_REF R)
 
 		SET_GAME_STATE (SHOFIXTI_RECRUITED, 1);
 		SET_GAME_STATE (MAIDENS_ON_SHIP, 0);
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 
 		AddEvent (RELATIVE_EVENT, 2, 0, 0, SHOFIXTI_RETURN_EVENT);
 	}
@@ -546,7 +546,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -644,7 +644,7 @@ init_shofixti_comm (void)
 	shofixti_desc.AlienTextBaseline.y = 0;
 	shofixti_desc.AlienTextWidth = SIS_TEXT_WIDTH;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	retval = &shofixti_desc;
 

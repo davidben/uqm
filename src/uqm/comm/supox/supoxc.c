@@ -103,7 +103,7 @@ static LOCDATA supox_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye_neutral))
 		NPCPhrase (GOODBYE_NEUTRAL);
@@ -531,7 +531,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -550,7 +550,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (SUPOX_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (CheckAlliance (SUPOX_SHIP) == GOOD_GUY)
 	{
@@ -696,11 +696,11 @@ init_supox_comm (void)
 	if (!GET_GAME_STATE (SUPOX_HOSTILE)
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &supox_desc;
 

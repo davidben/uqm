@@ -687,7 +687,7 @@ init_commander_comm ()
 	commander_desc.AlienTextBaseline.x = 164;
 	commander_desc.AlienTextBaseline.y = 20;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	retval = &commander_desc;
 
 	return (retval);

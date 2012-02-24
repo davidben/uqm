@@ -120,7 +120,7 @@ static LOCDATA chmmr_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye))
 		NPCPhrase (GOODBYE);
@@ -634,7 +634,7 @@ init_chmmr_comm (void)
 	chmmr_desc.AlienTextBaseline.y = 0;
 	chmmr_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	retval = &chmmr_desc;
 
 	return (retval);

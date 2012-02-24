@@ -102,6 +102,22 @@ extern void GetAllianceName (UNICODE *buf, RESPONSE_REF name_1);
 extern void construct_response (UNICODE *buf, int R /* promoted from
 		RESPONSE_REF */, ...);
 
+typedef enum {
+	Segue_peace,
+			// When initiating a conversation, open comms directly.
+			// When terminating a conversation, depart in peace.
+	Segue_hostile,
+			// When initiating a conversation, offer the choice to attack.
+			// When terminating a conversation, go into battle.
+	Segue_victory,
+			// (when terminating a conversation) instant victory
+	Segue_defeat,
+			// (when terminating a conversation) game over
+} Segue;
+
+void setSegue (Segue segue);
+Segue getSegue (void);
+
 extern LOCDATA* init_race (CONVERSATION comm_id);
 
 extern LOCDATA* init_arilou_comm (void);

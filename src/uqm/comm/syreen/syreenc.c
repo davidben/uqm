@@ -193,7 +193,7 @@ static LOCDATA syreen_desc =
 static void
 FriendlyExit (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye))
 		NPCPhrase (GOODBYE);
@@ -555,7 +555,7 @@ NormalSyreen (RESPONSE_REF R)
 	{
 		NPCPhrase (HORRIBLE_TRUTH);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		SET_GAME_STATE (SYREEN_HOME_VISITS, 0);
 		SET_GAME_STATE (SYREEN_KNOW_ABOUT_MYCON, 1);
 
@@ -729,7 +729,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -871,7 +871,7 @@ init_syreen_comm (void)
 	syreen_desc.AlienTextBaseline.y = 0;
 	syreen_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	retval = &syreen_desc;
 
 	return (retval);

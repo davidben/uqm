@@ -766,14 +766,14 @@ ExitConversation (RESPONSE_REF R)
 		NPCPhrase (YOU_GIVE_US_NO_CHOICE);
 
 		SET_GAME_STATE (MELNORME_ANGER, 1);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, so_we_can_attack))
 	{
 		NPCPhrase (DECEITFUL_HUMAN);
 
 		SET_GAME_STATE (MELNORME_ANGER, 2);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, bye_melnorme_slightly_angry))
 		NPCPhrase (MELNORME_SLIGHTLY_ANGRY_GOODBYE);
@@ -795,7 +795,7 @@ ExitConversation (RESPONSE_REF R)
 		NPCPhrase (OK_FIGHT_SOME_MORE);
 
 		SET_GAME_STATE (MELNORME_ANGER, 3);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, bye_melnorme_pissed_off))
 		NPCPhrase (MELNORME_PISSED_OFF_GOODBYE);
@@ -803,7 +803,7 @@ ExitConversation (RESPONSE_REF R)
 	{
 		NPCPhrase (WE_FIGHT_AGAIN);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, you_hate_us_so_we_go_away))
 		NPCPhrase (HATE_YOU_GOODBYE);
@@ -1847,7 +1847,7 @@ init_melnorme_comm (void)
 
 	prevMsgMode = SMM_UNDEFINED;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	AskedToBuy = FALSE;
 	retval = &melnorme_desc;
 

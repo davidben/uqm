@@ -166,7 +166,7 @@ ExitConversation (RESPONSE_REF R)
 {
 	if (PLAYER_SAID (R, bye))
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{
@@ -210,7 +210,7 @@ ExitConversation (RESPONSE_REF R)
 	}
 	else /* if (R == then_we_take_bomb) */
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 
 		NPCPhrase (FIGHT_FOR_BOMB);
 	}
@@ -683,7 +683,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -720,7 +720,7 @@ Intro (void)
 			SET_GAME_STATE (DRUUGE_VISITS, NumVisits);
 		}
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 	{
@@ -814,7 +814,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (DRUUGE_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else
 	{
@@ -850,7 +850,7 @@ Intro (void)
 			}
 			SET_GAME_STATE (DRUUGE_SALVAGE, NumVisits);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 			AttemptedSalvage = TRUE;
 		}
 		else
@@ -882,7 +882,7 @@ uninit_druuge (void)
 static void
 post_druuge_enc (void)
 {
-	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
+	if (getSegue () == Segue_hostile
 			&& !AttemptedSalvage
 			&& !GET_GAME_STATE (DRUUGE_MANNER))
 	{
@@ -914,11 +914,11 @@ init_druuge_comm (void)
 			&& (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7)))
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &druuge_desc;
 

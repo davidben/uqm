@@ -194,7 +194,7 @@ static LOCDATA yehat_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 
 	if (PLAYER_SAID (R, bye_homeworld))
 		NPCPhrase (GOODBYE_AND_DIE_HOMEWORLD);
@@ -214,7 +214,7 @@ ExitConversation (RESPONSE_REF R)
 		{
 			NPCPhrase (GO_IN_PEACE);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 0);
+			setSegue (Segue_peace);
 		}
 	}
 	else if (PLAYER_SAID (R, not_here)
@@ -235,7 +235,7 @@ ExitConversation (RESPONSE_REF R)
 	{
 		NPCPhrase (WE_REVOLT);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		SET_GAME_STATE (YEHAT_CIVIL_WAR, 1);
 		SET_GAME_STATE (YEHAT_VISITS, 0);
 		SET_GAME_STATE (YEHAT_HOME_VISITS, 0);
@@ -439,7 +439,7 @@ YehatSpace (RESPONSE_REF R)
 	{
 		NPCPhrase (WE_CANNOT_2);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		SET_GAME_STATE (NO_YEHAT_ALLY_SPACE, 2);
 
 		return;
@@ -565,7 +565,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -673,11 +673,11 @@ init_yehat_comm (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	retval = &yehat_desc;
 

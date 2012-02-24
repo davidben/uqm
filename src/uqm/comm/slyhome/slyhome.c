@@ -175,7 +175,7 @@ static void
 ExitConversation (RESPONSE_REF R)
 {
 	(void) R;  // ignored
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	switch (GET_GAME_STATE (SLYLANDRO_HOME_VISITS))
 	{
@@ -914,7 +914,7 @@ init_slylandro_comm (void)
 	slylandro_desc.AlienTextBaseline.y = 0;
 	slylandro_desc.AlienTextWidth = SIS_TEXT_WIDTH;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	retval = &slylandro_desc;
 
 	return (retval);

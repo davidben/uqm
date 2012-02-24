@@ -179,7 +179,7 @@ ZFPTalkSegue (COUNT wait_track)
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye_homeworld))
 	{
@@ -236,7 +236,7 @@ ExitConversation (RESPONSE_REF R)
 
 		SET_GAME_STATE (ZOQFOT_HOSTILE, 1);
 		SET_GAME_STATE (ZOQFOT_HOME_VISITS, 0);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, never))
 	{
@@ -246,7 +246,7 @@ ExitConversation (RESPONSE_REF R)
 
 		SET_GAME_STATE (ZOQFOT_HOME_VISITS, 0);
 		SET_GAME_STATE (ZOQFOT_HOSTILE, 1);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 }
 
@@ -777,7 +777,7 @@ Intro (void)
 		NPCPhrase_cb (OUT_TAKES12, &SelectAlienZOQ);
 		NPCPhrase_cb (OUT_TAKES13, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -814,7 +814,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (ZOQFOT_HOME_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (!GET_GAME_STATE (MET_ZOQFOT))
 	{
@@ -961,11 +961,11 @@ init_zoqfot_comm (void)
 	if (CheckAlliance (ZOQFOTPIK_SHIP) == GOOD_GUY
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	
 	retval = &zoqfot_desc;

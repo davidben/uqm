@@ -134,7 +134,7 @@ CombatIsInevitable (RESPONSE_REF R)
 {
 	BYTE NumVisits;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 
 	if (PLAYER_SAID (R, bye))
 	{
@@ -447,7 +447,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -455,7 +455,7 @@ Intro (void)
 	{
 		NPCPhrase (GAME_OVER_DUDE);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -474,7 +474,7 @@ Intro (void)
 		NPCPhrase (HELLO_SAMATRA);
 
 		SET_GAME_STATE (AWARE_OF_SAMATRA, 1);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else
 	{
@@ -555,11 +555,11 @@ init_blackurq_comm (void)
 	if (!GET_GAME_STATE (KOHR_AH_KILLED_ALL)
 			&& LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	retval = &blackurq_desc;
 

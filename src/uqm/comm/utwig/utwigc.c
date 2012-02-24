@@ -200,7 +200,7 @@ static LOCDATA utwig_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye_neutral))
 		NPCPhrase (GOODBYE_NEUTRAL);
@@ -216,7 +216,7 @@ ExitConversation (RESPONSE_REF R)
 	{
 		NPCPhrase (GUARDS_FIGHT);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, got_ultron)
 			|| PLAYER_SAID (R, hey_wait_got_ultron))
@@ -244,7 +244,7 @@ ExitConversation (RESPONSE_REF R)
 						{
 							NPCPhrase (TRICKED_US_1);
 
-							SET_GAME_STATE (BATTLE_SEGUE, 1);
+							setSegue (Segue_hostile);
 						}
 						break;
 					case 1:
@@ -254,7 +254,7 @@ ExitConversation (RESPONSE_REF R)
 						{
 							NPCPhrase (TRICKED_US_2);
 
-							SET_GAME_STATE (BATTLE_SEGUE, 1);
+							setSegue (Segue_hostile);
 						}
 						break;
 				}
@@ -497,7 +497,7 @@ NeutralUtwig (RESPONSE_REF R)
 	{
 		NPCPhrase (MOCK_OUR_PAIN);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 		SET_GAME_STATE (UTWIG_STACK1, 4);
 		SET_GAME_STATE (UTWIG_HOSTILE, 1);
 		SET_GAME_STATE (UTWIG_INFO, 0);
@@ -651,7 +651,7 @@ BombWorld (RESPONSE_REF R)
 	{
 		NPCPhrase (GUARDS_FIGHT);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 		SET_GAME_STATE (UTWIG_HOSTILE, 1);
 		SET_GAME_STATE (UTWIG_INFO, 0);
 		SET_GAME_STATE (UTWIG_HOME_VISITS, 0);
@@ -745,7 +745,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -800,7 +800,7 @@ Intro (void)
 		if (!GET_GAME_STATE (ULTRON_CONDITION)
 				|| (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 6)))
 		{
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 		}
 		else
 		{
@@ -984,11 +984,11 @@ init_utwig_comm (void)
 	if (GET_GAME_STATE (UTWIG_HAVE_ULTRON)
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &utwig_desc;
 

@@ -1954,7 +1954,7 @@ init_starbase_comm ()
 	commander_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 
 	CurBulletinMask = 0;
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	retval = &commander_desc;
 
 	return (retval);

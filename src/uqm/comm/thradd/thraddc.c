@@ -239,7 +239,7 @@ LikeYouPhrase (BYTE which_phrase)
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 
 	if (PLAYER_SAID (R, bye_hostile_2))
 		NPCPhrase (GOODBYE_HOSTILE_2);
@@ -261,7 +261,7 @@ ExitConversation (RESPONSE_REF R)
 	{
 		NPCPhrase (GOOD_IDEA);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		AddEvent (RELATIVE_EVENT, 0, 0, 0, ADVANCE_THRADD_MISSION);
 		SET_GAME_STATE (THRADD_STACK_1, 5);
 	}
@@ -289,14 +289,14 @@ ExitConversation (RESPONSE_REF R)
 				break;
 		}
 		SET_GAME_STATE (THRADD_STACK_1, NumVisits);
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (PLAYER_SAID (R, may_i_land))
 	{
 		NPCPhrase (SURE_LAND);
 
 		SET_GAME_STATE (HELIX_UNPROTECTED, 1);
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (PLAYER_SAID (R, demand_to_land))
 		NPCPhrase (NO_DEMAND);
@@ -330,7 +330,7 @@ ExitConversation (RESPONSE_REF R)
 		}
 		NPCPhrase (WORK_TO_DO);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 }
 
@@ -700,7 +700,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -719,7 +719,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (HELIX_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (GET_GAME_STATE (ILWRATH_FIGHT_THRADDASH))
 	{
@@ -752,7 +752,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (THRADD_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (GET_GAME_STATE (THRADD_MANNER))
 	{
@@ -942,11 +942,11 @@ init_thradd_comm (void)
 	if (GET_GAME_STATE (THRADD_MANNER)
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &thradd_desc;
 

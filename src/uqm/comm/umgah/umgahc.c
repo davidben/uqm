@@ -198,13 +198,13 @@ static LOCDATA umgah_desc =
 static void
 CombatIsInevitable (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 
 	if (PLAYER_SAID (R, bye_zombie))
 	{
 		NPCPhrase (GOODBYE_ZOMBIE);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (PLAYER_SAID (R, bye_pre_zombie))
 		NPCPhrase (GOODBYE_PRE_ZOMBIE);
@@ -235,7 +235,7 @@ CombatIsInevitable (RESPONSE_REF R)
 	{
 		NPCPhrase (GOODBYE_UNKNOWN);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (PLAYER_SAID (R, bye_post_zombie))
 	{
@@ -346,14 +346,14 @@ Zombies (RESPONSE_REF R)
 		{
 			NPCPhrase (NOT_GIVE_UP);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 			return;
 		}
 		else if (PLAYER_SAID (R, arilou_told_us))
 		{
 			NPCPhrase (THEN_DIE);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 			SET_GAME_STATE (KNOW_UMGAH_ZOMBIES, 1);
 			SET_GAME_STATE (UMGAH_VISITS, 0);
 			return;
@@ -541,7 +541,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (UMGAH_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (GET_GAME_STATE (UMGAH_ZOMBIE_BLOBBIES))
 	{
@@ -565,7 +565,7 @@ Intro (void)
 					break;
 			}
 
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 		}
 		else if (GET_GAME_STATE (KNOW_UMGAH_ZOMBIES))
 		{
@@ -586,7 +586,7 @@ Intro (void)
 					break;
 			}
 
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 		}
 		else
 		{
@@ -681,7 +681,7 @@ Intro (void)
 			}
 			SET_GAME_STATE (UMGAH_VISITS, NumVisits);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 0);
+			setSegue (Segue_peace);
 		}
 	}
 }
@@ -717,11 +717,11 @@ init_umgah_comm (void)
 	if ((GET_GAME_STATE (TALKING_PET) && !GET_GAME_STATE (UMGAH_HOSTILE))
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &umgah_desc;
 

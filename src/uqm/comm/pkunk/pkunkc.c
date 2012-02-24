@@ -132,7 +132,7 @@ PrepareShip (void)
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, friendly_bye_space))
 		NPCPhrase (FRIENDLY_GOODBYE_SPACE);
@@ -187,13 +187,13 @@ ExitConversation (RESPONSE_REF R)
 
 			SET_GAME_STATE (PKUNK_MANNER, 2);
 		}
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, die_idiot_fools))
 	{
 		NPCPhrase (VERY_WELL);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, suit_yourself))
 		NPCPhrase (GOODBYE_MIGRATION);
@@ -853,7 +853,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -880,7 +880,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (PKUNK_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (Manner == 1)
 	{
@@ -1104,7 +1104,7 @@ post_pkunk_enc (void)
 {
 	BYTE Manner;
 
-	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
+	if (getSegue () == Segue_hostile
 			&& (Manner = GET_GAME_STATE (PKUNK_MANNER)) != 2)
 	{
 		SET_GAME_STATE (PKUNK_MANNER, 1);
@@ -1133,12 +1133,12 @@ init_pkunk_comm (void)
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
 		// Enter communications immediately.
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
 		// Ask the player whether to attack or talk.
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &pkunk_desc;
 
