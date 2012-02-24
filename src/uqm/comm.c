@@ -1327,7 +1327,7 @@ InitCommunication (CONVERSATION which_comm)
 				RepairSISBorder ();
 			}
 			DrawSISMessage (NULL);
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+			if (inHQSpace ())
 				DrawHyperCoords (GLOBAL (ShipStamp.origin));
 			else if (GLOBAL (ip_planet) == 0)
 				DrawHyperCoords (CurStarDescPtr->star_pt);
@@ -1492,7 +1492,7 @@ RaceCommunication (void)
 		SET_GAME_STATE (ESCAPE_COUNTER, ec);
 		return;
 	}
-	else if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	else if (inHQSpace ())
 	{
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
 		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) >= 2)

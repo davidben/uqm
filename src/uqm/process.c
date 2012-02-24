@@ -308,12 +308,11 @@ CalcView (POINT *pNewScrollPt, SIZE next_reduction,
 			dy = -ORG_JUMP_Y;
 	}
 
-	if ((dx || dy) && LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if ((dx || dy) && inHQSpace ())
 		MoveSIS (&dx, &dy);
 
 	if (zoom_out == next_reduction)
-		view_state = dx == 0 && dy == 0
-				&& LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE
+		view_state = dx == 0 && dy == 0 && !inHQSpace ()
 				? VIEW_STABLE : VIEW_SCROLL;
 	else
 	{

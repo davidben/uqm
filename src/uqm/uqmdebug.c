@@ -369,7 +369,7 @@ equipShip (void)
 	}
 
 	// Make sure everything is redrawn:
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE ||
+	if (inHQSpace () ||
 			LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY)
 	{
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
@@ -1508,7 +1508,7 @@ resetCrewBattle (void)
 	CONTEXT OldContext;
 	
 	if (!(GLOBAL (CurrentActivity) & IN_BATTLE) ||
-			(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE))
+			(inHQSpace ()))
 		return;
 	
 	StarShipPtr = findPlayerShip (RPG_PLAYER_NUM);
@@ -1531,7 +1531,7 @@ resetEnergyBattle (void)
 	CONTEXT OldContext;
 	
 	if (!(GLOBAL (CurrentActivity) & IN_BATTLE) ||
-			(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE))
+			(inHQSpace ()))
 		return;
 	
 	StarShipPtr = findPlayerShip (RPG_PLAYER_NUM);

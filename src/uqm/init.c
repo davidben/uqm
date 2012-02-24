@@ -187,7 +187,7 @@ InitShips (void)
 	InitDisplayList ();
 	InitGalaxy ();
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		ReinitQueue (&race_q[0]);
 		ReinitQueue (&race_q[1]);
@@ -346,7 +346,7 @@ UninitShips (void)
 		for (i = 0; i < NUM_PLAYERS; i++)
 			ReinitQueue (&race_q[i]);
 
-		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+		if (inHQSpace ())
 			FreeHyperspace ();
 	}
 }

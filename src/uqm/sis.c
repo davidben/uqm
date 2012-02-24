@@ -214,7 +214,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 				pStr = buf;
 				break;
 			case IN_HYPERSPACE:
-				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+				if (inHyperSpace ())
 				{
 					pStr = GAME_STRING (NAVIGATION_STRING_BASE);
 							// "HyperSpace"

@@ -60,8 +60,7 @@ EventHandler (BYTE selector)
 			break;
 		case HYPERSPACE_ENCOUNTER_EVENT:
 			check_race_growth ();
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE
-					&& GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+			if (inHyperSpace ())
 				check_hyperspace_encounter ();
 
 			AddEvent (RELATIVE_EVENT, 0, 1, 0, HYPERSPACE_ENCOUNTER_EVENT);

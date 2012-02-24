@@ -454,7 +454,7 @@ spawn_ship (STARSHIP *StarShipPtr)
 		else
 		{
 			StarShipPtr->ShipFacing = NORMALIZE_FACING (TFB_Random ());
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+			if (inHQSpace ())
 			{	// Only one ship is ever spawned in HyperSpace -- flagship
 				COUNT facing = GLOBAL (ShipFacing);
 				// XXX: Solar system reentry test depends on ShipFacing != 0

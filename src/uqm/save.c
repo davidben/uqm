@@ -486,7 +486,7 @@ PrepareSummary (SUMMARY_DESC *SummPtr)
 	switch (SummPtr->Activity)
 	{
 		case IN_HYPERSPACE:
-			if (GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
+			if (inQuasiSpace ())
 				SummPtr->Activity = IN_QUASISPACE;
 			break;
 		case IN_INTERPLANETARY:
@@ -621,7 +621,7 @@ SaveProblem (void)
 static void
 SaveFlagshipState (void)
 {
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		// Player is in HyperSpace or QuasiSpace.
 		SaveSisHyperState ();

@@ -304,7 +304,7 @@ SetContext (OldContext);
 HSTARSHIP
 GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 {
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		assert (which_player == RPG_PLAYER_NUM);
 		// SIS for the Hyperspace flight

@@ -161,7 +161,7 @@ DrawAutoPilot (POINT *pDstPt)
 				cycle, delta;
 	POINT pt;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+	if (!inHQSpace ())
 		pt = CurStarDescPtr->star_pt;
 	else
 	{
@@ -346,7 +346,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 	{
 		Color OldColor;
 
-		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+		if (!inHQSpace ())
 			r.corner = CurStarDescPtr->star_pt;
 		else
 		{
@@ -773,7 +773,7 @@ UpdateFuelRequirement (void)
 	DWORD f;
 	POINT pt;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+	if (!inHQSpace ())
 		pt = CurStarDescPtr->star_pt;
 	else
 	{
@@ -1223,7 +1223,7 @@ DoMoveCursor (MENU_STATE *pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoMoveCursor;
 
-		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+		if (!inHQSpace ())
 			universe = CurStarDescPtr->star_pt;
 		else
 		{
@@ -1250,7 +1250,7 @@ DoMoveCursor (MENU_STATE *pMS)
 		{
 			PlayMenuSound (MENU_SOUND_INVOKED);
 
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+			if (inHQSpace ())
 			{
 				// Move to the new location immediately.
 				doInstantMove ();
@@ -1579,7 +1579,7 @@ StarMap (void)
 	mapOrigin.y = MAX_Y_UNIVERSE >> 1;
 	StarMapFrame = SetAbsFrameIndex (MiscDataFrame, 48);
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+	if (!inHQSpace ())
 		universe = CurStarDescPtr->star_pt;
 	else
 	{

@@ -236,12 +236,12 @@ BattleSong (BOOLEAN DoPlay)
 {
 	if (BattleRef == 0)
 	{
-		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
-			BattleRef = LoadMusic (BATTLE_MUSIC);
-		else if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+		if (inHyperSpace ())
 			BattleRef = LoadMusic (HYPERSPACE_MUSIC);
-		else
+		else if (inQuasiSpace ())
 			BattleRef = LoadMusic (QUASISPACE_MUSIC);
+		else
+			BattleRef = LoadMusic (BATTLE_MUSIC);
 	}
 
 	if (DoPlay)
@@ -463,8 +463,7 @@ Battle (BattleFrameCallback *callback)
 #endif  /* NETPLAY */
 		bs.InputFunc = DoBattle;
 		bs.frame_cb = callback;
-		bs.first_time = (BOOLEAN)(LOBYTE (GLOBAL (CurrentActivity)) ==
-				IN_HYPERSPACE);
+		bs.first_time = inHQSpace ();
 
 		DoInput (&bs, FALSE);
 

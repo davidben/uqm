@@ -217,7 +217,7 @@ DrawDevices (DEVICES_STATE *devState, COUNT OldDevice, COUNT NewDevice)
 static BOOLEAN
 UseCaster (void)
 {
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 		{
@@ -372,7 +372,7 @@ InvokeDevice (BYTE which_device)
 			NextActivity |= CHECK_LOAD; /* fake a load game */
 			GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 0);
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+			if (inHQSpace ())
 			{
 				if (GetHeadEncounter ())
 				{
@@ -443,8 +443,7 @@ InvokeDevice (BYTE which_device)
 			break;
 		case PORTAL_SPAWNER_DEVICE:
 #define PORTAL_FUEL_COST (10 * FUEL_TANK_SCALE)
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE
-					&& GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1
+			if (inHyperSpace ()
 					&& GLOBAL_SIS (FuelOnBoard) >= PORTAL_FUEL_COST)
 			{
 				/* No DeltaSISGauges because the flagship picture

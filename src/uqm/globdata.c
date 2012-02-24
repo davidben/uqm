@@ -32,6 +32,7 @@
 #include "grpinfo.h"
 #include "gamestr.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #ifdef STATE_DEBUG
 #	include "libs/log.h"
@@ -424,4 +425,88 @@ InitGlobData (void)
 }
 
 
+BOOLEAN
+inFullGame (void)
+{
+	ACTIVITY act = LOBYTE (GLOBAL (CurrentActivity));
+	return (act == IN_LAST_BATTLE || act == IN_ENCOUNTER ||
+			act == IN_HYPERSPACE || act == IN_INTERPLANETARY ||
+			act == WON_LAST_BATTLE);
+}
+
+BOOLEAN
+inSuperMelee (void)
+{
+	return (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE);
+			// TODO: && !inMainMenu ()
+}
+
+#if 0
+BOOLEAN
+inBattle (void)
+{
+	// TODO: IN_BATTLE is also set while in HyperSpace/QuasiSpace.
+	return ((GLOBAL (CurrentActivity) & IN_BATTLE) != 0);
+}
+#endif
+
+#if 0
+// Disabled for now as there are similar functions in uqm/planets/planets.h
+// Pre: inFullGame()
+BOOLEAN
+inInterPlanetary (void)
+{
+	assert (inFullGame ());
+	return (pSolarSysState != NULL);
+}
+
+// Pre: inFullGame()
+BOOLEAN
+inSolarSystem (void)
+{
+	assert (inFullGame ());
+	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY);
+}
+
+// Pre: inFullGame()
+BOOLEAN
+inOrbit (void)
+{
+	assert (inFullGame ());
+	return (pSolarSysState != NULL) &&
+			(pSolarSysState->pOrbitalDesc != NULL);
+}
+#endif
+
+// In HyperSpace or QuasiSpace
+// Pre: inFullGame()
+BOOLEAN
+inHQSpace (void)
+{
+	assert (inFullGame ());
+	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE);
+			// IN_HYPERSPACE is also set for QuasiSpace
+}
+
+// In HyperSpace
+// Pre: inFullGame()
+BOOLEAN
+inHyperSpace (void)
+{
+	//assert (inFullGame ());
+	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE) &&
+				(GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1);
+			// IN_HYPERSPACE is also set for QuasiSpace
+}
+
+// In QuasiSpace
+// Pre: inFullGame()
+BOOLEAN
+inQuasiSpace (void)
+{
+	//assert (inFullGame ());
+	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE) &&
+				(GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1);
+			// IN_HYPERSPACE is also set for QuasiSpace
+}
 

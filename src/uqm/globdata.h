@@ -892,7 +892,7 @@ enum
 	SUPER_MELEE = 0, /* Is also used while in the main menu */
 	IN_LAST_BATTLE,
 	IN_ENCOUNTER,
-	IN_HYPERSPACE /* in Hyperspace or Quasispace */,
+	IN_HYPERSPACE /* in HyperSpace or QuasiSpace */,
 	IN_INTERPLANETARY,
 	WON_LAST_BATTLE,
 
@@ -904,6 +904,7 @@ enum
 
 	CHECK_PAUSE = MAKE_WORD (0, (1 << 0)),
 	IN_BATTLE = MAKE_WORD (0, (1 << 1)),
+			/* Is also set while in HyperSpace/QuasiSpace */
 	START_ENCOUNTER = MAKE_WORD (0, (1 << 2)),
 	START_INTERPLANETARY = MAKE_WORD (0, (1 << 3)),
 	CHECK_LOAD = MAKE_WORD (0, (1 << 4)),
@@ -1010,6 +1011,16 @@ extern void FreeSC2Data (void);
 extern BOOLEAN LoadSC2Data (void);
 
 extern void InitGlobData (void);
+
+BOOLEAN inFullGame (void);
+BOOLEAN inSuperMelee (void);
+//BOOLEAN inBattle (void);
+//BOOLEAN inInterPlanetary (void);
+//BOOLEAN inSolarSystem (void);
+//BOOLEAN inOrbit (void);
+BOOLEAN inHQSpace (void);
+BOOLEAN inHyperSpace (void);
+BOOLEAN inQuasiSpace (void);
 
 extern BOOLEAN InitGameStructures (void);
 extern void UninitGameStructures (void);

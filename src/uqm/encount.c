@@ -296,7 +296,7 @@ InitEncounter (void)
 	SetContextFont (MicroFont);
 	SetContextForeGroundColor (
 			BUILD_COLOR (MAKE_RGB15 (0x00, 0x00, 0x14), 0x01));
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 0);
 				// "ENCOUNTER IN"
@@ -566,7 +566,7 @@ UninitEncounter (void)
 				{
 					DrawSISFrame ();
 					DrawSISMessage (NULL);
-					if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+					if (inHQSpace ())
 						DrawHyperCoords (GLOBAL (ShipStamp.origin));
 					else if (GLOBAL (ip_planet) == 0)
 						DrawHyperCoords (CurStarDescPtr->star_pt);

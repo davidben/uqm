@@ -891,7 +891,7 @@ init_sis (void)
 	
 	new_sis_desc.uninit_func = uninit_sis;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		for (i = 0; i < NUM_VIEWS; ++i)
 		{
@@ -950,7 +950,7 @@ init_sis (void)
 static void
 uninit_sis (RACE_DESC *pRaceDesc)
 {
-	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+	if (!inHQSpace ())
 	{
 		GLOBAL_SIS (CrewEnlisted) = pRaceDesc->ship_info.crew_level;
 		if (pRaceDesc->ship_info.ship_flags & PLAYER_CAPTAIN)
