@@ -483,7 +483,7 @@ inOrbit (void)
 BOOLEAN
 inHQSpace (void)
 {
-	assert (inFullGame ());
+	//assert (inFullGame ());
 	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE);
 			// IN_HYPERSPACE is also set for QuasiSpace
 }
