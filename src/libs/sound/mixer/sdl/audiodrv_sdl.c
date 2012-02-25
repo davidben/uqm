@@ -108,6 +108,8 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 		audio_FORMAT_MONO16, audio_FORMAT_STEREO16
 	};
 
+#ifndef __native_client__
+	// Initialized on plugin thread in nacl_glue.cpp.
 	log_add (log_Info, "Initializing SDL audio subsystem.");
 	if ((SDL_InitSubSystem(SDL_INIT_AUDIO)) == -1)
 	{
@@ -116,6 +118,7 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 		return -1;
 	}
 	log_add (log_Info, "SDL audio subsystem initialized.");
+#endif
 		
 	if (flags & audio_QUALITY_HIGH)
 	{

@@ -92,6 +92,9 @@ class GameInstance : public pp::Instance {
     SDL_NACL_SetInstance(pp_instance(), width_, height_);
     // This is SDL_Init call which used to be in game_main()
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
+    // Initialize audio and joystick here, not on the game thread.
+    SDL_InitSubSystem(SDL_INIT_AUDIO);
+    SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     StartGameInNewThread(0);
   }
 }; 
