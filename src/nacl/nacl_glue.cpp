@@ -25,6 +25,11 @@
 #include <ppapi/cpp/module.h>
 #include <ppapi/cpp/rect.h>
 
+#include <nacl-mounts/base/KernelProxy.h>
+#include <nacl-mounts/base/MainThreadRunner.h>
+#include <nacl-mounts/http2/HTTP2Mount.h>
+#include <nacl-mounts/pepper/PepperMount.h>
+
 extern "C" int uqmMain(int argc, char **argv);
 
 class GameInstance : public pp::Instance {
@@ -34,6 +39,10 @@ class GameInstance : public pp::Instance {
   int num_changed_view_;           // Ensure we initialize an instance only once.
   int width_; int height_;         // Dimension of the SDL video screen.
   pp::CompletionCallbackFactory<GameInstance> cc_factory_;
+
+  KernelProxy* proxy_;
+  MainThreadRunner* runner_;
+  pp::FileSystem* fs_;
 
   // Launches the actual game, e.g., by calling game_main().
   static void* LaunchGameThunk(void* data);
@@ -56,11 +65,22 @@ class GameInstance : public pp::Instance {
                        PP_INPUTEVENT_CLASS_KEYBOARD);
     ++num_instances_;
     assert (num_instances_ == 1);
+
+    proxy_ = KernelProxy::KPInstance();
+    runner_ = new MainThreadRunner(this);
+
+    // Persistent seems to hate me?
+    fprintf(stderr, "Requesting an HTML5 local tepmorary filesystem.\n");
+    fs_ = new pp::FileSystem(this, PP_FILESYSTEMTYPE_LOCALTEMPORARY);
   }
 
   virtual ~GameInstance() {
     // Wait for game thread to finish.
     if (game_main_thread_) { pthread_join(game_main_thread_, NULL); }
+
+    // Clean up stuff.
+    delete runner_;
+    delete fs_;
   }
 
   // This function is called with the HTML attributes of the embed tag,
@@ -131,6 +151,40 @@ void* GameInstance::LaunchGameThunk(void* data) {
 }
 
 void GameInstance::LaunchGame() {
+  // Setup filesystem.
+
+  // Setup writable homedir.
+  PepperMount* pepper_mount = new PepperMount(runner_, fs_, 20 * 1024 * 1024);
+  //  pepper_mount->SetDirectoryReader(&directory_reader_);
+  pepper_mount->SetPathPrefix("/userdata");
+
+  proxy_->mkdir("/userdata", 0777);
+  int res = proxy_->mount("/userdata", pepper_mount);
+  if (!res) {
+    fprintf(stderr, "/userdata initialization success.\n");
+  } else {
+    fprintf(stderr, "/userdata initialization failure.\n");
+  }
+
+  // Setup r/o data directory in /content
+  HTTP2Mount* http2_mount = new HTTP2Mount(runner_, "/data/0.7.0");
+  // FIXME: upgrades??
+  http2_mount->SetLocalCache(fs_, 350*1024*1024, "/content-cache", true);
+  //  http2_mount->SetProgressHandler(&progress_handler_);
+
+  http2_mount->ReadManifest("/manifest.0aaf28752056d176a94398ad6608940c33a44978");
+
+  // FIXME: nacl-mounts is buggy and can't readdir the root of an
+  // HTTP2 mount. Probably should workaround this outside the library
+  // too, to ease building.
+  proxy_->mkdir("/content", 0777);
+  res = proxy_->mount("/content", http2_mount);
+  if (!res) {
+    fprintf(stderr, "/content initialization success.\n");
+  } else {
+    fprintf(stderr, "/content initialization failure.\n");
+  }
+
   // Craft a fake command line. We can probably compile-in some of
   // this directory options, but whatever.
   char buf[100];
