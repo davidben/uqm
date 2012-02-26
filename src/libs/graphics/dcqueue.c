@@ -226,7 +226,7 @@ TFB_DrawCommandQueue_Clear ()
 }
 
 static void
-checkExclusiveThread (void)
+checkExclusiveThread (TFB_DrawCommand* DrawCommand)
 {
 #ifdef DEBUG_DCQ_THREADS
 	static uint32 exclusiveThreadId;
@@ -234,10 +234,18 @@ checkExclusiveThread (void)
 
 	// Only one thread is currently allowed to enqueue commands
 	// This is not a technical limitation but rather a semantical one atm.
+	if (DrawCommand->Type == TFB_DRAWCOMMANDTYPE_REINITVIDEO)
+	{	// TFB_DRAWCOMMANDTYPE_REINITVIDEO is an exception
+		// It is queued from the main() thread, which is safe to do
+		return;
+	}
+	
 	if (!exclusiveThreadId)
 		exclusiveThreadId = SDL_ThreadID();
 	else
 		assert (SDL_ThreadID() == exclusiveThreadId);
+#else
+	(void) DrawCommand; // suppress unused warning
 #endif
 }
 
@@ -249,7 +257,7 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 		return;
 	}
 
-	checkExclusiveThread ();
+	checkExclusiveThread (DrawCommand);
 
 	if (DrawCommand->Type <= TFB_DRAWCOMMANDTYPE_COPYTOIMAGE
 			&& _CurFramePtr->Type == SCREEN_DRAWABLE)
