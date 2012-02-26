@@ -473,9 +473,6 @@ new_ship (ELEMENT *DeadShipPtr)
 		SetElementStarShip (DeadShipPtr, 0);
 		RestartMusic = OpponentAlive (DeadStarShipPtr);
 
-		if (DeadStarShipPtr->RaceDescPtr->uninit_func != NULL)
-			(*DeadStarShipPtr->RaceDescPtr->uninit_func) (
-					DeadStarShipPtr->RaceDescPtr);
 		free_ship (DeadStarShipPtr->RaceDescPtr, TRUE, TRUE);
 		DeadStarShipPtr->RaceDescPtr = 0;
 		

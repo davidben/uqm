@@ -311,9 +311,6 @@ UninitShips (void)
 							crew_retrieved;
 			}
 
-			if (StarShipPtr->RaceDescPtr->uninit_func != NULL)
-				(*StarShipPtr->RaceDescPtr->uninit_func) (
-						StarShipPtr->RaceDescPtr);
 			/* Record crew left after battle */
 			StarShipPtr->crew_level =
 					StarShipPtr->RaceDescPtr->ship_info.crew_level;
