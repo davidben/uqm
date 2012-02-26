@@ -274,6 +274,15 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height)
 	return 0;
 }
 
+void
+TFB_GL_UninitGraphics (void)
+{
+	int i;
+
+	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+		UnInit_Screen (&GL_Screens[i].scaled);
+}
+
 void TFB_GL_UploadTransitionScreen (void)
 {
 	GL_Screens[TFB_SCREEN_TRANSITION].updated.x = 0;

@@ -126,7 +126,6 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 	}
 
 	*driver = openAL_Driver;
-	atexit (unInitAudio);
 
 	alcContext = alcCreateContext (alcDevice, NULL);
 	if (!alcContext)

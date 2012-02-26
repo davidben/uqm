@@ -159,6 +159,7 @@ log_exit (int code)
 	{
 		qlock = 0;
 		DestroyMutex (qmutex);
+		qmutex = 0;
 	}
 
 	return code;

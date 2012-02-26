@@ -22,6 +22,7 @@
 #include "libs/graphics/sdl/sdl_common.h"
 
 int TFB_GL_InitGraphics (int driver, int flags, int width, int height);
+void TFB_GL_UninitGraphics (void);
 int TFB_GL_ConfigureVideo (int driver, int flags, int width, int height, int togglefullscreen);
 void TFB_GL_UploadTransitionScreen (void);
 

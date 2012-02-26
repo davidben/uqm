@@ -146,8 +146,6 @@ noSound_Init (audio_Driver *driver, sint32 flags)
 		return -1;
 	}
 
-	atexit (unInitAudio);
-
 	PlaybackTask = AssignTask (PlaybackTaskFunc, 1024, 
 		"nosound audio playback");
 

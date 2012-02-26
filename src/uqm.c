@@ -464,14 +464,14 @@ main (int argc, char *argv[])
 	 *   tasks might still be using it */
 	if (MainExited)
 	{
-		// Not yet: TFB_UninitInput ();
+		TFB_UninitInput ();
 		unInitAudio ();
 		uninit_communication ();
-		// TODO: Merge into TFB_UninitGraphics when it goes live
+		
 		TFB_PurgeDanglingGraphics ();
 		// Purge above refers to colormaps which have to be still up
 		UninitColorMaps ();
-		// Not yet: TFB_UninitGraphics ();
+		TFB_UninitGraphics ();
 
 #ifdef NETPLAY
 		NetManager_uninit ();
@@ -481,7 +481,7 @@ main (int argc, char *argv[])
 		Callback_uninit ();
 		Alarm_uninit ();
 
-		// Not yet: CleanupTaskSystem ();
+		CleanupTaskSystem ();
 		UnInitTimeSystem ();
 #if 0
 		unInitTempDir ();

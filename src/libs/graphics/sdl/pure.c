@@ -263,6 +263,14 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height)
 	return 0;
 }
 
+void
+TFB_Pure_UninitGraphics (void)
+{
+	UnInit_Screen (&scaled_display);
+	UnInit_Screen (&fade_color_surface);
+	UnInit_Screen (&fade_temp);
+}
+
 static void
 ScanLines (SDL_Surface *dst, SDL_Rect *r)
 {

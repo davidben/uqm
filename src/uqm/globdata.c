@@ -46,8 +46,6 @@ FRAME PlayFrame;
 
 GLOBDATA GlobData;
 
-static BOOLEAN initedGameStructs = FALSE;
-
 
 BYTE
 getGameState (int startBit, int endBit)
@@ -347,17 +345,6 @@ InitGameStructures (void)
 	GLOBAL (autopilot.x) = ~0;
 	GLOBAL (autopilot.y) = ~0;
 
-	/* In case the program is exited before the full game is terminated,
-	 * make sure that the temporary files are deleted.
-	 * This can be removed if we make sure if the full game is terminated
-	 * before the game is exited.
-	 * The initedSIS variable is added so the uninit won't happen more
-	 * than once, as you can't remove the atexit function (when the full game
-	 * ends).
-	 */
-	initedGameStructs = TRUE;
-	atexit (UninitGameStructures);
-
 	return (TRUE);
 }
 
@@ -378,9 +365,6 @@ void
 UninitGameStructures (void)
 {
 	HFLEETINFO hStarShip;
-
-	if (!initedGameStructs)
-		return;
 
 	UninitQueue (&GLOBAL (encounter_q));
 	UninitQueue (&GLOBAL (ip_group_q));
@@ -409,7 +393,6 @@ UninitGameStructures (void)
 	
 	DestroyDrawable (ReleaseDrawable (PlayFrame));
 	PlayFrame = 0;
-	initedGameStructs = FALSE;
 }
 
 void

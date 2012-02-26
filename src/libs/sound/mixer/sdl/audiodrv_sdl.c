@@ -212,8 +212,6 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 		return -1;
 	}
 
-	atexit (unInitAudio);
-
 	SDL_PauseAudio (0);
 		
 	return 0;
@@ -239,6 +237,7 @@ mixSDL_Uninit (void)
 			HFree (sbuffer);
 		}
 		DestroyMutex (soundSource[i].stream_mutex);
+		soundSource[i].stream_mutex = 0;
 
 		mixSDL_DeleteSources (1, &soundSource[i].handle);
 	}

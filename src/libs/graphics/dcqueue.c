@@ -156,8 +156,17 @@ Init_DrawCommandQueue (void)
 void
 Uninit_DrawCommandQueue (void)
 {
-	DestroyCondVar (RenderingCond);
-	DestroyRecursiveMutex (DCQ_Mutex);
+	if (RenderingCond)
+	{
+		DestroyCondVar (RenderingCond);
+		RenderingCond = 0;
+	}
+
+	if (DCQ_Mutex)
+	{
+		DestroyRecursiveMutex (DCQ_Mutex);
+		DCQ_Mutex = 0;
+	}
 }
 
 void

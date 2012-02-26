@@ -52,6 +52,8 @@ TFB_GRAPHICS_BACKEND *graphics_backend = NULL;
 volatile int QuitPosted = 0;
 volatile int GameActive = 1; // Track the SDL_ACTIVEEVENT state SDL_APPACTIVE
 
+static void TFB_PreQuit (void);
+
 void
 TFB_PreInit (void)
 {
@@ -76,6 +78,14 @@ TFB_PreInit (void)
 		log_add (log_Fatal, "Could not initialize SDL: %s.", SDL_GetError ());
 		exit (EXIT_FAILURE);
 	}
+
+	atexit (TFB_PreQuit);
+}
+
+static void
+TFB_PreQuit (void)
+{
+	SDL_Quit ();
 }
 
 int
@@ -129,14 +139,8 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 int
 TFB_InitGraphics (int driver, int flags, int width, int height)
 {
-	int result, i;
+	int result;
 	char caption[200];
-
-	/* Null out screen pointers the first time */
-	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
-	{
-		SDL_Screens[i] = NULL;
-	}
 
 	GfxFlags = flags;
 
@@ -168,17 +172,25 @@ TFB_InitGraphics (int driver, int flags, int width, int height)
 
 	TFB_DrawCanvas_Initialize ();
 
-	atexit (TFB_UninitGraphics);
-
 	return 0;
 }
 
 void
 TFB_UninitGraphics (void)
 {
+	int i;
+
 	Uninit_DrawCommandQueue ();
-	// TODO: Uninit whatever the drivers have set up for us
-	SDL_Quit ();
+
+	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+		UnInit_Screen (&SDL_Screens[i]);
+
+	TFB_Pure_UninitGraphics ();
+#ifdef HAVE_OPENGL
+	TFB_GL_UninitGraphics ();
+#endif
+
+	UnInit_Screen (&format_conv_surf);
 }
 
 void
@@ -370,9 +382,18 @@ Create_Screen (SDL_Surface *templat, int w, int h)
 int
 ReInit_Screen (SDL_Surface **screen, SDL_Surface *templat, int w, int h)
 {
-	if (*screen)
-		SDL_FreeSurface (*screen);
+	UnInit_Screen (screen);
 	*screen = Create_Screen (templat, w, h);
 	
 	return *screen == 0 ? -1 : 0;
+}
+
+void
+UnInit_Screen (SDL_Surface **screen)
+{
+	if (*screen == NULL)
+		return;
+
+	SDL_FreeSurface (*screen);
+	*screen = NULL;
 }
