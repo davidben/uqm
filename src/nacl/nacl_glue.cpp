@@ -49,10 +49,6 @@ class GameInstance : public pp::Instance {
   static void* LaunchGameThunk(void* data);
   void LaunchGame();
 
-  // This function allows us to delay game start until all
-  // resources are ready.
-  void StartGameInNewThread(int32_t dummy);
-
  public:
 
   explicit GameInstance(PP_Instance instance)
@@ -116,7 +112,9 @@ class GameInstance : public pp::Instance {
     // Initialize audio and joystick here, not on the game thread.
     SDL_InitSubSystem(SDL_INIT_AUDIO);
     SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-    StartGameInNewThread(0);
+
+    // And launch the game.
+    pthread_create(&game_main_thread_, NULL, &LaunchGameThunk, this);
   }
 }; 
 
@@ -132,16 +130,6 @@ class GameModule : public pp::Module {
 
 // static
 int GameInstance::num_instances_;
-
-void GameInstance::StartGameInNewThread(int32_t dummy) {
-  if (true /* [All Resources Are Ready] */) {
-    pthread_create(&game_main_thread_, NULL, &LaunchGameThunk, this);
-  } else {
-    // Wait some more (here: 100ms).
-    pp::Module::Get()->core()->CallOnMainThread(
-        100, cc_factory_.NewCallback(&GameInstance::StartGameInNewThread), 0);
-  }
-}
 
 // static
 void* GameInstance::LaunchGameThunk(void* data) {
