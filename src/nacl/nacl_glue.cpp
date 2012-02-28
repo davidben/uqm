@@ -27,6 +27,7 @@
 
 #include <nacl-mounts/base/KernelProxy.h>
 #include <nacl-mounts/base/MainThreadRunner.h>
+#include <nacl-mounts/buffer/BufferMount.h>
 #include <nacl-mounts/http2/HTTP2Mount.h>
 #include <nacl-mounts/pepper/PepperMount.h>
 
@@ -178,7 +179,7 @@ void GameInstance::LaunchGame() {
   // HTTP2 mount. Probably should workaround this outside the library
   // too, to ease building.
   proxy_->mkdir("/content", 0777);
-  res = proxy_->mount("/content", http2_mount);
+  res = proxy_->mount("/content", new BufferMount(http2_mount, 1024 * 1024, 100));
   if (!res) {
     fprintf(stderr, "/content initialization success.\n");
   } else {
