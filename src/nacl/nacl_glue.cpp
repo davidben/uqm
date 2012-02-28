@@ -20,6 +20,8 @@
 #include SDL_INCLUDE(SDL.h)
 #include SDL_INCLUDE(SDL_nacl.h)
 
+#include <queue>
+
 #include <ppapi/cpp/completion_callback.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/module.h>
@@ -49,6 +51,53 @@ class GameInstance : public pp::Instance {
   static void* LaunchGameThunk(void* data);
   void LaunchGame();
 
+  class JSDirectoryReader : public DirectoryReader {
+  public:
+    JSDirectoryReader(pp::Instance* instance) : instance_(instance) { }
+
+    int ReadDirectory(const std::string& path,
+		      std::set<std::string>* entries,
+		      const pp::CompletionCallback& cc) {
+      DirectoryRequest req = { path, entries, cc };
+      requests_.push(req);
+      std::string message = "ReadDirectory";
+      message += '\0'; message += path;
+      instance_->PostMessage(message);
+      return 0;
+    }
+
+    void HandleResponse(const std::string& response) {
+      assert(!requests_.empty());
+      DirectoryRequest req = requests_.front(); requests_.pop();
+      if (strcmp(response.c_str(), "OK") != 0) {
+	fprintf(stderr, "ReadDirectory failed (%s)\n", response.c_str());
+	req.cc.Run(PP_ERROR_FAILED);
+	return;
+      }
+
+      size_t pos = response.find('\0');
+      while (pos != std::string::npos) {
+	// Add the string starting at pos, via gross abuse of C
+	// NUL-terminated strings.
+	req.entries->insert(response.c_str() + pos + 1);
+	pos = response.find('\0', pos + 1);
+      }
+      req.cc.Run(PP_OK);
+    }
+
+  private:
+    // For simplicity, process these in order. Probably safe to even
+    // assume only one thread does file I/O, but better to be correct.
+    struct DirectoryRequest {
+      std::string path;
+      std::set<std::string>* entries;
+      pp::CompletionCallback cc;
+    };
+    std::queue<DirectoryRequest> requests_;
+    pp::Instance* instance_;
+  };
+  JSDirectoryReader directory_reader_;
+
  public:
 
   explicit GameInstance(PP_Instance instance)
@@ -56,7 +105,8 @@ class GameInstance : public pp::Instance {
       game_main_thread_(NULL),
       num_changed_view_(0),
       width_(0), height_(0),
-      cc_factory_(this) {
+      cc_factory_(this),
+      directory_reader_(this) {
     // Game requires mouse and keyboard events; add more if necessary.
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
                        PP_INPUTEVENT_CLASS_KEYBOARD);
@@ -92,6 +142,16 @@ class GameInstance : public pp::Instance {
   virtual bool HandleInputEvent(const pp::InputEvent& event) {
     SDL_NACL_PushEvent(event);
     return true;
+  }
+
+  virtual void HandleMessage(const pp::Var& message) {
+    std::string s = message.AsString();
+    size_t pos = s.find('\0');
+    if (pos != std::string::npos && strcmp(s.c_str(), "ReadDirectory") == 0) {
+      directory_reader_.HandleResponse(s.substr(pos + 1));
+    } else {
+      fprintf(stderr, "Unexpected message\n");
+    }
   }
 
   // This function is called for various reasons, e.g. visibility and page
@@ -144,7 +204,7 @@ void GameInstance::LaunchGame() {
 
   // Setup writable homedir.
   PepperMount* pepper_mount = new PepperMount(runner_, fs_, 20 * 1024 * 1024);
-  //  pepper_mount->SetDirectoryReader(&directory_reader_);
+  pepper_mount->SetDirectoryReader(&directory_reader_);
   pepper_mount->SetPathPrefix("/userdata");
 
   proxy_->mkdir("/userdata", 0777);
