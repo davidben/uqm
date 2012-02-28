@@ -102,6 +102,7 @@ int
 readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result) {
 	struct dirent *readdir_entry;
 
+	errno = 0;
 	readdir_entry = readdir(dirp);
 	if (readdir_entry == NULL) {
 		*result = NULL;
