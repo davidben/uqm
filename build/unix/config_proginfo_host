@@ -375,11 +375,24 @@ HEADER_regex_EXTRA="#include <sys/types.h>"
 HEADER_stdint_DEFNAME="HAVE_STDINT_H_UQM"
 		# HAVE_STDINT_H would conflict with SDL (SDL_config.h).
 
-SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
+if [ "$HOST_SYSTEM" = "NACL" ]; then
+	# NaCl/newlib provides readdir_r, but the headers don't for
+	# some reason.
+	SYMBOL_readdir_r_EXTRA="
+#include <dirent.h>
+int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);"
+else
+	SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
+fi
 
 SYMBOL_setenv_EXTRA="#include <stdlib.h>"
 
-SYMBOL_strcasecmp_EXTRA="#include <strings.h>"
+if [ "$HOST_SYSTEM" = "NACL" ]; then
+	# NaCl is missing strings.h and puts it in string.h
+	SYMBOL_strcasecmp_EXTRA="#include <string.h>"
+else
+	SYMBOL_strcasecmp_EXTRA="#include <strings.h>"
+fi
 
 SYMBOL_strcasecmp_DEFNAME="HAVE_STRCASECMP_UQM"
 		# HAVE_STRCASECMP would conflict with SDL (SDL_config.h).
