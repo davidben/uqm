@@ -532,7 +532,7 @@ have_library() {
 		TEMP_LDFLAGS=`evalVar "LIB_${LIB}_LDFLAGS"`
 
 		try_compile_c "$CFLAGS $TEMP_CFLAGS" "$LDFLAGS $TEMP_LDFLAGS" << EOF
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	return 0;
 }
 EOF
@@ -597,8 +597,8 @@ use_library() {
 
 	TEMP_CFLAGS=`evalVar "LIB_${1}_CFLAGS"`
 	TEMP_LDFLAGS=`evalVar "LIB_${1}_LDFLAGS"`
-	CFLAGS="$CFLAGS $TEMP_CFLAGS"
-	LDFLAGS="$LDFLAGS $TEMP_LDFLAGS"
+	CFLAGS="$TEMP_CFLAGS $CFLAGS"
+	LDFLAGS="$TEMP_LDFLAGS $LDFLAGS"
 	return 0
 }
 
@@ -640,7 +640,7 @@ have_symbol() {
 	fi
 
 	CODE=`cat << EOF	
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	(void) $SYMBOL;
 	return 0;
 }
@@ -670,7 +670,7 @@ have_type() {
 	fi
 
 	CODE=`cat << EOF	
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	$TYPE var;
 	(void) var;
 	return 0;
@@ -757,7 +757,7 @@ have_header() {
 	try_compile_c "$CFLAGS $TEMP_CFLAGS" "$LDFLAGS $TEMP_LDFLAGS" << EOF > /dev/null 2>&1
 $EXTRA
 #include <$HEADER>
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	return 0;
 }
 EOF
@@ -810,7 +810,7 @@ $EXTRA
 #ifndef $MACRO
 #	error
 #endif
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	return 0;
 }
 EOF
@@ -878,7 +878,7 @@ check_endianness() {
 	else
 		# Detect endianness
 		try_compile_and_run_c "$CFLAGS" "$LDFLAGS" << EOF
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	int i;
 
 	i = 1;
@@ -1023,6 +1023,7 @@ set_build_system() {
 set_host_system() {
 	local UHOST
 
+	MAIN_FUNCTION=main
 	if [ -z "$BUILD_HOST" ]; then
 		HOST_SYSTEM=$BUILD_SYSTEM
 	else
@@ -1061,7 +1062,11 @@ set_host_system() {
 			[Gg][Cc][Cc][Ee])
 				HOST_SYSTEM="GCCE" ;;				
 			[Nn][Aa][Cc][Ll])
-				HOST_SYSTEM="NACL" ;;
+				HOST_SYSTEM="NACL"
+				# This is a hack, but we only need it
+				# to compile.
+				MAIN_FUNCTION=_ZN2pp12CreateModuleEv
+				;;
 			*)
 				build_message "Warning: host type '$BUILD_HOST' unknown. Using defaults."
 				;;
