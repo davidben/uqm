@@ -35,10 +35,17 @@ fi
 
 if [ "${NACL_PACKAGES_BITSIZE}" = "32" ] ; then
 	NACL_CROSS_PREFIX=i686-nacl
+	# Buildsystem cannot easily launch a prefixed gcc, so pass
+	# -m32 instead. i686-nacl-gcc is just a shell script that
+	# passes -m32 anyway.
+	export CFLAGS="-m32"
+	export LDFLAGS="-m32"
 elif [ "${NACL_PACKAGES_BITSIZE}" = "64" ] ; then
 	NACL_CROSS_PREFIX=x86_64-nacl
 elif [ "${NACL_PACKAGES_BITSIZE}" = "pnacl" ] ; then
 	NACL_CROSS_PREFIX=pnacl
+	echo "Do not know how to build pnacl"
+	exit 1
 else
 	echo "Unknown value for NACL_PACKAGES_BITSIZE: '${NACL_PACKAGES_BITSIZE}'" 1>&2
 	exit 1
@@ -46,7 +53,9 @@ fi
 
 CROSS_ROOT="$NACL_TOOLCHAIN_ROOT/$NACL_CROSS_PREFIX"
 
-export PATH="$CROSS_ROOT/bin:$PATH"
+# Unprefixed gcc lives in x86_64-nacl.
+export PATH="$NACL_TOOLCHAIN_ROOT/x86_64-nacl/bin:$PATH"
+
 export PATH="$CROSS_ROOT/usr/bin:$PATH"
 export PKG_CONFIG_PATH="$CROSS_ROOT/usr/lib/pkgconfig"
 
