@@ -49,6 +49,8 @@ class GameInstance : public pp::Instance {
   MainThreadRunner* runner_;
   pp::FileSystem* fs_;
 
+  std::string manifest_;
+
   // Launches the actual game, e.g., by calling game_main().
   static void* LaunchGameThunk(void* data);
   void LaunchGame();
@@ -135,8 +137,15 @@ class GameInstance : public pp::Instance {
   // This function is called with the HTML attributes of the embed tag,
   // which can be used in lieu of command line arguments.
   virtual bool Init(uint32_t argc, const char* argn[], const char* argv[]) {
-    // [Process arguments and set width_ and height_]
-    // [Initiate the loading of resources]
+    for (uint32_t i = 0; i < argc; i++) {
+      if (strcmp(argn[i], "manifest") == 0) {
+	manifest_ = argv[i];
+      }
+    }
+    if (manifest_.empty()) {
+      fprintf(stderr, "Manifest missing\n");
+      return false;
+    }
     return true;
   }
 
@@ -221,7 +230,7 @@ void GameInstance::LaunchGame() {
   http2_mount->SetLocalCache(fs_, 350*1024*1024, "/content-cache", true);
   //  http2_mount->SetProgressHandler(&progress_handler_);
 
-  http2_mount->ReadManifest("/manifest.0aaf28752056d176a94398ad6608940c33a44978");
+  http2_mount->ReadManifest(manifest_);
 
   // FIXME: nacl-mounts is buggy and can't readdir the root of an
   // HTTP2 mount. Probably should workaround this outside the library
