@@ -33,6 +33,8 @@
 #include <nacl-mounts/http2/HTTP2Mount.h>
 #include <nacl-mounts/pepper/PepperMount.h>
 
+// Code adapted from NaCl SDL tutorial and Wesnoth port.
+
 extern "C" int uqmMain(int argc, char **argv);
 
 class GameInstance : public pp::Instance {
@@ -214,7 +216,7 @@ void GameInstance::LaunchGame() {
   }
 
   // Setup r/o data directory in /content
-  HTTP2Mount* http2_mount = new HTTP2Mount(runner_, "/data/0.7.0");
+  HTTP2Mount* http2_mount = new HTTP2Mount(runner_, "./data");
   // FIXME: upgrades??
   http2_mount->SetLocalCache(fs_, 350*1024*1024, "/content-cache", true);
   //  http2_mount->SetProgressHandler(&progress_handler_);
