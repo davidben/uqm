@@ -121,7 +121,7 @@ class GameInstance : public pp::Instance {
     runner_ = new MainThreadRunner(this);
 
     // Persistent seems to hate me?
-    fprintf(stderr, "Requesting an HTML5 local tepmorary filesystem.\n");
+    fprintf(stderr, "Requesting an HTML5 local temporary filesystem.\n");
     fs_ = new pp::FileSystem(this, PP_FILESYSTEMTYPE_LOCALTEMPORARY);
   }
 
