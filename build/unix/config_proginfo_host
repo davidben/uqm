@@ -375,15 +375,7 @@ HEADER_regex_EXTRA="#include <sys/types.h>"
 HEADER_stdint_DEFNAME="HAVE_STDINT_H_UQM"
 		# HAVE_STDINT_H would conflict with SDL (SDL_config.h).
 
-if [ "$HOST_SYSTEM" = "NACL" ]; then
-	# NaCl/newlib provides readdir_r, but the headers don't for
-	# some reason.
-	SYMBOL_readdir_r_EXTRA="
-#include <dirent.h>
-int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);"
-else
-	SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
-fi
+SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
 
 SYMBOL_setenv_EXTRA="#include <stdlib.h>"
 
