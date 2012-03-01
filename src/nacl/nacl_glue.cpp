@@ -193,9 +193,7 @@ int GameInstance::num_instances_;
 
 // static
 void* GameInstance::LaunchGameThunk(void* data) {
-  // Use "thiz" to get access to instance object.
-  GameInstance* thiz = static_cast<GameInstance*>(data);
-  thiz->LaunchGame();
+  static_cast<GameInstance*>(data)->LaunchGame();
   return NULL;
 }
 
