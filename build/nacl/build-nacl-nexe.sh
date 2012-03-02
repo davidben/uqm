@@ -19,7 +19,7 @@
 # You can start this program as 'SH="/bin/sh -x" ./build.sh' to
 # enable command tracing.
 
-cd "$(readlink -f "$(dirname "$0")")"
+cd "$(readlink -f "$(dirname "$0")")/../.."
 
 if [ -z "$NACL_SDK_ROOT" ]; then
 	echo "Error: NACL_SDK_ROOT not set" 1>&2
