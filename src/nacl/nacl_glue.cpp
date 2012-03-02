@@ -60,9 +60,9 @@ class GameInstance : public pp::Instance {
   public:
     JSDirectoryReader(pp::Instance* instance) : instance_(instance) { }
 
-    int ReadDirectory(const std::string& path,
-		      std::set<std::string>* entries,
-		      const pp::CompletionCallback& cc) {
+    virtual int ReadDirectory(const std::string& path,
+			      std::set<std::string>* entries,
+			      const pp::CompletionCallback& cc) {
       DirectoryRequest req = { path, entries, cc };
       requests_.push(req);
       std::string message = "ReadDirectory";
@@ -103,6 +103,28 @@ class GameInstance : public pp::Instance {
   };
   JSDirectoryReader directory_reader_;
 
+  class JSProgressHandler : public HTTP2ProgressHandler {
+  public:
+    JSProgressHandler(pp::Instance* instance) : instance_(instance) { }
+
+    virtual void HandleProgress(std::string& path,
+				int64_t bytes,
+				int64_t size) {
+      std::string message = "HandleProgress";
+      message += '\0'; message += path;
+      char buf[30];
+      snprintf(buf, sizeof(buf), "%ld", bytes);
+      message += '\0'; message += buf;
+      snprintf(buf, sizeof(buf), "%ld", size);
+      message += '\0'; message += buf;
+      instance_->PostMessage(message);
+    }
+
+  private:
+    pp::Instance* instance_;
+  };
+  JSProgressHandler progress_handler_;
+
  public:
 
   explicit GameInstance(PP_Instance instance)
@@ -112,7 +134,8 @@ class GameInstance : public pp::Instance {
       width_(0), height_(0),
       cc_factory_(this),
       manifest_size_(-1),
-      directory_reader_(this) {
+      directory_reader_(this),
+      progress_handler_(this) {
     // Game requires mouse and keyboard events; add more if necessary.
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
                        PP_INPUTEVENT_CLASS_KEYBOARD);
@@ -239,7 +262,7 @@ void GameInstance::LaunchGame() {
   HTTP2Mount* http2_mount = new HTTP2Mount(runner_, "./data");
   // FIXME: upgrades??
   http2_mount->SetLocalCache(fs_, 350*1024*1024, "/content-cache", true);
-  //  http2_mount->SetProgressHandler(&progress_handler_);
+  http2_mount->SetProgressHandler(&progress_handler_);
 
   http2_mount->ReadManifest(manifest_, manifest_size_);
 
