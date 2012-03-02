@@ -1,8 +1,8 @@
 import os
 import os.path
 
-srcdir = "../../../content"
-destdir = "data"
+srcdir = "./content"
+destdir = os.path.join(os.environ["OUTPUTDIR"], "data")
 manifest = "manifest"
 
 # Separate each alien into its own pack.

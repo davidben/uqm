@@ -1,5 +1,12 @@
 (function () {
-    var uqmModule = document.getElementById("uqm_module");
+    var uqmModule = document.createElement("embed");
+    uqmModule.setAttribute("width", "640");
+    uqmModule.setAttribute("height", "480");
+    uqmModule.setAttribute("manifest", manifest);
+    uqmModule.setAttribute("manifestsize", manifestSize);
+    uqmModule.setAttribute("src", "uqm.nmf");
+    uqmModule.setAttribute("type", "application/x-nacl");
+    document.body.appendChild(uqmModule);
 
     function ReadDirectory(path) {
 	function onError(e) {

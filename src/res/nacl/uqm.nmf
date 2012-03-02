@@ -1,6 +1,6 @@
 {
     "program": {
-	"x86-64": { "url": "uqm64.nexe" },
-	"x86-32": { "url": "uqm32.nexe" }
+	"x86-64": { "url": "uqm-64.nexe" },
+	"x86-32": { "url": "uqm-32.nexe" }
     }
 }
