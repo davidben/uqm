@@ -266,9 +266,6 @@ void GameInstance::LaunchGame() {
 
   http2_mount->ReadManifest(manifest_, manifest_size_);
 
-  // FIXME: nacl-mounts is buggy and can't readdir the root of an
-  // HTTP2 mount. Probably should workaround this outside the library
-  // too, to ease building.
   proxy_->mkdir("/content", 0777);
   res = proxy_->mount("/content", new BufferMount(http2_mount, 1024 * 1024, 100));
   if (!res) {
