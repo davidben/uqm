@@ -6,7 +6,7 @@
     uqmModule.setAttribute("manifestsize", manifestSize);
     uqmModule.setAttribute("src", "uqm.nmf");
     uqmModule.setAttribute("type", "application/x-nacl");
-    document.body.appendChild(uqmModule);
+    document.getElementById("container").appendChild(uqmModule);
 
     function ReadDirectory(path) {
 	function onError(e) {
