@@ -43,4 +43,7 @@ for f in get_dirs(os.path.join(srcdir, 'base/fonts')):
             font_pack.append(['base/fonts/%s' % f, '*', ''])
 packs.append(font_pack)
 
+# Pack 3domusic separately.
+packs.append([['addons/3domusic', '*', '*.rmp']])
+
 packs.append([['*', '*', '']])
