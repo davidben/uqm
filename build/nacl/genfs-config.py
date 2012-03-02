@@ -20,6 +20,10 @@ packs.append([['base/ships/', '*-icons-*.png', ''],
               ['base/ships/', '*.txt', '']])
 packs.append([['base/ships/', '*', '']])
 
+# Separate some more content
+packs.append([['base/lander/', '*', '']])
+packs.append([['base/nav/', '*', '']])
+
 # TODO: Separate out other files. Maybe landers and whatnot. The
 # downside is that we spread the initial latency, so good to download
 # in the background too.
