@@ -33,6 +33,8 @@ for c in get_dirs(os.path.join(srcdir, 'base/comm')):
                   ['base/comm/%s' % c, '*', '']])
 
 # Pack 3domusic separately.
+packs.append([['addons/3domusic/space.ogg', '*', ''],
+              ['addons/3domusic/orbit*.ogg', '*', '']])
 packs.append([['addons/3domusic', '*', '*.rmp']])
 
 packs.append([['*', '*', '']])
