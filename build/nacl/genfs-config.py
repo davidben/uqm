@@ -5,8 +5,9 @@ srcdir = "./content"
 destdir = os.path.join(os.environ["OUTPUTDIR"], "data")
 manifest = "manifest"
 
-# Separate each alien into its own pack.
 packs = []
+
+# Separate each alien into its own pack.
 voice_dir = os.path.join(srcdir, 'addons/3dovoice')
 for alien in os.listdir(voice_dir):
     if os.path.isdir(os.path.join(voice_dir, alien)):
@@ -24,7 +25,10 @@ packs.append([['base/ships/', '*', '']])
 packs.append([['base/lander/', '*', '']])
 packs.append([['base/nav/', '*', '']])
 
-# TODO: Separate out other files. Maybe landers and whatnot. The
-# downside is that we spread the initial latency, so good to download
-# in the background too.
+# Separate each font into its own pack. (Too small?)
+font_dir = os.path.join(srcdir, 'base/fonts')
+for font in os.listdir(font_dir):
+    if os.path.isdir(os.path.join(font_dir, font)):
+        packs.append([['base/fonts/%s' % font, '*', '']])
+
 packs.append([['*', '*', '']])
