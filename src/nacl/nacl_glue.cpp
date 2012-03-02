@@ -50,6 +50,7 @@ class GameInstance : public pp::Instance {
   pp::FileSystem* fs_;
 
   std::string manifest_;
+  ssize_t manifest_size_;
 
   // Launches the actual game, e.g., by calling game_main().
   static void* LaunchGameThunk(void* data);
@@ -110,6 +111,7 @@ class GameInstance : public pp::Instance {
       num_changed_view_(0),
       width_(0), height_(0),
       cc_factory_(this),
+      manifest_size_(-1),
       directory_reader_(this) {
     // Game requires mouse and keyboard events; add more if necessary.
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE |
@@ -141,11 +143,20 @@ class GameInstance : public pp::Instance {
       if (strcmp(argn[i], "manifest") == 0) {
 	manifest_ = argv[i];
       }
+      if (strcmp(argn[i], "manifestsize") == 0) {
+	char *end;
+	manifest_size_ = strtol(argv[i], &end, 10);
+	if (*argv[i] == '\0' || *end != '\0') {
+	  fprintf(stderr, "manifestsize '%s' is not an integer\n", argv[i]);
+	  return false;
+	}
+      }
     }
     if (manifest_.empty()) {
       fprintf(stderr, "Manifest missing\n");
       return false;
     }
+    fprintf(stderr, "manifest_size_ = %d\n", manifest_size_);
     return true;
   }
 
@@ -230,7 +241,7 @@ void GameInstance::LaunchGame() {
   http2_mount->SetLocalCache(fs_, 350*1024*1024, "/content-cache", true);
   //  http2_mount->SetProgressHandler(&progress_handler_);
 
-  http2_mount->ReadManifest(manifest_);
+  http2_mount->ReadManifest(manifest_, manifest_size_);
 
   // FIXME: nacl-mounts is buggy and can't readdir the root of an
   // HTTP2 mount. Probably should workaround this outside the library
