@@ -23,9 +23,9 @@ packs.append([['base/ships/', '*-icons-*.png', ''],
 packs.append([['base/ships/', '*', '']])
 
 # Separate some more content
-packs.append([['base/lander/', '*', '']])
-packs.append([['base/nav/', '*', '']])
-packs.append([['base/planets/', '*', '']])
+packs.append([['base/lander/', '*', ''],
+              ['base/nav/', '*', ''],
+              ['base/planets/', '*', '']])
 
 # Separate comm files. Pack with matching font.
 for c in get_dirs(os.path.join(srcdir, 'base/comm')):
