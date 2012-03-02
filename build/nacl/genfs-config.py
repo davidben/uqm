@@ -14,13 +14,21 @@ def get_dirs(path):
 for alien in get_dirs(os.path.join(srcdir, 'addons/3dovoice')):
     packs.append([['addons/3dovoice/%s' % alien, '*', '']])
 
-# Move ship images in two dedicated packs. One contains files loaded
-# at startup, the other contains the rest.
-packs.append([['base/ships/', '*-icons-*.png', ''],
-              ['base/ships/', '*-meleeicons-*.png', ''],
-              ['base/ships/', '*.ani', ''],
-              ['base/ships/', '*.txt', '']])
-packs.append([['base/ships/', '*', '']])
+# Move ship images into a dedicated packs, except for the icons needed
+# at startup.
+ship_pack = []
+ship_exclude = ('-icons.ani', '-icons-000.png', '-icons-001.png',
+                '-meleeicons.ani', '-meleeicons-000.png', '-meleeicons-001.png',
+                '.txt')
+for ship in os.listdir(os.path.join(srcdir, 'base/ships')):
+    for f in os.listdir(os.path.join(srcdir, 'base/ships', ship)):
+        skip = False
+        for suffix in ship_exclude:
+            if f.endswith(suffix):
+                skip = True
+        if not skip:
+            ship_pack.append(['base/ships/%s/%s' % (ship, f), '*', ''])
+packs.append(ship_pack)
 
 # Separate some more content
 packs.append([['base/lander/', '*', ''],
