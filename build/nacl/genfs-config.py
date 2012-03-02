@@ -12,6 +12,14 @@ for alien in os.listdir(voice_dir):
     if os.path.isdir(os.path.join(voice_dir, alien)):
         packs.append([['addons/3dovoice/%s' % alien, '*', '']])
 
+# Move ship images in two dedicated packs. One contains files loaded
+# at startup, the other contains the rest.
+packs.append([['base/ships/', '*-icons-*.png', ''],
+              ['base/ships/', '*-meleeicons-*.png', ''],
+              ['base/ships/', '*.ani', ''],
+              ['base/ships/', '*.txt', '']])
+packs.append([['base/ships/', '*', '']])
+
 # TODO: Separate out other files. Maybe landers and whatnot. The
 # downside is that we spread the initial latency, so good to download
 # in the background too.
