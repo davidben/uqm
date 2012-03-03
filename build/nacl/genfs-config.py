@@ -42,9 +42,12 @@ for c in get_dirs(os.path.join(srcdir, 'base/comm')):
                       ['base/comm/%s' % c, '*', '']])
 packs.append(comm_pack)
 
-# Pack 3domusic separately.
+# Pack music needed on new game.
 packs.append([['addons/3domusic/space.ogg', '*', ''],
               ['addons/3domusic/orbit*.ogg', '*', '']])
-packs.append([['addons/3domusic', '*', '*.rmp']])
+# Pack remaining music, except credits.ogg. That one is included in
+# the main pack because it is loaded when you go idle, and hanging on
+# idle is not very good.
+packs.append([['addons/3domusic/*.ogg', '*', '*/credits.ogg']])
 
 packs.append([['*', '*', '']])
