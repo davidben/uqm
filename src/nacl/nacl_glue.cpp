@@ -113,9 +113,9 @@ class GameInstance : public pp::Instance {
       std::string message = "HandleProgress";
       message += '\0'; message += path;
       char buf[30];
-      snprintf(buf, sizeof(buf), "%ld", bytes);
+      snprintf(buf, sizeof(buf), "%lld", bytes);
       message += '\0'; message += buf;
-      snprintf(buf, sizeof(buf), "%ld", size);
+      snprintf(buf, sizeof(buf), "%lld", size);
       message += '\0'; message += buf;
       instance_->PostMessage(message);
     }
