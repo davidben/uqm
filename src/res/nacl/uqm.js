@@ -60,24 +60,50 @@
 		}, onError);
 	     }
 	     pumpReader();
-	 }
+	}
 
-	 window.webkitRequestFileSystem(
-             window.TEMPORARY, 5*1024*1024,
-             function (fs) {
-		 fs.root.getDirectory(path, {}, readDirectory, onError);
-	     }, onError);
-     }
+	window.webkitRequestFileSystem(
+            window.TEMPORARY, 5*1024*1024,
+            function (fs) {
+		fs.root.getDirectory(path, {}, readDirectory, onError);
+	    }, onError);
+    }
 
 
-     uqmModule.addEventListener(
-	 "message", function (ev) {
-	     var msg = ev.data.split("\x00");
-	     if (msg[0] == "ReadDirectory") {
-		 ReadDirectory(msg[1]);
-	     } else {
-		 console.log("Unexpected message:");
-		 console.log(msg);
-	     }
-	 }, false);
- })();
+    var downloadsList = document.getElementById("downloads");
+    var downloads = {}
+    function HandleProgress(path, bytes, size) {
+	if (bytes >= size) {
+	    console.log(path + " done");
+	    if (downloads[path]) {
+		downloads[path].parentElement.removeChild(downloads[path]);
+		delete downloads[path];
+	    }
+	} else {
+	    if (!downloads[path]) {
+		var li = document.createElement('li');
+		li.appendChild(document.createTextNode(path));
+		li.appendChild(document.createElement('progress'));
+		downloadsList.appendChild(li);
+		downloads[path] = li;
+	    }
+	    var progress = downloads[path].lastChild;
+	    progress.max = size;
+	    progress.value = bytes;
+	}
+    }
+
+
+    uqmModule.addEventListener(
+	"message", function (ev) {
+	    var msg = ev.data.split("\x00");
+	    if (msg[0] == "ReadDirectory") {
+		ReadDirectory(msg[1]);
+	    } else if (msg[0] == "HandleProgress") {
+		HandleProgress(msg[1], msg[2], msg[3]);
+	    } else {
+		console.log("Unexpected message:");
+		console.log(msg);
+	    }
+	}, false);
+})();
