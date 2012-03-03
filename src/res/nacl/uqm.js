@@ -100,7 +100,7 @@
 	    if (msg[0] == "ReadDirectory") {
 		ReadDirectory(msg[1]);
 	    } else if (msg[0] == "HandleProgress") {
-		HandleProgress(msg[1], msg[2], msg[3]);
+		HandleProgress(msg[1], Number(msg[2]), Number(msg[3]));
 	    } else {
 		console.log("Unexpected message:");
 		console.log(msg);
