@@ -1062,7 +1062,7 @@ set_host_system() {
 			[Gg][Cc][Cc][Ee])
 				HOST_SYSTEM="GCCE" ;;				
 			[Nn][Aa][Cc][Ll])
-				HOST_SYSTEM="NACL"
+				HOST_SYSTEM="NaCl"
 				# This is a hack, but we only need it
 				# to compile.
 				MAIN_FUNCTION=_ZN2pp12CreateModuleEv

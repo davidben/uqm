@@ -15,7 +15,7 @@ case "$HOST_SYSTEM" in
 	MINGW32*|CYGWIN*)
 		uqm_NAME="$uqm_NAME.exe"
 		;;
-	NACL)
+	NaCl)
 		uqm_NAME="$uqm_NAME.nexe"
 		;;
 esac

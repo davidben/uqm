@@ -26,7 +26,7 @@ if [ -z "$NACL_SDK_ROOT" ]; then
 	exit 1
 fi
 
-export BUILD_HOST="NACL"
+export BUILD_HOST="NaCl"
 export BUILD_HOST_ENDIAN="little"
 
 if [ "$NACL_GLIBC" = 1 ]; then

@@ -74,7 +74,7 @@ case "$HOST_SYSTEM" in
 		LIB_SDL_VERSION='1.2.13'
 		LIB_SDL_DETECT="true"
 		;;		
-	NACL)
+	NaCl)
 		LIB_SDL_DETECT="have_command sdl-config"
 		LIB_SDL_CFLAGS='$(sdl-config --cflags)'
 		LIB_SDL_LDFLAGS='$(sdl-config --libs)'
@@ -108,7 +108,7 @@ case "$HOST_SYSTEM" in
 		LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS"
 		LIB_SDL_image_DETECT="true"
 		;;	
-	NACL)
+	NaCl)
 		# Include dependencies, since we're linking statically.
 		LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
 		LIB_SDL_image_LDFLAGS="-lSDL_image -lpng -ljpeg"
@@ -338,7 +338,7 @@ esac
 # Core PPAPI and NaCl libraries.
 LIB_ppapi_NAME="NaCl PPAPI Bindings and nacl-mounts"
 case "$HOST_SYSTEM" in
-	NACL)
+	NaCl)
 		# Put nacl-mounts and ppapi_cpp in the same entry
 		# because there are dependency nuisances; -lppapi_cpp
 		# needs to be in the first check because config uses a
@@ -379,7 +379,7 @@ SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
 
 SYMBOL_setenv_EXTRA="#include <stdlib.h>"
 
-if [ "$HOST_SYSTEM" = "NACL" ]; then
+if [ "$HOST_SYSTEM" = "NaCl" ]; then
 	# NaCl is missing strings.h and puts it in string.h
 	SYMBOL_strcasecmp_EXTRA="#include <string.h>"
 else
