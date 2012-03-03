@@ -27,7 +27,7 @@ export OUTPUTDIR=$(readlink -f $1)
 cd "$(readlink -f "$(dirname "$0")")/../.."
 
 # Drop in static files
-for f in uqm.html uqm.js uqm.nmf icon.png; do
+for f in index.html uqm.js uqm.nmf icon.png; do
     cp "src/res/nacl/$f" "$OUTPUTDIR/$f"
 done
 
