@@ -35,10 +35,12 @@ packs.append([['base/lander/', '*', ''],
               ['base/nav/', '*', ''],
               ['base/planets/', '*', '']])
 
-# Separate comm files. Pack with matching font.
+# Pack comm files, along with corresponding fonts.
+comm_pack = []
 for c in get_dirs(os.path.join(srcdir, 'base/comm')):
-    packs.append([['base/fonts/%s.fon' % c, '*', ''],
-                  ['base/comm/%s' % c, '*', '']])
+    comm_pack.extend([['base/fonts/%s.fon' % c, '*', ''],
+                      ['base/comm/%s' % c, '*', '']])
+packs.append(comm_pack)
 
 # Pack 3domusic separately.
 packs.append([['addons/3domusic/space.ogg', '*', ''],
