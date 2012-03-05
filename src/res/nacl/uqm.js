@@ -1,26 +1,52 @@
 (function () {
-    var downloadsList = document.getElementById("downloads");
-    var downloads = {}
+    var downloadsDiv = document.getElementById("downloads");
+    var downloadsProgress = null;
+    var downloads = {};
     function HandleProgress(path, bytes, size) {
 	if (size >= 0 && bytes >= size) {
 	    console.log(path + " done");
 	    if (downloads[path]) {
-		downloads[path].parentElement.removeChild(downloads[path]);
 		delete downloads[path];
 	    }
 	} else {
-	    if (!downloads[path]) {
-		var li = document.createElement('li');
-		li.appendChild(document.createTextNode(path));
-		li.appendChild(document.createElement('progress'));
-		downloadsList.appendChild(li);
-		downloads[path] = li;
+	    if (downloads[path] === undefined)
+		console.log("Downloading '" + path + "'...");
+	    downloads[path] = [bytes, size]
+	}
+	updateProgress();
+    }
+    function updateProgress() {
+	var numDownloads = 0;
+	var totalDownloaded = 0, totalSize = 0;
+	for (var path in downloads) {
+	    if (!downloads.hasOwnProperty(path))
+		continue;
+	    numDownloads++;
+	    if (downloads[path][1] > 0) {
+		totalDownloaded += downloads[path][0];
+		totalSize += downloads[path][1];
 	    }
-	    if (size >= 0) {
-		var progress = downloads[path].lastChild;
-		progress.max = size;
-		progress.value = bytes;
+	}
+
+	if (numDownloads == 0) {
+	    // No active downloads. Delete the progress bar.
+	    if (downloadsProgress) {
+		downloadsProgress.parentElement.removeChild(downloadsProgress);
+		downloadsProgress = null;
 	    }
+	    return;
+	}
+	// Create a progress bar and update it.
+	if (!downloadsProgress) {
+	    downloadsProgress = document.createElement("progress");
+	    downloadsDiv.appendChild(downloadsProgress);
+	}
+	if (totalSize > 0) {
+	    downloadsProgress.value = totalDownloaded;
+	    downloadsProgress.max = totalSize;
+	} else {
+	    // Assume indeterminate.
+	    downloadsProgress.max = null;
 	}
     }
 
