@@ -2,7 +2,7 @@
     var downloadsDiv = document.getElementById("downloads");
     var downloadsProgress = null;
     var downloads = {};
-    function HandleProgress(path, bytes, size) {
+    function handleProgress(path, bytes, size) {
 	if (size >= 0 && bytes >= size) {
 	    console.log(path + " done");
 	    if (downloads[path]) {
@@ -50,25 +50,25 @@
 	}
     }
 
-    // Plumb nexe loading code through HandleProgress for now. All
+    // Plumb nexe loading code through handleProgress for now. All
     // this needs better UI anyway.
     var containerDiv = document.getElementById("container");
     containerDiv.addEventListener("loadstart", function (ev) {
-	HandleProgress("Downloading", -1, -1);
+	handleProgress("Downloading", -1, -1);
     }, true);
     containerDiv.addEventListener("progress", function (ev) {
 	if (ev.lengthComputable) {
-	    HandleProgress("Downloading", ev.loaded, ev.total);
+	    handleProgress("Downloading", ev.loaded, ev.total);
 	} else {
-	    HandleProgress("Downloading", -1, -1);
+	    handleProgress("Downloading", -1, -1);
 	}
     }, true);
     containerDiv.addEventListener("load", function (ev) {
-	HandleProgress("Downloading", 1, 1);
-	HandleProgress("Initializing", -1, -1);
+	handleProgress("Downloading", 1, 1);
+	handleProgress("Initializing", -1, -1);
     }, true);
     containerDiv.addEventListener("loadend", function (ev) {
-	HandleProgress("Initializing", 1, 1);
+	handleProgress("Initializing", 1, 1);
     }, true);
 
     var uqmModule = document.createElement("embed");
@@ -80,7 +80,7 @@
     uqmModule.setAttribute("type", "application/x-nacl");
     containerDiv.appendChild(uqmModule);
 
-    function ReadDirectory(path) {
+    function readDirectory(path) {
 	function onError(e) {
             var msg = '';
 
@@ -146,9 +146,9 @@
 	"message", function (ev) {
 	    var msg = ev.data.split("\x00");
 	    if (msg[0] == "ReadDirectory") {
-		ReadDirectory(msg[1]);
+		readDirectory(msg[1]);
 	    } else if (msg[0] == "HandleProgress") {
-		HandleProgress(msg[1], Number(msg[2]), Number(msg[3]));
+		handleProgress(msg[1], Number(msg[2]), Number(msg[3]));
 	    } else {
 		console.log("Unexpected message:");
 		console.log(msg);
