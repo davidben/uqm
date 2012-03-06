@@ -53,9 +53,6 @@
 #if defined(HAVE_STDINT_H_UQM)
 
 #	include <stdint.h>
-#	define UQM_INT16 int16_t
-#	define UQM_INT32 int32_t
-#	define UQM_INT64 int64_t
 
 #elif defined(__arch64__) || defined(__alpha) || defined(__x86_64) \
 		|| defined(_M_IA64) || defined(_M_AMD64)
@@ -155,10 +152,10 @@ typedef struct
 
 #endif /* UQM_INT64 */
 
-#endif /* HAVE_STDINT_H_UQM */
-
 #undef UQM_INT16
 #undef UQM_INT32
+
+#endif /* HAVE_STDINT_H_UQM */
 
 /* Make sure the types really have the right sizes
  * Adapted from SDL
