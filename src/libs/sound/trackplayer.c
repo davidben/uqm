@@ -24,7 +24,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <memory.h>
+#ifdef HAVE_MEMORY_H_UQM
+#	include <memory.h>
+#endif
 
 
 static int track_count;       // total number of tracks
