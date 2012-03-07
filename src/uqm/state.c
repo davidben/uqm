@@ -24,7 +24,10 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef HAVE_MEMORY_H_UQM
 #include <memory.h>
+#endif
+#include <string.h>
 
 // in-memory file i/o
 struct GAME_STATE_FILE
