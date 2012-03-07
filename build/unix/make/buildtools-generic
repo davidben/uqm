@@ -14,10 +14,6 @@ define act_mkdep_m
 	$(MKDEP_OBJC) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
 endef
 
-define act_mkdep_cxx
-	$(MKDEP_CXX) $(CFLAGS) "$<" -MT "$(@D)/$(<F).o" -MF "$@"
-endef
-
 define act_windres
 	$(WINDRES) --include-dir $(dir $<) -o "$@" "$<"
 endef
@@ -32,10 +28,6 @@ endef
 
 define act_objcc
 	$(COMPILE_OBJC) -o "$@" $(CFLAGS) "$<"
-endef
-
-define act_cxx
-	$(COMPILE_CXX) -o "$@" $(CFLAGS) "$<"
 endef
 
 define act_link
