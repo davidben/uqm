@@ -60,6 +60,9 @@
 /* Defined if your system has _Bool of its own */
 @HAVE__BOOL@
 
+/* Defined if your system has stdint.h */
+@HAVE_STDINT_H_UQM@
+
 #endif  /* _CONFIG_WIN_H */
 
 

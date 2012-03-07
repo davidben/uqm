@@ -54,7 +54,11 @@
 extern "C" {
 #endif
 
-#if defined(__arch64__) || defined(__alpha) || defined(__x86_64) \
+#if defined(HAVE_STDINT_H_UQM)
+
+#	include <stdint.h>
+
+#elif defined(__arch64__) || defined(__alpha) || defined(__x86_64) \
 		|| defined(_M_IA64) || defined(_M_AMD64)
 	/* 64-bit platforms */
 #	define UQM_INT16   short
@@ -113,6 +117,17 @@ typedef unsigned char _Bool;
 typedef unsigned char      uint8;
 typedef signed char        sint8;
 
+#if defined(HAVE_STDINT_H_UQM)
+
+typedef uint16_t uint16;
+typedef  int16_t sint16;
+typedef uint32_t uint32;
+typedef  int32_t sint32;
+typedef uint64_t uint64;
+typedef  int64_t sint64;
+
+#else /* dont have stdint.h */
+
 typedef unsigned UQM_INT16 uint16;
 typedef signed UQM_INT16   sint16;
 
@@ -143,6 +158,8 @@ typedef struct
 
 #undef UQM_INT16
 #undef UQM_INT32
+
+#endif /* HAVE_STDINT_H_UQM */
 
 /* Make sure the types really have the right sizes
  * Adapted from SDL
