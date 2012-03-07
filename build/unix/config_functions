@@ -591,13 +591,13 @@ but version $2 is required!"
 #              LIB_${1}_LDFLAGS are expected to exist. If two arguments are
 #              supplied, so is LIB_${1}_VERSION.
 use_library() {
-	local TEMP_CFLAGS TEMP_LDFLAGS
+	local TEMP_CCOMMONFLAGS TEMP_LDFLAGS
 	have_library "$@"
 	[ $? -eq 0 ] || exit 1
 
-	TEMP_CFLAGS=`evalVar "LIB_${1}_CFLAGS"`
+	TEMP_CCOMMONFLAGS=`evalVar "LIB_${1}_CFLAGS"`
 	TEMP_LDFLAGS=`evalVar "LIB_${1}_LDFLAGS"`
-	CFLAGS="$TEMP_CFLAGS $CFLAGS"
+	CCOMMONFLAGS="$TEMP_CCOMMONFLAGS $CCOMMONFLAGS"
 	LDFLAGS="$TEMP_LDFLAGS $LDFLAGS"
 	return 0
 }
