@@ -22,6 +22,7 @@
 #include "libs/graphics/sdl/sdl_common.h"
 
 int TFB_Pure_InitGraphics (int driver, int flags, int width, int height);
+void TFB_Pure_UninitGraphics (void);
 int TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int togglefullscreen);
 void Scale_PerfTest (void);
 

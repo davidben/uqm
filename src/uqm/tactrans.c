@@ -47,6 +47,8 @@ static void cleanup_dead_ship (ELEMENT *ElementPtr);
 
 static BOOLEAN dittyIsPlaying;
 static STARSHIP *winnerStarShip;
+		// Indicates which ship is the winner of the current battle.
+		// The winner will be last to pick the next ship.
 
 
 BOOLEAN
@@ -471,9 +473,6 @@ new_ship (ELEMENT *DeadShipPtr)
 		SetElementStarShip (DeadShipPtr, 0);
 		RestartMusic = OpponentAlive (DeadStarShipPtr);
 
-		if (DeadStarShipPtr->RaceDescPtr->uninit_func != NULL)
-			(*DeadStarShipPtr->RaceDescPtr->uninit_func) (
-					DeadStarShipPtr->RaceDescPtr);
 		free_ship (DeadStarShipPtr->RaceDescPtr, TRUE, TRUE);
 		DeadStarShipPtr->RaceDescPtr = 0;
 		
@@ -617,38 +616,37 @@ explosion_preprocess (ELEMENT *ShipPtr)
 }
 
 void
-ship_death (ELEMENT *ShipPtr)
+StopAllBattleMusic (void)
 {
-	STARSHIP *StarShipPtr;
-	STARSHIP *VictoriousStarShipPtr;
-	HELEMENT hElement, hNextElement;
-	ELEMENT *ElementPtr;
-
 	StopDitty ();
 	StopMusic ();
+}
 
-	GetElementStarShip (ShipPtr, &StarShipPtr);
+STARSHIP *
+FindAliveStarShip (ELEMENT *deadShip)
+{
+	STARSHIP *aliveShip = NULL;
+	HELEMENT hElement, hNextElement;
 
-	if (ShipPtr->mass_points <= MAX_SHIP_MASS)
-	{	// Not running away and not reincarnating (Pkunk)
-		// When a ship tries to run away, it is (dis)counted in DoRunAway(),
-		// so when it dies while running away, we will not count it again
-		assert (StarShipPtr->playerNr >= 0);
-		battle_counter[StarShipPtr->playerNr]--;
-	}
-
-	VictoriousStarShipPtr = NULL;
+	// Find the remaining ship, if any, and see if it is still alive.
 	for (hElement = GetHeadElement (); hElement; hElement = hNextElement)
 	{
+		ELEMENT *ElementPtr;
+
 		LockElement (hElement, &ElementPtr);
 		if ((ElementPtr->state_flags & PLAYER_SHIP)
-				&& ElementPtr != ShipPtr
+				&& ElementPtr != deadShip
 						/* and not running away */
-				&& ElementPtr->mass_points <= MAX_SHIP_MASS)
+				&& ElementPtr->mass_points <= MAX_SHIP_MASS + 1)
 		{
-			GetElementStarShip (ElementPtr, &VictoriousStarShipPtr);
-			if (VictoriousStarShipPtr->RaceDescPtr->ship_info.crew_level == 0)
-				VictoriousStarShipPtr = NULL;
+			GetElementStarShip (ElementPtr, &aliveShip);
+			assert (aliveShip != NULL);
+			if (aliveShip->RaceDescPtr->ship_info.crew_level == 0
+					/* reincarnating Pkunk is not actually dead */
+					&& ElementPtr->mass_points != MAX_SHIP_MASS + 1)
+			{
+				aliveShip = NULL;
+			}
 
 			UnlockElement (hElement);
 			break;
@@ -656,8 +654,59 @@ ship_death (ELEMENT *ShipPtr)
 		hNextElement = GetSuccElement (ElementPtr);
 		UnlockElement (hElement);
 	}
+	
+	return aliveShip;
+}
 
-	StarShipPtr->cur_status_flags &= ~PLAY_VICTORY_DITTY;
+STARSHIP *
+GetWinnerStarShip (void)
+{
+	return winnerStarShip;
+}
+
+void
+SetWinnerStarShip (STARSHIP *winner)
+{
+	if (winner == NULL)
+		return; // nothing to do
+	
+	winner->cur_status_flags |= PLAY_VICTORY_DITTY;
+
+	// The winner is set once per battle. If both ships die, this function is
+	// called twice, once for each ship. We need to preserve the winner
+	// determined on the first call.
+	if (winnerStarShip == NULL)
+		winnerStarShip = winner;
+}
+
+void
+RecordShipDeath (ELEMENT *deadShip)
+{
+	STARSHIP *deadStarShip;
+
+	GetElementStarShip (deadShip, &deadStarShip);
+	assert (deadStarShip != NULL);
+
+	if (deadShip->mass_points <= MAX_SHIP_MASS)
+	{	// Not running away.
+		// When a ship tries to run away, it is (dis)counted in DoRunAway(),
+		// so when it dies while running away, we will not count it again
+		assert (deadStarShip->playerNr >= 0);
+		battle_counter[deadStarShip->playerNr]--;
+	}
+
+	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
+		MeleeShipDeath (deadStarShip);
+}
+
+void
+StartShipExplosion (ELEMENT *ShipPtr, bool playSound)
+{
+	STARSHIP *StarShipPtr;
+
+	GetElementStarShip (ShipPtr, &StarShipPtr);
+
+	ZeroVelocityComponents (&ShipPtr->velocity);
 
 	DeltaEnergy (ShipPtr,
 			-(SIZE)StarShipPtr->RaceDescPtr->ship_info.energy_level);
@@ -665,43 +714,38 @@ ship_death (ELEMENT *ShipPtr)
 	ShipPtr->life_span = NUM_EXPLOSION_FRAMES * 3;
 	ShipPtr->state_flags &= ~DISAPPEARING;
 	ShipPtr->state_flags |= FINITE_LIFE | NONSOLID;
+	ShipPtr->preprocess_func = explosion_preprocess;
 	ShipPtr->postprocess_func = PostProcessStatus;
 	ShipPtr->death_func = cleanup_dead_ship;
 	ShipPtr->hTarget = 0;
-	ZeroVelocityComponents (&ShipPtr->velocity);
-	if (ShipPtr->crew_level) /* only happens for shofixti self-destruct */
-	{
-		PlaySound (SetAbsSoundIndex (
-				StarShipPtr->RaceDescPtr->ship_data.ship_sounds, 1),
-				CalcSoundPosition (ShipPtr), ShipPtr,
-				GAME_SOUND_PRIORITY + 1);
 
-		DeltaCrew (ShipPtr, -(SIZE)ShipPtr->crew_level);
-		if (VictoriousStarShipPtr == NULL)
-		{	// No ships left alive after a Shofixti Glory device,
-			// thus Shofixti wins
-			VictoriousStarShipPtr = StarShipPtr;
-		}
-	}
-	else
+	if (playSound)
 	{
-		ShipPtr->preprocess_func = explosion_preprocess;
-
 		PlaySound (SetAbsSoundIndex (GameSounds, SHIP_EXPLODES),
 				CalcSoundPosition (ShipPtr), ShipPtr, GAME_SOUND_PRIORITY + 1);
 	}
+}
 
-	if (VictoriousStarShipPtr != NULL)
-		VictoriousStarShipPtr->cur_status_flags |= PLAY_VICTORY_DITTY;
+void
+ship_death (ELEMENT *ShipPtr)
+{
+	STARSHIP *StarShipPtr;
+	STARSHIP *winner;
 
-	// The winner is set once per battle. If both ships die, this function is
-	// called twice, once for each ship. We need to preserve the winner
-	// determined on the first call.
-	if (winnerStarShip == NULL)
-		winnerStarShip = VictoriousStarShipPtr;
+	GetElementStarShip (ShipPtr, &StarShipPtr);
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE)
-		MeleeShipDeath (StarShipPtr);
+	StopAllBattleMusic ();
+
+	// If the winning ship dies before the ditty starts, do not play it.
+	// e.g. a ship can die after the opponent begins exploding but
+	// before the explosion is over.
+	StarShipPtr->cur_status_flags &= ~PLAY_VICTORY_DITTY;
+
+	StartShipExplosion (ShipPtr, true);
+
+	winner = FindAliveStarShip (ShipPtr);
+	SetWinnerStarShip (winner);
+	RecordShipDeath (ShipPtr);
 }
 
 #define START_ION_COLOR BUILD_COLOR (MAKE_RGB15 (0x1F, 0x15, 0x00), 0x7A)

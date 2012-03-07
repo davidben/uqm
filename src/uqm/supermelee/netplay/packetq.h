@@ -26,6 +26,10 @@ typedef struct PacketQueue PacketQueue;
 
 #include <sys/types.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef struct PacketQueueLink PacketQueueLink;
 struct PacketQueueLink {
 	PacketQueueLink *next;
@@ -46,6 +50,10 @@ void PacketQueue_uninit(PacketQueue *queue);
 void queuePacket(NetConnection *conn, Packet *packet);
 int flushPacketQueue(NetConnection *conn);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif
 

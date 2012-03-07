@@ -22,6 +22,10 @@
 #include "../../controls.h"
 		// for BATTLE_INPUT_STATE
 #include "../../init.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 		// for NUM_PLAYERS
 
 typedef struct BattleInputBuffer {
@@ -45,6 +49,10 @@ bool BattleInputBuffer_pop(BattleInputBuffer *bib,
 		BATTLE_INPUT_STATE *input);
 
 BattleInputBuffer *getBattleInputBuffer(size_t player);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _NETINPUT_H */
 

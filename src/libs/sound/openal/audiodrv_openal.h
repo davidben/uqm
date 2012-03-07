@@ -22,7 +22,6 @@
 
 #include "config.h"
 #include "libs/sound/sound.h"
-#include "options.h"
 #include "endian_uqm.h"
 
 #if defined (__APPLE__)

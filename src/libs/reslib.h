@@ -25,6 +25,10 @@
 #include "libs/memlib.h"
 #include "libs/uio.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef struct resource_index_desc RESOURCE_INDEX_DESC;
 typedef RESOURCE_INDEX_DESC *RESOURCE_INDEX;
 
@@ -33,6 +37,7 @@ typedef const char *RESOURCE;
 typedef union {
 	DWORD num;
 	void *ptr;
+	const char *str;
 } RESOURCE_DATA;
 
 #define NULL_RESOURCE NULL
@@ -78,8 +83,16 @@ void *GetResourceData (uio_Stream *fp, DWORD length);
 #define AllocResourceData HMalloc
 BOOLEAN FreeResourceData (void *);
 
+#if defined(__cplusplus)
+}
+#endif
+
 #include "libs/strlib.h"
 #include "libs/gfxlib.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 		// For Color
 
 typedef STRING_TABLE DIRENTRY_REF;
@@ -119,5 +132,9 @@ Color res_GetColor (const char *key);
 void res_PutColor (const char *key, Color value);
 
 BOOLEAN res_Remove (const char *key);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _RESLIB_H */

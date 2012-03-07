@@ -24,6 +24,10 @@
 #include "velocity.h"
 #include "libs/gfxlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 #define NORMAL_LIFE 1
 
@@ -92,7 +96,8 @@ typedef struct state
 
 typedef struct element ELEMENT;
 
-typedef void (CollisionFunc) (ELEMENT *ElementPtr0, POINT *pPt0,
+typedef void (ElementProcessFunc) (ELEMENT *ElementPtr);
+typedef void (ElementCollisionFunc) (ELEMENT *ElementPtr0, POINT *pPt0,
 			ELEMENT *ElementPtr1, POINT *pPt1);
 
 // Any physical object in the simulation.
@@ -101,10 +106,10 @@ struct element
 	// LINK elements; must be first
 	HELEMENT pred, succ;
 
-	void (*preprocess_func) (struct element *ElementPtr);
-	void (*postprocess_func) (struct element *ElementPtr);
-	CollisionFunc *collision_func;
-	void (*death_func) (struct element *ElementPtr);
+	ElementProcessFunc *preprocess_func;
+	ElementProcessFunc *postprocess_func;
+	ElementCollisionFunc *collision_func;
+	ElementProcessFunc *death_func;
 
 	// Player this element belongs to
 	// -1: neutral (planets, asteroids, crew, etc.)
@@ -229,6 +234,10 @@ extern void MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy);
 
 extern BOOLEAN CalculateGravity (ELEMENT *ElementPtr);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _ELEMENT_H */
 

@@ -22,6 +22,9 @@
 #include "plandata.h"
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /*------------------------------ Global Data ------------------------------ */
 
@@ -39,13 +42,19 @@ typedef struct
 
 	PLANET_INFO PlanetInfo;
 } SYSTEM_INFO;
+
+#define GENERATE_ALL  ((COUNT)~0)
 		
-extern DWORD GenerateMineralDeposits (SYSTEM_INFO *SysInfoPtr,
-		COUNT *pwhich_deposit);
-extern DWORD GenerateLifeForms (SYSTEM_INFO *SysInfoPtr, COUNT *pwhich_life);
-extern void GenerateRandomLocation (SYSTEM_INFO *);
-extern DWORD GenerateRandomNodes (SYSTEM_INFO *, COUNT scan, COUNT numNodes,
-		COUNT type, COUNT *whichNode);
+extern COUNT GenerateMineralDeposits (const SYSTEM_INFO *, COUNT whichDeposit,
+		NODE_INFO *info);
+extern COUNT GenerateLifeForms (const SYSTEM_INFO *, COUNT whichLife,
+		NODE_INFO *info);
+extern void GenerateRandomLocation (POINT *loc);
+extern COUNT GenerateRandomNodes (const SYSTEM_INFO *, COUNT scan, COUNT numNodes,
+		COUNT type, COUNT whichNode, NODE_INFO *info);
+// Generate lifeforms from a preset lifeTypes[] array
+extern COUNT GeneratePresetLife (const SYSTEM_INFO *,
+		const SBYTE *lifeTypes, COUNT whichLife, NODE_INFO *info);
 
 #define DWARF_ELEMENT_DENSITY  1
 #define GIANT_ELEMENT_DENSITY 3
@@ -53,10 +62,12 @@ extern DWORD GenerateRandomNodes (SYSTEM_INFO *, COUNT scan, COUNT numNodes,
 
 #define MAX_ELEMENT_DENSITY ((MAX_ELEMENT_UNITS * SUPERGIANT_ELEMENT_DENSITY) << 1)
 
-extern DWORD DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr,
+extern void DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr,
 		PLANET_DESC *pPlanetDesc);
 
-extern SYSTEM_INFO CurSysInfo;
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _SUNDATA_H */
 

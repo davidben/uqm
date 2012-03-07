@@ -85,7 +85,8 @@ DrawModuleStrings (MENU_STATE *pMS, BYTE NewModule)
 		t.align = ALIGN_RIGHT;
 		t.CharCount = (COUNT)~0;
 		t.pStr = buf;
-		sprintf (buf, "%u", GLOBAL (ModuleCost[NewModule]) * MODULE_COST_SCALE);
+		sprintf (buf, "%u",
+				GLOBAL (ModuleCost[NewModule]) * MODULE_COST_SCALE);
 		SetContextFont (TinyFont);
 		SetContextForeGroundColor (
 				BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0x02));
@@ -98,43 +99,38 @@ DrawModuleStrings (MENU_STATE *pMS, BYTE NewModule)
 static void
 RedistributeFuel (void)
 {
-	COUNT m;
-	DWORD FuelVolume;
+	const DWORD FuelVolume = GLOBAL_SIS (FuelOnBoard);
+	const CONTEXT OldContext = SetContext (SpaceContext);
 	RECT r;
-
-	FuelVolume = GLOBAL_SIS (FuelOnBoard);
-	if (FuelVolume <= FUEL_RESERVE)
-		return;
-
-	GLOBAL_SIS (FuelOnBoard) = 0;
-	m = FUEL_VOLUME_PER_ROW;
-
-	r.extent.width = 3;
 	r.extent.height = 1;
-	while (FuelVolume -= m)
-	{
-		GLOBAL_SIS (FuelOnBoard) += FUEL_VOLUME_PER_ROW;
-		GetFTankCapacity (&r.corner);
-		DrawPoint (&r.corner);
-		r.corner.x += r.extent.width + 1;
-		DrawPoint (&r.corner);
-		r.corner.x -= r.extent.width;
-		SetContextForeGroundColor (SetContextBackGroundColor (BLACK_COLOR));
-		DrawFilledRectangle (&r);
-		if (FuelVolume < FUEL_VOLUME_PER_ROW)
-			m = (COUNT)FuelVolume;
-	}
 
-	FuelVolume = GLOBAL_SIS (FuelOnBoard) + m;
-
-	r.extent.width = 5;
-	while ((GLOBAL_SIS (FuelOnBoard) += FUEL_VOLUME_PER_ROW) <
-			GetFTankCapacity (&r.corner))
+	// Loop through all the rows to draw
+	BatchGraphics ();
+	for (GLOBAL_SIS (FuelOnBoard) = FUEL_RESERVE;
+			GLOBAL_SIS (FuelOnBoard) < GetFTankCapacity (&r.corner);
+			GLOBAL_SIS (FuelOnBoard) += FUEL_VOLUME_PER_ROW)
 	{
-		SetContextForeGroundColor (
-				BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2E));
+		// If we're less than the fuel level, draw fuel.
+		if (GLOBAL_SIS (FuelOnBoard) < FuelVolume)
+		{
+			r.extent.width = 3;
+			DrawPoint (&r.corner);
+			r.corner.x += r.extent.width + 1;
+			DrawPoint (&r.corner);
+			r.corner.x -= r.extent.width;
+			SetContextForeGroundColor (
+					SetContextBackGroundColor (BLACK_COLOR));
+		}
+		else // Otherwise, draw an empty bar.
+		{
+			r.extent.width = 5;
+			SetContextForeGroundColor (
+					BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2E));
+		}
 		DrawFilledRectangle (&r);
 	}
+	UnbatchGraphics ();
+	SetContext (OldContext);
 
 	GLOBAL_SIS (FuelOnBoard) = FuelVolume;
 }
@@ -238,7 +234,6 @@ DoInstallModule (MENU_STATE *pMS)
 
 		pMS->InputFunc = DoInstallModule;
 
-		LockMutex (GraphicsLock);
 
 		SetContext (SpaceContext);
 		ClearSISRect (CLEAR_SIS_RADAR);
@@ -300,7 +295,6 @@ DoInstallModule (MENU_STATE *pMS)
 			}
 		}
 
-		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 
 		SetFlashRect (NULL);
@@ -348,7 +342,8 @@ DoInstallModule (MENU_STATE *pMS)
 							GLOBAL (ModuleCost[old_slot_piece])
 							* MODULE_COST_SCALE);
 
-				if (pMS->CurState == PLANET_LANDER || pMS->CurState == EMPTY_SLOT + 3)
+				if (pMS->CurState == PLANET_LANDER ||
+						pMS->CurState == EMPTY_SLOT + 3)
 					DisplayLanders (pMS);
 				else
 				{
@@ -385,15 +380,12 @@ DoInstallModule (MENU_STATE *pMS)
 		else
 		{
 			SetContext (StatusContext);
-			UnlockMutex (GraphicsLock);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState = OUTFIT_MODULES);
-			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
 
 			pMS->InputFunc = DoOutfit;
 			ClearSISRect (DRAW_SIS_DISPLAY);
 		}
-		UnlockMutex (GraphicsLock);
 	}
 	else if (motion)
 	{
@@ -402,7 +394,8 @@ DoInstallModule (MENU_STATE *pMS)
 		NewItem = NewState < EMPTY_SLOT ? pMS->CurState : pMS->delta_item;
 		do
 		{
-			if (NewState >= EMPTY_SLOT && (PulsedInputState.menu[KEY_MENU_UP] || PulsedInputState.menu[KEY_MENU_DOWN]))
+			if (NewState >= EMPTY_SLOT && (PulsedInputState.menu[KEY_MENU_UP]
+					|| PulsedInputState.menu[KEY_MENU_DOWN]))
 			{
 				if (PulsedInputState.menu[KEY_MENU_UP])
 				{
@@ -442,15 +435,14 @@ DoInstallModule (MENU_STATE *pMS)
 				|| (NewItem >= GUN_WEAPON && NewItem <= CANNON_WEAPON
 				&& pMS->delta_item > 0 && pMS->delta_item < 13)));
 
-		LockMutex (GraphicsLock);
 		if (NewState < EMPTY_SLOT)
 		{
 			if (NewItem != pMS->CurState)
 			{
 				pMS->CurState = NewItem;
+				PreUpdateFlashRect ();
 				DrawModuleStrings (pMS, NewItem);
-				// flash with PC menus too
-				SetFlashRect (SFR_MENU_ANY);
+				PostUpdateFlashRect ();
 			}
 		}
 		else if (NewItem != pMS->delta_item || NewState != pMS->CurState)
@@ -542,7 +534,6 @@ InitFlash:
 			else
 				SetFlashRect (&pMS->flash_rect0);
 		}
-		UnlockMutex (GraphicsLock);
 	}
 
 	return (TRUE);
@@ -551,64 +542,55 @@ InitFlash:
 static void
 ChangeFuelQuantity (void)
 {
-	RECT r;
+	int incr = 0; // Fuel increment in fuel points (not units).
 	
-	r.extent.height = 1;
-	
-	if (PulsedInputState.menu[KEY_MENU_UP])
-	{
-		LockMutex (GraphicsLock);
-		SetContext (SpaceContext);
-		if (GetFTankCapacity (&r.corner) > GLOBAL_SIS (FuelOnBoard)
-			&& GLOBAL_SIS (ResUnits) >= (DWORD)GLOBAL (FuelCost))
-		{
-			if (GLOBAL_SIS (FuelOnBoard) >= FUEL_RESERVE)
-			{
-				r.extent.width = 3;
-				DrawPoint (&r.corner);
-				r.corner.x += r.extent.width + 1;
-				DrawPoint (&r.corner);
-				r.corner.x -= r.extent.width;
-				SetContextForeGroundColor (
-						SetContextBackGroundColor (BLACK_COLOR));
-				DrawFilledRectangle (&r);
-			}
-			DeltaSISGauges (0, FUEL_TANK_SCALE, -GLOBAL (FuelCost));
-			SetContext (StatusContext);
-			GetGaugeRect (&r, FALSE);
-			SetFlashRect (&r);
-		}
-		else
-		{	// no more room for fuel or not enough RUs
-			PlayMenuSound (MENU_SOUND_FAILURE);
-		}
-		UnlockMutex (GraphicsLock);
-	}
+	if      (PulsedInputState.menu[KEY_MENU_UP])
+		incr = FUEL_TANK_SCALE;  // +1 Unit
 	else if (PulsedInputState.menu[KEY_MENU_DOWN])
+		incr = -FUEL_TANK_SCALE; // -1 Unit
+	else if (PulsedInputState.menu[KEY_MENU_PAGE_UP])
+		incr = FUEL_VOLUME_PER_ROW;  // +1 Bar
+	else if (PulsedInputState.menu[KEY_MENU_PAGE_DOWN])
+		incr = -FUEL_VOLUME_PER_ROW; // -1 Bar
+	else
+		return;
+
+	// Clamp incr to what we can afford/hold/have.
 	{
-		LockMutex (GraphicsLock);
-		SetContext (SpaceContext);
-		if (GLOBAL_SIS (FuelOnBoard))
-		{
-			DeltaSISGauges (0, -FUEL_TANK_SCALE, GLOBAL (FuelCost));
-			if (GLOBAL_SIS (FuelOnBoard) % FUEL_VOLUME_PER_ROW == 0 &&
-					GLOBAL_SIS (FuelOnBoard) >= FUEL_RESERVE)
-			{
-				GetFTankCapacity (&r.corner);
-				SetContextForeGroundColor (
-						BUILD_COLOR (MAKE_RGB15 (0x0B, 0x00, 0x00), 0x2E));
-				r.extent.width = 5;
-				DrawFilledRectangle (&r);
-			}
-		}
-		else
-		{	// no fuel left to drain
-			PlayMenuSound (MENU_SOUND_FAILURE);
-		}
-		SetContext (StatusContext);
+		const int maxFit = GetFuelTankCapacity () - GLOBAL_SIS (FuelOnBoard);
+		const int maxAfford = GLOBAL_SIS (ResUnits) / GLOBAL (FuelCost);
+		const int minFit = - (int) GLOBAL_SIS (FuelOnBoard);
+
+		if (incr > maxFit)
+			incr = maxFit; // All we can hold.
+
+		if (incr > maxAfford * FUEL_TANK_SCALE)
+			incr = maxAfford * FUEL_TANK_SCALE; // All we can afford.
+
+		if (incr < minFit)
+			incr = minFit; // All we have.
+	}
+
+	if (!incr)
+	{
+		// No more room, not enough RUs, or no fuel left to drain.
+		PlayMenuSound (MENU_SOUND_FAILURE);
+	}
+	else
+	{
+		const int cost = (incr / FUEL_TANK_SCALE) * GLOBAL (FuelCost);
+		PreUpdateFlashRect ();
+		DeltaSISGauges (0, incr, -cost);
+		PostUpdateFlashRect ();
+		RedistributeFuel ();
+	}
+
+	{   // Make fuel gauge flash.
+		RECT r;
+		CONTEXT oldContext = SetContext (StatusContext);
 		GetGaugeRect (&r, FALSE);
 		SetFlashRect (&r);
-		UnlockMutex (GraphicsLock);
+		SetContext (oldContext);
 	}
 }
 
@@ -616,9 +598,7 @@ static void
 onNamingDone (void)
 {
 	// In case player just named a ship, redraw it
-	LockMutex (GraphicsLock);
 	DrawFlagshipName (FALSE);
-	UnlockMutex (GraphicsLock);
 }
 
 BOOLEAN
@@ -648,7 +628,6 @@ DoOutfit (MENU_STATE *pMS)
 			s.frame = CaptureDrawable (
 					LoadGraphic (OUTFIT_PMAP_ANIM));
 
-			LockMutex (GraphicsLock);
 			SetTransitionSource (NULL);
 			BatchGraphics ();
 			DrawSISFrame ();
@@ -710,21 +689,16 @@ DoOutfit (MENU_STATE *pMS)
 					DrawStamp (&s);
 			}
 
-			UnlockMutex (GraphicsLock);
 			DrawMenuStateStrings (PM_FUEL, pMS->CurState);
-			LockMutex (GraphicsLock);
 			DrawFlagshipName (FALSE);
 			if (optWhichFonts == OPT_PC)
 				DrawFlagshipStats ();
-			UnlockMutex (GraphicsLock);
 
 			ScreenTransition (3, NULL);
 			PlayMusic (pMS->hMusic, TRUE, 1);
 			UnbatchGraphics ();
 			
-			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
-			UnlockMutex (GraphicsLock);
 
 			GLOBAL_SIS (FuelOnBoard) =
 					(GLOBAL_SIS (FuelOnBoard)
@@ -741,9 +715,7 @@ DoOutfit (MENU_STATE *pMS)
 		if (pMS->CurState == OUTFIT_DOFUEL)
 		{
 			pMS->CurState = OUTFIT_FUEL;
-			LockMutex (GraphicsLock);
 			SetFlashRect (SFR_MENU_3DO);
-			UnlockMutex (GraphicsLock);
 		}
 		else
 		{
@@ -767,18 +739,14 @@ ExitOutfit:
 				RECT r;
 
 				pMS->CurState = OUTFIT_DOFUEL;
-				LockMutex (GraphicsLock);
 				SetContext (StatusContext);
 				GetGaugeRect (&r, FALSE);
 				SetFlashRect (&r);
-				UnlockMutex (GraphicsLock);
 				break;
 			}
 			case OUTFIT_DOFUEL:
 				pMS->CurState = OUTFIT_FUEL;
-				LockMutex (GraphicsLock);
 				SetFlashRect (SFR_MENU_3DO);
-				UnlockMutex (GraphicsLock);
 				break;
 			case OUTFIT_MODULES:
 				pMS->CurState = EMPTY_SLOT + 2;
@@ -795,9 +763,7 @@ ExitOutfit:
 				if (!GameOptions ())
 					goto ExitOutfit;
 				DrawMenuStateStrings (PM_FUEL, pMS->CurState);
-				LockMutex (GraphicsLock);
 				SetFlashRect (SFR_MENU_3DO);
-				UnlockMutex (GraphicsLock);
 				break;
 		}
 	}
@@ -806,7 +772,9 @@ ExitOutfit:
 		switch (pMS->CurState)
 		{
 			case OUTFIT_DOFUEL:
-				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN, MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
+				SetMenuSounds (MENU_SOUND_UP | MENU_SOUND_DOWN |
+						MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN,
+						MENU_SOUND_SELECT | MENU_SOUND_CANCEL);
 				break;
 			default:
 				SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);

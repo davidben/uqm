@@ -110,6 +110,46 @@ static RACE_DESC umgah_desc =
 	0, /* CodeRef */
 };
 
+
+// Private per-instance ship data
+typedef struct
+{
+	UWORD prevFacing;
+} UMGAH_DATA;
+
+// Local typedef
+typedef UMGAH_DATA CustomShipData_t;
+
+// Retrieve race-specific ship data from a race desc
+static CustomShipData_t *
+GetCustomShipData (RACE_DESC *pRaceDesc)
+{
+	return pRaceDesc->data;
+}
+
+// Set the race-specific data in a race desc
+// (Re)Allocates its own storage for the data.
+static void
+SetCustomShipData (RACE_DESC *pRaceDesc, const CustomShipData_t *data)
+{
+	if (pRaceDesc->data == data) 
+		return;  // no-op
+
+	if (pRaceDesc->data) // Out with the old
+	{
+		HFree (pRaceDesc->data);
+		pRaceDesc->data = NULL;
+	}
+
+	if (data) // In with the new
+	{
+		CustomShipData_t* newData = HMalloc (sizeof (*data));
+		*newData = *data;
+		pRaceDesc->data = newData;
+	}
+}
+
+
 static void
 cone_preprocess (ELEMENT *ElementPtr)
 {
@@ -266,6 +306,7 @@ initialize_cone (ELEMENT *ShipPtr, HELEMENT ConeArray[])
 #define MISSILE_LIFE 1
 #define MISSILE_OFFSET 0
 	STARSHIP *StarShipPtr;
+	UMGAH_DATA* UmgahData;
 	MISSILE_BLOCK MissileBlock;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
@@ -285,15 +326,17 @@ initialize_cone (ELEMENT *ShipPtr, HELEMENT ConeArray[])
 
 	// This func is called every frame while the player is holding down WEAPON
 	// Don't reset the cone FRAME to the first image every time
-	if (ShipPtr->next.image.frame != (FRAME) StarShipPtr->RaceDescPtr->data)
+	UmgahData = GetCustomShipData (StarShipPtr->RaceDescPtr);
+	if (!UmgahData || StarShipPtr->ShipFacing != UmgahData->prevFacing)
 	{
-		StarShipPtr->RaceDescPtr->data = (intptr_t) ShipPtr->next.image.frame;
+		const UMGAH_DATA shipData = {StarShipPtr->ShipFacing};
+
+		SetCustomShipData (StarShipPtr->RaceDescPtr, &shipData);
 
 		StarShipPtr->RaceDescPtr->ship_data.special[0] =
 				SetAbsFrameIndex (
 				StarShipPtr->RaceDescPtr->ship_data.special[0],
-				StarShipPtr->ShipFacing
-				);
+				StarShipPtr->ShipFacing);
 	}
 	
 	MissileBlock.index = GetFrameIndex (StarShipPtr->RaceDescPtr->ship_data.special[0]);
@@ -341,7 +384,7 @@ umgah_preprocess (ELEMENT *ElementPtr)
 	if (ElementPtr->state_flags & APPEARING)
 	{
 		// Reset the value just in case
-		StarShipPtr->RaceDescPtr->data = 0;
+		SetCustomShipData (StarShipPtr->RaceDescPtr, NULL);
 	}
 	else
 	{
@@ -366,11 +409,18 @@ umgah_preprocess (ELEMENT *ElementPtr)
 	}
 }
 
+static void
+uninit_umgah (RACE_DESC *pRaceDesc)
+{
+	SetCustomShipData (pRaceDesc, NULL);
+}
+
 RACE_DESC*
 init_umgah (void)
 {
 	RACE_DESC *RaceDescPtr;
 
+	umgah_desc.uninit_func = uninit_umgah;
 	umgah_desc.preprocess_func = umgah_preprocess;
 	umgah_desc.postprocess_func = umgah_postprocess;
 	umgah_desc.init_weapon_func = initialize_cone;

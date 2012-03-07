@@ -26,6 +26,9 @@ typedef struct scan_block SCAN_BLOCK;
 #include "libs/gfxlib.h"
 #include "planets.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 struct scan_desc
 {
@@ -47,8 +50,8 @@ extern void ScanSystem (void);
 
 extern void RepairBackRect (RECT *pRect);
 extern void GeneratePlanetSide (void);
-extern COUNT callGenerateForScanType (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT node, BYTE scanType);
+extern COUNT callGenerateForScanType (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT node, BYTE scanType, NODE_INFO *);
 // Returns true if the node should be removed from the surface
 extern bool callPickupForScanType (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT node, BYTE scanType);
@@ -61,6 +64,10 @@ bool isNodeRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr);
 COUNT countNodesRetrieved (PLANET_INFO *planetInfo, BYTE scanType);
 void setNodeRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr);
 void setNodeNotRetrieved (PLANET_INFO *planetInfo, BYTE scanType, BYTE nodeNr);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _SCAN_H */
 

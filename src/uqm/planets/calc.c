@@ -17,7 +17,8 @@
  */
 
 /* ----------------------------- INCLUDES ---------------------------- */
-#include "../encount.h"
+#include "planets.h"
+#include "uqm/starmap.h"
 #include "libs/mathlib.h"
 #include "libs/log.h"
 /* -------------------------------- DATA -------------------------------- */
@@ -26,9 +27,6 @@
 
 //#define DEBUG_PLANET_CALC
 
-#define CalcMass(b) CalcFromBase (b, b)
-#define CalcRadius(b) CalcFromBase (b, ((b) >> 1) + 1)
-
 #define LOW_TEMP 0
 #define MED_TEMP 500
 #define HIGH_TEMP 1500
@@ -36,15 +34,6 @@
 #define MED_TEMP_BONUS 25
 #define HIGH_TEMP_BONUS 50
 #define MAX_TECTONICS 255
-#ifdef OLD
-#define CalcTectonics(b,t) (CalcFromBase(b, 3 << 5) \
-										+ (UWORD)((t) < LOW_TEMP ? 0 : \
-										((t) < MED_TEMP ? LOW_TEMP_BONUS : \
-										((t) < HIGH_TEMP ? MED_TEMP_BONUS : \
-										HIGH_TEMP_BONUS))))
-#else /* OLD */
-#define CalcTectonics(b,t) CalcFromBase(b, 3 << 5)
-#endif /* OLD */
 
 enum
 {
@@ -55,6 +44,18 @@ enum
 	BLUE_SUN_INTENSITY,
 	WHITE_SUN_INTENSITY
 };
+
+static UWORD
+CalcFromBase (UWORD base, UWORD variance)
+{
+	return base + LOWORD (RandomContext_Random (SysGenRNG)) % variance;
+}
+
+static inline UWORD
+CalcHalfBaseVariance (UWORD base)
+{
+	return CalcFromBase (base, (base >> 1) + 1);
+}
 
 static void
 CalcSysInfo (SYSTEM_INFO *SysInfoPtr)
@@ -149,7 +150,7 @@ GeneratePlanetComposition (PLANET_INFO *PlanetInfoPtr, SIZE SurfaceTemp,
 					PlanetInfoPtr->Weather += 1 << 5;
 				else if (radius > 10)
 					PlanetInfoPtr->Weather -= 1 << 5;
-				atmo = CalcFromBase (atmo, (atmo >> 1) + 1);
+				atmo = CalcHalfBaseVariance (atmo);
 			}
 		}
 
@@ -194,7 +195,7 @@ CalcTemp (SYSTEM_INFO *SysInfoPtr, SIZE radius)
 			bonus = COLD_BONUS;
 
 		bonus <<= HINIBBLE (SysInfoPtr->PlanetInfo.PlanDataPtr->AtmoAndDensity);
-		bonus = CalcFromBase (bonus, (bonus >> 1) + 1);
+		bonus = CalcHalfBaseVariance (bonus);
 	}
 
 	return (centigrade + bonus);
@@ -204,11 +205,11 @@ static COUNT
 CalcRotation (PLANET_INFO *PlanetInfoPtr)
 {
 	if (PLANSIZE (PlanetInfoPtr->PlanDataPtr->Type) == GAS_GIANT)
-		return ((COUNT)CalcFromBase (80, 80));
-	else if (((BYTE)TFB_Random () % 10) == 0)
-		return ((COUNT)CalcFromBase ((UWORD)50 * 240, (UWORD)200 * 240));
+		return CalcFromBase (80, 80);
+	else if (LOBYTE (RandomContext_Random (SysGenRNG)) % 10 == 0)
+		return CalcFromBase (50 * 240, 200 * 240);
 	else
-		return ((COUNT)CalcFromBase (150, 150));
+		return CalcFromBase (150, 150);
 }
 
 static SIZE
@@ -223,22 +224,138 @@ CalcTilt (void)
 	i = NUM_TOSSES;
 	do /* Using added Randomom values to give bell curve */
 	{
-		tilt += (UWORD)TFB_Random () % ((TILT_RANGE / NUM_TOSSES) + 1);
+		tilt += LOWORD (RandomContext_Random (SysGenRNG))
+				% ((TILT_RANGE / NUM_TOSSES) + 1);
 	} while (--i);
 
 	return (tilt);
 }
 
-// NB. Returns the RNG to the state it found it in.
-DWORD
+UWORD
+CalcGravity (const PLANET_INFO *PlanetInfoPtr)
+{
+	return (DWORD)PlanetInfoPtr->PlanetDensity * PlanetInfoPtr->PlanetRadius
+				/ 100;
+}
+
+static UWORD
+CalcTectonics (UWORD base, UWORD temp)
+{
+	UWORD tect = CalcFromBase (base, 3 << 5);
+#ifdef OLD
+	if (temp >= HIGH_TEMP)
+		tect += HIGH_TEMP_BONUS;
+	else if (temp >= MED_TEMP)
+		tect += MED_TEMP_BONUS;
+	else if (temp >= LOW_TEMP)
+		tect += LOW_TEMP_BONUS;
+#else /* !OLD */
+	(void) temp; /* silence compiler whining */
+#endif /* OLD */
+	return tect;
+}
+
+// This code moved from planets/surface.c:CalcLifeForms()
+static int
+CalcLifeChance (const PLANET_INFO *PlanetInfoPtr)
+{
+	SIZE life_var = 0;
+
+	if (PLANSIZE (PlanetInfoPtr->PlanDataPtr->Type) == GAS_GIANT)
+		return -1;
+
+	if (PlanetInfoPtr->SurfaceTemperature < -151)
+		life_var -= 300;
+	else if (PlanetInfoPtr->SurfaceTemperature < -51)
+		life_var -= 100;
+	else if (PlanetInfoPtr->SurfaceTemperature < 0)
+		life_var += 100;
+	else if (PlanetInfoPtr->SurfaceTemperature < 50)
+		life_var += 300;
+	else if (PlanetInfoPtr->SurfaceTemperature < 150)
+		life_var += 50;
+	else if (PlanetInfoPtr->SurfaceTemperature < 250)
+		life_var -= 100;
+	else if (PlanetInfoPtr->SurfaceTemperature < 500)
+		life_var -= 400;
+	else
+		life_var -= 800;
+
+	if (PlanetInfoPtr->AtmoDensity == 0)
+		life_var -= 1000;
+	else if (PlanetInfoPtr->AtmoDensity < 15)
+		life_var += 100;
+	else if (PlanetInfoPtr->AtmoDensity < 30)
+		life_var += 200;
+	else if (PlanetInfoPtr->AtmoDensity < 100)
+		life_var += 300;
+	else if (PlanetInfoPtr->AtmoDensity < 1000)
+		life_var += 150;
+	else if (PlanetInfoPtr->AtmoDensity < 2500)
+		;
+	else
+		life_var -= 100;
+
+#ifndef NOTYET
+	life_var += 200 + 80 + 80;
+#else /* NOTYET */
+	if (PlanetInfoPtr->SurfaceGravity < 10)
+		;
+	else if (PlanetInfoPtr->SurfaceGravity < 35)
+		life_var += 50;
+	else if (PlanetInfoPtr->SurfaceGravity < 75)
+		life_var += 100;
+	else if (PlanetInfoPtr->SurfaceGravity < 150)
+		life_var += 200;
+	else if (PlanetInfoPtr->SurfaceGravity < 400)
+		life_var += 50;
+	else if (PlanetInfoPtr->SurfaceGravity < 800)
+		;
+	else
+		life_var -= 100;
+
+	if (PlanetInfoPtr->Tectonics < 1)
+		life_var += 80;
+	else if (PlanetInfoPtr->Tectonics < 2)
+		life_var += 70;
+	else if (PlanetInfoPtr->Tectonics < 3)
+		life_var += 60;
+	else if (PlanetInfoPtr->Tectonics < 4)
+		life_var += 50;
+	else if (PlanetInfoPtr->Tectonics < 5)
+		life_var += 25;
+	else if (PlanetInfoPtr->Tectonics < 6)
+		;
+	else
+		life_var -= 100;
+
+	if (PlanetInfoPtr->Weather < 1)
+		life_var += 80;
+	else if (PlanetInfoPtr->Weather < 2)
+		life_var += 70;
+	else if (PlanetInfoPtr->Weather < 3)
+		life_var += 60;
+	else if (PlanetInfoPtr->Weather < 4)
+		life_var += 50;
+	else if (PlanetInfoPtr->Weather < 5)
+		life_var += 25;
+	else if (PlanetInfoPtr->Weather < 6)
+		;
+	else
+		life_var -= 100;
+#endif /* NOTYET */
+
+	return life_var;
+}
+
+// Sets the SysGenRNG to the required state first.
+void
 DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr, PLANET_DESC *pPlanetDesc)
 {
-	DWORD old_seed;
+	assert ((pPlanetDesc->data_index & ~WORLD_TYPE_SPECIAL)
+			< NUMBER_OF_PLANET_TYPES);
 
-	if (pPlanetDesc->data_index == HIERARCHY_STARBASE)
-		return (0);
-
-	old_seed = TFB_SeedRandom (pPlanetDesc->rand_seed);
+	RandomContext_SeedRandom (SysGenRNG, pPlanetDesc->rand_seed);
 
 	CalcSysInfo (SysInfoPtr);
 
@@ -303,18 +420,18 @@ DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr, PLANET_DESC *pPlanetDesc)
 		}
 		SysInfoPtr->PlanetInfo.PlanetDensity +=
 				(SysInfoPtr->PlanetInfo.PlanetDensity / 20)
-				- ((COUNT)TFB_Random ()
+				- (LOWORD (RandomContext_Random (SysGenRNG))
 				% (SysInfoPtr->PlanetInfo.PlanetDensity / 10));
 
 		switch (PLANSIZE (SysInfoPtr->PlanetInfo.PlanDataPtr->Type))
 		{
 			case SMALL_ROCKY_WORLD:
 #define SMALL_RADIUS 25
-				SysInfoPtr->PlanetInfo.PlanetRadius = CalcRadius (SMALL_RADIUS);
+				SysInfoPtr->PlanetInfo.PlanetRadius = CalcHalfBaseVariance (SMALL_RADIUS);
 				break;
 			case LARGE_ROCKY_WORLD:
 #define LARGE_RADIUS 75
-				SysInfoPtr->PlanetInfo.PlanetRadius = CalcRadius (LARGE_RADIUS);
+				SysInfoPtr->PlanetInfo.PlanetRadius = CalcHalfBaseVariance (LARGE_RADIUS);
 				break;
 			case GAS_GIANT:
 #define MIN_GAS_RADIUS 300
@@ -325,9 +442,7 @@ DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr, PLANET_DESC *pPlanetDesc)
 		}
 
 		SysInfoPtr->PlanetInfo.RotationPeriod = CalcRotation (&SysInfoPtr->PlanetInfo);
-		SysInfoPtr->PlanetInfo.SurfaceGravity =
-				CalcGravity (SysInfoPtr->PlanetInfo.PlanetDensity,
-				SysInfoPtr->PlanetInfo.PlanetRadius);
+		SysInfoPtr->PlanetInfo.SurfaceGravity = CalcGravity (&SysInfoPtr->PlanetInfo);
 		SysInfoPtr->PlanetInfo.AxialTilt = CalcTilt ();
 		if ((SysInfoPtr->PlanetInfo.Tectonics =
 				CalcTectonics (SysInfoPtr->PlanetInfo.PlanDataPtr->BaseTectonics,
@@ -340,6 +455,8 @@ DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr, PLANET_DESC *pPlanetDesc)
 
 		SysInfoPtr->PlanetInfo.Tectonics >>= 5;
 		SysInfoPtr->PlanetInfo.Weather >>= 5;
+
+		SysInfoPtr->PlanetInfo.LifeChance = CalcLifeChance (&SysInfoPtr->PlanetInfo);
 
 #ifdef DEBUG_PLANET_CALC
 		radius = (SIZE)((DWORD)UNSCALE_RADIUS (radius) * 100 / UNSCALE_RADIUS (EARTH_RADIUS));
@@ -404,7 +521,5 @@ DoPlanetaryAnalysis (SYSTEM_INFO *SysInfoPtr, PLANET_DESC *pPlanetDesc)
 		}
 #endif /* DEBUG_PLANET_CALC */
 	}
-
-	return (TFB_SeedRandom (old_seed));
 }
 

@@ -77,7 +77,7 @@ GenerateChmmr_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 
 		solarSys->MoonDesc[0].data_index = HIERARCHY_STARBASE;
 		solarSys->MoonDesc[0].radius = MIN_MOON_RADIUS;
-		rand_val = TFB_Random ();
+		rand_val = RandomContext_Random (SysGenRNG);
 		angle = NORMALIZE_ANGLE (LOWORD (rand_val));
 		solarSys->MoonDesc[0].location.x =
 				COSINE (angle, solarSys->MoonDesc[0].radius);
@@ -107,7 +107,7 @@ GenerateChmmr_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		}
 		else if (GET_GAME_STATE (SUN_DEVICE_ON_SHIP)
 				&& !GET_GAME_STATE (ILWRATH_DECEIVED)
-				&& ActivateStarShip (ILWRATH_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (ILWRATH_SHIP))
 		{
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 			ReinitQueue (&GLOBAL (ip_group_q));
@@ -133,8 +133,6 @@ GenerateChmmr_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	else if (matchWorld (solarSys, world, 1, 0))
 	{
 		/* Starbase */
-		LockMutex (GraphicsLock);
-
 		LoadStdLanderFont (&solarSys->SysInfo.PlanetInfo);
 		solarSys->SysInfo.PlanetInfo.DiscoveryString =
 				CaptureStringTable (LoadStringTable (CHMMR_BASE_STRTAB));
@@ -145,8 +143,6 @@ GenerateChmmr_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				solarSys->SysInfo.PlanetInfo.DiscoveryString));
 		solarSys->SysInfo.PlanetInfo.DiscoveryString = 0;
 		FreeLanderFont (&solarSys->SysInfo.PlanetInfo);
-
-		UnlockMutex (GraphicsLock);
 
 		return true;
 	}

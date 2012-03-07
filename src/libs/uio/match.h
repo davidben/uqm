@@ -31,7 +31,7 @@ typedef struct match_MatchContext match_MatchContext;
 
 
 typedef enum {
-	match_MATCH_LITTERAL = 0,
+	match_MATCH_LITERAL = 0,
 	match_MATCH_PREFIX,
 	match_MATCH_SUFFIX,
 	match_MATCH_SUBSTRING,
@@ -52,7 +52,7 @@ typedef int match_Result;
 #define match_ECUSTOM   -3
 #define match_ENOTINIT  -4
 
-typedef struct match_LitteralContext match_LitteralContext;
+typedef struct match_LiteralContext match_LiteralContext;
 typedef struct match_PrefixContext match_PrefixContext;
 typedef struct match_SuffixContext match_SuffixContext;
 typedef struct match_SubStringContext match_SubStringContext;
@@ -87,7 +87,7 @@ match_Result match_matchPatternOnce(const char *pattern, match_MatchType type,
 struct match_MatchContext {
 	match_MatchType type;
 	union {
-		match_LitteralContext *litteral;
+		match_LiteralContext *literal;
 		match_PrefixContext *prefix;
 		match_SuffixContext *suffix;
 		match_SubStringContext *subString;
@@ -100,7 +100,7 @@ struct match_MatchContext {
 	} u;
 };
 
-struct match_LitteralContext {
+struct match_LiteralContext {
 	char *pattern;
 };
 
@@ -134,11 +134,11 @@ struct match_RegexContext {
 };
 #endif
 
-match_Result match_prepareLitteral(const char *pattern,
-		match_LitteralContext **contextPtr);
-match_Result match_matchLitteral(match_LitteralContext *context,
+match_Result match_prepareLiteral(const char *pattern,
+		match_LiteralContext **contextPtr);
+match_Result match_matchLiteral(match_LiteralContext *context,
 		const char *string);
-void match_freeLitteral(match_LitteralContext *context);
+void match_freeLiteral(match_LiteralContext *context);
 
 match_Result match_preparePrefix(const char *pattern,
 		match_PrefixContext **contextPtr);

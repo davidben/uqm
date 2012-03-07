@@ -20,6 +20,10 @@
 #include "libs/compiler.h"
 #include "libs/gfxlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern BOOLEAN sliderDisabled;
 extern BOOLEAN oscillDisabled;
 
@@ -31,6 +35,10 @@ extern void InitSlider (int x, int y, int width, FRAME sliderFrame,
 		FRAME buttonFrame);
 extern void SetSliderImage (FRAME f);
 void DrawSlider (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _OSCILL_H */
 

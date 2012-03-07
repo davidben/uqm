@@ -28,10 +28,12 @@ typedef void HASHTABLE_(Value);
 #define CharHashTable_HASH CharHashTable_hash
 #define CharHashTable_EQUAL CharHashTable_equal
 #define CharHashTable_COPY CharHashTable_copy
-#define CharHashTable_FREE CharHashTable_free
+#define CharHashTable_FREEKEY CharHashTable_freeKey
+#define CharHashTable_FREEVALUE(hashTable, key) \
+		((void) (hashTable), (void) (key))
 
 #include "hashtable.h"
 
 
-#endif  /* _HASHTABLE_H */
+#endif  /* _CHARHASHTABLE_H */
 

@@ -157,22 +157,16 @@ UnlockGameClock (void)
 BOOLEAN
 GameClockRunning (void)
 {
-	SIZE prev_tick, cur_tick;
+	SIZE day_in_ticks;
 
 	if (!clock_mutex)
 		return FALSE;
 
 	LockMutex (clock_mutex);
-	prev_tick = GLOBAL (GameClock.tick_count);
+	day_in_ticks = GLOBAL (GameClock.day_in_ticks);
 	UnlockMutex (clock_mutex);
 	
-	SleepThread (ONE_SECOND / 5);
-	
-	LockMutex (clock_mutex);
-	cur_tick = GLOBAL (GameClock.tick_count);
-	UnlockMutex (clock_mutex);
-
-	return cur_tick != prev_tick;
+	return day_in_ticks != 0;
 }
 
 void
@@ -282,7 +276,6 @@ AddEvent (EVENT_TYPE type, COUNT month_index, COUNT day_index, COUNT
 	return (0);
 }
 
-// This function must be called with GraphicsLock held.
 void
 GameClockTick (void)
 {
@@ -305,7 +298,6 @@ GameClockTick (void)
 	UnlockMutex (clock_mutex);
 }
 
-// This function must be called with GraphicsLock held.
 void
 MoveGameClockDays (COUNT days)
 {

@@ -19,11 +19,19 @@
 #ifndef _NET_H
 #define _NET_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "network/network.h"
 #include "network/netmanager/netmanager.h"
 #include "network/connect/connect.h"
 #include "network/connect/listen.h"
 #include "network/connect/resolve.h"
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _NET_H */
 

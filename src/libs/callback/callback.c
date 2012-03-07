@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
+#include "libs/threadlib.h"
+
 typedef struct CallbackLink CallbackLink;
 
 #define CALLBACK_INTERNAL
@@ -38,16 +40,16 @@ static CallbackLink *callbacks;
 static CallbackLink **callbacksEnd;
 static CallbackLink *const *callbacksProcessEnd;
 
+static Mutex callbackListLock;
+
 static inline void
 CallbackList_lock(void) {
-	// TODO
-	// Necessary for reentrant operation
+	LockMutex(callbackListLock);
 }
 
 static inline void
 CallbackList_unlock(void) {
-	// TODO
-	// Necessary for reentrant operation
+	UnlockMutex(callbackListLock);
 }
 
 #if 0
@@ -62,6 +64,14 @@ Callback_init(void) {
 	callbacks = NULL;
 	callbacksEnd = &callbacks;
 	callbacksProcessEnd = &callbacks;
+	callbackListLock = CreateMutex("Callback List Lock", SYNC_CLASS_TOPLEVEL);
+}
+
+void
+Callback_uninit(void) {
+	// TODO: cleanup the queue?
+	DestroyMutex (callbackListLock);
+	callbackListLock = 0;
 }
 
 // Callbacks are guaranteed to be called in the order that they are queued.
@@ -170,4 +180,14 @@ Callback_process(void) {
 	}
 }
 
+bool
+Callback_haveMore(void) {
+	bool result;
+
+	CallbackList_lock();
+	result = (callbacks != NULL);
+	CallbackList_unlock();
+
+	return result;
+}
 

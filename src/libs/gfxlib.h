@@ -32,6 +32,10 @@ struct Color {
 
 #include "libs/reslib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef struct context_desc CONTEXT_DESC;
 typedef struct frame_desc FRAME_DESC;
 typedef struct font_desc FONT_DESC;
@@ -227,7 +231,15 @@ typedef struct text
 	COUNT CharCount;
 } TEXT;
 
+#if defined(__cplusplus)
+}
+#endif
+
 #include "libs/strlib.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 typedef STRING_TABLE COLORMAP_REF;
 typedef STRING COLORMAP;
@@ -236,6 +248,7 @@ typedef STRING COLORMAP;
 typedef void *COLORMAPPTR;
 
 #include "graphics/prim.h"
+
 
 typedef BYTE BATCH_FLAGS;
 // This flag is currently unused but it might make sense to restore it
@@ -453,5 +466,9 @@ extern COLORMAPPTR GetColorMapAddress (COLORMAP);
 
 void SetSystemRect (const RECT *pRect);
 void ClearSystemRect (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _GFXLIB_H */

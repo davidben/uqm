@@ -29,6 +29,7 @@
 
 static void CheckFinishedChannels (void);
 
+static const SoundPosition notPositional = {FALSE, 0, 0};
 
 void
 PlayChannel (COUNT channel, SOUND snd, SoundPosition pos,
@@ -50,8 +51,7 @@ PlayChannel (COUNT channel, SOUND snd, SoundPosition pos,
 	soundSource[channel].sample = sample;
 	soundSource[channel].positional_object = positional_object;
 	
-	if (optStereoSFX)
-		UpdateSoundPosition (channel, pos);
+	UpdateSoundPosition (channel, optStereoSFX ? pos : notPositional);
 
 	audio_Sourcei (soundSource[channel].handle, audio_BUFFER,
 			sample->buffer[0]);

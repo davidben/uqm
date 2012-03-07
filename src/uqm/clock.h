@@ -22,6 +22,10 @@
 #include "libs/tasklib.h"
 #include "displist.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 #define START_YEAR 2155
 
@@ -99,6 +103,10 @@ extern void UnlockGameClock (void);
 // A weak indicator of the clock moving. Suitable for debugging,
 // but not much else
 extern BOOLEAN GameClockRunning (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _CLOCK_H */
 

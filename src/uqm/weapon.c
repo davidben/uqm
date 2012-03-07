@@ -31,6 +31,15 @@
 
 #include <stdio.h>
 
+// A wrapper function for weapon_collision that discards the return value.
+// This makes its signature match ElementCollisionFunc.
+static void
+weapon_collision_cb (ELEMENT *WeaponElementPtr, POINT *pWPt,
+		ELEMENT *HitElementPtr, POINT *pHPt)
+{
+	weapon_collision (WeaponElementPtr, pWPt, HitElementPtr, pHPt);
+}
+
 
 HELEMENT
 initialize_laser (LASER_BLOCK *pLaserBlock)
@@ -50,7 +59,7 @@ initialize_laser (LASER_BLOCK *pLaserBlock)
 		LaserElementPtr->state_flags = APPEARING | FINITE_LIFE
 				| pLaserBlock->flags;
 		LaserElementPtr->life_span = LASER_LIFE;
-		LaserElementPtr->collision_func = (CollisionFunc*)weapon_collision;
+		LaserElementPtr->collision_func = weapon_collision_cb;
 		LaserElementPtr->blast_offset = 1;
 
 		LaserElementPtr->current.location.x = pLaserBlock->cx
@@ -100,7 +109,7 @@ initialize_missile (MISSILE_BLOCK *pMissileBlock)
 				SetAbsFrameIndex (pMissileBlock->farray[0],
 				pMissileBlock->index);
 		MissileElementPtr->preprocess_func = pMissileBlock->preprocess_func;
-		MissileElementPtr->collision_func = (CollisionFunc*)weapon_collision;
+		MissileElementPtr->collision_func = weapon_collision_cb;
 		MissileElementPtr->blast_offset = (BYTE)pMissileBlock->blast_offs;
 
 		angle = FACING_TO_ANGLE (pMissileBlock->face);

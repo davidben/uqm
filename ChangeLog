@@ -1,4 +1,55 @@
-Changes towards version 0.7:
+Changes towards version 0.8:
+- Removed GraphicsLock and made comm callbacks queued - Alex
+- Split debug key function into sync and async parts, paving the way
+  for GraphicsLock removal - Alex
+- PageUp/PageDown now add/remove 10 fuel in the shipyard, from
+  Scott A. Colcord, Nic
+- Annihigate flash thread - SvdB
+- Switch SetFlashRect() to the new flash code - SvdB
+- Add C++ support to the build system, from Scott A. Colcord
+- Cleaning up DoModifyShips() - SvdB
+- Added Valgrind suppression file, from Louis Delacroix
+- Fix several memory leaks, from Loius Delacroix
+- Some cleanups / warnings fixes, from Louis Delacroix
+- Added a free callback function for the values of the key-value pairs
+  in hash tables - SvdB
+- Annigilate ActivateStarShip() - SvdB
+- Removed obsolete RESPONSE_TO_REF() - SvdB
+- Don't require the 'shadow' dir in addon packs, from Alex
+- Make use of GAME_STATE_FILE consistently, from Scott A. Colcord
+- Fixed unconst(), from Scott A. Colcord
+- Fixes to a few small bugs in UIO which shouldn't have had an impact on
+  UQM, but would in the future, from Alex
+- Allow F6 as a default alternate search key, from related projects.
+- "Player 1" and "Player 2" are now "Bottom" and "Top" player (#954) - McM
+- Fix Utwig dialog inconsistency (#756) - McM
+- Use a deterministic seed for Melnorme modules-for-fuel deals (#567) - McM
+- Various warnings cleanup (bug #50), from Scott A. Colcord
+- Fixed various Pkunk reincarnation and Shofixti Glory device interactions;
+  Pkunk ditty plays in a simultaneous destruction (bug #666) - Alex
+- Preparing for linking with C++ code, from Scott A. Colcord
+- Fixed player's phrase leading to Tanaka's response about a solitary
+  vigil (bug #859) - Alex
+- Added the Ur-Quan to the list of starfaring races on which Commander
+  Hayes provides info (bug #865) - Alex
+- Commander Hayes now advises the player correctly on the number of
+  landers one needs (bug #1098) - Alex
+- All Sound Options are now preserved between visits to the setup menu.
+  Some options still require a restart (bug #1132) - Alex
+- Removed the remnants of the --music option (bug #1133) - Alex
+- Fixed flagship re-entering the inner system after an encounter in the
+  outer system, thus trapping the player (bug #1135) - Alex
+- Fixed starmap fuel range circle shrinking (bug #1130) - Alex
+- Added gamma correction to the setup menu (bug #977) - Alex, Nic
+- Refactor Melnorme comm code to make modding easier; step 1 (bug #1128),
+  from Scott A. Colcord
+- Added aspect ratio option to the setup menu - Alex
+- Positional audio setup menu option now has an immediate effect - Alex
+- Added speech option which controls loading of 3dovoice addon (no need
+  to set speech volume to 0 anymore) - Alex
+- Added the MetaChron story to the no-voice Melnorme script (bug #43) - Alex
+
+0.7.0:
 - Build with debug info in strict-debug mode (bug #1127), from Scott A. Colcord
 - Added spoken Slylandro probe coordinates (bug #732) - Nic, Alex
 - Added the missing bits to the no-voice versions of Mycon, Syreen and

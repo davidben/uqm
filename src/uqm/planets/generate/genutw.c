@@ -21,7 +21,8 @@
 #include "../planets.h"
 #include "../../build.h"
 #include "../../comm.h"
-#include "../../encount.h"
+#include "../../gendef.h"
+#include "../../starmap.h"
 #include "../../globdata.h"
 #include "../../ipdisp.h"
 #include "../../nameref.h"
@@ -34,8 +35,8 @@ static bool GenerateUtwig_initNpcs (SOLARSYS_STATE *solarSys);
 static bool GenerateUtwig_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateUtwig_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateUtwig_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -108,7 +109,7 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	{
 		if ((CurStarDescPtr->Index == UTWIG_DEFINED
 				|| !GET_GAME_STATE (UTWIG_HAVE_ULTRON))
-				&& ActivateStarShip (UTWIG_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (UTWIG_SHIP))
 		{
 			NotifyOthers (UTWIG_SHIP, IPNL_ALL_CLEAR);
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
@@ -140,7 +141,7 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 
 		if (CurStarDescPtr->Index == BOMB_DEFINED
 				&& !GET_GAME_STATE (BOMB_UNPROTECTED)
-				&& ActivateStarShip (DRUUGE_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (DRUUGE_SHIP))
 		{
 			COUNT i;
 
@@ -173,9 +174,7 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				if (DruugeSurvivors)
 					return true;
 
-				LockMutex (GraphicsLock);
 				RepairSISBorder ();
-				UnlockMutex (GraphicsLock);
 				SET_GAME_STATE (BOMB_UNPROTECTED, 1);
 			}
 		}
@@ -211,13 +210,13 @@ GenerateUtwig_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateUtwig_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (CurStarDescPtr->Index == UTWIG_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		return GenerateDefault_generateRuins (solarSys, whichNode);
+		return GenerateDefault_generateRuins (solarSys, whichNode, info);
 	}
 
 	if (CurStarDescPtr->Index == BOMB_DEFINED
@@ -230,7 +229,7 @@ GenerateUtwig_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	return 0;

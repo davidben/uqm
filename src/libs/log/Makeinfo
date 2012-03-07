@@ -1,4 +1,5 @@
 uqm_CFILES="uqmlog.c"
+uqm_HFILES="loginternal.h msgbox.h uqmlog.h"
 
 case "$HOST_SYSTEM" in
 	Darwin)
@@ -11,3 +12,4 @@ case "$HOST_SYSTEM" in
 		uqm_CFILES="$uqm_CFILES msgbox_stub.c"
 		;;
 esac
+

@@ -94,7 +94,7 @@ copyFile (uio_DirHandle *srcDir, const char *srcName,
 	buf = HMalloc(BUFSIZE);
 			// This was originally a statically allocated buffer,
 			// but as this function might be run from a thread with
-			// a small Stack, this is better.
+			// a small stack, this is better.
 	while (1)
 	{
 		numInBuf = uio_read (src, buf, BUFSIZE);

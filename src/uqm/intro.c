@@ -160,7 +160,6 @@ Present_BatchGraphics (PRESENTATION_INPUT_STATE* pPIS)
 	if (!pPIS->Batched)
 	{
 		pPIS->Batched = TRUE;
-		LockMutex (GraphicsLock);
 		BatchGraphics ();
 	}
 }
@@ -171,7 +170,6 @@ Present_UnbatchGraphics (PRESENTATION_INPUT_STATE* pPIS, BOOLEAN bYield)
 	if (pPIS->Batched)
 	{
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 		pPIS->Batched = FALSE;
 		if (bYield)
 			TaskSwitch ();
@@ -196,7 +194,6 @@ Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
 	COUNT piece;
 	Color SisBack;
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (OffScreenContext);
 
 	SkelFrame = CaptureDrawable (LoadGraphic (SISSKEL_MASK_PMAP_ANIM));
@@ -264,7 +261,6 @@ Present_GenerateSIS (PRESENTATION_INPUT_STATE* pPIS)
 
 	SetContext (OldContext);
 	FlushGraphics ();
-	UnlockMutex (GraphicsLock);
 
 	pPIS->SisFrame = SisFrame;
 }
@@ -277,9 +273,7 @@ Present_DrawMovieFrame (PRESENTATION_INPUT_STATE* pPIS)
 	s.origin.x = 0;
 	s.origin.y = 0;
 	s.frame = SetAbsFrameIndex (pPIS->Frame, pPIS->MovieFrame);
-	LockMutex (GraphicsLock);
 	DrawStamp (&s);
-	UnlockMutex (GraphicsLock);
 }
 
 static BOOLEAN
@@ -362,9 +356,7 @@ DoPresentation (void *pIS)
 				/* center on screen */
 				pPIS->clip_r.corner.x = (SCREEN_WIDTH - w) / 2;
 				pPIS->clip_r.corner.y = (SCREEN_HEIGHT - h) / 2;
-				LockMutex (GraphicsLock);
 				SetContextClipRect (&pPIS->clip_r);
-				UnlockMutex (GraphicsLock);
 			}
 		}
 		else if (strcmp (Opcode, "FONT") == 0)
@@ -390,11 +382,7 @@ DoPresentation (void *pIS)
 				*pFont = LoadFontFile (pPIS->Buffer);
 			}
 
-			if (!pPIS->Batched)
-				LockMutex (GraphicsLock);
 			SetContextFont (*pFont);
-			if (!pPIS->Batched)
-				UnlockMutex (GraphicsLock);
 		}
 		else if (strcmp (Opcode, "ANI") == 0)
 		{	/* set ani */
@@ -490,12 +478,8 @@ DoPresentation (void *pIS)
 				t.CharCount = (COUNT)~0;
 				t.baseline.x = x;
 				t.baseline.y = y;
-				if (!pPIS->Batched)
-					LockMutex (GraphicsLock);
 				DrawTextEffect (&t, pPIS->TextColor, pPIS->TextBackColor,
 						pPIS->TextEffect);
-				if (!pPIS->Batched)
-					UnlockMutex (GraphicsLock);
 			}
 		}
 		else if (strcmp (Opcode, "TFI") == 0)
@@ -510,9 +494,7 @@ DoPresentation (void *pIS)
 			
 			Present_UnbatchGraphics (pPIS, TRUE);
 
-			LockMutex (GraphicsLock);
 			GetContextFontLeading (&leading);
-			UnlockMutex (GraphicsLock);
 
 			switch (pPIS->TextVPos)
 			{
@@ -536,7 +518,6 @@ DoPresentation (void *pIS)
 				pPIS->TextLines[i].baseline.y = y;
 			}
 
-			LockMutex (GraphicsLock);
 			for (i = 0; i < pPIS->LinesCount; ++i)
 				DrawTextEffect (pPIS->TextLines + i, pPIS->TextFadeColor,
 						pPIS->TextFadeColor, pPIS->TextEffect);
@@ -550,7 +531,6 @@ DoPresentation (void *pIS)
 			ScreenTransition (3, &pPIS->tfade_r);
 			UnbatchGraphics ();
 			
-			UnlockMutex (GraphicsLock);
 		}
 		else if (strcmp (Opcode, "TFO") == 0)
 		{	/* text fade-out */
@@ -558,7 +538,6 @@ DoPresentation (void *pIS)
 			
 			Present_UnbatchGraphics (pPIS, TRUE);
 
-			LockMutex (GraphicsLock);
 			/* do transition */
 			SetTransitionSource (&pPIS->tfade_r);
 			BatchGraphics ();
@@ -567,7 +546,6 @@ DoPresentation (void *pIS)
 						pPIS->TextFadeColor, pPIS->TextEffect);
 			ScreenTransition (3, &pPIS->tfade_r);
 			UnbatchGraphics ();
-			UnlockMutex (GraphicsLock);
 		}
 		else if (strcmp (Opcode, "SAVEBG") == 0)
 		{	/* save background */
@@ -652,15 +630,11 @@ DoPresentation (void *pIS)
 			}
 			s.origin.x = x;
 			s.origin.y = y;
-			if (!pPIS->Batched)
-				LockMutex (GraphicsLock);
 			old_mode = SetGraphicScaleMode (scale_mode);
 			old_scale = SetGraphicScale (scale);
 			DrawStamp (&s);
 			SetGraphicScale (old_scale);
 			SetGraphicScaleMode (old_mode);
-			if (!pPIS->Batched)
-				UnlockMutex (GraphicsLock);
 		}
 		else if (strcmp (Opcode, "BATCH") == 0)
 		{	/* batch graphics */
@@ -689,9 +663,7 @@ DoPresentation (void *pIS)
 		{	/* clear screen */
 			Present_UnbatchGraphics (pPIS, TRUE);
 
-			LockMutex (GraphicsLock);
 			ClearDrawable ();	
-			UnlockMutex (GraphicsLock);
 		}
 		else if (strcmp (Opcode, "CALL") == 0)
 		{	/* call another script */
@@ -712,12 +684,8 @@ DoPresentation (void *pIS)
 				l.second.x = x2;
 				l.second.y = y2;
 				
-				if (!pPIS->Batched)
-					LockMutex (GraphicsLock);
 				SetContextForeGroundColor (pPIS->TextColor);
 				DrawLine (&l);
-				if (!pPIS->Batched)
-					UnlockMutex (GraphicsLock);
 			}
 			else
 			{
@@ -771,12 +739,10 @@ ShowSlidePresentation (STRING PresStr)
 	pis.SlideShow = SetAbsStringTableIndex (pis.SlideShow, 0);
 	pis.OperIndex = 0;
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (ScreenContext);
 	GetContextClipRect (&OldRect);
 	OldFont = SetContextFont (NULL);
 	SetContextBackGroundColor (BLACK_COLOR);
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	pis.InputFunc = DoPresentation;
@@ -797,11 +763,9 @@ ShowSlidePresentation (STRING PresStr)
 	for (i = 0; i < MAX_FONTS; ++i)
 		DestroyFont (pis.Fonts[i]);
 
-	LockMutex (GraphicsLock);
 	SetContextFont (OldFont);
 	SetContextClipRect (&OldRect);
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 
 	return TRUE;
 }
@@ -853,11 +817,9 @@ FadeClearScreen (void)
 	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 2));
 	
 	// clear the screen with black
-	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	SetContextBackGroundColor (BLACK_COLOR);
 	ClearDrawable ();
-	UnlockMutex (GraphicsLock);
 
 	FadeScreen (FadeAllToColor, 0);
 }

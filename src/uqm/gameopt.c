@@ -21,8 +21,7 @@
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
-// XXX: for FindStart(), GetClusterName()
-#include "encount.h"
+#include "starmap.h"
 #include "menustat.h"
 #include "sis.h"
 #include "units.h"
@@ -168,14 +167,32 @@ FeedbackSetting (BYTE which_setting)
 			break;
 	}
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (buf);
-	UnlockMutex (GraphicsLock);
 }
 
 #define DDSHS_NORMAL   0
 #define DDSHS_EDIT     1
 #define DDSHS_BLOCKCUR 2
+
+static const RECT captainNameRect = {
+	/* .corner = */ {
+		/* .x = */ 3,
+		/* .y = */ 10
+	}, /* .extent = */ {
+		/* .width = */ SHIP_NAME_WIDTH - 2,
+		/* .height = */ SHIP_NAME_HEIGHT
+	}
+};
+static const RECT shipNameRect = {
+	/* .corner = */ {
+		/* .x = */ 2,
+		/* .y = */ 20
+	}, /* .extent = */ {
+		/* .width = */ SHIP_NAME_WIDTH,
+		/* .height = */ SHIP_NAME_HEIGHT
+	}
+};
+
 
 static BOOLEAN
 DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
@@ -186,20 +203,11 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 	Color BackGround, ForeGround;
 	FONT Font;
 
-	LockMutex (GraphicsLock);
-
 	{
-		r.corner.x = 2;
-		r.extent.width = SHIP_NAME_WIDTH;
-		r.extent.height = SHIP_NAME_HEIGHT;
-
-		SetContext (StatusContext);
 		if (nameCaptain)
 		{	// Naming the captain
 			Font = TinyFont;
-			r.corner.y = 10;
-			++r.corner.x;
-			r.extent.width -= 2;
+			r = captainNameRect;
 			lf.baseline.x = r.corner.x + (r.extent.width >> 1) - 1;
 
 			BackGround = BUILD_COLOR (MAKE_RGB15 (0x0A, 0x0A, 0x1F), 0x09);
@@ -208,7 +216,7 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		else
 		{	// Naming the flagship
 			Font = StarConFont;
-			r.corner.y = 20;
+			r = shipNameRect;
 			lf.baseline.x = r.corner.x + (r.extent.width >> 1);
 
 			BackGround = BUILD_COLOR (MAKE_RGB15 (0x0F, 0x00, 0x00), 0x2D);
@@ -219,6 +227,7 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		lf.align = ALIGN_CENTER;
 	}
 
+	SetContext (StatusContext);
 	SetContextFont (Font);
 	lf.pStr = Str;
 	lf.CharCount = (COUNT)~0;
@@ -241,10 +250,11 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 		if ((text_r.extent.width + 2) >= r.extent.width)
 		{	// the text does not fit the input box size and so
 			// will not fit when displayed later
-			UnlockMutex (GraphicsLock);
 			// disallow the change
 			return (FALSE);
 		}
+	
+		PreUpdateFlashRect ();
 
 		SetContextForeGroundColor (BackGround);
 		DrawFilledRectangle (&r);
@@ -282,11 +292,10 @@ DrawNameString (bool nameCaptain, UNICODE *Str, COUNT CursorPos,
 
 		SetContextForeGroundColor (ForeGround);
 		font_DrawText (&lf);
-
-		SetFlashRect (&r);
+		
+		PostUpdateFlashRect ();
 	}
 
-	UnlockMutex (GraphicsLock);
 	return (TRUE);
 }
 
@@ -309,15 +318,11 @@ NameCaptainOrShip (bool nameCaptain)
 	TEXTENTRY_STATE tes;
 	UNICODE *Setting;
 
-	LockMutex (GraphicsLock);
-	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
+	SetFlashRect (nameCaptain ? &captainNameRect : &shipNameRect);
 
 	DrawNameString (nameCaptain, buf, 0, DDSHS_EDIT);
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (GAME_STRING (NAMING_STRING_BASE + 0));
-	UnlockMutex (GraphicsLock);
 
 	if (nameCaptain)
 	{
@@ -343,9 +348,7 @@ NameCaptainOrShip (bool nameCaptain)
 	else
 		utf8StringCopy (buf, sizeof (buf), Setting);
 	
-	LockMutex (GraphicsLock);
 	SetFlashRect (SFR_MENU_3DO);
-	UnlockMutex (GraphicsLock);
 	
 	DrawNameString (nameCaptain, buf, 0, DDSHS_NORMAL);
 
@@ -434,9 +437,7 @@ SettingsMenu (void)
 	MenuState.InputFunc = DoSettings;
 	DoInput (&MenuState, FALSE);
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (NULL);
-	UnlockMutex (GraphicsLock);
 }
 
 typedef struct
@@ -661,10 +662,8 @@ DrawSavegameSummary (PICK_GAME_STATE *pickState, COUNT gameIndex)
 			r.corner.y = SIS_ORG_Y + 84;
 			r.extent = OldRect.extent;
 			SetContextClipRect (&r);
-			UnlockMutex (GraphicsLock);
 			// draw the lander with upgrades
 			InitLander (pSD->Flags | OVERRIDE_LANDER_FLAGS);
-			LockMutex (GraphicsLock);
 			SetContextClipRect (&OldRect);
 			SetContext (SpaceContext);
 
@@ -925,11 +924,9 @@ DoPickGame (MENU_STATE *pMS)
 
 		if (NewState != pMS->CurState)
 		{
-			LockMutex (GraphicsLock);
 			pMS->CurState = NewState;
 			SetContext (SpaceContext);
 			RedrawPickDisplay (pickState, pMS->CurState);
-			UnlockMutex (GraphicsLock);
 		}
 		
 		SleepThreadUntil (TimeIn + ONE_SECOND / 30);
@@ -949,9 +946,7 @@ SaveLoadGame (PICK_GAME_STATE *pickState, COUNT gameIndex)
 
 	// TODO: fix ConfirmSaveLoad() interface so it does not rely on
 	//   MsgStamp != NULL parameter.
-	LockMutex (GraphicsLock);
 	ConfirmSaveLoad (pickState->saving ? &saveStamp : NULL);
-	UnlockMutex (GraphicsLock);
 
 	if (pickState->saving)
 		success = SaveGame (gameIndex, desc);
@@ -962,9 +957,7 @@ SaveLoadGame (PICK_GAME_STATE *pickState, COUNT gameIndex)
 	//   display a load problem message
 	if (pickState->saving)
 	{	// restore the screen under "SAVING..." message
-		LockMutex (GraphicsLock);
 		DrawStamp (&saveStamp);
-		UnlockMutex (GraphicsLock);
 	}
 
 	DestroyDrawable (ReleaseDrawable (saveStamp.frame));
@@ -999,12 +992,10 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 
 	LoadGameDescriptions (pickState.summary);
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 	// Save the current state of the screen for later restoration
 	DlgStamp = SaveContextFrame (NULL);
 	GetContextClipRect (&DlgRect);
-	UnlockMutex (GraphicsLock);
 
 	SleepThreadUntil (TimeOut);
 	PauseMusic ();
@@ -1012,7 +1003,6 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 	FadeMusic (NORMAL_VOLUME, 0);
 
 	// draw the current savegame and fade in
-	LockMutex (GraphicsLock);
 	SetTransitionSource (NULL);
 	BatchGraphics ();
 	
@@ -1034,7 +1024,6 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 		ScreenTransition (3, &ctxRect);
 		UnbatchGraphics ();
 	}
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS | MENU_SOUND_PAGEUP | MENU_SOUND_PAGEDOWN,
 			0);
@@ -1060,9 +1049,7 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 
 		// reload and redraw everything
 		LoadGameDescriptions (pickState.summary);
-		LockMutex (GraphicsLock);
 		RedrawPickDisplay (&pickState, MenuState.CurState);
-		UnlockMutex (GraphicsLock);
 	}
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
@@ -1075,20 +1062,16 @@ PickGame (BOOLEAN saving, BOOLEAN fromMainMenu)
 	if (!(GLOBAL (CurrentActivity) & CHECK_ABORT) &&
 			(saving || (!pickState.success && !fromMainMenu)))
 	{	// Restore previous screen
-		LockMutex (GraphicsLock);
 		SetTransitionSource (&DlgRect);
 		BatchGraphics ();
 		DrawStamp (&DlgStamp);
 		ScreenTransition (3, &DlgRect);
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 	}
 
 	DestroyDrawable (ReleaseDrawable (DlgStamp.frame));
 
-	LockMutex (GraphicsLock);
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 
 	ResumeMusic ();
 
@@ -1116,14 +1099,10 @@ DoGameOptions (MENU_STATE *pMS)
 		{
 			case SAVE_GAME:
 			case LOAD_GAME:
-				LockMutex (GraphicsLock);
 				SetFlashRect (NULL);
-				UnlockMutex (GraphicsLock);
 				if (PickGame (pMS->CurState == SAVE_GAME, FALSE))
 					return FALSE;
-				LockMutex (GraphicsLock);
 				SetFlashRect (SFR_MENU_3DO);
-				UnlockMutex (GraphicsLock);
 				break;
 			case QUIT_GAME:
 				if (ConfirmExit ())
@@ -1165,17 +1144,13 @@ GameOptions (void)
 	MenuState.CurState = SAVE_GAME;
 	DrawMenuStateStrings (PM_SAVE_GAME, MenuState.CurState);
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (SFR_MENU_3DO);
-	UnlockMutex (GraphicsLock);
 	
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	MenuState.InputFunc = DoGameOptions;
 	DoInput (&MenuState, TRUE);
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
 
 	return !(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD));
 }

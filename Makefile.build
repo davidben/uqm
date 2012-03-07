@@ -42,6 +42,13 @@ $(OBJDIR)%.c.d: $(BUILD_ROOT)%.c
 	fi
 	$(call act,act_mkdep_c,MKDEP  ,$@)
 
+$(OBJDIR)%.cpp.d: $(BUILD_ROOT)%.cpp
+	@DIR=$(dir $@); \
+	if [ ! -d $$DIR ]; then \
+		mkdir -p "$$DIR"; \
+	fi
+	$(call act,act_mkdep_cxx,MKDEP  ,$@)
+
 $(OBJDIR)%.m.d: $(BUILD_ROOT)%.m
 	@DIR=$(dir $@); \
 	if [ ! -d $$DIR ]; then \
@@ -69,6 +76,13 @@ $(OBJDIR)%.cpp.d: $(BUILD_ROOT)%.cpp
 		mkdir -p "$$DIR"; \
 	fi
 	$(call act,act_cc,CC     ,$@)
+
+%.cpp.o:
+	@DIR=$(dir $@); \
+	if [ ! -d $$DIR ]; then \
+		mkdir -p "$$DIR"; \
+	fi
+	$(call act,act_cxx,CXX    ,$@)
 
 %.m.o:
 	@DIR=$(dir $@); \

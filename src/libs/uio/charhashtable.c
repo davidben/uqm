@@ -30,7 +30,7 @@ static inline uio_bool CharHashTable_equal(CharHashTable_HashTable *hashTable,
 		const char *key1, const char *key2);
 static inline char *CharHashTable_copy(CharHashTable_HashTable *hashTable,
 		const char *key);
-static inline void CharHashTable_free(CharHashTable_HashTable *hashTable,
+static inline void CharHashTable_freeKey(CharHashTable_HashTable *hashTable,
 		char *key);
 
 #include "hashtable.c"
@@ -68,7 +68,7 @@ CharHashTable_copy(CharHashTable_HashTable *hashTable,
 }
 
 static inline void
-CharHashTable_free(CharHashTable_HashTable *hashTable,
+CharHashTable_freeKey(CharHashTable_HashTable *hashTable,
 		char *key) {
 	(void) *hashTable;
 	uio_free(key);

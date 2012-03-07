@@ -22,6 +22,7 @@
 
 #include "build.h"
 #include "controls.h"
+#include "starmap.h"
 #include "encount.h"
 #include "libs/file.h"
 #include "gamestr.h"
@@ -276,11 +277,13 @@ SaveEncounter (const ENCOUNTER *EncounterPtr, DECODE_REF fh)
 	cwrite_16  (fh, EncounterPtr->origin.x);
 	cwrite_16  (fh, EncounterPtr->origin.y);
 	cwrite_16  (fh, EncounterPtr->radius);
-	// STAR_DESC fields
-	cwrite_16  (fh, EncounterPtr->SD.star_pt.x);
-	cwrite_16  (fh, EncounterPtr->SD.star_pt.y);
-	cwrite_8   (fh, EncounterPtr->SD.Type);
-	cwrite_8   (fh, EncounterPtr->SD.Index);
+	// former STAR_DESC fields
+	cwrite_16  (fh, EncounterPtr->loc_pt.x);
+	cwrite_16  (fh, EncounterPtr->loc_pt.y);
+	cwrite_8   (fh, EncounterPtr->race_id);
+	// XXX: writing combined fields to maintain savegame compatibility
+	cwrite_8   (fh, (EncounterPtr->num_ships & ENCOUNTER_SHIPS_MASK)
+			| (EncounterPtr->flags & ENCOUNTER_FLAGS_MASK));
 	cwrite_16  (fh, 0); /* alignment padding */
 
 	// Save each entry in the BRIEF_SHIP_INFO array
@@ -483,7 +486,7 @@ PrepareSummary (SUMMARY_DESC *SummPtr)
 	switch (SummPtr->Activity)
 	{
 		case IN_HYPERSPACE:
-			if (GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1)
+			if (inQuasiSpace ())
 				SummPtr->Activity = IN_QUASISPACE;
 			break;
 		case IN_INTERPLANETARY:
@@ -603,26 +606,22 @@ SaveProblem (void)
 	STAMP s;
 	CONTEXT OldContext;
 	
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (SpaceContext);
 	SaveProblemMessage (&s);
 	FlushGraphics ();
-	UnlockMutex (GraphicsLock);
 
 	WaitForAnyButton (TRUE, WAIT_INFINITE, FALSE);
 
-	LockMutex (GraphicsLock);
 	// Restore the screen under the message
 	DrawStamp (&s);
 	SetContext (OldContext);
 	DestroyDrawable (ReleaseDrawable (s.frame));
-	UnlockMutex (GraphicsLock);
 }
 
 static void
 SaveFlagshipState (void)
 {
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		// Player is in HyperSpace or QuasiSpace.
 		SaveSisHyperState ();

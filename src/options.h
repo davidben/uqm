@@ -26,6 +26,10 @@
 #include "libs/compiler.h"
 #include "libs/uio.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define OPT_3DO 0x01
 #define OPT_PC  0x02
 #define OPT_ALL 0xFF
@@ -40,9 +44,13 @@ extern int optMeleeScale;
 
 extern BOOLEAN opt3doMusic;
 extern BOOLEAN optRemixMusic;
+extern BOOLEAN optSpeech;
 extern BOOLEAN optSubtitles;
 extern BOOLEAN optStereoSFX;
 extern BOOLEAN optKeepAspectRatio;
+
+#define GAMMA_SCALE  1000
+extern float optGamma;
 
 extern uio_DirHandle *contentDir;
 extern uio_DirHandle *configDir;
@@ -71,9 +79,16 @@ void prepareMeleeDir (void);
 void prepareSaveDir (void);
 void prepareAddons (const char **addons);
 void prepareShadowAddons (const char **addons);
+void unprepareAllDirs (void);
 
 BOOLEAN loadAddon (const char *addon);
 int loadIndices (uio_DirHandle *baseDir);
+
+bool setGammaCorrection (float gamma);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif
 

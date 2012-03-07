@@ -102,7 +102,6 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 	t.pStr = pStr;
 
 	Sleepy = TRUE;
-	UnlockMutex (GraphicsLock);
 
 	FlushInput ();
 	// XXX: this is a pretty ugly goto
@@ -163,9 +162,7 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						font_DrawText (&t);
 					else
 					{
-						LockMutex (GraphicsLock);
 						font_DrawText (&t);
-						UnlockMutex (GraphicsLock);
 
 						PlaySound (ReadOutSounds, NotPositional (), NULL,
 								GAME_SOUND_PRIORITY);
@@ -183,7 +180,6 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 						{
 							Sleepy = FALSE;
 							// We draw the whole thing at once after this
-							LockMutex (GraphicsLock);
 							BatchGraphics ();
 						}
 					}
@@ -204,7 +200,6 @@ MakeReport (SOUND ReadOutSounds, UNICODE *pStr, COUNT StrLen)
 			if (!Sleepy)
 			{
 				UnbatchGraphics ();
-				UnlockMutex (GraphicsLock);
 			}
 
 			if (!WaitForAnyButton (TRUE, WAIT_INFINITE, FALSE))
@@ -216,18 +211,14 @@ InitPageCell:
 			row_cells = 0;
 			if (StrLen)
 			{
-				LockMutex (GraphicsLock);
 				if (!Sleepy)
 					BatchGraphics ();
 				ClearReportArea();
 				SetContextForeGroundColor (
 						BUILD_COLOR (MAKE_RGB15 (0x00, 0x1F, 0x00), 0xFF));
-				if (Sleepy)
-					UnlockMutex (GraphicsLock);
 			}
 		}
 	}
-	LockMutex (GraphicsLock);
 }
 
 void
@@ -274,9 +265,7 @@ DoDiscoveryReport (SOUND ReadOutSounds)
 
 	DestroyDrawable (ReleaseDrawable (saveStamp.frame));
 
-	UnlockMutex (GraphicsLock);
 	WaitForNoInput (WAIT_INFINITE, TRUE);
-	LockMutex (GraphicsLock);
 }
 
 

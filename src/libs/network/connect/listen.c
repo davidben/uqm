@@ -56,7 +56,7 @@ static void doListenErrorCallback(ListenState *listenState,
 static ListenState *
 ListenState_alloc(void) {
 	return (ListenState *) malloc(sizeof (ListenState));
-};
+}
 
 static void
 ListenState_free(ListenState *listenState) {

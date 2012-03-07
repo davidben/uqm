@@ -21,7 +21,8 @@
 #include "../planets.h"
 #include "../../build.h"
 #include "../../comm.h"
-#include "../../encount.h"
+#include "../../gendef.h"
+#include "../../starmap.h"
 #include "../../globdata.h"
 #include "../../ipdisp.h"
 #include "../../nameref.h"
@@ -33,8 +34,8 @@
 static bool GenerateOrz_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateOrz_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateOrz_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateOrz_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -92,7 +93,7 @@ GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 
 		if ((CurStarDescPtr->Index == ORZ_DEFINED
 				|| !GET_GAME_STATE (TAALO_UNPROTECTED))
-				&& ActivateStarShip (ORZ_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (ORZ_SHIP))
 		{
 			NotifyOthers (ORZ_SHIP, IPNL_ALL_CLEAR);
 			PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
@@ -134,9 +135,7 @@ GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 				if (OrzSurvivors)
 					return true;
 
-				LockMutex (GraphicsLock);
 				RepairSISBorder ();
-				UnlockMutex (GraphicsLock);
 			}
 		}
 
@@ -167,8 +166,8 @@ GenerateOrz_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateOrz_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateOrz_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (CurStarDescPtr->Index == TAALO_PROTECTOR_DEFINED
 			&& matchWorld (solarSys, world, 1, 2))
@@ -180,13 +179,13 @@ GenerateOrz_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	if (CurStarDescPtr->Index == ORZ_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		return GenerateDefault_generateRuins (solarSys, whichNode);
+		return GenerateDefault_generateRuins (solarSys, whichNode, info);
 	}
 
 	return 0;

@@ -69,30 +69,6 @@ static TFB_GRAPHICS_BACKEND opengl_unscaled_backend = {
 	TFB_GL_ColorLayer };
 
 
-static SDL_Surface *
-Create_Screen (SDL_Surface *template, int w, int h)
-{
-	SDL_Surface *newsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
-			template->format->BitsPerPixel,
-			template->format->Rmask, template->format->Gmask,
-			template->format->Bmask, 0);
-	if (newsurf == 0) {
-		log_add (log_Error, "Couldn't create screen buffers: %s",
-				SDL_GetError());
-	}
-	return newsurf;
-}
-
-static int
-ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
-{
-	if (*screen)
-		SDL_FreeSurface (*screen);
-	*screen = Create_Screen (template, w, h);
-	
-	return *screen == 0 ? -1 : 0;
-}
-
 static int
 AttemptColorDepth (int flags, int width, int height, int bpp)
 {
@@ -298,6 +274,15 @@ TFB_GL_InitGraphics (int driver, int flags, int width, int height)
 	return 0;
 }
 
+void
+TFB_GL_UninitGraphics (void)
+{
+	int i;
+
+	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+		UnInit_Screen (&GL_Screens[i].scaled);
+}
+
 void TFB_GL_UploadTransitionScreen (void)
 {
 	GL_Screens[TFB_SCREEN_TRANSITION].updated.x = 0;
@@ -307,7 +292,7 @@ void TFB_GL_UploadTransitionScreen (void)
 	GL_Screens[TFB_SCREEN_TRANSITION].dirty = TRUE;
 }
 
-void
+static void
 TFB_GL_ScanLines (void)
 {
 	int y;

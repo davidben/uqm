@@ -17,12 +17,20 @@
 #ifndef _STARCON_H
 #define _STARCON_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern volatile int MainExited;
 extern void SignalStopMainThread (void);
 extern void ProcessUtilityKeys (void);
 
 extern int Starcon2Main (void *threadArg);
 extern void FreeGameData (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _STARCON_H */
 

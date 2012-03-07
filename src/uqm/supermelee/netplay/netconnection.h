@@ -22,6 +22,10 @@
 #include "netplay.h"
 		// for NETPLAY_STATISTICS
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef struct NetConnection NetConnection;
 typedef struct NetConnectionError NetConnectionError;
 typedef struct ConnectStateData ConnectStateData;
@@ -38,6 +42,10 @@ typedef void (*NetConnection_DeleteCallback)(NetConnection *nd);
 typedef void (*NetConnection_ReadyCallback)(NetConnection *conn, void *arg);
 typedef void (*NetConnection_ResetCallback)(NetConnection *conn, void *arg);
 
+#if defined(__cplusplus)
+}
+#endif
+
 #include "netstate.h"
 #include "netoptions.h"
 #ifdef NETPLAY_CHECKSUM
@@ -48,6 +56,10 @@ typedef void (*NetConnection_ResetCallback)(NetConnection *conn, void *arg);
 #endif
 #if defined(NETPLAY_DEBUG) && defined(NETPLAY_DEBUG_FILE)
 #	include "libs/uio.h"
+#endif
+
+#if defined(__cplusplus)
+extern "C" {
 #endif
 
 struct NetConnectionError {
@@ -68,10 +80,17 @@ struct NetStatistics {
 };
 #endif
 
+#if defined(__cplusplus)
+}
+#endif
 
 #ifdef NETCONNECTION_INTERNAL
 #include "libs/net.h"
 #include "packetq.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 typedef struct {
 	// For actions that require agreement by both parties.
@@ -232,6 +251,9 @@ void *NetConnection_getResetCallbackArg(const NetConnection *conn);
 extern uio_Stream *netplayDebugFile;
 #endif
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _NETCONNECTION_H */
 

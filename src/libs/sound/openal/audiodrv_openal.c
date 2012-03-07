@@ -126,7 +126,6 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 	}
 
 	*driver = openAL_Driver;
-	atexit (unInitAudio);
 
 	alcContext = alcCreateContext (alcDevice, NULL);
 	if (!alcContext)
@@ -193,14 +192,7 @@ openAL_Init (audio_Driver *driver, sint32 flags)
 		return -1;
 	}
 	
-	SetSFXVolume (sfxVolumeScale);
-	SetSpeechVolume (speechVolumeScale);
-	SetMusicVolume ((COUNT) musicVolume);
-
-	if (optStereoSFX)
-		alDistanceModel (AL_INVERSE_DISTANCE);
-	else
-		alDistanceModel (AL_NONE);
+	alDistanceModel (AL_INVERSE_DISTANCE);
 
 	(void) driver; // eat compiler warning
 

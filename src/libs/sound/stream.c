@@ -225,12 +225,12 @@ TFB_DestroySoundSample (TFB_SoundSample *sample)
 }
 
 void
-TFB_SetSoundSampleData (TFB_SoundSample *sample, intptr_t data)
+TFB_SetSoundSampleData (TFB_SoundSample *sample, void* data)
 {
 	sample->data = data;
 }
 
-intptr_t
+void*
 TFB_GetSoundSampleData (TFB_SoundSample *sample)
 {
 	return sample->data;
@@ -568,7 +568,7 @@ StreamDecoderTaskFunc (void *data)
 
 		if (active_streams == 0) 
 		{	// Throttle down the thread when there are no active streams
-			SleepThread (ONE_SECOND / 10);
+			HibernateThread (ONE_SECOND / 10);
 		}
 		else
 			TaskSwitch ();
@@ -593,7 +593,8 @@ readSoundSample (void *ptr, int sample_size)
 // We use AGC because different pieces of music and speech can easily be
 // at very different gain levels, because the game is moddable.
 int
-GraphForegroundStream (uint8 *data, sint32 width, sint32 height)
+GraphForegroundStream (uint8 *data, sint32 width, sint32 height,
+		bool wantSpeech)
 {
 	int source_num;
 	TFB_SoundSource *source;
@@ -634,7 +635,7 @@ GraphForegroundStream (uint8 *data, sint32 width, sint32 height)
 	source_num = SPEECH_SOURCE;
 	source = &soundSource[source_num];
 	LockMutex (source->stream_mutex);
-	if (speechVolumeScale != 0.0f && (!source->sample ||
+	if (wantSpeech && (!source->sample ||
 			!source->sample->decoder || !source->sample->decoder->is_null))
 	{	// Use speech waveform, since it's available
 		// Step is picked experimentally. Using step of 1 sample at 11025Hz,
@@ -642,9 +643,10 @@ GraphForegroundStream (uint8 *data, sint32 width, sint32 height)
 		// better this way.
 		step = 1;
 	}
-	else if (musicVolumeScale != 0.0f)
+	else
 	{	// We do not have speech -- use music waveform
 		UnlockMutex (source->stream_mutex);
+
 		source_num = MUSIC_SOURCE;
 		source = &soundSource[source_num];
 		LockMutex (source->stream_mutex);
@@ -652,11 +654,6 @@ GraphForegroundStream (uint8 *data, sint32 width, sint32 height)
 		// Step is picked experimentally. Using step of 4 samples at 11025Hz.
 		// It looks better this way.
 		step = 4;
-	}
-	else
-	{	// We do not have anything usable
-		UnlockMutex (source->stream_mutex);
-		return 0;
 	}
 
 	if (!PlayingStream (source_num) || !source->sample

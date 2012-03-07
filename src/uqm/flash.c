@@ -18,6 +18,12 @@
 //       areas, drawing directly to the screen, using a cache, are
 //       currently in use.
 
+// NOTE:
+// - If you change the properties of the original CONTEXT, specifically the
+//   dimensions and origin, you'll need to call Flash_preUpdate() before and
+//   Flash_postUpdate() after that change. Note that this may change which
+//   part of the screen is flashing.
+
 // TODO:
 // - During a few frames during the sequence, the frame to be displayed
 //   is equal to a frame which was supplied as a parameter to the flash
@@ -30,8 +36,6 @@
 #define FLASH_INTERNAL
 #include "flash.h"
 
-#include "setup.h"
-		// For GraphicsLock.
 #include "libs/log.h"
 #include "libs/memlib.h"
 #include "libs/threadlib.h"
@@ -211,6 +215,7 @@ Flash_terminate (FlashContext *context)
 		Flash_drawFrame (context, context->original);
 
 		Flash_clearCache (context);
+		HFree (context->cache);
 		DestroyDrawable (ReleaseDrawable (context->original));
 	}
 
@@ -274,37 +279,36 @@ Flash_process (FlashContext *context)
 	
 	now = GetTimeCounter ();
 
-	if (context->state == FlashState_fadeIn)
+	switch (context->state)
 	{
-		if (now >= context->lastStateTime + context->fadeInTime)
-		{
+		case FlashState_fadeIn:
+			if (now >= context->lastStateTime + context->fadeInTime)
+			{
+				Flash_nextState (context);
+				context->lastStateTime = now;
+			}
+			context->lastFrameTime = now;
+			break;
+		case FlashState_on:
+			if (now < context->lastStateTime + context->onTime)
+				return;
 			Flash_nextState (context);
 			context->lastStateTime = now;
-		}
-		context->lastFrameTime = now;
-	}
-	else if (context->state == FlashState_on)
-	{
-		if (now < context->lastStateTime + context->onTime)
-			return;
-		Flash_nextState (context);
-		context->lastStateTime = now;
-	}
-	else if (context->state == FlashState_fadeOut)
-	{
-		if (now >= context->lastStateTime + context->fadeOutTime)
-		{
+			break;
+		case FlashState_fadeOut:
+			if (now >= context->lastStateTime + context->fadeOutTime)
+			{
+				Flash_nextState (context);
+				context->lastStateTime = now;
+			}
+			context->lastFrameTime = now;
+			break;
+		case FlashState_off:
+			if (now < context->lastStateTime + context->offTime)
+				return;
 			Flash_nextState (context);
 			context->lastStateTime = now;
-		}
-		context->lastFrameTime = now;
-	}
-	else /* context->state == FlashState_off */
-	{
-		if (now < context->lastStateTime + context->offTime)
-			return;
-		Flash_nextState (context);
-		context->lastStateTime = now;
+			break;
 	}
 
 	Flash_drawCurrentFrame (context);
@@ -472,7 +476,8 @@ Flash_setOverlay (FlashContext *context, const POINT *origin, FRAME overlay)
 	}
 }
 
-// Call before you update the graphics in the currently flashing area.
+// Call before you update the graphics in the currently flashing area,
+// or before you change the dimensions or origin of the graphics context.
 void
 Flash_preUpdate (FlashContext *context)
 {
@@ -483,7 +488,8 @@ Flash_preUpdate (FlashContext *context)
 	}
 }
 
-// Call after you update the graphics in the currently flashing area.
+// Call after you update the graphics in the currently flashing area,
+// or after you change the dimensions or origin of the graphics context.
 void
 Flash_postUpdate (FlashContext *context)
 {
@@ -537,7 +543,6 @@ Flash_grabOriginal (FlashContext *context)
 	if (context->original != (FRAME) 0)
 		DestroyDrawable (ReleaseDrawable (context->original));
 
-	LockMutex (GraphicsLock);
 	oldGfxContext = SetContext (context->gfxContext);
 	context->original = CaptureDrawable (CopyContextRect (&context->rect));
 	SetContext (oldGfxContext);
@@ -545,7 +550,6 @@ Flash_grabOriginal (FlashContext *context)
 			// CopyContextRect() may have queued the command to read
 			// a rectangle from the screen; a FlushGraphics()
 			// is necessary to ensure that it can actually be used.
-	UnlockMutex (GraphicsLock);
 }
 
 static inline void
@@ -581,7 +585,6 @@ Flash_makeFrame (FlashContext *context, FRAME dest, int numer, int denom)
 
 	Flash_blendFraction (context, numer, denom, &blendedNumer, &blendedDenom);
 
-	LockMutex (GraphicsLock);
 	oldGfxContext = SetContext (workGfxContext);
 	SetContextFGFrame (dest);
 
@@ -642,7 +645,6 @@ Flash_makeFrame (FlashContext *context, FRAME dest, int numer, int denom)
 	}
 
 	SetContext (oldGfxContext);
-	UnlockMutex (GraphicsLock);
 }
 
 // Prepare an entry in the cache.
@@ -678,7 +680,6 @@ Flash_drawFrame (FlashContext *context, FRAME frame)
 	CONTEXT oldGfxContext;
 	STAMP stamp;
 
-	LockMutex (GraphicsLock);
 	oldGfxContext = SetContext (context->gfxContext);
 
 	stamp.origin = context->rect.corner;
@@ -686,7 +687,6 @@ Flash_drawFrame (FlashContext *context, FRAME frame)
 	DrawStamp(&stamp);
 
 	SetContext (oldGfxContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -802,6 +802,4 @@ Flash_drawCurrentFrame (FlashContext *context)
 	else
 		Flash_drawCachedFrame (context, numer, denom);
 }
-
-
 

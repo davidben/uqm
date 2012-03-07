@@ -47,30 +47,6 @@ static TFB_GRAPHICS_BACKEND pure_unscaled_backend = {
 	TFB_Pure_ScreenLayer,
 	TFB_Pure_ColorLayer };
 
-static SDL_Surface *
-Create_Screen (SDL_Surface *template, int w, int h)
-{
-	SDL_Surface *newsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
-			template->format->BitsPerPixel,
-			template->format->Rmask, template->format->Gmask,
-			template->format->Bmask, 0);
-	if (newsurf == 0) {
-		log_add (log_Error, "Couldn't create screen buffers: %s",
-				SDL_GetError());
-	}
-	return newsurf;
-}
-
-static int
-ReInit_Screen (SDL_Surface **screen, SDL_Surface *template, int w, int h)
-{
-	if (*screen)
-		SDL_FreeSurface (*screen);
-	*screen = Create_Screen (template, w, h);
-	
-	return *screen == 0 ? -1 : 0;
-}
-
 // We cannot rely on SDL_DisplayFormatAlpha() anymore. It can return
 // formats that we do not expect (SDL v1.2.14 on Mac OSX). Mac likes
 // ARGB surfaces, but SDL_DisplayFormatAlpha thinks that only RGBA are fast.
@@ -285,6 +261,14 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height)
 	Scale_Init ();
 
 	return 0;
+}
+
+void
+TFB_Pure_UninitGraphics (void)
+{
+	UnInit_Screen (&scaled_display);
+	UnInit_Screen (&fade_color_surface);
+	UnInit_Screen (&fade_temp);
 }
 
 static void

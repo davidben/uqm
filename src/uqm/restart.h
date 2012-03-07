@@ -19,8 +19,16 @@
 
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 extern BOOLEAN StartGame (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _RESTART_H */
 

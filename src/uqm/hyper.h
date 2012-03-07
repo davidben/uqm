@@ -23,6 +23,10 @@
 #include "units.h"
 		// for UNIT_SCREEN_WIDTH/HEIGHT
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define NUM_RADAR_SCREENS 12
 
 #define RADAR_SCAN_WIDTH (UNIT_SCREEN_WIDTH * NUM_RADAR_SCREENS)
@@ -78,6 +82,10 @@ extern BOOLEAN hyper_transition (ELEMENT *ElementPtr);
 
 extern void HyperspaceMenu (void);
 extern void SaveSisHyperState (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _HYPER_H */
 

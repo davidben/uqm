@@ -16,5 +16,14 @@
  *
  */
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "list/list.h"
+
+#if defined(__cplusplus)
+}
+#endif
+
 

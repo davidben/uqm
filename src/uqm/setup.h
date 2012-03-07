@@ -24,6 +24,10 @@
 #include "libs/gfxlib.h"
 #include "libs/threadlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern RESOURCE_INDEX hResIndex;
 
 extern FRAME Screen;
@@ -47,7 +51,6 @@ extern FONT StarConFont;
 extern FONT MicroFont;
 extern FONT TinyFont;
 
-extern Mutex GraphicsLock;
 extern CondVar RenderingCond;
 
 extern QUEUE race_q[];
@@ -57,6 +60,10 @@ extern QUEUE race_q[];
 extern ACTIVITY LastActivity;
 
 extern BYTE PlayerControl[];
+
+extern BOOLEAN usingSpeech;
+		// Actual speech presence indicator which decouples reality from
+		// the user option, thus the user option remains as pure intent
 
 BOOLEAN InitContexts (void);
 void UninitPlayerInput (void);
@@ -74,6 +81,10 @@ bool SetPlayerInputAll (void);
 void ClearPlayerInput (COUNT playerI);
 void ClearPlayerInputAll (void);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _SETUP_H */
 

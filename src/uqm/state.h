@@ -23,6 +23,10 @@
 #include "libs/compiler.h"
 #include <assert.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern void InitPlanetInfo (void);
 extern void UninitPlanetInfo (void);
 extern void GetPlanetInfo (void);
@@ -75,7 +79,7 @@ int WriteStateFile (const void *lpBuf, COUNT size, COUNT count, GAME_STATE_FILE 
 int SeekStateFile (GAME_STATE_FILE *fp, long offset, int whence);
 
 static inline COUNT
-sread_8 (void *fp, BYTE *v)
+sread_8 (GAME_STATE_FILE *fp, BYTE *v)
 {
 	BYTE t;
 	if (!v) /* read value ignored */
@@ -84,7 +88,7 @@ sread_8 (void *fp, BYTE *v)
 }
 
 static inline COUNT
-sread_16 (void *fp, UWORD *v)
+sread_16 (GAME_STATE_FILE *fp, UWORD *v)
 {
 	UWORD t;
 	if (!v) /* read value ignored */
@@ -93,7 +97,7 @@ sread_16 (void *fp, UWORD *v)
 }
 
 static inline COUNT
-sread_16s (void *fp, SWORD *v)
+sread_16s (GAME_STATE_FILE *fp, SWORD *v)
 {
 	UWORD t;
 	COUNT ret;
@@ -105,7 +109,7 @@ sread_16s (void *fp, SWORD *v)
 }
 
 static inline COUNT
-sread_32 (void *fp, DWORD *v)
+sread_32 (GAME_STATE_FILE *fp, DWORD *v)
 {
 	DWORD t;
 	if (!v) /* read value ignored */
@@ -114,7 +118,7 @@ sread_32 (void *fp, DWORD *v)
 }
 
 static inline COUNT
-sread_a32 (void *fp, DWORD *ar, COUNT count)
+sread_a32 (GAME_STATE_FILE *fp, DWORD *ar, COUNT count)
 {
 	assert (ar != NULL);
 
@@ -127,25 +131,25 @@ sread_a32 (void *fp, DWORD *ar, COUNT count)
 }
 
 static inline COUNT
-swrite_8 (void *fp, BYTE v)
+swrite_8 (GAME_STATE_FILE *fp, BYTE v)
 {
 	return WriteStateFile (&v, 1, 1, fp);
 }
 
 static inline COUNT
-swrite_16 (void *fp, UWORD v)
+swrite_16 (GAME_STATE_FILE *fp, UWORD v)
 {
 	return WriteStateFile (&v, 2, 1, fp);
 }
 
 static inline COUNT
-swrite_32 (void *fp, DWORD v)
+swrite_32 (GAME_STATE_FILE *fp, DWORD v)
 {
 	return WriteStateFile (&v, 4, 1, fp);
 }
 
 static inline COUNT
-swrite_a32 (void *fp, const DWORD *ar, COUNT count)
+swrite_a32 (GAME_STATE_FILE *fp, const DWORD *ar, COUNT count)
 {
 	for ( ; count > 0; --count, ++ar)
 	{
@@ -154,6 +158,10 @@ swrite_a32 (void *fp, const DWORD *ar, COUNT count)
 	}
 	return 1;
 }
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _STATE_H */
 

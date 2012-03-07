@@ -61,20 +61,73 @@ set_strtab_entry (STRING_TABLE_DESC *strtab, int index, const char *value, int l
 	}
 }
 
+// Check whether a buffer has a certain minimum size, and enlarge it
+// if necessary.
+// buf: pointer to the pointer to the buffer. May be NULL.
+// curSize: pointer to the current size (multiple of 'increment')
+// minSize: required minimum size
+// increment: size to increment the buffer with if necessary
+// On success, *buf and *curSize are updated. On failure, they are
+// unchanged.
+// returns FALSE if and only if the buffer needs to be enlarged but
+// memory allocation failed.
+static BOOLEAN
+ensureBufSize (char **buf, size_t *curSize, size_t minSize, size_t increment)
+{
+	char *newBuf;
+	size_t newSize;
+
+	if (minSize <= *curSize)
+	{
+		// Buffer is large enough as it is.
+		return TRUE;
+	}
+
+	newSize = ((minSize + (increment - 1)) / increment) * increment;
+			// Smallest multiple of 'increment' larger or equal to minSize.
+	newBuf = HRealloc (*buf, newSize);
+	if (newBuf == NULL)
+		return FALSE;
+
+	// Success
+	*buf = newBuf;
+	*curSize = newSize;
+	return TRUE;
+}
+
 void
 _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 {
 	uio_Stream *fp;
 	unsigned long dataLen;
 	void *result;
-	int n, path_len, num_data_sets;
-	DWORD opos,
-		slen[MAX_STRINGS], StringOffs, tot_string_size,
-		clen[MAX_STRINGS], ClipOffs, tot_clip_size,
-		tslen[MAX_STRINGS], TSOffs;
+	int n;
+	int path_len;
+	int num_data_sets;
+	DWORD opos;
+	DWORD slen[MAX_STRINGS];
+			// Length of each of the dialog strings.
+	DWORD StringOffs;
+	DWORD tot_string_size;
+	DWORD clen[MAX_STRINGS];
+			// Length of each of the speech file names.
+	DWORD ClipOffs;
+	DWORD tot_clip_size;
+	DWORD tslen[MAX_STRINGS];
+			// Length of each of the timestamp strings.
+	DWORD TSOffs;
 	DWORD tot_ts_size = 0;
-	char CurrentLine[1024], paths[1024], *clip_path, *ts_path,
-		*strdata, *clipdata, *ts_data;
+	char CurrentLine[1024];
+	char paths[1024];
+	char *clip_path;
+	char *ts_path;
+	char *strdata = NULL;
+			// Contains the dialog strings.
+	char *clipdata = NULL;
+			// Contains the file names of the speech files.
+	char *ts_data = NULL;
+			// Contains the timestamp data for synching the text with the
+			// speech.
 	uio_Stream *timestamp_fp = NULL;
 
 	/* Parse out the conversation components. */
@@ -107,7 +160,8 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 	}
 
 	dataLen = LengthResFile (fp);
-	log_add (log_Info, "\t'%s' -- conversation phrases -- %lu bytes", paths, dataLen);
+	log_add (log_Info, "\t'%s' -- conversation phrases -- %lu bytes", paths,
+			dataLen);
 	if (clip_path)
 		log_add (log_Info, "\t'%s' -- voice clip directory", clip_path);
 	else
@@ -117,41 +171,63 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 	else
 		log_add (log_Info, "\tNo associated timestamp file");
 
-	
 	if (dataLen == 0)
 	{
-		log_add (log_Warning, "Warning: Trying to load empty file '%s'.", path);
+		log_add (log_Warning, "Warning: Trying to load empty file '%s'.",
+				path);
 		goto err;
 	}
 	
-	if ((strdata = HMalloc (tot_string_size = POOL_SIZE)) == 0)
+	tot_string_size = POOL_SIZE;
+	strdata = HMalloc (tot_string_size);
+	if (strdata == 0)
 		goto err;
 	
-	if ((clipdata = HMalloc (tot_clip_size = POOL_SIZE)) == 0)
-	{
-		HFree (strdata);
+	tot_clip_size = POOL_SIZE;
+	clipdata = HMalloc (tot_clip_size);
+	if (clipdata == 0)
 		goto err;
-	}
 	ts_data = NULL;
 	
 	path_len = clip_path ? strlen (clip_path) : 0;
 
-	if (ts_path && (timestamp_fp = uio_fopen (contentDir, ts_path,
-			"rb")))
+	if (ts_path)
 	{
-		if ((ts_data = HMalloc (tot_ts_size = POOL_SIZE)) == 0)
-			goto err;
+		timestamp_fp = uio_fopen (contentDir, ts_path, "rb");
+		if (timestamp_fp != NULL)
+		{
+			tot_ts_size = POOL_SIZE;
+			ts_data = HMalloc (tot_ts_size);
+			if (ts_data == 0)
+				goto err;
+		}
 	}
 	
 	opos = uio_ftell (fp);
 	n = -1;
-	StringOffs = ClipOffs = TSOffs = 0;
-	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
+	StringOffs = 0;
+	ClipOffs = 0;
+	TSOffs = 0;
+	for (;;)
 	{
 		int l;
 
+		if (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) == NULL)
+		{
+			// EOF or read error.
+			break;
+		}
+	
+		if (n >= MAX_STRINGS - 1)
+		{
+			// Too many strings.
+			break;
+		}
+
 		if (CurrentLine[0] == '#')
 		{
+			// String header, of the following form:
+			//     #(GLAD_WHEN_YOU_COME_BACK) commander-000.ogg
 			char CopyLine[1024];
 			char *s;
 
@@ -161,7 +237,7 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 			{
 				if (n >= 0)
 				{
-					while (slen[n] > 1 && 
+					while (slen[n] > 1 &&
 							(strdata[StringOffs - 2] == '\n' ||
 							strdata[StringOffs - 2] == '\r'))
 					{
@@ -172,32 +248,34 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 				}
 
 				slen[++n] = 0;
+
 				// now lets check for timestamp data
 				if (timestamp_fp)
 				{
-					char TimeStampLine[1024], *tsptr;
+					// We have a time stamp file.
+					char TimeStampLine[1024];
+					char *tsptr;
 					BOOLEAN ts_ok = FALSE;
 					uio_fgets (TimeStampLine, sizeof (TimeStampLine), timestamp_fp);
 					if (TimeStampLine[0] == '#')
 					{
+						// Line is of the following form:
+						//     #(GIVE_FUEL_AGAIN) 3304,3255
 						tslen[n] = 0;
-						if ((tsptr = strstr (TimeStampLine,s)) 
-								&& (tsptr += strlen(s))
-								&& (++tsptr))
+						tsptr = strstr (TimeStampLine, s);
+						if (tsptr)
 						{
+							tsptr += strlen(s) + 1;
 							ts_ok = TRUE;
 							while (! strcspn(tsptr," \t\r\n") && *tsptr)
 								tsptr++;
 							if (*tsptr)
 							{
-								l = strlen (tsptr)  + 1;
-								if (TSOffs + l > tot_ts_size
-									&& (ts_data = HRealloc (ts_data,
-										tot_ts_size += POOL_SIZE)) == 0)
-								{
-									HFree (strdata);
+								l = strlen (tsptr) + 1;
+								if (!ensureBufSize (&ts_data, &tot_ts_size, TSOffs + l,
+										POOL_SIZE))
 									goto err;
-								}
+
 								strcpy (&ts_data[TSOffs], tsptr);
 								TSOffs += l;
 								tslen[n] = l;
@@ -221,13 +299,9 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 				if (s)
 				{
 					l = path_len + strlen (s) + 1;
-					if (ClipOffs + l > tot_clip_size
-							&& (clipdata = HRealloc (clipdata,
-							tot_clip_size += POOL_SIZE)) == 0)
-					{
-						HFree (strdata);
+					if (!ensureBufSize (&clipdata, &tot_clip_size,
+							ClipOffs + l, POOL_SIZE))
 						goto err;
-					}
 
 					if (clip_path)
 						strcpy (&clipdata[ClipOffs], clip_path);
@@ -241,13 +315,10 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 		{
 			char *s;
 			l = strlen (CurrentLine) + 1;
-			if (StringOffs + l > tot_string_size
-					&& (strdata = HRealloc (strdata,
-					tot_string_size += POOL_SIZE)) == 0)
-			{
-				HFree (clipdata);
+
+			if (!ensureBufSize (&strdata, &tot_string_size, StringOffs + l,
+					POOL_SIZE))
 				goto err;
-			}
 
 			if (slen[n])
 			{
@@ -287,10 +358,13 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 			flags |= HAS_SOUND_CLIPS;
 		if (TSOffs)
 			flags |= HAS_TIMESTAMP;
+
 		result = AllocStringTable (n, flags);
 		if (result)
 		{
-			int StringIndex, ClipIndex, TSIndex;
+			int StringIndex;
+			int ClipIndex;
+			int TSIndex;
 			STRING_TABLE_DESC *lpST;
 
 			lpST = (STRING_TABLE) result;
@@ -299,7 +373,9 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 			ClipIndex = n;
 			TSIndex = n * ((flags & HAS_SOUND_CLIPS) ? 2 : 1);
 
-			StringOffs = ClipOffs = TSOffs = 0;
+			StringOffs = 0;
+			ClipOffs = 0;
+			TSOffs = 0;
 
 			for (n = 0; n < (int)lpST->size;
 					++n, ++StringIndex, ++ClipIndex, ++TSIndex)
@@ -328,9 +404,14 @@ _GetConversationData (const char *path, RESOURCE_DATA *resdata)
 	return;
 
 err:
+	if (ts_data != NULL)
+		HFree (ts_data);
+	if (clipdata != NULL)
+		HFree (clipdata);
+	if (strdata != NULL)
+		HFree (strdata);
 	res_CloseResFile (fp);
 	resdata->ptr = NULL;
-
 }
 
 void *
@@ -339,18 +420,36 @@ _GetStringData (uio_Stream *fp, DWORD length)
 	void *result;
 
 	int n;
-	DWORD opos, slen[MAX_STRINGS], StringOffs, tot_string_size;
-	char CurrentLine[1024], *strdata;
+	DWORD opos;
+	DWORD slen[MAX_STRINGS];
+	DWORD StringOffs;
+	DWORD tot_string_size;
+	char CurrentLine[1024];
+	char *strdata = NULL;
 
-	if ((strdata = HMalloc (tot_string_size = POOL_SIZE)) == 0)
-		return (0);
+	tot_string_size = POOL_SIZE;
+	strdata = HMalloc (tot_string_size);
+	if (strdata == 0)
+		goto err;
 
 	opos = uio_ftell (fp);
 	n = -1;
 	StringOffs = 0;
-	while (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) && n < MAX_STRINGS - 1)
+	for (;;)
 	{
 		int l;
+
+		if (uio_fgets (CurrentLine, sizeof (CurrentLine), fp) == NULL)
+		{
+			// EOF or read error.
+			break;
+		}
+	
+		if (n >= MAX_STRINGS - 1)
+		{
+			// Too many strings.
+			break;
+		}
 
 		if (CurrentLine[0] == '#')
 		{
@@ -380,12 +479,10 @@ _GetStringData (uio_Stream *fp, DWORD length)
 		{
 			char *s;
 			l = strlen (CurrentLine) + 1;
-			if (StringOffs + l > tot_string_size
-					&& (strdata = HRealloc (strdata,
-					tot_string_size += POOL_SIZE)) == 0)
-			{
-				return (0);
-			}
+
+			if (!ensureBufSize (&strdata, &tot_string_size, StringOffs + l,
+					POOL_SIZE))
+				goto err;
 
 			if (slen[n])
 			{
@@ -439,7 +536,12 @@ _GetStringData (uio_Stream *fp, DWORD length)
 	}
 	HFree (strdata);
 
-	return (result);
+	return result;
+
+err:
+	if (strdata != NULL)
+		HFree (strdata);
+	return 0;
 }
 
 
@@ -478,6 +580,6 @@ _GetBinaryTableData (uio_Stream *fp, DWORD length)
 		result = lpST;
 	}
 
-	return (result);
+	return result;
 }
 

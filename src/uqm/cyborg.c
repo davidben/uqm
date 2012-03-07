@@ -1092,7 +1092,7 @@ if (!(ShipPtr->state_flags & FINITE_LIFE)
 			if (GRAVITY_MASS (ed.ObjectPtr->mass_points))
 			{
 				COUNT maneuver_turn, ship_bounds;
-				RECT ship_footprint;
+				RECT ship_footprint = {{0, 0}, {0, 0}};
 
 				if (UltraManeuverable)
 					maneuver_turn = 16;

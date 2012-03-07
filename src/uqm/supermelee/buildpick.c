@@ -86,7 +86,6 @@ DrawPickIcon (MeleeShip ship, bool DrawErase)
 	}
 }
 
-// Pre: the called holds the GraphicsLock
 void
 DrawPickFrame (MELEE_STATE *pMS)
 {
@@ -187,11 +186,9 @@ DoPickShip (MELEE_STATE *pMS)
 		if (newSelectedShip != pMS->currentShip)
 		{
 			// A new ship has been selected.
-			LockMutex (GraphicsLock);
 			DrawPickIcon (pMS->currentShip, true);
 			pMS->currentShip = newSelectedShip;
 			DrawMeleeShipStrings (pMS, newSelectedShip);
-			UnlockMutex (GraphicsLock);
 		}
 	}
 
@@ -214,9 +211,7 @@ BuildPickShip (MELEE_STATE *pMS)
 	if (pMS->currentShip == MELEE_NONE)
 		pMS->currentShip = 0;
 
-	LockMutex (GraphicsLock);
 	DrawPickFrame (pMS);
-	UnlockMutex (GraphicsLock);
 
 	pMS->InputFunc = DoPickShip;
 	DoInput (pMS, FALSE);

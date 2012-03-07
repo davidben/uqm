@@ -27,6 +27,7 @@
 #endif
 
 #include <stdarg.h>
+#include <errno.h>
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/cmap.h"
 #include "libs/sound/sound.h"
@@ -114,6 +115,7 @@ struct options_struct
 	DECL_CONFIG_OPTION(int, soundQuality);
 	DECL_CONFIG_OPTION(bool, use3doMusic);
 	DECL_CONFIG_OPTION(bool, useRemixMusic);
+	DECL_CONFIG_OPTION(bool, useSpeech);
 	DECL_CONFIG_OPTION(int, whichCoarseScan);
 	DECL_CONFIG_OPTION(int, whichMenu);
 	DECL_CONFIG_OPTION(int, whichFonts);
@@ -246,11 +248,12 @@ main (int argc, char *argv[])
 		INIT_CONFIG_OPTION(  scaler,            0 ),
 		INIT_CONFIG_OPTION(  showFps,           false ),
 		INIT_CONFIG_OPTION(  keepAspectRatio,   false ),
-		INIT_CONFIG_OPTION(  gamma,             0.0f ),
+		INIT_CONFIG_OPTION(  gamma,             1.0f ),
 		INIT_CONFIG_OPTION(  soundDriver,       audio_DRIVER_MIXSDL ),
 		INIT_CONFIG_OPTION(  soundQuality,      audio_QUALITY_MEDIUM ),
 		INIT_CONFIG_OPTION(  use3doMusic,       true ),
 		INIT_CONFIG_OPTION(  useRemixMusic,     false ),
+		INIT_CONFIG_OPTION(  useSpeech,         true ),
 		INIT_CONFIG_OPTION(  whichCoarseScan,   OPT_PC ),
 		INIT_CONFIG_OPTION(  whichMenu,         OPT_PC ),
 		INIT_CONFIG_OPTION(  whichFonts,        OPT_PC ),
@@ -281,7 +284,11 @@ main (int argc, char *argv[])
 	if (options.logFile != NULL)
 	{
 		int i;
-		freopen (options.logFile, "w", stderr);
+		if (!freopen (options.logFile, "w", stderr))
+		{
+			printf ("Error %d calling freopen() on stderr\n", errno);
+			return EXIT_FAILURE;
+		}
 #ifdef UNBUFFERED_LOGFILE
 		setbuf (stderr, NULL);
 #endif
@@ -372,6 +379,7 @@ main (int argc, char *argv[])
 	// Fill in global variables:
 	opt3doMusic = options.use3doMusic.value;
 	optRemixMusic = options.useRemixMusic.value;
+	optSpeech = options.useSpeech.value;
 	optWhichCoarseScan = options.whichCoarseScan.value;
 	optWhichMenu = options.whichMenu.value;
 	optWhichFonts = options.whichFonts.value;
@@ -398,15 +406,13 @@ main (int argc, char *argv[])
 	InitTimeSystem ();
 	InitTaskSystem ();
 
-#ifdef NETPLAY
-	Network_init ();
 	Alarm_init ();
 	Callback_init ();
+
+#ifdef NETPLAY
+	Network_init ();
 	NetManager_init ();
 #endif
-
-	GraphicsLock = CreateMutex ("Graphics",
-			SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
 
 	gfxDriver = options.opengl.value ?
 			TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE;
@@ -419,8 +425,11 @@ main (int argc, char *argv[])
 		gfxFlags |= TFB_GFXFLAGS_SHOWFPS;
 	TFB_InitGraphics (gfxDriver, gfxFlags, options.resolution.width,
 			options.resolution.height);
-	if (options.gamma.set)
-		TFB_SetGamma (options.gamma.value);
+	if (options.gamma.set && setGammaCorrection (options.gamma.value))
+		optGamma = options.gamma.value;
+	else
+		optGamma = 1.0f; // failed or default
+	
 	InitColorMaps ();
 	init_communication ();
 	/* TODO: Once threading is gone, restore initAudio here.
@@ -445,7 +454,7 @@ main (int argc, char *argv[])
 		}
 		else if (!GameActive)
 		{	// Throttle down the main loop when game is inactive
-			SleepThread (ONE_SECOND / 4);
+			HibernateThread (ONE_SECOND / 4);
 		}
 
 		TFB_ProcessEvents ();
@@ -459,27 +468,35 @@ main (int argc, char *argv[])
 	 *   tasks might still be using it */
 	if (MainExited)
 	{
-		// Not yet: TFB_UninitInput ();
+		TFB_UninitInput ();
 		unInitAudio ();
 		uninit_communication ();
+		
+		TFB_PurgeDanglingGraphics ();
+		// Purge above refers to colormaps which have to be still up
 		UninitColorMaps ();
-		// Not yet: TFB_UninitGraphics ();
+		TFB_UninitGraphics ();
 
 #ifdef NETPLAY
 		NetManager_uninit ();
-		Alarm_uninit ();
 		Network_uninit ();
 #endif
 
-		// Not yet: CleanupTaskSystem ();
+		Callback_uninit ();
+		Alarm_uninit ();
+
+		CleanupTaskSystem ();
 		UnInitTimeSystem ();
 #if 0
 		unInitTempDir ();
 #endif
+		unprepareAllDirs ();
 		uninitIO ();
 		UnInitThreadSystem ();
 		mem_uninit ();
 	}
+
+	HFree (options.addons);
 	
 	return EXIT_SUCCESS;
 }
@@ -558,6 +575,25 @@ getVolumeConfigValue (struct float_option *option, const char *config_val)
 	option->set = true;
 }
 
+static void
+getGammaConfigValue (struct float_option *option, const char *config_val)
+{
+	int val;
+
+	if (option->set || !res_IsInteger (config_val))
+		return;
+
+	val = res_GetInteger (config_val);
+	// gamma config option is a fixed-point number
+	// ignore ridiculously out-of-range values
+	if (val < (int)(0.03 * GAMMA_SCALE) || val > (int)(9.9 * GAMMA_SCALE))
+		return;
+	option->value = val / (float)GAMMA_SCALE;
+	// avoid setting gamma when not necessary
+	if (option->value != 1.0f)
+		option->set = true;
+}
+
 static bool
 getListConfigValue (struct int_option *option, const char *config_val,
 		const struct option_list_value *list)
@@ -606,6 +642,7 @@ getUserConfigOptions (struct options_struct *options)
 	getBoolConfigValue (&options->scanlines, "config.scanlines");
 	getBoolConfigValue (&options->showFps, "config.showfps");
 	getBoolConfigValue (&options->keepAspectRatio, "config.keepaspectratio");
+	getGammaConfigValue (&options->gamma, "config.gamma");
 
 	getBoolConfigValue (&options->subtitles, "config.subtitles");
 	
@@ -624,19 +661,13 @@ getUserConfigOptions (struct options_struct *options)
 
 	getBoolConfigValue (&options->use3doMusic, "config.3domusic");
 	getBoolConfigValue (&options->useRemixMusic, "config.remixmusic");
+	getBoolConfigValue (&options->useSpeech, "config.speech");
 
 	getBoolConfigValueXlat (&options->meleeScale, "config.smoothmelee",
 			TFB_SCALE_TRILINEAR, TFB_SCALE_STEP);
 
-	if (getListConfigValue (&options->soundDriver, "config.audiodriver",
-			audioDriverList))
-	{
-		// XXX: I don't know if we should turn speech off in this case.
-		//   This affects which version of the alien script will be used.
-		if (options->soundDriver.value == audio_DRIVER_NOSOUND)
-			options->speechVolumeScale.value = 0.0f;
-	}
-	
+	getListConfigValue (&options->soundDriver, "config.audiodriver",
+			audioDriverList);
 	getListConfigValue (&options->soundQuality, "config.audioquality",
 			audioQualityList);
 	getBoolConfigValue (&options->stereoSFX, "config.positionalsfx");
@@ -691,7 +722,7 @@ enum
 #endif
 };
 
-static const char *optString = "+r:foc:b:spC:n:?hM:S:T:m:q:ug:l:i:vwxk";
+static const char *optString = "+r:foc:b:spC:n:?hM:S:T:q:ug:l:i:vwxk";
 static struct option longOptions[] = 
 {
 	{"res", 1, NULL, 'r'},
@@ -975,16 +1006,8 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				}
 				break;
 			case SOUND_OPT:
-				if (setListOption (&options->soundDriver, optarg,
+				if (!setListOption (&options->soundDriver, optarg,
 						audioDriverList))
-				{
-					// XXX: I don't know if we should turn speech off in
-					//   this case. This affects which version of the alien
-					//   script will be used.
-					if (options->soundDriver.value == audio_DRIVER_NOSOUND)
-						options->speechVolumeScale.value = 0.0f;
-				}
-				else
 				{
 					InvalidArgument (optarg, "--sound");
 					badArg = true;
@@ -1017,7 +1040,7 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				}
 				break;
 			}
-	                case SAFEMODE_OPT:
+			case SAFEMODE_OPT:
 				setBoolOption (&options->safeMode, true);
 				break;
 #ifdef NETPLAY

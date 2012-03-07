@@ -23,6 +23,10 @@
 #include "libs/strlib.h"
 #include "libs/timelib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 // Enumerated type for controls
 enum {
 	KEY_UP,
@@ -115,9 +119,6 @@ BOOLEAN WaitForNoInputUntil (TimeCount timeOut, BOOLEAN resetInput);
 void DoPopupWindow(const char *msg);
 
 typedef void (InputFrameCallback) (void);
-// Anything using input callbacks MUST NOT keep GraphicsLock across
-// InputFunc executions. This also means NOT holding GraphicsLock
-// when calling DoInput().
 InputFrameCallback* SetInputCallback (InputFrameCallback *);
 // pInputState must point to a struct derived from INPUT_STATE_DESC
 void DoInput (void *pInputState, BOOLEAN resetInput);
@@ -161,6 +162,10 @@ typedef struct textentry_state
 } TEXTENTRY_STATE;
 
 extern BOOLEAN DoTextEntry (TEXTENTRY_STATE *pTES);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif
 

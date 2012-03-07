@@ -33,7 +33,7 @@
  * tragedy. */
 
 typedef struct vcontrol_keyname {
-	/* const */ char *name;
+	const char *name;
 	int code;
 } keyname;
 
@@ -198,7 +198,7 @@ static keyname keynames[] = {
 	{"Unknown", 0}};
 /* Last element must have code zero */
 
-char *
+const char *
 VControl_code2name (int code)
 {
 	int i = 0;
@@ -214,12 +214,12 @@ VControl_code2name (int code)
 }
 
 int
-VControl_name2code (char *name)
+VControl_name2code (const char *name)
 {
 	int i = 0;
 	while (1)
 	{
-		char *test = keynames[i].name;
+		const char *test = keynames[i].name;
 		int code = keynames[i].code;
 		if (!strcasecmp(test, name) || !code)
 		{

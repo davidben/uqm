@@ -18,12 +18,13 @@
 
 #include "state.h"
 
-#include "encount.h"
+#include "starmap.h"
 #include "libs/memlib.h"
 #include "libs/log.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <memory.h>
 
 // in-memory file i/o
 struct GAME_STATE_FILE
@@ -123,6 +124,8 @@ DeleteStateFile (int stateFile)
 
 	fp->used = 0;
 	fp->ptr = 0;
+	HFree (fp->data);
+	fp->data = 0;
 }
 
 DWORD
@@ -238,7 +241,7 @@ UninitPlanetInfo (void)
 void
 GetPlanetInfo (void)
 {
-	void *fp;
+	GAME_STATE_FILE *fp;
 
 	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[BIOLOGICAL_SCAN] = 0;
 	pSolarSysState->SysInfo.PlanetInfo.ScanRetrieveMask[MINERAL_SCAN] = 0;
@@ -286,7 +289,7 @@ GetPlanetInfo (void)
 void
 PutPlanetInfo (void)
 {
-	void *fp;
+	GAME_STATE_FILE *fp;
 
 	fp = OpenStateFile (STARINFO_FILE, "r+b");
 	if (fp)

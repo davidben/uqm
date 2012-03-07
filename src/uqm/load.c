@@ -23,6 +23,7 @@
 #include "build.h"
 #include "libs/declib.h"
 #include "encount.h"
+#include "starmap.h"
 #include "libs/file.h"
 #include "globdata.h"
 #include "load.h"
@@ -325,6 +326,7 @@ static void
 LoadEncounter (ENCOUNTER *EncounterPtr, DECODE_REF fh)
 {
 	COUNT i;
+	BYTE tmpb;
 
 	cread_ptr (fh); /* useless ptr; HENCOUNTER pred */
 	EncounterPtr->pred = 0;
@@ -336,18 +338,19 @@ LoadEncounter (ENCOUNTER *EncounterPtr, DECODE_REF fh)
 	cread_16s (fh, &EncounterPtr->origin.x);
 	cread_16s (fh, &EncounterPtr->origin.y);
 	cread_16  (fh, &EncounterPtr->radius);
-	// STAR_DESC fields
-	cread_16s (fh, &EncounterPtr->SD.star_pt.x);
-	cread_16s (fh, &EncounterPtr->SD.star_pt.y);
-	cread_8   (fh, &EncounterPtr->SD.Type);
-	cread_8   (fh, &EncounterPtr->SD.Index);
+	// former STAR_DESC fields
+	cread_16s (fh, &EncounterPtr->loc_pt.x);
+	cread_16s (fh, &EncounterPtr->loc_pt.y);
+	cread_8   (fh, &EncounterPtr->race_id);
+	cread_8   (fh, &tmpb);
+	EncounterPtr->num_ships = tmpb & ENCOUNTER_SHIPS_MASK;
+	EncounterPtr->flags = tmpb & ENCOUNTER_FLAGS_MASK;
 	cread_16  (fh, NULL); /* alignment padding */
 
 	// Load each entry in the BRIEF_SHIP_INFO array
 	for (i = 0; i < MAX_HYPER_SHIPS; i++)
 	{
 		BRIEF_SHIP_INFO *ShipInfo = &EncounterPtr->ShipList[i];
-		BYTE tmpb;
 
 		cread_16  (fh, NULL); /* useless; was SHIP_INFO.ship_flags */
 		cread_8   (fh, &ShipInfo->race_id);

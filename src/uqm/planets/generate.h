@@ -23,6 +23,10 @@ typedef struct GenerateFunctions GenerateFunctions;
 #include "planets.h"
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 /*
  * To do (for further cleanups):
  * - split off generateOrbital in a calculation and an activation
@@ -52,16 +56,16 @@ typedef bool (*GenerateMoonsFunction)(SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
 typedef bool (*GenerateOrbitalFunction)(SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-typedef bool (*GenerateNameFunction)(SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world);
+typedef bool (*GenerateNameFunction)(const SOLARSYS_STATE *,
+		const PLANET_DESC *world);
 // The following functions return the number of objects being generated
 // (or the index of the current object in some cases)
-typedef COUNT (*GenerateMineralsFunction)(SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
-typedef COUNT (*GenerateEnergyFunction)(SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
-typedef COUNT (*GenerateLifeFunction)(SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+typedef COUNT (*GenerateMineralsFunction)(const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
+typedef COUNT (*GenerateEnergyFunction)(const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
+typedef COUNT (*GenerateLifeFunction)(const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 // The following functions return true if the node should be removed
 // from the surface, i.e. picked up.
 typedef bool (*PickupMineralsFunction)(SOLARSYS_STATE *solarSys,
@@ -98,6 +102,9 @@ struct GenerateFunctions {
 	PickupLifeFunction pickupLife;
 };
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* GENERATE_H */
 

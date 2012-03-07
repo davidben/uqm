@@ -17,8 +17,8 @@
  */
 
 #include "build.h"
-// XXX: for CurStarDescPtr and XXX_DEFINED constants
-#include "encount.h"
+#include "starmap.h"
+#include "gendef.h"
 #include "libs/file.h"
 #include "globdata.h"
 #include "intel.h"
@@ -71,7 +71,7 @@ typedef struct
 } GROUP_HEADER;
 
 static void
-ReadGroupHeader (void *fp, GROUP_HEADER *pGH)
+ReadGroupHeader (GAME_STATE_FILE *fp, GROUP_HEADER *pGH)
 {
 	sread_8   (fp, &pGH->NumGroups);
 	sread_8   (fp, &pGH->day_index);
@@ -83,7 +83,7 @@ ReadGroupHeader (void *fp, GROUP_HEADER *pGH)
 }
 
 static void
-WriteGroupHeader (void *fp, const GROUP_HEADER *pGH)
+WriteGroupHeader (GAME_STATE_FILE *fp, const GROUP_HEADER *pGH)
 {
 	swrite_8   (fp, pGH->NumGroups);
 	swrite_8   (fp, pGH->day_index);
@@ -95,7 +95,7 @@ WriteGroupHeader (void *fp, const GROUP_HEADER *pGH)
 }
 
 static void
-ReadShipFragment (void *fp, SHIP_FRAGMENT *FragPtr)
+ReadShipFragment (GAME_STATE_FILE *fp, SHIP_FRAGMENT *FragPtr)
 {
 	BYTE tmpb;
 
@@ -117,7 +117,7 @@ ReadShipFragment (void *fp, SHIP_FRAGMENT *FragPtr)
 }
 
 static void
-WriteShipFragment (void *fp, const SHIP_FRAGMENT *FragPtr)
+WriteShipFragment (GAME_STATE_FILE *fp, const SHIP_FRAGMENT *FragPtr)
 {
 	swrite_16 (fp, 0); /* unused: was which_side */
 	swrite_8  (fp, FragPtr->captains_name_index);
@@ -135,7 +135,7 @@ WriteShipFragment (void *fp, const SHIP_FRAGMENT *FragPtr)
 }
 
 static void
-ReadIpGroup (void *fp, IP_GROUP *GroupPtr)
+ReadIpGroup (GAME_STATE_FILE *fp, IP_GROUP *GroupPtr)
 {
 	BYTE tmpb;
 
@@ -158,7 +158,7 @@ ReadIpGroup (void *fp, IP_GROUP *GroupPtr)
 }
 
 static void
-WriteIpGroup (void *fp, const IP_GROUP *GroupPtr)
+WriteIpGroup (GAME_STATE_FILE *fp, const IP_GROUP *GroupPtr)
 {
 	swrite_16 (fp, 0); /* unused; was which_side */
 	swrite_8  (fp, 0); /* unused; was captains_name_index */
@@ -181,7 +181,7 @@ WriteIpGroup (void *fp, const IP_GROUP *GroupPtr)
 void
 InitGroupInfo (BOOLEAN FirstTime)
 {
-	void *fp;
+	GAME_STATE_FILE *fp;
 
 	assert (NUM_SAVED_BATTLE_GROUPS >= MAX_BATTLE_GROUPS);
 
@@ -413,7 +413,7 @@ FoundHome:
 }
 
 static void
-FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
+FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, GAME_STATE_FILE *fp)
 {
 	if (which_group == GROUP_LIST)
 	{
@@ -549,7 +549,7 @@ FlushGroupInfo (GROUP_HEADER* pGH, DWORD offset, BYTE which_group, void *fp)
 BOOLEAN
 GetGroupInfo (DWORD offset, BYTE which_group)
 {
-	void *fp;
+	GAME_STATE_FILE *fp;
 	GROUP_HEADER GH;
 
 	if (offset != GROUPS_RANDOM && which_group != GROUP_LIST)
@@ -828,7 +828,7 @@ GetGroupInfo (DWORD offset, BYTE which_group)
 DWORD
 PutGroupInfo (DWORD offset, BYTE which_group)
 {
-	void *fp;
+	GAME_STATE_FILE *fp;
 	GROUP_HEADER GH;
 
 	if (offset != GROUPS_RANDOM && which_group != GROUP_LIST)

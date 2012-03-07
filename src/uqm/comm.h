@@ -31,6 +31,10 @@
 
 #include "commanim.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern LOCDATA CommData;
 
 static inline BOOLEAN
@@ -130,6 +134,10 @@ typedef enum
 extern void SetCommIntroMode (CommIntroMode, TimeCount howLong);
 
 extern void EnableTalkingAnim (BOOLEAN enable);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _COMM_H */
 

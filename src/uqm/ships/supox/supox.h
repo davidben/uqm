@@ -17,7 +17,15 @@
 #ifndef SUPOX_H
 #define SUPOX_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_supox (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* SUPOX_H */
 

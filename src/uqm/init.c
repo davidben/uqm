@@ -187,7 +187,7 @@ InitShips (void)
 	InitDisplayList ();
 	InitGalaxy ();
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		ReinitQueue (&race_q[0]);
 		ReinitQueue (&race_q[1]);
@@ -311,9 +311,6 @@ UninitShips (void)
 							crew_retrieved;
 			}
 
-			if (StarShipPtr->RaceDescPtr->uninit_func != NULL)
-				(*StarShipPtr->RaceDescPtr->uninit_func) (
-						StarShipPtr->RaceDescPtr);
 			/* Record crew left after battle */
 			StarShipPtr->crew_level =
 					StarShipPtr->RaceDescPtr->ship_info.crew_level;
@@ -346,7 +343,7 @@ UninitShips (void)
 		for (i = 0; i < NUM_PLAYERS; i++)
 			ReinitQueue (&race_q[i]);
 
-		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+		if (inHQSpace ())
 			FreeHyperspace ();
 	}
 }

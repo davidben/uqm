@@ -22,7 +22,8 @@
 #include "../scan.h"
 #include "../../build.h"
 #include "../../comm.h"
-#include "../../encount.h"
+#include "../../gendef.h"
+#include "../../starmap.h"
 #include "../../globdata.h"
 #include "../../ipdisp.h"
 #include "../../nameref.h"
@@ -34,10 +35,10 @@
 static bool GenerateMycon_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
-static COUNT GenerateMycon_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateMycon_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
+static COUNT GenerateMycon_generateLife (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateMycon_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -88,7 +89,7 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 	{
 		if ((CurStarDescPtr->Index == MYCON_DEFINED
 				|| CurStarDescPtr->Index == SUN_DEVICE_DEFINED)
-				&& ActivateStarShip (MYCON_SHIP, SPHERE_TRACKING))
+				&& StartSphereTracking (MYCON_SHIP))
 		{
 			if (CurStarDescPtr->Index == MYCON_DEFINED
 					|| !GET_GAME_STATE (SUN_DEVICE_UNGUARDED))
@@ -141,9 +142,7 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 						return true;
 
 					SET_GAME_STATE (SUN_DEVICE_UNGUARDED, 1);
-					LockMutex (GraphicsLock);
 					RepairSISBorder ();
-					UnlockMutex (GraphicsLock);
 				}
 			}
 		}
@@ -188,8 +187,8 @@ GenerateMycon_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateMycon_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (CurStarDescPtr->Index == SUN_DEVICE_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
@@ -201,7 +200,7 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	if ((CurStarDescPtr->Index == EGG_CASE0_DEFINED
@@ -218,7 +217,7 @@ GenerateMycon_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	return 0;
@@ -274,12 +273,14 @@ GenerateMycon_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 }
 
 static COUNT
-GenerateMycon_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateMycon_generateLife (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
+	// Gee, I wonder why there isn't any life in Mycon systems...
 	(void) whichNode;
 	(void) solarSys;
 	(void) world;
+	(void) info;
 	return 0;
 }
 

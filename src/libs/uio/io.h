@@ -82,6 +82,12 @@ uio_MountHandle *uio_mountDir(uio_Repository *destRep, const char *mountPoint,
 		const char *inPath, uio_AutoMount **autoMount, int flags,
 		uio_MountHandle *relative);
 
+// Mount a repository directory into same repository at a different
+// location.
+// From fossil.
+uio_MountHandle *uio_transplantDir(const char *mountPoint,
+		uio_DirHandle *sourceDir, int flags, uio_MountHandle *relative);
+
 // Unmount a previously mounted dir.
 int uio_unmountDir(uio_MountHandle *mountHandle);
 

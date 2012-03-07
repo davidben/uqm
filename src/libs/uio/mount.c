@@ -61,7 +61,7 @@ uio_repositoryAddMount(uio_Repository *repository,
 			repository->mounts[repository->numMounts] = mountInfo;
 			repository->numMounts++;
 			break;
-		case uio_MOUNT_BELOW: {
+		case uio_MOUNT_ABOVE: {
 			int i;
 			uio_MountInfo **newMounts;
 
@@ -76,7 +76,7 @@ uio_repositoryAddMount(uio_Repository *repository,
 			repository->numMounts++;
 			break;
 		}
-		case uio_MOUNT_ABOVE: {
+		case uio_MOUNT_BELOW: {
 			int i;
 			uio_MountInfo **newMounts;
 

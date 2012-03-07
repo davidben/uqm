@@ -24,6 +24,10 @@ typedef struct getmelee_struct GETMELEE_STATE;
 #include "meleesetup.h"
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 void MeleeShipDeath (STARSHIP *);
 void BuildPickMeleeFrame (void);
 void DestroyPickMeleeFrame (void);
@@ -41,11 +45,19 @@ BOOLEAN selectShipComputer (ComputerInputContext *context,
 BOOLEAN selectShipNetwork (NetworkInputContext *context, GETMELEE_STATE *gms);
 #endif  /* NETPLAY */
 
+#if defined(__cplusplus)
+}
+#endif
+
 #ifdef PICKMELE_INTERNAL
 
 #include "../flash.h"
 #include "libs/timelib.h"
 #include "../init.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 struct getmelee_struct {
 	BOOLEAN (*InputFunc) (struct getmelee_struct *pInputState);
@@ -79,6 +91,10 @@ struct getmelee_struct {
 
 bool setShipSelected(GETMELEE_STATE *gms, COUNT playerI, COUNT choice,
 		bool reportNetwork);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* PICKMELE_INTERNAL */
 

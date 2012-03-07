@@ -19,8 +19,7 @@
 #include "build.h"
 #include "colors.h"
 #include "controls.h"
-// XXX: for CurStarDescPtr
-#include "encount.h"
+#include "starmap.h"
 #include "comm.h"
 #include "gamestr.h"
 #include "load.h"
@@ -308,7 +307,6 @@ DoStarBase (MENU_STATE *pMS)
 		LastActivity &= ~CHECK_LOAD;
 		pMS->InputFunc = DoStarBase;
 
-		LockMutex (GraphicsLock);
 		SetFlashRect (NULL);
 
 		if (pMS->hMusic)
@@ -319,12 +317,10 @@ DoStarBase (MENU_STATE *pMS)
 		}
 
 		pMS->Initialized = TRUE;
-		UnlockMutex (GraphicsLock);
 
 		pMS->CurFrame = CaptureDrawable (LoadGraphic (STARBASE_ANIM));
 		pMS->hMusic = LoadMusic (STARBASE_MUSIC);
 
-		LockMutex (GraphicsLock);
 		SetContext (ScreenContext);
 		SetTransitionSource (NULL);
 		BatchGraphics ();
@@ -335,7 +331,6 @@ DoStarBase (MENU_STATE *pMS)
 		ScreenTransition (3, NULL);
 		PlayMusic (pMS->hMusic, TRUE, 1);
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 	}
 	else if (PulsedInputState.menu[KEY_MENU_SELECT])
 	{
@@ -405,7 +400,6 @@ ExitStarBase:
 				NewState = TALK_COMMANDER;
 		}
 
-		LockMutex (GraphicsLock);
 		BatchGraphics ();
 		SetContext (ScreenContext);
 
@@ -418,7 +412,6 @@ ExitStarBase:
 		rotateStarbase (pMS, NULL);
 
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 
 		SleepThread (ONE_SECOND / 30);
 	}
@@ -431,9 +424,7 @@ DoTimePassage (void)
 {
 #define LOST_DAYS 14
 	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND * 2));
-	LockMutex (GraphicsLock);
 	MoveGameClockDays (LOST_DAYS);
-	UnlockMutex (GraphicsLock);
 }
 
 void
@@ -542,12 +533,10 @@ InstallBombAtEarth (void)
 {
 	DoTimePassage ();
 
-	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	SetTransitionSource (NULL);
 	SetContextBackGroundColor (BLACK_COLOR);
 	ClearDrawable ();
-	UnlockMutex (GraphicsLock);
 	
 	SleepThreadUntil (FadeScreen (FadeAllToColor, 0));
 	

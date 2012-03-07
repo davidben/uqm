@@ -17,7 +17,7 @@
  */
 
 #include "netmelee.h"
-#include "libs/alarm.h"
+#include "libs/async.h"
 #include "libs/callback.h"
 #include "libs/log.h"
 #include "libs/net.h"
@@ -146,8 +146,7 @@ netInputAux(uint32 timeoutMs) {
 	NetManager_process(&timeoutMs);
 			// This may cause more packets to be queued, hence the
 			// flushPacketQueues().
-	Alarm_process();
-	Callback_process();
+	Async_process();
 	flushPacketQueues();
 			// During the flush, a disconnect may be noticed, which triggers
 			// another callback. It must be handled immediately, before
@@ -166,11 +165,11 @@ netInput(void) {
 
 void
 netInputBlocking(uint32 timeoutMs) {
-	uint32 nextAlarmMs;
+	uint32 nextAsyncMs;
 		
-	nextAlarmMs = Alarm_timeBeforeNextMs();
-	if (nextAlarmMs < timeoutMs)
-		timeoutMs = nextAlarmMs;
+	nextAsyncMs = Async_timeBeforeNextMs();
+	if (nextAsyncMs < timeoutMs)
+		timeoutMs = nextAsyncMs;
 
 	netInputAux(timeoutMs);
 }

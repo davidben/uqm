@@ -314,8 +314,7 @@ CombatIsInevitable (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, destruct_code))
 	{
 		NPCPhrase (DESTRUCT_SEQUENCE);
-		instantVictory = TRUE;
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_victory);
 	}
 	else
 	{
@@ -443,7 +442,7 @@ CombatIsInevitable (RESPONSE_REF R)
 		NPCPhrase (HOSTILE);
 
 		SET_GAME_STATE (PROBE_EXHIBITED_BUG, 1);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 }
 
@@ -511,7 +510,7 @@ init_slyland_comm (void)
 	slylandro_desc.AlienTextBaseline.y = 0;
 	slylandro_desc.AlienTextWidth = SIS_TEXT_WIDTH - 16;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 	retval = &slylandro_desc;
 
 	return (retval);

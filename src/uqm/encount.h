@@ -30,12 +30,24 @@ typedef struct encounter ENCOUNTER;
 #include "element.h"
 #include "races.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 typedef HLINK HENCOUNTER;
 
 #define MAX_HYPER_SHIPS 7
+
+// ENCOUNTER.flags
+// XXX: Currently, the flags are combined with num_ships into a single BYTE
+//   in the savegames: num_ships occupy the low nibble and flags the high one.
+//   Bits 4 and 5 are available for more flags in the savegames,
+//   and bits 0-3 available in the game but will not be saved.
 #define ONE_SHOT_ENCOUNTER (1 << 7)
 #define ENCOUNTER_REFORMING (1 << 6)
+#define ENCOUNTER_SHIPS_MASK  0x0f
+#define ENCOUNTER_FLAGS_MASK  0xf0
 
 struct brief_ship_info
 {
@@ -57,9 +69,14 @@ struct encounter
 	SIZE transition_state;
 	POINT origin;
 	COUNT radius;
+	BYTE race_id;
+	BYTE num_ships;
+	BYTE flags;
+			// See ENCOUNTER.flags above
+	POINT loc_pt;
 
-	STAR_DESC SD;
 	BRIEF_SHIP_INFO ShipList[MAX_HYPER_SHIPS];
+			// Only the crew_level member is currently used
 
 	SDWORD log_x, log_y;
 };
@@ -78,75 +95,9 @@ struct encounter
 
 enum
 {
-	SOL_DEFINED = 1,
-	SHOFIXTI_DEFINED,
-	MAIDENS_DEFINED,
-	START_COLONY_DEFINED,
-	SPATHI_DEFINED,
-	ZOQFOT_DEFINED,
-
-	MELNORME0_DEFINED,
-	MELNORME1_DEFINED,
-	MELNORME2_DEFINED,
-	MELNORME3_DEFINED,
-	MELNORME4_DEFINED,
-	MELNORME5_DEFINED,
-	MELNORME6_DEFINED,
-	MELNORME7_DEFINED,
-	MELNORME8_DEFINED,
-
-	TALKING_PET_DEFINED,
-	CHMMR_DEFINED,
-	SYREEN_DEFINED,
-	BURVIXESE_DEFINED,
-	SLYLANDRO_DEFINED,
-	DRUUGE_DEFINED,
-	BOMB_DEFINED,
-	AQUA_HELIX_DEFINED,
-	SUN_DEVICE_DEFINED,
-	TAALO_PROTECTOR_DEFINED,
-	SHIP_VAULT_DEFINED,
-	URQUAN_WRECK_DEFINED,
-	VUX_BEAST_DEFINED,
-	SAMATRA_DEFINED,
-	ZOQ_SCOUT_DEFINED,
-	MYCON_DEFINED,
-	EGG_CASE0_DEFINED,
-	EGG_CASE1_DEFINED,
-	EGG_CASE2_DEFINED,
-	PKUNK_DEFINED,
-	UTWIG_DEFINED,
-	SUPOX_DEFINED,
-	YEHAT_DEFINED,
-	VUX_DEFINED,
-	ORZ_DEFINED,
-	THRADD_DEFINED,
-	RAINBOW_DEFINED,
-	ILWRATH_DEFINED,
-	ANDROSYNTH_DEFINED,
-	MYCON_TRAP_DEFINED
-};
-
-#define UMGAH_DEFINED TALKING_PET_DEFINED
-
-// XXX: The stuff till EOC does not belong here
-extern STAR_DESC *CurStarDescPtr;
-extern STAR_DESC *star_array;
-
-#define NUM_SOLAR_SYSTEMS 502
-
-extern STAR_DESC* FindStar (STAR_DESC *pLastStar, POINT *puniverse,
-		SIZE xbounds, SIZE ybounds);
-
-extern void GetClusterName (const STAR_DESC *pSD, UNICODE buf[]);
-// <<< EOC
-
-enum
-{
 	HAIL = 0,
 	ATTACK
 };
-
 
 extern void EncounterBattle (void);
 extern void BuildBattle (COUNT which_player);
@@ -155,40 +106,15 @@ extern COUNT UninitEncounter (void);
 extern BOOLEAN FleetIsInfinite (COUNT playerNr);
 extern void UpdateShipFragCrew (STARSHIP *);
 
-// XXX: in comm.h, temporary, until solsys generation code is redone
-extern COUNT InitCommunication (CONVERSATION which_comm);
-
-extern void GenerateSOL (BYTE control);
-extern void GenerateShofixti (BYTE control);
-extern void GenerateColony (BYTE control);
-extern void GenerateSpathi (BYTE control);
-extern void GenerateZoqFotPik (BYTE control);
-extern void GenerateMelnorme (BYTE control);
-extern void GenerateTalkingPet (BYTE control);
-extern void GenerateChmmr (BYTE control);
-extern void GenerateSyreen (BYTE control);
-extern void GenerateBurvixes (BYTE control);
-extern void GenerateSlylandro (BYTE control);
-extern void GenerateDruuge (BYTE control);
-extern void GenerateUtwig (BYTE control);
-extern void GenerateThradd (BYTE control);
-extern void GenerateMycon (BYTE control);
-extern void GenerateOrz (BYTE control);
-extern void GenerateShipVault (BYTE control);
-extern void GenerateUrquanWreck (BYTE control);
-extern void GenerateVUX (BYTE control);
-extern void GenerateSamatra (BYTE control);
-extern void GenerateYehat (BYTE control);
-extern void GeneratePkunk (BYTE control);
-extern void GenerateSupox (BYTE control);
-extern void GenerateRainbow (BYTE control);
-extern void GenerateIlwrath (BYTE control);
-
 // Last race the player battled with, or -1 if no battle took place.
 // Set to -1 by some funcs to inhibit IP groups from intercepting
 // the flagship.
 extern SIZE EncounterRace;
 extern BYTE EncounterGroup;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _ENCOUNT_H */
 

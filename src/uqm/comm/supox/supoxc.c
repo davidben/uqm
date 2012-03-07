@@ -103,7 +103,7 @@ static LOCDATA supox_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye_neutral))
 		NPCPhrase (GOODBYE_NEUTRAL);
@@ -126,14 +126,14 @@ ExitConversation (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, can_you_help))
 	{
 		NPCPhrase (HOW_HELP);
-		if (ActivateStarShip (SUPOX_SHIP, FEASIBILITY_STUDY) == 0)
+		if (EscortFeasibilityStudy (SUPOX_SHIP) == 0)
 			NPCPhrase (DONT_NEED);
 		else
 		{
 			NPCPhrase (HAVE_4_SHIPS);
 
 			AlienTalkSegue ((COUNT)~0);
-			ActivateStarShip (SUPOX_SHIP, 4);
+			AddEscortShips (SUPOX_SHIP, 4);
 		}
 	}
 }
@@ -357,7 +357,7 @@ NeutralSupox (RESPONSE_REF R)
 
 		LastStack = 2;
 		SET_GAME_STATE (SUPOX_WAR_NEWS, 1);
-		ActivateStarShip (UTWIG_SHIP, SPHERE_TRACKING);
+		StartSphereTracking (UTWIG_SHIP);
 	}
 	else if (PLAYER_SAID (R, what_relation_to_utwig))
 	{
@@ -531,7 +531,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -550,9 +550,9 @@ Intro (void)
 		}
 		SET_GAME_STATE (SUPOX_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
-	else if (ActivateStarShip (SUPOX_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+	else if (CheckAlliance (SUPOX_SHIP) == GOOD_GUY)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{
@@ -696,11 +696,11 @@ init_supox_comm (void)
 	if (!GET_GAME_STATE (SUPOX_HOSTILE)
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &supox_desc;
 

@@ -17,7 +17,15 @@
 #ifndef SIS_SHIP_H
 #define SIS_SHIP_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_sis (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* SIS_SHIP_H */
 

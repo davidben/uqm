@@ -31,6 +31,10 @@ typedef HLINK HSTARSHIP;
 #include "libs/sndlib.h"
 #include "libs/reslib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 // TODO: remove RACES_PER_PLAYER remnant of SC1
 #define RACES_PER_PLAYER 7
@@ -217,7 +221,7 @@ struct race_desc
 	POSTPROCESS_FUNC *postprocess_func;
 	INIT_WEAPON_FUNC *init_weapon_func;
 
-	intptr_t data;  // private ship data, ship code owns this
+	void* data;  // private ship data, ship code owns this
 
 	void *CodeRef;
 };
@@ -380,9 +384,9 @@ typedef struct
 // Values for FLEET_INFO.allied_state
 enum
 {
-	DEAD_GUY = 0,
-	GOOD_GUY,
-	BAD_GUY,
+	DEAD_GUY = 0,  // Race is extinct
+	GOOD_GUY,      // Race is allied with the player
+	BAD_GUY,       // Race is not allied with the player
 };
 
 static inline FLEET_INFO *
@@ -663,6 +667,10 @@ enum
 		BUILD_COLOR (MAKE_RGB15_INIT (0x00, 0x00, 0x00), 0x00),  /* SYREEN_SHIP */ \
 		BUILD_COLOR (MAKE_RGB15_INIT (0x06, 0x06, 0x06), 0x20),  /* BLACK_URQUAN_SHIP */ \
 		BUILD_COLOR (MAKE_RGB15_INIT (0x14, 0x07, 0x1F), 0x39),  /* YEHAT_REBEL_SHIP */
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _RACES_H */
 

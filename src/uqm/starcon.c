@@ -50,6 +50,10 @@
 #include "options.h"
 
 volatile int MainExited = FALSE;
+#ifdef DEBUG_SLEEP
+uint32 mainThreadId;
+extern uint32 SDL_ThreadID(void);
+#endif
 
 // Open or close the periodically occuring QuasiSpace portal.
 // It changes the appearant portal size when necessary.
@@ -73,7 +77,6 @@ checkArilouGate (void)
 }
 
 // Battle frame callback function.
-// Called with GraphicsLock held
 static void
 on_battle_frame (void)
 {
@@ -101,6 +104,7 @@ BackgroundInitKernel (DWORD TimeOut)
 	}
 }
 
+// Executes on the main() thread
 void
 SignalStopMainThread (void)
 {
@@ -109,6 +113,7 @@ SignalStopMainThread (void)
 	TaskSwitch ();
 }
 
+// Executes on the main() thread
 void
 ProcessUtilityKeys (void)
 {
@@ -128,11 +133,17 @@ ProcessUtilityKeys (void)
 	}
 
 #if defined(DEBUG) || defined(USE_DEBUG_KEY)
-	if (ImmediateInputState.menu[KEY_DEBUG])
-	{
-		// clear ImmediateInputState so we don't repeat this next frame
-		FlushInput ();
-		debugKeyPressed ();
+	{	// Only call the debug func on the rising edge of
+		// ImmediateInputState[KEY_DEBUG] so it does not execute repeatedly.
+		// This duplicates the PulsedInputState somewhat, but we cannot
+		// use PulsedInputState here because it is meant for another thread.
+		static int debugKeyState;
+
+		if (ImmediateInputState.menu[KEY_DEBUG] && debugKeyState == 0)
+		{
+			debugKeyPressed ();
+		}
+		debugKeyState = ImmediateInputState.menu[KEY_DEBUG];
 	}
 #endif  /* DEBUG */
 }
@@ -143,6 +154,10 @@ extern int snddriver, soundflags;
 int
 Starcon2Main (void *threadArg)
 {
+#ifdef DEBUG_SLEEP
+	mainThreadId = SDL_ThreadID();
+#endif
+
 #if CREATE_JOURNAL
 {
 int ac = argc;
@@ -270,9 +285,7 @@ while (--ac > 0)
 				Battle (&on_battle_frame);
 			}
 
-			LockMutex (GraphicsLock);
 			SetFlashRect (NULL);
-			UnlockMutex (GraphicsLock);
 
 			LastActivity = GLOBAL (CurrentActivity);
 

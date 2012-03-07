@@ -18,6 +18,8 @@
 
 #include "commglue.h"
 
+#include "battle.h"
+		// For instantVictory
 #include "races.h"
 
 #include <stdarg.h>
@@ -28,8 +30,10 @@
 
 static int NPCNumberPhrase (int number, const char *fmt, UNICODE **ptrack);
 
+// The CallbackFunction is queued and executes synchronously
+// on the Starcon2Main thread
 void
-NPCPhrase_cb (int index,  TFB_TrackCB cb)
+NPCPhrase_cb (int index, CallbackFunction cb)
 {
 	UNICODE *pStr, buf[400];
 	void *pClip, *pTimeStamp;
@@ -305,6 +309,48 @@ construct_response (UNICODE *buf, int R /* promoted from RESPONSE_REF */, ...)
 		log_add (log_Fatal, "Error: shared_phrase_buf size exceeded,"
 				" please increase!\n");
 		exit (EXIT_FAILURE);
+	}
+}
+
+void
+setSegue (Segue segue)
+{
+	switch (segue)
+	{
+		case Segue_peace:
+			SET_GAME_STATE (BATTLE_SEGUE, 0);
+			break;
+		case Segue_hostile:
+			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			break;
+		case Segue_victory:
+			instantVictory = TRUE;
+			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			break;
+		case Segue_defeat:
+			SET_GAME_STATE (BATTLE_SEGUE, 0);
+			GLOBAL_SIS(CrewEnlisted) = (COUNT)~0;
+			GLOBAL(CurrentActivity) |= CHECK_RESTART;
+			break;
+	}
+}
+
+Segue
+getSegue (void)
+{
+	if (GET_GAME_STATE(BATTLE_SEGUE) == 0) {
+		if (GLOBAL_SIS(CrewEnlisted) == (COUNT)~0 &&
+				(GLOBAL(CurrentActivity) & CHECK_RESTART)) {
+			return Segue_defeat;
+		} else {
+			return Segue_peace;
+		}
+	} else /* GET_GAME_STATE(BATTLE_SEGUE) == 1) */ {
+		if (instantVictory) {
+			return Segue_victory;
+		} else {
+			return Segue_hostile;
+		}
 	}
 }
 

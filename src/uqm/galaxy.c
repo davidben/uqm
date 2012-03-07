@@ -268,7 +268,7 @@ InitGalaxy (void)
 		else
 		{
 			SetPrimType (&DisplayArray[p], POINT_PRIM);
-			if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+			if (!inHQSpace ())
 				SetPrimColor (&DisplayArray[p],
 						BUILD_COLOR (MAKE_RGB15 (0x15, 0x15, 0x15), 0x07));
 			else if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
@@ -327,7 +327,7 @@ MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 
 		if (view_state == VIEW_CHANGE)
 		{
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+			if (inHQSpace ())
 			{
 				for (iss = 0, pprim = DisplayArray; iss < 2; ++iss)
 				{
@@ -385,7 +385,7 @@ MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 			}
 		}
 
-		if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+		if (inHQSpace ())
 		{
 			for (i = BIG_STAR_COUNT + MED_STAR_COUNT, pprim = DisplayArray;
 					i > 0; --i, ++pprim)
@@ -406,7 +406,7 @@ MoveGalaxy (VIEW_STATE view_state, SIZE dx, SIZE dy)
 		WrapStarBlock (1, dx, dy);
 		WrapStarBlock (0, dx, dy);
 
-		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+		if (!inHQSpace ())
 		{
 			dx = SpaceOrg.x;
 			dy = SpaceOrg.y;

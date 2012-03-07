@@ -143,14 +143,12 @@ processAudioSyncedFrame (VIDEO_REF vid)
 	vid->cur_frame = vid->decoder->cur_frame;
 
 	// draw the frame
-	LockMutex (GraphicsLock);
 	// We have the cliprect precalculated and don't need the rest
 	oldContext = SetContext (NULL);
 	TFB_DrawScreen_Image (vid->frame,
 			vid->dst_rect.corner.x, vid->dst_rect.corner.y, 0, 0,
 			NULL, DRAW_REPLACE_MODE, TFB_SCREEN_MAIN);
 	SetContext (oldContext);
-	UnlockMutex (GraphicsLock);
 	FlushGraphics (); // needed to prevent half-frame updates
 
 	// increase interframe with positive lag-count to allow audio to catch up
@@ -195,14 +193,12 @@ processMuteFrame (VIDEO_REF vid)
 		
 		vid->cur_frame = vid->decoder->cur_frame;
 
-		LockMutex (GraphicsLock);
 		// We have the cliprect precalculated and don't need the rest
 		oldContext = SetContext (NULL);
 		TFB_DrawScreen_Image (vid->frame,
 				vid->dst_rect.corner.x, vid->dst_rect.corner.y, 0, 0,
 				NULL, DRAW_REPLACE_MODE, TFB_SCREEN_MAIN);
 		SetContext (oldContext);
-		UnlockMutex (GraphicsLock);
 		FlushGraphics (); // needed to prevent half-frame updates
 
 		if (vid->cur_frame == vid->loop_frame)
@@ -273,7 +269,7 @@ TFB_PlayVideo (VIDEO_REF vid, uint32 x, uint32 y)
 		}
 
 		TFB_SetSoundSampleCallbacks (*vid->hAudio, &vp_AudioCBs);
-		TFB_SetSoundSampleData (*vid->hAudio, (intptr_t)vid);
+		TFB_SetSoundSampleData (*vid->hAudio, vid);
 	}
 
 	// get the first frame
@@ -432,7 +428,7 @@ vp_SetTimer (TFB_VideoDecoder* decoder, uint32 msecs)
 static bool
 vp_AudioStart (TFB_SoundSample* sample)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+	TFB_VideoClip* vid = TFB_GetSoundSampleData (sample);
 	TFB_SoundDecoder *decoder;
 
 	assert (sizeof (intptr_t) >= sizeof (vid));
@@ -450,7 +446,7 @@ vp_AudioStart (TFB_SoundSample* sample)
 static void
 vp_AudioEnd (TFB_SoundSample* sample)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+	TFB_VideoClip* vid = TFB_GetSoundSampleData (sample);
 
 	assert (vid != NULL);
 
@@ -462,7 +458,7 @@ vp_AudioEnd (TFB_SoundSample* sample)
 static void
 vp_BufferTag (TFB_SoundSample* sample, TFB_SoundTag* tag)
 {
-	TFB_VideoClip* vid = (TFB_VideoClip*) TFB_GetSoundSampleData (sample);
+	TFB_VideoClip* vid = TFB_GetSoundSampleData (sample);
 	uint32 frame = (uint32) tag->data;
 
 	assert (sizeof (tag->data) >= sizeof (frame));

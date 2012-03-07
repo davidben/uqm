@@ -20,8 +20,7 @@
 #include "../colors.h"
 #include "../controls.h"
 #include "../menustat.h"
-// XXX: for stuff that does not belong there
-#include "../encount.h"
+#include "../starmap.h"
 #include "../races.h"
 #include "../gameopt.h"
 #include "../gamestr.h"
@@ -68,18 +67,18 @@ signedDivWithError (long val, long divisor)
 #define MAP_FIT_X ((MAX_X_UNIVERSE + 1) / SIS_SCREEN_WIDTH + 1)
 
 static inline COORD
-universeToDispx (COORD ux)
+universeToDispx (long ux)
 {
-	return signedDivWithError ((((long)ux - mapOrigin.x) << zoomLevel)
+	return signedDivWithError (((ux - mapOrigin.x) << zoomLevel)
 			* SIS_SCREEN_WIDTH, MAX_X_UNIVERSE + MAP_FIT_X)
 			+ ((SIS_SCREEN_WIDTH - 1) >> 1);
 }
 #define UNIVERSE_TO_DISPX(ux)  universeToDispx(ux)
 
 static inline COORD
-universeToDispy (COORD uy)
+universeToDispy (long uy)
 {
-	return signedDivWithError ((((long)mapOrigin.y - uy) << zoomLevel)
+	return signedDivWithError (((mapOrigin.y - uy) << zoomLevel)
 			* SIS_SCREEN_HEIGHT, MAX_Y_UNIVERSE + 2)
 			+ ((SIS_SCREEN_HEIGHT - 1) >> 1);
 }
@@ -124,7 +123,6 @@ flashCurrentLocation (POINT *where)
 
 		NextTime = GetTimeCounter () + (ONE_SECOND / 16);
 		
-		LockMutex (GraphicsLock);
 		OldContext = SetContext (SpaceContext);
 
 		if (c == 0x00 || c == 0x1A)
@@ -139,7 +137,6 @@ flashCurrentLocation (POINT *where)
 		SetContextForeGroundColor (OldColor);
 
 		SetContext (OldContext);
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -164,7 +161,7 @@ DrawAutoPilot (POINT *pDstPt)
 				cycle, delta;
 	POINT pt;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+	if (!inHQSpace ())
 		pt = CurStarDescPtr->star_pt;
 	else
 	{
@@ -300,7 +297,6 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 	}
 	else
 	{
-		LockMutex (GraphicsLock);
 		draw_cursor = TRUE;
 	}
 
@@ -343,19 +339,24 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 	}
 	ClearDrawable ();
 
+	// Draw the fuel range circle
 	if (race_update == 0
 			&& which_space < 2
 			&& (diameter = (long)GLOBAL_SIS (FuelOnBoard) << 1))
 	{
 		Color OldColor;
 
-		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+		if (!inHQSpace ())
 			r.corner = CurStarDescPtr->star_pt;
 		else
 		{
 			r.corner.x = LOGX_TO_UNIVERSE (GLOBAL_SIS (log_x));
 			r.corner.y = LOGY_TO_UNIVERSE (GLOBAL_SIS (log_y));
 		}
+
+		// Cap the diameter to a sane range
+		if (diameter > MAX_X_UNIVERSE * 4)
+			diameter = MAX_X_UNIVERSE * 4;
 
 		r.extent.width = UNIVERSE_TO_DISPX (diameter)
 				- UNIVERSE_TO_DISPX (0);
@@ -555,9 +556,6 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 					UNIVERSE_TO_DISPY (cursorLoc.y));
 		}
 	}
-
-	if (draw_cursor)
-		UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -587,9 +585,7 @@ EraseCursor (COORD curs_x, COORD curs_y)
 #else /* NEW */
 	r.extent.height += r.corner.y & 1;
 	r.corner.y &= ~1;
-	UnlockMutex (GraphicsLock);
 	DrawStarMap (0, &r);
-	LockMutex (GraphicsLock);
 #endif /* OLD */
 }
 
@@ -689,11 +685,9 @@ UpdateCursorLocation (int sx, int sy, const POINT *newpt)
 	}
 	else
 	{
-		LockMutex (GraphicsLock);
 		EraseCursor (pt.x, pt.y);
 		// ClearDrawable ();
 		DrawCursor (s.origin.x, s.origin.y);
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -763,14 +757,12 @@ UpdateCursorInfo (UNICODE *prevbuf)
 		}
 	}
 
-	LockMutex (GraphicsLock);
 	DrawHyperCoords (cursorLoc);
 	if (strcmp (buf, prevbuf) != 0)
 	{
 		strcpy (prevbuf, buf);
 		DrawSISMessage (buf);
 	}
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -781,7 +773,7 @@ UpdateFuelRequirement (void)
 	DWORD f;
 	POINT pt;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+	if (!inHQSpace ())
 		pt = CurStarDescPtr->star_pt;
 	else
 	{
@@ -802,9 +794,7 @@ UpdateFuelRequirement (void)
 			fuel_required / FUEL_TANK_SCALE,
 			(fuel_required % FUEL_TANK_SCALE) / 10);
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (buf);
-	UnlockMutex (GraphicsLock);
 }
 
 #define STAR_SEARCH_BUFSIZE 256
@@ -1055,10 +1045,8 @@ DrawMatchedStarName (TEXTENTRY_STATE *pTES)
 			flags |= DSME_BLOCKCUR;
 	}
 	
-	LockMutex (GraphicsLock);
 	DrawSISMessageEx (buf, CurPos, ExPos, flags);
 	DrawHyperCoords (cursorLoc);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1129,9 +1117,7 @@ OnStarNameChange (TEXTENTRY_STATE *pTES)
 		if (pTES->JoystickMode)
 			flags |= DSME_BLOCKCUR;
 
-		LockMutex (GraphicsLock);
 		ret = DrawSISMessageEx (pSS->Text, pTES->CursorPos, -1, flags);
-		UnlockMutex (GraphicsLock);
 	}
 	else
 	{
@@ -1192,9 +1178,7 @@ DoStarSearch (MENU_STATE *pMS)
 	if (!pss)
 		return FALSE;
 
-	LockMutex (GraphicsLock);
 	DrawSISMessageEx ("", 0, 0, DSME_SETFR);
-	UnlockMutex (GraphicsLock);
 
 	pss->pMS = pMS;
 	pss->LastChangeTime = 0;
@@ -1216,9 +1200,7 @@ DoStarSearch (MENU_STATE *pMS)
 	SetDefaultMenuRepeatDelay ();
 	success = DoTextEntry (&tes);
 
-	LockMutex (GraphicsLock);
 	DrawSISMessageEx (pss->Text, -1, -1, DSME_CLEARFR);
-	UnlockMutex (GraphicsLock);
 
 	HFree (pss);
 
@@ -1241,7 +1223,7 @@ DoMoveCursor (MENU_STATE *pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoMoveCursor;
 
-		if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+		if (!inHQSpace ())
 			universe = CurStarDescPtr->star_pt;
 		else
 		{
@@ -1268,7 +1250,7 @@ DoMoveCursor (MENU_STATE *pMS)
 		{
 			PlayMenuSound (MENU_SOUND_INVOKED);
 
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+			if (inHQSpace ())
 			{
 				// Move to the new location immediately.
 				doInstantMove ();
@@ -1597,7 +1579,7 @@ StarMap (void)
 	mapOrigin.y = MAX_Y_UNIVERSE >> 1;
 	StarMapFrame = SetAbsFrameIndex (MiscDataFrame, 48);
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+	if (!inHQSpace ())
 		universe = CurStarDescPtr->star_pt;
 	else
 	{
@@ -1616,8 +1598,6 @@ StarMap (void)
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 		UpdateMap ();
 
-	LockMutex (GraphicsLock);
-	
 	DrawStarMap (0, (RECT*)-1);
 	transition_pending = FALSE;
 	
@@ -1629,7 +1609,6 @@ StarMap (void)
 	DrawCursor (UNIVERSE_TO_DISPX (cursorLoc.x),
 			UNIVERSE_TO_DISPY (cursorLoc.y));
 	UnbatchGraphics ();
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_NONE, MENU_SOUND_NONE);
 	SetMenuRepeatDelay (MIN_ACCEL_DELAY, MAX_ACCEL_DELAY, STEP_ACCEL_DELAY,
@@ -1638,11 +1617,9 @@ StarMap (void)
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	SetDefaultMenuRepeatDelay ();
 
-	LockMutex (GraphicsLock);
 	DrawHyperCoords (universe);
 	DrawSISMessage (NULL);
 	DrawStatusMessage (NULL);
-	UnlockMutex (GraphicsLock);
 
 	if (GLOBAL (autopilot.x) == universe.x
 			&& GLOBAL (autopilot.y) == universe.y)

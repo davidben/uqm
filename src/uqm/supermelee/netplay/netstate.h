@@ -21,6 +21,9 @@
 
 #include "port.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 typedef struct NetConnectionStateData NetConnectionStateData;
 
@@ -38,7 +41,15 @@ typedef enum {
 	NetState_endingBattle2,  /* Waiting for the final synchronisation */
 } NetState;
 
+#if defined(__cplusplus)
+}
+#endif
+
 #include "types.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 typedef struct {
 	const char *name;
@@ -64,6 +75,10 @@ NetState_battleActive(NetState state) {
 			state == NetState_endingBattle2;
 }
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _NETSTATE_H */
 

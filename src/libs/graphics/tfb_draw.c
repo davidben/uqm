@@ -301,6 +301,7 @@ TFB_DrawImage_New (TFB_Canvas canvas)
 	img->last_scale_hs = NullHs;
 	img->last_scale_type = -1;
 	img->last_scale = 0;
+	img->dirty = FALSE;
 	TFB_DrawCanvas_GetExtent (canvas, &img->extent);
 
 	if (TFB_DrawCanvas_IsPaletted (canvas))
@@ -414,8 +415,16 @@ TFB_DrawImage_Delete (TFB_Image *image)
 
 	TFB_DrawCanvas_Delete (image->NormalImg);
 			
-	if (image->ScaledImg) {
+	if (image->ScaledImg)
+	{
 		TFB_DrawCanvas_Delete (image->ScaledImg);
+		image->ScaledImg = 0;
+	}
+
+	if (image->FilledImg)
+	{
+		TFB_DrawCanvas_Delete (image->FilledImg);
+		image->FilledImg = 0;
 	}
 
 	UnlockMutex (image->mutex);

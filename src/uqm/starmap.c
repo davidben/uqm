@@ -16,10 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "encount.h"
+#include "starmap.h"
 #include "gamestr.h"
 #include "globdata.h"
-#include "libs/compiler.h"
 #include "libs/gfxlib.h"
 
 

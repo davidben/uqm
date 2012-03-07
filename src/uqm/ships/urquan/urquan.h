@@ -17,7 +17,15 @@
 #ifndef URQUAN_H
 #define URQUAN_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_urquan (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* URQUAN_H */
 

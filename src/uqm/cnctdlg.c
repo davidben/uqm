@@ -531,14 +531,12 @@ DrawConnectDialog (void)
 	r.corner.x = (SCREEN_WIDTH - r.extent.width) >> 1;
 	r.corner.y = (SCREEN_HEIGHT - r.extent.height) >> 1;
 
-	LockMutex (GraphicsLock);
 
 	DrawShadowedBox (&r, SHADOWBOX_BACKGROUND_COLOR,
 			SHADOWBOX_DARK_COLOR, SHADOWBOX_MEDIUM_COLOR);
 
 	menu.draw ((WIDGET *)&menu, r.corner.x + 10, r.corner.y + 10);
 
-	UnlockMutex (GraphicsLock);
 }
 
 static BOOLEAN

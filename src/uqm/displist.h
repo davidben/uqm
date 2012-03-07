@@ -24,6 +24,10 @@
 #include "libs/compiler.h"
 #include "libs/memlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 // Note that we MUST use the QUEUE_TABLE variant at this time, because
 // certain gameplay elements depend on it. Namely, the maximum number
 // of HyperSpace encounter globes chasing the player is defined by the
@@ -119,6 +123,10 @@ extern void InsertQueue (QUEUE *pq, HLINK hLink, HLINK hRefLink);
 extern void RemoveQueue (QUEUE *pq, HLINK hLink);
 extern COUNT CountLinks (QUEUE *pq);
 void ForAllLinks(QUEUE *pq, void (*callback)(LINK *, void *), void *arg);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _DISPLIST_H */
 

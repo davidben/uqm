@@ -124,6 +124,41 @@ static RACE_DESC mmrnmhrm_desc =
 #define MISSILE_SPEED DISPLAY_TO_WORLD (20)
 #define TRACK_WAIT 5
 
+// Private per-instance ship data
+typedef CHARACTERISTIC_STUFF MMRNMHRM_DATA;
+
+// Local typedef
+typedef MMRNMHRM_DATA CustomShipData_t;
+
+// Retrieve race-specific ship data from a race desc
+static CustomShipData_t *
+GetCustomShipData (RACE_DESC *pRaceDesc)
+{
+	return pRaceDesc->data;
+}
+
+// Set the race-specific data in a race desc
+// (Re)Allocates its own storage for the data.
+static void
+SetCustomShipData (RACE_DESC *pRaceDesc, const CustomShipData_t *data)
+{
+	if (pRaceDesc->data == data) 
+		return;  // no-op
+
+	if (pRaceDesc->data) // Out with the old
+	{
+		HFree (pRaceDesc->data);
+		pRaceDesc->data = NULL;
+	}
+
+	if (data) // In with the new
+	{
+		CustomShipData_t* newData = HMalloc (sizeof (*data));
+		*newData = *data;
+		pRaceDesc->data = newData;
+	}
+}
+
 static void
 missile_preprocess (ELEMENT *ElementPtr)
 {
@@ -363,8 +398,8 @@ mmrnmhrm_postprocess (ELEMENT *ElementPtr)
 			/* take care of transform effect */
 	if (ElementPtr->next.image.farray != ElementPtr->current.image.farray)
 	{
-		CHARACTERISTIC_STUFF t;
-		CHARACTERISTIC_STUFF *otherwing_desc;
+		MMRNMHRM_DATA tempShipData;
+		MMRNMHRM_DATA *otherwing_desc;
 
 		ProcessSound (SetAbsSoundIndex (
 						/* TRANSFORM */
@@ -373,11 +408,13 @@ mmrnmhrm_postprocess (ELEMENT *ElementPtr)
 		StarShipPtr->weapon_counter = 0;
 
 		/* Swap characteristics descriptors around */
-		otherwing_desc = (CHARACTERISTIC_STUFF *)
-				StarShipPtr->RaceDescPtr->data;
-		t = *otherwing_desc;
-		*otherwing_desc = StarShipPtr->RaceDescPtr->characteristics;
-		StarShipPtr->RaceDescPtr->characteristics = t;
+		otherwing_desc = GetCustomShipData (StarShipPtr->RaceDescPtr);
+		if (!otherwing_desc)
+			return;  // No ship data (?!)
+
+		tempShipData = *otherwing_desc;
+		SetCustomShipData (StarShipPtr->RaceDescPtr, &StarShipPtr->RaceDescPtr->characteristics);
+		StarShipPtr->RaceDescPtr->characteristics = tempShipData;
 		StarShipPtr->RaceDescPtr->cyborg_control.ManeuverabilityIndex = 0;
 
 		if (ElementPtr->next.image.farray == StarShipPtr->RaceDescPtr->ship_data.special)
@@ -444,17 +481,16 @@ mmrnmhrm_preprocess (ELEMENT *ElementPtr)
 static void
 uninit_mmrnmhrm (RACE_DESC *pRaceDesc)
 {
-	HFree ((void *)pRaceDesc->data);
-	pRaceDesc->data = 0;
+	SetCustomShipData (pRaceDesc, NULL);
 }
 
 RACE_DESC*
 init_mmrnmhrm (void)
 {
 	RACE_DESC *RaceDescPtr;
-
+	// The caller of this func will copy the struct
 	static RACE_DESC new_mmrnmhrm_desc;
-	CHARACTERISTIC_STUFF *otherwing_desc;
+	MMRNMHRM_DATA otherwing_desc;
 
 	mmrnmhrm_desc.uninit_func = uninit_mmrnmhrm;
 	mmrnmhrm_desc.preprocess_func = mmrnmhrm_preprocess;
@@ -464,20 +500,19 @@ init_mmrnmhrm (void)
 
 	new_mmrnmhrm_desc = mmrnmhrm_desc;
 
-	otherwing_desc = HMalloc (sizeof (*otherwing_desc));
-	otherwing_desc->max_thrust = YWING_MAX_THRUST;
-	otherwing_desc->thrust_increment = YWING_THRUST_INCREMENT;
-	otherwing_desc->energy_regeneration = YWING_ENERGY_REGENERATION;
-	otherwing_desc->weapon_energy_cost = YWING_WEAPON_ENERGY_COST;
-	otherwing_desc->special_energy_cost = YWING_SPECIAL_ENERGY_COST;
-	otherwing_desc->energy_wait = YWING_ENERGY_WAIT;
-	otherwing_desc->turn_wait = YWING_TURN_WAIT;
-	otherwing_desc->thrust_wait = YWING_THRUST_WAIT;
-	otherwing_desc->weapon_wait = YWING_WEAPON_WAIT;
-	otherwing_desc->special_wait = YWING_SPECIAL_WAIT;
-	otherwing_desc->ship_mass = SHIP_MASS;
+	otherwing_desc.max_thrust = YWING_MAX_THRUST;
+	otherwing_desc.thrust_increment = YWING_THRUST_INCREMENT;
+	otherwing_desc.energy_regeneration = YWING_ENERGY_REGENERATION;
+	otherwing_desc.weapon_energy_cost = YWING_WEAPON_ENERGY_COST;
+	otherwing_desc.special_energy_cost = YWING_SPECIAL_ENERGY_COST;
+	otherwing_desc.energy_wait = YWING_ENERGY_WAIT;
+	otherwing_desc.turn_wait = YWING_TURN_WAIT;
+	otherwing_desc.thrust_wait = YWING_THRUST_WAIT;
+	otherwing_desc.weapon_wait = YWING_WEAPON_WAIT;
+	otherwing_desc.special_wait = YWING_SPECIAL_WAIT;
+	otherwing_desc.ship_mass = SHIP_MASS;
 
-	new_mmrnmhrm_desc.data = (intptr_t) otherwing_desc;
+	SetCustomShipData (&new_mmrnmhrm_desc, &otherwing_desc);
 
 	RaceDescPtr = &new_mmrnmhrm_desc;
 

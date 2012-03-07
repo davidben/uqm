@@ -50,6 +50,10 @@
 #	endif  /* defined(PRIxPTR) */
 #endif
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #if defined(HAVE_STDINT_H_UQM)
 
 #	include <stdint.h>
@@ -193,5 +197,9 @@ UQM_COMPILE_TIME_ASSERT(uint64, sizeof(uint64) == 8);
 #define UINT8_MAX  0xff /* 255U */
 #define UINT16_MAX 0xffff /* 65535U */
 #define UINT32_MAX 0xffffffff /* 4294967295U */
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _TYPES_H */

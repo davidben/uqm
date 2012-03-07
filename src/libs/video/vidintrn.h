@@ -38,10 +38,4 @@ struct legacy_video_ref
 	MUSIC_REF speechref;
 };
 
-// XXX: There has to be a better way to synchronize gfx calls with the rest
-//   of the game. The only thing we need to sync is the current context, and
-//   even there only the cliprect. Perhaps a DCQ command that takes an
-//   explicit cliprect would be better.
-extern Mutex GraphicsLock;
-
 #endif

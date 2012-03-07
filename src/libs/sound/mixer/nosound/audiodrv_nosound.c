@@ -146,12 +146,6 @@ noSound_Init (audio_Driver *driver, sint32 flags)
 		return -1;
 	}
 
-	atexit (unInitAudio);
-
-	SetSFXVolume (sfxVolumeScale);
-	SetSpeechVolume (speechVolumeScale);
-	SetMusicVolume ((COUNT)musicVolume);
-		
 	PlaybackTask = AssignTask (PlaybackTaskFunc, 1024, 
 		"nosound audio playback");
 
@@ -215,7 +209,7 @@ PlaybackTaskFunc (void *data)
 		mixer_MixFake (NULL, stream, len);
 		delay = period - (GetTimeCounter () - entryTime);
 		if (delay > 0)
-			SleepThread (delay);
+			HibernateThread (delay);
 	}
 
 	HFree (stream);

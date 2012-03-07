@@ -88,7 +88,7 @@ static void* buffer;
 static ULONG bufsize;
 static ULONG written;
 
-ULONG*
+static ULONG*
 moda_mmout_SetOutputBuffer (void* buf, ULONG size)
 {
 	buffer = buf;
@@ -132,12 +132,18 @@ moda_mmout_Reset (void)
     return 0;
 }
 
+static char MDRIVER_name[] = "Mem Buffer";
+static char MDRIVER_version[] = "Mem Buffer driver v1.1";
+static char MDRIVER_alias[] = "membuf";
+
 static MDRIVER moda_mmout_drv =
-{   NULL,
-    "Mem Buffer",              // Name
-    "Mem Buffer driver v1.1",  // Version
-    0, 255,                    // Voice limits
-    "membuf",                  // Alias
+{
+	NULL,
+	//xxx libmikmod does not declare these fields const; it probably should.
+	MDRIVER_name,              // Name
+	MDRIVER_version,           // Version
+	0, 255,                    // Voice limits
+	MDRIVER_alias,             // Alias
 
 // The minimum mikmod version we support is 3.1.8
 #if (LIBMIKMOD_VERSION_MAJOR > 3) || \
@@ -215,7 +221,7 @@ moda_uioReader_Tell (MREADER* reader)
 	return uio_ftell (((MUIOREADER*)reader)->file);
 }
 
-MREADER*
+static MREADER*
 moda_new_uioReader (uio_Stream* fp)
 {
 	MUIOREADER* reader = (MUIOREADER*) HMalloc (sizeof(MUIOREADER));
@@ -231,7 +237,7 @@ moda_new_uioReader (uio_Stream* fp)
 	return (MREADER*)reader;
 }
 
-void
+static void
 moda_delete_uioReader (MREADER* reader)
 {
 	if (reader)
@@ -276,7 +282,7 @@ moda_InitModule (int flags, const TFB_DecoderFormats* fmts)
 	
 	md_pansep = 64;
 
-	if (MikMod_Init (""))
+	if (MikMod_Init (NULL))
 	{
 		log_add (log_Error, "MikMod_Init() failed, %s", 
 			MikMod_strerror (MikMod_errno));

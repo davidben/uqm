@@ -35,14 +35,14 @@ static bool GenerateSol_reinitNpcs (SOLARSYS_STATE *solarSys);
 static bool GenerateSol_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateSol_generateMoons (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *planet);
-static bool GenerateSol_generateName (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world);
+static bool GenerateSol_generateName (const SOLARSYS_STATE *,
+		const PLANET_DESC *world);
 static bool GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
-static COUNT GenerateSol_generateLife (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateSol_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
+static COUNT GenerateSol_generateLife (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateSol_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -108,7 +108,7 @@ GenerateSol_generatePlanets (SOLARSYS_STATE *solarSys)
 	COUNT planetI;
 
 #define SOL_SEED 334241042L
-	TFB_SeedRandom (SOL_SEED);
+	RandomContext_SeedRandom (SysGenRNG, SOL_SEED);
 
 	solarSys->SunDesc[0].NumPlanets = 9;
 	for (planetI = 0; planetI < 9; ++planetI)
@@ -118,7 +118,8 @@ GenerateSol_generatePlanets (SOLARSYS_STATE *solarSys)
 		UWORD word_val;
 		PLANET_DESC *pCurDesc = &solarSys->PlanetDesc[planetI];
 
-		pCurDesc->rand_seed = rand_val = TFB_Random ();
+		pCurDesc->rand_seed = RandomContext_Random (SysGenRNG);
+		rand_val = pCurDesc->rand_seed;
 		word_val = LOWORD (rand_val);
 		angle = NORMALIZE_ANGLE ((COUNT)HIBYTE (word_val));
 
@@ -208,7 +209,7 @@ GenerateSol_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 			solarSys->MoonDesc[1].data_index = SELENIC_WORLD;
 			solarSys->MoonDesc[1].radius = MIN_MOON_RADIUS
 					+ (MAX_MOONS - 1) * MOON_DELTA;
-			rand_val = TFB_Random ();
+			rand_val = RandomContext_Random (SysGenRNG);
 			angle = NORMALIZE_ANGLE (LOWORD (rand_val));
 			solarSys->MoonDesc[1].location.x =
 					COSINE (angle, solarSys->MoonDesc[1].radius);
@@ -240,7 +241,8 @@ GenerateSol_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 }
 
 static bool
-GenerateSol_generateName (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
+GenerateSol_generateName (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world)
 {
 	COUNT planetNr = planetIndex (solarSys, world);
 	utf8StringCopy (GLOBAL_SIS (PlanetName), sizeof (GLOBAL_SIS (PlanetName)),
@@ -269,15 +271,12 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		return true;
 	}
 
-	rand_val = DoPlanetaryAnalysis (&solarSys->SysInfo, world);
-	if (rand_val)
-	{
-		COUNT i;
+	DoPlanetaryAnalysis (&solarSys->SysInfo, world);
+	rand_val = RandomContext_GetSeed (SysGenRNG);
 
-		solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-		i = (COUNT)~0;
-		rand_val = GenerateMineralDeposits (&solarSys->SysInfo, &i);
-	}
+	solarSys->SysInfo.PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
+	GenerateMineralDeposits (&solarSys->SysInfo, GENERATE_ALL, NULL);
+	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	planetNr = planetIndex (solarSys, world);
 	if (worldIsPlanet (solarSys, world))
@@ -405,8 +404,7 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		}
 
 		solarSys->SysInfo.PlanetInfo.SurfaceGravity =
-				CalcGravity (solarSys->SysInfo.PlanetInfo.PlanetDensity,
-				solarSys->SysInfo.PlanetInfo.PlanetRadius);
+				CalcGravity (&solarSys->SysInfo.PlanetInfo);
 		LoadPlanet (planetNr == 2 ?
 				CaptureDrawable (LoadGraphic (EARTH_MASK_ANIM)) : NULL);
 	}
@@ -421,6 +419,10 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		switch (planetNr)
 		{
 			case 2: /* moons of EARTH */
+				// NOTE: Even though we save the seed here, it is irrelevant.
+				//   The seed will be used to randomly place the tractors, but
+				//   since they are mobile, they will be moved to different
+				//   locations not governed by this seed.
 				solarSys->SysInfo.PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] =
 						rand_val;
 
@@ -505,8 +507,7 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 		}
 
 		solarSys->SysInfo.PlanetInfo.SurfaceGravity =
-				CalcGravity (solarSys->SysInfo.PlanetInfo.PlanetDensity,
-				solarSys->SysInfo.PlanetInfo.PlanetRadius);
+				CalcGravity (&solarSys->SysInfo.PlanetInfo);
 		LoadPlanet (NULL);
 	}
 
@@ -514,8 +515,8 @@ GenerateSol_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 static COUNT
-GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateSol_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 8, MATCH_PLANET))
 	{
@@ -527,8 +528,11 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		solarSys->SysInfo.PlanetInfo.CurPt.x = 20;
-		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT - 8;
+		if (info)
+		{
+			info->loc_pt.x = 20;
+			info->loc_pt.y = MAP_HEIGHT - 8;
+		}
 
 		return 1; // only matters when count is requested
 	}
@@ -543,8 +547,11 @@ GenerateSol_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 			return 0;
 		}
 
-		solarSys->SysInfo.PlanetInfo.CurPt.x = MAP_WIDTH * 3 / 4;
-		solarSys->SysInfo.PlanetInfo.CurPt.y = MAP_HEIGHT * 1 / 4;
+		if (info)
+		{
+			info->loc_pt.x = MAP_WIDTH * 3 / 4;
+			info->loc_pt.y = MAP_HEIGHT * 1 / 4;
+		}
 
 		return 1; // only matters when count is requested
 	}
@@ -595,15 +602,14 @@ GenerateSol_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 }
 
 static COUNT
-GenerateSol_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateSol_generateLife (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 2, 1))
 	{
 		/* Earth Moon */
-		GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, 10,
-				NUM_CREATURE_TYPES + 1, &whichNode);
-		return whichNode;
+		return GenerateRandomNodes (&solarSys->SysInfo, BIOLOGICAL_SCAN, 10,
+				NUM_CREATURE_TYPES + 1, whichNode, info);
 	}
 
 	return 0;

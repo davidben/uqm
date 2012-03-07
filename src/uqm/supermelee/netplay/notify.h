@@ -32,6 +32,10 @@
 #include "../meleesetup.h"
 		// for FleetShipIndex
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 void Netplay_Notify_shipSelected(NetConnection *conn, FleetShipIndex index);
 void Netplay_Notify_battleInput(NetConnection *conn,
 		BATTLE_INPUT_STATE input);
@@ -50,6 +54,10 @@ void Netplay_Notify_checksum(NetConnection *conn,
 		BattleFrameCounter frameCount, Checksum checksum);
 #endif
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _NOTIFY_H */
 

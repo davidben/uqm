@@ -239,8 +239,6 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 {
 	CONTEXT OldContext;
 
-	LockMutex (GraphicsLock);
-
 	OldContext = SetContext (StatusContext);
 	SetContextFont (TinyFont);
 
@@ -266,15 +264,12 @@ DrawCargoStrings (BYTE OldElement, BYTE NewElement)
 
 	UnbatchGraphics ();
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
 DrawElementDescription (COUNT element)
 {
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (GAME_STRING (element + (CARGO_STRING_BASE + 2)));
-	UnlockMutex (GraphicsLock);
 }
 
 static BOOLEAN
@@ -302,10 +297,8 @@ DoDiscardCargo (MENU_STATE *pMS)
 			--GLOBAL_SIS (ElementAmounts[pMS->CurState]);
 			DrawCargoStrings (pMS->CurState, pMS->CurState);
 
-			LockMutex (GraphicsLock);
 			--GLOBAL_SIS (TotalElementMass);
 			ShowRemainingCapacity ();
-			UnlockMutex (GraphicsLock);
 		}
 		else
 		{	// no element left in cargo hold
@@ -358,8 +351,6 @@ CargoMenu (void)
 	DoInput (&MenuState, TRUE);
 
 	// erase the cargo display
-	LockMutex (GraphicsLock);
 	ClearSISRect (DRAW_SIS_DISPLAY);
-	UnlockMutex (GraphicsLock);
 }
 

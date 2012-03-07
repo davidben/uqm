@@ -123,7 +123,7 @@ static LOCDATA urquan_desc =
 static void
 CombatIsInevitable (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 
 	if (PLAYER_SAID (R, you_must_surrender))
 		NPCPhrase (NOPE);
@@ -159,9 +159,7 @@ CombatIsInevitable (RESPONSE_REF R)
 	{
 		NPCPhrase (GOOD_CHOICE);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
-		GLOBAL_SIS (CrewEnlisted) = (COUNT)~0;
-		GLOBAL (CurrentActivity) |= CHECK_RESTART;
+		setSegue (Segue_defeat);
 	}
 	else if (PLAYER_SAID (R, like_to_leave))
 		NPCPhrase (INDEPENDENCE_IS_BAD);
@@ -169,7 +167,7 @@ CombatIsInevitable (RESPONSE_REF R)
 	{
 		NPCPhrase (GOODBYE_WARS_OVER);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (PLAYER_SAID (R, bye_sub_hypno))
 		NPCPhrase (GOODBYE_AND_DIE_SUB_HYPNO);
@@ -184,7 +182,7 @@ CombatIsInevitable (RESPONSE_REF R)
 	{
 		NPCPhrase (BAD_NEWS);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		SET_GAME_STATE (URQUAN_HYPNO_VISITS, 1);
 	}
 	else if (PLAYER_SAID (R, falling_asleep)
@@ -192,7 +190,7 @@ CombatIsInevitable (RESPONSE_REF R)
 	{
 		NPCPhrase (SOUNDS_FAMILIAR);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		SET_GAME_STATE (URQUAN_HYPNO_VISITS, 1);
 	}
 }
@@ -415,7 +413,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -450,7 +448,7 @@ Intro (void)
 		{
 			NPCPhrase (CAUGHT_YA);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 			return;
 		}
 
@@ -462,7 +460,7 @@ Intro (void)
 			NPCPhrase (HELLO_SAMATRA);
 
 			SET_GAME_STATE (AWARE_OF_SAMATRA, 1);
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 		}
 		else
 		{
@@ -501,7 +499,7 @@ Intro (void)
 						break;
 					case 1:
 						NPCPhrase (SUBSEQUENT_FLEE_HUMAN);
-						SET_GAME_STATE (BATTLE_SEGUE, 0);
+						setSegue (Segue_peace);
 						--NumVisits;
 						break;
 				}
@@ -545,11 +543,11 @@ init_urquan_comm (void)
 			&& GLOBAL (BattleGroupRef)
 			&& GLOBAL (BattleGroupRef) == GrpOffs))
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &urquan_desc;
 

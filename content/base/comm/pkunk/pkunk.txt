@@ -551,8 +551,7 @@ a material quaintness, if you will.
 We will be somewhat disappointed to have to leave it.
 
 #(how_goes_war)
-I seem to be having a little trouble defeating the Ur-Quan Hierarchy.
-Do you have any helpful advice for me?
+I seem to be having a little trouble defeating the Ur-Quan Hierarchy. Do you have any helpful advice for me?
 
 #(WAR_GOES_1)	pkunk-071.ogg
 Well, not advice exactly, but I can offer you plenty of moral support.

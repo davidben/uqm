@@ -213,7 +213,7 @@ static LOCDATA talkpet_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	SET_GAME_STATE (SHIP_TO_COMPEL, 0);
 
 	if (PLAYER_SAID (R, compel_urquan))
@@ -498,7 +498,7 @@ CompelPlayer (RESPONSE_REF R)
 		{
 			NPCPhrase (CANT_COMPEL);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 		}
 
 		return;
@@ -649,14 +649,14 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE)
 	{
 		SET_GAME_STATE (SHIP_TO_COMPEL, 0);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 		if (!(GLOBAL (glob_flags) & CYBORG_ENABLED))
 		{
 			NPCPhrase (HUMAN_PEP_TALK);
@@ -679,13 +679,13 @@ Intro (void)
 			else
 				NPCPhrase (SOUP_UP_BOMB);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 0);
+			setSegue (Segue_peace);
 		}
 		else if (GET_GAME_STATE (URQUAN_MESSED_UP))
 		{
 			NPCPhrase (HELLO_AFTER_COMPEL_URQUAN);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 0);
+			setSegue (Segue_peace);
 		}
 		else
 		{
@@ -769,18 +769,18 @@ Intro (void)
 		else if (!GET_GAME_STATE (TAALO_PROTECTOR_ON_SHIP))
 		{
 			SET_GAME_STATE (PLAYER_HYPNOTIZED, 1);
-			SET_GAME_STATE (BATTLE_SEGUE, 0);
+			setSegue (Segue_peace);
 		}
 		else
 		{
 			NPCPhrase (CANT_COMPEL);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 		}
 	}
 	else
 	{
-		if (ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING))
+		if (StartSphereTracking (UMGAH_SHIP))
 		{
 			NPCPhrase (LETS_MAKE_A_DEAL);
 		}
@@ -828,11 +828,11 @@ init_talkpet_comm (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 
 	retval = &talkpet_desc;

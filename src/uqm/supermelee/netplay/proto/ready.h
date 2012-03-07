@@ -21,11 +21,19 @@
 
 #include "../netconnection.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 bool Netplay_localReady(NetConnection *conn,
 		NetConnection_ReadyCallback callback, void *arg, bool notifyRemote);
 bool Netplay_remoteReady(NetConnection *conn);
 bool Netplay_isLocalReady(const NetConnection *conn);
 bool Netplay_isRemoteReady(const NetConnection *conn);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _READY_H */
 

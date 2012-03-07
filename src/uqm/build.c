@@ -68,233 +68,338 @@ GetStarShipFromIndex (QUEUE *pShipQ, COUNT Index)
 	return (hStarShip);
 }
 
+HSHIPFRAG
+GetEscortByStarShipIndex (COUNT index)
+{
+	HSHIPFRAG hStarShip;
+	HSHIPFRAG hNextShip;
+	SHIP_FRAGMENT *StarShipPtr;
+
+	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
+			hStarShip; hStarShip = hNextShip)
+	{
+		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+
+		if (StarShipPtr->index == index)
+		{
+			UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+			break;
+		}
+
+		hNextShip = _GetSuccLink (StarShipPtr);
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+	}
+
+	return hStarShip;
+}
+
 /*
- * What this function does depends on the value of the 'state' argument:
- * SPHERE_TRACKING:
- * 	The sphere of influence for the race for 'which_ship' will be shown
- * 	on the starmap in the future.
- * 	The value returned is 'which_ship', unless the type of ship is only
- * 	available in SuperMelee, in which case 0 is returned.
- * SPHERE_KNOWN:
- * 	The size of the fleet of the race of 'which_ship' when the starmap was
- * 	last checked is returned.
- * ESCORT_WORTH:
- * 	The total value of all the ships escorting the SIS is returned.
- * 	'which_ship' is ignored.
- * ESCORTING_FLAGSHIP:
- * 	Test if a ship of type 'which_ship' is among the escorts of the SIS
- * 	0 is returned if false, 1 if true.
- * FEASIBILITY_STUDY:
- * 	Test if the SIS can have an escort of type 'which_ship'.
- * 	0 is returned if 'which_ship' is not available.
- * 	Otherwise, the number of ships that can be added is returned.
- * CHECK_ALLIANCE:
- * 	Test the alliance status of the race of 'which_ship'.
- *      Either GOOD_GUY (allied) or BAD_GUY (not allied) is returned.
- * SET_ALLIED (0):
- * 	Ally with the race of 'which_ship'. This makes their ship available
- *  for building in the shipyard.
- * SET_NOT_ALLIED:
- * 	End an alliance with the race of 'which_ship'. This ends the possibility
- * 	of building their ships in the shipyard.
- * REMOVE_BUILT: 
- *  Make the already built escorts of the race of 'which_ship' disappear.
- *   (as for the Orz when the alliance with them ends)
- * any other positive number:
- * 	Give the player this many ships of type 'which_ship'.
+ * Give the player 'count' ships of the specified race,
+ * limited by the number of free slots.
+ * Returns the number of ships added.
  */
 COUNT
-ActivateStarShip (COUNT which_ship, SIZE state)
+AddEscortShips (COUNT race, SIZE count)
 {
 	HFLEETINFO hFleet;
+	BYTE which_window;
+	COUNT i;
 
-	hFleet = GetStarShipFromIndex (&GLOBAL (avail_race_q), which_ship);
+	hFleet = GetStarShipFromIndex (&GLOBAL (avail_race_q), race);
 	if (!hFleet)
 		return 0;
 
-	switch (state)
+	assert (count > 0);
+
+	which_window = 0;
+	for (i = 0; i < (COUNT) count; i++)
 	{
-		case SPHERE_TRACKING:
-		case SPHERE_KNOWN:
+		HSHIPFRAG hStarShip;
+		HSHIPFRAG hOldShip;
+		SHIP_FRAGMENT *StarShipPtr;
+
+		hStarShip = CloneShipFragment (race, &GLOBAL (built_ship_q), 0);
+		if (!hStarShip)
+			break;
+
+		RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
+
+		/* Find first available escort window */
+		while ((hOldShip = GetStarShipFromIndex (
+				&GLOBAL (built_ship_q), which_window++)))
 		{
-			FLEET_INFO *FleetPtr;
+			BYTE win_loc;
 
-			FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hFleet);
-			if (state == SPHERE_KNOWN)
-				which_ship = FleetPtr->known_strength;
-			else if (FleetPtr->actual_strength == 0)
-			{
-				if (FleetPtr->allied_state == DEAD_GUY)
-					which_ship = 0;
-			}
-			else if (FleetPtr->known_strength == 0
-					&& FleetPtr->actual_strength != INFINITE_RADIUS)
-			{
-				FleetPtr->known_strength = 1;
-				FleetPtr->known_loc = FleetPtr->loc;
-			}
-			UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
-			return (which_ship);
-		}
-		case ESCORT_WORTH:
-		{
-			COUNT ShipCost[] =
-			{
-				RACE_SHIP_COST
-			};
-			COUNT total = 0;
-			HSHIPFRAG hStarShip, hNextShip;
-
-			for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
-					hStarShip; hStarShip = hNextShip)
-			{
-				SHIP_FRAGMENT *StarShipPtr;
-
-				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-				hNextShip = _GetSuccLink (StarShipPtr);
-				total += ShipCost[StarShipPtr->race_id];
-				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-			}
-			return total;
-		}
-		case ESCORTING_FLAGSHIP:
-		{
-			HSHIPFRAG hStarShip, hNextShip;
-
-			for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
-					hStarShip; hStarShip = hNextShip)
-			{
-				BYTE ship_type;
-				SHIP_FRAGMENT *StarShipPtr;
-
-				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-				hNextShip = _GetSuccLink (StarShipPtr);
-				ship_type = StarShipPtr->race_id;
-				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-
-				if (ship_type == which_ship)
-					return 1;
-			}
-			return 0;
-		}
-		case FEASIBILITY_STUDY:
-		{
-			return (MAX_BUILT_SHIPS - CountLinks (&GLOBAL (built_ship_q)));
-		}
-		case CHECK_ALLIANCE:
-		{
-			UWORD flags;
-			FLEET_INFO *FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q),
-					hFleet);
-			flags = FleetPtr->allied_state;
-			UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
-			return flags;
-		}
-		case SET_ALLIED:
-		case SET_NOT_ALLIED:
-		{
-			FLEET_INFO *FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q),
-					hFleet);
-
-			if (FleetPtr->allied_state == DEAD_GUY)
-			{	/* Strange request, silently ignore it */
-				UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+			StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hOldShip);
+			win_loc = StarShipPtr->index;
+			UnlockShipFrag (&GLOBAL (built_ship_q), hOldShip);
+			if (which_window <= win_loc)
 				break;
-			}
-
-			if (state == SET_ALLIED)
-				FleetPtr->allied_state = GOOD_GUY;
-			else
-				FleetPtr->allied_state = BAD_GUY;
-			
-			UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
-			break;
 		}
-		case REMOVE_BUILT:
-		{
-			HSHIPFRAG hStarShip, hNextShip;
-			BOOLEAN ShipRemoved = FALSE;
 
-			for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
-					hStarShip; hStarShip = hNextShip)
-			{
-				BOOLEAN RemoveShip;
-				SHIP_FRAGMENT *StarShipPtr;
+		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+		StarShipPtr->index = which_window - 1;
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 
-				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-				hNextShip = _GetSuccLink (StarShipPtr);
-				RemoveShip = (StarShipPtr->race_id == which_ship);
-				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-
-				if (RemoveShip)
-				{
-					ShipRemoved = TRUE;
-
-					RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
-					FreeShipFrag (&GLOBAL (built_ship_q), hStarShip);
-				}
-			}
-			
-			if (ShipRemoved)
-			{
-				LockMutex (GraphicsLock);
-				DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA,
-						UNDEFINED_DELTA);
-				UnlockMutex (GraphicsLock);
-			}
-			break;
-		}
-		default:
-		{
-			BYTE which_window;
-			COUNT i;
-
-			assert (state > 0);
-			/* Add ships to the escorts */
-			which_window = 0;
-			for (i = 0; i < (COUNT)state; i++)
-			{
-				HSHIPFRAG hStarShip;
-				HSHIPFRAG hOldShip;
-				SHIP_FRAGMENT *StarShipPtr;
-
-				hStarShip = CloneShipFragment (which_ship,
-						&GLOBAL (built_ship_q), 0);
-				if (!hStarShip)
-					break;
-
-				RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
-
-				/* Find first available escort window */
-				while ((hOldShip = GetStarShipFromIndex (
-						&GLOBAL (built_ship_q), which_window++)))
-				{
-					BYTE win_loc;
-
-					StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q),
-							hOldShip);
-					win_loc = StarShipPtr->index;
-					UnlockShipFrag (&GLOBAL (built_ship_q), hOldShip);
-					if (which_window <= win_loc)
-						break;
-				}
-
-				StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-				StarShipPtr->index = which_window - 1;
-				UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
-
-				InsertQueue (&GLOBAL (built_ship_q), hStarShip, hOldShip);
-			}
-
-			LockMutex (GraphicsLock);
-			DeltaSISGauges (UNDEFINED_DELTA,
-					UNDEFINED_DELTA, UNDEFINED_DELTA);
-			UnlockMutex (GraphicsLock);
-			return i;
-		}
+		InsertQueue (&GLOBAL (built_ship_q), hStarShip, hOldShip);
 	}
 
+	DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
+	return i;
+}
+
+/*
+ * Returns the total value of all the ships escorting the SIS.
+ */
+COUNT
+CalculateEscortsWorth (void)
+{
+	COUNT ShipCost[] =
+	{
+		RACE_SHIP_COST
+	};
+	COUNT total = 0;
+	HSHIPFRAG hStarShip, hNextShip;
+
+	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q));
+			hStarShip; hStarShip = hNextShip)
+	{
+		SHIP_FRAGMENT *StarShipPtr;
+
+		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+		hNextShip = _GetSuccLink (StarShipPtr);
+		total += ShipCost[StarShipPtr->race_id];
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+	}
+	return total;
+}
+
+#if 0
+/*
+ * Returns the size of the fleet of the specified race when the starmap was
+ * last checked. If the race has no SoI, 0 is returned.
+ */
+COUNT
+GetRaceKnownSize (COUNT race)
+{
+	HFLEETINFO hFleet;
+	FLEET_INFO *FleetPtr;
+	COUNT result;
+
+	hFleet = GetStarShipFromIndex (&GLOBAL (avail_race_q), race);
+	if (!hFleet)
+		return 0;
+
+	FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+
+	result = FleetPtr->known_strength;
+
+	UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+	return result;
+}
+#endif
+
+/*
+ * Start or end an alliance with the specified race.
+ * Being in an alliance with a race makes their ships available for building
+ * in the shipyard.
+ * flag == TRUE: start an alliance
+ * flag == TRUE: end an alliance
+ */
+COUNT
+SetRaceAllied (COUNT race, BOOLEAN flag) {
+	HFLEETINFO hFleet;
+	FLEET_INFO *FleetPtr;
+
+	hFleet = GetStarShipFromIndex (&GLOBAL (avail_race_q), race);
+	if (!hFleet)
+		return 0;
+
+	FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+
+	if (FleetPtr->allied_state == DEAD_GUY)
+	{
+		/* Strange request, silently ignore it */
+	}
+	else
+	{
+		FleetPtr->allied_state = (flag ? GOOD_GUY : BAD_GUY);
+	}
+
+	UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
 	return 1;
+}
+
+/*
+ * 	Make the sphere of influence for the specified race shown on the starmap
+ * 	in the future.
+ * 	The value returned is 'race', unless the type of ship is only available
+ * 	in SuperMelee, in which case 0 is returned.
+ */
+COUNT
+StartSphereTracking (COUNT race)
+{
+	HFLEETINFO hFleet;
+	FLEET_INFO *FleetPtr;
+
+	hFleet = GetStarShipFromIndex (&GLOBAL (avail_race_q), race);
+	if (!hFleet)
+		return 0;
+
+	FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+
+	if (FleetPtr->actual_strength == 0)
+	{
+		if (FleetPtr->allied_state == DEAD_GUY)
+		{
+			// Race is extinct.
+			UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+			return 0;
+		}
+	}
+	else if (FleetPtr->known_strength == 0
+			&& FleetPtr->actual_strength != INFINITE_RADIUS)
+	{
+		FleetPtr->known_strength = 1;
+		FleetPtr->known_loc = FleetPtr->loc;
+	}
+
+	UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+	return race;
+}
+
+/*
+ * Returns the number of ships of the specified race among the
+ * escort ships.
+ */
+COUNT
+CountEscortShips (COUNT race)
+{
+	HFLEETINFO hFleet;
+	HSHIPFRAG hStarShip, hNextShip;
+	COUNT result = 0;
+
+	hFleet = GetStarShipFromIndex (&GLOBAL (avail_race_q), race);
+	if (!hFleet)
+		return 0;
+
+	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)); hStarShip;
+			hStarShip = hNextShip)
+	{
+		BYTE ship_type;
+		SHIP_FRAGMENT *StarShipPtr;
+
+		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+		hNextShip = _GetSuccLink (StarShipPtr);
+		ship_type = StarShipPtr->race_id;
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+
+		if (ship_type == race)
+			result++;
+	}
+	return result;
+}
+
+/*
+ * Returns true if and only if a ship of the specified race is among the
+ * escort ships.
+ */
+BOOLEAN
+HaveEscortShip (COUNT race)
+{
+	return (CountEscortShips (race) > 0);
+}
+
+/*
+ * Test if the SIS can have an escort of the specified race.
+ * Returns 0 if 'race' is not available.
+ * Otherwise, returns the number of ships that can be added.
+ */
+COUNT
+EscortFeasibilityStudy (COUNT race)
+{
+	HFLEETINFO hFleet;
+
+	hFleet = GetStarShipFromIndex (&GLOBAL (avail_race_q), race);
+	if (!hFleet)
+		return 0;
+
+	return (MAX_BUILT_SHIPS - CountLinks (&GLOBAL (built_ship_q)));
+}
+
+/*
+ * Test the alliance status of the specified race.
+ * Either DEAD_GUY (extinct), GOOD_GUY (allied), or BAD_GUY (not allied) is
+ * returned.
+ */
+COUNT
+CheckAlliance (COUNT race)
+{
+	HFLEETINFO hFleet;
+	UWORD flags;
+	FLEET_INFO *FleetPtr;
+
+	hFleet = GetStarShipFromIndex (&GLOBAL (avail_race_q), race);
+	if (!hFleet)
+		return 0;
+
+	FleetPtr = LockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+	flags = FleetPtr->allied_state;
+	UnlockFleetInfo (&GLOBAL (avail_race_q), hFleet);
+
+	return flags;
+}
+
+/*
+ * Remove a number of escort ships of the specified race (if present).
+ * Returns the number of escort ships removed.
+ */
+COUNT
+RemoveSomeEscortShips (COUNT race, COUNT count)
+{
+	HSHIPFRAG hStarShip;
+	HSHIPFRAG hNextShip;
+
+	if (count == 0)
+		return 0;
+
+	for (hStarShip = GetHeadLink (&GLOBAL (built_ship_q)); hStarShip;
+			hStarShip = hNextShip)
+	{
+		BOOLEAN RemoveShip;
+		SHIP_FRAGMENT *StarShipPtr;
+
+		StarShipPtr = LockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+		hNextShip = _GetSuccLink (StarShipPtr);
+		RemoveShip = (StarShipPtr->race_id == race);
+		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
+
+		if (RemoveShip)
+		{
+			RemoveQueue (&GLOBAL (built_ship_q), hStarShip);
+			FreeShipFrag (&GLOBAL (built_ship_q), hStarShip);
+			count--;
+			if (count == 0)
+				break;
+		}
+	}
+	
+	if (count > 0)
+	{
+		// Update the display.
+		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
+	}
+
+	return count;
+}
+
+/*
+ * Remove all escort ships of the specified race.
+ */
+void
+RemoveEscortShips (COUNT race)
+{
+	RemoveSomeEscortShips (race, (COUNT) -1);
 }
 
 COUNT

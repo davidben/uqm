@@ -136,8 +136,40 @@ static void InitDriveSlots (RACE_DESC *RaceDescPtr,
 		const BYTE *DriveSlots);
 static void InitJetSlots (RACE_DESC *RaceDescPtr,
 		const BYTE *JetSlots);
-void uninit_sis (RACE_DESC *pRaceDesc);
+static void uninit_sis (RACE_DESC *pRaceDesc);
 
+
+// Local typedef
+typedef SIS_DATA CustomShipData_t;
+
+// Retrieve race-specific ship data from a race desc
+static CustomShipData_t *
+GetCustomShipData (RACE_DESC *pRaceDesc)
+{
+	return pRaceDesc->data;
+}
+
+// Set the race-specific data in a race desc
+// (Re)Allocates its own storage for the data.
+static void
+SetCustomShipData (RACE_DESC *pRaceDesc, const CustomShipData_t *data)
+{
+	if (pRaceDesc->data == data)
+		return;  // no-op
+
+	if (pRaceDesc->data) // Out with the old
+	{
+		HFree (pRaceDesc->data);
+		pRaceDesc->data = NULL;
+	}
+
+	if (data) // In with the new
+	{
+		CustomShipData_t* newData = HMalloc (sizeof (*data));
+		*newData = *data;
+		pRaceDesc->data = newData;
+	}
+}
 
 static void
 sis_hyper_preprocess (ELEMENT *ElementPtr)
@@ -566,7 +598,7 @@ initialize_blasters (ELEMENT *ShipPtr, HELEMENT BlasterArray[])
 	SIS_DATA *SisData;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
-	SisData = (SIS_DATA *) StarShipPtr->RaceDescPtr->data;
+	SisData = GetCustomShipData (StarShipPtr->RaceDescPtr);
 
 	nt = (BYTE)((4 - SisData->num_trackers) & 3);
 
@@ -606,7 +638,7 @@ sis_intelligence (ELEMENT *ShipPtr, EVALUATE_DESC *ObjectsOfConcern,
 	SIS_DATA *SisData;
 
 	GetElementStarShip (ShipPtr, &StarShipPtr);
-	SisData = (SIS_DATA *) StarShipPtr->RaceDescPtr->data;
+	SisData = GetCustomShipData (StarShipPtr->RaceDescPtr);
 
 	lpEvalDesc = &ObjectsOfConcern[ENEMY_WEAPON_INDEX];
 	if (lpEvalDesc->ObjectPtr)
@@ -680,7 +712,7 @@ InitWeaponSlots (RACE_DESC *RaceDescPtr, const BYTE *ModuleSlots)
 #define BLASTER_HITS 2
 #define BLASTER_OFFSET 8
 	COUNT i;
-	SIS_DATA *SisData = (SIS_DATA *) RaceDescPtr->data;
+	SIS_DATA *SisData = GetCustomShipData (RaceDescPtr);
 	MISSILE_BLOCK *lpMB = SisData->MissileBlock;
 
 	SisData->num_blasters = 0;
@@ -760,7 +792,7 @@ InitModuleSlots (RACE_DESC *RaceDescPtr, const BYTE *ModuleSlots)
 {
 	COUNT i;
 	COUNT num_trackers;
-	SIS_DATA *SisData = (SIS_DATA *) RaceDescPtr->data;
+	SIS_DATA *SisData = GetCustomShipData (RaceDescPtr);
 
 	RaceDescPtr->ship_info.max_crew = 0;
 	num_trackers = 0;
@@ -848,16 +880,18 @@ RACE_DESC*
 init_sis (void)
 {
 	RACE_DESC *RaceDescPtr;
-
 	COUNT i;
+	// The caller of this func will copy the struct
 	static RACE_DESC new_sis_desc;
+	SIS_DATA empty_data;
+	memset (&empty_data, 0, sizeof (empty_data));
 
 	/* copy initial ship settings to new_sis_desc */
 	new_sis_desc = sis_desc;
 	
 	new_sis_desc.uninit_func = uninit_sis;
 
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		for (i = 0; i < NUM_VIEWS; ++i)
 		{
@@ -888,7 +922,7 @@ init_sis (void)
 			SET_GAME_STATE (BOMB_CARRIER, 1);
 	}
 
-	new_sis_desc.data = (intptr_t) HCalloc (sizeof (SIS_DATA));
+	SetCustomShipData (&new_sis_desc, &empty_data);
 	InitModuleSlots (&new_sis_desc, GLOBAL_SIS (ModuleSlots));
 	InitWeaponSlots (&new_sis_desc, GLOBAL_SIS (ModuleSlots));
 	InitDriveSlots (&new_sis_desc, GLOBAL_SIS (DriveSlots));
@@ -913,18 +947,17 @@ init_sis (void)
 	return (RaceDescPtr);
 }
 
-void
+static void
 uninit_sis (RACE_DESC *pRaceDesc)
 {
-	if (LOBYTE (GLOBAL (CurrentActivity)) != IN_HYPERSPACE)
+	if (!inHQSpace ())
 	{
 		GLOBAL_SIS (CrewEnlisted) = pRaceDesc->ship_info.crew_level;
 		if (pRaceDesc->ship_info.ship_flags & PLAYER_CAPTAIN)
 			GLOBAL_SIS (CrewEnlisted)--;
 	}
 
-	HFree ((void *)pRaceDesc->data);
-	pRaceDesc->data = 0;
+	SetCustomShipData (pRaceDesc, NULL);
 }
 
 

@@ -20,11 +20,19 @@
 #include "libs/gfxlib.h"
 #include "libs/sndlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 void load_gravity_well (BYTE selector);
 void free_gravity_well (void);
 
 FRAME load_life_form (BYTE selector);
 
 MUSIC_REF load_orbit_theme (BYTE selector);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* CONS_RES_H_ */

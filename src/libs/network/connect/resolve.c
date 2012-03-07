@@ -33,7 +33,7 @@
 static ResolveState *
 ResolveState_new(void) {
 	return (ResolveState *) malloc(sizeof (ResolveState));
-};
+}
 
 static void
 ResolveState_free(ResolveState *resolveState) {

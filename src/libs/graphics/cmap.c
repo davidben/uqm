@@ -64,6 +64,10 @@ static int mapcount;
 static Mutex maplock;
 
 
+static void release_colormap (TFB_ColorMap *map);
+static void delete_colormap (TFB_ColorMap *map);
+
+
 void
 InitColorMaps (void)
 {
@@ -84,13 +88,23 @@ InitColorMaps (void)
 void
 UninitColorMaps (void)
 {
+	int i;
 	TFB_ColorMap *next;
 
+	for (i = 0; i < MAX_COLORMAPS; ++i)
+	{
+		TFB_ColorMap *map = colormaps[i];
+		if (!map)
+			continue;
+		release_colormap (map);
+		colormaps[i] = 0;
+	}
+
 	// free spares
-	for ( ; poolhead; poolhead = next)
+	for ( ; poolhead; poolhead = next, --poolcount)
 	{
 		next = poolhead->next;
-		HFree (poolhead);
+		delete_colormap (poolhead);
 	}
 
 	DestroyMutex (fadeLock);
@@ -155,6 +169,13 @@ clone_colormap (TFB_ColorMap *from, int index)
 	return map;
 }
 
+static void
+delete_colormap (TFB_ColorMap *map)
+{
+	FreeNativePalette (map->palette);
+	HFree (map);
+}
+
 static inline void
 free_colormap (TFB_ColorMap *map)
 {
@@ -172,8 +193,7 @@ free_colormap (TFB_ColorMap *map)
 	}
 	else
 	{	// don't need any more spares
-		FreeNativePalette (map->palette);
-		HFree (map);
+		delete_colormap (map);
 	}
 }
 
@@ -193,7 +213,7 @@ get_colormap (int index)
 	return map;
 }
 
-static inline void
+static void
 release_colormap (TFB_ColorMap *map)
 {
 	if (!map)

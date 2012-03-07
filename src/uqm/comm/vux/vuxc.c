@@ -205,7 +205,7 @@ CombatIsInevitable (RESPONSE_REF R)
 {
 	BYTE NumVisits;
 
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 
 	if (PLAYER_SAID (R, ok_take_beast))
 	{
@@ -220,7 +220,7 @@ CombatIsInevitable (RESPONSE_REF R)
 
 		SET_GAME_STATE (VUX_BEAST_ON_SHIP, 0);
 		SET_GAME_STATE (ZEX_IS_DEAD, 1);
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (PLAYER_SAID (R, try_any_way))
 	{
@@ -290,7 +290,7 @@ CombatIsInevitable (RESPONSE_REF R)
 	{
 		NPCPhrase (GOODBYE_ZEX);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
@@ -376,13 +376,13 @@ Menagerie (RESPONSE_REF R)
 	{
 		NPCPhrase (FIGHT_AGAIN);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, regardless))
 	{
 		NPCPhrase (THEN_FIGHT);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 		SET_GAME_STATE (ZEX_STACK_3, 2);
 		SET_GAME_STATE (ZEX_VISITS, 0);
 	}
@@ -696,7 +696,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -784,11 +784,11 @@ init_vux_comm (void)
 	if ((GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 6))
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &vux_desc;
 

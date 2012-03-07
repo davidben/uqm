@@ -21,7 +21,8 @@
 #include "../planets.h"
 #include "../../build.h"
 #include "../../comm.h"
-#include "../../encount.h"
+#include "../../gendef.h"
+#include "../../starmap.h"
 #include "../../globdata.h"
 #include "../../ipdisp.h"
 #include "../../nameref.h"
@@ -33,8 +34,8 @@
 static bool GenerateThraddash_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateThraddash_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateThraddash_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateThraddash_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -95,7 +96,7 @@ GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		if (ActivateStarShip (THRADDASH_SHIP, SPHERE_TRACKING)
+		if (StartSphereTracking (THRADDASH_SHIP)
 				&& (CurStarDescPtr->Index == THRADD_DEFINED
 				|| (!GET_GAME_STATE (HELIX_UNPROTECTED)
 				&& (BYTE)(GET_GAME_STATE (THRADD_MISSION) - 1) >= 3)))
@@ -131,9 +132,7 @@ GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 					&& (BYTE)(GET_GAME_STATE (THRADD_MISSION) - 1) >= 3))
 				return true;
 
-			LockMutex (GraphicsLock);
 			RepairSISBorder ();
-			UnlockMutex (GraphicsLock);
 		}
 
 		if (CurStarDescPtr->Index == AQUA_HELIX_DEFINED
@@ -160,13 +159,13 @@ GenerateThraddash_generateOrbital (SOLARSYS_STATE *solarSys,
 }
 
 static COUNT
-GenerateThraddash_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode)
+GenerateThraddash_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (CurStarDescPtr->Index == THRADD_DEFINED
 			&& matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		return GenerateDefault_generateRuins (solarSys, whichNode);
+		return GenerateDefault_generateRuins (solarSys, whichNode, info);
 	}
 
 	if (CurStarDescPtr->Index == AQUA_HELIX_DEFINED
@@ -179,7 +178,7 @@ GenerateThraddash_generateEnergy (SOLARSYS_STATE *solarSys,
 			return 0;
 		}
 
-		return GenerateDefault_generateArtifact (solarSys, whichNode);
+		return GenerateDefault_generateArtifact (solarSys, whichNode, info);
 	}
 
 	return 0;

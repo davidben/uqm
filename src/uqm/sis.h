@@ -22,6 +22,10 @@
 #include "planets/elemdata.h"
 		// for NUM_ELEMENT_CATEGORIES
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define CLEAR_SIS_RADAR (1 << 2)
 #define DRAW_SIS_DISPLAY (1 << 3)
 
@@ -177,7 +181,12 @@ extern void RepairSISBorder (void);
 extern void InitSISContexts (void);
 extern void DrawSISFrame (void);
 extern void ClearSISRect (BYTE ClearFlags);
-extern void SetFlashRect (RECT *pRect);
+extern void SetFlashRect (const RECT *pRect);
+extern void PreUpdateFlashRect (void);
+extern void PostUpdateFlashRect (void);
+extern void PauseFlash (void);
+extern void ContinueFlash (void);
+
 #define SFR_MENU_3DO ((RECT*)~0L)
 #define SFR_MENU_ANY ((RECT*)~1L)
 extern void DrawHyperCoords (POINT puniverse);
@@ -243,6 +252,10 @@ extern COUNT CountSISPieces (BYTE piece_type);
 
 extern void DrawFlagshipName (BOOLEAN InStatusArea);
 extern void DrawCaptainsName (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* SIS_H_INCL__ */
 

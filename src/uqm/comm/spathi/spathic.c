@@ -147,7 +147,7 @@ static LOCDATA spathi_desc =
 static void
 ExitConversation (RESPONSE_REF Response)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (Response, bye_ally_space))
 		NPCPhrase (GOODBYE_ALLY_SPACE);
@@ -165,13 +165,13 @@ ExitConversation (RESPONSE_REF Response)
 	{
 		NPCPhrase (YIPES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (Response, we_fight_again_space))
 	{
 		NPCPhrase (OK_FIGHT_AGAIN_SPACE);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (Response, die_slugboy)
 			|| PLAYER_SAID (Response, we_fight_1)
@@ -184,18 +184,18 @@ ExitConversation (RESPONSE_REF Response)
 			NPCPhrase (FAKE_COORDINATES);
 		NPCPhrase (OK_WE_FIGHT_AT_PLUTO);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (Response, join_us))
 	{
-		if (ActivateStarShip (SPATHI_SHIP, FEASIBILITY_STUDY) == 0)
+		if (EscortFeasibilityStudy (SPATHI_SHIP) == 0)
 			NPCPhrase (TOO_SCARY);
 		else
 		{
 			NPCPhrase (WILL_JOIN);
 
 			AlienTalkSegue ((COUNT)~0);
-			ActivateStarShip (SPATHI_SHIP, 1);
+			AddEscortShips (SPATHI_SHIP, 1);
 			/* Make the Eluder escort captained by Fwiffo alone */
 			SetEscortCrewComplement (SPATHI_SHIP, 1,
 					NAME_OFFSET + NUM_CAPTAINS_NAMES);
@@ -726,7 +726,7 @@ Intro (void)
 	else if (Manner == 2)
 	{
 		NPCPhrase (HATE_YOU_FOREVER_SPACE);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (Manner == 1)
 	{
@@ -750,7 +750,7 @@ Intro (void)
 		Response (we_fight_again_space, ExitConversation);
 		Response (bye_angry_space, ExitConversation);
 	}
-	else if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+	else if (CheckAlliance (SPATHI_SHIP) == GOOD_GUY)
 	{
 		SpathiAllies ((RESPONSE_REF)0);
 	}
@@ -779,7 +779,7 @@ post_spathi_enc (void)
 	{
 		SET_GAME_STATE (FOUND_PLUTO_SPATHI, 2);
 	}
-	else if (GET_GAME_STATE (BATTLE_SEGUE) == 1
+	else if (getSegue () == Segue_hostile
 			&& (Manner = GET_GAME_STATE (SPATHI_MANNER)) != 2)
 	{
 		SET_GAME_STATE (SPATHI_MANNER, 1);
@@ -822,11 +822,11 @@ init_spathi_comm (void)
 			|| GET_GAME_STATE (SPATHI_MANNER) == 3
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &spathi_desc;
 

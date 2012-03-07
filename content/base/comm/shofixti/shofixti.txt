@@ -215,11 +215,11 @@ No, wait, Shofixti! I have an important duty for you to perform.
 What might that be?
 
 #(need_you_for_duty)
-Shofixti, I am now your new commander. I order you not to kill yourself.  You are to remain here and guard your solar system.
+Shofixti, I am now your new commander. I order you not to kill yourself. Instead, join our fleet. Fight with us!
 
 #(OK_WILL_BE_SENTRY)	shofixti-033.ogg
-To fight again? Against the Ur-Quan?
-Yes.  But no
+To fight again? Against the UR-QUAN!?
+YES!!...  But no.
 I cannot leave my homeworld unguarded. I will remain here and keep a solitary vigil.
 Goodbye.
 

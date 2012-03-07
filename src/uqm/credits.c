@@ -240,7 +240,6 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 	t.pStr = " ";
 	t.CharCount = 1;
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (TempContext);
 
 	// get font dimensions
@@ -312,7 +311,6 @@ Credits_RenderTextFrame (CONTEXT TempContext, int *istr, int dir,
 	
 	SetContextFGFrame (OldFrame);
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 
 	return f;
 }
@@ -331,7 +329,6 @@ RenderCreditsScreen (CONTEXT targetContext)
 	STAMP s;
 	int i;
 
-	LockMutex (GraphicsLock);
 	oldContext = SetContext (targetContext);
 	// draw background
 	s.origin.x = 0;
@@ -358,7 +355,6 @@ RenderCreditsScreen (CONTEXT targetContext)
 	}
 	
 	SetContext (oldContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -373,7 +369,6 @@ InitCredits (void)
 	LocalContext = CreateContext ("Credits.LocalContext");
 	DrawContext = CreateContext ("Credits.DrawContext");
 
-	LockMutex (GraphicsLock);
 	targetFrame = GetContextFGFrame ();
 	GetContextClipRect (&ctxRect);
 	CreditsExtent = ctxRect.extent;
@@ -402,7 +397,6 @@ InitCredits (void)
 	SetContextFGFrame (targetFrame);
 
 	SetContext (oldContext);
-	UnlockMutex (GraphicsLock);
 
 	// Prepare the first screen frame
 	RenderCreditsScreen (LocalContext);
@@ -493,12 +487,10 @@ processCreditsFrame (void)
 		s.origin.y = 0;
 		s.frame = CreditsFrame;
 
-		LockMutex (GraphicsLock);
 		OldContext = SetContext (DrawContext);
 		DrawStamp (&s);
 		SetContext (OldContext);
 		FlushGraphics ();
-		UnlockMutex (GraphicsLock);
 
 		// prepare next screen frame
 		deficitHeight = calcDeficitHeight ();
@@ -782,13 +774,11 @@ Credits (BOOLEAN WithOuttakes)
 
 	hMusic = LoadMusic (CREDITS_MUSIC);
 
-	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	SetContextClipRect (NULL);
 	GetContextClipRect (&screenRect);
 	SetContextBackGroundColor (BLACK_COLOR);
 	ClearDrawable ();
-	UnlockMutex (GraphicsLock);
 
 	if (!LoadCredits ())
 		return;
@@ -797,10 +787,8 @@ Credits (BOOLEAN WithOuttakes)
 	s.origin.x = 0;
 	s.origin.y = 0;
 	s.frame = CreditsBack;
-	LockMutex (GraphicsLock);
 	DrawStamp (&s);
 	FadeScreen (FadeAllToColor, ONE_SECOND / 2);
-	UnlockMutex (GraphicsLock);
 
 	// set the position of outtakes comm
 	CommWndRect.corner.x = (screenRect.extent.width - CommWndRect.extent.width)
@@ -836,11 +824,9 @@ Credits (BOOLEAN WithOuttakes)
 	FadeMusic (0, ONE_SECOND / 2);
 	UninitCredits ();
 
-	LockMutex (GraphicsLock);
 	SetContext (ScreenContext);
 	SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND / 2));
 	FlushColorXForms ();
-	UnlockMutex (GraphicsLock);
 
 	if (hMusic)
 	{

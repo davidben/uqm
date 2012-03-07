@@ -21,7 +21,15 @@
 #ifndef _UIO_H
 #define _UIO_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "uio/io.h"
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _UIO_H */
 

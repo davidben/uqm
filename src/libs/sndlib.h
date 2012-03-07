@@ -22,6 +22,10 @@
 #include "port.h"
 #include "libs/strlib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef STRING_TABLE SOUND_REF;
 typedef STRING SOUND;
 // SOUNDPTR is really a TFB_SoundSample**
@@ -94,6 +98,10 @@ extern void WaitForSoundEnd (COUNT Channel);
 #define TFBSOUND_WAIT_ALL ((COUNT)~0)
 
 extern DWORD FadeMusic (BYTE end_vol, SIZE TimeInterval);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _SNDLIB_H */
 

@@ -16,12 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "solarsys.h"
 #include "lander.h"
 #include "../colors.h"
 #include "../controls.h"
 #include "../menustat.h"
 		// for DrawMenuStateStrings()
-#include "../encount.h"
+#include "../starmap.h"
 #include "../races.h"
 #include "../gamestr.h"
 #include "../gendef.h"
@@ -94,6 +95,7 @@ static FRAME SolarSysFrame;
 static RECT scaleRect;
 		// system zooms in when the flagship enters this rect
 
+RandomContext *SysGenRNG;
 
 #define DISPLAY_TO_LOC  (DISPLAY_FACTOR >> 1)
 
@@ -210,15 +212,15 @@ playerInInnerSystem (void)
 	return pSolarSysState->pBaseDesc != pSolarSysState->PlanetDesc;
 }
 
+// Sets the SysGenRNG to the required state first.
 static void
 GenerateMoons (SOLARSYS_STATE *system, PLANET_DESC *planet)
 {
 	COUNT i;
 	COUNT facing;
 	PLANET_DESC *pMoonDesc;
-	DWORD old_seed;
 
-	old_seed = TFB_SeedRandom (planet->rand_seed);
+	RandomContext_SeedRandom (SysGenRNG, planet->rand_seed);
 
 	(*system->genFuncs->generateName) (system, planet);
 	(*system->genFuncs->generateMoons) (system, planet);
@@ -234,8 +236,6 @@ GenerateMoons (SOLARSYS_STATE *system, PLANET_DESC *planet)
 		
 		pMoonDesc->temp_color = planet->temp_color;
 	}
-
-	TFB_SeedRandom (old_seed);
 }
 
 void
@@ -255,6 +255,9 @@ FreeIPData (void)
 	SpaceJunkFrame = 0;
 	DestroyMusic (SpaceMusic);
 	SpaceMusic = 0;
+
+	RandomContext_Delete (SysGenRNG);
+	SysGenRNG = NULL;
 }
 
 void
@@ -273,6 +276,11 @@ LoadIPData (void)
 		SunFrame = CaptureDrawable (LoadGraphic (SUN_MASK_PMAP_ANIM));
 
 		SpaceMusic = LoadMusic (IP_MUSIC);
+	}
+
+	if (!SysGenRNG)
+	{
+		SysGenRNG = RandomContext_New ();
 	}
 }
 	
@@ -349,11 +357,10 @@ initSolarSysSISCharacteristics (void)
 	}
 }
 
-static DWORD
-seedRandomForSolarSys (void)
+DWORD
+GetRandomSeedForStar (const STAR_DESC *star)
 {
-	return TFB_SeedRandom (MAKE_DWORD (CurStarDescPtr->star_pt.x,
-			CurStarDescPtr->star_pt.y));
+	return MAKE_DWORD (star->star_pt.x, star->star_pt.y);
 }
 
 // Returns an orbital PLANET_DESC when player is in orbit
@@ -363,7 +370,6 @@ LoadSolarSys (void)
 	COUNT i;
 	PLANET_DESC *orbital = NULL;
 	PLANET_DESC *pCurDesc;
-	DWORD old_seed;
 #define NUM_TEMP_RANGES 5
 	static const Color temp_color_array[NUM_TEMP_RANGES] =
 	{
@@ -374,13 +380,13 @@ LoadSolarSys (void)
 		BUILD_COLOR (MAKE_RGB15_INIT (0x0F, 0x08, 0x00), 0x75),
 	};
 
-	old_seed = seedRandomForSolarSys ();
+	RandomContext_SeedRandom (SysGenRNG, GetRandomSeedForStar (CurStarDescPtr));
 
 	SunFrame = SetAbsFrameIndex (SunFrame, STAR_TYPE (CurStarDescPtr->Type));
 
 	pCurDesc = &pSolarSysState->SunDesc[0];
 	pCurDesc->pPrevDesc = 0;
-	pCurDesc->rand_seed = TFB_Random ();
+	pCurDesc->rand_seed = RandomContext_Random (SysGenRNG);
 
 	pCurDesc->data_index = STAR_TYPE (CurStarDescPtr->Type);
 	pCurDesc->location.x = 0;
@@ -466,9 +472,6 @@ LoadSolarSys (void)
 		GLOBAL (ShipStamp.frame) = SetAbsFrameIndex (SISIPFrame, i - 1);
 	}
 
-	// Restore RNG state:
-	TFB_SeedRandom (old_seed);
-
 	return orbital;
 }
 
@@ -527,7 +530,7 @@ getCollisionFrame (PLANET_DESC *planet, COUNT WaitPlanet)
 
 // Returns the planet with which the flagship is colliding
 static PLANET_DESC *
-CheckIntersect (BOOLEAN just_checking)
+CheckIntersect (void)
 {
 	COUNT i;
 	PLANET_DESC *pCurDesc;
@@ -618,16 +621,9 @@ CheckIntersect (BOOLEAN just_checking)
 				continue;
 			}
 			
-			if (playerInInnerSystem ())
-			{	// Collision in the inner system (starts orbital)
-				pSolarSysState->WaitIntersect = NewWaitPlanet;
-			}
-			else
-			{	// Going into an inner system
-				// So there is now no existing collision
-				if (!just_checking)
-					pSolarSysState->WaitIntersect = 0;
-			}
+			// Collision with a new planet/moon. This may cause a transition
+			// to an inner system or start an orbital view.
+			pSolarSysState->WaitIntersect = NewWaitPlanet;
 			return pCurDesc;
 		}
 	}
@@ -942,7 +938,7 @@ leaveInnerSystem (PLANET_DESC *planet)
 	// See if we also intersect with another planet, and if we do,
 	// disable collisions comletely until we stop intersecting
 	// with any planet at all.
-	CheckIntersect (TRUE);
+	CheckIntersect ();
 	if (pSolarSysState->WaitIntersect != outerPlanetWait)
 		pSolarSysState->WaitIntersect = (COUNT)~0;
 }
@@ -998,7 +994,7 @@ CheckShipLocation (SIZE *newRadius)
 
 	if (GLOBAL (autopilot.x) == ~0 && GLOBAL (autopilot.y) == ~0)
 	{	// Not on autopilot -- may collide with a planet
-		PLANET_DESC *planet = CheckIntersect (FALSE);
+		PLANET_DESC *planet = CheckIntersect ();
 		if (planet)
 		{	// Collision with a planet
 			if (playerInInnerSystem ())
@@ -1034,10 +1030,8 @@ DrawSystemTransition (BOOLEAN inner)
 static void
 TransitionSystemIn (void)
 {
-	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
 	DrawSystemTransition (playerInInnerSystem ());
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1121,7 +1115,6 @@ IP_frame (void)
 	BOOLEAN locChange;
 	SIZE newRadius;
 
-	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
 
 	GameClockTick ();
@@ -1152,7 +1145,6 @@ IP_frame (void)
 		UnbatchGraphics ();
 	}
 	
-	UnlockMutex (GraphicsLock);
 }
 
 static BOOLEAN
@@ -1241,7 +1233,12 @@ ResetSolarSys (void)
 	DoMissions ();
 
 	// Figure out and note which planet/moon we just left, if any
-	CheckIntersect (TRUE);
+	// This records any existing collision and prevents the ship
+	// from entering planets until a new collision occurs.
+	// TODO: this may need logic similar to one in leaveInnerSystem()
+	//   for when the ship collides with more than one planet at
+	//   the same time. While quite rare, it's still possible.
+	CheckIntersect ();
 	
 	pSolarSysState->InIpFlight = TRUE;
 
@@ -1310,9 +1307,7 @@ EnterPlanetOrbit (void)
 		ValidateInnerOrbits ();
 		ResetSolarSys ();
 
-		LockMutex (GraphicsLock);
 		RepairSISBorder ();
-		UnlockMutex (GraphicsLock);
 		TransitionSystemIn ();
 	}
 }
@@ -1324,11 +1319,9 @@ InitSolarSys (void)
 	BOOLEAN Reentry;
 	PLANET_DESC *orbital;
 
-	LockMutex (GraphicsLock);
 
 	LoadIPData ();
 	LoadLanderData ();
-	UnlockMutex (GraphicsLock);
 
 	Reentry = (GLOBAL (ShipFacing) != 0);
 	if (!Reentry)
@@ -1343,7 +1336,6 @@ InitSolarSys (void)
 				MAX_ZOOM_RADIUS);
 	}
 
-	LockMutex (GraphicsLock);
 
 	StarsFrame = CreateStarBackGround ();
 	
@@ -1351,7 +1343,6 @@ InitSolarSys (void)
 	SetContextFGFrame (Screen);
 	SetContextBackGroundColor (BLACK_COLOR);
 	
-	UnlockMutex (GraphicsLock);
 
 	orbital = LoadSolarSys ();
 	InnerSystem = CheckZoomLevel ();
@@ -1379,7 +1370,6 @@ InitSolarSys (void)
 	}
 	else
 	{	// Draw the borders, the system (inner or outer) and fade/transition
-		LockMutex (GraphicsLock);
 		SetContext (SpaceContext);
 
 		SetTransitionSource (NULL);
@@ -1417,8 +1407,6 @@ InitSolarSys (void)
 
 			LastActivity &= ~CHECK_LOAD;
 		}
-		
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -1657,11 +1645,11 @@ CreateStarBackGround (void)
 	COUNT i, j;
 	DWORD rand_val;
 	STAMP s;
-	DWORD old_seed;
 	CONTEXT oldContext;
 	RECT clipRect;
 	FRAME frame;
 
+	// Use SpaceContext to find out the dimensions of the background
 	oldContext = SetContext (SpaceContext);
 	GetContextClipRect (&clipRect);
 
@@ -1675,7 +1663,7 @@ CreateStarBackGround (void)
 
 	ClearDrawable ();
 
-	old_seed = seedRandomForSolarSys ();
+	RandomContext_SeedRandom (SysGenRNG, GetRandomSeedForStar (CurStarDescPtr));
 
 #define NUM_DIM_PIECES 8
 	s.frame = SpaceJunkFrame;
@@ -1684,7 +1672,7 @@ CreateStarBackGround (void)
 #define NUM_DIM_DRAWN 5
 		for (j = 0; j < NUM_DIM_DRAWN; ++j)
 		{
-			rand_val = TFB_Random ();
+			rand_val = RandomContext_Random (SysGenRNG);
 			s.origin.x = LOWORD (rand_val) % SIS_SCREEN_WIDTH;
 			s.origin.y = HIWORD (rand_val) % SIS_SCREEN_HEIGHT;
 
@@ -1698,7 +1686,7 @@ CreateStarBackGround (void)
 #define NUM_BRT_DRAWN 30
 		for (j = 0; j < NUM_BRT_DRAWN; ++j)
 		{
-			rand_val = TFB_Random ();
+			rand_val = RandomContext_Random (SysGenRNG);
 			s.origin.x = LOWORD (rand_val) % SIS_SCREEN_WIDTH;
 			s.origin.y = HIWORD (rand_val) % SIS_SCREEN_HEIGHT;
 
@@ -1706,8 +1694,6 @@ CreateStarBackGround (void)
 		}
 		s.frame = IncFrameIndex (s.frame);
 	}
-
-	TFB_SeedRandom (old_seed);
 
 	SetContext (oldContext);
 
@@ -1929,9 +1915,7 @@ DoSolarSysMenu (MENU_STATE *pMS)
 	if (!select)
 		return TRUE;
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
 
 	switch (pMS->CurState)
 	{
@@ -1972,9 +1956,7 @@ DoSolarSysMenu (MENU_STATE *pMS)
 				pMS->CurState = NAVIGATION;
 			DrawMenuStateStrings (PM_STARMAP, pMS->CurState);
 		}
-		LockMutex (GraphicsLock);
 		SetFlashRect (SFR_MENU_3DO);
-		UnlockMutex (GraphicsLock);
 	}
 
 	return TRUE;
@@ -1997,10 +1979,8 @@ SolarSysMenu (void)
 		MenuState.CurState = STARMAP;
 	}
 
-	LockMutex (GraphicsLock);
 	DrawStatusMessage (NULL);
 	SetFlashRect (SFR_MENU_3DO);
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	MenuState.InputFunc = DoSolarSysMenu;

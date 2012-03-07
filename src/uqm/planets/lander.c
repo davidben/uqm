@@ -23,8 +23,6 @@
 #include "../cons_res.h"
 #include "../controls.h"
 #include "../colors.h"
-// XXX: for CurStarDescPtr and XXX_DEFINED
-#include "../encount.h"
 #include "../process.h"
 #include "../units.h"
 #include "../gamestr.h"
@@ -1144,7 +1142,6 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 	
 	curLanderLoc = new_pt;
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (PlanetContext);
 
 	BatchGraphics ();
@@ -1254,7 +1251,6 @@ ScrollPlanetSide (SIZE dx, SIZE dy, int landingOffset)
 	UnbatchGraphics ();
 
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1264,9 +1260,7 @@ animationInterframe (TimeCount *TimeIn, COUNT periods)
 
 	for ( ; periods; --periods)
 	{
-		LockMutex (GraphicsLock);
 		RotatePlanetSphere (TRUE);
-		UnlockMutex (GraphicsLock);
 
 		SleepThreadUntil (*TimeIn + ANIM_FRAME_RATE);
 		*TimeIn = GetTimeCounter ();
@@ -1281,12 +1275,12 @@ AnimateLaunch (FRAME farray)
 	COUNT num_frames;
 	TimeCount NextTime;
 
-	LockMutex (GraphicsLock);
 	SetContext (PlanetContext);
 
 	r.corner.x = 0;
 	r.corner.y = 0;
 	r.extent.width = 0;
+	r.extent.height = 0;
 	s.origin.x = 0;
 	s.origin.y = 0;
 	s.frame = farray;
@@ -1304,18 +1298,14 @@ AnimateLaunch (FRAME farray)
 #endif
 		DrawStamp (&s);
 		UnbatchGraphics ();
-		UnlockMutex (GraphicsLock);
 
 		GetFrameRect (s.frame, &r);
 		s.frame = IncFrameIndex (s.frame);
 
 		SleepThreadUntil (NextTime);
-
-		LockMutex (GraphicsLock);
 	}
 
 	RepairBackRect (&r);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1326,18 +1316,14 @@ AnimateLanderWarmup (void)
 	CONTEXT OldContext;
 	TimeCount TimeIn = GetTimeCounter ();
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (RadarContext);
-	UnlockMutex (GraphicsLock);
 
 	s.origin.x = 0;
 	s.origin.y = 0;
 	s.frame = SetAbsFrameIndex (LanderFrame[0],
 			(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 1);
 
-	LockMutex (GraphicsLock);
 	DrawStamp (&s);
-	UnlockMutex (GraphicsLock);
 
 	animationInterframe (&TimeIn, 2);
 
@@ -1346,10 +1332,8 @@ AnimateLanderWarmup (void)
 	{
 		animationInterframe (&TimeIn, 1);
 		
-		LockMutex (GraphicsLock);
 		DeltaSISGauges (-1, 0, 0);
 		DeltaLanderCrew (1, 0);
-		UnlockMutex (GraphicsLock);
 	}
 
 	animationInterframe (&TimeIn, 2);
@@ -1359,9 +1343,7 @@ AnimateLanderWarmup (void)
 	else
 		s.frame = SetAbsFrameIndex (s.frame,
 				(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 2);
-	LockMutex (GraphicsLock);
 	DrawStamp (&s);
-	UnlockMutex (GraphicsLock);
 
 	animationInterframe (&TimeIn, 2);
 
@@ -1371,26 +1353,20 @@ AnimateLanderWarmup (void)
 	{
 		s.frame = SetAbsFrameIndex (s.frame,
 				(ANGLE_TO_FACING (FULL_CIRCLE) << 1) + 3);
-		LockMutex (GraphicsLock);
 		DrawStamp (&s);
-		UnlockMutex (GraphicsLock);
 
 		animationInterframe (&TimeIn, 2);
 
 		s.frame = IncFrameIndex (s.frame);
 	}
-	LockMutex (GraphicsLock);
 	DrawStamp (&s);
-	UnlockMutex (GraphicsLock);
 
 	if (GET_GAME_STATE (IMPROVED_LANDER_CARGO))
 	{
 		animationInterframe (&TimeIn, 2);
 
 		s.frame = SetAbsFrameIndex (s.frame, 59);
-		LockMutex (GraphicsLock);
 		DrawStamp (&s);
-		UnlockMutex (GraphicsLock);
 	}
 
 	animationInterframe (&TimeIn, 2);
@@ -1420,7 +1396,6 @@ InitPlanetSide (POINT pt)
 
 	curLanderLoc = pt;
 
-	LockMutex (GraphicsLock);
 	SetContext (PlanetContext);
 	SetContextFont (TinyFont);
 
@@ -1453,7 +1428,6 @@ InitPlanetSide (POINT pt)
 		UnbatchGraphics ();
 	}
 
-	UnlockMutex (GraphicsLock);
 
 	SET_GAME_STATE (PLANETARY_LANDING, 1);
 }
@@ -1750,7 +1724,6 @@ ReturnToOrbit (void)
 	CONTEXT OldContext;
 	RECT r;
 
-	LockMutex (GraphicsLock);
 	OldContext = SetContext (PlanetContext);
 	GetContextClipRect (&r);
 
@@ -1763,7 +1736,6 @@ ReturnToOrbit (void)
 	UnbatchGraphics ();
 
 	SetContext (OldContext);
-	UnlockMutex (GraphicsLock);
 }
 
 static void
@@ -1857,40 +1829,65 @@ KillLanderCrewSeq (COUNT numKilled, DWORD period)
 	return crew_left > 0;
 }
 
+// Maps a temperature to a (0-7) hazard rating.
+// Thermal hazards aren't exposed to the user as a hazard number,
+// but the code still works with them that way.
+#define ARRAY_SIZE(array) (sizeof(array) / sizeof (*array))
+unsigned
+GetThermalHazardRating (int temp)
+{
+	static const int tempBreakpoints[] = { 50, 100, 150, 250, 350, 550, 800 };
+	const size_t numBreakpoints = ARRAY_SIZE (tempBreakpoints);
+	unsigned i;
+
+	for (i = 0; i < numBreakpoints; ++i)
+	{
+		if (temp < tempBreakpoints[i])
+			return i;
+	}
+
+	return numBreakpoints;
+}
+
+// Given a hazard type and rating, return the chance (out of 256) of the hazard
+// being generated.
+static BYTE
+GetHazardChance (int hazardType, unsigned HazardRating)
+{
+	static const BYTE TectonicsChanceTab[] = {0*3, 0*3, 1*3, 2*3, 4*3,  8*3, 16*3, 32*3};
+	static const BYTE WeatherChanceTab  [] = {0*3, 0*3, 1*3, 2*3, 3*3,  6*3, 12*3, 24*3};
+	static const BYTE FireChanceTab     [] = {0*3, 0*3, 1*3, 2*3, 4*3, 12*3, 24*3, 48*3};
+
+	switch (hazardType)
+	{
+		case EARTHQUAKE_DISASTER:
+			return TectonicsChanceTab[HazardRating];
+		case LIGHTNING_DISASTER:
+			return WeatherChanceTab[HazardRating];
+		case LAVASPOT_DISASTER:
+			return FireChanceTab[HazardRating];
+	}
+
+	return 0;
+}
+
 void
 PlanetSide (POINT planetLoc)
 {
 	SIZE index;
 	LanderInputState landerInputState;
 	PLANETSIDE_DESC PSD;
-	BYTE TectonicsChanceTab[] = {0*3, 0*3, 1*3, 2*3, 4*3, 8*3, 16*3, 32*3};
-	BYTE WeatherChanceTab[] = {0*3, 0*3, 1*3, 2*3, 3*3, 6*3, 12*3, 24*3};
-	BYTE FireChanceTab[] = {0*3, 0*3, 1*3, 2*3, 4*3, 12*3, 24*3, 48*3};
 
 	memset (&PSD, 0, sizeof (PSD));
 	PSD.InTransit = TRUE;
 
-	PSD.TectonicsChance =
-			TectonicsChanceTab[pSolarSysState->SysInfo.PlanetInfo.Tectonics];
-	PSD.WeatherChance =
-			WeatherChanceTab[pSolarSysState->SysInfo.PlanetInfo.Weather];
-	index = pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature;
-	if (index < 50)
-		PSD.FireChance = FireChanceTab[0];
-	else if (index < 100)
-		PSD.FireChance = FireChanceTab[1];
-	else if (index < 150)
-		PSD.FireChance = FireChanceTab[2];
-	else if (index < 250)
-		PSD.FireChance = FireChanceTab[3];
-	else if (index < 350)
-		PSD.FireChance = FireChanceTab[4];
-	else if (index < 550)
-		PSD.FireChance = FireChanceTab[5];
-	else if (index < 800)
-		PSD.FireChance = FireChanceTab[6];
-	else
-		PSD.FireChance = FireChanceTab[7];
+	// Set our chances of hazards occurring.
+	PSD.TectonicsChance = GetHazardChance (EARTHQUAKE_DISASTER,
+			pSolarSysState->SysInfo.PlanetInfo.Tectonics);
+	PSD.WeatherChance = GetHazardChance (LIGHTNING_DISASTER,
+			pSolarSysState->SysInfo.PlanetInfo.Weather);
+	PSD.FireChance = GetHazardChance (LAVASPOT_DISASTER, GetThermalHazardRating (
+			pSolarSysState->SysInfo.PlanetInfo.SurfaceTemperature));
 
 	PSD.ElementLevel = GetStorageBayCapacity () - GLOBAL_SIS (TotalElementMass);
 	PSD.MaxElementLevel = MAX_SCROUNGED;
@@ -1948,9 +1945,7 @@ PlanetSide (POINT planetLoc)
 		if (crew_left == 0)
 		{
 			--GLOBAL_SIS (NumLanders);
-			LockMutex (GraphicsLock);
 			DrawLanders ();
-			UnlockMutex (GraphicsLock);
 
 			ReturnToOrbit ();
 		}
@@ -1964,7 +1959,6 @@ PlanetSide (POINT planetLoc)
 			ReturnToOrbit ();
 			AnimateLaunch (LanderFrame[6]);
 			
-			LockMutex (GraphicsLock);
 			DeltaSISGauges (crew_left, 0, 0);
 
 			if (PSD.ElementLevel)
@@ -1978,7 +1972,6 @@ PlanetSide (POINT planetLoc)
 				}
 				DrawStorageBays (FALSE);
 			}
-			UnlockMutex (GraphicsLock);
 
 			GLOBAL_SIS (TotalBioMass) += PSD.BiologicalLevel;
 		}
@@ -2018,10 +2011,7 @@ InitLander (BYTE LanderFlags)
 {
 	RECT r;
 
-	LockMutex (GraphicsLock);
-
 	SetContext (RadarContext);
-	
 	BatchGraphics ();
 	
 	r.corner.x = 0;
@@ -2108,6 +2098,4 @@ InitLander (BYTE LanderFlags)
 	}
 
 	UnbatchGraphics ();
-
-	UnlockMutex (GraphicsLock);
 }

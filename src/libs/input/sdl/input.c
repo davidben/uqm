@@ -18,8 +18,10 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <string.h>
+#include "input.h"
 #include "../inpintrn.h"
-#include "libs/graphics/sdl/sdl_common.h"
+#include "libs/threadlib.h"
 #include "libs/input/sdl/vcontrol.h"
 #include "libs/input/sdl/keynames.h"
 #include "libs/memlib.h"
@@ -33,7 +35,7 @@
 static int kbdhead=0, kbdtail=0;
 static UniChar kbdbuf[KBDBUFSIZE];
 static UniChar lastchar;
-static unsigned int num_keys = 0;
+static int num_keys = 0;
 static int *kbdstate = NULL;
 		// Holds all SDL keys +1 for holding invalid values
 
@@ -213,20 +215,13 @@ TFB_SetInputVectors (volatile int menu[], int num_menu_, volatile int flight[],
 	num_flight = num_flight_;
 }
 
-int 
-TFB_InitInput (int driver, int flags)
-{
-	int i;
-	int nJoysticks;
-	(void)driver;
-	(void)flags;
-
-	SDL_EnableUNICODE(1);
-	(void)SDL_GetKeyState (&num_keys);
-	kbdstate = (int *)HMalloc (sizeof (int) * (num_keys + 1));
-	
-
 #ifdef HAVE_JOYSTICK
+
+static void
+initJoystick (void)
+{
+	int nJoysticks;
+
 #ifndef __native_client__
 	// Initialized on plugin thread in nacl_glue.cpp.
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
@@ -242,6 +237,8 @@ TFB_InitInput (int driver, int flags)
 	nJoysticks = SDL_NumJoysticks ();
 	if (nJoysticks > 0)
 	{
+		int i;
+
 		log_add (log_Info, "The names of the joysticks are:");
 		for (i = 0; i < nJoysticks; i++)
 		{
@@ -249,6 +246,23 @@ TFB_InitInput (int driver, int flags)
 		}
 		SDL_JoystickEventState (SDL_ENABLE);
 	}
+}
+
+#endif /* HAVE_JOYSTICK */
+
+int 
+TFB_InitInput (int driver, int flags)
+{
+	(void)driver;
+	(void)flags;
+
+	SDL_EnableUNICODE(1);
+	(void)SDL_GetKeyState (&num_keys);
+	kbdstate = (int *)HMalloc (sizeof (int) * (num_keys + 1));
+	
+
+#ifdef HAVE_JOYSTICK
+	initJoystick ();
 #endif /* HAVE_JOYSTICK */
 
 	in_character_mode = FALSE;
@@ -262,7 +276,6 @@ TFB_InitInput (int driver, int flags)
 	VControl_ResetInput ();
 	InputInitialized = TRUE;
 
-	atexit (TFB_UninitInput);
 	return 0;
 }
 
@@ -311,7 +324,7 @@ GetLastCharacter (void)
 
 volatile int MouseButtonDown = 0;
 
-void
+static void
 ProcessMouseEvent (const SDL_Event *e)
 {
 	switch (e->type)
@@ -353,10 +366,12 @@ ProcessInputEvent (const SDL_Event *Event)
 
 	if (Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP)
 	{	// process character input event, if any
-		SDLKey k = Event->key.keysym.sym;
+		// keysym.sym is an SDLKey type which is an enum and can be signed
+		// or unsigned on different platforms; we'll use a guaranteed type
+		int k = Event->key.keysym.sym;
 		UniChar map_key = Event->key.keysym.unicode;
 
-		if (k > num_keys)
+		if (k < 0 || k > num_keys)
 			k = num_keys; // for unknown keys
 
 		if (Event->type == SDL_KEYDOWN)
@@ -407,11 +422,11 @@ TFB_ResetControls (void)
 }
 
 void
-InterrogateInputState (int template, int control, int index, char *buffer, int maxlen)
+InterrogateInputState (int templat, int control, int index, char *buffer, int maxlen)
 {
-	VCONTROL_GESTURE *g = CONTROL_PTR(template, control, index);
+	VCONTROL_GESTURE *g = CONTROL_PTR(templat, control, index);
 
-	if (template >= num_templ || control >= num_flight
+	if (templat >= num_templ || control >= num_flight
 			|| index >= MAX_FLIGHT_ALTERNATES)
 	{
 		log_add (log_Warning, "InterrogateInputState(): invalid control index");
@@ -444,13 +459,13 @@ InterrogateInputState (int template, int control, int index, char *buffer, int m
 }
 
 void
-RemoveInputState (int template, int control, int index)
+RemoveInputState (int templat, int control, int index)
 {
-	VCONTROL_GESTURE *g = CONTROL_PTR(template, control, index);
+	VCONTROL_GESTURE *g = CONTROL_PTR(templat, control, index);
 	char keybuf[40];
 	keybuf[39] = '\0';
 
-	if (template >= num_templ || control >= num_flight
+	if (templat >= num_templ || control >= num_flight
 			|| index >= MAX_FLIGHT_ALTERNATES)
 	{
 		log_add (log_Warning, "RemoveInputState(): invalid control index");
@@ -458,23 +473,23 @@ RemoveInputState (int template, int control, int index)
 	}
 
 	VControl_RemoveGestureBinding (g,
-			(int *)(flight_vec + template * num_flight + control));
+			(int *)(flight_vec + templat * num_flight + control));
 	g->type = VCONTROL_NONE;
 
-	snprintf (keybuf, 39, "keys.%d.%s.%d", template+1, flight_res_names[control], index+1);
+	snprintf (keybuf, 39, "keys.%d.%s.%d", templat+1, flight_res_names[control], index+1);
 	res_Remove (keybuf);
 
 	return;
 }
 
 void
-RebindInputState (int template, int control, int index)
+RebindInputState (int templat, int control, int index)
 {
 	VCONTROL_GESTURE g;
 	char keybuf[40], valbuf[40];
 	keybuf[39] = valbuf[39] = '\0';
 
-	if (template >= num_templ || control >= num_flight
+	if (templat >= num_templ || control >= num_flight
 			|| index >= MAX_FLIGHT_ALTERNATES)
 	{
 		log_add (log_Warning, "RebindInputState(): invalid control index");
@@ -482,7 +497,7 @@ RebindInputState (int template, int control, int index)
 	}
 
 	/* Remove the old binding on this spot */
-	RemoveInputState (template, control, index);
+	RemoveInputState (templat, control, index);
 
 	/* Wait for the next interesting bit of user input */
 	VControl_ClearGesture ();
@@ -493,9 +508,9 @@ RebindInputState (int template, int control, int index)
 
 	/* And now, add the new binding. */
 	VControl_AddGestureBinding (&g,
-			(int *)(flight_vec + template * num_flight + control));
-	*CONTROL_PTR(template, control, index) = g;
-	snprintf (keybuf, 39, "keys.%d.%s.%d", template+1, flight_res_names[control], index+1);
+			(int *)(flight_vec + templat * num_flight + control));
+	*CONTROL_PTR(templat, control, index) = g;
+	snprintf (keybuf, 39, "keys.%d.%s.%d", templat+1, flight_res_names[control], index+1);
 	VControl_DumpGesture (valbuf, 39, &g);
 	res_PutString (keybuf, valbuf);
 }

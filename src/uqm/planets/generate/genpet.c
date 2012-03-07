@@ -21,6 +21,7 @@
 #include "../../build.h"
 #include "../../comm.h"
 #include "../../encount.h"
+#include "../../starmap.h"
 #include "../../globdata.h"
 #include "../../ipdisp.h"
 #include "../../nameref.h"
@@ -32,8 +33,8 @@
 static bool GenerateTalkingPet_generatePlanets (SOLARSYS_STATE *solarSys);
 static bool GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world);
-static COUNT GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode);
+static COUNT GenerateTalkingPet_generateEnergy (const SOLARSYS_STATE *,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *);
 static bool GenerateTalkingPet_pickupEnergy (SOLARSYS_STATE *solarSys,
 		PLANET_DESC *world, COUNT whichNode);
 
@@ -82,14 +83,14 @@ GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET)
 			&& (GET_GAME_STATE (UMGAH_ZOMBIE_BLOBBIES)
 			|| !GET_GAME_STATE (TALKING_PET)
-			|| ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING)))
+			|| StartSphereTracking (UMGAH_SHIP)))
 	{
 		NotifyOthers (UMGAH_SHIP, IPNL_ALL_CLEAR);
 		PutGroupInfo (GROUPS_RANDOM, GROUP_SAVE_IP);
 		ReinitQueue (&GLOBAL (ip_group_q));
 		assert (CountLinks (&GLOBAL (npc_built_ship_q)) == 0);
 
-		if (ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING))
+		if (StartSphereTracking (UMGAH_SHIP))
 		{
 			GLOBAL (CurrentActivity) |= START_INTERPLANETARY;
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 1 << 7);
@@ -128,7 +129,7 @@ GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 				// Defeated the zombie fleet.
 				InitCommunication (TALKING_PET_CONVERSATION);
 			}
-			else if (!(ActivateStarShip (UMGAH_SHIP, SPHERE_TRACKING)))
+			else if (!(StartSphereTracking (UMGAH_SHIP)))
 			{
 				// The Kohr-Ah have destroyed the Umgah, but the
 				// talking pet survived.
@@ -160,12 +161,12 @@ GenerateTalkingPet_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world
 }
 
 static COUNT
-GenerateTalkingPet_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateTalkingPet_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	if (matchWorld (solarSys, world, 0, MATCH_PLANET))
 	{
-		return GenerateDefault_generateRuins (solarSys, whichNode);
+		return GenerateDefault_generateRuins (solarSys, whichNode, info);
 	}
 
 	return 0;
@@ -211,17 +212,18 @@ ZapToUrquanEncounter (void)
 		TemplatePtr = LockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
 		EncounterPtr->origin = TemplatePtr->loc;
 		EncounterPtr->radius = TemplatePtr->actual_strength;
-		EncounterPtr->SD.Type = URQUAN_SHIP;
-		EncounterPtr->SD.Index = MAKE_BYTE (1, 0) | ONE_SHOT_ENCOUNTER;
+		EncounterPtr->race_id = URQUAN_SHIP;
+		EncounterPtr->num_ships = 1;
+		EncounterPtr->flags = ONE_SHOT_ENCOUNTER;
 		BSIPtr = &EncounterPtr->ShipList[0];
 		BSIPtr->race_id = URQUAN_SHIP;
 		BSIPtr->crew_level = TemplatePtr->crew_level;
 		BSIPtr->max_crew = TemplatePtr->max_crew;
 		BSIPtr->max_energy = TemplatePtr->max_energy;
-		EncounterPtr->SD.star_pt.x = 5288;
-		EncounterPtr->SD.star_pt.y = 4892;
-		EncounterPtr->log_x = UNIVERSE_TO_LOGX (EncounterPtr->SD.star_pt.x);
-		EncounterPtr->log_y = UNIVERSE_TO_LOGY (EncounterPtr->SD.star_pt.y);
+		EncounterPtr->loc_pt.x = 5288;
+		EncounterPtr->loc_pt.y = 4892;
+		EncounterPtr->log_x = UNIVERSE_TO_LOGX (EncounterPtr->loc_pt.x);
+		EncounterPtr->log_y = UNIVERSE_TO_LOGY (EncounterPtr->loc_pt.y);
 		GLOBAL_SIS (log_x) = EncounterPtr->log_x;
 		GLOBAL_SIS (log_y) = EncounterPtr->log_y;
 		UnlockFleetInfo (&GLOBAL (avail_race_q), hStarShip);
@@ -229,19 +231,16 @@ ZapToUrquanEncounter (void)
 		{
 #define LOST_DAYS 15
 			SleepThreadUntil (FadeScreen (FadeAllToBlack, ONE_SECOND * 2));
-			LockMutex (GraphicsLock);
 			MoveGameClockDays (LOST_DAYS);
-			UnlockMutex (GraphicsLock);
 		}
 
 		GLOBAL (CurrentActivity) = MAKE_WORD (IN_HYPERSPACE, 0) | START_ENCOUNTER;
 
-		dx = CurStarDescPtr->star_pt.x - EncounterPtr->SD.star_pt.x;
-		dy = CurStarDescPtr->star_pt.y - EncounterPtr->SD.star_pt.y;
+		dx = CurStarDescPtr->star_pt.x - EncounterPtr->loc_pt.x;
+		dy = CurStarDescPtr->star_pt.y - EncounterPtr->loc_pt.y;
 		dx = (SIZE)square_root ((long)dx * dx + (long)dy * dy)
 				+ (FUEL_TANK_SCALE >> 1);
 
-		LockMutex (GraphicsLock);
 		DeltaSISGauges (0, -dx, 0);
 		if (GLOBAL_SIS (FuelOnBoard) < 5 * FUEL_TANK_SCALE)
 		{
@@ -250,8 +249,7 @@ ZapToUrquanEncounter (void)
 			DeltaSISGauges (0, dx, 0);
 		}
 		DrawSISMessage (NULL);
-		DrawHyperCoords (EncounterPtr->SD.star_pt);
-		UnlockMutex (GraphicsLock);
+		DrawHyperCoords (EncounterPtr->loc_pt);
 
 		UnlockEncounter (hEncounter);
 	}

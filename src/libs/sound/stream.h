@@ -28,7 +28,8 @@ void ResumeStream (uint32 source);
 void SeekStream (uint32 source, uint32 pos);
 BOOLEAN PlayingStream (uint32 source);
 
-int GraphForegroundStream (uint8 *data, sint32 width, sint32 height);
+int GraphForegroundStream (uint8 *data, sint32 width, sint32 height,
+		bool wantSpeech);
 
 // returns TRUE if the fade was accepted by stream decoder
 bool SetMusicStreamFade (sint32 howLong, int endVolume);

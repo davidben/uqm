@@ -17,7 +17,15 @@
 #ifndef SPATHI_H
 #define SPATHI_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_spathi (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* SPATHI_H */
 

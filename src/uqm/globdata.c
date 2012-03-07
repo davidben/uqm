@@ -20,6 +20,7 @@
 
 #include "coderes.h"
 #include "encount.h"
+#include "starmap.h"
 #include "master.h"
 #include "setup.h"
 #include "units.h"
@@ -31,6 +32,7 @@
 #include "grpinfo.h"
 #include "gamestr.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #ifdef STATE_DEBUG
 #	include "libs/log.h"
@@ -43,8 +45,6 @@ CONTEXT RadarContext;
 FRAME PlayFrame;
 
 GLOBDATA GlobData;
-
-static BOOLEAN initedGameStructs = FALSE;
 
 
 BYTE
@@ -336,7 +336,7 @@ InitGameStructures (void)
 			sizeof (GLOBAL_SIS (CommanderName)),
 			GAME_STRING (NAMING_STRING_BASE + 3));
 
-	ActivateStarShip (HUMAN_SHIP, SET_ALLIED);
+	SetRaceAllied (HUMAN_SHIP, TRUE);
 	CloneShipFragment (HUMAN_SHIP, &GLOBAL (built_ship_q), 0);
 
 	GLOBAL_SIS (log_x) = UNIVERSE_TO_LOGX (SOL_X);
@@ -344,17 +344,6 @@ InitGameStructures (void)
 	CurStarDescPtr = 0;
 	GLOBAL (autopilot.x) = ~0;
 	GLOBAL (autopilot.y) = ~0;
-
-	/* In case the program is exited before the full game is terminated,
-	 * make sure that the temporary files are deleted.
-	 * This can be removed if we make sure if the full game is terminated
-	 * before the game is exited.
-	 * The initedSIS variable is added so the uninit won't happen more
-	 * than once, as you can't remove the atexit function (when the full game
-	 * ends).
-	 */
-	initedGameStructs = TRUE;
-	atexit (UninitGameStructures);
 
 	return (TRUE);
 }
@@ -376,9 +365,6 @@ void
 UninitGameStructures (void)
 {
 	HFLEETINFO hStarShip;
-
-	if (!initedGameStructs)
-		return;
 
 	UninitQueue (&GLOBAL (encounter_q));
 	UninitQueue (&GLOBAL (ip_group_q));
@@ -407,7 +393,6 @@ UninitGameStructures (void)
 	
 	DestroyDrawable (ReleaseDrawable (PlayFrame));
 	PlayFrame = 0;
-	initedGameStructs = FALSE;
 }
 
 void
@@ -423,4 +408,88 @@ InitGlobData (void)
 }
 
 
+BOOLEAN
+inFullGame (void)
+{
+	ACTIVITY act = LOBYTE (GLOBAL (CurrentActivity));
+	return (act == IN_LAST_BATTLE || act == IN_ENCOUNTER ||
+			act == IN_HYPERSPACE || act == IN_INTERPLANETARY ||
+			act == WON_LAST_BATTLE);
+}
+
+BOOLEAN
+inSuperMelee (void)
+{
+	return (LOBYTE (GLOBAL (CurrentActivity)) == SUPER_MELEE);
+			// TODO: && !inMainMenu ()
+}
+
+#if 0
+BOOLEAN
+inBattle (void)
+{
+	// TODO: IN_BATTLE is also set while in HyperSpace/QuasiSpace.
+	return ((GLOBAL (CurrentActivity) & IN_BATTLE) != 0);
+}
+#endif
+
+#if 0
+// Disabled for now as there are similar functions in uqm/planets/planets.h
+// Pre: inFullGame()
+BOOLEAN
+inInterPlanetary (void)
+{
+	assert (inFullGame ());
+	return (pSolarSysState != NULL);
+}
+
+// Pre: inFullGame()
+BOOLEAN
+inSolarSystem (void)
+{
+	assert (inFullGame ());
+	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY);
+}
+
+// Pre: inFullGame()
+BOOLEAN
+inOrbit (void)
+{
+	assert (inFullGame ());
+	return (pSolarSysState != NULL) &&
+			(pSolarSysState->pOrbitalDesc != NULL);
+}
+#endif
+
+// In HyperSpace or QuasiSpace
+// Pre: inFullGame()
+BOOLEAN
+inHQSpace (void)
+{
+	//assert (inFullGame ());
+	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE);
+			// IN_HYPERSPACE is also set for QuasiSpace
+}
+
+// In HyperSpace
+// Pre: inFullGame()
+BOOLEAN
+inHyperSpace (void)
+{
+	//assert (inFullGame ());
+	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE) &&
+				(GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1);
+			// IN_HYPERSPACE is also set for QuasiSpace
+}
+
+// In QuasiSpace
+// Pre: inFullGame()
+BOOLEAN
+inQuasiSpace (void)
+{
+	//assert (inFullGame ());
+	return (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE) &&
+				(GET_GAME_STATE (ARILOU_SPACE_SIDE) > 1);
+			// IN_HYPERSPACE is also set for QuasiSpace
+}
 

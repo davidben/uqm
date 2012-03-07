@@ -211,7 +211,7 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 	// add better platform techs to the top
 #ifdef MMX_ASM
 	if ( (!force_platform && (SDL_HasSSE () || SDL_HasMMXExt ()))
-			|| force_platform == SCALEPLAT_SSE)
+			|| force_platform == PLATFORM_SSE)
 	{
 		log_add (log_Info, "Screen scalers are using SSE/MMX-Ext/MMX code");
 		Scale_Platform = SCALEPLAT_SSE;
@@ -220,7 +220,7 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 	}
 	else
 	if ( (!force_platform && SDL_HasAltiVec ())
-			|| force_platform == SCALEPLAT_ALTIVEC)
+			|| force_platform == PLATFORM_ALTIVEC)
 	{
 		log_add (log_Info, "Screen scalers would use AltiVec code "
 				"if someone actually wrote it");
@@ -228,7 +228,7 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 	}
 	else
 	if ( (!force_platform && SDL_Has3DNow ())
-			|| force_platform == SCALEPLAT_3DNOW)
+			|| force_platform == PLATFORM_3DNOW)
 	{
 		log_add (log_Info, "Screen scalers are using 3DNow/MMX code");
 		Scale_Platform = SCALEPLAT_3DNOW;
@@ -237,7 +237,7 @@ Scale_PrepPlatform (int flags, const SDL_PixelFormat* fmt)
 	}
 	else
 	if ( (!force_platform && SDL_HasMMX ())
-			|| force_platform == SCALEPLAT_MMX)
+			|| force_platform == PLATFORM_MMX)
 	{
 		log_add (log_Info, "Screen scalers are using MMX code");
 		Scale_Platform = SCALEPLAT_MMX;

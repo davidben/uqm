@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "audiocore.h"
+#include "sound.h"
 #include "libs/log.h"
 
 static audio_Driver audiodrv;
@@ -76,6 +77,10 @@ initAudio (sint32 driver, sint32 flags)
 				"NOTICE: Try running UQM with '--sound=none' option");
 		exit (EXIT_FAILURE);
 	}
+
+	SetSFXVolume (sfxVolumeScale);
+	SetSpeechVolume (speechVolumeScale);
+	SetMusicVolume (musicVolume);
 	
 	audio_inited = true;
 	

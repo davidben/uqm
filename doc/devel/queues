@@ -7,7 +7,7 @@ GlobData.Game_state.avail_race_q:
 	  except for, technically, SAMATRA_SHIP. URQUAN_PROBE_SHIP is a
 	  very incomplete 'race'.
 	Elements are of type FLEET_INFO.
-	Filled in InitSIS().
+	Filled in InitGameStructures().
 	Partially included in savegames.
 
 GlobData.Game_state.built_ship_q:
@@ -19,7 +19,7 @@ GlobData.Game_state.built_ship_q:
 master_q:
 	List of templates for all the ships that are available in SuperMelee.
 	Elements are of type MASTER_SHIP_INFO.
-	Sorted on the (abbreviated) race name (see doc/racestrings).
+	Sorted on the (abbreviated) race name (see doc/devel/racestrings).
 	Filled in LoadMasterShipList().
 
 GlobData.Game_state.npc_built_ship_q:

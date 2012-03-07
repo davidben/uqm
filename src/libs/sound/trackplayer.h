@@ -20,8 +20,7 @@
 #define TRACKPLAYER_H
 
 #include "libs/compiler.h"
-
-typedef void (*TFB_TrackCB) (void);
+#include "libs/callback.h"
 
 #define ACCEL_SCROLL_SPEED 300
 
@@ -37,7 +36,7 @@ extern void FastForward_Smooth (void);
 extern void FastReverse_Page (void);
 extern void FastForward_Page (void);
 
-extern void SpliceTrack (UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, TFB_TrackCB cb);
+extern void SpliceTrack (UNICODE *filespec, UNICODE *textspec, UNICODE *TimeStamp, CallbackFunction cb);
 extern void SpliceMultiTrack (UNICODE *TrackNames[], UNICODE *TrackText);
 
 extern int GetTrackPosition (int in_units);

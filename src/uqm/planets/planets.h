@@ -19,6 +19,8 @@
 #ifndef _PLANETS_H
 #define _PLANETS_H
 
+#include "libs/mathlib.h"
+
 #define END_INTERPLANETARY START_INTERPLANETARY
 
 enum PlanetScanTypes
@@ -86,6 +88,7 @@ enum
 
 typedef struct planet_desc PLANET_DESC;
 typedef struct star_desc STAR_DESC;
+typedef struct node_info NODE_INFO;
 typedef struct planet_orbit PLANET_ORBIT;
 typedef struct solarsys_state SOLARSYS_STATE;
 
@@ -99,6 +102,9 @@ typedef struct solarsys_state SOLARSYS_STATE;
 #include "plandata.h"
 #include "sundata.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 struct planet_desc
 {
@@ -126,7 +132,26 @@ struct star_desc
 	BYTE Postfix;
 };
 
-typedef void (*PLAN_GEN_FUNC) (BYTE control);
+struct node_info
+{
+	// This structire is filled in when a generateMinerals, generateEnergy,
+	// or generateLife call is made.
+	POINT loc_pt;
+			// Position of the mineral/bio/energy node on the planet.
+	COUNT density;
+			// For bio and energy: undefined
+			// For minerals the low byte is the gross size of the
+			// deposit (this determines the image), and the high
+			// byte is the fine size (the actual quantity).
+	COUNT type;
+			// For minerals: the type of element
+			// For bio: the type of the creature.
+			//          0 through NUM_CREATURE_TYPES - 1 are normal creatures,
+			//          NUM_CREATURE_TYPES     is an Evil One
+			//          NUM_CREATURE_TYPES + 1 is a Brainbox Bulldozer
+			//          NUM_CREATURE_TYPES + 2 is Zex' Beauty
+			// For energy: undefined
+};
 
 struct planet_orbit
 {
@@ -230,6 +255,9 @@ extern SOLARSYS_STATE *pSolarSysState;
 extern MUSIC_REF SpaceMusic;
 extern CONTEXT PlanetContext;
 
+// Random context used for all solar system, planets and surfaces generation
+extern RandomContext *SysGenRNG;
+
 bool playerInSolarSystem (void);
 bool playerInPlanetOrbit (void);
 bool playerInInnerSystem (void);
@@ -240,6 +268,8 @@ COUNT moonIndex (const SOLARSYS_STATE *solarSys, const PLANET_DESC *moon);
 #define MATCH_PLANET ((BYTE) -1)
 bool matchWorld (const SOLARSYS_STATE *solarSys, const PLANET_DESC *world,
 		BYTE planetI, BYTE moonI);
+
+DWORD GetRandomSeedForStar (const STAR_DESC *star);
 
 POINT locationToDisplay (POINT pt, SIZE scaleRadius);
 POINT displayToLocation (POINT pt, SIZE scaleRadius);
@@ -254,7 +284,6 @@ extern void FreeLanderFont (PLANET_INFO *info);
 extern void ExploreSolarSys (void);
 extern void DrawStarBackGround (void);
 extern void XFormIPLoc (POINT *pIn, POINT *pOut, BOOLEAN ToDisplay);
-extern PLAN_GEN_FUNC GenerateIP (BYTE Index);
 extern void DrawOval (RECT *pRect, BYTE num_off_pixels);
 extern void DrawFilledOval (RECT *pRect);
 extern void FillOrbits (SOLARSYS_STATE *system, BYTE NumPlanets,
@@ -285,6 +314,10 @@ extern void GetPlanetOrMoonName (UNICODE *buf, COUNT bufsize);
 
 extern void PlanetOrbitMenu (void);
 extern void SaveSolarSysLocation (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _PLANETS_H */
 

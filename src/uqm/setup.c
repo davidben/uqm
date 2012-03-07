@@ -65,12 +65,13 @@ FRAME StatusFrame;
 FRAME FlagStatFrame;
 FRAME MiscDataFrame;
 FRAME FontGradFrame;
-Mutex GraphicsLock;
 STRING GameStrings;
 QUEUE disp_q;
 
 uio_Repository *repository;
 uio_DirHandle *rootDir;
+
+BOOLEAN usingSpeech;
 
 
 static void
@@ -119,9 +120,11 @@ LoadKernel (int argc, char *argv[])
 		loadAddon ("3domusic");
 	}
 
-	/* Always try to use voice data */
-	if (!loadAddon ("3dovoice"))
-		speechVolumeScale = 0.0f; // XXX: need better no-speech indicator
+	usingSpeech = optSpeech;
+	if (optSpeech && !loadAddon ("3dovoice"))
+	{
+		usingSpeech = FALSE;
+	}
 
 	if (optRemixMusic)
 	{

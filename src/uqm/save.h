@@ -21,8 +21,16 @@
 		// for SUMMARY_DESC
 #include "libs/compiler.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern void SaveProblem (void);
 extern BOOLEAN SaveGame (COUNT which_game, SUMMARY_DESC *summary_desc);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _SAVE_H */
 

@@ -245,7 +245,7 @@ DoRamble (RESPONSE_REF R)
 static void
 CombatIsInevitable (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 1);
+	setSegue (Segue_hostile);
 
 	if (PLAYER_SAID (R, bye_space))
 		NPCPhrase (BYE_AND_DIE_SPACE);
@@ -257,7 +257,7 @@ CombatIsInevitable (RESPONSE_REF R)
 	{
 		NPCPhrase (GOODBYE_SUN_DEVICE);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
@@ -340,7 +340,7 @@ TrickMycon (RESPONSE_REF R)
 	{
 		NPCPhrase (WE_GO_TO_IMPLANT);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		SET_GAME_STATE (MYCON_FELL_FOR_AMBUSH, 1);
 		AddEvent (RELATIVE_EVENT, 0, 0, 0, ADVANCE_MYCON_MISSION);
 	}
@@ -371,7 +371,7 @@ NormalMycon (RESPONSE_REF R)
 		DoRamble (R);
 		NPCPhrase (RAMBLE_TAIL);
 
-		DISABLE_PHRASE (RESPONSE_TO_REF (R));
+		DISABLE_PHRASE (R);
 	}
 
 	if ((BYTE)TFB_Random () < 256 * 30 / 100)
@@ -505,13 +505,13 @@ Intro (void)
 		}
 		SET_GAME_STATE (MYCON_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (GET_GAME_STATE (MYCON_KNOW_AMBUSH))
 	{
 		NPCPhrase (DIE_LIAR);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 6))
 	{
@@ -631,11 +631,11 @@ init_mycon_comm (void)
 
 	if (LOBYTE (GLOBAL (CurrentActivity)) != WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	retval = &mycon_desc;
 

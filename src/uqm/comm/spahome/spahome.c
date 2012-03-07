@@ -186,24 +186,24 @@ static LOCDATA spahome_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	if (PLAYER_SAID (R, we_attack_again))
 	{
 		NPCPhrase (WE_FIGHT_AGAIN);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, surrender_or_die))
 	{
 		NPCPhrase (DEFEND_OURSELVES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, we_are_vindicator0))
 	{
 		NPCPhrase (NO_PASSWORD);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, gort_merenga)
 			|| PLAYER_SAID (R, guph_florp)
@@ -212,13 +212,13 @@ ExitConversation (RESPONSE_REF R)
 	{
 		NPCPhrase (WRONG_PASSWORD);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, screw_password))
 	{
 		NPCPhrase (NO_PASSWORD);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, bye_no_ally_offer))
 		NPCPhrase (GOODBYE_NO_ALLY_OFFER);
@@ -251,7 +251,7 @@ ExitConversation (RESPONSE_REF R)
 	{
 		NPCPhrase (DEPART_FOR_EARTH);
 
-		ActivateStarShip (SPATHI_SHIP, SET_ALLIED);
+		SetRaceAllied (SPATHI_SHIP, TRUE);
 		AddEvent (RELATIVE_EVENT, 6, 0, 0, SPATHI_SHIELD_EVENT);
 		SET_GAME_STATE (SPATHI_HOME_VISITS, 0);
 		SET_GAME_STATE (SPATHI_VISITS, 0);
@@ -821,7 +821,7 @@ SpathiCouncil (RESPONSE_REF R)
 	{
 		if (PHRASE_ENABLED (spathi_on_pluto))
 			Response (spathi_on_pluto, SpathiCouncil);
-		else if (ActivateStarShip (SPATHI_SHIP, ESCORTING_FLAGSHIP))
+		else if (HaveEscortShip (SPATHI_SHIP))
 		{
 			if (PHRASE_ENABLED (hostage))
 				Response (hostage, SpathiCouncil);
@@ -906,7 +906,7 @@ Intro (void)
 	if (Manner == 2)
 	{
 		NPCPhrase (HATE_YOU_FOREVER);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (Manner == 1
 			&& GET_GAME_STATE (KNOW_SPATHI_PASSWORD)
@@ -915,7 +915,7 @@ Intro (void)
 	{
 		SpathiAngry ((RESPONSE_REF)0);
 	}
-	else if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+	else if (CheckAlliance (SPATHI_SHIP) == GOOD_GUY)
 	{
 		CommData.AlienColorMap =
 				SetAbsColorMapIndex (CommData.AlienColorMap, 1);
@@ -940,7 +940,7 @@ Intro (void)
 			NPCPhrase (YOU_LIED_2);
 
 			SET_GAME_STATE (SPATHI_MANNER, 2);
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 		}
 	}
 	else if (GET_GAME_STATE (KNOW_SPATHI_QUEST))
@@ -974,7 +974,7 @@ post_spahome_enc (void)
 {
 	BYTE Manner;
 
-	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
+	if (getSegue () == Segue_hostile
 			&& (Manner = GET_GAME_STATE (SPATHI_MANNER)) != 2)
 	{
 		SET_GAME_STATE (SPATHI_MANNER, 1);
@@ -1005,11 +1005,11 @@ init_spahome_comm ()
 
 	if (GET_GAME_STATE (SPATHI_MANNER) == 3)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 
 	retval = &spahome_desc;

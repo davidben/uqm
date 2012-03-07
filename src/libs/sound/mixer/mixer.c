@@ -1569,7 +1569,7 @@ mixer_ResampleNone (mixer_Source *src, bool left)
 	uint8 *d0 = src->nextqueued->data + src->pos;
 	src->pos += mixer_chansize;
 	(void) left; // satisfying compiler - unused arg
-	return (float)mixer_GetSampleInt (d0, mixer_chansize);
+	return mixer_GetSampleInt (d0, mixer_chansize);
 }
 
 /* get a resampled (up/down) sample from source (nearest neighbor) */
@@ -1578,7 +1578,7 @@ mixer_ResampleNearest (mixer_Source *src, bool left)
 {
 	uint8 *d0 = src->nextqueued->data + src->pos;
 	d0 += mixer_SourceAdvance (src, left);
-	return (float)mixer_GetSampleInt (d0, mixer_chansize);
+	return mixer_GetSampleInt (d0, mixer_chansize);
 }
 
 /* get an upsampled sample from source (linear interpolation) */
@@ -1608,8 +1608,8 @@ mixer_UpsampleLinear (mixer_Source *src, bool left)
 	else
 		d1 = d0 + curr->sampsize;
 
-	s0 = (float)mixer_GetSampleInt (d0, mixer_chansize);
-	s1 = (float)mixer_GetSampleInt (d1, mixer_chansize);
+	s0 = mixer_GetSampleInt (d0, mixer_chansize);
+	s1 = mixer_GetSampleInt (d1, mixer_chansize);
 	return s0 + t * (s1 - s0);
 }
 
@@ -1672,10 +1672,10 @@ mixer_UpsampleCubic (mixer_Source *src, bool left)
 			d3 = d2 + curr->sampsize;
 	}
 
-	s0 = (float)mixer_GetSampleInt (d0, mixer_chansize);
-	s1 = (float)mixer_GetSampleInt (d1, mixer_chansize);
-	s2 = (float)mixer_GetSampleInt (d2, mixer_chansize);
-	s3 = (float)mixer_GetSampleInt (d3, mixer_chansize);
+	s0 = mixer_GetSampleInt (d0, mixer_chansize);
+	s1 = mixer_GetSampleInt (d1, mixer_chansize);
+	s2 = mixer_GetSampleInt (d2, mixer_chansize);
+	s3 = mixer_GetSampleInt (d3, mixer_chansize);
 
 	a = (3.0f * (s1 - s2) - s0 + s3) * 0.5f;
 	b = 2.0f * s2 + s0 - ((5.0f * s1 + s3) * 0.5f);

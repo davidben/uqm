@@ -43,9 +43,10 @@ DeltaTopography (COUNT num_iterations, SBYTE *DepthArray, RECT *pRect,
 		DWORD rand_val;
 		SBYTE *lpDst;
 
-		depth_delta = ((((SIZE)TFB_Random () & 1) << 1) - 1) * depth_delta;
+		if ((RandomContext_Random (SysGenRNG) & 1) == 0)
+			depth_delta = -depth_delta;
 
-		rand_val = TFB_Random ();
+		rand_val = RandomContext_Random (SysGenRNG);
 		w1 = LOWORD (rand_val);
 		w2 = HIWORD (rand_val);
 

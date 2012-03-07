@@ -20,8 +20,10 @@ case "$HOST_SYSTEM" in
 		;;
 esac
 uqm_CFLAGS="$uqm_CFLAGS -Isrc"
+uqm_CXXFLAGS="$uqm_CXXFLAGS -Isrc"
 if [ "$uqm_HAVE_REGEX" = 0 ]; then
 	uqm_CFLAGS="$uqm_CFLAGS -Isrc/regex"
+	uqm_CXXFLAGS="$uqm_CXXFLAGS -Isrc/regex"
 fi
 
 # Stuff to install under the directory for libraries, as specified during

@@ -20,9 +20,18 @@
 #define _MATHLIB_H
 
 #include "libs/compiler.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "math/random.h"
 
 extern COUNT square_root (DWORD value);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _MATHLIB_H */
 

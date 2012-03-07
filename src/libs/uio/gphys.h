@@ -33,7 +33,7 @@ typedef struct CharHashTable_HashTable uio_GPDirEntries;
 
 #define uio_GPDirEntries_new() \
 		((uio_GPDirEntries *) CharHashTable_newHashTable(NULL, NULL, NULL, \
-		NULL, 0, 0.85, 0.9))
+		NULL, NULL, 0, 0.85, 0.9))
 #define uio_GPDirEntries_add(hashTable, name, item) \
 		CharHashTable_add((CharHashTable_HashTable *) hashTable, name, \
 		(void *) item)

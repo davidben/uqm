@@ -118,15 +118,12 @@ enum
 
 static int LastAlien;
 
+// Queued and executes synchronously on the Starcon2Main thread
 static void
-SelectAlienZOQ (void)
+SelectAlienZOQ (CallbackArg arg)
 {
 	if (LastAlien != ZOQ_ALIEN)
 	{
-		// XXX: This should hold the GraphicsLock to block comm anims and
-		//   prevent CommData half-updates, but if we do so, the stream
-		//   decoder will deadlock with the drawing thread.
-
 		// Transition to neutral state first if Pik was talking
 		if (LastAlien != FOT_ALIEN)
 			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
@@ -142,17 +139,16 @@ SelectAlienZOQ (void)
 		CommData.AlienTextFColor = ZOQ_FG_COLOR;
 		CommData.AlienTextBColor = ZOQ_BG_COLOR;
 	}
+
+	(void)arg; // ignored
 }
 
+// Queued and executes synchronously on the Starcon2Main thread
 static void
-SelectAlienPIK (void)
+SelectAlienPIK (CallbackArg arg)
 {
 	if (LastAlien != PIK_ALIEN)
 	{
-		// XXX: This should hold the GraphicsLock to block comm anims and
-		//   prevent CommData half-updates, but if we do so, the stream
-		//   decoder will deadlock with the drawing thread.
-
 		// Transition to neutral state first if Zoq was talking
 		if (LastAlien != FOT_ALIEN)
 			CommData.AlienTransitionDesc.AnimFlags |= TALK_DONE;
@@ -168,20 +164,22 @@ SelectAlienPIK (void)
 		CommData.AlienTextFColor = PIK_FG_COLOR;
 		CommData.AlienTextBColor = PIK_BG_COLOR;
 	}
+
+	(void)arg; // ignored
 }
 
 static void
 ZFPTalkSegue (COUNT wait_track)
 {
 	LastAlien = FOT_ALIEN;
-	SelectAlienZOQ ();
+	SelectAlienZOQ (0);
 	AlienTalkSegue (wait_track);
 }
 
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye_homeworld))
 	{
@@ -224,7 +222,7 @@ ExitConversation (RESPONSE_REF R)
 		NPCPhrase_cb (WE_ALLY4, &SelectAlienZOQ);
 		NPCPhrase_cb (WE_ALLY5, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
-		ActivateStarShip (ZOQFOTPIK_SHIP, SET_ALLIED);
+		SetRaceAllied (ZOQFOTPIK_SHIP, TRUE);
 		AddEvent (RELATIVE_EVENT, 3, 0, 0, ZOQFOT_DISTRESS_EVENT);
 		SET_GAME_STATE (ZOQFOT_HOME_VISITS, 0);
 	}
@@ -238,7 +236,7 @@ ExitConversation (RESPONSE_REF R)
 
 		SET_GAME_STATE (ZOQFOT_HOSTILE, 1);
 		SET_GAME_STATE (ZOQFOT_HOME_VISITS, 0);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, never))
 	{
@@ -248,7 +246,7 @@ ExitConversation (RESPONSE_REF R)
 
 		SET_GAME_STATE (ZOQFOT_HOME_VISITS, 0);
 		SET_GAME_STATE (ZOQFOT_HOSTILE, 1);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 }
 
@@ -735,7 +733,7 @@ ZoqFotHome (RESPONSE_REF R)
 		NPCPhrase_cb (GOOD9, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
 
-		ActivateStarShip (ZOQFOTPIK_SHIP, SET_ALLIED);
+		SetRaceAllied (ZOQFOTPIK_SHIP, TRUE);
 		AddEvent (RELATIVE_EVENT, 3, 0, 0, ZOQFOT_DISTRESS_EVENT);
 	}
 	else if (PLAYER_SAID (R, enough_info))
@@ -748,7 +746,7 @@ ZoqFotHome (RESPONSE_REF R)
 		Response (whats_up_homeworld, ZoqFotHome);
 	if (PHRASE_ENABLED (any_war_news))
 		Response (any_war_news, ZoqFotHome);
-	if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
+	if (CheckAlliance (ZOQFOTPIK_SHIP) != GOOD_GUY)
 		Response (i_want_alliance, ZoqFotHome);
 	else if (PHRASE_ENABLED (want_specific_info))
 	{
@@ -779,7 +777,7 @@ Intro (void)
 		NPCPhrase_cb (OUT_TAKES12, &SelectAlienZOQ);
 		NPCPhrase_cb (OUT_TAKES13, &SelectAlienPIK);
 		ZFPTalkSegue ((COUNT)~0);
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -816,7 +814,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (ZOQFOT_HOME_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (!GET_GAME_STATE (MET_ZOQFOT))
 	{
@@ -870,12 +868,12 @@ Intro (void)
 			ZFPTalkSegue ((COUNT)~0);
 
 			SET_GAME_STATE (ZOQFOT_DISTRESS, 0);
-			ActivateStarShip (ZOQFOTPIK_SHIP, MAX_ZFP_SHIPS);
+			AddEscortShips (ZOQFOTPIK_SHIP, MAX_ZFP_SHIPS);
 		}
 		else
 		{
 			NumVisits = GET_GAME_STATE (ZOQFOT_HOME_VISITS);
-			if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) != GOOD_GUY)
+			if (CheckAlliance (ZOQFOTPIK_SHIP) != GOOD_GUY)
 			{
 				switch (NumVisits++)
 				{
@@ -960,14 +958,14 @@ init_zoqfot_comm (void)
 
 	zoqfot_desc.AlienTextWidth = (SIS_TEXT_WIDTH >> 1) - TEXT_X_OFFS;
 
-	if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE) == GOOD_GUY
+	if (CheckAlliance (ZOQFOTPIK_SHIP) == GOOD_GUY
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	
 	retval = &zoqfot_desc;

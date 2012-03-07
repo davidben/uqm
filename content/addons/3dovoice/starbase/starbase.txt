@@ -1324,7 +1324,7 @@ No more history, thank you.
 The members of the old Alliance.
 
 #(what_about_hierarchy)
-The battle thralls in the Hierarchy.
+The Hierarchy and their battle thralls.
 
 #(what_about_other)
 Were there any alien races who weren't in the War?

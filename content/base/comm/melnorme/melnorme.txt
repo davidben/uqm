@@ -89,7 +89,7 @@ Shall we begin trading now?
 #(WERE_NOT_AFRAID)	melnorme-010.ogg
 We reel with inchoate fear, and are thrown into a sudden panic.  
 Being peaceful by nature
-We would no doubt be unprepared for your sudden hostility
+we would no doubt be unprepared for your sudden hostility
 were it not for the excellent weapon system we bought from the Keel-Verezy just last month.
 A weapon system which is fully locked on your command bridge, by the way.
 
@@ -105,6 +105,22 @@ Yes, let us get down to business.
 
 #(HELLO_AND_DOWN_TO_BUSINESS_2)	melnorme-013.ogg
 How nice to see you again, Captain.
+Before we go on, I have a small announcement.
+As you may know, in our travels throughout the galaxy
+we Melnorme have found many strange and interesting alien artifacts.
+One of these devices is the MetaChron, a kind of trans-time alarm system.
+In a nutshell, it warns me of future dangers by predicting its own demise
+which is most likely linked to my own well being, since I keep it under my pillow.
+The unit is a small pyramid and, when all is well, white in color.
+But if we are proceeding along a timeline which will eventually result in the destruction of the MetaChron
+the unit slowly darkens. Presumably, it will be destroyed at the same time as it turns completely black.
+When we first entered this region of space, the MetaChron was white.
+Now it is light gray.
+At its present rate of change, something will destroy the MetaChron
+in the early part of the year 2159.
+In order to avoid this unpleasantness, we may be leaving just before this time
+so if you have business you wish to conduct with us
+I suggest you do so before January 2159, or February at the latest.
 
 #(HELLO_AND_DOWN_TO_BUSINESS_3)	melnorme-014.ogg
 I had itchy pods this morning, Captain, and here you are!
@@ -305,7 +321,7 @@ I don't need your help at this time. Maybe later, though.
 
 #(RESCUE_OFFER)	melnorme-045.ogg
 You have no Credit balance in our mercantile computer
-and our scanners show you that you possess no useful trade goods
+and our scanners show that you possess no useful trade goods
 but, perhaps we can work out a special deal.
 In exchange for our giving you enough fuel to
 
@@ -844,7 +860,7 @@ Actually, we don't know what the Orz did to the Androsynth -- they're just all g
 
 #(OK_BUY_ALIEN_RACE_11)	melnorme-109.ogg
 The Arilou Lalee'lay are a mysterious race of IDF beings
-IDF meaning, Inter-Dimensional Fatigue
+IDF meaning, Inter-Dimensional Fatigue.
 They do not reside in this galaxy, or in fact, anywhere in this universe.
 While it is true that the Arilou are rarely seen far from the Columbae star group
 they do make regular, secret visits to your world, and have done so for centuries.
@@ -952,8 +968,8 @@ Within a month, Dnyarri-compelled starships had spread the evil, psychic creatur
 When the Dnyarri took control over the Milieu, one race fought back -- the Taalo.
 These slow, quiet creatures were silicon-based life forms
 but bore little resemblance to the modern Chenjesu.
-The Taalo were natural immunes to the Dynarri psychic compulsion; they were unaffected by the creatures' power
-and the Dynarri would not permit anyone to exist outside their control
+The Taalo were natural immunes to the Dnyarri psychic compulsion; they were unaffected by the creatures' power
+and the Dnyarri would not permit anyone to exist outside their control
 so they ordered the remaining races of the Milieu to attack and destroy the Taalo home planet.
 This planet was one of the few Milieu worlds located in this region of space.
 I believe you call their star Delta Vulpeculae. Their home was a moon revolving about the second planet.
@@ -970,7 +986,7 @@ As the centuries of Dnyarri dominance passed, what was once the Sentient Milieu
 deteriorated and degenerated into a great galactic gulag.
 Alien races which did not serve with the efficiency and speed demanded by the Dnyarri
 were ruthlessly burned from the faces of their worlds.
-The agents of this genocide were inevitably the Dynarri's favored pet, the Ur-Quan.
+The agents of this genocide were inevitably the Dnyarri's favored pet, the Ur-Quan.
 After almost twenty-five hundred years of unrelenting Dnyarri control
 there were only four living member races of the once-great Sentient Milieu.
 By this point, the Dnyarri had used genetic manipulation to split the Ur-Quan into two sub-species:
@@ -987,7 +1003,7 @@ By this point in history, the Dnyarri had grown lax in their dominance
 and on occasion accidentally permitted their slaves moments of self-direction.
 Kzer-Za was able to use those few scattered minutes to compose a theory.
 From its observations, Kzer-Za realized that when a slave died
-the Dynarri `disconnected' from the slave's mind, lest it too be dragged down to death.
+the Dnyarri `disconnected' from the slave's mind, lest it too be dragged down to death.
 Further, the Ur-Quan scientist uncovered the fact that when a slave underwent great pain
 the Dnyarri temporarily disconnected -- but that the degree of pain had to be extreme, nearly lethal.
 Kzer-Za chose its moment carefully -- it waited until it was near an open transmission unit.

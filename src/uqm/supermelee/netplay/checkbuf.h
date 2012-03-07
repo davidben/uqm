@@ -19,12 +19,24 @@
 #ifndef _CHECKBUF_H
 #define _CHECKBUF_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef struct ChecksumEntry ChecksumEntry;
 typedef struct ChecksumBuffer ChecksumBuffer;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #include "../../battle.h"
 		// for BattleFrameCounter
 #include "checksum.h"
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 
 struct ChecksumEntry {
@@ -57,6 +69,10 @@ bool ChecksumBuffer_addChecksum(ChecksumBuffer *cb,
 		BattleFrameCounter frameNr, Checksum checksum);
 bool ChecksumBuffer_getChecksum(ChecksumBuffer *cb,
 		BattleFrameCounter frameNr, Checksum *result);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _CHECKBUF_H */
 

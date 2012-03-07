@@ -18,6 +18,8 @@
 
 #include "../build.h"
 #include "../colors.h"
+#include "../gendef.h"
+#include "../starmap.h"
 #include "../encount.h"
 #include "../gamestr.h"
 #include "../controls.h"
@@ -183,7 +185,6 @@ DrawDevicesDisplay (DEVICES_STATE *devState)
 static void
 DrawDevices (DEVICES_STATE *devState, COUNT OldDevice, COUNT NewDevice)
 {
-	LockMutex (GraphicsLock);
 	BatchGraphics ();
 
 	SetContext (StatusContext);
@@ -209,7 +210,6 @@ DrawDevices (DEVICES_STATE *devState, COUNT OldDevice, COUNT NewDevice)
 	}
 
 	UnbatchGraphics ();
-	UnlockMutex (GraphicsLock);
 }
 
 // Returns TRUE if the broadcaster has been successfully activated,
@@ -217,7 +217,7 @@ DrawDevices (DEVICES_STATE *devState, COUNT OldDevice, COUNT NewDevice)
 static BOOLEAN
 UseCaster (void)
 {
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
 		{
@@ -256,7 +256,7 @@ UseCaster (void)
 		HIPGROUP hGroup;
 
 		FoundIlwrath = (CurStarDescPtr->Index == ILWRATH_DEFINED)
-				&& ActivateStarShip (ILWRATH_SHIP, SPHERE_TRACKING);
+				&& StartSphereTracking (ILWRATH_SHIP);
 				// In the Ilwrath home system and they are alive?
 
 		if (!FoundIlwrath &&
@@ -372,7 +372,7 @@ InvokeDevice (BYTE which_device)
 			NextActivity |= CHECK_LOAD; /* fake a load game */
 			GLOBAL (CurrentActivity) |= START_ENCOUNTER;
 			SET_GAME_STATE (GLOBAL_FLAGS_AND_DATA, 0);
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+			if (inHQSpace ())
 			{
 				if (GetHeadEncounter ())
 				{
@@ -443,8 +443,7 @@ InvokeDevice (BYTE which_device)
 			break;
 		case PORTAL_SPAWNER_DEVICE:
 #define PORTAL_FUEL_COST (10 * FUEL_TANK_SCALE)
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE
-					&& GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1
+			if (inHyperSpace ()
 					&& GLOBAL_SIS (FuelOnBoard) >= PORTAL_FUEL_COST)
 			{
 				/* No DeltaSISGauges because the flagship picture
@@ -491,13 +490,11 @@ DoManipulateDevices (MENU_STATE *pMS)
 	{
 		DeviceStatus status;
 
-		LockMutex (GraphicsLock);
 		status = InvokeDevice (devState->list[pMS->CurState]);
 		if (status == DEVICE_FAILURE)
 			PlayMenuSound (MENU_SOUND_FAILURE);
 		else if (status == DEVICE_SUCCESS)
 			PlayMenuSound (MENU_SOUND_INVOKED);
-		UnlockMutex (GraphicsLock);
 
 		return (status == DEVICE_FAILURE);
 	}
@@ -680,9 +677,7 @@ DevicesMenu (void)
 	if (GLOBAL_SIS (CrewEnlisted) != (COUNT)~0
 			&& !(GLOBAL (CurrentActivity) & CHECK_ABORT))
 	{
-		LockMutex (GraphicsLock);
 		ClearSISRect (DRAW_SIS_DISPLAY);
-		UnlockMutex (GraphicsLock);
 
 		if (!GET_GAME_STATE (PORTAL_COUNTER)
 				&& !(GLOBAL (CurrentActivity) & START_ENCOUNTER)

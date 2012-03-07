@@ -17,7 +17,15 @@
 #ifndef ANDROSYN_H
 #define ANDROSYN_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_androsynth (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* ANDROSYN_H */
 

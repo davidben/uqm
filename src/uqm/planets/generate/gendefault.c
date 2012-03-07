@@ -27,17 +27,6 @@
 #include "libs/mathlib.h"
 
 
-bool GenerateDefault_initNpcs (SOLARSYS_STATE *solarSys);
-bool GenerateDefault_reinitNpcs (SOLARSYS_STATE *solarSys);
-bool GenerateDefault_uninitNpcs (SOLARSYS_STATE *solarSys);
-bool GenerateDefault_generatePlanets (SOLARSYS_STATE *solarSys);
-bool GenerateDefault_generateMoons (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *planet);
-bool GenerateDefault_generateName (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world);
-bool GenerateDefault_generateOrbital (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world);
-
 static void GeneratePlanets (SOLARSYS_STATE *system);
 static void check_yehat_rebellion (void);
 
@@ -113,7 +102,8 @@ GenerateDefault_generateMoons (SOLARSYS_STATE *solarSys, PLANET_DESC *planet)
 }
 
 bool
-GenerateDefault_generateName (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
+GenerateDefault_generateName (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world)
 {
 	COUNT i = planetIndex (solarSys, world);
 	utf8StringCopy (GLOBAL_SIS (PlanetName), sizeof (GLOBAL_SIS (PlanetName)),
@@ -126,7 +116,6 @@ GenerateDefault_generateName (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 bool
 GenerateDefault_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 {
-	COUNT i;
 	DWORD rand_val;
 	SYSTEM_INFO *sysInfo;
 
@@ -146,15 +135,15 @@ GenerateDefault_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 
 	sysInfo = &solarSys->SysInfo;
 
-	rand_val = DoPlanetaryAnalysis (sysInfo, world);
+	DoPlanetaryAnalysis (sysInfo, world);
+	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	sysInfo->PlanetInfo.ScanSeed[BIOLOGICAL_SCAN] = rand_val;
-	i = (COUNT)~0;
-	rand_val = GenerateLifeForms (sysInfo, &i);
+	GenerateLifeForms (sysInfo, GENERATE_ALL, NULL);
+	rand_val = RandomContext_GetSeed (SysGenRNG);
 
 	sysInfo->PlanetInfo.ScanSeed[MINERAL_SCAN] = rand_val;
-	i = (COUNT)~0;
-	GenerateMineralDeposits (sysInfo, &i);
+	GenerateMineralDeposits (sysInfo, GENERATE_ALL, NULL);
 
 	sysInfo->PlanetInfo.ScanSeed[ENERGY_SCAN] = rand_val;
 	LoadPlanet (NULL);
@@ -163,12 +152,11 @@ GenerateDefault_generateOrbital (SOLARSYS_STATE *solarSys, PLANET_DESC *world)
 }
 
 COUNT
-GenerateDefault_generateMinerals (SOLARSYS_STATE *solarSys,
-		PLANET_DESC *world, COUNT whichNode)
+GenerateDefault_generateMinerals (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
-	GenerateMineralDeposits (&solarSys->SysInfo, &whichNode);
+	return GenerateMineralDeposits (&solarSys->SysInfo, whichNode, info);
 	(void) world;
-	return whichNode;
 }
 
 bool
@@ -183,12 +171,13 @@ GenerateDefault_pickupMinerals (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 }
 
 COUNT
-GenerateDefault_generateEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateDefault_generateEnergy (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
 	(void) whichNode;
 	(void) solarSys;
 	(void) world;
+	(void) info;
 	return 0;
 }
 
@@ -206,12 +195,11 @@ GenerateDefault_pickupEnergy (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 }
 
 COUNT
-GenerateDefault_generateLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
-		COUNT whichNode)
+GenerateDefault_generateLife (const SOLARSYS_STATE *solarSys,
+		const PLANET_DESC *world, COUNT whichNode, NODE_INFO *info)
 {
-	GenerateLifeForms (&solarSys->SysInfo, &whichNode);
+	return GenerateLifeForms (&solarSys->SysInfo, whichNode, info);
 	(void) world;
-	return whichNode;
 }
 
 bool
@@ -226,20 +214,21 @@ GenerateDefault_pickupLife (SOLARSYS_STATE *solarSys, PLANET_DESC *world,
 }
 
 COUNT
-GenerateDefault_generateArtifact (SOLARSYS_STATE *solarSys, COUNT whichNode)
+GenerateDefault_generateArtifact (const SOLARSYS_STATE *solarSys,
+		COUNT whichNode, NODE_INFO *info)
 {
 	// Generate an energy node at a random location
-	GenerateRandomNodes (&solarSys->SysInfo, ENERGY_SCAN, 1, 0, &whichNode);
-	return whichNode;
+	return GenerateRandomNodes (&solarSys->SysInfo, ENERGY_SCAN, 1, 0,
+			whichNode, info);
 }
 
 COUNT
-GenerateDefault_generateRuins (SOLARSYS_STATE *solarSys, COUNT whichNode)
+GenerateDefault_generateRuins (const SOLARSYS_STATE *solarSys,
+		COUNT whichNode, NODE_INFO *info)
 {
 	// Generate a standard spread of city ruins of a destroyed civilization
-	GenerateRandomNodes (&solarSys->SysInfo, ENERGY_SCAN, NUM_RACE_RUINS,
-			0, &whichNode);
-	return whichNode;
+	return GenerateRandomNodes (&solarSys->SysInfo, ENERGY_SCAN, NUM_RACE_RUINS,
+			0, whichNode, info);
 }
 
 static inline void
@@ -309,7 +298,7 @@ GeneratePlanets (SOLARSYS_STATE *solarSys)
 		BYTE num_moons;
 		BYTE type;
 
-		rand_val = TFB_Random ();
+		rand_val = RandomContext_Random (SysGenRNG);
 		byte_val = LOBYTE (rand_val);
 
 		num_moons = 0;

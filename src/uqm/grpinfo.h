@@ -24,6 +24,10 @@
 		// for POINT
 #include <assert.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 // XXX: Needed to maintain savegame compatibility
 #define NUM_SAVED_BATTLE_GROUPS 64
 
@@ -81,5 +85,9 @@ LockIpGroup (const QUEUE *pq, HIPGROUP h)
 #define FreeIpGroup(pq, h)    FreeLink (pq, h)
 
 extern HIPGROUP BuildGroup (QUEUE *pDstQueue, BYTE race_id);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _GRPINFO_H */

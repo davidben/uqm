@@ -28,7 +28,6 @@
 #include "libs/graphics/gfx_common.h"
 #include "libs/mathlib.h"
 #include "libs/inplib.h"
-#include "libs/sound/sound.h"
 
 
 static void TellMission (RESPONSE_REF R);
@@ -214,7 +213,7 @@ ByeBye (RESPONSE_REF R)
 		}
 
 		NPCPhrase (pStr0);
-		if (speechVolumeScale == 0.0f)
+		if (!usingSpeech)
 		{
 			NPCPhrase (SPACE);
 			NPCPhrase (GLOBAL_PLAYER_NAME);
@@ -303,12 +302,18 @@ HierarchyInfo (RESPONSE_REF R)
 #define HIERARCHY_ANDROSYNTH (1 << 3)
 #define HIERARCHY_ILWRATH (1 << 4)
 #define HIERARCHY_VUX (1 << 5)
+#define HIERARCHY_URQUAN (1 << 6)
 	static BYTE HierarchyMask = 0;
 
 	if (PLAYER_SAID (R, what_about_hierarchy))
 	{
 		NPCPhrase (WHICH_HIERARCHY);
 		HierarchyMask = 0;
+	}
+	else if (PLAYER_SAID (R, urquan))
+	{
+		NPCPhrase (ABOUT_URQUAN);
+		HierarchyMask |= HIERARCHY_URQUAN;
 	}
 	else if (PLAYER_SAID (R, mycon))
 	{
@@ -341,6 +346,8 @@ HierarchyInfo (RESPONSE_REF R)
 		HierarchyMask |= HIERARCHY_VUX;
 	}
 
+	if (!(HierarchyMask & HIERARCHY_URQUAN))
+		Response (urquan, HierarchyInfo);
 	if (!(HierarchyMask & HIERARCHY_MYCON))
 		Response (mycon, HierarchyInfo);
 	if (!(HierarchyMask & HIERARCHY_SPATHI))
@@ -678,7 +685,7 @@ AnalyzeCondition (void)
 		if (num_bays < 1)
 			NPCPhrase (NEED_STORAGE_1);
 		if (GLOBAL_SIS (NumLanders) == 0)
-			NPCPhrase (NEED_LANDERS_1);
+			NPCPhrase (NEED_LANDERS_2);
 		if (num_batts < 1)
 			NPCPhrase (NEED_DYNAMOS_1);
 
@@ -693,11 +700,10 @@ AnalyzeCondition (void)
 		COUNT FleetStrength;
 		BOOLEAN HasMaximum;
 
-		FleetStrength = ActivateStarShip (0, ESCORT_WORTH);
+		FleetStrength = CalculateEscortsWorth ();
 		for (i = 0; i < NUM_AVAILABLE_RACES; ++i)
 		{
-			if (i != HUMAN_SHIP
-					&& ActivateStarShip (i, CHECK_ALLIANCE) == GOOD_GUY)
+			if (i != HUMAN_SHIP && CheckAlliance (i) == GOOD_GUY)
 				++num_aliens;
 		}
 
@@ -755,7 +761,7 @@ AnalyzeCondition (void)
 					if (GLOBAL_SIS (FuelOnBoard) < FUEL_TANK_CAPACITY * 3)
 						NPCPhrase (NEED_FUEL_2);
 					if (GLOBAL_SIS (NumLanders) < 3)
-						NPCPhrase (NEED_LANDERS_2);
+						NPCPhrase (NEED_LANDERS_1);
 					if (num_batts < 4)
 						NPCPhrase (NEED_DYNAMOS_2);
 					if (num_defense < 2)
@@ -900,7 +906,7 @@ TellStarBase (RESPONSE_REF R)
 	else if (PLAYER_SAID (R, tell_me_about_crew))
 	{
 		NPCPhrase (ABOUT_CREW0);
-		if (speechVolumeScale > 0.0f)
+		if (usingSpeech)
 			NPCPhrase (YOUR_FLAGSHIP_3DO2);
 		else {
 			NPCPhrase (YOUR_FLAGSHIP_PC);
@@ -1370,36 +1376,31 @@ CheckBulletins (BOOLEAN Repeat)
 			switch (b0)
 			{
 				case 0:
-					if (ActivateStarShip (SPATHI_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (SPATHI_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_1;
 					}
 					break;
 				case 1:
-					if (ActivateStarShip (ZOQFOTPIK_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (ZOQFOTPIK_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_2;
 					}
 					break;
 				case 2:
-					if (ActivateStarShip (SUPOX_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (SUPOX_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_3;
 					}
 					break;
 				case 3:
-					if (ActivateStarShip (UTWIG_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (UTWIG_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_4;
 					}
 					break;
 				case 4:
-					if (ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (ORZ_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_5;
 					}
@@ -1408,14 +1409,13 @@ CheckBulletins (BOOLEAN Repeat)
 					if (GET_GAME_STATE (ARILOU_MANNER) == 2)
 						BulletinMask |= 1L << b0;
 					else if (GET_GAME_STATE (PORTAL_SPAWNER)
-							&& (Repeat || ActivateStarShip (
-									ARILOU_SHIP, FEASIBILITY_STUDY
-									)))
+							&& (Repeat || EscortFeasibilityStudy (
+									ARILOU_SHIP)))
 					{
 #define NUM_GIFT_ARILOUS 3
 						pStr = STARBASE_BULLETIN_6;
 						if (!Repeat)
-							ActivateStarShip (ARILOU_SHIP, NUM_GIFT_ARILOUS);
+							AddEscortShips (ARILOU_SHIP, NUM_GIFT_ARILOUS);
 					}
 					break;
 				case 6:
@@ -1464,15 +1464,13 @@ CheckBulletins (BOOLEAN Repeat)
 					}
 					break;
 				case 12:
-					if (ActivateStarShip (CHMMR_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (CHMMR_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_13;
 					}
 					break;
 				case 13:
-					if (ActivateStarShip (SHOFIXTI_SHIP, CHECK_ALLIANCE)
-							== GOOD_GUY)
+					if (CheckAlliance (SHOFIXTI_SHIP) == GOOD_GUY)
 					{
 						pStr = STARBASE_BULLETIN_14;
 					}
@@ -1646,21 +1644,19 @@ NormalStarbase (RESPONSE_REF R)
 		if (GET_GAME_STATE (MOONBASE_ON_SHIP))
 		{
 			NPCPhrase (STARBASE_IS_READY_A);
-			if (speechVolumeScale > 0.0f)
+			if (usingSpeech)
 				NPCPhrase (YOUR_FLAGSHIP_3DO1);
 			else {
 				NPCPhrase (YOUR_FLAGSHIP_PC);
 				NPCPhrase (GLOBAL_SHIP_NAME);
 			}
 			NPCPhrase (STARBASE_IS_READY_B);
-			if (speechVolumeScale > 0.0f)
+			if (usingSpeech)
 				NPCPhrase (YOUR_FLAGSHIP_3DO0);
 			else
 				NPCPhrase (GLOBAL_SHIP_NAME);
 			NPCPhrase (STARBASE_IS_READY_C);
-			LockMutex (GraphicsLock);
 			DeltaSISGauges (0, 0, 2500);
-			UnlockMutex (GraphicsLock);
 			SET_GAME_STATE (STARBASE_MONTH,
 					GLOBAL (GameClock.month_index));
 			SET_GAME_STATE (STARBASE_DAY,
@@ -1711,7 +1707,7 @@ NormalStarbase (RESPONSE_REF R)
 					break;
 			}
 			NPCPhrase (pStr0);
-			if (speechVolumeScale == 0.0f)
+			if (!usingSpeech)
 			{
 				NPCPhrase (SPACE);
 				NPCPhrase (GLOBAL_PLAYER_NAME);
@@ -1772,9 +1768,7 @@ SellMinerals (RESPONSE_REF R)
 					Sleepy = FALSE;
 					GLOBAL_SIS (ElementAmounts[i]) = 0;
 					GLOBAL_SIS (TotalElementMass) -= amount;
-					LockMutex (GraphicsLock);
 					DeltaSISGauges (0, 0, amount * GLOBAL (ElementWorth[i]));
-					UnlockMutex (GraphicsLock);
 					break;
 				}
 				
@@ -1783,10 +1777,8 @@ SellMinerals (RESPONSE_REF R)
 				TaskSwitch ();
 				TimeIn = GetTimeCounter ();
 				DrawCargoStrings ((BYTE)i, (BYTE)i);
-				LockMutex (GraphicsLock);
 				ShowRemainingCapacity ();
 				DeltaSISGauges (0, 0, GLOBAL (ElementWorth[i]));
-				UnlockMutex (GraphicsLock);
 			} while (--amount);
 		}
 		if (Sleepy) {
@@ -1796,9 +1788,7 @@ SellMinerals (RESPONSE_REF R)
 	}
 	SleepThread (ONE_SECOND / 2);
 
-	LockMutex (GraphicsLock);
 	ClearSISRect (DRAW_SIS_DISPLAY);
-	UnlockMutex (GraphicsLock);
 // DrawStorageBays (FALSE);
 
 	if (total < 1000)
@@ -1914,7 +1904,7 @@ SellMinerals (RESPONSE_REF R)
 	}
 
 	NPCPhrase (pStr1);
-	if (speechVolumeScale == 0.0f)
+	if (!usingSpeech)
 	{
 		NPCPhrase (SPACE);
 		NPCPhrase (GLOBAL_PLAYER_NAME);
@@ -1964,7 +1954,7 @@ init_starbase_comm ()
 	commander_desc.AlienSongFlags |= LDASF_USE_ALTERNATE;
 
 	CurBulletinMask = 0;
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 	retval = &commander_desc;
 
 	return (retval);

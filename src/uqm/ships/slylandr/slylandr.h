@@ -17,7 +17,15 @@
 #ifndef SLYLANDR_H
 #define SLYLANDR_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_slylandro (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* SLYLANDR_H */
 

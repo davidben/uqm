@@ -22,10 +22,18 @@
 #include "libs/compiler.h"
 #include "globdata.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern ACTIVITY NextActivity;
 
 extern BOOLEAN LoadGame (COUNT which_game, SUMMARY_DESC *summary_desc);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _LOAD_H */
 

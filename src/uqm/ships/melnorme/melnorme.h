@@ -17,7 +17,15 @@
 #ifndef MELNORME_H
 #define MELNORME_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_melnorme (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* MELNORME_H */
 

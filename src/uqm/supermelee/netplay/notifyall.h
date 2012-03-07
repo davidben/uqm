@@ -24,6 +24,10 @@
 #	include "checksum.h"
 #endif  /* NETPLAY_CHECKSUM */
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 void Netplay_NotifyAll_setTeamName (MELEE_STATE *pMS, size_t playerNr);
 void Netplay_NotifyAll_setFleet (MELEE_STATE *pMS, size_t playerNr);
 void Netplay_NotifyAll_setShip (MELEE_STATE *pMS, size_t playerNr,
@@ -36,6 +40,10 @@ void Netplay_NotifyAll_checksum(BattleFrameCounter frameNr,
 #endif  /* NETPLAY_CHECKSUM */
 void Netplay_NotifyAll_battleInput(BATTLE_INPUT_STATE input);
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* NOTIFYALL_H */
 

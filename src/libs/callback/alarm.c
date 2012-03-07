@@ -18,6 +18,7 @@
 
 #include "alarm.h"
 
+#include SDL_INCLUDE(SDL.h)
 #include "libs/heap.h"
 
 #include <assert.h>
@@ -71,19 +72,36 @@ Alarm_uninit(void) {
 }
 
 static inline AlarmTime
-AlarmTime_nowMS(void) {
+AlarmTime_nowMs(void) {
 	return SDL_GetTicks();
 }
 
 Alarm *
-Alarm_addRelativeMs(Uint32 ms, AlarmCallback callback,
+Alarm_addAbsoluteMs(uint32 ms, AlarmCallback callback,
 		AlarmCallbackArg arg) {
 	Alarm *alarm;
 
 	assert(alarmHeap != NULL);
 
 	alarm = Alarm_alloc();
-	alarm->time = AlarmTime_nowMS() + ms;
+	alarm->time = ms;
+	alarm->callback = callback;
+	alarm->arg = arg;
+
+	Heap_add(alarmHeap, (HeapValue *) alarm);
+
+	return alarm;
+}
+
+Alarm *
+Alarm_addRelativeMs(uint32 ms, AlarmCallback callback,
+		AlarmCallbackArg arg) {
+	Alarm *alarm;
+
+	assert(alarmHeap != NULL);
+
+	alarm = Alarm_alloc();
+	alarm->time = AlarmTime_nowMs() + ms;
 	alarm->callback = callback;
 	alarm->arg = arg;
 
@@ -99,15 +117,40 @@ Alarm_remove(Alarm *alarm) {
 	Alarm_free(alarm);
 }
 
+// Process at most one alarm, if its time has come.
+// It is safe to call this function again from inside a callback function
+// that it called. It should not be called from multiple threads at once.
+bool
+Alarm_processOne(void)
+{
+	AlarmTime now;
+	Alarm *alarm;
+	
+	assert(alarmHeap != NULL);
+	if (!Heap_hasMore(alarmHeap))
+		return false;
+	
+	now = AlarmTime_nowMs();
+	alarm = (Alarm *) Heap_first(alarmHeap);
+	if (now < alarm->time)
+		return false;
+
+	Heap_pop(alarmHeap);
+	alarm->callback(alarm->arg);
+	Alarm_free(alarm);
+	return true;
+}
+
+#if 0
 // It is safe to call this function again from inside a callback function
 // that it called. It should not be called from multiple threads at once.
 void
-Alarm_process(void) {
+Alarm_processAll(void) {
 	AlarmTime now;
 
 	assert(alarmHeap != NULL);
 	
-	now = AlarmTime_nowMS();
+	now = AlarmTime_nowMs();
 	while (Heap_hasMore(alarmHeap)) {
 		Alarm *alarm = (Alarm *) Heap_first(alarmHeap);
 
@@ -119,8 +162,9 @@ Alarm_process(void) {
 		Alarm_free(alarm);
 	}
 }
+#endif
 
-Uint32
+uint32
 Alarm_timeBeforeNextMs(void) {
 	Alarm *alarm;
 
@@ -130,5 +174,4 @@ Alarm_timeBeforeNextMs(void) {
 	alarm = (Alarm *) Heap_first(alarmHeap);
 	return alarmTimeToMsUint32(alarm->time);
 }
-
 

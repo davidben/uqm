@@ -134,15 +134,6 @@ Set sound effects volume (0-100).
 Set speech volume (0-100). If set to 0, the game runs in 'no speech'
 mode and the oscilloscope reacts to the music.
 
-	-m 3do             (or --music 3do)
-
-Use the 3DO remixed soundtrack for songs that were in fact remixed.
-The default.
-
-	-m pc              (or --music pc)
-
-Use the .MOD based PC soundtrack everywhere.
-
 	-q                 (or --audioquality)
 
 Can be "high", "medium", or "low".  Specifies how nice the audio

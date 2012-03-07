@@ -52,6 +52,8 @@ TFB_GRAPHICS_BACKEND *graphics_backend = NULL;
 volatile int QuitPosted = 0;
 volatile int GameActive = 1; // Track the SDL_ACTIVEEVENT state SDL_APPACTIVE
 
+static void TFB_PreQuit (void);
+
 void
 TFB_PreInit (void)
 {
@@ -76,6 +78,14 @@ TFB_PreInit (void)
 		log_add (log_Fatal, "Could not initialize SDL: %s.", SDL_GetError ());
 		exit (EXIT_FAILURE);
 	}
+
+	atexit (TFB_PreQuit);
+}
+
+static void
+TFB_PreQuit (void)
+{
+	SDL_Quit ();
 }
 
 int
@@ -129,14 +139,8 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 int
 TFB_InitGraphics (int driver, int flags, int width, int height)
 {
-	int result, i;
+	int result;
 	char caption[200];
-
-	/* Null out screen pointers the first time */
-	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
-	{
-		SDL_Screens[i] = NULL;
-	}
 
 	GfxFlags = flags;
 
@@ -168,17 +172,25 @@ TFB_InitGraphics (int driver, int flags, int width, int height)
 
 	TFB_DrawCanvas_Initialize ();
 
-	atexit (TFB_UninitGraphics);
-
 	return 0;
 }
 
 void
 TFB_UninitGraphics (void)
 {
+	int i;
+
 	Uninit_DrawCommandQueue ();
-	// TODO: Uninit whatever the drivers have set up for us
-	SDL_Quit ();
+
+	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
+		UnInit_Screen (&SDL_Screens[i]);
+
+	TFB_Pure_UninitGraphics ();
+#ifdef HAVE_OPENGL
+	TFB_GL_UninitGraphics ();
+#endif
+
+	UnInit_Screen (&format_conv_surf);
 }
 
 void
@@ -186,7 +198,7 @@ TFB_ProcessEvents ()
 {
 	SDL_Event Event;
 
-	while (SDL_PollEvent (&Event))
+	while (SDL_PollEvent (&Event) > 0)
 	{
 		/* Run through the InputEvent filter. */
 		ProcessInputEvent (&Event);
@@ -337,251 +349,6 @@ TFB_GetScreenCanvas (SCREEN screen)
 }
 
 void
-TFB_BlitSurface (SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst,
-		SDL_Rect *dstrect, int blend_numer, int blend_denom)
-{
-	BOOLEAN has_colorkey;
-	int x, y, x1, y1, x2, y2, dst_x2, dst_y2, nr, ng, nb;
-	int srcx, srcy, w, h;
-	Uint8 sr, sg, sb, dr, dg, db;
-	Uint32 src_pixval, dst_pixval, colorkey;
-	GetPixelFn src_getpix, dst_getpix;
-	PutPixelFn putpix;
-	SDL_Rect fulldst;
-
-	if (blend_numer == blend_denom)
-	{
-		// normal blit: dst = src
-		
-		// log_add (log_Debug, "normal blit\n");
-		SDL_BlitSurface (src, srcrect, dst, dstrect);
-		return;
-	}
-		
-	// NOTE: following clipping code is copied from SDL-1.2.4 sources
-
-	// If the destination rectangle is NULL, use the entire dest surface
-	if (dstrect == NULL)
-	{
-		fulldst.x = fulldst.y = 0;
-		dstrect = &fulldst;
-	}
-
-	// clip the source rectangle to the source surface
-	if (srcrect)
-	{
-		int maxw, maxh;
-
-		srcx = srcrect->x;
-		w = srcrect->w;
-		if (srcx < 0) 
-		{
-			w += srcx;
-			dstrect->x -= srcx;
-			srcx = 0;
-		}
-		maxw = src->w - srcx;
-		if (maxw < w)
-			w = maxw;
-
-		srcy = srcrect->y;
-		h = srcrect->h;
-		if (srcy < 0) 
-		{
-			h += srcy;
-			dstrect->y -= srcy;
-			srcy = 0;
-		}
-		maxh = src->h - srcy;
-		if (maxh < h)
-			h = maxh;
-	}
-	else
-	{
-		srcx = 0;
-		srcy = 0;
-		w = src->w;
-		h = src->h;
-	}
-
-	// clip the destination rectangle against the clip rectangle
-	{
-		SDL_Rect *clip = &dst->clip_rect;
-		int dx, dy;
-
-		dx = clip->x - dstrect->x;
-		if (dx > 0)
-		{
-			w -= dx;
-			dstrect->x += dx;
-			srcx += dx;
-		}
-		dx = dstrect->x + w - clip->x - clip->w;
-		if (dx > 0)
-			w -= dx;
-
-		dy = clip->y - dstrect->y;
-		if (dy > 0)
-		{
-			h -= dy;
-			dstrect->y += dy;
-			srcy += dy;
-		}
-		dy = dstrect->y + h - clip->y - clip->h;
-		if (dy > 0)
-			h -= dy;
-	}
-
-	dstrect->w = w;
-	dstrect->h = h;
-
-	if (w <= 0 || h <= 0)
-		return;
-
-	x1 = srcx;
-	y1 = srcy;
-	x2 = srcx + w;
-	y2 = srcy + h;
-
-	if (src->flags & SDL_SRCCOLORKEY)
-	{
-		has_colorkey = TRUE;
-		colorkey = src->format->colorkey;
-	}
-	else
-	{
-		has_colorkey = FALSE;
-		colorkey = 0;  /* Satisfying compiler */
-	}
-
-	src_getpix = getpixel_for (src);
-	dst_getpix = getpixel_for (dst);
-	putpix = putpixel_for (dst);
-
-	if (blend_denom < 0)
-	{
-		// additive blit: dst = src + dst
-#if 0
-		log_add (log_Debug, "additive blit %d %d, src %d %d %d %d dst %d %d,"
-				" srcbpp %d", blend_numer, blend_denom, x1, y1, x2, y2,
-				dstrect->x, dstrect->y, src->format->BitsPerPixel);
-#endif		
-		for (y = y1; y < y2; ++y)
-		{
-			dst_y2 = dstrect->y + (y - y1);
-			for (x = x1; x < x2; ++x)
-			{
-				dst_x2 = dstrect->x + (x - x1);
-				src_pixval = src_getpix (src, x, y);
-
-				if (has_colorkey && src_pixval == colorkey)
-					continue;
-
-				dst_pixval = dst_getpix (dst, dst_x2, dst_y2);
-				
-				SDL_GetRGB (src_pixval, src->format, &sr, &sg, &sb);
-				SDL_GetRGB (dst_pixval, dst->format, &dr, &dg, &db);
-
-				nr = sr + dr;
-				ng = sg + dg;
-				nb = sb + db;
-
-				if (nr > 255)
-					nr = 255;
-				if (ng > 255)
-					ng = 255;
-				if (nb > 255)
-					nb = 255;
-
-				putpix (dst, dst_x2, dst_y2,
-						SDL_MapRGB (dst->format, nr, ng, nb));
-			}
-		}
-	}
-	else if (blend_numer < 0)
-	{
-		// subtractive blit: dst = src - dst
-#if 0
-		log_add (log_Debug, "subtractive blit %d %d, src %d %d %d %d"
-				" dst %d %d, srcbpp %d", blend_numer, blend_denom,
-					x1, y1, x2, y2, dstrect->x, dstrect->y,
-					src->format->BitsPerPixel);
-#endif		
-		for (y = y1; y < y2; ++y)
-		{
-			dst_y2 = dstrect->y + (y - y1);
-			for (x = x1; x < x2; ++x)
-			{
-				dst_x2 = dstrect->x + (x - x1);
-				src_pixval = src_getpix (src, x, y);
-
-				if (has_colorkey && src_pixval == colorkey)
-					continue;
-
-				dst_pixval = dst_getpix (dst, dst_x2, dst_y2);
-
-				SDL_GetRGB (src_pixval, src->format, &sr, &sg, &sb);
-				SDL_GetRGB (dst_pixval, dst->format, &dr, &dg, &db);
-
-				nr = sr - dr;
-				ng = sg - dg;
-				nb = sb - db;
-
-				if (nr < 0)
-					nr = 0;
-				if (ng < 0)
-					ng = 0;
-				if (nb < 0)
-					nb = 0;
-
-				putpix (dst, dst_x2, dst_y2,
-						SDL_MapRGB (dst->format, nr, ng, nb));
-			}
-		}
-	}
-	else 
-	{
-		// modulated blit: dst = src * (blend_numer / blend_denom) 
-
-		float f = blend_numer / (float)blend_denom;
-#if 0
-		log_add (log_Debug, "modulated blit %d %d, f %f, src %d %d %d %d"
-				" dst %d %d, srcbpp %d\n", blend_numer, blend_denom, f,
-				x1, y1, x2, y2, dstrect->x, dstrect->y,
-				src->format->BitsPerPixel);
-#endif		
-		for (y = y1; y < y2; ++y)
-		{
-			dst_y2 = dstrect->y + (y - y1);
-			for (x = x1; x < x2; ++x)
-			{
-				dst_x2 = dstrect->x + (x - x1);
-				src_pixval = src_getpix (src, x, y);
-
-				if (has_colorkey && src_pixval == colorkey)
-					continue;
-				
-				SDL_GetRGB (src_pixval, src->format, &sr, &sg, &sb);
-
-				nr = (int)(sr * f);
-				ng = (int)(sg * f);
-				nb = (int)(sb * f);
-
-				if (nr > 255)
-					nr = 255;
-				if (ng > 255)
-					ng = 255;
-				if (nb > 255)
-					nb = 255;
-
-				putpix (dst, dst_x2, dst_y2,
-						SDL_MapRGB (dst->format, nr, ng, nb));
-			}
-		}
-	}
-}
-
-void
 TFB_UploadTransitionScreen (void)
 {
 #ifdef HAVE_OPENGL
@@ -592,16 +359,41 @@ TFB_UploadTransitionScreen (void)
 #endif
 }
 
-void
+bool
 TFB_SetGamma (float gamma)
 {
-	if (SDL_SetGamma (gamma, gamma, gamma) == -1)
-	{
-		log_add (log_Warning, "Unable to set gamma correction.");
-	}
-	else
-	{
-		log_add (log_Info, "Gamma correction set to %1.4f.", gamma);
-	}
+	return (SDL_SetGamma (gamma, gamma, gamma) == 0);
 }
 
+SDL_Surface *
+Create_Screen (SDL_Surface *templat, int w, int h)
+{
+	SDL_Surface *newsurf = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
+			templat->format->BitsPerPixel,
+			templat->format->Rmask, templat->format->Gmask,
+			templat->format->Bmask, 0);
+	if (newsurf == 0) {
+		log_add (log_Error, "Couldn't create screen buffers: %s",
+				SDL_GetError());
+	}
+	return newsurf;
+}
+
+int
+ReInit_Screen (SDL_Surface **screen, SDL_Surface *templat, int w, int h)
+{
+	UnInit_Screen (screen);
+	*screen = Create_Screen (templat, w, h);
+	
+	return *screen == 0 ? -1 : 0;
+}
+
+void
+UnInit_Screen (SDL_Surface **screen)
+{
+	if (*screen == NULL)
+		return;
+
+	SDL_FreeSurface (*screen);
+	*screen = NULL;
+}

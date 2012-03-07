@@ -17,7 +17,15 @@
 #ifndef ILWRATH_H
 #define ILWRATH_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_ilwrath (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* ILWRATH_H */
 

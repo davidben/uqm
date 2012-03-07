@@ -22,7 +22,7 @@
 #include "colors.h"
 #include "controls.h"
 #include "clock.h"
-#include "encount.h"
+#include "starmap.h"
 #include "element.h"
 #include "sis.h"
 #include "status.h"
@@ -72,11 +72,12 @@ static void dumpPlanetTypeCallback (int index, const PlanetFrame *planet,
 BOOLEAN instantMove = FALSE;
 BOOLEAN disableInteractivity = FALSE;
 void (* volatile debugHook) (void) = NULL;
-void (* volatile doInputDebugHook) (void) = NULL;
 
 
+// Must be called on the Starcon2Main thread.
+// This function is called synchronously wrt the game logic thread.
 void
-debugKeyPressed (void)
+debugKeyPressedSynchronous (void)
 {
 	// State modifying:
 	equipShip ();
@@ -85,18 +86,18 @@ debugKeyPressed (void)
 	// Give the player the ships you can't ally with under normal
 	// conditions.
 	clearEscorts ();
-	ActivateStarShip (ARILOU_SHIP, 1);
-	ActivateStarShip (PKUNK_SHIP, 1);
-	ActivateStarShip (VUX_SHIP, 1);
-	ActivateStarShip (YEHAT_SHIP, 1);
-	ActivateStarShip (MELNORME_SHIP, 1);
-	ActivateStarShip (DRUUGE_SHIP, 1);
-	ActivateStarShip (ILWRATH_SHIP, 1);
-	ActivateStarShip (MYCON_SHIP, 1);
-	ActivateStarShip (SLYLANDRO_SHIP, 1);
-	ActivateStarShip (UMGAH_SHIP, 1);
-	ActivateStarShip (URQUAN_SHIP, 1);
-	ActivateStarShip (BLACK_URQUAN_SHIP, 1);
+	AddEscortShips (ARILOU_SHIP, 1);
+	AddEscortShips (PKUNK_SHIP, 1);
+	AddEscortShips (VUX_SHIP, 1);
+	AddEscortShips (YEHAT_SHIP, 1);
+	AddEscortShips (MELNORME_SHIP, 1);
+	AddEscortShips (DRUUGE_SHIP, 1);
+	AddEscortShips (ILWRATH_SHIP, 1);
+	AddEscortShips (MYCON_SHIP, 1);
+	AddEscortShips (SLYLANDRO_SHIP, 1);
+	AddEscortShips (UMGAH_SHIP, 1);
+	AddEscortShips (URQUAN_SHIP, 1);
+	AddEscortShips (BLACK_URQUAN_SHIP, 1);
 
 	resetCrewBattle ();
 	resetEnergyBattle ();
@@ -107,27 +108,35 @@ debugKeyPressed (void)
 //	SET_GAME_STATE (MELNORME_CREDIT1, 100);
 //	GLOBAL_SIS (ResUnits) = 100000;
 
+	// Informational:
+//	dumpEvents (stderr);
+
+	// Graphical and textual:
+//	debugContexts();
+}
+
+// Can be called on any thread, but usually on main()
+// This function is called asynchronously wrt the game logic thread,
+// which means locking applies. Use carefully.
+// TODO: Once game logic thread is purged of graphics and clock locks,
+//   this function may not call graphics and game clock functions at all.
+void
+debugKeyPressed (void)
+{
 	// Tests
 //	Scale_PerfTest ();
 
 	// Informational:
 //	dumpStrings (stdout);
-//	dumpEvents (stderr);
 //	dumpPlanetTypes(stderr);
 //	debugHook = dumpUniverseToFile;
 			// This will cause dumpUniverseToFile to be called from the
-			// main loop. Calling it from here would give threading
+			// Starcon2Main loop. Calling it from here would give threading
 			// problems.
 //	debugHook = tallyResourcesToFile;
 			// This will cause tallyResourcesToFile to be called from the
-			// main loop. Calling it from here would give threading
+			// Starcon2Main loop. Calling it from here would give threading
 			// problems.
-
-	// Graphical and textual:
-	//doInputDebugHook = debugContexts;
-			// This will cause debugContexts to be called from the
-			// Starcon2Main thread, from DoInput(). Calling it from here
-			// would give threading problems.
 
 	// Interactive:
 //	uio_debugInteractive(stdin, stdout, stderr);
@@ -137,6 +146,9 @@ debugKeyPressed (void)
 
 // Fast forwards to the next event.
 // If skipHEE is set, HYPERSPACE_ENCOUNTER_EVENTs are skipped.
+// Must be called from the Starcon2Main thread.
+// TODO: LockGameClock may be removed since it is only
+//   supposed to be called synchronously wrt the game logic thread.
 void
 forwardToNextEvent (BOOLEAN skipHEE)
 {
@@ -149,9 +161,6 @@ forwardToNextEvent (BOOLEAN skipHEE)
 	if (!GameClockRunning ())
 		return;
 
-	// Must hold GraphicsLock for MoveGameClockDays()
-	// Must acquire GraphicsLock *before* the game clock lock
-	LockMutex (GraphicsLock);
 	LockGameClock ();
 
 	done = !skipHEE;
@@ -180,7 +189,6 @@ forwardToNextEvent (BOOLEAN skipHEE)
 	} while (!done);
 
 	UnlockGameClock ();
-	UnlockMutex (GraphicsLock);
 }
 
 const char *
@@ -361,12 +369,10 @@ equipShip (void)
 	}
 
 	// Make sure everything is redrawn:
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE ||
+	if (inHQSpace () ||
 			LOBYTE (GLOBAL (CurrentActivity)) == IN_INTERPLANETARY)
 	{
-		LockMutex (GraphicsLock);
 		DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
-		UnlockMutex (GraphicsLock);
 	}
 }
 
@@ -423,9 +429,7 @@ clearEscorts (void)
 		FreeShipFrag (&GLOBAL (built_ship_q), hStarShip);
 	}
 
-	LockMutex (GraphicsLock);
 	DeltaSISGauges (UNDEFINED_DELTA, UNDEFINED_DELTA, UNDEFINED_DELTA);
-	UnlockMutex (GraphicsLock);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -596,6 +600,8 @@ forAllMoons (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 
 ////////////////////////////////////////////////////////////////////////////
 
+// Must be called from the Starcon2Main thread.
+// TODO: LockGameClock may be removed
 void
 UniverseRecurse (UniverseRecurseArg *universeRecurseArg)
 {
@@ -627,15 +633,14 @@ starRecurse (STAR_DESC *star, void *arg)
 
 	SOLARSYS_STATE SolarSysState;
 	SOLARSYS_STATE *oldPSolarSysState = pSolarSysState;
-	DWORD oldSeed =
-			TFB_SeedRandom (MAKE_DWORD (star->star_pt.x, star->star_pt.y));
-
 	STAR_DESC *oldStarDescPtr = CurStarDescPtr;
 	CurStarDescPtr = star;
 
+	RandomContext_SeedRandom (SysGenRNG, GetRandomSeedForStar (star));
+
 	memset (&SolarSysState, 0, sizeof (SolarSysState));
 	SolarSysState.SunDesc[0].pPrevDesc = 0;
-	SolarSysState.SunDesc[0].rand_seed = TFB_Random ();
+	SolarSysState.SunDesc[0].rand_seed = RandomContext_Random (SysGenRNG);
 	SolarSysState.SunDesc[0].data_index = STAR_TYPE (star->Type);
 	SolarSysState.SunDesc[0].location.x = 0;
 	SolarSysState.SunDesc[0].location.y = 0;
@@ -667,7 +672,6 @@ starRecurse (STAR_DESC *star, void *arg)
 	
 	pSolarSysState = oldPSolarSysState;
 	CurStarDescPtr = oldStarDescPtr;
-	TFB_SeedRandom (oldSeed);
 }
 
 static void
@@ -695,14 +699,12 @@ planetRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 
 	if (universeRecurseArg->moonFunc != NULL)
 	{
-		DWORD oldSeed = TFB_SeedRandom (planet->rand_seed);
+		RandomContext_SeedRandom (SysGenRNG, planet->rand_seed);
 		
 		(*system->genFuncs->generateMoons) (system, planet);
 
 		forAllMoons (star, system, planet, moonRecurse,
 				(void *) universeRecurseArg);
-
-		TFB_SeedRandom (oldSeed);
 	}
 	
 	if (universeRecurseArg->planetFuncPost != NULL)
@@ -732,10 +734,13 @@ moonRecurse (STAR_DESC *star, SOLARSYS_STATE *system, PLANET_DESC *planet,
 	if (universeRecurseArg->moonFunc != NULL)
 	{
 		system->pOrbitalDesc = moon;
-		DoPlanetaryAnalysis (&system->SysInfo, moon);
+		if (moon->data_index != HIERARCHY_STARBASE && moon->data_index != SA_MATRA)
+		{
+			DoPlanetaryAnalysis (&system->SysInfo, moon);
 				// When GenerateDefaultFunctions is used as genFuncs,
 				// generateOrbital will also call DoPlanetaryAnalysis,
 				// but with other GenerateFunctions this is not guaranteed.
+		}
 		(*system->genFuncs->generateOrbital) (system, moon);
 		(*universeRecurseArg->moonFunc) (
 				moon, universeRecurseArg->arg);
@@ -749,6 +754,7 @@ typedef struct
 	FILE *out;
 } DumpUniverseArg;
 
+// Must be called from the Starcon2Main thread.
 void
 dumpUniverse (FILE *out)
 {
@@ -767,7 +773,7 @@ dumpUniverse (FILE *out)
 	UniverseRecurse (&universeRecurseArg);
 }
 
-// Must be called from the main thread.
+// Must be called from the Starcon2Main thread.
 void
 dumpUniverseToFile (void)
 {
@@ -977,8 +983,7 @@ dumpPlanetCallback (const PLANET_DESC *planet, void *arg)
 void
 dumpPlanet (FILE *out, const PLANET_DESC *planet)
 {
-	(*pSolarSysState->genFuncs->generateName) (
-			pSolarSysState, (PLANET_DESC *) planet);
+	(*pSolarSysState->genFuncs->generateName) (pSolarSysState, planet);
 	fprintf (out, "- %-37s  %s\n", GLOBAL_SIS (PlanetName),
 			planetTypeString (planet->data_index & ~PLANET_SHIELDED));
 	dumpWorld (out, planet);
@@ -1059,16 +1064,16 @@ calculateBioValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 
 	assert (system->pOrbitalDesc == world);
 	
-	numBio = callGenerateForScanType ((SOLARSYS_STATE *) system,
-			(PLANET_DESC *) world, ~0, BIOLOGICAL_SCAN);
+	numBio = callGenerateForScanType (system, world, GENERATE_ALL,
+			BIOLOGICAL_SCAN, NULL);
 
 	result = 0;
 	for (i = 0; i < numBio; i++)
 	{
-		callGenerateForScanType ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, i, BIOLOGICAL_SCAN);
-		result += BIO_CREDIT_VALUE * LONIBBLE (CreatureData[
-				system->SysInfo.PlanetInfo.CurType].ValueAndHitPoints);
+		NODE_INFO info;
+		callGenerateForScanType (system, world, i, BIOLOGICAL_SCAN, &info);
+		result += BIO_CREDIT_VALUE *
+				LONIBBLE (CreatureData[info.type].ValueAndHitPoints);
 	}
 	return result;
 }
@@ -1082,17 +1087,17 @@ generateBioIndex(const SOLARSYS_STATE *system, const PLANET_DESC *world,
 
 	assert (system->pOrbitalDesc == world);
 	
-	numBio = callGenerateForScanType ((SOLARSYS_STATE *) system,
-			(PLANET_DESC *) world, ~0, BIOLOGICAL_SCAN);
+	numBio = callGenerateForScanType (system, world, GENERATE_ALL,
+			BIOLOGICAL_SCAN, NULL);
 
 	for (i = 0; i < NUM_CREATURE_TYPES + NUM_SPECIAL_CREATURE_TYPES; i++)
 		bio[i] = 0;
 	
 	for (i = 0; i < numBio; i++)
 	{
-		callGenerateForScanType ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, i, BIOLOGICAL_SCAN);
-		bio[system->SysInfo.PlanetInfo.CurType]++;
+		NODE_INFO info;
+		callGenerateForScanType (system, world, i, BIOLOGICAL_SCAN, &info);
+		bio[info.type]++;
 	}
 }
 
@@ -1105,17 +1110,16 @@ calculateMineralValue (const SOLARSYS_STATE *system, const PLANET_DESC *world)
 
 	assert (system->pOrbitalDesc == world);
 	
-	numDeposits = callGenerateForScanType ((SOLARSYS_STATE *) system,
-			(PLANET_DESC *) world, ~0, MINERAL_SCAN);
+	numDeposits = callGenerateForScanType (system, world, GENERATE_ALL,
+			MINERAL_SCAN, NULL);
 
 	result = 0;
 	for (i = 0; i < numDeposits; i++)
 	{
-		callGenerateForScanType ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, i, MINERAL_SCAN);
-		result += HIBYTE (system->SysInfo.PlanetInfo.CurDensity) *
-				GLOBAL (ElementWorth[ElementCategory (
-				system->SysInfo.PlanetInfo.CurType)]);
+		NODE_INFO info;
+		callGenerateForScanType (system, world, i, MINERAL_SCAN, &info);
+		result += HIBYTE (info.density) *
+				GLOBAL (ElementWorth[ElementCategory (info.type)]);
 	}
 	return result;
 }
@@ -1129,18 +1133,17 @@ generateMineralIndex(const SOLARSYS_STATE *system, const PLANET_DESC *world,
 
 	assert (system->pOrbitalDesc == world);
 	
-	numDeposits = callGenerateForScanType ((SOLARSYS_STATE *) system,
-			(PLANET_DESC *) world, ~0, MINERAL_SCAN);
+	numDeposits = callGenerateForScanType (system, world, GENERATE_ALL,
+			MINERAL_SCAN, NULL);
 
 	for (i = 0; i < NUM_ELEMENT_CATEGORIES; i++)
 		minerals[i] = 0;
 	
 	for (i = 0; i < numDeposits; i++)
 	{
-		callGenerateForScanType ((SOLARSYS_STATE *) system,
-				(PLANET_DESC *) world, i, MINERAL_SCAN);
-		minerals[ElementCategory(system->SysInfo.PlanetInfo.CurType)] +=
-				HIBYTE (system->SysInfo.PlanetInfo.CurDensity);
+		NODE_INFO info;
+		callGenerateForScanType (system, world, i, MINERAL_SCAN, &info);
+		minerals[ElementCategory (info.type)] += HIBYTE (info.density);
 	}
 }
 
@@ -1153,6 +1156,7 @@ struct TallyResourcesArg
 	COUNT bioCount;
 };
 
+// Must be called from the Starcon2Main thread.
 void
 tallyResources (FILE *out)
 {
@@ -1171,7 +1175,7 @@ tallyResources (FILE *out)
 	UniverseRecurse (&universeRecurseArg);
 }
 
-// Must be called from the main thread.
+// Must be called from the Starcon2Main thread.
 void
 tallyResourcesToFile (void)
 {
@@ -1504,7 +1508,7 @@ resetCrewBattle (void)
 	CONTEXT OldContext;
 	
 	if (!(GLOBAL (CurrentActivity) & IN_BATTLE) ||
-			(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE))
+			(inHQSpace ()))
 		return;
 	
 	StarShipPtr = findPlayerShip (RPG_PLAYER_NUM);
@@ -1527,7 +1531,7 @@ resetEnergyBattle (void)
 	CONTEXT OldContext;
 	
 	if (!(GLOBAL (CurrentActivity) & IN_BATTLE) ||
-			(LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE))
+			(inHQSpace ()))
 		return;
 	
 	StarShipPtr = findPlayerShip (RPG_PLAYER_NUM);
@@ -1853,16 +1857,13 @@ debugContexts (void)
 		return;
 	inDebugContexts = true;
 
-	LockMutex (GraphicsLock);
 	contextCount = countVisibleContexts ();
 	if (contextCount == 0)
 	{
-		UnlockMutex (GraphicsLock);
 		goto out;
 	}
 	
 	savedScreen = getScreen ();
-	//UnlockMutex (GraphicsLock);
 	FlushGraphics ();
 			// Make sure that the screen has actually been captured,
 			// before we use the frame.
@@ -1876,7 +1877,6 @@ debugContexts (void)
 
 	hueIncrement = 360.0 / contextCount;
 
-	//LockMutex (GraphicsLock);
 	visibleContextI = 0;
 	for (context = GetFirstContext (); context != NULL;
 			context = GetNextContext (context))
@@ -1898,7 +1898,6 @@ debugContexts (void)
 
 	// Blit the final debugging frame to the screen.
 	putScreen (debugDrawFrame);
-	UnlockMutex (GraphicsLock);
 
 	// Wait for a key:
 	{
@@ -1907,9 +1906,7 @@ debugContexts (void)
 		DoInput(&state, TRUE);
 	}
 
-	LockMutex (GraphicsLock);
 	SetContext (orgContext);
-	UnlockMutex (GraphicsLock);
 
 	// Destroy the debugging frame and context.
 	DestroyContext (debugDrawContext);
@@ -1917,9 +1914,7 @@ debugContexts (void)
 			// SetContextFGFrame().
 	DestroyDrawable (ReleaseDrawable (debugDrawFrame));
 	
-	LockMutex (GraphicsLock);
 	putScreen (savedScreen);
-	UnlockMutex (GraphicsLock);
 
 	DestroyDrawable (ReleaseDrawable (savedScreen));
 

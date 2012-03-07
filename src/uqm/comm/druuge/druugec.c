@@ -166,7 +166,7 @@ ExitConversation (RESPONSE_REF R)
 {
 	if (PLAYER_SAID (R, bye))
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{
@@ -210,7 +210,7 @@ ExitConversation (RESPONSE_REF R)
 	}
 	else /* if (R == then_we_take_bomb) */
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 
 		NPCPhrase (FIGHT_FOR_BOMB);
 	}
@@ -240,15 +240,13 @@ Buy (RESPONSE_REF R)
 #define SHIP_CREW_COST 100
 		if (GLOBAL_SIS (CrewEnlisted) < SHIP_CREW_COST)
 			NPCPhrase (NOT_ENOUGH_CREW);
-		else if (ActivateStarShip (DRUUGE_SHIP, FEASIBILITY_STUDY) == 0)
+		else if (EscortFeasibilityStudy (DRUUGE_SHIP) == 0)
 			NPCPhrase (NOT_ENOUGH_ROOM);
 		else
 		{
-			LockMutex (GraphicsLock);
 			DeltaSISGauges (-SHIP_CREW_COST, 0, 0);
-			UnlockMutex (GraphicsLock);
 			SlaveryCount += SHIP_CREW_COST;
-			ActivateStarShip (DRUUGE_SHIP, 1);
+			AddEscortShips (DRUUGE_SHIP, 1);
 
 			NPCPhrase (BOUGHT_SHIP);
 		}
@@ -260,9 +258,7 @@ Buy (RESPONSE_REF R)
 			NPCPhrase (NOT_ENOUGH_CREW);
 		else
 		{
-			LockMutex (GraphicsLock);
 			DeltaSISGauges (-ARTIFACT_CREW_COST, 0, 0);
-			UnlockMutex (GraphicsLock);
 			SlaveryCount += ARTIFACT_CREW_COST;
 			SET_GAME_STATE (ROSY_SPHERE_ON_SHIP, 1);
 			SET_GAME_STATE (ROSY_SPHERE, 1);
@@ -276,9 +272,7 @@ Buy (RESPONSE_REF R)
 			NPCPhrase (NOT_ENOUGH_CREW);
 		else
 		{
-			LockMutex (GraphicsLock);
 			DeltaSISGauges (-ARTIFACT_CREW_COST, 0, 0);
-			UnlockMutex (GraphicsLock);
 			SlaveryCount += ARTIFACT_CREW_COST;
 			SET_GAME_STATE (ARTIFACT_2_ON_SHIP, 1);
 
@@ -291,9 +285,7 @@ Buy (RESPONSE_REF R)
 			NPCPhrase (NOT_ENOUGH_CREW);
 		else
 		{
-			LockMutex (GraphicsLock);
 			DeltaSISGauges (-ARTIFACT_CREW_COST, 0, 0);
-			UnlockMutex (GraphicsLock);
 			SlaveryCount += ARTIFACT_CREW_COST;
 			SET_GAME_STATE (ARTIFACT_3_ON_SHIP, 1);
 
@@ -307,10 +299,8 @@ Buy (RESPONSE_REF R)
 			NPCPhrase (NOT_ENOUGH_CREW);
 		else
 		{
-			LockMutex (GraphicsLock);
 			DeltaSISGauges (-FUEL_CREW_COST,
 					FUEL_CREW_COST * FUEL_TANK_SCALE, 0);
-			UnlockMutex (GraphicsLock);
 			SlaveryCount += FUEL_CREW_COST;
 
 			NPCPhrase (BOUGHT_FUEL);
@@ -403,7 +393,7 @@ DoTransaction (RESPONSE_REF R)
 
 		trade_gas = 0;
 		ships_to_trade = 0;
-		ship_slots = ActivateStarShip (DRUUGE_SHIP, FEASIBILITY_STUDY);
+		ship_slots = EscortFeasibilityStudy (DRUUGE_SHIP);
 		if (PLAYER_SAID (R, sell_maidens))
 		{
 			NPCPhrase (BOUGHT_MAIDENS);
@@ -430,7 +420,7 @@ DoTransaction (RESPONSE_REF R)
 		NPCPhrase (YOU_GET);
 		if (ships_to_trade)
 		{
-			ActivateStarShip (DRUUGE_SHIP, ships_to_trade);
+			AddEscortShips (DRUUGE_SHIP, ships_to_trade);
 
 			if (ship_slots >= ships_to_trade)
 				NPCPhrase (DEAL_FOR_STATED_SHIPS);
@@ -466,14 +456,12 @@ DoTransaction (RESPONSE_REF R)
 			capacity -= GLOBAL_SIS (FuelOnBoard);
 			f = (COUNT)((capacity + (FUEL_TANK_SCALE >> 1)) / FUEL_TANK_SCALE);
 
-			LockMutex (GraphicsLock);
 			while (capacity > 0x3FFFL)
 			{
 				DeltaSISGauges (0, 0x3FFF, 0);
 				capacity -= 0x3FFF;
 			}
 			DeltaSISGauges (0, (SIZE)capacity, 0);
-			UnlockMutex (GraphicsLock);
 
 			NPCPhrase (FUEL0);
 			NPCNumber (f, NULL);
@@ -695,7 +683,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -732,7 +720,7 @@ Intro (void)
 			SET_GAME_STATE (DRUUGE_VISITS, NumVisits);
 		}
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 	{
@@ -826,7 +814,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (DRUUGE_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else
 	{
@@ -862,7 +850,7 @@ Intro (void)
 			}
 			SET_GAME_STATE (DRUUGE_SALVAGE, NumVisits);
 
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 			AttemptedSalvage = TRUE;
 		}
 		else
@@ -894,7 +882,7 @@ uninit_druuge (void)
 static void
 post_druuge_enc (void)
 {
-	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
+	if (getSegue () == Segue_hostile
 			&& !AttemptedSalvage
 			&& !GET_GAME_STATE (DRUUGE_MANNER))
 	{
@@ -926,11 +914,11 @@ init_druuge_comm (void)
 			&& (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7)))
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &druuge_desc;
 

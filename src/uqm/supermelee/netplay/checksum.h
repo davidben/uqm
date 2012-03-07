@@ -33,6 +33,10 @@ typedef uint32 Checksum;
 
 #include "netconnection.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 static inline void
 crc_processELEMENT_FLAGS(crc_State *state, ELEMENT_FLAGS val) {
@@ -87,6 +91,10 @@ void addLocalChecksum(BattleFrameCounter frameNr, Checksum checksum);
 void addRemoteChecksum(NetConnection *conn, BattleFrameCounter frameNr,
 		Checksum checksum);
 bool verifyChecksums(BattleFrameCounter frameNr);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _CHECKSUM_H */
 

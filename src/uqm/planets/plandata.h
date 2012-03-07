@@ -21,6 +21,9 @@
 
 #include "libs/reslib.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /*------------------------------ Type Defines ----------------------------- */
 #define NUMBER_OF_ORBITS 16
@@ -276,25 +279,6 @@ typedef struct
 	DWORD ScanSeed[NUM_SCAN_TYPES];
 	DWORD ScanRetrieveMask[NUM_SCAN_TYPES];
 
-	// The CurPt, CurDensity and CurType fields are filled in
-	// when a GENERATE_MINERAL, GENERATE_ENERGY, or GENERATE_LIFE
-	// call is made.
-	POINT CurPt;
-			// Position of the mineral/bio/energy node on the planet.
-	COUNT CurDensity;
-			// For bio and energy: undefined
-			// For minerals the low byte is the gross size of the
-			// deposit (this determines the image), and the high
-			// byte is the fine size (the actual quantity).
-	COUNT CurType;
-			// For minerals: the type of element
-			// For bio: the type of the creature.
-			//          0 through NUM_CREATURE_TYPES - 1 are normal creatures,
-			//          NUM_CREATURE_TYPES     is an Evil One
-			//          NUM_CREATURE_TYPES + 1 is a Brainbox Bulldozer
-			//          NUM_CREATURE_TYPES + 2 is Zex' Beauty
-			// For energy: undefined
-
 	STRING DiscoveryString;
 	FONT LanderFont;
 	FRAME LanderFontEff;
@@ -310,8 +294,7 @@ enum
 	SUPER_DENSITY
 };
 
-#define CalcGravity(d,r) (UWORD)((DWORD)(d) * (r) / 100)
-#define CalcFromBase(b,v) ((UWORD)(b) + ((UWORD)TFB_Random () % (v)))
+extern UWORD CalcGravity (const PLANET_INFO*);
 
 #define EARTH_ATMOSPHERE 50
 
@@ -327,6 +310,10 @@ enum
 #define SUPER_TECTONICS 200
 
 extern const PlanetFrame *PlanData;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _PLANDATA_H */
 

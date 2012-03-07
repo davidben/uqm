@@ -156,8 +156,17 @@ Init_DrawCommandQueue (void)
 void
 Uninit_DrawCommandQueue (void)
 {
-	DestroyCondVar (RenderingCond);
-	DestroyRecursiveMutex (DCQ_Mutex);
+	if (RenderingCond)
+	{
+		DestroyCondVar (RenderingCond);
+		RenderingCond = 0;
+	}
+
+	if (DCQ_Mutex)
+	{
+		DestroyRecursiveMutex (DCQ_Mutex);
+		DCQ_Mutex = 0;
+	}
 }
 
 void
@@ -216,6 +225,30 @@ TFB_DrawCommandQueue_Clear ()
 	UnlockRecursiveMutex (DCQ_Mutex);
 }
 
+static void
+checkExclusiveThread (TFB_DrawCommand* DrawCommand)
+{
+#ifdef DEBUG_DCQ_THREADS
+	static uint32 exclusiveThreadId;
+	extern uint32 SDL_ThreadID(void);
+
+	// Only one thread is currently allowed to enqueue commands
+	// This is not a technical limitation but rather a semantical one atm.
+	if (DrawCommand->Type == TFB_DRAWCOMMANDTYPE_REINITVIDEO)
+	{	// TFB_DRAWCOMMANDTYPE_REINITVIDEO is an exception
+		// It is queued from the main() thread, which is safe to do
+		return;
+	}
+	
+	if (!exclusiveThreadId)
+		exclusiveThreadId = SDL_ThreadID();
+	else
+		assert (SDL_ThreadID() == exclusiveThreadId);
+#else
+	(void) DrawCommand; // suppress unused warning
+#endif
+}
+
 void
 TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 {
@@ -223,6 +256,8 @@ TFB_EnqueueDrawCommand (TFB_DrawCommand* DrawCommand)
 	{
 		return;
 	}
+
+	checkExclusiveThread (DrawCommand);
 
 	if (DrawCommand->Type <= TFB_DRAWCOMMANDTYPE_COPYTOIMAGE
 			&& _CurFramePtr->Type == SCREEN_DRAWABLE)
@@ -586,4 +621,50 @@ TFB_FlushGraphics (void)
 	TFB_SwapBuffers (TFB_REDRAW_NO);
 	RenderedFrames++;
 	BroadcastCondVar (RenderingCond);
+}
+
+void
+TFB_PurgeDanglingGraphics (void)
+{
+	Lock_DCQ (-1);
+
+	for (;;)
+	{
+		TFB_DrawCommand DC;
+
+		if (!TFB_DrawCommandQueue_Pop (&DC))
+		{
+			// the Queue is now empty.
+			break;
+		}
+
+		switch (DC.Type)
+		{
+			case TFB_DRAWCOMMANDTYPE_DELETEIMAGE:
+			{
+				TFB_Image *DC_image = DC.data.deleteimage.image;
+				TFB_DrawImage_Delete (DC_image);
+				break;
+			}
+			case TFB_DRAWCOMMANDTYPE_DELETEDATA:
+			{
+				void *data = DC.data.deletedata.data;
+				HFree (data);
+				break;
+			}
+			case TFB_DRAWCOMMANDTYPE_IMAGE:
+			{
+				TFB_ColorMap *cmap = DC.data.image.colormap;
+				if (cmap)
+					TFB_ReturnColorMap (cmap);
+				break;
+			}
+			case TFB_DRAWCOMMANDTYPE_SENDSIGNAL:
+			{
+				ClearSemaphore (DC.data.sendsignal.sem);
+				break;
+			}
+		}
+	}
+	Unlock_DCQ ();
 }

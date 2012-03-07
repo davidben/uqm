@@ -17,7 +17,15 @@
 #ifndef VUX_H
 #define VUX_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_vux (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* VUX_H */
 

@@ -21,7 +21,15 @@
 
 #include "libs/net.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 void dataReadyCallback(NetDescriptor *nd);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _NETRCV_H */
 

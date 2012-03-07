@@ -3,6 +3,10 @@
 
 #include "types.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef enum MeleeShip {
 	MELEE_ANDROSYNTH,
 	MELEE_ARILOU,
@@ -42,6 +46,10 @@ MeleeShip_valid (MeleeShip ship)
 {
 	return (ship < NUM_MELEE_SHIPS) || (ship == MELEE_NONE);
 }
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* MELEESHIP_H */
 

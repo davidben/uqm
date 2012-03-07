@@ -27,6 +27,7 @@
 #include "sis.h"
 #include "units.h"
 #include "encount.h"
+#include "starmap.h"
 #include "endian_uqm.h"
 #include "gamestr.h"
 #include "options.h"
@@ -46,8 +47,7 @@
 #include <ctype.h>
 
 #define MAX_RESPONSES 8
-#define BACKGROUND_VOL \
-		(speechVolumeScale == 0.0f ? NORMAL_VOLUME : (NORMAL_VOLUME >> 1))
+#define BACKGROUND_VOL (usingSpeech ? (NORMAL_VOLUME / 2) : NORMAL_VOLUME)
 #define FOREGROUND_VOL NORMAL_VOLUME
 
 // Oscilloscope frame rate
@@ -632,13 +632,11 @@ DoTalkSegue (TALKING_STATE *pTS)
 		CheckSubtitles ();
 	}
 
-	LockMutex (GraphicsLock);
 	// XXX: When seeking, all animations (talking and ambient) stop
 	// progressing. This is an original 3DO behavior, and I see no
 	// reason why the animations cannot continue while seeking.
 	UpdateAnimations (pTS->seeking);
 	UpdateSpeechGraphics ();
-	UnlockMutex (GraphicsLock);
 
 	curTrack = PlayingTrack ();
 	pTS->ended = !pTS->seeking && !curTrack;
@@ -653,9 +651,7 @@ DoTalkSegue (TALKING_STATE *pTS)
 static void
 runCommAnimFrame (void)
 {
-	LockMutex (GraphicsLock);
 	UpdateCommGraphics ();
-	UnlockMutex (GraphicsLock);
 	SleepThread (COMM_ANIM_RATE);
 }
 
@@ -764,13 +760,11 @@ AlienTalkSegue (COUNT wait_track)
 	if (!pCurInputState->Initialized)
 	{
 		InitSpeechGraphics ();
-		LockMutex (GraphicsLock);
 		SetColorMap (GetColorMapAddress (CommData.AlienColorMap));
 		SetContext (AnimContext);
 		DrawAlienFrame (NULL, 0, TRUE);
 		UpdateSpeechGraphics ();
 		CommIntroTransition ();
-		UnlockMutex (GraphicsLock);
 		
 		pCurInputState->Initialized = TRUE;
 
@@ -845,7 +839,6 @@ DoConvSummary (SUMMARY_STATE *pSS)
 		r.extent.width = SIS_SCREEN_WIDTH;
 		r.extent.height = SIS_SCREEN_HEIGHT - SLIDER_Y - SLIDER_HEIGHT + 2;
 
-		LockMutex (GraphicsLock);
 		SetContext (AnimContext);
 		SetContextForeGroundColor (COMM_HISTORY_BACKGROUND_COLOR);
 		DrawFilledRectangle (&r);
@@ -914,7 +907,6 @@ DoConvSummary (SUMMARY_STATE *pSS)
 			font_DrawText (&mt);
 		}
 
-		UnlockMutex (GraphicsLock);
 
 		pSS->PrintNext = FALSE;
 	}
@@ -934,9 +926,7 @@ SelectResponse (ENCOUNTER_STATE *pES)
 			&pES->response_list[pES->cur_response].response_text;
 	utf8StringCopy (pES->phrase_buf, sizeof pES->phrase_buf,
 			response_text->pStr);
-	LockMutex (GraphicsLock);
 	FeedbackPlayerPhrase (pES->phrase_buf);
-	UnlockMutex (GraphicsLock);
 	StopTrack ();
 	ClearSubtitles ();
 	SetSliderImage (SetAbsFrameIndex (ActivityFrame, 2));
@@ -955,29 +945,23 @@ SelectConversationSummary (ENCOUNTER_STATE *pES)
 {
 	SUMMARY_STATE SummaryState;
 	
-	LockMutex (GraphicsLock);
 	if (pES)
 		FeedbackPlayerPhrase (pES->phrase_buf);
-	UnlockMutex (GraphicsLock);
 
 	SummaryState.Initialized = FALSE;
 	DoConvSummary (&SummaryState);
 
-	LockMutex (GraphicsLock);
 	if (pES)
 		RefreshResponses (pES);
 	clear_subtitles = TRUE;
-	UnlockMutex (GraphicsLock);
 }
 
 static void
 SelectReplay (ENCOUNTER_STATE *pES)
 {
 	FadeMusic (BACKGROUND_VOL, ONE_SECOND);
-	LockMutex (GraphicsLock);
 	if (pES)
 		FeedbackPlayerPhrase (pES->phrase_buf);
-	UnlockMutex (GraphicsLock);
 
 	TalkSegue (0);
 }
@@ -990,9 +974,7 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 	if (pES->top_response == (BYTE)~0)
 	{
 		pES->top_response = 0;
-		LockMutex (GraphicsLock);
 		RefreshResponses (pES);
-		UnlockMutex (GraphicsLock);
 	}
 
 	if (PulsedInputState.menu[KEY_MENU_SELECT])
@@ -1013,9 +995,7 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 
 			if (!(GLOBAL (CurrentActivity) & CHECK_ABORT))
 			{
-				LockMutex (GraphicsLock);
 				RefreshResponses (pES);
-				UnlockMutex (GraphicsLock);
 				FadeMusic (FOREGROUND_VOL, ONE_SECOND);
 			}
 		}
@@ -1029,7 +1009,6 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 		{
 			COORD y;
 
-			LockMutex (GraphicsLock);
 			BatchGraphics ();
 			add_text (-2,
 					&pES->response_list[pES->cur_response].response_text);
@@ -1049,12 +1028,9 @@ PlayerResponseInput (ENCOUNTER_STATE *pES)
 				RefreshResponses (pES);
 			}
 			UnbatchGraphics ();
-			UnlockMutex (GraphicsLock);
 		}
 
-		LockMutex (GraphicsLock);
 		UpdateCommGraphics ();
-		UnlockMutex (GraphicsLock);
 
 		SleepThreadUntil (pES->NextTime);
 		pES->NextTime = GetTimeCounter () + COMM_ANIM_RATE;
@@ -1094,9 +1070,7 @@ DoLastReplay (LAST_REPLAY_STATE *pLRS)
 		pLRS->TimeOut = FadeMusic (0, ONE_SECOND * 2) + ONE_SECOND / 60;
 	}
 
-	LockMutex (GraphicsLock);
 	UpdateCommGraphics ();
-	UnlockMutex (GraphicsLock);
 	
 	SleepThreadUntil (pLRS->NextTime);
 	pLRS->NextTime = GetTimeCounter () + COMM_ANIM_RATE;
@@ -1135,11 +1109,9 @@ DoCommunication (ENCOUNTER_STATE *pES)
 		return TRUE;
 	}
 
-	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
 	DestroyContext (AnimContext);
 	AnimContext = NULL;
-	UnlockMutex (GraphicsLock);
 
 	FlushColorXForms ();
 	ClearSubtitles ();
@@ -1228,7 +1200,6 @@ HailAlien (void)
 	SubtitleText.baseline = CommData.AlienTextBaseline;
 	SubtitleText.align = CommData.AlienTextAlign;
 
-	LockMutex (GraphicsLock);
 
 	// init subtitle cache context
 	TextCacheContext = CreateContext ("TextCacheContext");
@@ -1293,7 +1264,6 @@ HailAlien (void)
 		DrawSISComWindow ();
 	}
 
-	UnlockMutex (GraphicsLock);
 
 	LastActivity |= CHECK_LOAD; /* prevent spurious input */
 	(*CommData.init_encounter_func) ();
@@ -1302,10 +1272,8 @@ HailAlien (void)
 		(*CommData.post_encounter_func) ();
 	(*CommData.uninit_encounter_func) ();
 
-	LockMutex (GraphicsLock);
 	SetContext (SpaceContext);
 	SetContextFont (OldFont);
-	UnlockMutex (GraphicsLock);
 
 	DestroyStringTable (ReleaseStringTable (CommData.ConversationPhrases));
 	DestroyMusic (CommData.AlienSong);
@@ -1343,7 +1311,6 @@ InitCommunication (CONVERSATION which_comm)
 		return 0;
 #endif
 	
-	LockMutex (GraphicsLock);
 
 	if (LastActivity & CHECK_LOAD)
 	{
@@ -1360,7 +1327,7 @@ InitCommunication (CONVERSATION which_comm)
 				RepairSISBorder ();
 			}
 			DrawSISMessage (NULL);
-			if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+			if (inHQSpace ())
 				DrawHyperCoords (GLOBAL (ShipStamp.origin));
 			else if (GLOBAL (ip_planet) == 0)
 				DrawHyperCoords (CurStarDescPtr->star_pt);
@@ -1369,7 +1336,6 @@ InitCommunication (CONVERSATION which_comm)
 		}
 	}
 
-	UnlockMutex (GraphicsLock);
 
 	if (which_comm == URQUAN_DRONE_CONVERSATION)
 	{
@@ -1394,7 +1360,7 @@ InitCommunication (CONVERSATION which_comm)
 				status = HUMAN_SHIP;
 			}
 		}
-		ActivateStarShip (status, SPHERE_TRACKING);
+		StartSphereTracking (status);
 
 		if (which_comm == ORZ_CONVERSATION
 				|| (which_comm == TALKING_PET_CONVERSATION
@@ -1402,7 +1368,7 @@ InitCommunication (CONVERSATION which_comm)
 				|| LOBYTE (GLOBAL (CurrentActivity)) == IN_LAST_BATTLE))
 				|| (which_comm != CHMMR_CONVERSATION
 				&& which_comm != SYREEN_CONVERSATION
-				))//&& ActivateStarShip (status, CHECK_ALLIANCE) == BAD_GUY))
+				))//&& CheckAlliance (status) == BAD_GUY))
 			BuildBattle (NPC_PLAYER_NUM);
 	}
 
@@ -1526,7 +1492,7 @@ RaceCommunication (void)
 		SET_GAME_STATE (ESCAPE_COUNTER, ec);
 		return;
 	}
-	else if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	else if (inHQSpace ())
 	{
 		ReinitQueue (&GLOBAL (npc_built_ship_q));
 		if (GET_GAME_STATE (ARILOU_SPACE_SIDE) >= 2)
@@ -1537,7 +1503,6 @@ RaceCommunication (void)
 		else
 		{
 			/* Encounter with a black globe in HS, prepare enemy ship list */
-			COUNT NumShips;
 			ENCOUNTER *EncounterPtr;
 
 			// The encounter globe that the flagship collided with is moved
@@ -1545,10 +1510,9 @@ RaceCommunication (void)
 			hEncounter = GetHeadEncounter ();
 			LockEncounter (hEncounter, &EncounterPtr);
 
-			NumShips = LONIBBLE (EncounterPtr->SD.Index);
-			for (i = 0; i < NumShips; ++i)
+			for (i = 0; i < EncounterPtr->num_ships; ++i)
 			{
-				CloneShipFragment (EncounterPtr->SD.Type,
+				CloneShipFragment (EncounterPtr->race_id,
 						&GLOBAL (npc_built_ship_q),
 						EncounterPtr->ShipList[i].crew_level);
 			}
@@ -1589,12 +1553,11 @@ RaceCommunication (void)
 
 		LockEncounter (hEncounter, &EncounterPtr);
 
-		NumShips = (BYTE)CountLinks (&GLOBAL (npc_built_ship_q));
-		EncounterPtr->SD.Index = MAKE_BYTE (NumShips,
-				HINIBBLE (EncounterPtr->SD.Index));
-		EncounterPtr->SD.Index |= ENCOUNTER_REFORMING;
+		NumShips = CountLinks (&GLOBAL (npc_built_ship_q));
+		EncounterPtr->num_ships = NumShips;
+		EncounterPtr->flags |= ENCOUNTER_REFORMING;
 		if (status == 0)
-			EncounterPtr->SD.Index |= ONE_SHOT_ENCOUNTER;
+			EncounterPtr->flags |= ONE_SHOT_ENCOUNTER;
 
 		for (i = 0; i < NumShips; ++i)
 		{

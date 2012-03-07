@@ -130,8 +130,20 @@ Socket_send(Socket *sock, const void *buf, size_t len, int flags) {
 }
 
 ssize_t
+Socket_sendto(Socket *sock, const void *buf, size_t len, int flags,
+		const struct sockaddr *addr, socklen_t addrLen) {
+	return sendto(sock->fd, buf, len, flags, addr, addrLen);
+}
+
+ssize_t
 Socket_recv(Socket *sock, void *buf, size_t len, int flags) {
 	return recv(sock->fd, buf, len, flags);
+}
+
+ssize_t
+Socket_recvfrom(Socket *sock, void *buf, size_t len, int flags,
+		struct sockaddr *from, socklen_t *fromLen) {
+	return recvfrom(sock->fd, buf, len, flags, from, fromLen);
 }
 
 int

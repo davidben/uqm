@@ -23,6 +23,10 @@
 
 #include <stddef.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define NETPLAY_NUM_PLAYERS 2
 		// Not using NUM_PLAYERS because that would mean we'd have
 		// to include init.h, and all that comes with it.
@@ -44,6 +48,10 @@ typedef struct {
 } NetplayOptions;
 extern NetplayOptions netplayOptions;
 
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _NETOPTIONS_H */
 

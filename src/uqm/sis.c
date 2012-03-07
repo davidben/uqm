@@ -20,8 +20,7 @@
 
 #include "colors.h"
 #include "races.h"
-// XXX: including encount.h for stuff that does not belong there
-#include "encount.h"
+#include "starmap.h"
 #include "units.h"
 #include "menustat.h"
 		// for DrawMenuStateStrings()
@@ -32,8 +31,10 @@
 #include "element.h"
 #include "setup.h"
 #include "state.h"
+#include "flash.h"
 #include "libs/graphics/gfx_common.h"
 #include "libs/tasklib.h"
+#include "libs/alarm.h"
 #include "libs/log.h"
 
 #include <stdio.h>
@@ -99,9 +100,7 @@ ClearSISRect (BYTE ClearFlags)
 
 	if (ClearFlags & CLEAR_SIS_RADAR)
 	{
-		UnlockMutex (GraphicsLock);
 		DrawMenuStateStrings ((BYTE)~0, 1);
-		LockMutex (GraphicsLock);
 #ifdef NEVER
 		r.corner.x = RADAR_X - 1;
 		r.corner.y = RADAR_Y - 1;
@@ -215,7 +214,7 @@ DrawSISMessageEx (const UNICODE *pStr, SIZE CurPos, SIZE ExPos, COUNT flags)
 				pStr = buf;
 				break;
 			case IN_HYPERSPACE:
-				if (GET_GAME_STATE (ARILOU_SPACE_SIDE) <= 1)
+				if (inHyperSpace ())
 				{
 					pStr = GAME_STRING (NAVIGATION_STRING_BASE);
 							// "HyperSpace"
@@ -950,7 +949,6 @@ DrawModules (void)
 	}
 }
 
-// Pre: GraphicsLock is unlocked
 static void
 DrawSupportShips (void)
 {
@@ -974,9 +972,7 @@ DrawSupportShips (void)
 
 		s.origin = *pship_pos;
 		s.frame = StarShipPtr->icons;
-		LockMutex (GraphicsLock);
 		DrawStamp (&s);
-		UnlockMutex (GraphicsLock);
 
 		UnlockShipFrag (&GLOBAL (built_ship_q), hStarShip);
 	}
@@ -1141,9 +1137,7 @@ DeltaSISGauges (SIZE crew_delta, SIZE fuel_delta, int resunit_delta)
 		DrawTurningJets ();
 		DrawModules ();
 
-		UnlockMutex (GraphicsLock);
 		DrawSupportShips ();
-		LockMutex (GraphicsLock);
 	}
 
 	SetContextFont (TinyFont);
@@ -1590,248 +1584,158 @@ DrawAutoPilotMessage (BOOLEAN Reset)
 }
 
 
-Task flash_task = 0;
-RECT flash_rect;
-static FRAME flash_screen_frame = 0;
-		// The original contents of the flash rectangle.
-static int flash_changed;
-Mutex flash_mutex = 0;
+static FlashContext *flashContext = NULL;
+static RECT flash_rect;
+static Alarm *flashAlarm = NULL;
+static BOOLEAN flashPaused = FALSE;
 
-static int
-flash_rect_func (void *data)
+static void scheduleFlashAlarm (void);
+
+static void
+updateFlashRect (void *arg)
 {
-#define NORMAL_STRENGTH 4
-#define NORMAL_F_STRENGTH 0
-#define CACHE_SIZE 10
-	DWORD TimeIn;
-	const DWORD WaitTime = ONE_SECOND / 16;
-	SIZE strength;
-	RECT cached_rect = {{0, 0}, {0, 0}};
-	FRAME cached_screen_frame = 0;
-	Task task = (Task)data;
-	bool cached[CACHE_SIZE];
-	STAMP cached_stamp[CACHE_SIZE];
-	int i;
+	if (flashContext == NULL)
+		return;
 
-	// Init cache
-	for (i = 0; i < CACHE_SIZE; i++)
-	{
-		cached[i] = false;
-		cached_stamp[i].frame = 0;
-	}
+	Flash_process (flashContext);
+	scheduleFlashAlarm ();
+	(void) arg;
+}
 
-	strength = NORMAL_STRENGTH;
-	TimeIn = GetTimeCounter ();
-	while (!Task_ReadState(task, TASK_EXIT))
-	{
-		CONTEXT OldContext;
-
-		LockMutex (flash_mutex);
-		if (flash_changed)
-		{
-			cached_rect = flash_rect;
-			if (cached_screen_frame)
-				DestroyDrawable (ReleaseDrawable (cached_screen_frame));
-			flash_changed = 0;
-			//  Wait for the  flash_screen_frame to get initialized
-			FlushGraphics ();
-			cached_screen_frame = CaptureDrawable (
-					CloneFrame (flash_screen_frame));
-			UnlockMutex (flash_mutex);
-
-			// Clear the cache.
-			for (i = 0; i < CACHE_SIZE; i++)
-			{
-				cached[i] = false;
-				if (cached_stamp[i].frame)
-					DestroyDrawable (ReleaseDrawable (cached_stamp[i].frame));
-				cached_stamp[i].frame = 0;
-			}
-		}
-		else
-			UnlockMutex (flash_mutex);
-		
-		if (cached_rect.extent.width)
-		{
-			STAMP *pStamp;
-
-#define MIN_STRENGTH 4
-#define MAX_STRENGTH 6
-			strength += 2;
-			if (strength > MAX_STRENGTH)
-				strength = MIN_STRENGTH;
-			if (cached[strength - MIN_STRENGTH])
-				pStamp = &cached_stamp[strength - MIN_STRENGTH];
-			else
-			{
-				pStamp = &cached_stamp[strength - MIN_STRENGTH];
-				cached[strength - MIN_STRENGTH] = true;
-				pStamp->frame = CaptureDrawable (
-						CloneFrame (cached_screen_frame));
-				pStamp->origin.x = 0;
-				pStamp->origin.y = 0;
-
-				if (strength != 4)
-				{	// brighten the frame with an additive
-					DrawMode oldMode;
-					STAMP s;
-					int factor;
-
-					s.origin.x = 0;
-					s.origin.y = 0;
-					s.frame = cached_screen_frame;
-
-					factor = (strength - MIN_STRENGTH) * DRAW_FACTOR_1 / 4;
-
-					LockMutex (GraphicsLock);
-					OldContext = SetContext (OffScreenContext);
-					SetContextFGFrame (pStamp->frame);
-					SetContextClipRect (NULL);
-					oldMode	= SetContextDrawMode (MAKE_DRAW_MODE (
-							DRAW_ADDITIVE, factor));
-					DrawStamp (&s);
-					SetContextDrawMode (oldMode);
-					SetContext (OldContext);
-					UnlockMutex (GraphicsLock);
-				}
-			}
-
-			LockMutex (GraphicsLock);
-			OldContext = SetContext (ScreenContext);
-			SetContextClipRect (&cached_rect);
-			// flash changed_can't be modified while GraphicSem is held
-			if (!flash_changed)
-				DrawStamp (pStamp);
-			// XXX: Shouldn't we save and restore the original cliprect?
-			SetContextClipRect (NULL);
-			SetContext (OldContext);
-			UnlockMutex (GraphicsLock);
-		}
-		FlushGraphics ();
-		SleepThreadUntil (TimeIn + WaitTime);
-		TimeIn = GetTimeCounter ();
-	}
-
-	// Clear cache
-	{
-		if (cached_screen_frame)
-			DestroyDrawable (ReleaseDrawable (cached_screen_frame));
-
-		for (i = 0; i < CACHE_SIZE; i++)
-		{
-			if(cached_stamp[i].frame)
-				DestroyDrawable (ReleaseDrawable (cached_stamp[i].frame));
-		}
-	}
-	LockMutex (flash_mutex);
-	flash_task = 0;
-	UnlockMutex (flash_mutex);
-
-	FinishTask (task);
-	return 0;
+static void
+scheduleFlashAlarm (void)
+{
+	TimeCount nextTime = Flash_nextTime (flashContext);
+	DWORD nextTimeMs = (nextTime / ONE_SECOND) * 1000 +
+			((nextTime % ONE_SECOND) * 1000 / ONE_SECOND);
+			// Overflow-safe conversion.
+	flashAlarm = Alarm_addAbsoluteMs (nextTimeMs, updateFlashRect, NULL);
 }
 
 void
-SetFlashRect (RECT *pRect)
+SetFlashRect (const RECT *pRect)
 {
 	RECT clip_r = {{0, 0}, {0, 0}};
-	RECT temp_r, flash_rect1, old_r;
-	CONTEXT OldContext;
-	int create_flash = 0;
-
-	if (!flash_mutex)
-		flash_mutex = CreateMutex ("FlashRect Lock",
-				SYNC_CLASS_TOPLEVEL | SYNC_CLASS_VIDEO);
-
-	old_r = flash_rect;
-	flash_rect1 = flash_rect;
-		
+	RECT temp_r;
+	
 	if (pRect != SFR_MENU_3DO && pRect != SFR_MENU_ANY)
 	{
+		// The caller specified their own flash area, or NULL (stop flashing).
 		GetContextClipRect (&clip_r);
-		OldContext = SetContext (ScreenContext);
 	}
 	else
 	{
-		//Don't flash when using the PC menu
  		if (optWhichMenu == OPT_PC && pRect != SFR_MENU_ANY)
  		{
- 			OldContext = SetContext (ScreenContext);
+			// The player wants PC menus and this flash is not used
+			// for a PC menu.
+			// Don't flash.
  			pRect = 0;
  		}
  		else
  		{
- 			OldContext = SetContext (StatusContext);
+			// The player wants 3DO menus, or the flash is used in both
+			// 3DO and PC mode.
+			CONTEXT OldContext = SetContext (StatusContext);
  			GetContextClipRect (&clip_r);
  			pRect = &temp_r;
  			temp_r.corner.x = RADAR_X - clip_r.corner.x;
  			temp_r.corner.y = RADAR_Y - clip_r.corner.y;
  			temp_r.extent.width = RADAR_WIDTH;
  			temp_r.extent.height = RADAR_HEIGHT;
- 			SetContext (ScreenContext);
+ 			SetContext (OldContext);
 		}
 	}
 
-	if (pRect == 0 || pRect->extent.width == 0)
+	if (pRect != 0 && pRect->extent.width != 0)
 	{
-		// End the flashing.
-		flash_rect1.extent.width = 0;
-		if (flash_task)
+		// Flash rectangle is not empty, start or continue flashing.
+		flash_rect = *pRect;
+		flash_rect.corner.x += clip_r.corner.x;
+		flash_rect.corner.y += clip_r.corner.y;
+
+		if (flashContext == NULL)
 		{
-			UnlockMutex (GraphicsLock);
-			ConcludeTask (flash_task);
-			LockMutex (GraphicsLock);
+			// Create a new flash context.
+			flashContext = Flash_createHighlight (ScreenContext, &flash_rect);
+			Flash_setMergeFactors(flashContext, 3, 2, 2);
+			Flash_setSpeed (flashContext, 0, ONE_SECOND / 16, 0, ONE_SECOND / 16);
+			Flash_setFrameTime (flashContext, ONE_SECOND / 16);
+			Flash_start (flashContext);
+			scheduleFlashAlarm ();
+		}
+		else
+		{
+			// Reuse an existing flash context
+			Flash_setRect (flashContext, &flash_rect);
 		}
 	}
 	else
 	{
-		flash_rect1 = *pRect;
-		flash_rect1.corner.x += clip_r.corner.x;
-		flash_rect1.corner.y += clip_r.corner.y;
-		create_flash = 1;
-	}
-	
-	LockMutex (flash_mutex);
-	flash_rect = flash_rect1;
-
-	if (old_r.extent.width && !rectsEqual (old_r, flash_rect))
-	{
-		// We had a flash rectangle, and now a different one is set.
-		if (flash_screen_frame)
+		// Flash rectangle is empty. Stop flashing.
+		if (flashContext != NULL)
 		{
-			// The screen contents may have changed; we grab a new copy.
-			STAMP old_s;
-			old_s.origin.x = old_r.corner.x;
-			old_s.origin.y = old_r.corner.y;
-			old_s.frame = flash_screen_frame;
-			DrawStamp (&old_s);
-			DestroyDrawable (ReleaseDrawable (flash_screen_frame));
-			flash_screen_frame = 0;
+			Alarm_remove(flashAlarm);
+			flashAlarm = 0;
+			
+			Flash_terminate (flashContext);
+			flashContext = NULL;
 		}
-		else
-			log_add (log_Debug, "Couldn't locate flash_screen_rect");
 	}
-	
-	if (flash_rect.extent.width)
-	{
-		// A new flash rectangle is set.
-		// Copy the original contents of the rectangle from the screen.
-		if (flash_screen_frame)
-			DestroyDrawable (ReleaseDrawable (flash_screen_frame));
-		flash_screen_frame =
-				CaptureDrawable (LoadDisplayPixmap (&flash_rect, (FRAME)0));
-	}
-	flash_changed = 1;
-	UnlockMutex (flash_mutex);
-	// we create the thread after the LoadDisplayPixmap()
-	// so there is no race between the FlushGraphics in flash_task
-	// and the Enqueue in LoadDisplayPixmap()
-	if (create_flash && flash_task == 0)
-	{
-		flash_task = AssignTask (flash_rect_func, 2048,
-				"flash rectangle");
-	}
-
-	SetContext (OldContext);
 }
+
+COUNT updateFlashRectRecursion = 0;
+// XXX This is necessary at least because DMS_AddEscortShip() calls
+// DrawRaceStrings() in an UpdateFlashRect block, which calls
+// ClearSISRect(), which calls DrawMenuStateStrings(), which starts its own
+// UpdateFlashRect block. This should probably be cleaned up.
+
+void
+PreUpdateFlashRect (void)
+{
+	if (flashAlarm)
+	{
+		updateFlashRectRecursion++;
+		if (updateFlashRectRecursion > 1)
+			return;
+		Flash_preUpdate (flashContext);
+	}
+}
+
+void
+PostUpdateFlashRect (void)
+{
+	if (flashAlarm)
+	{
+		updateFlashRectRecursion--;
+		if (updateFlashRectRecursion > 0)
+			return;
+
+		Flash_postUpdate (flashContext);
+	}
+}
+
+// Stop flashing if flashing is active.
+void
+PauseFlash (void)
+{
+	if (flashContext != NULL)
+	{
+		Alarm_remove(flashAlarm);
+		flashAlarm = 0;
+		flashPaused = TRUE;
+	}
+}
+
+// Continue flashing after PauseFlash (), if flashing was active.
+void
+ContinueFlash (void)
+{
+	if (flashPaused)
+	{
+		scheduleFlashAlarm ();
+		flashPaused = FALSE;
+	}
+}
+
 

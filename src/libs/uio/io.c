@@ -287,6 +287,103 @@ uio_mountDir(uio_Repository *destRep, const char *mountPoint,
 	}
 }
 
+// Mount a repository directory into same repository at a different location
+// From fossil.
+uio_MountHandle *
+uio_transplantDir(const char *mountPoint, uio_DirHandle *sourceDir, int flags,
+		uio_MountHandle *relative) {
+	uio_MountInfo *relativeInfo;
+	int numPDirHandles;
+	uio_PDirHandle **pDirHandles;
+	uio_MountTreeItem **treeItems;
+	int i;
+	uio_MountHandle *handle = NULL;
+
+	if ((flags & uio_MOUNT_RDONLY) != uio_MOUNT_RDONLY) {
+		// Only read-only transplants supported atm
+		errno = ENOSYS;
+		return NULL;
+	}
+
+	switch (flags & uio_MOUNT_LOCATION_MASK) {
+		case uio_MOUNT_TOP:
+		case uio_MOUNT_BOTTOM:
+			if (relative != NULL) {
+				errno = EINVAL;
+				return NULL;
+			}
+			relativeInfo = NULL;
+			break;
+		case uio_MOUNT_BELOW:
+		case uio_MOUNT_ABOVE:
+			if (relative == NULL) {
+				errno = EINVAL;
+				return NULL;
+			}
+			relativeInfo = relative->mountInfo;
+			break;
+		default:
+			abort();
+	}
+
+	if (mountPoint[0] == '/')
+		mountPoint++;
+	if (!validPathName(mountPoint, strlen(mountPoint))) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	if (uio_getPathPhysicalDirs(sourceDir, "", 0,
+			&pDirHandles, &numPDirHandles, &treeItems) == -1) {
+		// errno is set
+		return NULL;
+	}
+	if (numPDirHandles == 0) {
+		errno = ENOENT;
+		return NULL;
+	}
+	
+	// TODO: We only transplant the first read-only physical dir that we find
+	//    Maybe transplant all of them? We would then have several
+	//    uio_MountHandles to return.
+	for (i = 0; i < numPDirHandles; ++i) {
+		uio_PDirHandle *pDirHandle = pDirHandles[i];
+		uio_MountInfo *oldMountInfo = treeItems[i]->mountInfo;
+		uio_Repository *rep = oldMountInfo->mountHandle->repository;
+		uio_MountInfo *mountInfo;
+		uio_MountTree *mountTree;
+
+		// Only interested in read-only dirs in this incarnation
+		if (!uio_mountInfoIsReadOnly(oldMountInfo))
+			continue;
+	
+		mountInfo = uio_MountInfo_new(oldMountInfo->fsID, NULL, pDirHandle,
+				uio_strdup(""), oldMountInfo->autoMount, NULL, flags);
+		// New mount references the same handles
+		uio_PDirHandle_ref(pDirHandle);
+		uio_PRoot_refMount(pDirHandle->pRoot);
+
+		uio_repositoryAddMount(rep, mountInfo,
+				flags & uio_MOUNT_LOCATION_MASK, relativeInfo);
+		mountTree = uio_mountTreeAddMountInfo(rep, rep->mountTree,
+				mountInfo, mountPoint, flags & uio_MOUNT_LOCATION_MASK,
+				relativeInfo);
+		// mountTree is the node in rep->mountTree where mountInfo leads to
+		mountInfo->mountTree = mountTree;
+		mountInfo->mountHandle = uio_MountHandle_new(rep, mountInfo);
+		handle = mountInfo->mountHandle;
+		break;
+	}
+
+	uio_PDirHandles_delete(pDirHandles, numPDirHandles);
+	uio_free(treeItems);
+	
+	if (handle == NULL)
+		errno = ENOENT;
+
+	return handle;
+}
+
 int
 uio_unmountDir(uio_MountHandle *mountHandle) {
 	uio_PRoot *pRoot;

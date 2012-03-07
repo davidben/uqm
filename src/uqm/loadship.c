@@ -170,6 +170,9 @@ void
 free_ship (RACE_DESC *raceDescPtr, BOOLEAN FreeIconData,
 		BOOLEAN FreeBattleData)
 {
+	if (raceDescPtr->uninit_func != NULL)
+		(*raceDescPtr->uninit_func) (raceDescPtr);
+
 	if (FreeBattleData)
 	{
 		DATA_STUFF *shipData = &raceDescPtr->ship_data;

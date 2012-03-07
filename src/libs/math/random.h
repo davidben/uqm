@@ -29,13 +29,6 @@
 #ifndef _RANDOM_H
 #define _RANDOM_H
 
-/* ----------------------------DEFINES------------------------------------ */
-
-#define RAND(n) ( (int) ( (unsigned int)TFB_Random() % (n) ) )
-#define SRAND(n) ( (int)TFB_Random() % (n) )
-#define AND_RAND(n) ( (int)TFB_Random() & (n) )
-
-
 /* ----------------------------GLOBALS/EXTERNS---------------------------- */
 
 DWORD TFB_SeedRandom (DWORD seed);
@@ -55,6 +48,7 @@ void RandomContext_Delete (RandomContext *context);
 RandomContext *RandomContext_Copy (const RandomContext *source);
 DWORD RandomContext_Random (RandomContext *context);
 DWORD RandomContext_SeedRandom (RandomContext *context, DWORD new_seed);
+DWORD RandomContext_GetSeed (RandomContext *context);
 
 
 #endif  /* _RANDOM_H */

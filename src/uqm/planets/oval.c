@@ -21,6 +21,7 @@
 #include "libs/graphics/context.h"
 #include "libs/graphics/drawable.h"
 
+#include "planets.h"
 
 #define NUM_QUADS 4
 

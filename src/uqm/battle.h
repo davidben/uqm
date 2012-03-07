@@ -26,9 +26,12 @@ typedef DWORD BattleFrameCounter;
 #include "init.h"
 		// For NUM_SIDES
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 // The callback function is called on every battle frame
-// with GraphicsLock held, just before the display queue
-// is drawn
+// just before the display queue is drawn
 typedef void (BattleFrameCallback) (void);
 
 typedef struct battlestate_struct {
@@ -55,5 +58,9 @@ BOOLEAN Battle (BattleFrameCallback *);
 
 extern void BattleSong (BOOLEAN DoPlay);
 extern void FreeBattleSong (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _BATTLE_H */

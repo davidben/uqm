@@ -24,6 +24,10 @@
 #include "libs/uio.h"
 #include "libs/unicode.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 
 extern BOOLEAN AnyButtonPress (BOOLEAN DetectSpecial);
 
@@ -49,15 +53,19 @@ UniChar GetLastCharacter (void);
 
 /* Interrogating the current key configuration */
 
-void InterrogateInputState (int template, int control, int index, char *buffer, int maxlen);
-void RemoveInputState (int template, int control, int index);
-void RebindInputState (int template, int control, int index);
+void InterrogateInputState (int templat, int control, int index, char *buffer, int maxlen);
+void RemoveInputState (int templat, int control, int index);
+void RebindInputState (int templat, int control, int index);
 
 void SaveKeyConfiguration (uio_DirHandle *path, const char *fname);
 
 /* Separate inputs into frames for dealing with very fast inputs */
 
 void BeginInputFrame (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _INPLIB_H */
 

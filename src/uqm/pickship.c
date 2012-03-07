@@ -61,7 +61,6 @@ DoPickBattleShip (MENU_STATE *pMS)
 		pMS->Initialized = TRUE;
 		pMS->InputFunc = DoPickBattleShip;
 
-		LockMutex (GraphicsLock);
 
 		goto ChangeSelection;
 	}
@@ -106,7 +105,6 @@ DoPickBattleShip (MENU_STATE *pMS)
 
 			PlayMenuSound (MENU_SOUND_MOVE);
 
-			LockMutex (GraphicsLock);
 
 #ifdef NEVER
 			SetContextForeGroundColor (
@@ -240,7 +238,6 @@ ChangeSelection:
 
 			SetFlashRect (NULL);
 			SetFlashRect (&pMS->flash_rect0);
-			UnlockMutex (GraphicsLock);
 		}
 	}
 
@@ -278,10 +275,8 @@ OldContext = SetContext (SpaceContext);
 		MenuState.flash_rect1.corner = pick_r.corner;
 		MenuState.flash_rect1.extent.width = 0;
 
-		UnlockMutex (GraphicsLock);
 		SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 		DoInput (&MenuState, FALSE);
-		LockMutex (GraphicsLock);
 
 		SetFlashRect (NULL);
 
@@ -309,7 +304,7 @@ SetContext (OldContext);
 HSTARSHIP
 GetEncounterStarShip (STARSHIP *LastStarShipPtr, COUNT which_player)
 {
-	if (LOBYTE (GLOBAL (CurrentActivity)) == IN_HYPERSPACE)
+	if (inHQSpace ())
 	{
 		assert (which_player == RPG_PLAYER_NUM);
 		// SIS for the Hyperspace flight

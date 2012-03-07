@@ -26,6 +26,7 @@
 #include "menustat.h"
 		// for DrawMenuStateStrings()
 #include "encount.h"
+#include "starmap.h"
 #include "ship.h"
 #include "shipcont.h"
 #include "process.h"
@@ -225,13 +226,13 @@ check_hyperspace_encounter (void)
 					encounter_flags = ONE_SHOT_ENCOUNTER;
 				}
 
-
+				// There can be only one! (of either Slylandro or Melnorme)
 				for (hEncounter = GetHeadEncounter ();
 						hEncounter; hEncounter = hNextEncounter)
 				{
 					LockEncounter (hEncounter, &EncounterPtr);
 					hNextEncounter = GetSuccEncounter (EncounterPtr);
-					if (EncounterPtr->SD.Type == Type)
+					if (EncounterPtr->race_id == Type)
 					{
 						percent = 0;
 						hNextEncounter = 0;
@@ -266,8 +267,8 @@ check_hyperspace_encounter (void)
 					memset (EncounterPtr, 0, sizeof (*EncounterPtr));
 					EncounterPtr->origin = FleetPtr->loc;
 					EncounterPtr->radius = encounter_radius;
-					EncounterPtr->SD.Index = encounter_flags;
-					EncounterPtr->SD.Type = Type;
+					EncounterPtr->flags = encounter_flags;
+					EncounterPtr->race_id = Type;
 					UnlockEncounter (hEncounter);
 
 					PutEncounter (hEncounter);
@@ -758,7 +759,7 @@ arilou_space_collision (ELEMENT *ElementPtr0,
 }
 
 static HELEMENT
-AllocHyperElement (STAR_DESC *SDPtr)
+AllocHyperElement (const POINT *elem_pt)
 {
 	HELEMENT hHyperSpaceElement;
 
@@ -776,11 +777,11 @@ AllocHyperElement (STAR_DESC *SDPtr)
 		{
 			long lx, ly;
 
-			lx = UNIVERSE_TO_LOGX (SDPtr->star_pt.x)
+			lx = UNIVERSE_TO_LOGX (elem_pt->x)
 					+ (LOG_SPACE_WIDTH >> 1) - GLOBAL_SIS (log_x);
 			HyperSpaceElementPtr->current.location.x = WRAP_X (lx);
 
-			ly = UNIVERSE_TO_LOGY (SDPtr->star_pt.y)
+			ly = UNIVERSE_TO_LOGY (elem_pt->y)
 					+ (LOG_SPACE_HEIGHT >> 1) - GLOBAL_SIS (log_y);
 			HyperSpaceElementPtr->current.location.y = WRAP_Y (ly);
 		}
@@ -951,25 +952,25 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 {
 	BOOLEAN NewEncounter;
 	HELEMENT hElement;
-	STAR_DESC SD;
+	POINT enc_pt;
 	
 	if (GET_GAME_STATE (ARILOU_SPACE_SIDE) >= 2)
 		return 0;
 
-	if (EncounterPtr->SD.Index & ENCOUNTER_REFORMING)
+	if (EncounterPtr->flags & ENCOUNTER_REFORMING)
 	{
-		EncounterPtr->SD.Index &= ~ENCOUNTER_REFORMING;
+		EncounterPtr->flags &= ~ENCOUNTER_REFORMING;
 
 		EncounterPtr->transition_state = 100;
-		if ((EncounterPtr->SD.Index & ONE_SHOT_ENCOUNTER)
-				|| LONIBBLE (EncounterPtr->SD.Index) == 0)
+		if ((EncounterPtr->flags & ONE_SHOT_ENCOUNTER)
+				|| EncounterPtr->num_ships == 0)
 			return 0;
 	}
 
-	if (LONIBBLE (EncounterPtr->SD.Index))
+	if (EncounterPtr->num_ships)
 	{
 		NewEncounter = FALSE;
-		SD.star_pt = EncounterPtr->SD.star_pt;
+		enc_pt = EncounterPtr->loc_pt;
 	}
 	else
 	{
@@ -987,7 +988,7 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 
 		radius_squared = (DWORD)EncounterPtr->radius * EncounterPtr->radius;
 
-		Type = EncounterPtr->SD.Type;
+		Type = EncounterPtr->race_id;
 		NumShips = LONIBBLE (EncounterMakeup[Type]);
 		for (i = HINIBBLE (EncounterMakeup[Type]) - NumShips; i; --i)
 		{
@@ -998,9 +999,7 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 		if (NumShips > MAX_HYPER_SHIPS)
 			NumShips = MAX_HYPER_SHIPS;
 
-
-		EncounterPtr->SD.Index =
-				MAKE_BYTE (NumShips, HINIBBLE (EncounterPtr->SD.Index));
+		EncounterPtr->num_ships = NumShips;
 		for (i = 0; i < NumShips; ++i)
 		{
 			BRIEF_SHIP_INFO *BSIPtr = &EncounterPtr->ShipList[i];
@@ -1021,29 +1020,29 @@ AddEncounterElement (ENCOUNTER *EncounterPtr, POINT *puniverse)
 
 			rand_val = TFB_Random ();
 
-			SD.star_pt.x = puniverse->x
+			enc_pt.x = puniverse->x
 					+ (LOWORD (rand_val) % (XOFFS << 1)) - XOFFS;
-			if (SD.star_pt.x < 0)
-				SD.star_pt.x = 0;
-			else if (SD.star_pt.x > MAX_X_UNIVERSE)
-				SD.star_pt.x = MAX_X_UNIVERSE;
-			SD.star_pt.y = puniverse->y
+			if (enc_pt.x < 0)
+				enc_pt.x = 0;
+			else if (enc_pt.x > MAX_X_UNIVERSE)
+				enc_pt.x = MAX_X_UNIVERSE;
+			enc_pt.y = puniverse->y
 					+ (HIWORD (rand_val) % (YOFFS << 1)) - YOFFS;
-			if (SD.star_pt.y < 0)
-				SD.star_pt.y = 0;
-			else if (SD.star_pt.y > MAX_Y_UNIVERSE)
-				SD.star_pt.y = MAX_Y_UNIVERSE;
+			if (enc_pt.y < 0)
+				enc_pt.y = 0;
+			else if (enc_pt.y > MAX_Y_UNIVERSE)
+				enc_pt.y = MAX_Y_UNIVERSE;
 
-			dx = SD.star_pt.x - EncounterPtr->origin.x;
-			dy = SD.star_pt.y - EncounterPtr->origin.y;
+			dx = enc_pt.x - EncounterPtr->origin.x;
+			dy = enc_pt.y - EncounterPtr->origin.y;
 		} while ((DWORD)((long)dx * dx + (long)dy * dy) > radius_squared);
 
-		EncounterPtr->SD.star_pt = SD.star_pt;
-		EncounterPtr->log_x = UNIVERSE_TO_LOGX (SD.star_pt.x);
-		EncounterPtr->log_y = UNIVERSE_TO_LOGY (SD.star_pt.y);
+		EncounterPtr->loc_pt = enc_pt;
+		EncounterPtr->log_x = UNIVERSE_TO_LOGX (enc_pt.x);
+		EncounterPtr->log_y = UNIVERSE_TO_LOGY (enc_pt.y);
 	}
 
-	hElement = AllocHyperElement (&SD);
+	hElement = AllocHyperElement (&enc_pt);
 	if (hElement)
 	{
 		SIZE i;
@@ -1197,8 +1196,8 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 			cur_facing = ANGLE_TO_FACING (
 					GetVelocityTravelAngle (&ElementPtr->velocity));
 			delta_facing = NORMALIZE_FACING (cur_facing - ANGLE_TO_FACING (
-					ARCTAN (puniverse->x - EncounterPtr->SD.star_pt.x,
-					puniverse->y - EncounterPtr->SD.star_pt.y)));
+					ARCTAN (puniverse->x - EncounterPtr->loc_pt.x,
+					puniverse->y - EncounterPtr->loc_pt.y)));
 			if (delta_facing || (delta_x == 0 && delta_y == 0))
 			{
 				SIZE speed;
@@ -1208,7 +1207,7 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 				};
 
 #define ENCOUNTER_TRACK_WAIT 3
-				speed = RaceHyperSpeed[EncounterPtr->SD.Type];
+				speed = RaceHyperSpeed[EncounterPtr->race_id];
 				if (delta_facing < ANGLE_TO_FACING (HALF_CIRCLE))
 					--cur_facing;
 				else
@@ -1233,14 +1232,14 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 		}
 		EncounterPtr->log_x += delta_x;
 		EncounterPtr->log_y -= delta_y;
-		EncounterPtr->SD.star_pt.x = LOGX_TO_UNIVERSE (EncounterPtr->log_x);
-		EncounterPtr->SD.star_pt.y = LOGY_TO_UNIVERSE (EncounterPtr->log_y);
+		EncounterPtr->loc_pt.x = LOGX_TO_UNIVERSE (EncounterPtr->log_x);
+		EncounterPtr->loc_pt.y = LOGY_TO_UNIVERSE (EncounterPtr->log_y);
 
 		encounter_radius = EncounterPtr->radius + (GRID_OFFSET >> 1);
-		delta_x = EncounterPtr->SD.star_pt.x - EncounterPtr->origin.x;
+		delta_x = EncounterPtr->loc_pt.x - EncounterPtr->origin.x;
 		if (delta_x < 0)
 			delta_x = -delta_x;
-		delta_y = EncounterPtr->SD.star_pt.y - EncounterPtr->origin.y;
+		delta_y = EncounterPtr->loc_pt.y - EncounterPtr->origin.y;
 		if (delta_y < 0)
 			delta_y = -delta_y;
 		if ((COUNT)delta_x >= encounter_radius
@@ -1248,6 +1247,7 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 				|| (DWORD)delta_x * delta_x + (DWORD)delta_y * delta_y >=
 				(DWORD)encounter_radius * encounter_radius)
 		{
+			// Encounter globe traveled outside the SoI and now disappears
 			ElementPtr->state_flags |= NONSOLID;
 			ElementPtr->life_span = 0;
 
@@ -1266,8 +1266,8 @@ ProcessEncounter (ENCOUNTER *EncounterPtr, POINT *puniverse,
 		}
 	}
 
-	ex = EncounterPtr->SD.star_pt.x;
-	ey = EncounterPtr->SD.star_pt.y;
+	ex = EncounterPtr->loc_pt.x;
+	ey = EncounterPtr->loc_pt.y;
 	if (ex - puniverse->x >= -UNIT_SCREEN_WIDTH
 			&& ex - puniverse->x <= UNIT_SCREEN_WIDTH
 			&& ey - puniverse->y >= -UNIT_SCREEN_HEIGHT
@@ -1482,7 +1482,7 @@ SeedUniverse (void)
 					|| ey > (YOFFS / NUM_RADAR_SCREENS))
 				continue;
 
-			hHyperSpaceElement = AllocHyperElement (&SD[i]);
+			hHyperSpaceElement = AllocHyperElement (&SD[i].star_pt);
 			if (hHyperSpaceElement == 0)
 				continue;
 
@@ -1527,7 +1527,7 @@ SeedUniverse (void)
 					|| ey > (YOFFS / NUM_RADAR_SCREENS))
 				continue;
 
-			hHyperSpaceElement = AllocHyperElement (SDPtr);
+			hHyperSpaceElement = AllocHyperElement (&SDPtr->star_pt);
 			if (hHyperSpaceElement == 0)
 				continue;
 
@@ -1633,9 +1633,7 @@ DoHyperspaceMenu (MENU_STATE *pMS)
 	if (!select)
 		return TRUE;
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
-	UnlockMutex (GraphicsLock);
 
 	switch (pMS->CurState)
 	{
@@ -1675,9 +1673,7 @@ DoHyperspaceMenu (MENU_STATE *pMS)
 				pMS->CurState = NAVIGATION;
 			DrawMenuStateStrings (PM_STARMAP, pMS->CurState);
 		}
-		LockMutex (GraphicsLock);
 		SetFlashRect (SFR_MENU_3DO);
-		UnlockMutex (GraphicsLock);
 	}
 
 	return TRUE;
@@ -1695,7 +1691,6 @@ UnbatchGraphics ();
 	OldContext = SetContext (SpaceContext);
 	OldColor = SetContextBackGroundColor (BLACK_COLOR);
 
-	UnlockMutex (GraphicsLock);
 
 	memset (&MenuState, 0, sizeof (MenuState));
 	MenuState.InputFunc = DoHyperspaceMenu;
@@ -1703,14 +1698,11 @@ UnbatchGraphics ();
 	MenuState.CurState = STARMAP;
 
 	DrawMenuStateStrings (PM_STARMAP, STARMAP);
-	LockMutex (GraphicsLock);
 	SetFlashRect (SFR_MENU_3DO);
-	UnlockMutex (GraphicsLock);
 
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
 	DoInput (&MenuState, TRUE);
 
-	LockMutex (GraphicsLock);
 	SetFlashRect (NULL);
 
 	SetContext (SpaceContext);
@@ -1718,9 +1710,7 @@ UnbatchGraphics ();
 	if (!(GLOBAL (CurrentActivity) & (CHECK_ABORT | CHECK_LOAD)))
 	{
 		ClearSISRect (CLEAR_SIS_RADAR);
-		UnlockMutex (GraphicsLock);
 		WaitForNoInput (ONE_SECOND / 2, FALSE);
-		LockMutex (GraphicsLock);
 	}
 
 	SetContextBackGroundColor (OldColor);

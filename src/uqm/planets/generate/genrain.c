@@ -18,7 +18,8 @@
 
 #include "genall.h"
 #include "../planets.h"
-#include "../../encount.h"
+#include "../../gendef.h"
+#include "../../starmap.h"
 #include "../../globdata.h"
 #include "libs/mathlib.h"
 

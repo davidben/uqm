@@ -230,7 +230,7 @@ static LOCDATA arilou_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye_angry_space))
 		NPCPhrase (GOODBYE_ANGRY_SPACE);
@@ -644,7 +644,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 	else if (!GET_GAME_STATE (MET_ARILOU))
@@ -691,7 +691,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (ARILOU_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else if (Manner == 1)
 	{
@@ -801,7 +801,7 @@ post_arilou_enc (void)
 {
 	BYTE Manner;
 
-	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
+	if (getSegue () == Segue_hostile
 			&& (Manner = GET_GAME_STATE (ARILOU_MANNER)) != 2)
 	{
 		SET_GAME_STATE (ARILOU_MANNER, 1);
@@ -843,11 +843,11 @@ init_arilou_comm (void)
 			|| GET_GAME_STATE (ARILOU_MANNER) == 3
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &arilou_desc;
 

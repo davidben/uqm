@@ -37,9 +37,9 @@
 static inline match_MatchContext *match_allocMatchContext(void);
 static inline void match_freeMatchContext(match_MatchContext *context);
 
-static inline match_LitteralContext *match_newLitteralContext(char *pattern);
-static inline match_LitteralContext *match_allocLitteralContext(void);
-static inline void match_freeLitteralContext(match_LitteralContext *context);
+static inline match_LiteralContext *match_newLiteralContext(char *pattern);
+static inline match_LiteralContext *match_allocLiteralContext(void);
+static inline void match_freeLiteralContext(match_LiteralContext *context);
 static inline match_PrefixContext *match_newPrefixContext(char *pattern);
 static inline match_PrefixContext *match_allocPrefixContext(void);
 static inline void match_freePrefixContext(match_PrefixContext *context);
@@ -85,9 +85,9 @@ match_prepareContext(const char *pattern, match_MatchContext **contextPtr,
 	*contextPtr = match_allocMatchContext();
 	(*contextPtr)->type = type;
 	switch (type) {
-		case match_MATCH_LITTERAL:
-			result = match_prepareLitteral(pattern,
-					&(*contextPtr)->u.litteral);
+		case match_MATCH_LITERAL:
+			result = match_prepareLiteral(pattern,
+					&(*contextPtr)->u.literal);
 			break;
 		case match_MATCH_PREFIX:
 			result = match_preparePrefix(pattern, &(*contextPtr)->u.prefix);
@@ -122,8 +122,8 @@ match_prepareContext(const char *pattern, match_MatchContext **contextPtr,
 match_Result
 match_matchPattern(match_MatchContext *context, const char *string) {
 	switch (context->type) {
-		case match_MATCH_LITTERAL:
-			return match_matchLitteral(context->u.litteral, string);
+		case match_MATCH_LITERAL:
+			return match_matchLiteral(context->u.literal, string);
 		case match_MATCH_PREFIX:
 			return match_matchPrefix(context->u.prefix, string);
 		case match_MATCH_SUFFIX:
@@ -168,8 +168,8 @@ match_errorString(match_MatchContext *context, match_Result result) {
 
 	switch (context->type) {
 #if 0
-		case match_MATCH_LITTERAL:
-			return match_errorStringLitteral(context->u.litteral, result);
+		case match_MATCH_LITERAL:
+			return match_errorStringLiteral(context->u.literal, result);
 		case match_MATCH_PREFIX:
 			return match_errorStringPrefix(context->u.prefix, result);
 		case match_MATCH_SUFFIX:
@@ -193,8 +193,8 @@ match_errorString(match_MatchContext *context, match_Result result) {
 void
 match_freeContext(match_MatchContext *context) {
 	switch (context->type) {
-		case match_MATCH_LITTERAL:
-			match_freeLitteral(context->u.litteral);
+		case match_MATCH_LITERAL:
+			match_freeLiteral(context->u.literal);
 			break;
 		case match_MATCH_PREFIX:
 			match_freePrefix(context->u.prefix);
@@ -239,43 +239,43 @@ out:
 }
 
 
-// *** Litteral part ***
+// *** Literal part ***
 
 match_Result
-match_prepareLitteral(const char *pattern,
-		match_LitteralContext **contextPtr) {
-	*contextPtr = match_newLitteralContext(uio_strdup(pattern));
+match_prepareLiteral(const char *pattern,
+		match_LiteralContext **contextPtr) {
+	*contextPtr = match_newLiteralContext(uio_strdup(pattern));
 	return match_OK;
 }
 
 match_Result
-match_matchLitteral(match_LitteralContext *context, const char *string) {
+match_matchLiteral(match_LiteralContext *context, const char *string) {
 	return (strcmp(context->pattern, string) == 0) ?
 			match_MATCH : match_NOMATCH;
 }
 
 void
-match_freeLitteral(match_LitteralContext *context) {
+match_freeLiteral(match_LiteralContext *context) {
 	uio_free(context->pattern);
-	match_freeLitteralContext(context);
+	match_freeLiteralContext(context);
 }
 
-static inline match_LitteralContext *
-match_newLitteralContext(char *pattern) {
-	match_LitteralContext *result;
+static inline match_LiteralContext *
+match_newLiteralContext(char *pattern) {
+	match_LiteralContext *result;
 
-	result = match_allocLitteralContext();
+	result = match_allocLiteralContext();
 	result->pattern = pattern;
 	return result;
 }
 
-static inline match_LitteralContext *
-match_allocLitteralContext(void) {
-	return uio_malloc(sizeof (match_LitteralContext));
+static inline match_LiteralContext *
+match_allocLiteralContext(void) {
+	return uio_malloc(sizeof (match_LiteralContext));
 }
 
 static inline void
-match_freeLitteralContext(match_LitteralContext *context) {
+match_freeLiteralContext(match_LiteralContext *context) {
 	uio_free(context);
 }
 

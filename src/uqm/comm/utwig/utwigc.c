@@ -200,7 +200,7 @@ static LOCDATA utwig_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye_neutral))
 		NPCPhrase (GOODBYE_NEUTRAL);
@@ -216,7 +216,7 @@ ExitConversation (RESPONSE_REF R)
 	{
 		NPCPhrase (GUARDS_FIGHT);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, got_ultron)
 			|| PLAYER_SAID (R, hey_wait_got_ultron))
@@ -244,7 +244,7 @@ ExitConversation (RESPONSE_REF R)
 						{
 							NPCPhrase (TRICKED_US_1);
 
-							SET_GAME_STATE (BATTLE_SEGUE, 1);
+							setSegue (Segue_hostile);
 						}
 						break;
 					case 1:
@@ -254,7 +254,7 @@ ExitConversation (RESPONSE_REF R)
 						{
 							NPCPhrase (TRICKED_US_2);
 
-							SET_GAME_STATE (BATTLE_SEGUE, 1);
+							setSegue (Segue_hostile);
 						}
 						break;
 				}
@@ -288,22 +288,22 @@ ExitConversation (RESPONSE_REF R)
 				SET_GAME_STATE (SUPOX_HOSTILE, 0);
 				SET_GAME_STATE (UTWIG_HOSTILE, 0);
 
-				ActivateStarShip (UTWIG_SHIP, SET_ALLIED);
-				ActivateStarShip (SUPOX_SHIP, SET_ALLIED);
+				SetRaceAllied (UTWIG_SHIP, TRUE);
+				SetRaceAllied (SUPOX_SHIP, TRUE);
 			}
 		}
 	}
 	else if (PLAYER_SAID (R, can_you_help))
 	{
 		NPCPhrase (HOW_HELP);
-		if (ActivateStarShip (UTWIG_SHIP, FEASIBILITY_STUDY) == 0)
+		if (EscortFeasibilityStudy (UTWIG_SHIP) == 0)
 			NPCPhrase (DONT_NEED);
 		else
 		{
 			NPCPhrase (HAVE_4_SHIPS);
 
 			AlienTalkSegue ((COUNT)~0);
-			ActivateStarShip (UTWIG_SHIP, 4);
+			AddEscortShips (UTWIG_SHIP, 4);
 		}
 	}
 }
@@ -390,7 +390,7 @@ AlliedHome (RESPONSE_REF R)
 		Response (what_now_homeworld, AlliedHome);
 	if (PHRASE_ENABLED (how_is_ultron))
 		Response (how_is_ultron, AlliedHome);
-	if (NumVisits == 0)
+	if (NumVisits == 0 && EscortFeasibilityStudy (UTWIG_SHIP) != 0)
 		Response (can_you_help, ExitConversation);
 	Response (bye_allied_homeworld, ExitConversation);
 }
@@ -497,7 +497,7 @@ NeutralUtwig (RESPONSE_REF R)
 	{
 		NPCPhrase (MOCK_OUR_PAIN);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 		SET_GAME_STATE (UTWIG_STACK1, 4);
 		SET_GAME_STATE (UTWIG_HOSTILE, 1);
 		SET_GAME_STATE (UTWIG_INFO, 0);
@@ -525,7 +525,7 @@ NeutralUtwig (RESPONSE_REF R)
 		NPCPhrase (ABOUT_US_2);
 
 		LastStack = 2;
-		ActivateStarShip (SUPOX_SHIP, SPHERE_TRACKING);
+		StartSphereTracking (SUPOX_SHIP);
 		SET_GAME_STATE (UTWIG_WAR_NEWS, 2);
 	}
 	else if (PLAYER_SAID (R, what_about_you_3))
@@ -651,7 +651,7 @@ BombWorld (RESPONSE_REF R)
 	{
 		NPCPhrase (GUARDS_FIGHT);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 		SET_GAME_STATE (UTWIG_HOSTILE, 1);
 		SET_GAME_STATE (UTWIG_INFO, 0);
 		SET_GAME_STATE (UTWIG_HOME_VISITS, 0);
@@ -745,7 +745,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -800,14 +800,14 @@ Intro (void)
 		if (!GET_GAME_STATE (ULTRON_CONDITION)
 				|| (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 6)))
 		{
-			SET_GAME_STATE (BATTLE_SEGUE, 1);
+			setSegue (Segue_hostile);
 		}
 		else
 		{
 			Response (hey_wait_got_ultron, ExitConversation);
 		}
 	}
-	else if (ActivateStarShip (UTWIG_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+	else if (CheckAlliance (UTWIG_SHIP) == GOOD_GUY)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{
@@ -984,11 +984,11 @@ init_utwig_comm (void)
 	if (GET_GAME_STATE (UTWIG_HAVE_ULTRON)
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &utwig_desc;
 

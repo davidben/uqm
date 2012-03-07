@@ -174,7 +174,7 @@ static LOCDATA orz_desc =
 static void
 ExitConversation (RESPONSE_REF R)
 {
-	SET_GAME_STATE (BATTLE_SEGUE, 0);
+	setSegue (Segue_peace);
 
 	if (PLAYER_SAID (R, bye_ally))
 		NPCPhrase (GOODBYE_ALLY);
@@ -193,7 +193,7 @@ ExitConversation (RESPONSE_REF R)
 	{
 		NPCPhrase (HOSTILITY_IS_BAD_2);
 		
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, may_we_land))
 	{
@@ -213,13 +213,13 @@ ExitConversation (RESPONSE_REF R)
 		SET_GAME_STATE (ORZ_GENERAL_INFO, 0);
 		SET_GAME_STATE (ORZ_PERSONAL_INFO, 0);
 		SET_GAME_STATE (ORZ_MANNER, 3);
-		ActivateStarShip (ORZ_SHIP, SET_ALLIED);
+		SetRaceAllied (ORZ_SHIP, TRUE);
 	}
 	else if (PLAYER_SAID (R, demand_to_land))
 	{
 		NPCPhrase (NO_DEMAND);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (PLAYER_SAID (R, about_andro_3)
 			|| PLAYER_SAID (R, must_know_about_androsyn))
@@ -231,11 +231,11 @@ ExitConversation (RESPONSE_REF R)
 
 		SET_GAME_STATE (ORZ_VISITS, 0);
 		SET_GAME_STATE (ORZ_MANNER, 2);
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 		if (PLAYER_SAID (R, about_andro_3))
 		{
-			ActivateStarShip (ORZ_SHIP, SET_NOT_ALLIED);
-			ActivateStarShip (ORZ_SHIP, REMOVE_BUILT);
+			SetRaceAllied (ORZ_SHIP, FALSE);
+			RemoveEscortShips (ORZ_SHIP);
 		}
 
 		XFormColorMap (GetColorMapAddress (
@@ -257,13 +257,13 @@ ExitConversation (RESPONSE_REF R)
 				break;
 			case 2:
 				NPCPhrase (INSULTED_3);
-				SET_GAME_STATE (BATTLE_SEGUE, 1);
+				setSegue (Segue_hostile);
 				break;
 			case 7:
 				--NumVisits;
 			default:
 				NPCPhrase (INSULTED_4);
-				SET_GAME_STATE (BATTLE_SEGUE, 1);
+				setSegue (Segue_hostile);
 				break;
 		}
 		SET_GAME_STATE (ORZ_PERSONAL_INFO, NumVisits);
@@ -322,8 +322,7 @@ TaaloWorld (RESPONSE_REF R)
 
 	if (PHRASE_ENABLED (may_we_land))
 	{
-		if (Manner == 3 &&
-				ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+		if (Manner == 3 && CheckAlliance (ORZ_SHIP) == GOOD_GUY)
 			Response (may_we_land, ExitConversation);
 		else
 			Response (may_we_land, TaaloWorld);
@@ -644,7 +643,7 @@ Intro (void)
 	{
 		NPCPhrase (OUT_TAKES);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 		return;
 	}
 
@@ -670,7 +669,7 @@ Intro (void)
 		}
 		SET_GAME_STATE (ORZ_VISITS, NumVisits);
 
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	else if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 6))
 	{
@@ -705,8 +704,7 @@ Intro (void)
 
 		TaaloWorld ((RESPONSE_REF)0);
 	}
-	else if (Manner == 3 &&
-			ActivateStarShip (ORZ_SHIP, CHECK_ALLIANCE) == GOOD_GUY)
+	else if (Manner == 3 && CheckAlliance (ORZ_SHIP) == GOOD_GUY)
 	{
 		if (GET_GAME_STATE (GLOBAL_FLAGS_AND_DATA) & (1 << 7))
 		{
@@ -859,7 +857,7 @@ post_orz_enc (void)
 {
 	BYTE Manner;
 
-	if (GET_GAME_STATE (BATTLE_SEGUE) == 1
+	if (getSegue () == Segue_hostile
 			&& (Manner = GET_GAME_STATE (ORZ_MANNER)) != 2)
 	{
 		SET_GAME_STATE (ORZ_MANNER, 1);
@@ -888,11 +886,11 @@ init_orz_comm (void)
 	if (GET_GAME_STATE (ORZ_MANNER) == 3
 			|| LOBYTE (GLOBAL (CurrentActivity)) == WON_LAST_BATTLE)
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 0);
+		setSegue (Segue_peace);
 	}
 	else
 	{
-		SET_GAME_STATE (BATTLE_SEGUE, 1);
+		setSegue (Segue_hostile);
 	}
 	retval = &orz_desc;
 

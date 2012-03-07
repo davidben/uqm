@@ -21,7 +21,15 @@
 #ifndef _UIOUTILS_H
 #define _UIOUTILS_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "uio/utils.h"
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* _UIOUTILS_H */
 

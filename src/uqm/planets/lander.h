@@ -26,6 +26,9 @@
 #include "libs/timelib.h"
 #include "../element.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 // Surface magnification shift (x4)
 #define MAG_SHIFT 2
@@ -69,12 +72,18 @@ extern void object_animation (ELEMENT *ElementPtr);
 extern void SetLanderTakeoff (void);
 extern bool KillLanderCrewSeq (COUNT numKilled, DWORD period);
 
+extern unsigned GetThermalHazardRating (int temp);
+
 // ELEMENT.playerNr constants
 enum
 {
 	PS_HUMAN_PLAYER,
 	PS_NON_PLAYER,
 };
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _LANDER_H */
 

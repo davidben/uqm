@@ -17,7 +17,15 @@
 #ifndef SHOFIXTI_H
 #define SHOFIXTI_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 RACE_DESC *init_shofixti (void);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif  /* SHOFIXTI_H */
 

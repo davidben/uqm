@@ -16,8 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// XXX: for XXX_DEFINED constants
-#include "encount.h"
+#include "gendef.h"
 #include "resinst.h"
 #include "planets/planets.h"
 #include "planets/elemdata.h"

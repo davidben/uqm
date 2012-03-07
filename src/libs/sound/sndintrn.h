@@ -46,7 +46,7 @@ struct tfb_soundsample
 	uint32 num_buffers;
 	TFB_SoundTag *buffer_tag;
 	sint32 offset; // initial offset
-	intptr_t data; // user-defined data
+	void* data; // user-defined data
 	TFB_SoundCallbacks callbacks; // user-defined callbacks
 };
 

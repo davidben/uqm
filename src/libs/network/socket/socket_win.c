@@ -160,10 +160,38 @@ Socket_send(Socket *sock, const void *buf, size_t len, int flags) {
 }
 
 ssize_t
+Socket_sendto(Socket *sock, const void *buf, size_t len, int flags,
+		const struct sockaddr *addr, socklen_t addrLen) {
+	int sendResult;
+
+	sendResult = sendto(sock->sock, buf, len, flags, addr, addrLen);
+	if (sendResult == SOCKET_ERROR) {
+		errno = getWinsockErrno();
+		return -1;
+	}
+
+	return sendResult;
+}
+
+ssize_t
 Socket_recv(Socket *sock, void *buf, size_t len, int flags) {
 	int recvResult;
 
 	recvResult = recv(sock->sock, buf, len, flags);
+	if (recvResult == SOCKET_ERROR) {
+		errno = getWinsockErrno();
+		return -1;
+	}
+
+	return recvResult;
+}
+
+ssize_t
+Socket_recvfrom(Socket *sock, void *buf, size_t len, int flags,
+		struct sockaddr *from, socklen_t *fromLen) {
+	int recvResult;
+
+	recvResult = recvfrom(sock->sock, buf, len, flags, from, fromLen);
 	if (recvResult == SOCKET_ERROR) {
 		errno = getWinsockErrno();
 		return -1;
