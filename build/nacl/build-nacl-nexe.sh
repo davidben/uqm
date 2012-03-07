@@ -40,7 +40,7 @@ if [ "${NACL_PACKAGES_BITSIZE}" = "32" ] ; then
 	# Buildsystem cannot easily launch a prefixed gcc, so pass
 	# -m32 instead. i686-nacl-gcc is just a shell script that
 	# passes -m32 anyway.
-	export CFLAGS="-m32"
+	export CCOMMONFLAGS="-m32"
 	export LDFLAGS="-m32"
 elif [ "${NACL_PACKAGES_BITSIZE}" = "64" ] ; then
 	NACL_CROSS_PREFIX=x86_64-nacl
