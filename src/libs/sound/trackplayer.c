@@ -24,8 +24,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef __native_client__
-#include <memory.h>
+#ifdef HAVE_MEMORY_H_UQM
+#	include <memory.h>
 #endif
 
 

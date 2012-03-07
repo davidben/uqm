@@ -63,6 +63,9 @@
 /* Defined if your system has stdint.h */
 @HAVE_STDINT_H_UQM@
 
+/* Defined if your system has memory.h */
+@HAVE_MEMORY_H_UQM@
+
 #endif  /* _CONFIG_WIN_H */
 
 

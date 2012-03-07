@@ -365,6 +365,9 @@ HEADER_regex_EXTRA="#include <sys/types.h>"
 HEADER_stdint_DEFNAME="HAVE_STDINT_H_UQM"
 		# HAVE_STDINT_H would conflict with SDL (SDL_config.h).
 
+HEADER_memory_DEFNAME="HAVE_MEMORY_H_UQM"
+		# HAVE_MEMORY_H would conflict with SDL (SDL_config.h).
+
 SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
 
 SYMBOL_setenv_EXTRA="#include <stdlib.h>"

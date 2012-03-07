@@ -23,11 +23,13 @@
  * 16-bit AIFF-C SDX2-compressed.
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 		// for abs()
 #include <errno.h>
-#if !defined(_WIN32_WCE) && !defined(__native_client__)
+#ifdef HAVE_MEMORY_H_UQM
 #      include <memory.h>
 #endif
 #include <string.h>
