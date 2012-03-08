@@ -219,6 +219,11 @@ case "$HOST_SYSTEM" in
 		BUILDTOOL_LINK_COMMAND="\$PROG_mingw_gcc_FILE $EXTRA_CYGWIN_FLAGS_LINK"
 		BUILDTOOL_LINK_DEPEND='mingw_gcc'
 		;;
+	NaCl)
+		useGccBuildTools
+		BUILDTOOL_LINK_COMMAND="\$PROG_gxx_FILE $EXTRA_PLATFORM_GCC_FLAGS_LINK"
+		BUILDTOOL_LINK_DEPEND='gxx'
+		;;
 	*)
 		useGccBuildTools
 		;;
@@ -247,6 +252,13 @@ PROG_gcc_NAME="GNU C compiler"
 PROG_gcc_FILE="gcc"
 PROG_gcc_ACTION=""
 PROG_gcc_VERSION='$(gcc --version)'
+
+
+### g++ ###
+PROG_gxx_NAME="GNU C++ compiler"
+PROG_gxx_FILE="g++"
+PROG_gxx_ACTION=""
+PROG_gxx_VERSION='$(g++ --version)'
 
 
 ### sed ###

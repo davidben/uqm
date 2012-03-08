@@ -222,12 +222,15 @@ initJoystick (void)
 {
 	int nJoysticks;
 
+#ifndef __native_client__
+	// Initialized on plugin thread in nacl_glue.cpp.
 	if ((SDL_InitSubSystem(SDL_INIT_JOYSTICK)) == -1)
 	{
 		log_add (log_Fatal, "Couldn't initialize joystick subsystem: %s",
 				SDL_GetError());
 		exit (EXIT_FAILURE);
 	}
+#endif
 
 	log_add (log_Info, "%i joysticks were found.", SDL_NumJoysticks ());
 	

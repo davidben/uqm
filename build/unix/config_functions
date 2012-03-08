@@ -1061,6 +1061,12 @@ set_host_system() {
 				HOST_SYSTEM="ARMV5" ;;
 			[Gg][Cc][Cc][Ee])
 				HOST_SYSTEM="GCCE" ;;				
+			[Nn][Aa][Cc][Ll])
+				HOST_SYSTEM="NaCl"
+				# This is a hack, but we only need it
+				# to compile.
+				MAIN_FUNCTION=_ZN2pp12CreateModuleEv
+				;;
 			*)
 				build_message "Warning: host type '$BUILD_HOST' unknown. Using defaults."
 				;;

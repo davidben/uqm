@@ -496,7 +496,7 @@ debugCmdExec(DebugContext *debugContext, int argc, char *argv[]) {
 		fprintf(debugContext->err, " %s", newArgs[i]);
 	fprintf(debugContext->err, "\n");
 
-#if defined(__unix__) && !defined(_WIN32_WCE)
+#if defined(__unix__) && !defined(_WIN32_WCE) && !defined(__native_client__)
 	{
 		pid_t pid;
 		

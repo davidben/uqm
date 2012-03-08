@@ -150,12 +150,28 @@ static keyname keynames[] = {
 	{"F13", SDLK_F13},
 	{"F14", SDLK_F14},
 	{"F15", SDLK_F15},
+#ifdef __native_client__
+	// The Native Client SDL port doesn't distinguish between left
+	// and right shifts and only sends left. Treat everything as
+	// left and, when requesting a name, return an unmodified
+	// string.
+	{"Shift", SDLK_LSHIFT},
+	{"RightShift", SDLK_LSHIFT},
+	{"LeftShift", SDLK_LSHIFT},
+	{"Control", SDLK_LCTRL},
+	{"RightControl", SDLK_LCTRL},
+	{"LeftControl", SDLK_LCTRL},
+	{"Alt", SDLK_LALT},
+	{"RightAlt", SDLK_LALT},
+	{"LeftAlt", SDLK_LALT},
+#else
 	{"RightShift", SDLK_RSHIFT},
 	{"LeftShift", SDLK_LSHIFT},
 	{"RightControl", SDLK_RCTRL},
 	{"LeftControl", SDLK_LCTRL},
 	{"RightAlt", SDLK_RALT},
 	{"LeftAlt", SDLK_LALT},
+#endif
 	{"RightMeta", SDLK_RMETA},
 	{"LeftMeta", SDLK_LMETA},
 	{"RightSuper", SDLK_RSUPER},

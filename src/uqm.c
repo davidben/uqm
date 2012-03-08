@@ -226,7 +226,11 @@ static const char *boolOptString (const struct bool_option *option);
 static const char *boolNotOptString (const struct bool_option *option);
 
 int
+#ifdef __native_client__
+uqmMain (int argc, char *argv[])
+#else
 main (int argc, char *argv[])
+#endif
 {
 	struct options_struct options = {
 		/* .logFile = */            NULL,

@@ -880,6 +880,7 @@ CHAR *MD_GetAtom(CHAR *atomname,CHAR *cmdline,BOOL implicit)
 
 /*========== Posix helper functions */
 
+#ifndef __native_client__
 /* Check if the file is a regular or nonexistant file (or a link to a such a
    file), and that, should the calling program be setuid, the access rights are
    reasonable. Returns 1 if it is safe to rewrite the file, 0 otherwise.
@@ -905,7 +906,9 @@ BOOL MD_Access(CHAR *filename)
 	
 	return 1;
 }
+#endif
 
+#ifndef __native_client__
 /* Drop all root privileges we might have */
 BOOL MD_DropPrivileges(void)
 {
@@ -927,6 +930,7 @@ BOOL MD_DropPrivileges(void)
 	}
 	return 0;
 }
+#endif
 
 #endif
 

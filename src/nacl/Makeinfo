@@ -1,0 +1,2 @@
+uqm_CXXFILES="nacl_glue.cpp"
+

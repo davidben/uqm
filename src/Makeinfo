@@ -13,6 +13,9 @@ case "$HOST_SYSTEM" in
 	MSVC)
 		uqm_HFILES="$uqm_HFILES config_vc6.h"
 		;;
+	NaCl)
+		uqm_SUBDIRS="$uqm_SUBDIRS nacl"
+		;;
 esac
 
 if [ "$uqm_HAVE_REGEX" = 0 ]; then

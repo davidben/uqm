@@ -92,6 +92,11 @@ case "$HOST_SYSTEM" in
 		LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS"
 		LIB_SDL_image_DETECT="true"
 		;;	
+	NaCl)
+		# Include dependencies, since we're linking statically.
+		LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
+		LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_image -lpng -ljpeg"
+		;;
 	*)
 		LIB_SDL_image_CFLAGS="$LIB_SDL_CFLAGS"
 		LIB_SDL_image_LDFLAGS="$LIB_SDL_LDFLAGS -lSDL_image"
@@ -314,6 +319,37 @@ case "$HOST_SYSTEM" in
 esac
 
 
+# Core PPAPI and NaCl libraries.
+LIB_ppapi_NAME="NaCl PPAPI Bindings and nacl-mounts"
+case "$HOST_SYSTEM" in
+	NaCl)
+		# Put nacl-mounts and ppapi_cpp in the same entry
+		# because there are dependency nuisances; -lppapi_cpp
+		# needs to be in the first check because config uses a
+		# different main, and there's a mess of circular
+		# dependencies here.
+		nacl_mounts_calls="\
+		    chdir getcwd getwd dup chmod stat mkdir rmdir \
+		    umount mount read write fstat getdents \
+		    fsync isatty close lseek open remove access \
+		    ioctl link symlink kill getuid setuid \
+		    getgid setgid getlogin getpwnam getpwuid \
+		    umask unlink utime signal"
+
+		LIB_ppapi_CFLAGS=""
+		LIB_ppapi_LDFLAGS="-Wl,--start-group -lppapi -lppapi_cpp -lnacl-mounts -Wl,--end-group"
+		LIB_ppapi_VERSION=""
+
+		for call in $nacl_mounts_calls; do
+			LIB_ppapi_LDFLAGS="$LIB_ppapi_LDFLAGS -Wl,--wrap=$call"
+		done
+		;;
+	*)
+		LIB_ppapi_DETECT="false"
+		;;
+esac
+
+
 ##############################################################################
 # Describe the symbols (possibly) used:                                      #
 ##############################################################################
@@ -330,7 +366,12 @@ SYMBOL_readdir_r_EXTRA="#include <dirent.h>"
 
 SYMBOL_setenv_EXTRA="#include <stdlib.h>"
 
-SYMBOL_strcasecmp_EXTRA="#include <strings.h>"
+if [ "$HOST_SYSTEM" = "NaCl" ]; then
+	# NaCl is missing strings.h and puts it in string.h
+	SYMBOL_strcasecmp_EXTRA="#include <string.h>"
+else
+	SYMBOL_strcasecmp_EXTRA="#include <strings.h>"
+fi
 
 SYMBOL_strcasecmp_DEFNAME="HAVE_STRCASECMP_UQM"
 		# HAVE_STRCASECMP would conflict with SDL (SDL_config.h).
