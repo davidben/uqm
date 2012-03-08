@@ -161,7 +161,7 @@ typedef unsigned short mode_t;
 #	define S_IFCHR _S_IFCHR
 #	define S_IFDIR _S_IFDIR
 #endif
-#ifdef __SYMBIAN32__
+#ifndef HAVE_READDIR_R
 	// TODO: Symbian doesn't have readdir_r(). If uio is to be usable
 	// outside of uqm (which defines its own backup readdir_r()), an
 	// implementation of that function needs to be added to uio.
