@@ -79,6 +79,8 @@
     uqmModule.setAttribute("src", "uqm.nmf");
     uqmModule.setAttribute("type", "application/x-nacl");
     containerDiv.appendChild(uqmModule);
+    uqmModule.tabIndex = 1;
+    uqmModule.focus();
 
     function readDirectory(path) {
 	function onError(e) {
