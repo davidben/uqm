@@ -532,7 +532,7 @@ have_library() {
 		TEMP_LDFLAGS=`evalVar "LIB_${LIB}_LDFLAGS"`
 
 		try_compile_c "$TEMP_CCOMMONFLAGS $CFLAGS $CCOMMONFLAGS" "$TEMP_LDFLAGS $LDFLAGS" << EOF
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	return 0;
 }
 EOF
@@ -640,7 +640,7 @@ have_symbol() {
 	fi
 
 	CODE=`cat << EOF	
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	(void) $SYMBOL;
 	return 0;
 }
@@ -670,7 +670,7 @@ have_type() {
 	fi
 
 	CODE=`cat << EOF	
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	$TYPE var;
 	(void) var;
 	return 0;
@@ -757,7 +757,7 @@ have_header() {
 	try_compile_c "$CFLAGS $CCOMMONFLAGS" "$LDFLAGS" << EOF > /dev/null 2>&1
 $EXTRA
 #include <$HEADER>
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	return 0;
 }
 EOF
@@ -810,7 +810,7 @@ $EXTRA
 #ifndef $MACRO
 #	error
 #endif
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	return 0;
 }
 EOF
@@ -878,7 +878,7 @@ check_endianness() {
 	else
 		# Detect endianness
 		try_compile_and_run_c "$CFLAGS $CCOMMONFLAGS" "$LDFLAGS" << EOF
-int main(void) {
+int $MAIN_FUNCTION(void) {
 	int i;
 
 	i = 1;
@@ -1023,6 +1023,7 @@ set_build_system() {
 set_host_system() {
 	local UHOST
 
+	MAIN_FUNCTION=main
 	if [ -z "$BUILD_HOST" ]; then
 		HOST_SYSTEM=$BUILD_SYSTEM
 	else
