@@ -1,6 +1,7 @@
 body {
     background-color: #000;
     background-image: url(starfield.png);
+    margin: 0; padding: 0;
 }
 
 #container {
@@ -14,7 +15,7 @@ body {
     color: #fff;
     border: 2px solid #226;
     width: 640px;
-    margin: 0 auto 0 auto;
+    margin: 20px auto 20px auto;
 }
 #downloads {
     width: 640px;
