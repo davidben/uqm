@@ -136,7 +136,7 @@ function initializeModule() {
 	}
 
 	window.webkitRequestFileSystem(
-            TEMPORARY, 5*1024*1024,
+            PERSISTENT, 2*1024*1024,
             function (fs) {
 		fs.root.getDirectory(path, {}, onGetDirEntry, onError);
 	    }, onError);
