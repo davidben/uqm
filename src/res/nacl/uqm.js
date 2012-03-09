@@ -53,23 +53,6 @@ var handleProgress = (function () {
     return handleProgress;
 }());
 
-function fileErrorToString(code) {
-    switch (code) {
-    case FileError.QUOTA_EXCEEDED_ERR:
-	return 'QUOTA_EXCEEDED_ERR';
-    case FileError.NOT_FOUND_ERR:
-	return 'NOT_FOUND_ERR';
-    case FileError.SECURITY_ERR:
-	return 'SECURITY_ERR';
-    case FileError.INVALID_MODIFICATION_ERR:
-	return 'INVALID_MODIFICATION_ERR';
-    case FileError.INVALID_STATE_ERR:
-	return 'INVALID_STATE_ERR';
-    default:
-	return 'Unknown Error';
-    };
-}
-
 function initializeModule(fsPersistent) {
     // Plumb nexe loading code through handleProgress for now. All
     // this needs better UI anyway.
@@ -105,7 +88,7 @@ function initializeModule(fsPersistent) {
 
     function readDirectory(path) {
 	function onError(e) {
-            var msg = fileErrorToString(e.code);
+            var msg = FileSystemUtils.errorToString(e.code);
             console.log("Error reading '" + path + "': "
 			+ msg + " (" + e.code + ")");
 	    uqmModule.postMessage(["ReadDirectory", "ERROR"].join("\x00"));
@@ -136,7 +119,7 @@ function initializeModule(fsPersistent) {
 
 (function () {
     function onError(e) {
-        var msg = fileErrorToString(e.code);
+        var msg = FileSystemUtils.errorToString(e.code);
         console.log(msg + " (" + e.code + ")");
     }
 
