@@ -70,7 +70,7 @@ function fileErrorToString(code) {
     };
 }
 
-function initializeModule() {
+function initializeModule(fsPersistent) {
     // Plumb nexe loading code through handleProgress for now. All
     // this needs better UI anyway.
     var containerDiv = document.getElementById("container");
@@ -111,23 +111,14 @@ function initializeModule() {
 	    uqmModule.postMessage(["ReadDirectory", "ERROR"].join("\x00"));
 	}
 
-	function onGetDirEntry(dirEntry) {
+	fsPersistent.root.getDirectory(path, {}, function (dirEntry) {
 	    FileSystemUtils.readDirectory(
 		dirEntry, function (entries) {
-		    console.log(path);
-		    console.log(entries);
 		    uqmModule.postMessage(
 			["ReadDirectory", "OK"].concat(entries).join("\x00"));
 		}, onError);
-	}
-
-	window.webkitRequestFileSystem(
-            PERSISTENT, 2*1024*1024,
-            function (fs) {
-		fs.root.getDirectory(path, {}, onGetDirEntry, onError);
-	    }, onError);
+	}, onError);
     }
-
 
     uqmModule.addEventListener(
 	"message", function (ev) {
@@ -156,7 +147,7 @@ function initializeModule() {
 	    window.webkitRequestFileSystem(
 		PERSISTENT, grantedBytes, function (fsPersistent) {
 		    console.log("Got filesystem. Starting game.");
-		    initializeModule();
+		    initializeModule(fsPersistent);
 		}, onError);
 	    }, function (e) { console.log(e); });
 }());
