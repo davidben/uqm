@@ -47,7 +47,8 @@ class GameInstance : public pp::Instance {
 
   KernelProxy* proxy_;
   MainThreadRunner* runner_;
-  pp::FileSystem* fs_;
+  pp::FileSystem* fs_temporary_;
+  pp::FileSystem* fs_persistent_;
 
   std::string manifest_;
   ssize_t manifest_size_;
@@ -145,9 +146,8 @@ class GameInstance : public pp::Instance {
     proxy_ = KernelProxy::KPInstance();
     runner_ = new MainThreadRunner(this);
 
-    // Persistent seems to hate me?
-    fprintf(stderr, "Requesting an HTML5 local temporary filesystem.\n");
-    fs_ = new pp::FileSystem(this, PP_FILESYSTEMTYPE_LOCALTEMPORARY);
+    fs_temporary_ = new pp::FileSystem(this, PP_FILESYSTEMTYPE_LOCALTEMPORARY);
+    fs_persistent_ = new pp::FileSystem(this, PP_FILESYSTEMTYPE_LOCALPERSISTENT);
   }
 
   virtual ~GameInstance() {
@@ -156,7 +156,8 @@ class GameInstance : public pp::Instance {
 
     // Clean up stuff.
     delete runner_;
-    delete fs_;
+    delete fs_temporary_;
+    delete fs_persistent_;
   }
 
   // This function is called with the HTML attributes of the embed tag,
@@ -246,7 +247,8 @@ void GameInstance::LaunchGame() {
   // Setup filesystem.
 
   // Setup writable homedir.
-  PepperMount* pepper_mount = new PepperMount(runner_, fs_, 20 * 1024 * 1024);
+  PepperMount* pepper_mount = new PepperMount(runner_, fs_persistent_,
+					      2 * 1024 * 1024);
   pepper_mount->SetDirectoryReader(&directory_reader_);
   pepper_mount->SetPathPrefix("/userdata");
 
@@ -261,7 +263,7 @@ void GameInstance::LaunchGame() {
   // Setup r/o data directory in /content
   HTTP2Mount* http2_mount = new HTTP2Mount(runner_, "./data");
   // FIXME: upgrades??
-  http2_mount->SetLocalCache(fs_, 350*1024*1024, "/content-cache", true);
+  http2_mount->SetLocalCache(fs_temporary_, 350*1024*1024, "/content-cache");
   http2_mount->SetProgressHandler(&progress_handler_);
 
   http2_mount->ReadManifest(manifest_, manifest_size_);

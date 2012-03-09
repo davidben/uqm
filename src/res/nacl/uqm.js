@@ -1,4 +1,4 @@
-(function () {
+var handleProgress = (function () {
     var downloadsDiv = document.getElementById("downloads");
     var downloadsProgress = null;
     var downloads = {};
@@ -50,6 +50,27 @@
 	}
     }
 
+    return handleProgress;
+}());
+
+function fileErrorToString(code) {
+    switch (code) {
+    case FileError.QUOTA_EXCEEDED_ERR:
+	return 'QUOTA_EXCEEDED_ERR';
+    case FileError.NOT_FOUND_ERR:
+	return 'NOT_FOUND_ERR';
+    case FileError.SECURITY_ERR:
+	return 'SECURITY_ERR';
+    case FileError.INVALID_MODIFICATION_ERR:
+	return 'INVALID_MODIFICATION_ERR';
+    case FileError.INVALID_STATE_ERR:
+	return 'INVALID_STATE_ERR';
+    default:
+	return 'Unknown Error';
+    };
+}
+
+function initializeModule() {
     // Plumb nexe loading code through handleProgress for now. All
     // this needs better UI anyway.
     var containerDiv = document.getElementById("container");
@@ -84,36 +105,14 @@
 
     function readDirectory(path) {
 	function onError(e) {
-            var msg = '';
-
-            switch (e.code) {
-	    case FileError.QUOTA_EXCEEDED_ERR:
-		msg = 'QUOTA_EXCEEDED_ERR';
-		break;
-	    case FileError.NOT_FOUND_ERR:
-		msg = 'NOT_FOUND_ERR';
-		break;
-	    case FileError.SECURITY_ERR:
-		msg = 'SECURITY_ERR';
-		break;
-	    case FileError.INVALID_MODIFICATION_ERR:
-		msg = 'INVALID_MODIFICATION_ERR';
-		break;
-	    case FileError.INVALID_STATE_ERR:
-		msg = 'INVALID_STATE_ERR';
-		break;
-	    default:
-		msg = 'Unknown Error';
-		break;
-	    };
-
+            var msg = fileErrorToString(e.code);
             console.log("Error reading '" + path + "': "
-			+ msg + " (" + e + ")");
+			+ msg + " (" + e.code + ")");
 	    uqmModule.postMessage(["ReadDirectory", "ERROR"].join("\x00"));
 	}
 
 	// This API is kinda ridiculous.
-	function readDirectory(dirEntry) {
+	function onGetDirEntry(dirEntry) {
 	    var reader = dirEntry.createReader();
 	    var entries = [];
 
@@ -137,9 +136,9 @@
 	}
 
 	window.webkitRequestFileSystem(
-            window.TEMPORARY, 5*1024*1024,
+            TEMPORARY, 5*1024*1024,
             function (fs) {
-		fs.root.getDirectory(path, {}, readDirectory, onError);
+		fs.root.getDirectory(path, {}, onGetDirEntry, onError);
 	    }, onError);
     }
 
@@ -156,4 +155,22 @@
 		console.log(msg);
 	    }
 	}, false);
-})();
+}
+
+(function () {
+    function onError(e) {
+        var msg = fileErrorToString(e.code);
+        console.log(msg + " (" + e.code + ")");
+    }
+
+    // Request 2MB storage for save data. This should be way more than
+    // enough space.
+    window.webkitStorageInfo.requestQuota(
+	PERSISTENT, 2 * 1024 * 1024, function (grantedBytes) {
+	    window.webkitRequestFileSystem(
+		PERSISTENT, grantedBytes, function (fsPersistent) {
+		    console.log("Got filesystem. Starting game.");
+		    initializeModule();
+		}, onError);
+	    }, function (e) { console.log(e); });
+}());
