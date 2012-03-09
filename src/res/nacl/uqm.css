@@ -13,3 +13,10 @@
 #downloads > progress {
     width: 100%;
 }
+
+footer > .left {
+    float: left;
+}
+footer > .right {
+    float: right;
+}
