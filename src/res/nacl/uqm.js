@@ -111,28 +111,14 @@ function initializeModule() {
 	    uqmModule.postMessage(["ReadDirectory", "ERROR"].join("\x00"));
 	}
 
-	// This API is kinda ridiculous.
 	function onGetDirEntry(dirEntry) {
-	    var reader = dirEntry.createReader();
-	    var entries = [];
-
-	    function done() {
-		uqmModule.postMessage(
-		    ["ReadDirectory", "OK"].concat(entries).join("\x00"));
-	    }
-	    function pumpReader() {
-		reader.readEntries(function (results) {
-		    if (results.length == 0) {
-			done();
-		    } else {
-			for (var i = 0; i < results.length; i++) {
-			    entries.push(results[i].name);
-			}
-			pumpReader();
-		    }
+	    FileSystemUtils.readDirectory(
+		dirEntry, function (entries) {
+		    console.log(path);
+		    console.log(entries);
+		    uqmModule.postMessage(
+			["ReadDirectory", "OK"].concat(entries).join("\x00"));
 		}, onError);
-	     }
-	     pumpReader();
 	}
 
 	window.webkitRequestFileSystem(
