@@ -127,10 +127,43 @@ function initializeModule(fsPersistent) {
     // enough space.
     window.webkitStorageInfo.requestQuota(
 	PERSISTENT, 2 * 1024 * 1024, function (grantedBytes) {
+	    // Grab filesystems.
 	    window.webkitRequestFileSystem(
 		PERSISTENT, grantedBytes, function (fsPersistent) {
-		    console.log("Got filesystem. Starting game.");
-		    initializeModule(fsPersistent);
+		    window.webkitRequestFileSystem(
+			TEMPORARY, 350 * 1024 * 1024, function (fsTemporary) {
+			    console.log("Got filesystems.");
+			    onGotFileSystems(fsPersistent, fsTemporary);
+			}, onError);
 		}, onError);
 	    }, function (e) { console.log(e); });
+
+    function onGotFileSystems(fsPersistent, fsTemporary) {
+	function startGame() {
+	    console.log("Starting game.");
+	    initializeModule(fsPersistent);
+	}
+
+	// Check if we need to migrate user data from the temporary
+	// filesystem. Isn't explicit CPS great?
+	FileSystemUtils.getDirectoryOrNull(
+	    fsPersistent.root, "/userdata", function (dirEntry) {
+		if (dirEntry) {
+		    startGame();
+		} else {
+		    FileSystemUtils.getDirectoryOrNull(
+			fsTemporary.root, "/userdata", function (dirEntry) {
+			    if (dirEntry) {
+				console.log("Migrating user data...");
+				FileSystemUtils.xfsCopyDirectory(
+				    dirEntry, fsPersistent.root, "userdata",
+				    startGame, onError);
+			    } else {
+				startGame();
+			    }
+			},
+			onError); // Just start the game.
+		}
+	    }, onError);
+    }
 }());
