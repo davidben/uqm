@@ -269,7 +269,7 @@ void GameInstance::LaunchGame() {
   http2_mount->ReadManifest(manifest_, manifest_size_);
 
   proxy_->mkdir("/content", 0777);
-  res = proxy_->mount("/content", new BufferMount(http2_mount, 1024 * 1024, 100));
+  res = proxy_->mount("/content", new BufferMount(http2_mount, 100 * 1024, 1000));
   if (!res) {
     fprintf(stderr, "/content initialization success.\n");
   } else {
