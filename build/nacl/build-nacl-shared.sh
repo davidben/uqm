@@ -18,17 +18,18 @@
 
 set -e
 
-if [ $# -ne 1 ]; then
-    echo "Usage $0 OUTPUTDIR"
+if [ $# -ne 2 ]; then
+    echo "Usage $0 OUTPUTDIR NMFNAME"
     exit 1
 fi
 
 export OUTPUTDIR=$(readlink -f $1)
+NMFNAME=$2
 cd "$(readlink -f "$(dirname "$0")")/../.."
 
 # Drop in static files
 for f in index.html uqm.js filesystem.js \
-    uqm.nmf uqm.css icon.png starfield.png; do
+    uqm.css icon.png starfield.png; do
     cp "src/res/nacl/$f" "$OUTPUTDIR/$f"
 done
 
@@ -42,4 +43,5 @@ MANIFEST=$(basename "$MANIFEST_PATH")
 cat > "$OUTPUTDIR/files.js" <<EOF
 var manifest = "/$MANIFEST";
 var manifestSize = $MANIFEST_SIZE;
+var naclManifest = "$NMFNAME";
 EOF

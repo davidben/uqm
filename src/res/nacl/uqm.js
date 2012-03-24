@@ -80,7 +80,7 @@ function initializeModule(fsPersistent) {
     uqmModule.setAttribute("height", "480");
     uqmModule.setAttribute("manifest", manifest);
     uqmModule.setAttribute("manifestsize", manifestSize);
-    uqmModule.setAttribute("src", "uqm.nmf");
+    uqmModule.setAttribute("src", naclManifest);
     uqmModule.setAttribute("type", "application/x-nacl");
     containerDiv.appendChild(uqmModule);
     uqmModule.tabIndex = 1;
