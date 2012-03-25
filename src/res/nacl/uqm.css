@@ -27,17 +27,17 @@ body {
 footer {
     width: 626px;
     margin: 20px auto 20px auto;
-    background-color: #000878;
-    color: #eee;
-    border-top: 4px solid #010661;
-    border-left: 4px solid #01055c;
-    border-right: 4px solid #040999;
-    border-bottom: 4px solid #040999;
+    background-color: #0000a5;
+    color: #de00de;
+    border-top: 4px solid #000073;
+    border-left: 4px solid #000073;
+    border-right: 4px solid #0008e7;
+    border-bottom: 4px solid #0008e7;
     padding: 5px;
 }
 
 footer a {
-    color: #5050f8;
+    color: #de00de;
     font-family: sans-serif;
 }
 
