@@ -104,7 +104,14 @@ static HANDLER button_handlers[BUTTON_COUNT] = {
 	do_keyconfig };
 
 static int menu_sizes[MENU_COUNT] = {
-	7, 5, 7, 9, 2, 5,
+	7,
+#ifdef __native_client__
+	/* Hide resolution and fullscreen options in NaCl */
+	3,
+#else
+	5,
+#endif
+	7, 9, 2, 5,
 #ifdef HAVE_OPENGL
 	5,
 #else
@@ -127,8 +134,11 @@ static WIDGET *main_widgets[] = {
 	(WIDGET *)(&buttons[0]) };
 
 static WIDGET *graphics_widgets[] = {
+#ifndef __native_client__
+        /* Hide resolution and fullscreen options in NaCl */
 	(WIDGET *)(&choices[0]),
 	(WIDGET *)(&choices[10]),
+#endif
 	(WIDGET *)(&choices[2]),
 	(WIDGET *)(&choices[3]),
 	(WIDGET *)(&buttons[1]) };
