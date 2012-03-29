@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
     <title>The Ur-Quan Masters</title>
     <link rel="shortcut icon" href="icon.png">
     <link rel="stylesheet" href="uqm.css">
@@ -21,10 +22,51 @@
       <div id="container"></div>
       <div id="downloads"></div>
     </div>
-    <footer>
+    <footer class="bluebox">
       <a href="http://sc2.sourceforge.net/">The Ur-Quan Masters</a>
       <a class="right" href="https://github.com/davidben/uqm/">Source code</a>
     </footer>
+
+    <!-- Various dialogs. -->
+
+    <div class="overlay" id="firstrun-dialog" hidden>
+      <div class="overlay-dummy">
+	<div class="dialog bluebox">
+	  <h1 class="dialog-title">The Ur-Quan Masters</h1>
+	  <p>Welcome to the Chrome port
+	  of <a href="http://sc2.sourceforge.net">The Ur-Quan
+	  Masters</a>, a volunteer project that intends to bring the
+	  classic game Star Control II to modern systems.</p>
+
+	  <h2>Controls</h2>
+	  <table class="key-table">
+	    <tr>
+	      <td>
+		<kbd class="key">←</kbd>
+		<kbd class="key">↑</kbd>
+		<kbd class="key">↓</kbd>
+		<kbd class="key">→</kbd>
+	      </td>
+	      <td>Movement</td>
+	    </tr>
+	    <tr>
+	      <td><kbd class="key">Enter</kbd></td>
+	      <td>Select / Fire primary weapon</td>
+	    </tr>
+	    <tr>
+	      <td><kbd class="key">Shift</kbd></td>
+	      <td>Menu / Fire secondary weapon</td>
+	    </tr>
+	  </table>
+
+	  <div class="button-box"><button class="dialog-button" id="firstrun-startgame">Start Game</button></div>
+	  <p><small>Star Control II is a registered trademark of
+	  Accolade, Inc. All other trademarks and tradenames belong to
+	  their respective owners.</small></p>
+	</div>
+      </div>
+    </div>
+
     <script src="files.js"></script>
     <script src="filesystem.js"></script>
     <script src="uqm.js"></script>

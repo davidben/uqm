@@ -2,7 +2,29 @@ body {
     background-color: #000;
     background-image: url(starfield.png);
     margin: 0; padding: 0;
+    font-family: sans-serif;
 }
+
+*[hidden] {
+    /* The display: table overrides the one we want. */
+    display: none !important;
+}
+
+.bluebox {
+    background-color: #0000a5;
+    color: #eee;
+    border-top: 4px solid #000073;
+    border-left: 4px solid #000073;
+    border-right: 4px solid #0008e7;
+    border-bottom: 4px solid #0008e7;
+}
+
+.bluebox a {
+    color: #de00de;
+    text-decoration: none;
+}
+
+/* Game area */
 
 #container {
     width: 640px;
@@ -24,23 +46,82 @@ body {
     width: 100%;
 }
 
+/* Footer */
+
 footer {
+    /* bleh. 640 - 2*5 + 2*gameareaborder - 2*blueboxborder. W3C box model
+       is lame sometimes. The IE one was better. */
     width: 626px;
     margin: 20px auto 20px auto;
-    background-color: #0000a5;
-    color: #de00de;
-    border-top: 4px solid #000073;
-    border-left: 4px solid #000073;
-    border-right: 4px solid #0008e7;
-    border-bottom: 4px solid #0008e7;
     padding: 5px;
-}
-
-footer a {
-    color: #de00de;
-    font-family: sans-serif;
 }
 
 footer > .right {
     float: right;
+}
+
+/* Dialogs */
+
+.overlay {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: table;
+}
+.overlay-dummy {
+    /* Sigh. */
+    display: table-cell;
+    vertical-align: middle;
+}
+.dialog {
+    margin: auto;
+    padding: 5px;
+    width: 450px;
+}
+.dialog > h1, .dialog > h2 {
+    margin-bottom: 0.5em;
+}
+.dialog > p:last-child {
+    margin-bottom: 0;
+}
+.dialog-title {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+.button-box {
+    text-align: center;
+    margin: 5px 0 5px 0;
+}
+.dialog-button {
+    font-weight: bold;
+    padding: 3px 20px 3px 20px;
+    font-size: 150%;
+    background-color: #0e043e;
+    border: 2px solid #747474;
+    color: #238cd2;
+}
+.dialog-button:active {
+    background-color: #04087c;
+    color: #28a0f0;
+}
+.key-table {
+    margin: auto;
+}
+.key-table td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+kbd.key {
+    display: inline-block;
+    color: #000;
+    background-color: #ccc;
+    border-top: 2px solid #eee;
+    border-left: 2px solid #eee;
+    border-right: 2px solid #aaa;
+    border-bottom: 2px solid #aaa;
+    padding: 0px 4px 0px 4px;
 }

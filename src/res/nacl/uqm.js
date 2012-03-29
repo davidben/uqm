@@ -171,5 +171,25 @@ function startGame() {
     }
 }
 
-/* Okay, start the game. */
-startGame();
+function main() {
+    // TODO: Check browser support and prompt for inline installation
+    // and stuff.
+
+    if (localStorage["firstrun-shown"]) {
+	// Just start the game.
+	startGame();
+    } else {
+	// Show a first-run dialog to deal with the game not showing
+	// you the controls.
+	var dialog = document.getElementById("firstrun-dialog");
+	var button = document.getElementById("firstrun-startgame");
+
+	dialog.hidden = false;
+	button.addEventListener("click", function (ev) {
+	    localStorage["firstrun-shown"] = "1";
+	    dialog.hidden = true;
+	    startGame();
+	});
+    }
+}
+main();
