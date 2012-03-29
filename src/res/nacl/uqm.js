@@ -149,7 +149,6 @@ function startGame() {
 				    console.log("Starting game.");
 				    initializeModule(fsPersistent);
 				}, onError);
-			    onGotFileSystems(fsPersistent, fsTemporary);
 			}, onError);
 		}, onError);
 	}, function (e) { console.log(e); });
