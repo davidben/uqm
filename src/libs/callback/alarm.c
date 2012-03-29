@@ -41,7 +41,7 @@ static inline int
 AlarmTime_compare(const AlarmTime t1, const AlarmTime t2) {
 	if (t1 < t2)
 		return -1;
-	if (t2 > t2)
+	if (t2 > t1)
 		return 1;
 	return 0;
 }
