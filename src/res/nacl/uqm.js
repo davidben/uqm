@@ -117,7 +117,7 @@ function initializeModule(fsPersistent) {
 	}, false);
 }
 
-(function () {
+function startGame() {
     function onError(e) {
         var msg = FileSystemUtils.errorToString(e.code);
         console.log(msg + " (" + e.code + ")");
@@ -133,23 +133,26 @@ function initializeModule(fsPersistent) {
 		    window.webkitRequestFileSystem(
 			TEMPORARY, 350 * 1024 * 1024, function (fsTemporary) {
 			    console.log("Got filesystems.");
+			    // If needed, move /userdata from fsTemporary to fsPersistent.
+			    migrateDataIfNecessary(
+				fsPersistent, fsTemporary,
+				function () {
+				    // Then finally start the game.
+				    console.log("Starting game.");
+				    initializeModule(fsPersistent);
+				}, onError);
 			    onGotFileSystems(fsPersistent, fsTemporary);
 			}, onError);
 		}, onError);
-	    }, function (e) { console.log(e); });
+	}, function (e) { console.log(e); });
 
-    function onGotFileSystems(fsPersistent, fsTemporary) {
-	function startGame() {
-	    console.log("Starting game.");
-	    initializeModule(fsPersistent);
-	}
-
+    function migrateDataIfNecessary(fsPersistent, fsTemporary, successCallback, errorCallback) {
 	// Check if we need to migrate user data from the temporary
 	// filesystem. Isn't explicit CPS great?
 	FileSystemUtils.getDirectoryOrNull(
 	    fsPersistent.root, "/userdata", function (dirEntry) {
 		if (dirEntry) {
-		    startGame();
+		    successCallback();
 		} else {
 		    FileSystemUtils.getDirectoryOrNull(
 			fsTemporary.root, "/userdata", function (dirEntry) {
@@ -157,13 +160,16 @@ function initializeModule(fsPersistent) {
 				console.log("Migrating user data...");
 				FileSystemUtils.xfsCopyDirectory(
 				    dirEntry, fsPersistent.root, "userdata",
-				    startGame, onError);
+				    successCallback, errorCallback);
 			    } else {
-				startGame();
+				successCallback();
 			    }
 			},
-			onError); // Just start the game.
+			errorCallback);
 		}
-	    }, onError);
+	    }, errorCallback);
     }
-}());
+}
+
+/* Okay, start the game. */
+startGame();
