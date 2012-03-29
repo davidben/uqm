@@ -11,7 +11,7 @@ var handleProgress = (function () {
 	} else {
 	    if (downloads[path] === undefined)
 		console.log("Downloading '" + path + "'...");
-	    downloads[path] = [bytes, size]
+	    downloads[path] = [bytes, size];
 	}
 	updateProgress();
     }
