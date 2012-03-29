@@ -195,6 +195,18 @@ class GameInstance : public pp::Instance {
     size_t pos = s.find('\0');
     if (pos != std::string::npos && strcmp(s.c_str(), "ReadDirectory") == 0) {
       directory_reader_.HandleResponse(s.substr(pos + 1));
+    } else if (strcmp(s.c_str(), "Focus") == 0) {
+      // Not quite the same as DidChangeFocus; that doesn't know about
+      // OS focus changes.
+      SDL_NACL_SetHasFocus(true);
+    } else if (strcmp(s.c_str(), "Blur") == 0) {
+      SDL_NACL_SetHasFocus(false);
+    } else if (strcmp(s.c_str(), "Visible") == 0) {
+      // When targetting a future Pepper, can do this in
+      // DidChangeView.
+      SDL_NACL_SetPageVisible(true);
+    } else if (strcmp(s.c_str(), "Hidden") == 0) {
+      SDL_NACL_SetPageVisible(false);
     } else {
       fprintf(stderr, "Unexpected message\n");
     }
