@@ -41,7 +41,7 @@ class GameInstance : public pp::Instance {
  private:
   static int num_instances_;       // Ensure we only create one instance.
   pthread_t game_main_thread_;     // This thread will run game_main().
-  int num_changed_view_;           // Ensure we initialize an instance only once.
+  bool sdl_initialized_;           // Ensure we initialize an instance only once.
   int width_; int height_;         // Dimension of the SDL video screen.
   pp::CompletionCallbackFactory<GameInstance> cc_factory_;
 
@@ -131,7 +131,7 @@ class GameInstance : public pp::Instance {
   explicit GameInstance(PP_Instance instance)
     : pp::Instance(instance),
       game_main_thread_(NULL),
-      num_changed_view_(0),
+      sdl_initialized_(false),
       width_(0), height_(0),
       cc_factory_(this),
       manifest_size_(-1),
@@ -216,8 +216,8 @@ class GameInstance : public pp::Instance {
   // size changes. We ignore these calls except for the first
   // invocation, which we use to start the game.
   virtual void DidChangeView(const pp::Rect& position, const pp::Rect& clip) {
-    ++num_changed_view_;
-    if (num_changed_view_ > 1) return;
+    if (sdl_initialized_) return;
+    sdl_initialized_ = true;
 
     width_ = position.size().width();
     height_ = position.size().height();
