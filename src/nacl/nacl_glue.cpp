@@ -201,12 +201,6 @@ class GameInstance : public pp::Instance {
       SDL_NACL_SetHasFocus(true);
     } else if (strcmp(s.c_str(), "Blur") == 0) {
       SDL_NACL_SetHasFocus(false);
-    } else if (strcmp(s.c_str(), "Visible") == 0) {
-      // When targetting a future Pepper, can do this in
-      // DidChangeView.
-      SDL_NACL_SetPageVisible(true);
-    } else if (strcmp(s.c_str(), "Hidden") == 0) {
-      SDL_NACL_SetPageVisible(false);
     } else {
       fprintf(stderr, "Unexpected message\n");
     }
@@ -215,24 +209,26 @@ class GameInstance : public pp::Instance {
   // This function is called for various reasons, e.g. visibility and page
   // size changes. We ignore these calls except for the first
   // invocation, which we use to start the game.
-  virtual void DidChangeView(const pp::Rect& position, const pp::Rect& clip) {
-    if (sdl_initialized_) return;
-    sdl_initialized_ = true;
+  virtual void DidChangeView(const pp::View& view) {
+    if (!sdl_initialized_) {
+      sdl_initialized_ = true;
 
-    width_ = position.size().width();
-    height_ = position.size().height();
+      width_ = view.GetRect().size().width();
+      height_ = view.GetRect().size().height();
 
-    // NOTE: It is crucial that the two calls below are run here
-    // and not in a thread.
-    SDL_NACL_SetInstance(pp_instance(), width_, height_);
-    // This is SDL_Init call which used to be in game_main()
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
-    // Initialize audio and joystick here, not on the game thread.
-    SDL_InitSubSystem(SDL_INIT_AUDIO);
-    SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+      // NOTE: It is crucial that the two calls below are run here
+      // and not in a thread.
+      SDL_NACL_SetInstance(pp_instance(), width_, height_);
+      // This is SDL_Init call which used to be in game_main()
+      SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
+      // Initialize audio and joystick here, not on the game thread.
+      SDL_InitSubSystem(SDL_INIT_AUDIO);
+      SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 
-    // And launch the game.
-    pthread_create(&game_main_thread_, NULL, &LaunchGameThunk, this);
+      // And launch the game.
+      pthread_create(&game_main_thread_, NULL, &LaunchGameThunk, this);
+    }
+    SDL_NACL_SetPageVisible(view.IsPageVisible());
   }
 }; 
 

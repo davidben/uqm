@@ -119,10 +119,6 @@ function initializeModule(fsPersistent) {
 	"focus", function (ev) { uqmModule.postMessage("Focus"); });
     uqmModule.addEventListener(
 	"blur", function (ev) { uqmModule.postMessage("Blur"); });
-    document.addEventListener(
-	"webkitvisibilitychange",
-	function (ev) { uqmModule.postMessage(
-	    document.webkitHidden ? "Hidden" : "Visible"); });
 }
 
 function startGame() {
