@@ -129,8 +129,8 @@ function startGame() {
 
     // Request 2MB storage for save data. This should be way more than
     // enough space.
-    window.webkitStorageInfo.requestQuota(
-	PERSISTENT, 2 * 1024 * 1024, function (grantedBytes) {
+    navigator.webkitPersistentStorage.requestQuota(
+	2 * 1024 * 1024, function (grantedBytes) {
 	    // Grab filesystems.
 	    window.webkitRequestFileSystem(
 		PERSISTENT, grantedBytes, function (fsPersistent) {
