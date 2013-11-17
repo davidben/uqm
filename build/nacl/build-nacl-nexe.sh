@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 # NaCl Build helper
 # Copyright (c) 2012 David Benjamin
+# Copyright (c) 2013 Google, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,46 +20,39 @@
 # You can start this program as 'SH="/bin/sh -x" ./build.sh' to
 # enable command tracing.
 
+set -e
+
 cd "$(readlink -f "$(dirname "$0")")/../.."
 
 if [ -z "$NACL_SDK_ROOT" ]; then
 	echo "Error: NACL_SDK_ROOT not set" 1>&2
 	exit 1
 fi
+if [ -z "$NACL_PORTS" ]; then
+	echo "Error: NACL_PORTS not set" 1>&2
+	exit 1
+fi
 
 export BUILD_HOST="NaCl"
 export BUILD_HOST_ENDIAN="little"
 
-if [ "$NACL_GLIBC" = 1 ]; then
-	NACL_TOOLCHAIN_ROOT="$NACL_SDK_ROOT/toolchain/linux_x86"
-else
-	NACL_TOOLCHAIN_ROOT="$NACL_SDK_ROOT/toolchain/linux_x86_newlib"
-fi
+# common.sh gets unhappy without setting this.
+PACKAGE_NAME=uqm-0.7.0
 
-if [ "${NACL_PACKAGES_BITSIZE}" = "32" ] ; then
-	NACL_CROSS_PREFIX=i686-nacl
-	# Buildsystem cannot easily launch a prefixed gcc, so pass
-	# -m32 instead. i686-nacl-gcc is just a shell script that
-	# passes -m32 anyway.
-	export CFLAGS="-m32"
-	export LDFLAGS="-m32"
-elif [ "${NACL_PACKAGES_BITSIZE}" = "64" ] ; then
-	NACL_CROSS_PREFIX=x86_64-nacl
-elif [ "${NACL_PACKAGES_BITSIZE}" = "pnacl" ] ; then
-	NACL_CROSS_PREFIX=pnacl
-	echo "Do not know how to build pnacl"
-	exit 1
-else
-	echo "Unknown value for NACL_PACKAGES_BITSIZE: '${NACL_PACKAGES_BITSIZE}'" 1>&2
-	exit 1
-fi
+# There's a nacl_env.sh --print, but it doesn't pick up where naclports builds
+# into.
+. "${NACL_PORTS}/src/build_tools/common.sh"
 
-CROSS_ROOT="$NACL_TOOLCHAIN_ROOT/$NACL_CROSS_PREFIX"
+export CC="${NACLCC}"
+export CXX="${NACLCXX}"
+export AR="${NACLAR}"
+export RANLIB="${NACLRANLIB}"
+export PKG_CONFIG_PATH="${NACLPORTS_LIBDIR}/pkgconfig"
+export PKG_CONFIG_LIBDIR="${NACLPORTS_LIBDIR}"
+export CFLAGS="${NACLPORTS_CFLAGS}"
+export CXXFLAGS="${NACLPORTS_CXXFLAGS}"
+export LDFLAGS="${NACLPORTS_LDFLAGS}"
+export PATH="${NACL_BIN_PATH}:${NACLPORTS_PREFIX_BIN}:${PATH}"
 
-# Unprefixed gcc lives in x86_64-nacl.
-export PATH="$NACL_TOOLCHAIN_ROOT/x86_64-nacl/bin:$PATH"
-
-export PATH="$CROSS_ROOT/usr/bin:$PATH"
-export PKG_CONFIG_PATH="$CROSS_ROOT/usr/lib/pkgconfig"
-
-./build.sh "$@"
+./build.sh uqm reprocess_config
+./build.sh uqm

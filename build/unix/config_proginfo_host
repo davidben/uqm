@@ -74,6 +74,13 @@ case "$HOST_SYSTEM" in
 		LIB_SDL_VERSION='1.2.13'
 		LIB_SDL_DETECT="true"
 		;;		
+	NaCl)
+		LIB_SDL_DETECT="have_command sdl-config"
+		LIB_SDL_CFLAGS='$(sdl-config --cflags)'
+                # Don't link in -lSDLmain; we provide our own.
+		LIB_SDL_LDFLAGS='$(sdl-config --libs | sed -e s/-lSDLmain//)'
+		LIB_SDL_VERSION='$(sdl-config --version)'
+		;;
 	*)
 		LIB_SDL_DETECT="have_command sdl-config"
 		LIB_SDL_CFLAGS='$(sdl-config --cflags)'

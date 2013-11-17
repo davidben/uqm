@@ -16,7 +16,7 @@ case "$HOST_SYSTEM" in
 		uqm_NAME="$uqm_NAME.exe"
 		;;
 	NaCl)
-		uqm_NAME="$uqm_NAME.nexe"
+		uqm_NAME="${uqm_NAME}${NACL_EXEEXT}"
 		;;
 esac
 uqm_CFLAGS="$uqm_CFLAGS -Isrc"

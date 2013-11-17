@@ -2,6 +2,7 @@
 """
 NaCl build script
 Copyright (c) 2012 David Benjamin
+Copyright (c) 2013 Google, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,30 +29,29 @@ import tempfile
 
 SCRIPT_DIR = sys.path[0]
 
-# Map from ISA to NACL_PACKAGES_BITSIZE value from naclports.
+# Map from ISA to NACL_ARCH value from naclports.
 PORTS = {
-    "x86-32": "32",
-    "x86-64": "64",
+    "x86-32": "i686",
+    "x86-64": "x86_64",
+    "arm": "arm",
 }
 
 def hash_file(path):
     with open(path) as f:
         return hashlib.sha1(f.read()).hexdigest()
 
-def build_nacl_port(workdir, bitsize):
-    build_work = os.path.join(workdir, bitsize)
+def build_nacl_port(workdir, arch):
+    build_work = os.path.join(workdir, arch)
     os.mkdir(build_work)
     shutil.copyfile(os.path.join(SCRIPT_DIR, "config.state"),
                     os.path.join(build_work, "config.state"))
     env = dict(os.environ)
     env["BUILD_WORK"] = build_work
-    env["NACL_PACKAGES_BITSIZE"] = bitsize
+    env["NACL_ARCH"] = arch
     subprocess.check_call(
-        [os.path.join(SCRIPT_DIR, "build-nacl-nexe.sh"),
-         "uqm", "reprocess_config"], env=env)
-    subprocess.check_call(
-        [os.path.join(SCRIPT_DIR, "build-nacl-nexe.sh"),
-         "uqm"], env=env)
+        [os.path.join(SCRIPT_DIR, "build-nacl-nexe.sh")], env=env)
+    if arch == "pnacl":
+        return os.path.join(build_work, "uqm.pexe")
     return os.path.join(build_work, "uqm.nexe")
 
 def main(outputdir):
@@ -65,16 +65,22 @@ def main(outputdir):
     try:
         # Build all ports.
         manifest = { "program": { } }
-        for isa, bitsize in PORTS.items():
+        for isa, arch in PORTS.items():
             # Build it.
             print "=== Building for %s ===" % isa
-            nexe = build_nacl_port(workdir, bitsize)
+            nexe = build_nacl_port(workdir, arch)
             # Name with SHA-1 for caching.
             sha1 = hash_file(nexe)
-            filename = "uqm-%s.%s.nexe" % (isa, sha1)
+            ext = "pexe" if arch == "pnacl" else "nexe"
+            filename = "uqm-%s.%s.%s" % (isa, sha1, ext)
             shutil.copyfile(nexe, os.path.join(outputdir, filename))
             # Put in the maniest.
-            manifest["program"][isa] = { "url": filename }
+            if arch == "pnacl":
+                manifest["program"][isa] = {
+                    "pnacl-translate": { "url": filename }
+                }
+            else:
+                manifest["program"][isa] = { "url": filename }
 
         # Write the manifest
         print "=== Writing manifest ==="
