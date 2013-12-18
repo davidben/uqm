@@ -54,7 +54,7 @@ def list_pack_contents(masks):
             new_files = mask_files.difference(all_files)
             files.update(new_files)
             all_files.update(new_files)
-    return files
+    return sorted(files)
 
 
 def build_pack(files, destdir, out):

@@ -8,7 +8,7 @@ manifest = "manifest"
 packs = []
 
 def get_dirs(path):
-    return [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
+    return sorted([d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))])
 
 # Separate each alien into its own pack.
 for alien in get_dirs(os.path.join(srcdir, 'addons/3dovoice')):
