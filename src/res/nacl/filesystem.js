@@ -11,15 +11,15 @@ FileSystemUtils.TaskManager.prototype = {
 
 FileSystemUtils.errorToString = function(code) {
     switch (code) {
-    case FileError.QUOTA_EXCEEDED_ERR:
+    case DOMException.QUOTA_EXCEEDED_ERR:
 	return 'QUOTA_EXCEEDED_ERR';
-    case FileError.NOT_FOUND_ERR:
+    case DOMException.NOT_FOUND_ERR:
 	return 'NOT_FOUND_ERR';
-    case FileError.SECURITY_ERR:
+    case DOMException.SECURITY_ERR:
 	return 'SECURITY_ERR';
-    case FileError.INVALID_MODIFICATION_ERR:
+    case DOMException.INVALID_MODIFICATION_ERR:
 	return 'INVALID_MODIFICATION_ERR';
-    case FileError.INVALID_STATE_ERR:
+    case DOMException.INVALID_STATE_ERR:
 	return 'INVALID_STATE_ERR';
     default:
 	return 'Unknown Error';
@@ -114,7 +114,7 @@ FileSystemUtils.getDirectoryOrNull = function (dirEntry, path,
     dirEntry.getDirectory(
 	path, {}, function (entry) { successCallback(entry); },
 	function (e) {
-	    if (e.code == FileError.NOT_FOUND_ERR) {
+	    if (e.code == DOMException.NOT_FOUND_ERR) {
 		successCallback(null);
 	    } else {
 		errorCallback(e);
